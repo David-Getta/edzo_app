@@ -19,8 +19,10 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * A háttérben futó időzítő. Foreground service + részleges wake lock, így akkor is
@@ -43,7 +45,8 @@ public class TimerService extends Service {
 
     // Extra kulcsok
     public static final String EX_PREP = "prep", EX_WORK = "work", EX_REST = "rest",
-            EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_PRE = "pre";
+            EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_PRE = "pre",
+            EX_VOICE = "voice";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur";
 
@@ -59,7 +62,11 @@ public class TimerService extends Service {
 
     // Konfiguráció
     private int prep, work, rest, rounds, workSound, restSound;
-    private boolean track, precount;
+    private boolean track, precount, voice;
+
+    // Beszéd (TTS)
+    private TextToSpeech tts;
+    private boolean ttsReady;
 
     // Állapot
     private final ArrayList<Step> plan = new ArrayList<>();
@@ -92,6 +99,28 @@ public class TimerService extends Service {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createChannel();
         ticker = this::tick;
+        initTts();
+    }
+
+    private void initTts() {
+        try {
+            tts = new TextToSpeech(this, status -> {
+                if (status == TextToSpeech.SUCCESS) {
+                    ttsReady = true;
+                    try {
+                        int r = tts.setLanguage(new Locale("hu", "HU"));
+                        if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            tts.setLanguage(Locale.getDefault());
+                        }
+                    } catch (Exception ignored) {}
+                }
+            });
+        } catch (Exception ignored) {}
+    }
+
+    private void speak(String s) {
+        if (!voice || !ttsReady || tts == null) return;
+        try { tts.speak(s, TextToSpeech.QUEUE_FLUSH, null, "edzo"); } catch (Exception ignored) {}
     }
 
     @Override
@@ -109,6 +138,7 @@ public class TimerService extends Service {
                 restSound = intent.getIntExtra(EX_RS, 1);
                 track = intent.getBooleanExtra(EX_TRACK, false);
                 precount = intent.getBooleanExtra(EX_PRE, true);
+                voice = intent.getBooleanExtra(EX_VOICE, false);
                 startWorkout();
                 break;
             case ACTION_PAUSE: pause(); break;
@@ -125,8 +155,6 @@ public class TimerService extends Service {
     // ---------------- Edzés folyamat ----------------
 
     private void startWorkout() {
-        startForeground(NOTIF_ID, buildNotification("Edzés indul", ""));
-        acquireWakeLock();
         buildPlan();
         if (plan.isEmpty()) { stopEverything(); return; }
         running = true;
@@ -135,6 +163,9 @@ public class TimerService extends Service {
         sessionStart = SystemClock.elapsedRealtime();
         pausedAccum = 0;
         distanceM = track ? 0 : -1;
+        stepEndElapsed = SystemClock.elapsedRealtime() + (long) plan.get(0).dur * 1000L;
+        startForeground(NOTIF_ID, buildNotification());
+        acquireWakeLock();
         if (track) startLocation();
         beginStep(true);
         handler.post(ticker);
@@ -153,9 +184,18 @@ public class TimerService extends Service {
         Step s = plan.get(idx);
         stepEndElapsed = SystemClock.elapsedRealtime() + (long) s.dur * 1000L;
         lastShownSec = -1;
-        if (s.type == T_WORK) { Beeper.play(workSound); buzz(new long[]{0, 60, 60, 60}); }
-        else if (s.type == T_REST) { Beeper.play(restSound); buzz(120); }
-        else if (s.type == T_PREP && !first) { Beeper.play(restSound); buzz(120); }
+        boolean lastRound = s.round == rounds;
+        if (s.type == T_WORK) {
+            Beeper.play(workSound); buzz(new long[]{0, 60, 60, 60});
+            speak(lastRound ? "Utolsó kör. Futás!" : "Futás!");
+        } else if (s.type == T_REST) {
+            Beeper.play(restSound); buzz(120);
+            speak("Pihenő.");
+        } else if (s.type == T_PREP) {
+            if (!first) { Beeper.play(restSound); buzz(120); }
+            speak("Felkészülés.");
+        }
+        postNotification();
         broadcastTick();
     }
 
@@ -176,7 +216,7 @@ public class TimerService extends Service {
         if (shown != lastShownSec) {
             lastShownSec = shown;
             if (precount && shown <= 3 && shown >= 1) { Beeper.tick(); buzz(30); }
-            updateNotification(s, shown);
+            postNotification();
         }
         broadcastTick();
         handler.postDelayed(ticker, 200);
@@ -188,6 +228,8 @@ public class TimerService extends Service {
         remainingAtPause = stepEndElapsed - SystemClock.elapsedRealtime();
         pauseStart = SystemClock.elapsedRealtime();
         handler.removeCallbacks(ticker);
+        speak("Szünet.");
+        postNotification();
         broadcastTick();
     }
 
@@ -197,6 +239,7 @@ public class TimerService extends Service {
         stepEndElapsed = SystemClock.elapsedRealtime() + remainingAtPause;
         pausedAccum += SystemClock.elapsedRealtime() - pauseStart;
         lastLoc = null; // ne számítson bele a szünet alatti helyváltozás
+        postNotification();
         handler.post(ticker);
     }
 
@@ -205,6 +248,7 @@ public class TimerService extends Service {
         handler.removeCallbacks(ticker);
         Beeper.finish();
         buzz(new long[]{0, 120, 80, 120, 80, 240});
+        speak("Edzés kész. Szép munka!");
         int durationSec = (int) ((SystemClock.elapsedRealtime() - sessionStart - pausedAccum) / 1000);
         History.add(this, System.currentTimeMillis(), durationSec, distanceM, rounds, work, rest);
 
@@ -318,29 +362,56 @@ public class TimerService extends Service {
         }
     }
 
-    private Notification buildNotification(String title, String text) {
+    private PendingIntent actionIntent(String action, int rc) {
+        Intent i = new Intent(this, TimerService.class).setAction(action);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
+        return PendingIntent.getService(this, rc, i, flags);
+    }
+
+    private Notification buildNotification() {
         Intent open = new Intent(this, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent pi = PendingIntent.getActivity(this, 0, open, flags);
+        PendingIntent openPi = PendingIntent.getActivity(this, 0, open, flags);
+
+        String text;
+        if (plan.isEmpty() || idx >= plan.size()) {
+            text = "Edzés";
+        } else {
+            Step s = plan.get(idx);
+            double remain = paused ? remainingAtPause / 1000.0
+                    : (stepEndElapsed - SystemClock.elapsedRealtime()) / 1000.0;
+            if (remain < 0) remain = 0;
+            String name = s.type == T_PREP ? "Előkészület" : s.type == T_WORK ? "Futás" : "Pihenő";
+            text = name + " · " + (int) Math.ceil(remain) + " mp · Kör "
+                    + Math.max(1, s.round) + "/" + rounds + (paused ? " · szünet" : "");
+        }
 
         Notification.Builder b = Build.VERSION.SDK_INT >= 26
                 ? new Notification.Builder(this, CHANNEL)
                 : new Notification.Builder(this);
-        b.setContentTitle(title)
+        b.setContentTitle("Edző Időzítő")
                 .setContentText(text)
                 .setSmallIcon(android.R.drawable.ic_menu_recent_history)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
-                .setContentIntent(pi);
+                .setContentIntent(openPi);
+
+        if (running) {
+            if (paused) {
+                b.addAction(android.R.drawable.ic_media_play, "Folytatás", actionIntent(ACTION_RESUME, 1));
+            } else {
+                b.addAction(android.R.drawable.ic_media_pause, "Szünet", actionIntent(ACTION_PAUSE, 2));
+            }
+            b.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Leállítás", actionIntent(ACTION_STOP, 3));
+        }
         return b.build();
     }
 
-    private void updateNotification(Step s, int remain) {
-        String name = s.type == T_PREP ? "Előkészület" : s.type == T_WORK ? "Futás" : "Pihenő";
-        String text = name + " · " + remain + " mp · Kör " + Math.max(1, s.round) + "/" + rounds;
-        try { nm.notify(NOTIF_ID, buildNotification("Edző Időzítő", text)); } catch (Exception ignored) {}
+    private void postNotification() {
+        try { nm.notify(NOTIF_ID, buildNotification()); } catch (Exception ignored) {}
     }
 
     // ---------------- Rezgés ----------------
@@ -365,6 +436,7 @@ public class TimerService extends Service {
         handler.removeCallbacks(ticker);
         stopLocation();
         releaseWakeLock();
+        try { if (tts != null) { tts.stop(); tts.shutdown(); } } catch (Exception ignored) {}
     }
 
     @Override

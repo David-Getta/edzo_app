@@ -15,6 +15,10 @@ visszaszámol.
   ki/be kapcsolható**; plusz **rezgés**
 - 🌙 **Fut kikapcsolt képernyővel is** – háttérszolgáltatás + wake lock,
   így a sípszó és az időzítő sötét képernyőnél is megy
+- 🗣️ **Hangos bemondás (beszéd)** – a telefon kimondja a szakaszokat
+  („Futás", „Pihenő", „Utolsó kör", „Edzés kész"), bekapcsolható
+- 🎛️ **Vezérlés az értesítésből** – Szünet / Folytatás / Leállítás gombok
+  a lezárt képernyőről is, az app megnyitása nélkül
 - 📍 **GPS táv-mérés** (opcionális) – a lefutott távot menet közben és a
   végén is mutatja
 - 📜 **Korábbi edzések** naplója (dátum, idő, táv, körök)

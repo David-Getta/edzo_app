@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
     final int[] cfg = new int[4];
     final int[] DEF = {10, 10, 30, 8};
     int workSoundIdx = 2, restSoundIdx = 1;
-    boolean trackDistance = false, precount = true;
+    boolean trackDistance = false, precount = true, voice = false;
 
     static final int REQ_LOCATION = 1001, REQ_NOTIF = 1002;
 
@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
     TextView totalText;
     final TextView[] valueLabels = new TextView[4];
     TextView workSoundLabel, restSoundLabel;
-    Switch distanceSwitch, precountSwitch;
+    Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
     Button pauseBtn;
     ProgressRing ring;
@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
         restSoundIdx = prefs.getInt("rs", 1);
         trackDistance = prefs.getBoolean("track", false);
         precount = prefs.getBoolean("pre", true);
+        voice = prefs.getBoolean("voice", false);
 
         root = new FrameLayout(this);
         root.setBackgroundColor(BG);
@@ -184,6 +185,14 @@ public class MainActivity extends Activity {
         precountSwitch.setOnCheckedChangeListener((btn, checked) -> {
             precount = checked;
             prefs.edit().putBoolean("pre", precount).apply();
+        });
+        card2.addView(divider());
+        voiceSwitch = new Switch(this);
+        voiceSwitch.setChecked(voice);
+        card2.addView(switchRow("Hangos bemondás", "A telefon kimondja a szakaszokat", voiceSwitch));
+        voiceSwitch.setOnCheckedChangeListener((btn, checked) -> {
+            voice = checked;
+            prefs.edit().putBoolean("voice", voice).apply();
         });
         col.addView(card2, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(12));
@@ -520,6 +529,7 @@ public class MainActivity extends Activity {
         i.putExtra(TimerService.EX_RS, restSoundIdx);
         i.putExtra(TimerService.EX_TRACK, trackDistance && hasLocationPermission());
         i.putExtra(TimerService.EX_PRE, precount);
+        i.putExtra(TimerService.EX_VOICE, voice);
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(i);
         else startService(i);
 
