@@ -36,6 +36,7 @@ public class TimerService extends Service {
     public static final String ACTION_PAUSE = "com.edzo.idozito.PAUSE";
     public static final String ACTION_RESUME = "com.edzo.idozito.RESUME";
     public static final String ACTION_STOP = "com.edzo.idozito.STOP";
+    public static final String ACTION_STOP_SAVE = "com.edzo.idozito.STOP_SAVE";
     public static final String ACTION_SYNC = "com.edzo.idozito.SYNC";
 
     // Broadcastok (Service -> Activity)
@@ -74,6 +75,7 @@ public class TimerService extends Service {
     private boolean running, paused;
     private long stepEndElapsed, remainingAtPause;
     private int lastShownSec;
+    private int completedRounds; // teljesített (végigment) futás-körök száma
 
     // Időmérés
     private long sessionStart, pausedAccum, pauseStart;
@@ -148,6 +150,11 @@ public class TimerService extends Service {
                 sendBroadcast(new Intent(B_STOPPED).setPackage(getPackageName()));
                 stopEverything();
                 break;
+            case ACTION_STOP_SAVE:
+                if (running) saveSession(completedRounds);
+                sendBroadcast(new Intent(B_STOPPED).setPackage(getPackageName()));
+                stopEverything();
+                break;
         }
         return START_NOT_STICKY;
     }
@@ -160,6 +167,7 @@ public class TimerService extends Service {
         running = true;
         paused = false;
         idx = 0;
+        completedRounds = 0;
         sessionStart = SystemClock.elapsedRealtime();
         pausedAccum = 0;
         distanceM = track ? 0 : -1;
@@ -205,6 +213,7 @@ public class TimerService extends Service {
         double remain = (stepEndElapsed - SystemClock.elapsedRealtime()) / 1000.0;
 
         if (remain <= 0) {
+            if (plan.get(idx).type == T_WORK) completedRounds++;
             idx++;
             if (idx >= plan.size()) { finishWorkout(); return; }
             beginStep(false);
@@ -243,14 +252,22 @@ public class TimerService extends Service {
         handler.post(ticker);
     }
 
+    private int currentDurationSec() {
+        return (int) ((SystemClock.elapsedRealtime() - sessionStart - pausedAccum) / 1000);
+    }
+
+    private void saveSession(int roundsDone) {
+        History.add(this, System.currentTimeMillis(), currentDurationSec(), distanceM, roundsDone, work, rest);
+    }
+
     private void finishWorkout() {
         running = false;
         handler.removeCallbacks(ticker);
         Beeper.finish();
         buzz(new long[]{0, 120, 80, 120, 80, 240});
         speak("Edzés kész. Szép munka!");
-        int durationSec = (int) ((SystemClock.elapsedRealtime() - sessionStart - pausedAccum) / 1000);
-        History.add(this, System.currentTimeMillis(), durationSec, distanceM, rounds, work, rest);
+        int durationSec = currentDurationSec();
+        saveSession(rounds);
 
         Intent done = new Intent(B_DONE).setPackage(getPackageName());
         done.putExtra(EX_DUR, durationSec);

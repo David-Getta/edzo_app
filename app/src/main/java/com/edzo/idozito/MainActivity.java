@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
     Button pauseBtn;
     ProgressRing ring;
     boolean lastPaused = false;
+    boolean finished = false;
 
     final Handler repeatH = new Handler(Looper.getMainLooper());
     Runnable repeatR;
@@ -498,7 +499,7 @@ public class MainActivity extends Activity {
             if (lastPaused) cmd(TimerService.ACTION_RESUME);
             else cmd(TimerService.ACTION_PAUSE);
         });
-        stop.setOnClickListener(v -> { cmd(TimerService.ACTION_STOP); showRun(false); });
+        stop.setOnClickListener(v -> confirmStop());
         LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(0, -2, 1f);
         lp1.rightMargin = dp(10);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(0, -2, 1f);
@@ -535,6 +536,7 @@ public class MainActivity extends Activity {
 
         // Kezdeti UI, a további frissítés a broadcast-okból jön.
         lastPaused = false;
+        finished = false;
         pauseBtn.setEnabled(true);
         pauseBtn.setText("Szünet");
         setPhaseUI(cfg[PREP_K] > 0 ? TimerService.T_PREP : TimerService.T_WORK, 1);
@@ -546,6 +548,24 @@ public class MainActivity extends Activity {
 
     void cmd(String action) {
         startService(new Intent(this, TimerService.class).setAction(action));
+    }
+
+    /** Leállításkor: ha az edzés még nem fejeződött be, rákérdez a mentésre. */
+    void confirmStop() {
+        if (finished) { cmd(TimerService.ACTION_STOP); showRun(false); return; }
+        new AlertDialog.Builder(this)
+                .setTitle("Edzés leállítása")
+                .setMessage("Az edzés még nem fejeződött be. Mented a naplóba?")
+                .setPositiveButton("Mentés", (d, w) -> { cmd(TimerService.ACTION_STOP_SAVE); showRun(false); })
+                .setNegativeButton("Ne mentsd", (d, w) -> { cmd(TimerService.ACTION_STOP); showRun(false); })
+                .setNeutralButton("Mégse", null)
+                .show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (runView.getVisibility() == View.VISIBLE) confirmStop();
+        else super.onBackPressed();
     }
 
     // ================= Broadcast fogadás =================
@@ -570,6 +590,7 @@ public class MainActivity extends Activity {
         boolean paused = i.getBooleanExtra(TimerService.EX_PAUSED, false);
 
         showRun(true);
+        finished = false;
         setPhaseUI(phase, round, rounds);
         timeText.setText(fmt(remain));
         ring.setProgress(prog);
@@ -585,6 +606,7 @@ public class MainActivity extends Activity {
         double dist = i.getDoubleExtra(TimerService.EX_DIST, -1);
         int rounds = i.getIntExtra(TimerService.EX_ROUND, cfg[ROUND_K]);
         showRun(true);
+        finished = true;
         phaseLabel.setText("KÉSZ");
         phaseLabel.setTextColor(DONE);
         ring.setColor(DONE);
