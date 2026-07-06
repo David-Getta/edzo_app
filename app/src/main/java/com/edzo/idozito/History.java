@@ -18,9 +18,9 @@ public final class History {
     static final String KEY = "history";
     static final int MAX = 100;
 
-    /** Egy befejezett edzés hozzáadása a napló elejére. distanceM < 0, ha nem volt táv-mérés. */
+    /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
-                           int rounds, int work, int rest) {
+                           int rounds, int work, int rest, double maxSpeedKmh) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         JSONArray arr = load(ctx);
         try {
@@ -31,6 +31,7 @@ public final class History {
             o.put("rounds", rounds);
             o.put("work", work);
             o.put("rest", rest);
+            o.put("maxspeed", maxSpeedKmh);
             JSONArray out = new JSONArray();
             out.put(o);
             for (int i = 0; i < arr.length() && out.length() < MAX; i++) out.put(arr.get(i));

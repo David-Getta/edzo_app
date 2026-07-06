@@ -19,9 +19,11 @@ visszaszámol.
   („Futás", „Pihenő", „Utolsó kör", „Edzés kész"), bekapcsolható
 - 🎛️ **Vezérlés az értesítésből** – Szünet / Folytatás / Leállítás gombok
   a lezárt képernyőről is, az app megnyitása nélkül
-- 📍 **GPS táv-mérés** (opcionális) – a lefutott távot menet közben és a
-  végén is mutatja
-- 📜 **Korábbi edzések** naplója (dátum, idő, táv, körök)
+- 📍 **GPS táv- és sebességmérés** (opcionális) – lefutott táv és **km/h**
+  menet közben, valamint **átlag- és max sebesség** a naplóban
+- 📜 **Korábbi edzések** naplója (dátum, idő, táv, sebesség, körök)
+- 📊 **Profil / BMI** – magasság, testsúly, kor, testzsír; élő **BMI** +
+  kategória, és a testsúly/BMI/testzsír **változása diagramon**
 - ⚡ Gyors sablonok (HIIT, Tempó, Tabata)
 - 🟢 Nagy, színkódolt körkijelző és aktuális kör számláló
 - 💾 A beállítások megjegyzésre kerülnek

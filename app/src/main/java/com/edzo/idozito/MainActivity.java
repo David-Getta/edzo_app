@@ -211,6 +211,10 @@ public class MainActivity extends Activity {
         Button hist = ghostButton("📜  Korábbi edzések");
         hist.setOnClickListener(v -> showHistory());
         col.addView(hist);
+        col.addView(gap(12));
+        Button prof = ghostButton("📊  Profil / BMI");
+        prof.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
+        col.addView(prof);
 
         col.addView(gap(24));
         TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
@@ -587,6 +591,7 @@ public class MainActivity extends Activity {
         int rounds = i.getIntExtra(TimerService.EX_ROUNDS, cfg[ROUND_K]);
         float prog = i.getFloatExtra(TimerService.EX_PROGRESS, 0);
         double dist = i.getDoubleExtra(TimerService.EX_DIST, -1);
+        float speed = i.getFloatExtra(TimerService.EX_SPEED, 0);
         boolean paused = i.getBooleanExtra(TimerService.EX_PAUSED, false);
 
         showRun(true);
@@ -594,7 +599,9 @@ public class MainActivity extends Activity {
         setPhaseUI(phase, round, rounds);
         timeText.setText(fmt(remain));
         ring.setProgress(prog);
-        distanceText.setText(dist >= 0 ? "📍 " + fmtDist(dist) : "");
+        distanceText.setText(dist >= 0
+                ? "📍 " + fmtDist(dist) + "   ·   " + String.format(Locale.US, "%.1f km/h", speed)
+                : "");
 
         lastPaused = paused;
         pauseBtn.setText(paused ? "Folytatás" : "Szünet");
@@ -678,6 +685,14 @@ public class MainActivity extends Activity {
                 if (dist >= 0) line += "   ·   📍 " + fmtDist(dist);
                 item.addView(text(line, 15.5f, TXT, true));
                 item.addView(text(o.optInt("work") + " mp futás / " + o.optInt("rest") + " mp pihenő", 12, MUTED, false));
+                if (dist >= 0) {
+                    int dur = o.optInt("dur");
+                    double avg = dur > 0 ? dist / dur * 3.6 : 0;
+                    double mx = o.optDouble("maxspeed", -1);
+                    String sp = String.format(Locale.US, "🏃 átlag %.1f km/h", avg);
+                    if (mx >= 0) sp += String.format(Locale.US, "  ·  max %.1f km/h", mx);
+                    item.addView(text(sp, 12.5f, ACCENT, false));
+                }
                 list.addView(item);
                 if (k < arr.length() - 1) {
                     View dv = new View(this);

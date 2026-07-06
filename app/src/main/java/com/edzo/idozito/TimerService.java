@@ -49,7 +49,8 @@ public class TimerService extends Service {
             EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_PRE = "pre",
             EX_VOICE = "voice";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
-            EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur";
+            EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
+            EX_SPEED = "speed";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2;
 
@@ -93,6 +94,8 @@ public class TimerService extends Service {
     private double distanceM = -1; // -1 = nincs mérés
     private boolean tracking;
     private LocationListener locListener;
+    private double maxSpeedMps, curSpeedMps;
+    private long lastFixElapsed;
 
     @Override
     public void onCreate() {
@@ -171,6 +174,9 @@ public class TimerService extends Service {
         sessionStart = SystemClock.elapsedRealtime();
         pausedAccum = 0;
         distanceM = track ? 0 : -1;
+        maxSpeedMps = 0;
+        curSpeedMps = 0;
+        lastFixElapsed = 0;
         stepEndElapsed = SystemClock.elapsedRealtime() + (long) plan.get(0).dur * 1000L;
         startForeground(NOTIF_ID, buildNotification());
         acquireWakeLock();
@@ -257,7 +263,8 @@ public class TimerService extends Service {
     }
 
     private void saveSession(int roundsDone) {
-        History.add(this, System.currentTimeMillis(), currentDurationSec(), distanceM, roundsDone, work, rest);
+        double maxKmh = distanceM >= 0 ? maxSpeedMps * 3.6 : -1;
+        History.add(this, System.currentTimeMillis(), currentDurationSec(), distanceM, roundsDone, work, rest, maxKmh);
     }
 
     private void finishWorkout() {
@@ -304,6 +311,7 @@ public class TimerService extends Service {
         i.putExtra(EX_ROUNDS, rounds);
         i.putExtra(EX_PROGRESS, (float) (s.dur > 0 ? remain / s.dur : 0));
         i.putExtra(EX_DIST, distanceM);
+        i.putExtra(EX_SPEED, (float) (paused ? 0 : curSpeedMps * 3.6));
         i.putExtra(EX_PAUSED, paused);
         sendBroadcast(i);
     }
@@ -323,13 +331,24 @@ public class TimerService extends Service {
         lastLoc = null;
         locListener = new LocationListener() {
             @Override public void onLocationChanged(Location loc) {
-                if (paused) { lastLoc = loc; return; }
+                long now = SystemClock.elapsedRealtime();
+                if (paused) { lastLoc = loc; lastFixElapsed = now; curSpeedMps = 0; return; }
                 if (loc.hasAccuracy() && loc.getAccuracy() > 40) return;
+                double sp = loc.hasSpeed() ? loc.getSpeed() : -1;
                 if (lastLoc != null) {
                     float d = lastLoc.distanceTo(loc);
                     if (d < 250) distanceM += d;
+                    if (sp < 0 && lastFixElapsed > 0) {
+                        double dt = (now - lastFixElapsed) / 1000.0;
+                        if (dt > 0.2) sp = d / dt;
+                    }
+                }
+                if (sp >= 0 && sp < 12) { // futáshoz reális felső korlát (~43 km/h), GPS-tüskék kiszűrése
+                    curSpeedMps = sp;
+                    if (sp > maxSpeedMps) maxSpeedMps = sp;
                 }
                 lastLoc = loc;
+                lastFixElapsed = now;
             }
             @Override public void onStatusChanged(String p, int s, android.os.Bundle e) {}
             @Override public void onProviderEnabled(String p) {}
