@@ -1,0 +1,14 @@
+# Gradle / Android build outputs
+.gradle/
+build/
+app/build/
+local.properties
+*.apk
+
+# Keep the committed wrapper jar (needed by CI)
+!gradle/wrapper/gradle-wrapper.jar
+
+# Editor / OS
+.idea/
+*.iml
+.DS_Store

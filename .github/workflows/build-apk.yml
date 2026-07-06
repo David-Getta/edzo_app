@@ -1,0 +1,58 @@
+name: APK build
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Prepare APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk out/Edzo-Idozito.apk
+          ls -la out
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Edzo-Idozito-apk
+          path: out/Edzo-Idozito.apk
+          if-no-files-found: error
+
+      - name: Publish APK to Release
+        if: >-
+          github.ref == 'refs/heads/claude/busy-cori-yjd6to' ||
+          github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: "Edző Időzítő – legfrissebb APK"
+          body: |
+            Töltsd le az **Edzo-Idozito.apk** fájlt a telefonodon és telepítsd.
+            Ha rákérdez, engedélyezd az „ismeretlen forrásból" való telepítést.
+          files: out/Edzo-Idozito.apk
