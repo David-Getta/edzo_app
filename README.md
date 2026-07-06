@@ -26,13 +26,25 @@ visszaszámol.
 - 🟢 Nagy, színkódolt körkijelző és aktuális kör számláló
 - 💾 A beállítások megjegyzésre kerülnek
 
-## Az APK letöltése (telefonra)
+## Automatikus frissítés (ajánlott) — Obtainium
 
-Az appot a GitHub Actions automatikusan lebuildeli, és felteszi a
-**[Releases](../../releases/tag/latest)** oldalra:
+Az appot a GitHub Actions minden változtatásnál lebuildeli és egy új
+**Release**-be tölti. Az [Obtainium](https://github.com/ImranR98/Obtainium)
+ingyenes app ezt figyeli, és **magától frissít**:
 
-1. Nyisd meg a telefonod böngészőjében a `latest` release-t.
-2. Töltsd le az **`Edzo-Idozito.apk`** fájlt.
+1. Telepítsd az **Obtainium**-ot (Play Store / F-Droid / GitHub Release).
+2. Add hozzá a repó URL-jét: `https://github.com/David-Getta/edzo_app`
+3. Mivel a repó privát, add meg az Obtainium beállításaiban a GitHub
+   fiókodat / egy olvasó (repo-hozzáférésű) personal access tokent.
+4. Innentől az Obtainium jelzi és telepíti az új verziókat.
+
+Minden build **egyedi taggel** (`build-N`) és **növekvő `versionCode`-dal**
+készül, így az Obtainium és az Android is frissítésként ismeri fel.
+
+## Kézi letöltés (telefonra)
+
+1. Nyisd meg a **[legfrissebb Release](../../releases/latest)** oldalt.
+2. Töltsd le a **`My-Trainer.apk`** fájlt.
 3. Nyisd meg — ha rákérdez, engedélyezd az „ismeretlen forrásból" való
    telepítést, majd telepítsd.
 
@@ -46,4 +58,4 @@ Az appot a GitHub Actions automatikusan lebuildeli, és felteszi a
 ```
 
 Tiszta natív Android app (Java, `Activity` + programozott felület), külső
-függőségek nélkül. `minSdk 24`, `targetSdk 34`.
+függőségek nélkül. `minSdk 24`, `targetSdk 33`.

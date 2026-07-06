@@ -28,19 +28,22 @@ jobs:
         run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build debug APK
+        env:
+          # Minden buildnél növekvő versionCode, hogy az Android frissítésként telepítse.
+          VERSION_CODE: ${{ 1000 + github.run_number }}
         run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Prepare APK
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/debug/app-debug.apk out/Edzo-Idozito.apk
+          cp app/build/outputs/apk/debug/app-debug.apk out/My-Trainer.apk
           ls -la out
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Edzo-Idozito-apk
-          path: out/Edzo-Idozito.apk
+          name: My-Trainer-apk
+          path: out/My-Trainer.apk
           if-no-files-found: error
 
       - name: Publish APK to Release
@@ -50,9 +53,16 @@ jobs:
           github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest
-          name: "Edző Időzítő – legfrissebb APK"
+          # Egyedi tag minden buildnél, hogy az Obtainium új verzióként lássa.
+          # A GitHub "latest release" mindig a legújabbra mutat, így a fix
+          # .../releases/latest link is működik.
+          tag_name: build-${{ github.run_number }}
+          name: "My trainer – build ${{ github.run_number }}"
+          make_latest: true
           body: |
-            Töltsd le az **Edzo-Idozito.apk** fájlt a telefonodon és telepítsd.
-            Ha rákérdez, engedélyezd az „ismeretlen forrásból" való telepítést.
-          files: out/Edzo-Idozito.apk
+            My trainer automatikus build (v1.2, build ${{ github.run_number }}).
+
+            Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
+            **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"
+            való telepítést.
+          files: out/My-Trainer.apk

@@ -12,7 +12,9 @@ android {
         // targetSdk 33: robustabb foreground service (elkerüli az Android 14 FGS-típus
         // szigorítását), miközben a háttérfutás és a wake lock így is megbízhatóan megy.
         targetSdk 33
-        versionCode 3
+        // A CI a VERSION_CODE env-változóból növekvő értéket ad, hogy az
+        // automatikus frissítés (Obtainium/Android) minden buildnél működjön.
+        versionCode System.getenv('VERSION_CODE') ? System.getenv('VERSION_CODE').toInteger() : 3
         versionName '1.2'
     }
 
