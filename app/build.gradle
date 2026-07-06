@@ -23,9 +23,25 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    // Fix aláíró kulcs, hogy minden CI-build ugyanazzal az aláírással készüljön,
+    // és az Obtainium/Android ütközés nélkül tudjon frissíteni. (Saját használatra
+    // szánt kulcs, ismert jelszóval – nem érzékeny titok.)
+    signingConfigs {
+        stable {
+            storeFile file('mytrainer.keystore')
+            storePassword 'android'
+            keyAlias 'mytrainer'
+            keyPassword 'android'
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig signingConfigs.stable
+        }
         release {
             minifyEnabled false
+            signingConfig signingConfigs.stable
         }
     }
 }
