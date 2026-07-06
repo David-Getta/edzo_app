@@ -1,4 +1,4 @@
-# Edző Időzítő 🏃⏱️
+# My trainer 🏃⏱️
 
 Egyszerű **intervallum (HIIT) edző időzítő** Androidra. Beállíthatsz
 előkészületet, futás- és pihenőidőt, valamint a körök számát. Minden

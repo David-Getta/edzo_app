@@ -392,7 +392,7 @@ public class TimerService extends Service {
         Notification.Builder b = Build.VERSION.SDK_INT >= 26
                 ? new Notification.Builder(this, CHANNEL)
                 : new Notification.Builder(this);
-        b.setContentTitle("Edző Időzítő")
+        b.setContentTitle("My trainer")
                 .setContentText(text)
                 .setSmallIcon(android.R.drawable.ic_menu_recent_history)
                 .setOngoing(true)

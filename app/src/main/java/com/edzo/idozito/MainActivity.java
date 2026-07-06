@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
         bp.rightMargin = dp(10);
         head.addView(badge, bp);
         LinearLayout titles = vbox();
-        titles.addView(text("Edző Időzítő", 20, TXT, true));
+        titles.addView(text("My trainer", 20, TXT, true));
         titles.addView(text("Intervallum edzés sípszóval", 12.5f, MUTED, false));
         head.addView(titles);
         col.addView(head);
