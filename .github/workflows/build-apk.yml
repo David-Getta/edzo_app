@@ -61,7 +61,7 @@ jobs:
           name: "My trainer – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            My trainer automatikus build (v1.2, build ${{ github.run_number }}).
+            My trainer automatikus build (v1.3, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"

@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
         setupScroll.setFillViewport(true);
 
         LinearLayout col = vbox();
-        col.setPadding(dp(18), dp(18), dp(18), dp(28));
+        col.setPadding(dp(20), dp(20), dp(20), dp(36));
 
         // Fejléc
         LinearLayout head = hbox();
@@ -133,7 +133,7 @@ public class MainActivity extends Activity {
         titles.addView(text("Intervallum edzés sípszóval", 12.5f, MUTED, false));
         head.addView(titles);
         col.addView(head);
-        col.addView(gap(16));
+        col.addView(gap(24));
 
         // Sablonok
         LinearLayout presets = hbox();
@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
         presets.addView(preset("Tempó", "60/20 mp · 6×", 60, 20, 6), presetLp());
         presets.addView(preset("Tabata", "20/10 mp · 8×", 20, 10, 8), presetLp());
         col.addView(presets, new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(14));
+        col.addView(gap(20));
 
         // Idő-beállítások
         LinearLayout card = card();
@@ -153,11 +153,11 @@ public class MainActivity extends Activity {
         card.addView(divider());
         card.addView(stepperRow("Körök", "Hányszor ismételjük", ROUND_K, 1, 99));
         col.addView(card, new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(6));
+        col.addView(gap(8));
         TextView tip = text("A számra koppintva pontos értéket írhatsz be.", 11.5f, MUTED, false);
         tip.setPadding(dp(4), 0, 0, dp(6));
         col.addView(tip);
-        col.addView(gap(8));
+        col.addView(gap(16));
 
         // Hangok + extrák
         LinearLayout card2 = card();
@@ -195,23 +195,23 @@ public class MainActivity extends Activity {
             prefs.edit().putBoolean("voice", voice).apply();
         });
         col.addView(card2, new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(12));
+        col.addView(gap(18));
 
         totalText = text("", 13, MUTED, false);
         totalText.setGravity(Gravity.CENTER);
-        totalText.setPadding(0, dp(2), 0, dp(14));
+        totalText.setPadding(0, dp(4), 0, dp(20));
         col.addView(totalText, new LinearLayout.LayoutParams(-1, -2));
 
         Button start = primaryButton("▶  Indítás");
         start.setOnClickListener(v -> startWorkout());
         col.addView(start);
-        col.addView(gap(12));
+        col.addView(gap(16));
 
         Button hist = ghostButton("📜  Korábbi edzések");
         hist.setOnClickListener(v -> showHistory());
         col.addView(hist);
 
-        col.addView(gap(16));
+        col.addView(gap(24));
         TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
                 12, MUTED, false);
         hint.setGravity(Gravity.CENTER);
@@ -241,7 +241,7 @@ public class MainActivity extends Activity {
     View preset(String name, String sub, final int work, final int rest, final int rounds) {
         LinearLayout b = vbox();
         b.setGravity(Gravity.CENTER);
-        b.setPadding(dp(10), dp(11), dp(10), dp(11));
+        b.setPadding(dp(10), dp(14), dp(10), dp(14));
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(CARD2);
         bg.setCornerRadius(dp(14));
@@ -264,7 +264,7 @@ public class MainActivity extends Activity {
     LinearLayout stepperRow(String title, String sub, final int key, final int min, final int max) {
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(16), dp(14), dp(16), dp(14));
+        row.setPadding(dp(18), dp(17), dp(18), dp(17));
 
         LinearLayout labels = vbox();
         labels.addView(text(title, 15.5f, TXT, true));
@@ -288,8 +288,8 @@ public class MainActivity extends Activity {
         Button plus = stepButton("+");
 
         LinearLayout.LayoutParams valLp = new LinearLayout.LayoutParams(-2, -2);
-        valLp.leftMargin = dp(4);
-        valLp.rightMargin = dp(4);
+        valLp.leftMargin = dp(10);
+        valLp.rightMargin = dp(10);
 
         attachStepper(minus, key, -1, min, max);
         attachStepper(plus, key, 1, min, max);
@@ -388,7 +388,7 @@ public class MainActivity extends Activity {
     LinearLayout navRow(String title, String sub, TextView valueOut, Runnable onTap) {
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(16), dp(14), dp(16), dp(14));
+        row.setPadding(dp(18), dp(17), dp(18), dp(17));
         row.setClickable(true);
         row.setOnClickListener(v -> onTap.run());
 
@@ -408,7 +408,7 @@ public class MainActivity extends Activity {
     LinearLayout switchRow(String title, String sub, Switch sw) {
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(16), dp(10), dp(16), dp(10));
+        row.setPadding(dp(18), dp(14), dp(18), dp(14));
         LinearLayout labels = vbox();
         labels.addView(text(title, 15.5f, TXT, true));
         if (sub != null) labels.addView(text(sub, 12, MUTED, false));
@@ -466,7 +466,7 @@ public class MainActivity extends Activity {
         phaseLabel.setGravity(Gravity.CENTER);
         phaseLabel.setLetterSpacing(0.22f);
         runView.addView(phaseLabel);
-        runView.addView(gap(10));
+        runView.addView(gap(16));
 
         int size = (int) (getResources().getDisplayMetrics().widthPixels * 0.72f);
         FrameLayout ringHost = new FrameLayout(this);
@@ -484,12 +484,12 @@ public class MainActivity extends Activity {
         center.addView(roundInfo);
         ringHost.addView(center, centerLp);
         runView.addView(ringHost, new LinearLayout.LayoutParams(size, size));
-        runView.addView(gap(10));
+        runView.addView(gap(16));
 
         distanceText = text("", 15, ACCENT, true);
         distanceText.setGravity(Gravity.CENTER);
         runView.addView(distanceText);
-        runView.addView(gap(16));
+        runView.addView(gap(24));
 
         LinearLayout controls = hbox();
         pauseBtn = ghostButton("Szünet");
@@ -500,9 +500,9 @@ public class MainActivity extends Activity {
         });
         stop.setOnClickListener(v -> { cmd(TimerService.ACTION_STOP); showRun(false); });
         LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(0, -2, 1f);
-        lp1.rightMargin = dp(6);
+        lp1.rightMargin = dp(10);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(0, -2, 1f);
-        lp2.leftMargin = dp(6);
+        lp2.leftMargin = dp(10);
         controls.addView(pauseBtn, lp1);
         controls.addView(stop, lp2);
         controls.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
@@ -718,8 +718,8 @@ public class MainActivity extends Activity {
     View divider() {
         View v = new View(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(1));
-        lp.leftMargin = dp(14);
-        lp.rightMargin = dp(14);
+        lp.leftMargin = dp(16);
+        lp.rightMargin = dp(16);
         v.setLayoutParams(lp);
         v.setBackgroundColor(LINE);
         return v;
@@ -752,7 +752,7 @@ public class MainActivity extends Activity {
         b.setAllCaps(false);
         b.setTextColor(TXT);
         b.setTypeface(null, Typeface.BOLD);
-        b.setPadding(dp(18), dp(16), dp(18), dp(16));
+        b.setPadding(dp(18), dp(18), dp(18), dp(18));
         b.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         b.setStateListAnimator(null);
         return b;
