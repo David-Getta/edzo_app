@@ -27,10 +27,11 @@ jobs:
       - name: Install SDK packages
         run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+      - name: Compute versionCode
+        # Minden buildnél növekvő versionCode, hogy az Android frissítésként telepítse.
+        run: echo "VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+
       - name: Build debug APK
-        env:
-          # Minden buildnél növekvő versionCode, hogy az Android frissítésként telepítse.
-          VERSION_CODE: ${{ 1000 + github.run_number }}
         run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Prepare APK
