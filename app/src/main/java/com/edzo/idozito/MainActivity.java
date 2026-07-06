@@ -1,89 +1,82 @@
 package com.edzo.idozito;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
- * Edző Időzítő – egyszerű intervallum (HIIT) időzítő.
- * Beállítható előkészület / futás / pihenő idő és körök száma.
- * Minden szakaszváltásnál sípol és rezeg, az utolsó 3 másodpercben visszaszámol.
+ * Beállító és futás-képernyő. A tényleges időzítést a TimerService végzi (háttérben,
+ * kikapcsolt képernyőnél is); ez az Activity csak elindítja, és a service broadcast-jaiból
+ * frissíti a felületet.
  */
 public class MainActivity extends Activity {
 
-    // --- Színek ---
+    // Színek
     static final int BG = 0xFF0B1020, CARD = 0xFF1A2238, CARD2 = 0xFF212B47;
-    static final int TXT = 0xFFF2F5FF, MUTED = 0xFF93A0C4, LINE = 0xFF2A3552;
+    static final int TXT = 0xFFF2F5FF, MUTED = 0xFF93A0C4, LINE = 0xFF2A3552, ACCENT = 0xFF8B9BFF;
     static final int INDIGO = 0xFF6366F1, VIOLET = 0xFF8B5CF6;
     static final int WORK = 0xFF22C55E, REST = 0xFF38BDF8, PREP = 0xFFF59E0B, DONE = 0xFFA78BFA;
 
-    // --- Beállítás kulcsok ---
     static final int PREP_K = 0, WORK_K = 1, REST_K = 2, ROUND_K = 3;
-    final int[] cfg = new int[4]; // előkészület, futás, pihenő, körök (mp / db)
+    final int[] cfg = new int[4];
     final int[] DEF = {10, 10, 30, 8};
+    int workSoundIdx = 2, restSoundIdx = 1;
+    boolean trackDistance = false, precount = true;
+
+    static final int REQ_LOCATION = 1001, REQ_NOTIF = 1002;
+
     SharedPreferences prefs;
 
-    // --- Szakasztípusok ---
-    static final int T_PREP = 0, T_WORK = 1, T_REST = 2;
-
-    static class Step {
-        int type, dur, round;
-        Step(int t, int d, int r) { type = t; dur = d; round = r; }
-    }
-
-    // --- UI hivatkozások ---
+    // UI
     FrameLayout root;
     ScrollView setupScroll;
     LinearLayout runView;
     TextView totalText;
     final TextView[] valueLabels = new TextView[4];
-    TextView phaseLabel, timeText, roundInfo, nextInfo;
+    TextView workSoundLabel, restSoundLabel;
+    Switch distanceSwitch, precountSwitch;
+    TextView phaseLabel, timeText, roundInfo, distanceText;
     Button pauseBtn;
     ProgressRing ring;
+    boolean lastPaused = false;
 
-    // --- Időzítő állapot ---
-    ArrayList<Step> plan = new ArrayList<>();
-    int idx;
-    boolean running, paused;
-    long stepEndElapsed;
-    long remainingAtPause;
-    int lastShownSec;
-    final Handler ui = new Handler(Looper.getMainLooper());
-    Runnable ticker;
-
-    // --- Léptető ismétlés (nyomva tartás) ---
     final Handler repeatH = new Handler(Looper.getMainLooper());
     Runnable repeatR;
-
-    Vibrator vibrator;
+    boolean receiverRegistered = false;
 
     // ---------------------------------------------------------------------
 
@@ -92,24 +85,29 @@ public class MainActivity extends Activity {
         super.onCreate(b);
         prefs = getSharedPreferences("edzo", MODE_PRIVATE);
         for (int i = 0; i < 4; i++) cfg[i] = prefs.getInt("k" + i, DEF[i]);
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        workSoundIdx = prefs.getInt("ws", 2);
+        restSoundIdx = prefs.getInt("rs", 1);
+        trackDistance = prefs.getBoolean("track", false);
+        precount = prefs.getBoolean("pre", true);
 
         root = new FrameLayout(this);
         root.setBackgroundColor(BG);
         root.addView(buildSetup());
         root.addView(buildRun());
         setContentView(root);
-
         showRun(false);
+
         refreshValues();
+        updateSoundLabels();
         updateTotal();
 
-        ticker = new Runnable() {
-            @Override public void run() { tick(); }
-        };
+        if (Build.VERSION.SDK_INT >= 33 &&
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
+        }
     }
 
-    // ================= SETUP KÉPERNYŐ =================
+    // ================= SETUP =================
 
     View buildSetup() {
         setupScroll = new ScrollView(this);
@@ -136,7 +134,7 @@ public class MainActivity extends Activity {
         col.addView(head);
         col.addView(gap(16));
 
-        // Gyors sablonok
+        // Sablonok
         LinearLayout presets = hbox();
         presets.addView(preset("HIIT", "30/10 mp · 8×", 30, 10, 8), presetLp());
         presets.addView(preset("Tempó", "60/20 mp · 6×", 60, 20, 6), presetLp());
@@ -144,48 +142,84 @@ public class MainActivity extends Activity {
         col.addView(presets, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(14));
 
-        // Beállító kártya
-        LinearLayout card = vbox();
-        GradientDrawable cardBg = new GradientDrawable();
-        cardBg.setColor(CARD);
-        cardBg.setCornerRadius(dp(20));
-        cardBg.setStroke(dp(1), LINE);
-        card.setBackground(cardBg);
-        card.addView(stepperRow("Előkészület", "Visszaszámlálás indulás előtt", PREP_K, 0, 60, 5));
+        // Idő-beállítások
+        LinearLayout card = card();
+        card.addView(stepperRow("Előkészület", "Visszaszámlálás indulás előtt", PREP_K, 0, 600));
         card.addView(divider());
-        card.addView(stepperRow("Futás", "Aktív időszak hossza", WORK_K, 1, 900, 5));
+        card.addView(stepperRow("Futás", "Aktív időszak hossza", WORK_K, 1, 3600));
         card.addView(divider());
-        card.addView(stepperRow("Pihenő", "Pihenés két futás között", REST_K, 0, 900, 5));
+        card.addView(stepperRow("Pihenő", "Pihenés két futás között", REST_K, 0, 3600));
         card.addView(divider());
-        card.addView(stepperRow("Körök", "Hányszor ismételjük", ROUND_K, 1, 99, 1));
+        card.addView(stepperRow("Körök", "Hányszor ismételjük", ROUND_K, 1, 99));
         col.addView(card, new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(6));
+        TextView tip = text("A számra koppintva pontos értéket írhatsz be.", 11.5f, MUTED, false);
+        tip.setPadding(dp(4), 0, 0, dp(6));
+        col.addView(tip);
+        col.addView(gap(8));
+
+        // Hangok + extrák
+        LinearLayout card2 = card();
+        workSoundLabel = text("", 14, ACCENT, true);
+        restSoundLabel = text("", 14, ACCENT, true);
+        card2.addView(navRow("Futás hangja", "Sípszó a futás kezdetén", workSoundLabel, () -> chooseSound(true)));
+        card2.addView(divider());
+        card2.addView(navRow("Pihenő hangja", "Sípszó a pihenő kezdetén", restSoundLabel, () -> chooseSound(false)));
+        card2.addView(divider());
+        distanceSwitch = new Switch(this);
+        distanceSwitch.setChecked(trackDistance);
+        card2.addView(switchRow("Táv mérése (GPS)", "Lefutott távolság mérése", distanceSwitch));
+        distanceSwitch.setOnCheckedChangeListener((btn, checked) -> {
+            if (checked && !hasLocationPermission()) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQ_LOCATION);
+                return;
+            }
+            trackDistance = checked;
+            prefs.edit().putBoolean("track", trackDistance).apply();
+        });
+        card2.addView(divider());
+        precountSwitch = new Switch(this);
+        precountSwitch.setChecked(precount);
+        card2.addView(switchRow("Visszaszámláló csipogás", "3-2-1 jelzés a szakasz vége előtt", precountSwitch));
+        precountSwitch.setOnCheckedChangeListener((btn, checked) -> {
+            precount = checked;
+            prefs.edit().putBoolean("pre", precount).apply();
+        });
+        col.addView(card2, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(12));
 
-        // Összes idő
         totalText = text("", 13, MUTED, false);
         totalText.setGravity(Gravity.CENTER);
         totalText.setPadding(0, dp(2), 0, dp(14));
         col.addView(totalText, new LinearLayout.LayoutParams(-1, -2));
 
-        // Indítás
         Button start = primaryButton("▶  Indítás");
         start.setOnClickListener(v -> startWorkout());
         col.addView(start);
         col.addView(gap(12));
 
-        // Hang teszt
-        Button test = ghostButton("🔊  Hang tesztelése");
-        test.setOnClickListener(v -> cueWork());
-        col.addView(test);
+        Button hist = ghostButton("📜  Korábbi edzések");
+        hist.setOnClickListener(v -> showHistory());
+        col.addView(hist);
 
         col.addView(gap(16));
-        TextView hint = text("Tipp: kapcsold be a hangot, és ne halkítsd le a telefont.\nA képernyő edzés közben bekapcsolva marad.",
+        TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
                 12, MUTED, false);
         hint.setGravity(Gravity.CENTER);
         col.addView(hint, new LinearLayout.LayoutParams(-1, -2));
 
         setupScroll.addView(col, new FrameLayout.LayoutParams(-1, -2));
         return setupScroll;
+    }
+
+    LinearLayout card() {
+        LinearLayout c = vbox();
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(CARD);
+        bg.setCornerRadius(dp(20));
+        bg.setStroke(dp(1), LINE);
+        c.setBackground(bg);
+        return c;
     }
 
     LinearLayout.LayoutParams presetLp() {
@@ -213,13 +247,12 @@ public class MainActivity extends Activity {
         b.addView(s);
         b.setOnClickListener(v -> {
             cfg[WORK_K] = work; cfg[REST_K] = rest; cfg[ROUND_K] = rounds;
-            saveAll(); refreshValues(); updateTotal(); buzz(20);
+            saveAll(); refreshValues(); updateTotal(); vibrateShort();
         });
         return b;
     }
 
-    LinearLayout stepperRow(String title, String sub, final int key,
-                            final int min, final int max, final int step) {
+    LinearLayout stepperRow(String title, String sub, final int key, final int min, final int max) {
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(dp(16), dp(14), dp(16), dp(14));
@@ -235,6 +268,9 @@ public class MainActivity extends Activity {
         TextView val = text("0", 22, TXT, true);
         val.setGravity(Gravity.CENTER);
         val.setMinWidth(dp(56));
+        val.setPadding(dp(4), dp(2), dp(4), dp(2));
+        val.setOnClickListener(v -> showNumberDialog(key, min, max,
+                title + (key == ROUND_K ? " (kör)" : " (mp)")));
         valueLabels[key] = val;
         TextView unit = text(key == ROUND_K ? "kör" : "mp", 11, MUTED, false);
         unit.setGravity(Gravity.CENTER);
@@ -243,11 +279,11 @@ public class MainActivity extends Activity {
         Button plus = stepButton("+");
 
         LinearLayout.LayoutParams valLp = new LinearLayout.LayoutParams(-2, -2);
-        valLp.leftMargin = dp(6);
-        valLp.rightMargin = dp(6);
+        valLp.leftMargin = dp(4);
+        valLp.rightMargin = dp(4);
 
-        attachStepper(minus, key, -step, min, max);
-        attachStepper(plus, key, step, min, max);
+        attachStepper(minus, key, -1, min, max);
+        attachStepper(plus, key, 1, min, max);
 
         row.addView(minus);
         row.addView(valCol, valLp);
@@ -264,6 +300,7 @@ public class MainActivity extends Activity {
         b.setTypeface(null, Typeface.BOLD);
         b.setAllCaps(false);
         b.setPadding(0, 0, 0, 0);
+        b.setStateListAnimator(null);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(CARD2);
         bg.setCornerRadius(dp(12));
@@ -273,16 +310,19 @@ public class MainActivity extends Activity {
         return b;
     }
 
-    void attachStepper(final Button b, final int key, final int delta, final int min, final int max) {
+    void attachStepper(final Button b, final int key, final int dir, final int min, final int max) {
         b.setOnTouchListener((v, e) -> {
             switch (e.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    changeValue(key, delta, min, max);
+                    changeValue(key, dir, min, max);
                     v.setPressed(true);
                     stopRepeat();
                     repeatR = new Runnable() {
+                        int count = 0;
                         @Override public void run() {
-                            changeValue(key, delta, min, max);
+                            count++;
+                            int step = count < 10 ? 1 : count < 25 ? 2 : count < 45 ? 5 : 10;
+                            changeValue(key, dir * step, min, max);
                             repeatH.postDelayed(this, 70);
                         }
                     };
@@ -303,14 +343,91 @@ public class MainActivity extends Activity {
     }
 
     void changeValue(int key, int delta, int min, int max) {
-        int v = cfg[key] + delta;
-        if (v < min) v = min;
-        if (v > max) v = max;
+        int v = Math.max(min, Math.min(max, cfg[key] + delta));
         if (v == cfg[key]) return;
         cfg[key] = v;
         valueLabels[key].setText(String.valueOf(v));
         prefs.edit().putInt("k" + key, v).apply();
         updateTotal();
+    }
+
+    void showNumberDialog(int key, int min, int max, String title) {
+        final EditText et = new EditText(this);
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        et.setText(String.valueOf(cfg[key]));
+        et.setSelectAllOnFocus(true);
+        int pad = dp(20);
+        FrameLayout wrap = new FrameLayout(this);
+        wrap.setPadding(pad, dp(8), pad, 0);
+        wrap.addView(et);
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setView(wrap)
+                .setPositiveButton("OK", (d, w) -> {
+                    try {
+                        int v = Math.max(min, Math.min(max, Integer.parseInt(et.getText().toString().trim())));
+                        cfg[key] = v;
+                        valueLabels[key].setText(String.valueOf(v));
+                        prefs.edit().putInt("k" + key, v).apply();
+                        updateTotal();
+                    } catch (Exception ignored) {}
+                })
+                .setNegativeButton("Mégse", null)
+                .show();
+    }
+
+    LinearLayout navRow(String title, String sub, TextView valueOut, Runnable onTap) {
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(16), dp(14), dp(16), dp(14));
+        row.setClickable(true);
+        row.setOnClickListener(v -> onTap.run());
+
+        LinearLayout labels = vbox();
+        labels.addView(text(title, 15.5f, TXT, true));
+        if (sub != null) labels.addView(text(sub, 12, MUTED, false));
+        row.addView(labels, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        valueOut.setGravity(Gravity.END);
+        row.addView(valueOut);
+        TextView chev = text("  ▸", 15, MUTED, false);
+        row.addView(chev);
+        row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        return row;
+    }
+
+    LinearLayout switchRow(String title, String sub, Switch sw) {
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(16), dp(10), dp(16), dp(10));
+        LinearLayout labels = vbox();
+        labels.addView(text(title, 15.5f, TXT, true));
+        if (sub != null) labels.addView(text(sub, 12, MUTED, false));
+        row.addView(labels, new LinearLayout.LayoutParams(0, -2, 1f));
+        row.addView(sw);
+        row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        return row;
+    }
+
+    void chooseSound(final boolean forWork) {
+        final String[] names = new String[Beeper.SOUNDS.length];
+        for (int i = 0; i < names.length; i++) names[i] = Beeper.SOUNDS[i].name;
+        int cur = forWork ? workSoundIdx : restSoundIdx;
+        new AlertDialog.Builder(this)
+                .setTitle(forWork ? "Futás hangja" : "Pihenő hangja")
+                .setSingleChoiceItems(names, cur, (d, which) -> {
+                    Beeper.play(which);
+                    if (forWork) { workSoundIdx = which; prefs.edit().putInt("ws", which).apply(); }
+                    else { restSoundIdx = which; prefs.edit().putInt("rs", which).apply(); }
+                    updateSoundLabels();
+                })
+                .setPositiveButton("Kész", null)
+                .show();
+    }
+
+    void updateSoundLabels() {
+        if (workSoundLabel != null) workSoundLabel.setText(Beeper.soundAt(workSoundIdx).name);
+        if (restSoundLabel != null) restSoundLabel.setText(Beeper.soundAt(restSoundIdx).name);
     }
 
     void refreshValues() {
@@ -328,7 +445,7 @@ public class MainActivity extends Activity {
         totalText.setText("Teljes idő: " + fmtLong(total));
     }
 
-    // ================= RUN KÉPERNYŐ =================
+    // ================= RUN =================
 
     View buildRun() {
         runView = vbox();
@@ -360,24 +477,26 @@ public class MainActivity extends Activity {
         runView.addView(ringHost, new LinearLayout.LayoutParams(size, size));
         runView.addView(gap(10));
 
-        nextInfo = text("", 13, MUTED, false);
-        nextInfo.setGravity(Gravity.CENTER);
-        runView.addView(nextInfo);
-        runView.addView(gap(18));
+        distanceText = text("", 15, ACCENT, true);
+        distanceText.setGravity(Gravity.CENTER);
+        runView.addView(distanceText);
+        runView.addView(gap(16));
 
         LinearLayout controls = hbox();
         pauseBtn = ghostButton("Szünet");
         Button stop = ghostButton("Leállítás");
-        pauseBtn.setOnClickListener(v -> togglePause());
-        stop.setOnClickListener(v -> stopWorkout());
+        pauseBtn.setOnClickListener(v -> {
+            if (lastPaused) cmd(TimerService.ACTION_RESUME);
+            else cmd(TimerService.ACTION_PAUSE);
+        });
+        stop.setOnClickListener(v -> { cmd(TimerService.ACTION_STOP); showRun(false); });
         LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(0, -2, 1f);
         lp1.rightMargin = dp(6);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(0, -2, 1f);
         lp2.leftMargin = dp(6);
         controls.addView(pauseBtn, lp1);
         controls.addView(stop, lp2);
-        LinearLayout.LayoutParams cw = new LinearLayout.LayoutParams(-1, -2);
-        controls.setLayoutParams(cw);
+        controls.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         runView.addView(controls);
 
         return runView;
@@ -388,204 +507,192 @@ public class MainActivity extends Activity {
         runView.setVisibility(run ? View.VISIBLE : View.GONE);
     }
 
-    // ================= IDŐZÍTŐ LOGIKA =================
-
-    void buildPlan() {
-        plan.clear();
-        if (cfg[PREP_K] > 0) plan.add(new Step(T_PREP, cfg[PREP_K], 0));
-        for (int r = 1; r <= cfg[ROUND_K]; r++) {
-            plan.add(new Step(T_WORK, cfg[WORK_K], r));
-            if (cfg[REST_K] > 0 && r < cfg[ROUND_K]) plan.add(new Step(T_REST, cfg[REST_K], r));
-        }
-    }
+    // ================= Service parancsok =================
 
     void startWorkout() {
-        buildPlan();
-        if (plan.isEmpty()) return;
-        idx = 0;
-        running = true;
-        paused = false;
+        if (cfg[WORK_K] < 1) return;
+        Intent i = new Intent(this, TimerService.class).setAction(TimerService.ACTION_START);
+        i.putExtra(TimerService.EX_PREP, cfg[PREP_K]);
+        i.putExtra(TimerService.EX_WORK, cfg[WORK_K]);
+        i.putExtra(TimerService.EX_REST, cfg[REST_K]);
+        i.putExtra(TimerService.EX_ROUNDS, cfg[ROUND_K]);
+        i.putExtra(TimerService.EX_WS, workSoundIdx);
+        i.putExtra(TimerService.EX_RS, restSoundIdx);
+        i.putExtra(TimerService.EX_TRACK, trackDistance && hasLocationPermission());
+        i.putExtra(TimerService.EX_PRE, precount);
+        if (Build.VERSION.SDK_INT >= 26) startForegroundService(i);
+        else startService(i);
+
+        // Kezdeti UI, a további frissítés a broadcast-okból jön.
+        lastPaused = false;
+        pauseBtn.setEnabled(true);
         pauseBtn.setText("Szünet");
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        showRun(true);
-        beginStep(true);
-        ui.post(ticker);
-    }
-
-    void beginStep(boolean first) {
-        Step s = plan.get(idx);
-        applyPhaseUI(s);
-        stepEndElapsed = SystemClock.elapsedRealtime() + (long) s.dur * 1000L;
-        lastShownSec = -1;
-        timeText.setText(fmt(s.dur));
+        setPhaseUI(cfg[PREP_K] > 0 ? TimerService.T_PREP : TimerService.T_WORK, 1);
+        timeText.setText(fmt(cfg[PREP_K] > 0 ? cfg[PREP_K] : cfg[WORK_K]));
         ring.setProgress(1f);
-        if (s.type == T_WORK) cueWork();
-        else if (s.type == T_REST) cueRest();
-        else if (s.type == T_PREP && !first) cueRest();
+        distanceText.setText(trackDistance && hasLocationPermission() ? "📍 0 m" : "");
+        showRun(true);
     }
 
-    void tick() {
-        if (!running || paused) return;
-        Step s = plan.get(idx);
-        long now = SystemClock.elapsedRealtime();
-        double remain = (stepEndElapsed - now) / 1000.0;
+    void cmd(String action) {
+        startService(new Intent(this, TimerService.class).setAction(action));
+    }
 
-        if (remain <= 0) {
-            idx++;
-            if (idx >= plan.size()) { finishWorkout(); return; }
-            beginStep(false);
-            ui.postDelayed(ticker, 40);
-            return;
+    // ================= Broadcast fogadás =================
+
+    final BroadcastReceiver rx = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            String a = i.getAction();
+            if (a == null) return;
+            if (TimerService.B_TICK.equals(a)) onTick(i);
+            else if (TimerService.B_DONE.equals(a)) onDone(i);
+            else if (TimerService.B_STOPPED.equals(a)) showRun(false);
         }
+    };
 
-        int shown = (int) Math.ceil(remain);
-        if (shown != lastShownSec) {
-            lastShownSec = shown;
-            timeText.setText(fmt(shown));
-            if (shown <= 3 && shown >= 1) cueTick();
-        }
-        ring.setProgress((float) (remain / s.dur));
-        ui.postDelayed(ticker, 40);
+    void onTick(Intent i) {
+        int phase = i.getIntExtra(TimerService.EX_PHASE, TimerService.T_WORK);
+        int remain = i.getIntExtra(TimerService.EX_REMAIN, 0);
+        int round = i.getIntExtra(TimerService.EX_ROUND, 1);
+        int rounds = i.getIntExtra(TimerService.EX_ROUNDS, cfg[ROUND_K]);
+        float prog = i.getFloatExtra(TimerService.EX_PROGRESS, 0);
+        double dist = i.getDoubleExtra(TimerService.EX_DIST, -1);
+        boolean paused = i.getBooleanExtra(TimerService.EX_PAUSED, false);
+
+        showRun(true);
+        setPhaseUI(phase, round, rounds);
+        timeText.setText(fmt(remain));
+        ring.setProgress(prog);
+        distanceText.setText(dist >= 0 ? "📍 " + fmtDist(dist) : "");
+
+        lastPaused = paused;
+        pauseBtn.setText(paused ? "Folytatás" : "Szünet");
+        if (paused) phaseLabel.setText(phaseName(phase) + " · SZÜNET");
     }
 
-    void togglePause() {
-        if (!running) return;
-        if (!paused) {
-            paused = true;
-            remainingAtPause = stepEndElapsed - SystemClock.elapsedRealtime();
-            pauseBtn.setText("Folytatás");
-            ui.removeCallbacks(ticker);
-        } else {
-            paused = false;
-            stepEndElapsed = SystemClock.elapsedRealtime() + remainingAtPause;
-            pauseBtn.setText("Szünet");
-            ui.post(ticker);
-        }
-    }
-
-    void stopWorkout() {
-        running = false;
-        paused = false;
-        ui.removeCallbacks(ticker);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        showRun(false);
-    }
-
-    void finishWorkout() {
-        running = false;
-        ui.removeCallbacks(ticker);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    void onDone(Intent i) {
+        int dur = i.getIntExtra(TimerService.EX_DUR, 0);
+        double dist = i.getDoubleExtra(TimerService.EX_DIST, -1);
+        int rounds = i.getIntExtra(TimerService.EX_ROUND, cfg[ROUND_K]);
+        showRun(true);
         phaseLabel.setText("KÉSZ");
         phaseLabel.setTextColor(DONE);
         ring.setColor(DONE);
         ring.setProgress(1f);
         timeText.setText("✓");
-        roundInfo.setText(cfg[ROUND_K] + " kör kész 💪");
-        nextInfo.setText("Nyomd meg a Leállítást a visszalépéshez");
-        cueDone();
+        roundInfo.setText(rounds + " kör kész 💪");
+        distanceText.setText("Idő: " + fmtLong(dur) + (dist >= 0 ? "  ·  📍 " + fmtDist(dist) : ""));
+        lastPaused = false;
+        pauseBtn.setEnabled(false);
+        pauseBtn.setText("Kész");
     }
 
-    void applyPhaseUI(Step s) {
-        String name;
-        int color;
-        if (s.type == T_PREP) { name = "ELŐKÉSZÜLÉS"; color = PREP; }
-        else if (s.type == T_WORK) { name = "FUTÁS"; color = WORK; }
-        else { name = "PIHENŐ"; color = REST; }
-        phaseLabel.setText(name);
+    void setPhaseUI(int phase, int round) { setPhaseUI(phase, round, cfg[ROUND_K]); }
+
+    void setPhaseUI(int phase, int round, int rounds) {
+        int color = phase == TimerService.T_PREP ? PREP : phase == TimerService.T_WORK ? WORK : REST;
+        phaseLabel.setText(phaseName(phase));
         phaseLabel.setTextColor(color);
         ring.setColor(color);
-        roundInfo.setText("Kör " + Math.max(1, s.round) + " / " + cfg[ROUND_K]);
-        Step next = (idx + 1 < plan.size()) ? plan.get(idx + 1) : null;
-        if (next == null) nextInfo.setText("Utolsó szakasz");
-        else nextInfo.setText("Következik: " + phaseNameLower(next.type));
+        roundInfo.setText("Kör " + Math.max(1, round) + " / " + rounds);
     }
 
-    String phaseNameLower(int type) {
-        if (type == T_PREP) return "előkészület";
-        if (type == T_WORK) return "futás";
-        return "pihenő";
+    String phaseName(int phase) {
+        return phase == TimerService.T_PREP ? "ELŐKÉSZÜLÉS" : phase == TimerService.T_WORK ? "FUTÁS" : "PIHENŐ";
     }
 
-    // ================= HANG + REZGÉS =================
-
-    void cueTick() { tone(new double[][]{{760, 90, 0, 0.35}}); buzz(30); }
-
-    void cueWork() {
-        tone(new double[][]{{920, 150, 60, 0.55}, {920, 170, 0, 0.55}});
-        buzz(new long[]{0, 60, 60, 60});
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!receiverRegistered) {
+            IntentFilter f = new IntentFilter();
+            f.addAction(TimerService.B_TICK);
+            f.addAction(TimerService.B_DONE);
+            f.addAction(TimerService.B_STOPPED);
+            if (Build.VERSION.SDK_INT >= 33) registerReceiver(rx, f, Context.RECEIVER_NOT_EXPORTED);
+            else registerReceiver(rx, f);
+            receiverRegistered = true;
+        }
     }
 
-    void cueRest() { tone(new double[][]{{430, 300, 0, 0.5}}); buzz(120); }
-
-    void cueDone() {
-        tone(new double[][]{{660, 220, 40, 0.5}, {840, 220, 40, 0.5}, {1040, 320, 0, 0.5}});
-        buzz(new long[]{0, 120, 80, 120, 80, 240});
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (receiverRegistered) {
+            try { unregisterReceiver(rx); } catch (Exception ignored) {}
+            receiverRegistered = false;
+        }
     }
 
-    /** Hangsorozat lejátszása háttérszálon. Minden elem: {frekvencia, hossz(ms), utána szünet(ms), hangerő}. */
-    void tone(final double[][] seq) {
-        new Thread(() -> {
-            for (double[] s : seq) {
-                synth(s[0], (int) s[1], s[3]);
-                if (s[2] > 0) { try { Thread.sleep((long) s[2]); } catch (InterruptedException ignored) {} }
+    // ================= Előzmények =================
+
+    void showHistory() {
+        JSONArray arr = History.load(this);
+        ScrollView sv = new ScrollView(this);
+        LinearLayout list = vbox();
+        list.setPadding(dp(20), dp(8), dp(20), dp(8));
+        if (arr.length() == 0) {
+            list.addView(text("Még nincs elmentett edzés.\nFejezz be egy edzést, és itt megjelenik.", 14, MUTED, false));
+        } else {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd  HH:mm", new Locale("hu"));
+            for (int k = 0; k < arr.length(); k++) {
+                JSONObject o = arr.optJSONObject(k);
+                if (o == null) continue;
+                LinearLayout item = vbox();
+                item.setPadding(0, dp(10), 0, dp(10));
+                item.addView(text(df.format(new Date(o.optLong("ts"))), 13, MUTED, false));
+                double dist = o.optDouble("dist", -1);
+                String line = "⏱ " + fmtLong(o.optInt("dur")) + "   ·   " + o.optInt("rounds") + " kör";
+                if (dist >= 0) line += "   ·   📍 " + fmtDist(dist);
+                item.addView(text(line, 15.5f, TXT, true));
+                item.addView(text(o.optInt("work") + " mp futás / " + o.optInt("rest") + " mp pihenő", 12, MUTED, false));
+                list.addView(item);
+                if (k < arr.length() - 1) {
+                    View dv = new View(this);
+                    dv.setBackgroundColor(LINE);
+                    list.addView(dv, new LinearLayout.LayoutParams(-1, dp(1)));
+                }
             }
-        }).start();
-    }
-
-    void synth(double freq, int durMs, double vol) {
-        final int sr = 44100;
-        int n = (int) ((long) durMs * sr / 1000);
-        if (n <= 0) return;
-        short[] buf = new short[n];
-        int fade = Math.max(1, Math.min(n / 8, sr / 200));
-        for (int i = 0; i < n; i++) {
-            double env = 1.0;
-            if (i < fade) env = i / (double) fade;
-            else if (i > n - fade) env = (n - i) / (double) fade;
-            double sample = Math.sin(2.0 * Math.PI * freq * i / sr);
-            buf[i] = (short) (vol * env * sample * 32767.0);
         }
-        int min = AudioTrack.getMinBufferSize(sr, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        int bytes = Math.max(min, n * 2);
-        AudioTrack at = new AudioTrack(AudioManager.STREAM_MUSIC, sr,
-                AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                bytes, AudioTrack.MODE_STATIC);
-        try {
-            at.write(buf, 0, n);
-            at.play();
-            Thread.sleep(durMs + 40);
-        } catch (Exception ignored) {
-        } finally {
-            try { at.stop(); } catch (Exception ignored) {}
-            try { at.release(); } catch (Exception ignored) {}
+        sv.addView(list);
+        AlertDialog.Builder b = new AlertDialog.Builder(this)
+                .setTitle("Korábbi edzések")
+                .setView(sv)
+                .setPositiveButton("Bezár", null);
+        if (arr.length() > 0) {
+            b.setNegativeButton("Törlés", (d, w) ->
+                    new AlertDialog.Builder(this)
+                            .setMessage("Biztosan törlöd az összes elmentett edzést?")
+                            .setPositiveButton("Törlés", (dd, ww) -> History.clear(this))
+                            .setNegativeButton("Mégse", null)
+                            .show());
+        }
+        b.show();
+    }
+
+    // ================= Engedélyek =================
+
+    boolean hasLocationPermission() {
+        return Build.VERSION.SDK_INT < 23 ||
+                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_LOCATION) {
+            boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            trackDistance = granted;
+            prefs.edit().putBoolean("track", trackDistance).apply();
+            if (distanceSwitch != null) distanceSwitch.setChecked(granted);
+            if (!granted) Toast.makeText(this, "A táv méréséhez helyhozzáférés kell.", Toast.LENGTH_LONG).show();
         }
     }
 
-    void buzz(long ms) {
-        if (vibrator == null || !vibrator.hasVibrator()) return;
-        if (Build.VERSION.SDK_INT >= 26) vibrator.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
-        else vibrator.vibrate(ms);
-    }
+    // ================= Segéd UI =================
 
-    void buzz(long[] pattern) {
-        if (vibrator == null || !vibrator.hasVibrator()) return;
-        if (Build.VERSION.SDK_INT >= 26) vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1));
-        else vibrator.vibrate(pattern, -1);
-    }
-
-    // ================= SEGÉD UI =================
-
-    LinearLayout vbox() {
-        LinearLayout l = new LinearLayout(this);
-        l.setOrientation(LinearLayout.VERTICAL);
-        return l;
-    }
-
-    LinearLayout hbox() {
-        LinearLayout l = new LinearLayout(this);
-        l.setOrientation(LinearLayout.HORIZONTAL);
-        return l;
-    }
+    LinearLayout vbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
+    LinearLayout hbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.HORIZONTAL); return l; }
 
     TextView text(String s, float sizeSp, int color, boolean bold) {
         TextView t = new TextView(this);
@@ -596,11 +703,7 @@ public class MainActivity extends Activity {
         return t;
     }
 
-    View gap(int h) {
-        View v = new View(this);
-        v.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(h)));
-        return v;
-    }
+    View gap(int h) { View v = new View(this); v.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(h))); return v; }
 
     View divider() {
         View v = new View(this);
@@ -613,7 +716,7 @@ public class MainActivity extends Activity {
     }
 
     Button primaryButton(String label) {
-        Button b = baseButton(label, TXT);
+        Button b = baseButton(label);
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{INDIGO, VIOLET});
         bg.setCornerRadius(dp(18));
         b.setBackground(bg);
@@ -623,7 +726,7 @@ public class MainActivity extends Activity {
     }
 
     Button ghostButton(String label) {
-        Button b = baseButton(label, TXT);
+        Button b = baseButton(label);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(CARD2);
         bg.setCornerRadius(dp(15));
@@ -633,22 +736,19 @@ public class MainActivity extends Activity {
         return b;
     }
 
-    Button baseButton(String label, int color) {
+    Button baseButton(String label) {
         Button b = new Button(this);
         b.setText(label);
         b.setAllCaps(false);
-        b.setTextColor(color);
+        b.setTextColor(TXT);
         b.setTypeface(null, Typeface.BOLD);
         b.setPadding(dp(18), dp(16), dp(18), dp(16));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
-        b.setLayoutParams(lp);
+        b.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         b.setStateListAnimator(null);
         return b;
     }
 
-    int dp(float v) {
-        return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
-    }
+    int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }
 
     String fmt(int sec) {
         if (sec < 0) sec = 0;
@@ -658,18 +758,33 @@ public class MainActivity extends Activity {
 
     String fmtLong(int sec) {
         if (sec < 0) sec = 0;
-        int m = sec / 60, s = sec % 60;
-        return String.format(Locale.US, "%d:%02d", m, s);
+        return String.format(Locale.US, "%d:%02d", sec / 60, sec % 60);
+    }
+
+    String fmtDist(double m) {
+        if (m < 0) return "—";
+        if (m < 1000) return Math.round(m) + " m";
+        return String.format(Locale.US, "%.2f km", m / 1000.0);
+    }
+
+    void vibrateShort() {
+        try {
+            android.os.Vibrator vb = (android.os.Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if (vb != null && vb.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= 26)
+                    vb.vibrate(android.os.VibrationEffect.createOneShot(20, android.os.VibrationEffect.DEFAULT_AMPLITUDE));
+                else vb.vibrate(20);
+            }
+        } catch (Exception ignored) {}
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ui.removeCallbacks(ticker);
         stopRepeat();
     }
 
-    // ================= KÖRGYŰRŰ NÉZET =================
+    // ================= Körgyűrű =================
 
     static class ProgressRing extends View {
         private final Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -686,15 +801,8 @@ public class MainActivity extends Activity {
             fgPaint.setColor(WORK);
         }
 
-        void setProgress(float p) {
-            progress = Math.max(0f, Math.min(1f, p));
-            invalidate();
-        }
-
-        void setColor(int col) {
-            fgPaint.setColor(col);
-            invalidate();
-        }
+        void setProgress(float p) { progress = Math.max(0f, Math.min(1f, p)); invalidate(); }
+        void setColor(int col) { fgPaint.setColor(col); invalidate(); }
 
         @Override
         protected void onDraw(Canvas canvas) {

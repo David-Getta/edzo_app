@@ -7,12 +7,19 @@ visszaszámol.
 
 ## Funkciók
 
-- ⏱️ Beállítható **Előkészület / Futás / Pihenő** idő és **Körök** száma
-- 🔊 Külön **sípszó** a futás kezdetére (magas), a pihenőre (mély) és a
-  3-2-1 visszaszámlálásra, plusz **rezgés**
+- ⏱️ Beállítható **Előkészület / Futás / Pihenő** idő és **Körök** száma –
+  **másodpercre pontosan** (léptető nyomva tartva gyorsul, vagy a számra
+  koppintva beírható a pontos érték)
+- 🔊 **Hangválasztás**: több síphang közül, **külön** a futás és **külön** a
+  pihenő kezdetére, előhallgatással; a **3-2-1 visszaszámláló csipogás
+  ki/be kapcsolható**; plusz **rezgés**
+- 🌙 **Fut kikapcsolt képernyővel is** – háttérszolgáltatás + wake lock,
+  így a sípszó és az időzítő sötét képernyőnél is megy
+- 📍 **GPS táv-mérés** (opcionális) – a lefutott távot menet közben és a
+  végén is mutatja
+- 📜 **Korábbi edzések** naplója (dátum, idő, táv, körök)
 - ⚡ Gyors sablonok (HIIT, Tempó, Tabata)
 - 🟢 Nagy, színkódolt körkijelző és aktuális kör számláló
-- 📱 A képernyő edzés közben **bekapcsolva marad**
 - 💾 A beállítások megjegyzésre kerülnek
 
 ## Az APK letöltése (telefonra)

@@ -1,0 +1,51 @@
+package com.edzo.idozito;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/**
+ * Befejezett edzések naplója. A SharedPreferences-be mentett JSON-tömb;
+ * a legfrissebb elöl. Legfeljebb az utolsó 100 edzést tartja meg.
+ */
+public final class History {
+
+    private History() {}
+
+    static final String PREFS = "edzo";
+    static final String KEY = "history";
+    static final int MAX = 100;
+
+    /** Egy befejezett edzés hozzáadása a napló elejére. distanceM < 0, ha nem volt táv-mérés. */
+    public static void add(Context ctx, long ts, int durationSec, double distanceM,
+                           int rounds, int work, int rest) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        JSONArray arr = load(ctx);
+        try {
+            JSONObject o = new JSONObject();
+            o.put("ts", ts);
+            o.put("dur", durationSec);
+            o.put("dist", distanceM);
+            o.put("rounds", rounds);
+            o.put("work", work);
+            o.put("rest", rest);
+            JSONArray out = new JSONArray();
+            out.put(o);
+            for (int i = 0; i < arr.length() && out.length() < MAX; i++) out.put(arr.get(i));
+            p.edit().putString(KEY, out.toString()).apply();
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static JSONArray load(Context ctx) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String s = p.getString(KEY, "[]");
+        try { return new JSONArray(s); } catch (Exception e) { return new JSONArray(); }
+    }
+
+    public static void clear(Context ctx) {
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(KEY).apply();
+    }
+}
