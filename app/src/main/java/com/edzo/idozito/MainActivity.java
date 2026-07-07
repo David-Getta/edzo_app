@@ -230,6 +230,10 @@ public class MainActivity extends Activity {
         hist.setOnClickListener(v -> showHistory());
         col.addView(hist);
         col.addView(gap(12));
+        Button stats = ghostButton("📈  Statisztika");
+        stats.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
+        col.addView(stats);
+        col.addView(gap(12));
         Button prof = ghostButton("📊  Profil / BMI");
         prof.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
         col.addView(prof);
