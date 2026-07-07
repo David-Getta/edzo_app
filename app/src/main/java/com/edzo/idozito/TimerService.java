@@ -439,14 +439,16 @@ public class TimerService extends Service {
                 // Útvonal mintavételezés (2 mp-enként vagy 5 m-enként)
                 boolean far = lastTrackDist < 0 || (distanceM - lastTrackDist) >= 5;
                 if (trackPts != null && (trackPts.length() == 0 || (now - lastTrackElapsed) >= 2000 || far)) {
-                    JSONArray pt = new JSONArray();
-                    pt.put((SystemClock.elapsedRealtime() - sessionStart) / 1000);
-                    pt.put(Math.round(loc.getLatitude() * 1e6) / 1e6);
-                    pt.put(Math.round(loc.getLongitude() * 1e6) / 1e6);
-                    pt.put(loc.hasAltitude() ? Math.round(loc.getAltitude()) : 0);
-                    pt.put((int) distanceM);
-                    pt.put(Math.round(curSpeedMps * 10) / 10.0);
-                    trackPts.put(pt);
+                    try {
+                        JSONArray pt = new JSONArray();
+                        pt.put((SystemClock.elapsedRealtime() - sessionStart) / 1000);
+                        pt.put(Math.round(loc.getLatitude() * 1e6) / 1e6);
+                        pt.put(Math.round(loc.getLongitude() * 1e6) / 1e6);
+                        pt.put(loc.hasAltitude() ? Math.round(loc.getAltitude()) : 0);
+                        pt.put((int) distanceM);
+                        pt.put(Math.round(curSpeedMps * 10) / 10.0);
+                        trackPts.put(pt);
+                    } catch (org.json.JSONException ignored) {}
                     lastTrackElapsed = now;
                     lastTrackDist = distanceM;
                 }
