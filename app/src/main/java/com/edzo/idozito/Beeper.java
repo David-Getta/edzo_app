@@ -12,6 +12,9 @@ public final class Beeper {
 
     private Beeper() {}
 
+    /** Globális hangerő-szorzó (0..1), a Beállításokból állítható. */
+    public static volatile float masterVolume = 0.8f;
+
     /** Egy választható síphang: név + hangszekvencia. Egy elem: {frekvencia, hossz(ms), utána szünet(ms), hangerő}. */
     public static final class Sound {
         public final String name;
@@ -66,12 +69,13 @@ public final class Beeper {
         if (n <= 0) return;
         short[] buf = new short[n];
         int fade = Math.max(1, Math.min(n / 8, sr / 200));
+        double gain = vol * Math.max(0f, Math.min(1f, masterVolume));
         for (int i = 0; i < n; i++) {
             double env = 1.0;
             if (i < fade) env = i / (double) fade;
             else if (i > n - fade) env = (n - i) / (double) fade;
             double sample = Math.sin(2.0 * Math.PI * freq * i / sr);
-            buf[i] = (short) (vol * env * sample * 32767.0);
+            buf[i] = (short) (gain * env * sample * 32767.0);
         }
         int min = AudioTrack.getMinBufferSize(sr, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         int bytes = Math.max(min, n * 2);

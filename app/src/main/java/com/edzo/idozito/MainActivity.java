@@ -75,6 +75,11 @@ public class MainActivity extends Activity {
     boolean lastPaused = false;
     boolean finished = false;
 
+    // Téma (Beállításokból)
+    int tAccent, tAccent2, tWork, tRest;
+    boolean tPace;
+    int builtRev;
+
     final Handler repeatH = new Handler(Looper.getMainLooper());
     Runnable repeatR;
     boolean receiverRegistered = false;
@@ -85,6 +90,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         prefs = getSharedPreferences("edzo", MODE_PRIVATE);
+        tAccent = Theme.accent(this);
+        tAccent2 = Theme.accent2(this);
+        tWork = Theme.work(this);
+        tRest = Theme.rest(this);
+        tPace = Theme.paceMode(this);
+        Beeper.masterVolume = Theme.volume(this);
+        builtRev = Theme.rev(this);
         for (int i = 0; i < 4; i++) cfg[i] = prefs.getInt("k" + i, DEF[i]);
         workSoundIdx = prefs.getInt("ws", 2);
         restSoundIdx = prefs.getInt("rs", 1);
@@ -123,7 +135,7 @@ public class MainActivity extends Activity {
         LinearLayout head = hbox();
         head.setGravity(Gravity.CENTER_VERTICAL);
         View badge = new View(this);
-        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{INDIGO, VIOLET});
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
         bg.setCornerRadius(dp(9));
         badge.setBackground(bg);
         LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(dp(34), dp(34));
@@ -162,8 +174,8 @@ public class MainActivity extends Activity {
 
         // Hangok + extrák
         LinearLayout card2 = card();
-        workSoundLabel = text("", 14, ACCENT, true);
-        restSoundLabel = text("", 14, ACCENT, true);
+        workSoundLabel = text("", 14, tAccent, true);
+        restSoundLabel = text("", 14, tAccent, true);
         card2.addView(navRow("Futás hangja", "Sípszó a futás kezdetén", workSoundLabel, () -> chooseSound(true)));
         card2.addView(divider());
         card2.addView(navRow("Pihenő hangja", "Sípszó a pihenő kezdetén", restSoundLabel, () -> chooseSound(false)));
@@ -182,7 +194,7 @@ public class MainActivity extends Activity {
         card2.addView(divider());
         precountSwitch = new Switch(this);
         precountSwitch.setChecked(precount);
-        card2.addView(switchRow("Visszaszámláló csipogás", "3-2-1 jelzés a szakasz vége előtt", precountSwitch));
+        card2.addView(switchRow("Visszaszámláló csipogás", "Jelzés a szakasz vége előtt (hossz a Beállításokban)", precountSwitch));
         precountSwitch.setOnCheckedChangeListener((btn, checked) -> {
             precount = checked;
             prefs.edit().putBoolean("pre", precount).apply();
@@ -215,6 +227,10 @@ public class MainActivity extends Activity {
         Button prof = ghostButton("📊  Profil / BMI");
         prof.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
         col.addView(prof);
+        col.addView(gap(12));
+        Button settings = ghostButton("⚙️  Beállítások");
+        settings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        col.addView(settings);
 
         col.addView(gap(24));
         TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
@@ -491,7 +507,7 @@ public class MainActivity extends Activity {
         runView.addView(ringHost, new LinearLayout.LayoutParams(size, size));
         runView.addView(gap(16));
 
-        distanceText = text("", 15, ACCENT, true);
+        distanceText = text("", 15, tAccent, true);
         distanceText.setGravity(Gravity.CENTER);
         runView.addView(distanceText);
         runView.addView(gap(24));
@@ -533,7 +549,8 @@ public class MainActivity extends Activity {
         i.putExtra(TimerService.EX_WS, workSoundIdx);
         i.putExtra(TimerService.EX_RS, restSoundIdx);
         i.putExtra(TimerService.EX_TRACK, trackDistance && hasLocationPermission());
-        i.putExtra(TimerService.EX_PRE, precount);
+        i.putExtra(TimerService.EX_CD, precount ? Theme.countdownSecs(this) : 0);
+        i.putExtra(TimerService.EX_VIBE, Theme.vibrate(this));
         i.putExtra(TimerService.EX_VOICE, voice);
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(i);
         else startService(i);
@@ -600,7 +617,7 @@ public class MainActivity extends Activity {
         timeText.setText(fmt(remain));
         ring.setProgress(prog);
         distanceText.setText(dist >= 0
-                ? "📍 " + fmtDist(dist) + "   ·   " + String.format(Locale.US, "%.1f km/h", speed)
+                ? "📍 " + fmtDist(dist) + "   ·   " + fmtSpeed(speed)
                 : "");
 
         lastPaused = paused;
@@ -629,7 +646,7 @@ public class MainActivity extends Activity {
     void setPhaseUI(int phase, int round) { setPhaseUI(phase, round, cfg[ROUND_K]); }
 
     void setPhaseUI(int phase, int round, int rounds) {
-        int color = phase == TimerService.T_PREP ? PREP : phase == TimerService.T_WORK ? WORK : REST;
+        int color = phase == TimerService.T_PREP ? PREP : phase == TimerService.T_WORK ? tWork : tRest;
         phaseLabel.setText(phaseName(phase));
         phaseLabel.setTextColor(color);
         ring.setColor(color);
@@ -643,6 +660,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Ha a Beállításokban változott a téma, építsük újra (kivéve edzés közben).
+        if (Theme.rev(this) != builtRev && (runView == null || runView.getVisibility() != View.VISIBLE)) {
+            recreate();
+            return;
+        }
         if (!receiverRegistered) {
             IntentFilter f = new IntentFilter();
             f.addAction(TimerService.B_TICK);
@@ -689,9 +711,9 @@ public class MainActivity extends Activity {
                     int dur = o.optInt("dur");
                     double avg = dur > 0 ? dist / dur * 3.6 : 0;
                     double mx = o.optDouble("maxspeed", -1);
-                    String sp = String.format(Locale.US, "🏃 átlag %.1f km/h", avg);
-                    if (mx >= 0) sp += String.format(Locale.US, "  ·  max %.1f km/h", mx);
-                    item.addView(text(sp, 12.5f, ACCENT, false));
+                    String sp = "🏃 átlag " + fmtSpeed(avg);
+                    if (mx >= 0) sp += "  ·  max " + fmtSpeed(mx);
+                    item.addView(text(sp, 12.5f, tAccent, false));
                 }
                 list.addView(item);
                 if (k < arr.length() - 1) {
@@ -764,7 +786,7 @@ public class MainActivity extends Activity {
 
     Button primaryButton(String label) {
         Button b = baseButton(label);
-        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{INDIGO, VIOLET});
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
         bg.setCornerRadius(dp(18));
         b.setBackground(bg);
         b.setTextColor(0xFFFFFFFF);
@@ -812,6 +834,19 @@ public class MainActivity extends Activity {
         if (m < 0) return "—";
         if (m < 1000) return Math.round(m) + " m";
         return String.format(Locale.US, "%.2f km", m / 1000.0);
+    }
+
+    /** Sebesség km/h-ban vagy tempóként (perc/km), a beállítás szerint. */
+    String fmtSpeed(double kmh) {
+        if (tPace) {
+            if (kmh <= 0.3) return "–:– /km";
+            double pace = 60.0 / kmh;
+            int m = (int) pace;
+            int s = (int) Math.round((pace - m) * 60);
+            if (s == 60) { m++; s = 0; }
+            return String.format(Locale.US, "%d:%02d /km", m, s);
+        }
+        return String.format(Locale.US, "%.1f km/h", kmh);
     }
 
     void vibrateShort() {

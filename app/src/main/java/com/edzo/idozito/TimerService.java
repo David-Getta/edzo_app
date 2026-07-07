@@ -46,8 +46,8 @@ public class TimerService extends Service {
 
     // Extra kulcsok
     public static final String EX_PREP = "prep", EX_WORK = "work", EX_REST = "rest",
-            EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_PRE = "pre",
-            EX_VOICE = "voice";
+            EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_CD = "cd",
+            EX_VIBE = "vibe", EX_VOICE = "voice";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed";
@@ -64,7 +64,8 @@ public class TimerService extends Service {
 
     // Konfiguráció
     private int prep, work, rest, rounds, workSound, restSound;
-    private boolean track, precount, voice;
+    private int cdSecs = 3;
+    private boolean track, vibeOn = true, voice;
 
     // Beszéd (TTS)
     private TextToSpeech tts;
@@ -104,6 +105,7 @@ public class TimerService extends Service {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createChannel();
         ticker = this::tick;
+        Beeper.masterVolume = Theme.volume(this);
         initTts();
     }
 
@@ -142,7 +144,8 @@ public class TimerService extends Service {
                 workSound = intent.getIntExtra(EX_WS, 2);
                 restSound = intent.getIntExtra(EX_RS, 1);
                 track = intent.getBooleanExtra(EX_TRACK, false);
-                precount = intent.getBooleanExtra(EX_PRE, true);
+                cdSecs = intent.getIntExtra(EX_CD, 3);
+                vibeOn = intent.getBooleanExtra(EX_VIBE, true);
                 voice = intent.getBooleanExtra(EX_VOICE, false);
                 startWorkout();
                 break;
@@ -230,7 +233,7 @@ public class TimerService extends Service {
         int shown = (int) Math.ceil(remain);
         if (shown != lastShownSec) {
             lastShownSec = shown;
-            if (precount && shown <= 3 && shown >= 1) { Beeper.tick(); buzz(30); }
+            if (cdSecs > 0 && shown <= cdSecs && shown >= 1) { Beeper.tick(); buzz(30); }
             postNotification();
         }
         broadcastTick();
@@ -453,14 +456,14 @@ public class TimerService extends Service {
     // ---------------- Rezgés ----------------
 
     private void buzz(long ms) {
-        if (vibrator == null || !vibrator.hasVibrator()) return;
+        if (!vibeOn || vibrator == null || !vibrator.hasVibrator()) return;
         if (Build.VERSION.SDK_INT >= 26)
             vibrator.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
         else vibrator.vibrate(ms);
     }
 
     private void buzz(long[] pattern) {
-        if (vibrator == null || !vibrator.hasVibrator()) return;
+        if (!vibeOn || vibrator == null || !vibrator.hasVibrator()) return;
         if (Build.VERSION.SDK_INT >= 26)
             vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1));
         else vibrator.vibrate(pattern, -1);

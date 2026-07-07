@@ -77,7 +77,7 @@ public class ProfileActivity extends Activity {
         LinearLayout bmiLeft = vbox();
         bmiLeft.addView(text("BMI (testtömegindex)", 14, MUTED, false));
         bmiValue = text("—", 34, TXT, true);
-        bmiCat = text("", 14, ACCENT, true);
+        bmiCat = text("", 14, Theme.accent(this), true);
         bmiLeft.addView(bmiValue);
         bmiLeft.addView(bmiCat);
         bmiRow.addView(bmiLeft, new LinearLayout.LayoutParams(0, -2, 1f));
@@ -248,7 +248,7 @@ public class ProfileActivity extends Activity {
         for (int i = 0; i < 3; i++) {
             GradientDrawable bg = new GradientDrawable();
             bg.setCornerRadius(dp(13));
-            if (i == idx) { bg.setColor(INDIGO); }
+            if (i == idx) { bg.setColor(Theme.accent(this)); }
             else { bg.setColor(CARD2); bg.setStroke(dp(1), LINE); }
             seriesBtns[i].setBackground(bg);
         }
@@ -326,7 +326,8 @@ public class ProfileActivity extends Activity {
 
     Button primary(String label) {
         Button b = base(label);
-        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{INDIGO, VIOLET});
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Theme.accent(this), Theme.accent2(this)});
         bg.setCornerRadius(dp(18));
         b.setBackground(bg); b.setTextColor(0xFFFFFFFF); b.setTextSize(17);
         return b;
