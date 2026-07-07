@@ -70,6 +70,7 @@ public class MainActivity extends Activity {
     TextView workSoundLabel, restSoundLabel;
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
+    TextView statElapsed, statCal, statSteps;
     Button pauseBtn;
     ProgressRing ring;
     boolean lastPaused = false;
@@ -115,10 +116,14 @@ public class MainActivity extends Activity {
         updateSoundLabels();
         updateTotal();
 
+        java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 &&
-                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
-        }
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+            perms.add(Manifest.permission.POST_NOTIFICATIONS);
+        if (Build.VERSION.SDK_INT >= 29 &&
+                checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
+            perms.add(Manifest.permission.ACTIVITY_RECOGNITION);
+        if (!perms.isEmpty()) requestPermissions(perms.toArray(new String[0]), REQ_NOTIF);
         Reminders.scheduleAll(this);
     }
 
@@ -515,7 +520,16 @@ public class MainActivity extends Activity {
         distanceText = text("", 15, tAccent, true);
         distanceText.setGravity(Gravity.CENTER);
         runView.addView(distanceText);
-        runView.addView(gap(24));
+        runView.addView(gap(16));
+
+        // Élő statisztikák: eltelt idő, kalória, lépések
+        LinearLayout stats = hbox();
+        statElapsed = statCell(stats, "Eltelt");
+        statCal = statCell(stats, "Kalória");
+        statSteps = statCell(stats, "Lépés");
+        stats.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        runView.addView(stats);
+        runView.addView(gap(22));
 
         LinearLayout controls = hbox();
         pauseBtn = ghostButton("Szünet");
@@ -535,6 +549,19 @@ public class MainActivity extends Activity {
         runView.addView(controls);
 
         return runView;
+    }
+
+    TextView statCell(LinearLayout parent, String label) {
+        LinearLayout cell = vbox();
+        cell.setGravity(Gravity.CENTER);
+        TextView val = text("—", 18, TXT, true);
+        val.setGravity(Gravity.CENTER);
+        TextView lab = text(label, 11.5f, MUTED, false);
+        lab.setGravity(Gravity.CENTER);
+        cell.addView(val);
+        cell.addView(lab);
+        parent.addView(cell, new LinearLayout.LayoutParams(0, -2, 1f));
+        return val;
     }
 
     void showRun(boolean run) {
@@ -625,6 +652,13 @@ public class MainActivity extends Activity {
                 ? "📍 " + fmtDist(dist) + "   ·   " + fmtSpeed(speed)
                 : "");
 
+        int elapsed = i.getIntExtra(TimerService.EX_ELAPSED, 0);
+        int steps = i.getIntExtra(TimerService.EX_STEPS, 0);
+        int cal = i.getIntExtra(TimerService.EX_CAL, 0);
+        statElapsed.setText(fmtLong(elapsed));
+        statCal.setText(cal + " kcal");
+        statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
+
         lastPaused = paused;
         pauseBtn.setText(paused ? "Folytatás" : "Szünet");
         if (paused) phaseLabel.setText(phaseName(phase) + " · SZÜNET");
@@ -697,6 +731,7 @@ public class MainActivity extends Activity {
         ScrollView sv = new ScrollView(this);
         LinearLayout list = vbox();
         list.setPadding(dp(20), dp(8), dp(20), dp(8));
+        final AlertDialog[] dlg = new AlertDialog[1];
         if (arr.length() == 0) {
             list.addView(text("Még nincs elmentett edzés.\nFejezz be egy edzést, és itt megjelenik.", 14, MUTED, false));
         } else {
@@ -704,14 +739,23 @@ public class MainActivity extends Activity {
             for (int k = 0; k < arr.length(); k++) {
                 JSONObject o = arr.optJSONObject(k);
                 if (o == null) continue;
+                final long ts = o.optLong("ts");
                 LinearLayout item = vbox();
-                item.setPadding(0, dp(10), 0, dp(10));
-                item.addView(text(df.format(new Date(o.optLong("ts"))), 13, MUTED, false));
+                item.setPadding(dp(2), dp(10), dp(2), dp(10));
+                item.setClickable(true);
+                item.setOnClickListener(v -> {
+                    if (dlg[0] != null) dlg[0].dismiss();
+                    startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts));
+                });
+                item.addView(text(df.format(new Date(ts)), 13, MUTED, false));
                 double dist = o.optDouble("dist", -1);
                 String line = "⏱ " + fmtLong(o.optInt("dur")) + "   ·   " + o.optInt("rounds") + " kör";
                 if (dist >= 0) line += "   ·   📍 " + fmtDist(dist);
                 item.addView(text(line, 15.5f, TXT, true));
-                item.addView(text(o.optInt("work") + " mp futás / " + o.optInt("rest") + " mp pihenő", 12, MUTED, false));
+                String sub = o.optInt("work") + " mp futás / " + o.optInt("rest") + " mp pihenő";
+                int cal = (int) Math.round(o.optDouble("cal", 0));
+                if (cal > 0) sub += "  ·  🔥 " + cal + " kcal";
+                item.addView(text(sub, 12, MUTED, false));
                 if (dist >= 0) {
                     int dur = o.optInt("dur");
                     double avg = dur > 0 ? dist / dur * 3.6 : 0;
@@ -720,6 +764,7 @@ public class MainActivity extends Activity {
                     if (mx >= 0) sp += "  ·  max " + fmtSpeed(mx);
                     item.addView(text(sp, 12.5f, tAccent, false));
                 }
+                item.addView(text("Részletek megnyitása ›", 11.5f, tAccent, false));
                 list.addView(item);
                 if (k < arr.length() - 1) {
                     View dv = new View(this);
@@ -741,7 +786,7 @@ public class MainActivity extends Activity {
                             .setNegativeButton("Mégse", null)
                             .show());
         }
-        b.show();
+        dlg[0] = b.show();
     }
 
     // ================= Engedélyek =================

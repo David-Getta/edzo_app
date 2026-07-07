@@ -8,6 +8,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,6 +24,8 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -50,7 +56,7 @@ public class TimerService extends Service {
             EX_VIBE = "vibe", EX_VOICE = "voice";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
-            EX_SPEED = "speed";
+            EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2;
 
@@ -97,6 +103,19 @@ public class TimerService extends Service {
     private LocationListener locListener;
     private double maxSpeedMps, curSpeedMps;
     private long lastFixElapsed;
+
+    // Bővített mérések
+    private SensorManager sensorManager;
+    private Sensor stepSensor;
+    private SensorEventListener stepListener;
+    private int steps;
+    private long movingMs;
+    private double elevGainM;
+    private Double lastAlt;
+    private double weightKg = 70;
+    private JSONArray trackPts;
+    private long lastTrackElapsed;
+    private double lastTrackDist;
 
     @Override
     public void onCreate() {
@@ -180,9 +199,19 @@ public class TimerService extends Service {
         maxSpeedMps = 0;
         curSpeedMps = 0;
         lastFixElapsed = 0;
+        steps = 0;
+        movingMs = 0;
+        elevGainM = 0;
+        lastAlt = null;
+        trackPts = new JSONArray();
+        lastTrackElapsed = 0;
+        lastTrackDist = -1;
+        double lw = Profile.lastWeight(this);
+        weightKg = lw > 0 ? lw : 70;
         stepEndElapsed = SystemClock.elapsedRealtime() + (long) plan.get(0).dur * 1000L;
         startForeground(NOTIF_ID, buildNotification());
         acquireWakeLock();
+        startSteps();
         if (track) startLocation();
         beginStep(true);
         handler.post(ticker);
@@ -267,7 +296,10 @@ public class TimerService extends Service {
 
     private void saveSession(int roundsDone) {
         double maxKmh = distanceM >= 0 ? maxSpeedMps * 3.6 : -1;
-        History.add(this, System.currentTimeMillis(), currentDurationSec(), distanceM, roundsDone, work, rest, maxKmh);
+        long ts = System.currentTimeMillis();
+        History.add(this, ts, currentDurationSec(), distanceM, roundsDone, work, rest, maxKmh,
+                steps, (int) (movingMs / 1000), elevGainM, estimateCalories());
+        if (trackPts != null && trackPts.length() > 0) SessionStore.save(this, ts, trackPts);
     }
 
     private void finishWorkout() {
@@ -293,9 +325,49 @@ public class TimerService extends Service {
         paused = false;
         handler.removeCallbacks(ticker);
         stopLocation();
+        stopSteps();
         releaseWakeLock();
         stopForeground(true);
         stopSelf();
+    }
+
+    private double estimateCalories() {
+        double km = distanceM > 0 ? distanceM / 1000.0 : 0;
+        if (km > 0) return weightKg * km * 1.036; // futás közelítés
+        double min = currentDurationSec() / 60.0;
+        return 6.0 * 3.5 * weightKg / 200.0 * min; // MET~6 mozgás
+    }
+
+    // ---------------- Lépésérzékelő ----------------
+
+    private boolean hasActivityPermission() {
+        return Build.VERSION.SDK_INT < 29 ||
+                checkSelfPermission("android.permission.ACTIVITY_RECOGNITION")
+                        == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void startSteps() {
+        try {
+            if (!hasActivityPermission()) return;
+            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            if (sensorManager == null) return;
+            stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+            if (stepSensor == null) return;
+            stepListener = new SensorEventListener() {
+                @Override public void onSensorChanged(SensorEvent e) {
+                    if (!paused && e.values.length > 0) steps += (int) e.values[0];
+                }
+                @Override public void onAccuracyChanged(Sensor s, int a) {}
+            };
+            sensorManager.registerListener(stepListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        } catch (Exception ignored) {}
+    }
+
+    private void stopSteps() {
+        try {
+            if (sensorManager != null && stepListener != null) sensorManager.unregisterListener(stepListener);
+        } catch (Exception ignored) {}
+        stepListener = null;
     }
 
     // ---------------- Broadcast ----------------
@@ -315,6 +387,9 @@ public class TimerService extends Service {
         i.putExtra(EX_PROGRESS, (float) (s.dur > 0 ? remain / s.dur : 0));
         i.putExtra(EX_DIST, distanceM);
         i.putExtra(EX_SPEED, (float) (paused ? 0 : curSpeedMps * 3.6));
+        i.putExtra(EX_ELAPSED, (int) ((SystemClock.elapsedRealtime() - sessionStart - pausedAccum) / 1000));
+        i.putExtra(EX_STEPS, steps);
+        i.putExtra(EX_CAL, (int) Math.round(estimateCalories()));
         i.putExtra(EX_PAUSED, paused);
         sendBroadcast(i);
     }
@@ -349,6 +424,31 @@ public class TimerService extends Service {
                 if (sp >= 0 && sp < 12) { // futáshoz reális felső korlát (~43 km/h), GPS-tüskék kiszűrése
                     curSpeedMps = sp;
                     if (sp > maxSpeedMps) maxSpeedMps = sp;
+                }
+                // Mozgásidő (amíg ténylegesen halad)
+                if (lastFixElapsed > 0) {
+                    long dtMs = now - lastFixElapsed;
+                    if (dtMs > 0 && dtMs < 6000 && curSpeedMps > 0.6) movingMs += dtMs;
+                }
+                // Emelkedő (pozitív magasságváltozás, zajszűréssel)
+                if (loc.hasAltitude()) {
+                    double alt = loc.getAltitude();
+                    if (lastAlt != null && alt - lastAlt > 0.7) elevGainM += alt - lastAlt;
+                    lastAlt = alt;
+                }
+                // Útvonal mintavételezés (2 mp-enként vagy 5 m-enként)
+                boolean far = lastTrackDist < 0 || (distanceM - lastTrackDist) >= 5;
+                if (trackPts != null && (trackPts.length() == 0 || (now - lastTrackElapsed) >= 2000 || far)) {
+                    JSONArray pt = new JSONArray();
+                    pt.put((SystemClock.elapsedRealtime() - sessionStart) / 1000);
+                    pt.put(Math.round(loc.getLatitude() * 1e6) / 1e6);
+                    pt.put(Math.round(loc.getLongitude() * 1e6) / 1e6);
+                    pt.put(loc.hasAltitude() ? Math.round(loc.getAltitude()) : 0);
+                    pt.put((int) distanceM);
+                    pt.put(Math.round(curSpeedMps * 10) / 10.0);
+                    trackPts.put(pt);
+                    lastTrackElapsed = now;
+                    lastTrackDist = distanceM;
                 }
                 lastLoc = loc;
                 lastFixElapsed = now;
@@ -474,6 +574,7 @@ public class TimerService extends Service {
         super.onDestroy();
         handler.removeCallbacks(ticker);
         stopLocation();
+        stopSteps();
         releaseWakeLock();
         try { if (tts != null) { tts.stop(); tts.shutdown(); } } catch (Exception ignored) {}
     }

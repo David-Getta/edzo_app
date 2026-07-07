@@ -1,0 +1,363 @@
+package com.edzo.idozito;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+/**
+ * Egy edzés részletes nézete: összegző mérőszámok, GPS-útvonal rajz, km-es
+ * splitek és sebesség-görbe.
+ */
+public class WorkoutDetailActivity extends Activity {
+
+    static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
+    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
+
+    @Override
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        long ts = getIntent().getLongExtra("ts", 0);
+        JSONObject e = findEntry(ts);
+        JSONArray track = SessionStore.loadTrack(this, ts);
+
+        ScrollView sv = new ScrollView(this);
+        sv.setBackgroundColor(BG);
+        sv.setFillViewport(true);
+        LinearLayout col = vbox();
+        col.setPadding(dp(20), dp(20), dp(20), dp(36));
+
+        if (e == null) {
+            col.addView(text("Az edzés nem található.", 15, MUTED, false));
+            sv.addView(col);
+            setContentView(sv);
+            return;
+        }
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd  HH:mm", new Locale("hu"));
+        col.addView(text("Edzés részletei", 22, TXT, true));
+        col.addView(gap(4));
+        col.addView(text(df.format(new Date(e.optLong("ts"))), 13.5f, MUTED, false));
+        col.addView(gap(18));
+
+        // ---- Összegzés ----
+        int dur = e.optInt("dur");
+        double dist = e.optDouble("dist", -1);
+        int moving = e.optInt("moving", 0);
+        double maxKmh = e.optDouble("maxspeed", -1);
+        int steps = e.optInt("steps", 0);
+        double elev = e.optDouble("elev", 0);
+        double cal = e.optDouble("cal", 0);
+        int rounds = e.optInt("rounds", 0);
+
+        double avgKmh = (dist > 0 && dur > 0) ? dist / dur * 3.6 : -1;
+        double cadence = (steps > 0 && moving > 0) ? steps / (moving / 60.0) : -1;
+
+        LinearLayout grid = card();
+        grid.setPadding(dp(6), dp(6), dp(6), dp(6));
+        addTiles(grid, new String[][]{
+                {"⏱ Idő", fmtDur(dur)},
+                {"🏃 Mozgásidő", moving > 0 ? fmtDur(moving) : "—"},
+                {"📍 Táv", dist >= 0 ? fmtDist(dist) : "—"},
+                {"🔥 Kalória", Math.round(cal) + " kcal"},
+                {"⚡ Átlag", avgKmh >= 0 ? fmtSpeed(avgKmh) : "—"},
+                {"🚀 Max", maxKmh >= 0 ? fmtSpeed(maxKmh) : "—"},
+                {"👟 Lépések", steps > 0 ? String.valueOf(steps) : "—"},
+                {"🎵 Kadencia", cadence >= 0 ? Math.round(cadence) + " /min" : "—"},
+                {"⛰ Emelkedő", dist >= 0 ? Math.round(elev) + " m" : "—"},
+                {"🔁 Körök", String.valueOf(rounds)},
+        });
+        col.addView(grid, lp());
+        col.addView(gap(18));
+
+        // ---- Útvonal ----
+        double[][] latlon = extractLatLon(track);
+        if (latlon != null && latlon[0].length >= 2) {
+            col.addView(text("Útvonal", 17, TXT, true));
+            col.addView(gap(10));
+            LinearLayout routeCard = card();
+            routeCard.setPadding(dp(10), dp(10), dp(10), dp(10));
+            RouteView rv = new RouteView(this);
+            rv.setData(latlon[0], latlon[1]);
+            routeCard.addView(rv, new LinearLayout.LayoutParams(-1, dp(220)));
+            col.addView(routeCard, lp());
+            col.addView(gap(18));
+        }
+
+        // ---- Splitek (km) ----
+        String[] splits = computeSplits(track);
+        if (splits.length > 0) {
+            col.addView(text("Körök kilométerenként", 17, TXT, true));
+            col.addView(gap(10));
+            LinearLayout splitCard = card();
+            for (int i = 0; i < splits.length; i++) {
+                LinearLayout row = hbox();
+                row.setPadding(dp(16), dp(11), dp(16), dp(11));
+                row.addView(text((i + 1) + ". km", 14.5f, MUTED, false), new LinearLayout.LayoutParams(0, -2, 1f));
+                row.addView(text(splits[i], 15.5f, TXT, true));
+                splitCard.addView(row);
+                if (i < splits.length - 1) {
+                    View dv = new View(this);
+                    LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+                    dvp.leftMargin = dp(16); dvp.rightMargin = dp(16);
+                    dv.setLayoutParams(dvp); dv.setBackgroundColor(LINE);
+                    splitCard.addView(dv);
+                }
+            }
+            col.addView(splitCard, lp());
+            col.addView(gap(18));
+        }
+
+        // ---- Sebesség-görbe ----
+        double[] spd = extractSpeed(track);
+        if (spd != null && spd.length >= 2) {
+            col.addView(text("Sebesség (km/h)", 17, TXT, true));
+            col.addView(gap(10));
+            LinearLayout chartCard = card();
+            chartCard.setPadding(dp(8), dp(12), dp(12), dp(10));
+            ProfileActivity.ChartView chart = new ProfileActivity.ChartView(this);
+            chart.setData(spd, Theme.accent(this), "km/h");
+            chartCard.addView(chart, new LinearLayout.LayoutParams(-1, dp(180)));
+            col.addView(chartCard, lp());
+        }
+
+        if ((latlon == null || latlon[0].length < 2)) {
+            col.addView(text("Ehhez az edzéshez nincs GPS-adat (a táv-mérés kikapcsolva volt).",
+                    12.5f, MUTED, false));
+        }
+
+        sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
+        setContentView(sv);
+    }
+
+    JSONObject findEntry(long ts) {
+        JSONArray arr = History.load(this);
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null && o.optLong("ts") == ts) return o;
+        }
+        return null;
+    }
+
+    // track pont: [tSec, lat, lon, alt, dist, speed]
+
+    double[][] extractLatLon(JSONArray track) {
+        int n = track.length();
+        if (n == 0) return null;
+        double[] la = new double[n], lo = new double[n];
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            JSONArray p = track.optJSONArray(i);
+            if (p == null || p.length() < 3) continue;
+            double lat = p.optDouble(1, 0), lon = p.optDouble(2, 0);
+            if (lat == 0 && lon == 0) continue;
+            la[k] = lat; lo[k] = lon; k++;
+        }
+        if (k == 0) return null;
+        double[] laa = new double[k], loo = new double[k];
+        System.arraycopy(la, 0, laa, 0, k);
+        System.arraycopy(lo, 0, loo, 0, k);
+        return new double[][]{laa, loo};
+    }
+
+    double[] extractSpeed(JSONArray track) {
+        int n = track.length();
+        if (n == 0) return null;
+        double[] s = new double[n];
+        for (int i = 0; i < n; i++) {
+            JSONArray p = track.optJSONArray(i);
+            s[i] = p != null && p.length() >= 6 ? p.optDouble(5, 0) * 3.6 : 0;
+        }
+        return s;
+    }
+
+    /** Km-es splitek m:ss formában, lineáris interpolációval a (dist, t) mintákból. */
+    String[] computeSplits(JSONArray track) {
+        int n = track.length();
+        if (n < 2) return new String[0];
+        double maxDist = 0;
+        for (int i = 0; i < n; i++) {
+            JSONArray p = track.optJSONArray(i);
+            if (p != null && p.length() >= 5) maxDist = Math.max(maxDist, p.optDouble(4, 0));
+        }
+        int kms = (int) (maxDist / 1000.0);
+        if (kms < 1) return new String[0];
+        String[] out = new String[kms];
+        double prevT = 0;
+        for (int km = 1; km <= kms; km++) {
+            double targetD = km * 1000.0;
+            double t = timeAtDist(track, targetD);
+            double split = t - prevT;
+            prevT = t;
+            int sec = (int) Math.round(split);
+            out[km - 1] = fmtDur(sec) + "  (" + paceStr(split) + ")";
+        }
+        return out;
+    }
+
+    double timeAtDist(JSONArray track, double targetD) {
+        double prevD = 0, prevT = 0;
+        for (int i = 0; i < track.length(); i++) {
+            JSONArray p = track.optJSONArray(i);
+            if (p == null || p.length() < 5) continue;
+            double d = p.optDouble(4, 0), t = p.optDouble(0, 0);
+            if (d >= targetD) {
+                if (d - prevD <= 0) return t;
+                double f = (targetD - prevD) / (d - prevD);
+                return prevT + (t - prevT) * f;
+            }
+            prevD = d; prevT = t;
+        }
+        return prevT;
+    }
+
+    String paceStr(double secPerKm) {
+        if (secPerKm <= 0) return "–";
+        int m = (int) (secPerKm / 60);
+        int s = (int) Math.round(secPerKm - m * 60);
+        if (s == 60) { m++; s = 0; }
+        return String.format(Locale.US, "%d:%02d /km", m, s);
+    }
+
+    // ---------------- Format ----------------
+
+    String fmtDur(int sec) {
+        if (sec < 0) sec = 0;
+        int h = sec / 3600, m = (sec % 3600) / 60, s = sec % 60;
+        return h > 0 ? String.format(Locale.US, "%d:%02d:%02d", h, m, s)
+                : String.format(Locale.US, "%d:%02d", m, s);
+    }
+    String fmtDist(double m) {
+        if (m < 0) return "—";
+        if (m < 1000) return Math.round(m) + " m";
+        return String.format(Locale.US, "%.2f km", m / 1000.0);
+    }
+    String fmtSpeed(double kmh) {
+        if (Theme.paceMode(this)) return paceStr(kmh > 0 ? 3600.0 / kmh : 0);
+        return String.format(Locale.US, "%.1f km/h", kmh);
+    }
+
+    // ---------------- UI segéd ----------------
+
+    void addTiles(LinearLayout grid, String[][] items) {
+        for (int i = 0; i < items.length; i += 2) {
+            LinearLayout row = hbox();
+            row.addView(tile(items[i][0], items[i][1]), tileLp());
+            if (i + 1 < items.length) row.addView(tile(items[i + 1][0], items[i + 1][1]), tileLp());
+            else row.addView(new View(this), tileLp());
+            grid.addView(row, lp());
+        }
+    }
+
+    LinearLayout.LayoutParams tileLp() {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
+        p.leftMargin = dp(4); p.rightMargin = dp(4); p.topMargin = dp(4); p.bottomMargin = dp(4);
+        return p;
+    }
+
+    View tile(String label, String value) {
+        LinearLayout t = vbox();
+        t.setPadding(dp(12), dp(12), dp(12), dp(12));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(CARD2); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), LINE);
+        t.setBackground(bg);
+        t.addView(text(value, 18, TXT, true));
+        t.addView(text(label, 12, MUTED, false));
+        return t;
+    }
+
+    LinearLayout vbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
+    LinearLayout hbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.HORIZONTAL); return l; }
+    LinearLayout.LayoutParams lp() { return new LinearLayout.LayoutParams(-1, -2); }
+
+    LinearLayout card() {
+        LinearLayout c = vbox();
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(CARD); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), LINE);
+        c.setBackground(bg);
+        return c;
+    }
+
+    TextView text(String s, float size, int color, boolean bold) {
+        TextView t = new TextView(this);
+        t.setText(s); t.setTextSize(size); t.setTextColor(color);
+        if (bold) t.setTypeface(null, Typeface.BOLD);
+        return t;
+    }
+
+    View gap(int h) { View v = new View(this); v.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(h))); return v; }
+
+    int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }
+
+    // ---------------- Útvonal nézet ----------------
+
+    static class RouteView extends View {
+        private double[] lat, lon;
+        private final Paint line = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint start = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint end = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path path = new Path();
+        private final float density;
+
+        RouteView(Context c) {
+            super(c);
+            density = c.getResources().getDisplayMetrics().density;
+            line.setStyle(Paint.Style.STROKE);
+            line.setStrokeCap(Paint.Cap.ROUND);
+            line.setStrokeJoin(Paint.Join.ROUND);
+            line.setStrokeWidth(density * 3.5f);
+            line.setColor(Theme.accent(c));
+            start.setColor(0xFF22C55E);
+            end.setColor(0xFFEF4444);
+        }
+
+        void setData(double[] lat, double[] lon) { this.lat = lat; this.lon = lon; invalidate(); }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if (lat == null || lat.length < 2) return;
+            double minLa = lat[0], maxLa = lat[0], minLo = lon[0], maxLo = lon[0];
+            for (int i = 0; i < lat.length; i++) {
+                minLa = Math.min(minLa, lat[i]); maxLa = Math.max(maxLa, lat[i]);
+                minLo = Math.min(minLo, lon[i]); maxLo = Math.max(maxLo, lon[i]);
+            }
+            double midLa = (minLa + maxLa) / 2;
+            double spanLo = Math.max(1e-6, (maxLo - minLo) * Math.cos(Math.toRadians(midLa)));
+            double spanLa = Math.max(1e-6, maxLa - minLa);
+            float pad = density * 16;
+            float w = getWidth() - 2 * pad, h = getHeight() - 2 * pad;
+            double scale = Math.min(w / spanLo, h / spanLa);
+            float drawW = (float) (spanLo * scale), drawH = (float) (spanLa * scale);
+            float offX = pad + (w - drawW) / 2, offY = pad + (h - drawH) / 2;
+
+            path.reset();
+            float sx = 0, sy = 0, ex = 0, ey = 0;
+            for (int i = 0; i < lat.length; i++) {
+                float x = offX + (float) (((lon[i] - minLo) * Math.cos(Math.toRadians(midLa))) * scale);
+                float y = offY + (float) ((maxLa - lat[i]) * scale);
+                if (i == 0) { path.moveTo(x, y); sx = x; sy = y; }
+                else path.lineTo(x, y);
+                ex = x; ey = y;
+            }
+            canvas.drawPath(path, line);
+            canvas.drawCircle(sx, sy, density * 5, start);
+            canvas.drawCircle(ex, ey, density * 5, end);
+        }
+    }
+}
