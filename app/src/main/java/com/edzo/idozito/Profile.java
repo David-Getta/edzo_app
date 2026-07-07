@@ -49,6 +49,28 @@ public final class Profile {
         return Math.max(0, age);
     }
 
+    // ---- Nem ----
+
+    public static int getSex(Context c) { return prefs(c).getInt("p_sex", 0); } // 0 = férfi, 1 = nő
+    public static void setSex(Context c, int s) { prefs(c).edit().putInt("p_sex", s).apply(); }
+
+    // ---- BMR (alap-anyagcsere, Mifflin–St Jeor) ----
+
+    public static double bmr(int sex, double weightKg, int heightCm, int age) {
+        if (weightKg <= 0 || heightCm <= 0 || age < 0) return -1;
+        double base = 10 * weightKg + 6.25 * heightCm - 5 * age;
+        return sex == 1 ? base - 161 : base + 5;
+    }
+
+    // ---- Fogyási cél ----
+
+    public static final double[] RATES = {0.25, 0.5, 0.75, 1.0}; // kg/hét: lassú, normál, gyors, extrém
+
+    public static float getGoalLoss(Context c) { return prefs(c).getFloat("g_loss", 0f); }
+    public static void setGoalLoss(Context c, float kg) { prefs(c).edit().putFloat("g_loss", kg).apply(); }
+    public static int getGoalRate(Context c) { return prefs(c).getInt("g_rate", 1); }
+    public static void setGoalRate(Context c, int i) { prefs(c).edit().putInt("g_rate", i).apply(); }
+
     // ---- BMI ----
 
     /** BMI a magasságból (cm) és testsúlyból (kg), vagy -1 ha hiányos. */

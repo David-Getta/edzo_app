@@ -119,6 +119,7 @@ public class MainActivity extends Activity {
                 checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
         }
+        Reminders.scheduleAll(this);
     }
 
     // ================= SETUP =================
@@ -231,6 +232,10 @@ public class MainActivity extends Activity {
         Button settings = ghostButton("⚙️  Beállítások");
         settings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         col.addView(settings);
+        col.addView(gap(12));
+        Button reminders = ghostButton("🔔  Emlékeztetők");
+        reminders.setOnClickListener(v -> startActivity(new Intent(this, RemindersActivity.class)));
+        col.addView(reminders);
 
         col.addView(gap(24));
         TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
