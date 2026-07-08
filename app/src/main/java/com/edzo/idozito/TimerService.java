@@ -103,6 +103,8 @@ public class TimerService extends Service {
     private LocationListener locListener;
     private double maxSpeedMps, curSpeedMps;
     private long lastFixElapsed;
+    private boolean inWorkPhase;      // csak FUTÁS szakaszban mérünk sebességet/távot
+    private long workMs, lastTickElapsed; // futással töltött idő (átlaghoz)
 
     // Bővített mérések
     private SensorManager sensorManager;
@@ -201,6 +203,9 @@ public class TimerService extends Service {
         lastFixElapsed = 0;
         steps = 0;
         movingMs = 0;
+        workMs = 0;
+        lastTickElapsed = 0;
+        inWorkPhase = false;
         elevGainM = 0;
         lastAlt = null;
         trackPts = new JSONArray();
@@ -230,6 +235,8 @@ public class TimerService extends Service {
         Step s = plan.get(idx);
         stepEndElapsed = SystemClock.elapsedRealtime() + (long) s.dur * 1000L;
         lastShownSec = -1;
+        inWorkPhase = (s.type == T_WORK);
+        if (inWorkPhase) { lastLoc = null; lastFixElapsed = 0; } // GPS-alap nullázása a futás elején
         boolean lastRound = s.round == rounds;
         if (s.type == T_WORK) {
             Beeper.play(workSound); buzz(new long[]{0, 60, 60, 60});
@@ -247,6 +254,14 @@ public class TimerService extends Service {
 
     private void tick() {
         if (!running || paused) return;
+        // Futással töltött idő gyűjtése (csak FUTÁS szakaszban).
+        long nowT = SystemClock.elapsedRealtime();
+        if (lastTickElapsed > 0 && plan.get(idx).type == T_WORK) {
+            long d = nowT - lastTickElapsed;
+            if (d > 0 && d < 2000) workMs += d;
+        }
+        lastTickElapsed = nowT;
+
         Step s = plan.get(idx);
         double remain = (stepEndElapsed - SystemClock.elapsedRealtime()) / 1000.0;
 
@@ -275,6 +290,7 @@ public class TimerService extends Service {
         remainingAtPause = stepEndElapsed - SystemClock.elapsedRealtime();
         pauseStart = SystemClock.elapsedRealtime();
         handler.removeCallbacks(ticker);
+        lastTickElapsed = 0; // szünet ne számítson bele a futásidőbe
         speak("Szünet.");
         postNotification();
         broadcastTick();
@@ -286,6 +302,7 @@ public class TimerService extends Service {
         stepEndElapsed = SystemClock.elapsedRealtime() + remainingAtPause;
         pausedAccum += SystemClock.elapsedRealtime() - pauseStart;
         lastLoc = null; // ne számítson bele a szünet alatti helyváltozás
+        lastTickElapsed = 0;
         postNotification();
         handler.post(ticker);
     }
@@ -296,9 +313,11 @@ public class TimerService extends Service {
 
     private void saveSession(int roundsDone) {
         double maxKmh = distanceM >= 0 ? maxSpeedMps * 3.6 : -1;
+        // Átlagsebesség CSAK a futással töltött időből.
+        double avgKmh = (distanceM > 0 && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
         long ts = System.currentTimeMillis();
         History.add(this, ts, currentDurationSec(), distanceM, roundsDone, work, rest, maxKmh,
-                steps, (int) (movingMs / 1000), elevGainM, estimateCalories());
+                steps, (int) (movingMs / 1000), elevGainM, estimateCalories(), avgKmh);
         if (trackPts != null && trackPts.length() > 0) SessionStore.save(this, ts, trackPts);
     }
 
@@ -410,7 +429,8 @@ public class TimerService extends Service {
         locListener = new LocationListener() {
             @Override public void onLocationChanged(Location loc) {
                 long now = SystemClock.elapsedRealtime();
-                if (paused) { lastLoc = loc; lastFixElapsed = now; curSpeedMps = 0; return; }
+                // Csak a FUTÁS szakaszban mérünk; pihenő/szünet alatt nem gyűjtünk sebességet/távot.
+                if (paused || !inWorkPhase) { curSpeedMps = 0; lastLoc = loc; lastFixElapsed = now; return; }
                 if (loc.hasAccuracy() && loc.getAccuracy() > 40) return;
                 double sp = loc.hasSpeed() ? loc.getSpeed() : -1;
                 if (lastLoc != null) {
@@ -441,7 +461,7 @@ public class TimerService extends Service {
                 if (trackPts != null && (trackPts.length() == 0 || (now - lastTrackElapsed) >= 2000 || far)) {
                     try {
                         JSONArray pt = new JSONArray();
-                        pt.put((SystemClock.elapsedRealtime() - sessionStart) / 1000);
+                        pt.put(workMs / 1000); // futásidő (mp), hogy a splitek a futásból számoljanak
                         pt.put(Math.round(loc.getLatitude() * 1e6) / 1e6);
                         pt.put(Math.round(loc.getLongitude() * 1e6) / 1e6);
                         pt.put(loc.hasAltitude() ? Math.round(loc.getAltitude()) : 0);

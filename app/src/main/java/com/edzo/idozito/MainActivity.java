@@ -762,7 +762,8 @@ public class MainActivity extends Activity {
                 item.addView(text(sub, 12, MUTED, false));
                 if (dist >= 0) {
                     int dur = o.optInt("dur");
-                    double avg = dur > 0 ? dist / dur * 3.6 : 0;
+                    double avg = o.optDouble("avgspeed", -1);
+                    if (avg < 0) avg = dur > 0 ? dist / dur * 3.6 : 0;
                     double mx = o.optDouble("maxspeed", -1);
                     String sp = "🏃 átlag " + fmtSpeed(avg);
                     if (mx >= 0) sp += "  ·  max " + fmtSpeed(mx);

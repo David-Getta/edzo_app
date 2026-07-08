@@ -66,7 +66,8 @@ public class WorkoutDetailActivity extends Activity {
         double cal = e.optDouble("cal", 0);
         int rounds = e.optInt("rounds", 0);
 
-        double avgKmh = (dist > 0 && dur > 0) ? dist / dur * 3.6 : -1;
+        double avgKmh = e.optDouble("avgspeed", -1);
+        if (avgKmh < 0 && dist > 0 && dur > 0) avgKmh = dist / dur * 3.6;
         double cadence = (steps > 0 && moving > 0) ? steps / (moving / 60.0) : -1;
 
         LinearLayout grid = card();

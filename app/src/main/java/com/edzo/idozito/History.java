@@ -21,7 +21,8 @@ public final class History {
     /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
                            int rounds, int work, int rest, double maxSpeedKmh,
-                           int steps, int movingSec, double elevGainM, double calories) {
+                           int steps, int movingSec, double elevGainM, double calories,
+                           double avgSpeedKmh) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         JSONArray arr = load(ctx);
         try {
@@ -37,6 +38,7 @@ public final class History {
             o.put("moving", movingSec);
             o.put("elev", elevGainM);
             o.put("cal", calories);
+            o.put("avgspeed", avgSpeedKmh);
             JSONArray out = new JSONArray();
             out.put(o);
             for (int i = 0; i < arr.length() && out.length() < MAX; i++) out.put(arr.get(i));
