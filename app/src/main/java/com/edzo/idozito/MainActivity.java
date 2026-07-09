@@ -65,6 +65,7 @@ public class MainActivity extends Activity {
     FrameLayout root;
     ScrollView setupScroll;
     LinearLayout runView;
+    LinearLayout templatesBox;
     TextView totalText;
     final TextView[] valueLabels = new TextView[4];
     TextView workSoundLabel, restSoundLabel;
@@ -115,6 +116,7 @@ public class MainActivity extends Activity {
         refreshValues();
         updateSoundLabels();
         updateTotal();
+        refreshTemplates();
 
         java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -137,22 +139,23 @@ public class MainActivity extends Activity {
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
 
-        // Fejléc
-        LinearLayout head = hbox();
-        head.setGravity(Gravity.CENTER_VERTICAL);
-        View badge = new View(this);
-        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
-        bg.setCornerRadius(dp(9));
-        badge.setBackground(bg);
-        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(dp(34), dp(34));
-        bp.rightMargin = dp(10);
-        head.addView(badge, bp);
-        LinearLayout titles = vbox();
-        titles.addView(text("My trainer", 20, TXT, true));
-        titles.addView(text("Intervallum edzés sípszóval", 12.5f, MUTED, false));
-        head.addView(titles);
-        col.addView(head);
-        col.addView(gap(24));
+        // Fejléc banner (gradiens)
+        LinearLayout banner = hbox();
+        banner.setGravity(Gravity.CENTER_VERTICAL);
+        banner.setPadding(dp(20), dp(20), dp(20), dp(20));
+        GradientDrawable bbg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
+        bbg.setCornerRadius(dp(22));
+        banner.setBackground(bbg);
+        LinearLayout btitles = vbox();
+        btitles.addView(text("My trainer", 25, 0xFFFFFFFF, true));
+        TextView bsub = text("Intervallum edző · készen állsz? 💪", 13, 0xFFFFFFFF, false);
+        bsub.setAlpha(0.85f);
+        btitles.addView(bsub);
+        banner.addView(btitles, new LinearLayout.LayoutParams(0, -2, 1f));
+        TextView bico = text("🏃", 34, 0xFFFFFFFF, false);
+        banner.addView(bico);
+        col.addView(banner, new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(22));
 
         // Sablonok
         LinearLayout presets = hbox();
@@ -160,7 +163,12 @@ public class MainActivity extends Activity {
         presets.addView(preset("Tempó", "60/20 mp · 6×", 60, 20, 6), presetLp());
         presets.addView(preset("Tabata", "20/10 mp · 8×", 20, 10, 8), presetLp());
         col.addView(presets, new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(20));
+        col.addView(gap(12));
+
+        // Saját mentett sablonok (dinamikus)
+        templatesBox = vbox();
+        col.addView(templatesBox, new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(8));
 
         // Idő-beállítások
         LinearLayout card = card();
@@ -224,27 +232,22 @@ public class MainActivity extends Activity {
         Button start = primaryButton("▶  Indítás");
         start.setOnClickListener(v -> startWorkout());
         col.addView(start);
-        col.addView(gap(16));
+        col.addView(gap(22));
 
-        Button hist = ghostButton("📜  Korábbi edzések");
-        hist.setOnClickListener(v -> showHistory());
-        col.addView(hist);
-        col.addView(gap(12));
-        Button stats = ghostButton("📈  Statisztika");
-        stats.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
-        col.addView(stats);
-        col.addView(gap(12));
-        Button prof = ghostButton("📊  Profil / BMI");
-        prof.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
-        col.addView(prof);
-        col.addView(gap(12));
-        Button settings = ghostButton("⚙️  Beállítások");
-        settings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
-        col.addView(settings);
-        col.addView(gap(12));
-        Button reminders = ghostButton("🔔  Emlékeztetők");
-        reminders.setOnClickListener(v -> startActivity(new Intent(this, RemindersActivity.class)));
-        col.addView(reminders);
+        // Funkció-csempék (2 oszlop)
+        LinearLayout grid = vbox();
+        grid.addView(tileRow(
+                featureTile("📜", "Előzmények", () -> showHistory()),
+                featureTile("📈", "Statisztika", () -> startActivity(new Intent(this, StatsActivity.class)))));
+        grid.addView(gap(10));
+        grid.addView(tileRow(
+                featureTile("📊", "Profil / BMI", () -> startActivity(new Intent(this, ProfileActivity.class))),
+                featureTile("🔔", "Emlékeztetők", () -> startActivity(new Intent(this, RemindersActivity.class)))));
+        grid.addView(gap(10));
+        grid.addView(tileRow(
+                featureTile("⚙️", "Beállítások", () -> startActivity(new Intent(this, SettingsActivity.class))),
+                featureTile("💾", "Sablon mentése", this::saveTemplateDialog)));
+        col.addView(grid, new LinearLayout.LayoutParams(-1, -2));
 
         col.addView(gap(24));
         TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
@@ -264,6 +267,95 @@ public class MainActivity extends Activity {
         bg.setStroke(dp(1), LINE);
         c.setBackground(bg);
         return c;
+    }
+
+    // ---- Funkció-csempék ----
+
+    View featureTile(String emoji, String label, Runnable onTap) {
+        LinearLayout t = vbox();
+        t.setGravity(Gravity.CENTER);
+        t.setPadding(dp(14), dp(18), dp(14), dp(18));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(CARD); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), LINE);
+        t.setBackground(bg);
+        t.setClickable(true);
+        TextView e = text(emoji, 26, TXT, false); e.setGravity(Gravity.CENTER);
+        TextView l = text(label, 13.5f, TXT, true); l.setGravity(Gravity.CENTER);
+        l.setPadding(0, dp(6), 0, 0);
+        t.addView(e); t.addView(l);
+        t.setOnClickListener(v -> onTap.run());
+        return t;
+    }
+
+    LinearLayout tileRow(View a, View b) {
+        LinearLayout row = hbox();
+        LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(0, -2, 1f); l.rightMargin = dp(5);
+        LinearLayout.LayoutParams r = new LinearLayout.LayoutParams(0, -2, 1f); r.leftMargin = dp(5);
+        row.addView(a, l); row.addView(b, r);
+        row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        return row;
+    }
+
+    // ---- Saját sablonok ----
+
+    void refreshTemplates() {
+        if (templatesBox == null) return;
+        templatesBox.removeAllViews();
+        java.util.List<Workouts.W> list = Workouts.load(this);
+        if (list.isEmpty()) return;
+        TextView title = text("Saját sablonok", 13, MUTED, true);
+        title.setPadding(dp(2), 0, 0, dp(8));
+        templatesBox.addView(title);
+        LinearLayout cardT = card();
+        for (int i = 0; i < list.size(); i++) {
+            final int idx = i;
+            final Workouts.W w = list.get(i);
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(16), dp(12), dp(8), dp(12));
+            row.setClickable(true);
+            row.setOnClickListener(v -> loadTemplate(w));
+            LinearLayout left = vbox();
+            left.addView(text(w.name, 15.5f, TXT, true));
+            left.addView(text(w.work + "/" + w.rest + " mp · " + w.rounds + "× · előkész. " + w.prep + " mp", 12, MUTED, false));
+            row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
+            Button del = new Button(this);
+            del.setText("🗑"); del.setAllCaps(false); del.setTextSize(16);
+            del.setBackground(null); del.setStateListAnimator(null); del.setTextColor(MUTED);
+            del.setOnClickListener(v -> new AlertDialog.Builder(this)
+                    .setMessage("Törlöd a(z) „" + w.name + "\" sablont?")
+                    .setPositiveButton("Törlés", (d, ww) -> { Workouts.removeAt(this, idx); refreshTemplates(); })
+                    .setNegativeButton("Mégse", null).show());
+            row.addView(del);
+            cardT.addView(row);
+            if (i < list.size() - 1) cardT.addView(divider());
+        }
+        templatesBox.addView(cardT, new LinearLayout.LayoutParams(-1, -2));
+        templatesBox.addView(gap(10));
+    }
+
+    void loadTemplate(Workouts.W w) {
+        cfg[PREP_K] = w.prep; cfg[WORK_K] = w.work; cfg[REST_K] = w.rest; cfg[ROUND_K] = w.rounds;
+        saveAll(); refreshValues(); updateTotal(); vibrateShort();
+    }
+
+    void saveTemplateDialog() {
+        final EditText et = new EditText(this);
+        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        et.setHint("Sablon neve"); et.setHintTextColor(MUTED); et.setTextColor(TXT);
+        et.setText("Saját edzés"); et.setSelectAllOnFocus(true);
+        FrameLayout wrap = new FrameLayout(this);
+        wrap.setPadding(dp(20), dp(8), dp(20), 0); wrap.addView(et);
+        new AlertDialog.Builder(this)
+                .setTitle("Sablon mentése")
+                .setView(wrap)
+                .setPositiveButton("Mentés", (d, w) -> {
+                    String name = et.getText().toString().trim();
+                    if (name.isEmpty()) name = "Saját edzés";
+                    Workouts.add(this, new Workouts.W(name, cfg[PREP_K], cfg[WORK_K], cfg[REST_K], cfg[ROUND_K]));
+                    refreshTemplates();
+                })
+                .setNegativeButton("Mégse", null).show();
     }
 
     LinearLayout.LayoutParams presetLp() {
