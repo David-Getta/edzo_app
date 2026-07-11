@@ -105,6 +105,7 @@ public class TimerService extends Service {
     private long lastFixElapsed;
     private boolean inWorkPhase;      // csak FUTÁS szakaszban mérünk sebességet/távot
     private long workMs, lastTickElapsed; // futással töltött idő (átlaghoz)
+    private int lastKm;               // utoljára bejelentett teljes kilométer
 
     // Bővített mérések
     private SensorManager sensorManager;
@@ -149,6 +150,20 @@ public class TimerService extends Service {
     private void speak(String s) {
         if (!voice || !ttsReady || tts == null) return;
         try { tts.speak(s, TextToSpeech.QUEUE_FLUSH, null, "edzo"); } catch (Exception ignored) {}
+    }
+
+    /** Sorba állított bemondás – nem vágja el a szakaszváltás bemondását. */
+    private void speakAdd(String s) {
+        if (!voice || !ttsReady || tts == null) return;
+        try { tts.speak(s, TextToSpeech.QUEUE_ADD, null, "edzo_km"); } catch (Exception ignored) {}
+    }
+
+    /** Minden teljes kilométernél: rezgés + hangos bejelentés a futásidővel. */
+    private void announceKm(int km) {
+        buzz(new long[]{0, 50, 80, 50});
+        int sec = (int) (workMs / 1000);
+        String t = sec >= 60 ? (sec / 60) + " perc " + (sec % 60) + " másodperc" : sec + " másodperc";
+        speakAdd(km + " kilométer. Futásidő: " + t + ".");
     }
 
     @Override
@@ -205,6 +220,7 @@ public class TimerService extends Service {
         movingMs = 0;
         workMs = 0;
         lastTickElapsed = 0;
+        lastKm = 0;
         inWorkPhase = false;
         elevGainM = 0;
         lastAlt = null;
@@ -436,6 +452,8 @@ public class TimerService extends Service {
                 if (lastLoc != null) {
                     float d = lastLoc.distanceTo(loc);
                     if (d < 250) distanceM += d;
+                    int km = (int) (distanceM / 1000);
+                    if (km > lastKm) { lastKm = km; announceKm(km); }
                     if (sp < 0 && lastFixElapsed > 0) {
                         double dt = (now - lastFixElapsed) / 1000.0;
                         if (dt > 0.2) sp = d / dt;

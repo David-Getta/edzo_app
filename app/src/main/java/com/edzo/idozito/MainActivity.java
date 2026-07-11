@@ -66,6 +66,7 @@ public class MainActivity extends Activity {
     ScrollView setupScroll;
     LinearLayout runView;
     LinearLayout templatesBox;
+    LinearLayout goalBox;
     TextView totalText;
     final TextView[] valueLabels = new TextView[4];
     TextView workSoundLabel, restSoundLabel;
@@ -117,6 +118,7 @@ public class MainActivity extends Activity {
         updateSoundLabels();
         updateTotal();
         refreshTemplates();
+        refreshGoal();
 
         java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -155,7 +157,11 @@ public class MainActivity extends Activity {
         TextView bico = text("🏃", 34, 0xFFFFFFFF, false);
         banner.addView(bico);
         col.addView(banner, new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(22));
+        col.addView(gap(14));
+
+        // Heti cél (dinamikus kártya)
+        goalBox = vbox();
+        col.addView(goalBox, new LinearLayout.LayoutParams(-1, -2));
 
         // Sablonok
         LinearLayout presets = hbox();
@@ -356,6 +362,163 @@ public class MainActivity extends Activity {
                     refreshTemplates();
                 })
                 .setNegativeButton("Mégse", null).show();
+    }
+
+    // ---- Heti cél ----
+
+    static final String[] GOAL_UNITS = {"edzés", "perc", "km"};
+
+    void refreshGoal() {
+        if (goalBox == null) return;
+        goalBox.removeAllViews();
+        int mode = prefs.getInt("wg_mode", 0);
+        int target = prefs.getInt("wg_target", 0);
+        LinearLayout cardG = card();
+        cardG.setClickable(true);
+        cardG.setOnClickListener(v -> goalDialog());
+
+        if (target <= 0) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(18), dp(14), dp(18), dp(14));
+            LinearLayout left = vbox();
+            left.addView(text("🎯 Heti cél", 15.5f, TXT, true));
+            left.addView(text("Tűzz ki célt: heti edzésszám, perc vagy km", 12, MUTED, false));
+            row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text("▸", 15, MUTED, false));
+            cardG.addView(row);
+        } else {
+            double done = weekProgress(mode);
+            float frac = (float) Math.min(1.0, done / target);
+            LinearLayout inner = vbox();
+            inner.setPadding(dp(18), dp(14), dp(18), dp(14));
+            LinearLayout top = hbox();
+            top.setGravity(Gravity.CENTER_VERTICAL);
+            top.addView(text("🎯 Heti cél", 15.5f, TXT, true), new LinearLayout.LayoutParams(0, -2, 1f));
+            String doneS = mode == 2 ? String.format(Locale.US, "%.1f", done) : String.valueOf((int) done);
+            top.addView(text(doneS + " / " + target + " " + GOAL_UNITS[mode], 14, tAccent, true));
+            inner.addView(top);
+            inner.addView(gap(10));
+
+            // Folyamatjelző sáv
+            LinearLayout barBg = hbox();
+            GradientDrawable bgd = new GradientDrawable();
+            bgd.setColor(CARD2); bgd.setCornerRadius(dp(6));
+            barBg.setBackground(bgd);
+            View fill = new View(this);
+            GradientDrawable fgd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                    new int[]{tAccent, tAccent2});
+            fgd.setCornerRadius(dp(6));
+            fill.setBackground(fgd);
+            barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(12), Math.max(0.001f, frac)));
+            barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(12), 1f - Math.max(0.001f, frac)));
+            inner.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
+            inner.addView(gap(8));
+
+            String sub;
+            if (frac >= 1f) sub = "Kész! Teljesítetted a heti célod 🎉";
+            else {
+                double left2 = target - done;
+                String leftS = mode == 2 ? String.format(Locale.US, "%.1f", left2) : String.valueOf((int) Math.ceil(left2));
+                sub = Math.round(frac * 100) + "% · még " + leftS + " " + GOAL_UNITS[mode] + " a célig";
+            }
+            inner.addView(text(sub, 12, MUTED, false));
+            cardG.addView(inner);
+        }
+        goalBox.addView(cardG, new LinearLayout.LayoutParams(-1, -2));
+        goalBox.addView(gap(14));
+    }
+
+    /** E heti teljesítés a naplóból: edzésszám / perc / km, a mód szerint. */
+    double weekProgress(int mode) {
+        long from = weekStartMs();
+        JSONArray arr = History.load(this);
+        double v = 0;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null || o.optLong("ts") < from) continue;
+            if (mode == 1) v += o.optInt("dur") / 60.0;
+            else if (mode == 2) { double d = o.optDouble("dist", -1); if (d > 0) v += d / 1000.0; }
+            else v += 1;
+        }
+        return v;
+    }
+
+    long weekStartMs() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setFirstDayOfWeek(java.util.Calendar.MONDAY);
+        c.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY);
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
+
+    void goalDialog() {
+        final int[] mode = {prefs.getInt("wg_mode", 0)};
+        int target = prefs.getInt("wg_target", 0);
+
+        LinearLayout box = vbox();
+        box.setPadding(dp(20), dp(10), dp(20), 0);
+        box.addView(text("Mit mérjen a cél?", 13, MUTED, false));
+        box.addView(gap(8));
+        LinearLayout modes = hbox();
+        final Button[] mb = new Button[3];
+        String[] mn = {"Edzés (db)", "Idő (perc)", "Táv (km)"};
+        for (int i = 0; i < 3; i++) {
+            final int mi = i;
+            Button bb = new Button(this);
+            bb.setText(mn[i]); bb.setAllCaps(false); bb.setTextSize(12.5f);
+            bb.setTypeface(null, Typeface.BOLD);
+            bb.setStateListAnimator(null);
+            bb.setPadding(dp(4), dp(10), dp(4), dp(10));
+            styleGoalChip(bb, mi == mode[0]);
+            bb.setOnClickListener(v -> {
+                mode[0] = mi;
+                for (int j = 0; j < 3; j++) styleGoalChip(mb[j], j == mi);
+            });
+            mb[i] = bb;
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(0, -2, 1f);
+            clp.leftMargin = dp(3); clp.rightMargin = dp(3);
+            modes.addView(bb, clp);
+        }
+        box.addView(modes, new LinearLayout.LayoutParams(-1, -2));
+        box.addView(gap(12));
+        box.addView(text("Heti célérték", 13, MUTED, false));
+        final EditText et = new EditText(this);
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        et.setTextColor(TXT); et.setHintTextColor(MUTED);
+        et.setHint("pl. 3");
+        if (target > 0) { et.setText(String.valueOf(target)); et.setSelectAllOnFocus(true); }
+        box.addView(et);
+
+        AlertDialog.Builder b = new AlertDialog.Builder(this)
+                .setTitle("Heti cél")
+                .setView(box)
+                .setPositiveButton("Mentés", (d, w) -> {
+                    try {
+                        int v = Integer.parseInt(et.getText().toString().trim());
+                        if (v > 0) {
+                            prefs.edit().putInt("wg_mode", mode[0]).putInt("wg_target", v).apply();
+                            refreshGoal();
+                        }
+                    } catch (Exception ignored) {}
+                })
+                .setNegativeButton("Mégse", null);
+        if (target > 0) {
+            b.setNeutralButton("Cél törlése", (d, w) -> {
+                prefs.edit().putInt("wg_target", 0).apply();
+                refreshGoal();
+            });
+        }
+        b.show();
+    }
+
+    void styleGoalChip(Button b, boolean sel) {
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(dp(12));
+        if (sel) { bg.setColor(tAccent); b.setTextColor(0xFFFFFFFF); }
+        else { bg.setColor(CARD2); bg.setStroke(dp(1), LINE); b.setTextColor(TXT); }
+        b.setBackground(bg);
     }
 
     LinearLayout.LayoutParams presetLp() {
@@ -725,7 +888,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) showRun(false);
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); }
         }
     };
 
@@ -776,6 +939,7 @@ public class MainActivity extends Activity {
         lastPaused = false;
         pauseBtn.setEnabled(false);
         pauseBtn.setText("Kész");
+        refreshGoal();
     }
 
     void setPhaseUI(int phase, int round) { setPhaseUI(phase, round, cfg[ROUND_K]); }
@@ -809,6 +973,7 @@ public class MainActivity extends Activity {
             else registerReceiver(rx, f);
             receiverRegistered = true;
         }
+        refreshGoal();
     }
 
     @Override

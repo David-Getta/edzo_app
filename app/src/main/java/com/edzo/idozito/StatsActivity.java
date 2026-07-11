@@ -68,6 +68,10 @@ public class StatsActivity extends Activity {
 
         col.addView(sectionTitle("Összesen"));
         col.addView(totalsCard(totals(0, now + 1)), lp());
+        col.addView(gap(16));
+
+        col.addView(sectionTitle("Rekordok"));
+        col.addView(recordsCard(), lp());
         col.addView(gap(22));
 
         // Heti diagram
@@ -143,6 +147,67 @@ public class StatsActivity extends Activity {
                 {"⚡ Átlag táv", t.count > 0 && t.distM > 0 ? fmtDist(t.distM / t.count) : "—"},
         });
         return grid;
+    }
+
+    // ---------------- Rekordok + heti sorozat ----------------
+
+    LinearLayout recordsCard() {
+        double bestDist = -1, bestAvg = -1, bestCal = 0;
+        int bestDur = 0, bestSteps = 0;
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            double d = o.optDouble("dist", -1);
+            if (d > bestDist) bestDist = d;
+            int dur = o.optInt("dur");
+            if (dur > bestDur) bestDur = dur;
+            double avg = o.optDouble("avgspeed", -1);
+            if (avg < 0 && d > 0 && dur > 0) avg = d / dur * 3.6;
+            if (avg > bestAvg) bestAvg = avg;
+            double cal = o.optDouble("cal", 0);
+            if (cal > bestCal) bestCal = cal;
+            int st = o.optInt("steps", 0);
+            if (st > bestSteps) bestSteps = st;
+        }
+        int streak = weekStreak();
+        LinearLayout grid = card();
+        grid.setPadding(dp(6), dp(6), dp(6), dp(6));
+        addTiles(grid, new String[][]{
+                {"🔥 Heti sorozat", streak + " hét"},
+                {"🏆 Leghosszabb táv", bestDist > 0 ? fmtDist(bestDist) : "—"},
+                {"⏱ Leghosszabb edzés", bestDur > 0 ? fmtDur(bestDur) : "—"},
+                {"⚡ Legjobb átlag", bestAvg > 0 ? fmtSpeed(bestAvg) : "—"},
+                {"🍩 Legtöbb kalória", bestCal > 0 ? Math.round(bestCal) + " kcal" : "—"},
+                {"👟 Legtöbb lépés", bestSteps > 0 ? String.valueOf(bestSteps) : "—"},
+        });
+        return grid;
+    }
+
+    /** Hány egymást követő héten volt legalább egy edzés (az aktuális vagy múlt héttől visszafelé). */
+    int weekStreak() {
+        java.util.HashSet<Long> weeks = new java.util.HashSet<>();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o != null) weeks.add(weekStart(o.optLong("ts")));
+        }
+        long wk = weekStart(System.currentTimeMillis());
+        if (!weeks.contains(wk)) wk = prevWeek(wk); // az aktuális hét még "türelmi idő"
+        int streak = 0;
+        while (weeks.contains(wk)) { streak++; wk = prevWeek(wk); }
+        return streak;
+    }
+
+    /** Előző hét kezdete (óraátállítás-biztos: 3 nappal visszalépve normalizálunk). */
+    long prevWeek(long ws) { return weekStart(ws - 3L * 24 * 3600 * 1000); }
+
+    String fmtSpeed(double kmh) {
+        if (Theme.paceMode(this) && kmh > 0) {
+            double pace = 3600.0 / kmh;
+            int m = (int) (pace / 60), s = (int) Math.round(pace - m * 60);
+            if (s == 60) { m++; s = 0; }
+            return String.format(Locale.US, "%d:%02d /km", m, s);
+        }
+        return String.format(Locale.US, "%.1f km/h", kmh);
     }
 
     void refreshChart() {

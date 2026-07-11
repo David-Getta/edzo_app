@@ -85,6 +85,23 @@ public class WorkoutDetailActivity extends Activity {
                 {"🔁 Körök", String.valueOf(rounds)},
         });
         col.addView(grid, lp());
+        col.addView(gap(12));
+
+        // ---- Megosztás ----
+        android.widget.Button share = new android.widget.Button(this);
+        share.setText("📤 Edzés megosztása");
+        share.setAllCaps(false);
+        share.setTextColor(TXT);
+        share.setTypeface(null, Typeface.BOLD);
+        share.setTextSize(15);
+        share.setStateListAnimator(null);
+        share.setPadding(dp(16), dp(14), dp(16), dp(14));
+        GradientDrawable sbg = new GradientDrawable();
+        sbg.setColor(CARD2); sbg.setCornerRadius(dp(15)); sbg.setStroke(dp(1), LINE);
+        share.setBackground(sbg);
+        final JSONObject entry = e;
+        share.setOnClickListener(v -> shareWorkout(entry));
+        col.addView(share, lp());
         col.addView(gap(18));
 
         // ---- Útvonal ----
@@ -145,6 +162,40 @@ public class WorkoutDetailActivity extends Activity {
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(sv);
+    }
+
+    /** Az edzés összefoglalója szövegként, bármely appba küldhető (üzenet, közösségi média...). */
+    void shareWorkout(JSONObject e) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm", new Locale("hu"));
+        int dur = e.optInt("dur");
+        double dist = e.optDouble("dist", -1);
+        double avg = e.optDouble("avgspeed", -1);
+        if (avg < 0 && dist > 0 && dur > 0) avg = dist / dur * 3.6;
+        double mx = e.optDouble("maxspeed", -1);
+        int steps = e.optInt("steps", 0);
+        double cal = e.optDouble("cal", 0);
+        int rounds = e.optInt("rounds", 0);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("🏃 My trainer – edzés · ").append(df.format(new Date(e.optLong("ts")))).append("\n");
+        sb.append("⏱ Idő: ").append(fmtDur(dur));
+        if (dist >= 0) sb.append("  ·  📍 Táv: ").append(fmtDist(dist));
+        sb.append("\n");
+        if (avg > 0) {
+            sb.append("⚡ Átlag: ").append(fmtSpeed(avg));
+            if (mx > 0) sb.append("  ·  🚀 Max: ").append(fmtSpeed(mx));
+            sb.append("\n");
+        }
+        if (cal > 0) sb.append("🔥 ").append(Math.round(cal)).append(" kcal");
+        if (steps > 0) sb.append("  ·  👟 ").append(steps).append(" lépés");
+        if (rounds > 0) sb.append("  ·  🔁 ").append(rounds).append(" kör");
+
+        android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(android.content.Intent.EXTRA_TEXT, sb.toString());
+        try {
+            startActivity(android.content.Intent.createChooser(i, "Edzés megosztása"));
+        } catch (Exception ignored) {}
     }
 
     JSONObject findEntry(long ts) {
