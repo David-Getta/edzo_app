@@ -72,6 +72,15 @@ public class StatsActivity extends Activity {
 
         col.addView(sectionTitle("Rekordok"));
         col.addView(recordsCard(), lp());
+        col.addView(gap(16));
+
+        col.addView(sectionTitle("Jelvények"));
+        col.addView(badgesCard(), lp());
+        col.addView(gap(16));
+
+        SimpleDateFormat mf = new SimpleDateFormat("yyyy. MMMM", new Locale("hu"));
+        col.addView(sectionTitle("Naptár – " + mf.format(new Date())));
+        col.addView(calendarCard(), lp());
         col.addView(gap(22));
 
         // Heti diagram
@@ -199,6 +208,126 @@ public class StatsActivity extends Activity {
 
     /** Előző hét kezdete (óraátállítás-biztos: 3 nappal visszalépve normalizálunk). */
     long prevWeek(long ws) { return weekStart(ws - 3L * 24 * 3600 * 1000); }
+
+    // ---------------- Jelvények ----------------
+
+    LinearLayout badgesCard() {
+        int count = 0;
+        double totalDist = 0, totalCal = 0, bestDist = 0;
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            count++;
+            double d = o.optDouble("dist", -1);
+            if (d > 0) { totalDist += d; if (d > bestDist) bestDist = d; }
+            totalCal += o.optDouble("cal", 0);
+        }
+        int streak = weekStreak();
+        String[] emo = {"🥇", "🔟", "💯", "🏅", "🚀", "🔥", "⚡", "🌍", "🍔", "👑"};
+        String[] name = {"Első edzés", "10 edzés", "50 edzés", "5 km egy edzésen",
+                "10 km egy edzésen", "3 hetes sorozat", "8 hetes sorozat",
+                "100 km összesen", "5000 kcal összesen", "100 edzés"};
+        boolean[] got = {count >= 1, count >= 10, count >= 50, bestDist >= 5000,
+                bestDist >= 10000, streak >= 3, streak >= 8,
+                totalDist >= 100000, totalCal >= 5000, count >= 100};
+
+        LinearLayout grid = card();
+        grid.setPadding(dp(6), dp(6), dp(6), dp(6));
+        for (int i = 0; i < name.length; i += 2) {
+            LinearLayout row = hbox();
+            row.addView(badgeTile(emo[i], name[i], got[i]), tileLp());
+            if (i + 1 < name.length) row.addView(badgeTile(emo[i + 1], name[i + 1], got[i + 1]), tileLp());
+            else row.addView(new View(this), tileLp());
+            grid.addView(row, lp());
+        }
+        int earned = 0;
+        for (boolean g : got) if (g) earned++;
+        TextView cap = text(earned + " / " + name.length + " jelvény megszerezve", 12, MUTED, false);
+        cap.setGravity(Gravity.CENTER);
+        cap.setPadding(0, dp(4), 0, dp(6));
+        grid.addView(cap, lp());
+        return grid;
+    }
+
+    View badgeTile(String emoji, String title, boolean earned) {
+        View v = tile(title, earned ? emoji : "🔒");
+        v.setAlpha(earned ? 1f : 0.45f);
+        return v;
+    }
+
+    // ---------------- Naptár (aktuális hónap) ----------------
+
+    LinearLayout calendarCard() {
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR), month = now.get(Calendar.MONTH);
+        int today = now.get(Calendar.DAY_OF_MONTH);
+        java.util.HashSet<Integer> days = new java.util.HashSet<>();
+        Calendar c2 = Calendar.getInstance();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            c2.setTimeInMillis(o.optLong("ts"));
+            if (c2.get(Calendar.YEAR) == year && c2.get(Calendar.MONTH) == month)
+                days.add(c2.get(Calendar.DAY_OF_MONTH));
+        }
+
+        LinearLayout cardC = card();
+        cardC.setPadding(dp(12), dp(12), dp(12), dp(12));
+        String[] dow = {"H", "K", "Sze", "Cs", "P", "Szo", "V"};
+        LinearLayout head = hbox();
+        for (String s : dow) {
+            TextView t = text(s, 11, MUTED, true);
+            t.setGravity(Gravity.CENTER);
+            head.addView(t, cellLp());
+        }
+        cardC.addView(head, lp());
+
+        Calendar first = Calendar.getInstance();
+        first.set(year, month, 1);
+        int offset = (first.get(Calendar.DAY_OF_WEEK) + 5) % 7; // hétfő = 0
+        int dim = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int day = 1;
+        while (day <= dim) {
+            LinearLayout row = hbox();
+            for (int c = 0; c < 7; c++) {
+                if ((day == 1 && c < offset) || day > dim) {
+                    row.addView(new View(this), cellLp());
+                    continue;
+                }
+                boolean did = days.contains(day);
+                TextView t = text(String.valueOf(day), 12.5f,
+                        did ? 0xFFFFFFFF : (day == today ? TXT : MUTED), did || day == today);
+                t.setGravity(Gravity.CENTER);
+                t.setPadding(0, dp(7), 0, dp(7));
+                if (did) {
+                    GradientDrawable bg = new GradientDrawable();
+                    bg.setColor(Theme.accent(this));
+                    bg.setCornerRadius(dp(10));
+                    t.setBackground(bg);
+                } else if (day == today) {
+                    GradientDrawable bg = new GradientDrawable();
+                    bg.setColor(0);
+                    bg.setStroke(dp(1), Theme.accent(this));
+                    bg.setCornerRadius(dp(10));
+                    t.setBackground(bg);
+                }
+                row.addView(t, cellLp());
+                day++;
+            }
+            cardC.addView(row, lp());
+        }
+        TextView cap = text(days.size() + " edzésnap ebben a hónapban", 12, MUTED, false);
+        cap.setGravity(Gravity.CENTER);
+        cap.setPadding(0, dp(8), 0, 0);
+        cardC.addView(cap, lp());
+        return cardC;
+    }
+
+    LinearLayout.LayoutParams cellLp() {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
+        p.leftMargin = dp(2); p.rightMargin = dp(2); p.topMargin = dp(2); p.bottomMargin = dp(2);
+        return p;
+    }
 
     String fmtSpeed(double kmh) {
         if (Theme.paceMode(this) && kmh > 0) {

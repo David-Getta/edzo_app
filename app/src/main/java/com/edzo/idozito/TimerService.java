@@ -43,6 +43,7 @@ public class TimerService extends Service {
     public static final String ACTION_RESUME = "com.edzo.idozito.RESUME";
     public static final String ACTION_STOP = "com.edzo.idozito.STOP";
     public static final String ACTION_STOP_SAVE = "com.edzo.idozito.STOP_SAVE";
+    public static final String ACTION_SKIP = "com.edzo.idozito.SKIP";
     public static final String ACTION_SYNC = "com.edzo.idozito.SYNC";
 
     // Broadcastok (Service -> Activity)
@@ -195,6 +196,7 @@ public class TimerService extends Service {
                 break;
             case ACTION_PAUSE: pause(); break;
             case ACTION_RESUME: resume(); break;
+            case ACTION_SKIP: skipStep(); break;
             case ACTION_SYNC: broadcastTick(); break;
             case ACTION_STOP:
                 sendBroadcast(new Intent(B_STOPPED).setPackage(getPackageName()));
@@ -331,6 +333,20 @@ public class TimerService extends Service {
         handler.postDelayed(ticker, 200);
     }
 
+    /** Az aktuális szakasz átugrása (a lejárt munka-szakasz teljesítettnek számít). */
+    private void skipStep() {
+        if (!running) return;
+        if (paused) resume();
+        Step s = plan.get(idx);
+        if (s.type == T_WORK) {
+            completedWork++;
+            completedRounds = completedWork / exLen();
+        }
+        idx++;
+        if (idx >= plan.size()) { finishWorkout(); return; }
+        beginStep(false);
+    }
+
     private void pause() {
         if (!running || paused) return;
         paused = true;
@@ -381,6 +397,10 @@ public class TimerService extends Service {
         done.putExtra(EX_DUR, durationSec);
         done.putExtra(EX_DIST, distanceM);
         done.putExtra(EX_ROUND, rounds);
+        done.putExtra(EX_CAL, (int) Math.round(estimateCalories()));
+        done.putExtra(EX_STEPS, steps);
+        done.putExtra(EX_SPEED, (float) ((distanceM > 0 && workMs > 0)
+                ? distanceM / (workMs / 1000.0) * 3.6 : -1));
         sendBroadcast(done);
 
         stopEverything();
@@ -619,6 +639,7 @@ public class TimerService extends Service {
             } else {
                 b.addAction(android.R.drawable.ic_media_pause, "Szünet", actionIntent(ACTION_PAUSE, 2));
             }
+            b.addAction(android.R.drawable.ic_media_next, "Következő", actionIntent(ACTION_SKIP, 4));
             b.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Leállítás", actionIntent(ACTION_STOP, 3));
         }
         return b.build();
