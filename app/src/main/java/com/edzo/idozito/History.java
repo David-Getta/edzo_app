@@ -22,12 +22,13 @@ public final class History {
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
                            int rounds, int work, int rest, double maxSpeedKmh,
                            int steps, int movingSec, double elevGainM, double calories,
-                           double avgSpeedKmh) {
+                           double avgSpeedKmh, String name) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         JSONArray arr = load(ctx);
         try {
             JSONObject o = new JSONObject();
             o.put("ts", ts);
+            if (name != null && !name.isEmpty()) o.put("name", name);
             o.put("dur", durationSec);
             o.put("dist", distanceM);
             o.put("rounds", rounds);

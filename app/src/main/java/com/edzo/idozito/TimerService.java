@@ -53,10 +53,11 @@ public class TimerService extends Service {
     // Extra kulcsok
     public static final String EX_PREP = "prep", EX_WORK = "work", EX_REST = "rest",
             EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_CD = "cd",
-            EX_VIBE = "vibe", EX_VOICE = "voice";
+            EX_VIBE = "vibe", EX_VOICE = "voice", EX_NAMES = "names", EX_PNAME = "pname";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
-            EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal";
+            EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
+            EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2;
 
@@ -65,13 +66,17 @@ public class TimerService extends Service {
 
     private static final class Step {
         int type, dur, round;
+        String label; // gyakorlat neve (null = sima futás)
         Step(int t, int d, int r) { type = t; dur = d; round = r; }
+        Step(int t, int d, int r, String l) { type = t; dur = d; round = r; label = l; }
     }
 
     // Konfiguráció
     private int prep, work, rest, rounds, workSound, restSound;
     private int cdSecs = 3;
     private boolean track, vibeOn = true, voice;
+    private String[] exNames;    // gyakorlatnevek (null/üres = sima futás)
+    private String programName;  // program neve a naplóhoz
 
     // Beszéd (TTS)
     private TextToSpeech tts;
@@ -83,7 +88,8 @@ public class TimerService extends Service {
     private boolean running, paused;
     private long stepEndElapsed, remainingAtPause;
     private int lastShownSec;
-    private int completedRounds; // teljesített (végigment) futás-körök száma
+    private int completedRounds; // teljesített (végigment) körök száma
+    private int completedWork;   // teljesített munka-szakaszok (gyakorlatok) száma
 
     // Időmérés
     private long sessionStart, pausedAccum, pauseStart;
@@ -183,6 +189,8 @@ public class TimerService extends Service {
                 cdSecs = intent.getIntExtra(EX_CD, 3);
                 vibeOn = intent.getBooleanExtra(EX_VIBE, true);
                 voice = intent.getBooleanExtra(EX_VOICE, false);
+                exNames = intent.getStringArrayExtra(EX_NAMES);
+                programName = intent.getStringExtra(EX_PNAME);
                 startWorkout();
                 break;
             case ACTION_PAUSE: pause(); break;
@@ -210,6 +218,7 @@ public class TimerService extends Service {
         paused = false;
         idx = 0;
         completedRounds = 0;
+        completedWork = 0;
         sessionStart = SystemClock.elapsedRealtime();
         pausedAccum = 0;
         distanceM = track ? 0 : -1;
@@ -241,10 +250,19 @@ public class TimerService extends Service {
     private void buildPlan() {
         plan.clear();
         if (prep > 0) plan.add(new Step(T_PREP, prep, 0));
-        for (int r = 1; r <= rounds; r++) {
-            plan.add(new Step(T_WORK, work, r));
-            if (rest > 0 && r < rounds) plan.add(new Step(T_REST, rest, r));
+        int len = exLen();
+        int n = rounds * len; // összes munka-szakasz (gyakorlat vagy futás)
+        for (int k = 0; k < n; k++) {
+            int round = k / len + 1;
+            String label = exNames != null && exNames.length > 0 ? exNames[k % len] : null;
+            plan.add(new Step(T_WORK, work, round, label));
+            if (rest > 0 && k < n - 1) plan.add(new Step(T_REST, rest, round));
         }
+    }
+
+    /** Gyakorlatok száma egy körben (1 = sima futás mód). */
+    private int exLen() {
+        return exNames != null && exNames.length > 0 ? exNames.length : 1;
     }
 
     private void beginStep(boolean first) {
@@ -256,16 +274,26 @@ public class TimerService extends Service {
         boolean lastRound = s.round == rounds;
         if (s.type == T_WORK) {
             Beeper.play(workSound); buzz(new long[]{0, 60, 60, 60});
-            speak(lastRound ? "Utolsó kör. Futás!" : "Futás!");
+            if (s.label != null) speak(s.label + "!");
+            else speak(lastRound ? "Utolsó kör. Futás!" : "Futás!");
         } else if (s.type == T_REST) {
             Beeper.play(restSound); buzz(120);
-            speak("Pihenő.");
+            String nx = nextWorkLabel();
+            speak(nx != null ? "Pihenő. Következik: " + nx + "." : "Pihenő.");
         } else if (s.type == T_PREP) {
             if (!first) { Beeper.play(restSound); buzz(120); }
             speak("Felkészülés.");
         }
         postNotification();
         broadcastTick();
+    }
+
+    /** A következő munka-szakasz gyakorlatneve (null, ha nincs több vagy sima futás). */
+    private String nextWorkLabel() {
+        for (int i = idx + 1; i < plan.size(); i++) {
+            if (plan.get(i).type == T_WORK) return plan.get(i).label;
+        }
+        return null;
     }
 
     private void tick() {
@@ -282,7 +310,10 @@ public class TimerService extends Service {
         double remain = (stepEndElapsed - SystemClock.elapsedRealtime()) / 1000.0;
 
         if (remain <= 0) {
-            if (plan.get(idx).type == T_WORK) completedRounds++;
+            if (plan.get(idx).type == T_WORK) {
+                completedWork++;
+                completedRounds = completedWork / exLen();
+            }
             idx++;
             if (idx >= plan.size()) { finishWorkout(); return; }
             beginStep(false);
@@ -333,7 +364,7 @@ public class TimerService extends Service {
         double avgKmh = (distanceM > 0 && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
         long ts = System.currentTimeMillis();
         History.add(this, ts, currentDurationSec(), distanceM, roundsDone, work, rest, maxKmh,
-                steps, (int) (movingMs / 1000), elevGainM, estimateCalories(), avgKmh);
+                steps, (int) (movingMs / 1000), elevGainM, estimateCalories(), avgKmh, programName);
         if (trackPts != null && trackPts.length() > 0) SessionStore.save(this, ts, trackPts);
     }
 
@@ -426,6 +457,9 @@ public class TimerService extends Service {
         i.putExtra(EX_STEPS, steps);
         i.putExtra(EX_CAL, (int) Math.round(estimateCalories()));
         i.putExtra(EX_PAUSED, paused);
+        if (s.label != null) i.putExtra(EX_STEPNAME, s.label);
+        String nx = nextWorkLabel();
+        if (nx != null) i.putExtra(EX_NEXTNAME, nx);
         sendBroadcast(i);
     }
 
@@ -563,7 +597,8 @@ public class TimerService extends Service {
             double remain = paused ? remainingAtPause / 1000.0
                     : (stepEndElapsed - SystemClock.elapsedRealtime()) / 1000.0;
             if (remain < 0) remain = 0;
-            String name = s.type == T_PREP ? "Előkészület" : s.type == T_WORK ? "Futás" : "Pihenő";
+            String name = s.type == T_PREP ? "Előkészület"
+                    : s.type == T_WORK ? (s.label != null ? s.label : "Futás") : "Pihenő";
             text = name + " · " + (int) Math.ceil(remain) + " mp · Kör "
                     + Math.max(1, s.round) + "/" + rounds + (paused ? " · szünet" : "");
         }

@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
     final int[] DEF = {10, 10, 30, 8};
     int workSoundIdx = 2, restSoundIdx = 1;
     boolean trackDistance = false, precount = true, voice = false;
+    String programName = ""; // üres = sima futás (intervallum)
 
     static final int REQ_LOCATION = 1001, REQ_NOTIF = 1002;
 
@@ -70,8 +71,11 @@ public class MainActivity extends Activity {
     TextView totalText;
     final TextView[] valueLabels = new TextView[4];
     TextView workSoundLabel, restSoundLabel;
+    TextView programLabel, programPreview, workRowTitle, workRowSub;
+    LinearLayout programCard;
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
+    TextView exText, nextText;
     TextView statElapsed, statCal, statSteps;
     Button pauseBtn;
     ProgressRing ring;
@@ -106,6 +110,7 @@ public class MainActivity extends Activity {
         trackDistance = prefs.getBoolean("track", false);
         precount = prefs.getBoolean("pre", true);
         voice = prefs.getBoolean("voice", false);
+        programName = prefs.getString("progname", "");
 
         root = new FrameLayout(this);
         root.setBackgroundColor(BG);
@@ -116,7 +121,7 @@ public class MainActivity extends Activity {
 
         refreshValues();
         updateSoundLabels();
-        updateTotal();
+        updateProgramUI();
         refreshTemplates();
         refreshGoal();
 
@@ -175,6 +180,17 @@ public class MainActivity extends Activity {
         templatesBox = vbox();
         col.addView(templatesBox, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(8));
+
+        // Edzés típusa (futás vagy gyakorlatsor)
+        programCard = card();
+        programLabel = text("", 14, tAccent, true);
+        programCard.addView(navRow("Edzés típusa", "Futás vagy gyakorlatsor körökben", programLabel, this::chooseProgram));
+        programPreview = text("", 12, MUTED, false);
+        programPreview.setPadding(dp(18), 0, dp(18), dp(14));
+        programCard.addView(programPreview);
+        programCard.setOnLongClickListener(v -> maybeDeleteCustomProgram());
+        col.addView(programCard, new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(16));
 
         // Idő-beállítások
         LinearLayout card = card();
@@ -513,6 +529,116 @@ public class MainActivity extends Activity {
         b.show();
     }
 
+    // ---- Edzésprogramok ----
+
+    void updateProgramUI() {
+        Programs.P p = Programs.byName(this, programName);
+        if (p == null) {
+            programName = "";
+            if (programLabel != null) programLabel.setText("🏃 Futás");
+            if (programPreview != null) programPreview.setVisibility(View.GONE);
+            if (workRowTitle != null) workRowTitle.setText("Futás");
+            if (workRowSub != null) workRowSub.setText("Aktív időszak hossza");
+        } else {
+            if (programLabel != null) programLabel.setText(p.title());
+            if (programPreview != null) {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < p.ex.length; i++) {
+                    if (i > 0) sb.append("  ·  ");
+                    sb.append(p.ex[i]);
+                }
+                if (p.custom) sb.append("\n(A saját programot hosszan nyomva törölheted.)");
+                programPreview.setText(sb.toString());
+                programPreview.setVisibility(View.VISIBLE);
+            }
+            if (workRowTitle != null) workRowTitle.setText("Gyakorlat");
+            if (workRowSub != null) workRowSub.setText("Egy gyakorlat hossza");
+        }
+        updateTotal();
+    }
+
+    void chooseProgram() {
+        final java.util.List<Programs.P> all = Programs.all(this);
+        String[] items = new String[all.size() + 2];
+        items[0] = "🏃 Futás (intervallum)";
+        for (int i = 0; i < all.size(); i++)
+            items[i + 1] = all.get(i).title() + "  (" + all.get(i).ex.length + " gyakorlat)";
+        items[items.length - 1] = "➕ Új saját program…";
+        new AlertDialog.Builder(this)
+                .setTitle("Edzés típusa")
+                .setItems(items, (d, which) -> {
+                    if (which == 0) { programName = ""; saveProgram(); }
+                    else if (which == items.length - 1) newProgramDialog();
+                    else { programName = all.get(which - 1).name; saveProgram(); }
+                })
+                .setNegativeButton("Mégse", null)
+                .show();
+    }
+
+    void saveProgram() {
+        prefs.edit().putString("progname", programName).apply();
+        updateProgramUI();
+        vibrateShort();
+    }
+
+    void newProgramDialog() {
+        LinearLayout box = vbox();
+        box.setPadding(dp(20), dp(10), dp(20), 0);
+        final EditText name = new EditText(this);
+        name.setHint("Program neve (pl. Reggeli torna)");
+        name.setTextColor(TXT); name.setHintTextColor(MUTED);
+        name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        box.addView(name);
+        box.addView(gap(10));
+        box.addView(text("Gyakorlatok – soronként egy:", 13, MUTED, false));
+        final EditText exs = new EditText(this);
+        exs.setHint("Plank\nHasprés\nGuggolás");
+        exs.setTextColor(TXT); exs.setHintTextColor(MUTED);
+        exs.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        exs.setMinLines(4);
+        exs.setGravity(Gravity.TOP);
+        box.addView(exs);
+        ScrollView svw = new ScrollView(this);
+        svw.addView(box);
+        new AlertDialog.Builder(this)
+                .setTitle("Új saját program")
+                .setView(svw)
+                .setPositiveButton("Mentés", (d, w) -> {
+                    String n = name.getText().toString().trim();
+                    java.util.ArrayList<String> list = new java.util.ArrayList<>();
+                    for (String line : exs.getText().toString().split("\n")) {
+                        String t = line.trim();
+                        if (!t.isEmpty()) list.add(t);
+                    }
+                    if (list.isEmpty()) {
+                        Toast.makeText(this, "Adj meg legalább egy gyakorlatot.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (n.isEmpty()) n = "Saját program";
+                    Programs.addCustom(this, n, list.toArray(new String[0]));
+                    programName = n;
+                    saveProgram();
+                })
+                .setNegativeButton("Mégse", null)
+                .show();
+    }
+
+    boolean maybeDeleteCustomProgram() {
+        final Programs.P p = Programs.byName(this, programName);
+        if (p == null || !p.custom) return false;
+        new AlertDialog.Builder(this)
+                .setMessage("Törlöd a(z) „" + p.name + "\" saját programot?")
+                .setPositiveButton("Törlés", (d, w) -> {
+                    Programs.removeCustom(this, p.name);
+                    programName = "";
+                    saveProgram();
+                })
+                .setNegativeButton("Mégse", null)
+                .show();
+        return true;
+    }
+
     void styleGoalChip(Button b, boolean sel) {
         GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(dp(12));
@@ -557,8 +683,11 @@ public class MainActivity extends Activity {
         row.setPadding(dp(18), dp(17), dp(18), dp(17));
 
         LinearLayout labels = vbox();
-        labels.addView(text(title, 15.5f, TXT, true));
-        labels.addView(text(sub, 12, MUTED, false));
+        TextView titleTv = text(title, 15.5f, TXT, true);
+        TextView subTv = text(sub, 12, MUTED, false);
+        labels.addView(titleTv);
+        labels.addView(subTv);
+        if (key == WORK_K) { workRowTitle = titleTv; workRowSub = subTv; }
         row.addView(labels, new LinearLayout.LayoutParams(0, -2, 1f));
 
         Button minus = stepButton("−");
@@ -740,8 +869,13 @@ public class MainActivity extends Activity {
     }
 
     void updateTotal() {
-        int total = cfg[PREP_K] + cfg[WORK_K] * cfg[ROUND_K] + cfg[REST_K] * Math.max(0, cfg[ROUND_K] - 1);
-        totalText.setText("Teljes idő: " + fmtLong(total));
+        Programs.P p = Programs.byName(this, programName);
+        int len = p == null ? 1 : p.ex.length;
+        int n = cfg[ROUND_K] * len; // összes munka-szakasz
+        int total = cfg[PREP_K] + cfg[WORK_K] * n + cfg[REST_K] * Math.max(0, n - 1);
+        String s = "Teljes idő: " + fmtLong(total);
+        if (len > 1) s += "  ·  " + len + " gyakorlat × " + cfg[ROUND_K] + " kör";
+        totalText.setText(s);
     }
 
     // ================= RUN =================
@@ -756,7 +890,12 @@ public class MainActivity extends Activity {
         phaseLabel.setGravity(Gravity.CENTER);
         phaseLabel.setLetterSpacing(0.22f);
         runView.addView(phaseLabel);
-        runView.addView(gap(16));
+        exText = text("", 21, TXT, true);
+        exText.setGravity(Gravity.CENTER);
+        exText.setVisibility(View.GONE);
+        exText.setPadding(0, dp(6), 0, 0);
+        runView.addView(exText);
+        runView.addView(gap(12));
 
         int size = (int) (getResources().getDisplayMetrics().widthPixels * 0.72f);
         FrameLayout ringHost = new FrameLayout(this);
@@ -779,7 +918,10 @@ public class MainActivity extends Activity {
         distanceText = text("", 15, tAccent, true);
         distanceText.setGravity(Gravity.CENTER);
         runView.addView(distanceText);
-        runView.addView(gap(16));
+        nextText = text("", 13, MUTED, false);
+        nextText.setGravity(Gravity.CENTER);
+        runView.addView(nextText);
+        runView.addView(gap(14));
 
         // Élő statisztikák: eltelt idő, kalória, lépések
         LinearLayout stats = hbox();
@@ -843,6 +985,11 @@ public class MainActivity extends Activity {
         i.putExtra(TimerService.EX_CD, precount ? Theme.countdownSecs(this) : 0);
         i.putExtra(TimerService.EX_VIBE, Theme.vibrate(this));
         i.putExtra(TimerService.EX_VOICE, voice);
+        Programs.P prog = Programs.byName(this, programName);
+        if (prog != null) {
+            i.putExtra(TimerService.EX_NAMES, prog.ex);
+            i.putExtra(TimerService.EX_PNAME, prog.name);
+        }
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(i);
         else startService(i);
 
@@ -855,6 +1002,8 @@ public class MainActivity extends Activity {
         timeText.setText(fmt(cfg[PREP_K] > 0 ? cfg[PREP_K] : cfg[WORK_K]));
         ring.setProgress(1f);
         distanceText.setText(trackDistance && hasLocationPermission() ? "📍 0 m" : "");
+        exText.setVisibility(View.GONE);
+        nextText.setText(prog != null && prog.ex.length > 0 ? "Következő: " + prog.ex[0] : "");
         showRun(true);
     }
 
@@ -905,6 +1054,17 @@ public class MainActivity extends Activity {
         showRun(true);
         finished = false;
         setPhaseUI(phase, round, rounds);
+        // Gyakorlatsor: a gyakorlat neve nagyban + a következő kijelzése
+        String stepName = i.getStringExtra(TimerService.EX_STEPNAME);
+        String nextName = i.getStringExtra(TimerService.EX_NEXTNAME);
+        if (stepName != null && phase == TimerService.T_WORK) {
+            phaseLabel.setText("GYAKORLAT");
+            exText.setText(stepName);
+            exText.setVisibility(View.VISIBLE);
+        } else {
+            exText.setVisibility(View.GONE);
+        }
+        nextText.setText(nextName != null ? "Következő: " + nextName : "");
         timeText.setText(fmt(remain));
         ring.setProgress(prog);
         distanceText.setText(dist >= 0
@@ -920,7 +1080,10 @@ public class MainActivity extends Activity {
 
         lastPaused = paused;
         pauseBtn.setText(paused ? "Folytatás" : "Szünet");
-        if (paused) phaseLabel.setText(phaseName(phase) + " · SZÜNET");
+        if (paused) {
+            String base = stepName != null && phase == TimerService.T_WORK ? "GYAKORLAT" : phaseName(phase);
+            phaseLabel.setText(base + " · SZÜNET");
+        }
     }
 
     void onDone(Intent i) {
@@ -931,6 +1094,8 @@ public class MainActivity extends Activity {
         finished = true;
         phaseLabel.setText("KÉSZ");
         phaseLabel.setTextColor(DONE);
+        exText.setVisibility(View.GONE);
+        nextText.setText("");
         ring.setColor(DONE);
         ring.setProgress(1f);
         timeText.setText("✓");
@@ -1009,6 +1174,8 @@ public class MainActivity extends Activity {
                     startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts));
                 });
                 item.addView(text(df.format(new Date(ts)), 13, MUTED, false));
+                String wname = o.optString("name", "");
+                item.addView(text(wname.isEmpty() ? "🏃 Futás" : "🏋️ " + wname, 13.5f, tAccent, true));
                 double dist = o.optDouble("dist", -1);
                 String line = "⏱ " + fmtLong(o.optInt("dur")) + "   ·   " + o.optInt("rounds") + " kör";
                 if (dist >= 0) line += "   ·   📍 " + fmtDist(dist);

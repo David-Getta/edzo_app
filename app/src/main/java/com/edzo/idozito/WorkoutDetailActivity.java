@@ -53,6 +53,9 @@ public class WorkoutDetailActivity extends Activity {
         SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd  HH:mm", new Locale("hu"));
         col.addView(text("Edzés részletei", 22, TXT, true));
         col.addView(gap(4));
+        String wname = e.optString("name", "");
+        col.addView(text(wname.isEmpty() ? "🏃 Futás (intervallum)" : "🏋️ " + wname, 14.5f, Theme.accent(this), true));
+        col.addView(gap(2));
         col.addView(text(df.format(new Date(e.optLong("ts"))), 13.5f, MUTED, false));
         col.addView(gap(18));
 
@@ -178,6 +181,8 @@ public class WorkoutDetailActivity extends Activity {
 
         StringBuilder sb = new StringBuilder();
         sb.append("🏃 My trainer – edzés · ").append(df.format(new Date(e.optLong("ts")))).append("\n");
+        String nm = e.optString("name", "");
+        if (!nm.isEmpty()) sb.append("🏋️ ").append(nm).append("\n");
         sb.append("⏱ Idő: ").append(fmtDur(dur));
         if (dist >= 0) sb.append("  ·  📍 Táv: ").append(fmtDist(dist));
         sb.append("\n");
