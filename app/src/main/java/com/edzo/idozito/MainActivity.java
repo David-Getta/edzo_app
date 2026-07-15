@@ -285,7 +285,7 @@ public class MainActivity extends Activity {
         // Funkció-csempék (2 oszlop)
         LinearLayout grid = vbox();
         grid.addView(tileRow(
-                featureTile("📜", "Előzmények", () -> showHistory()),
+                featureTile("📜", "Előzmények", () -> startActivity(new Intent(this, HistoryActivity.class))),
                 featureTile("📈", "Statisztika", () -> startActivity(new Intent(this, StatsActivity.class)))));
         grid.addView(gap(10));
         grid.addView(tileRow(
@@ -409,10 +409,9 @@ public class MainActivity extends Activity {
             Button del = new Button(this);
             del.setText("🗑"); del.setAllCaps(false); del.setTextSize(16);
             del.setBackground(null); del.setStateListAnimator(null); del.setTextColor(MUTED);
-            del.setOnClickListener(v -> new AlertDialog.Builder(this)
-                    .setMessage("Törlöd a(z) „" + w.name + "\" sablont?")
-                    .setPositiveButton("Törlés", (d, ww) -> { Workouts.removeAt(this, idx); refreshTemplates(); })
-                    .setNegativeButton("Mégse", null).show());
+            del.setOnClickListener(v -> new Sheet(this, "Sablon törlése", "Törlöd a(z) „" + w.name + "\" sablont?")
+                    .addDestructive("Törlés", () -> { Workouts.removeAt(this, idx); refreshTemplates(); })
+                    .addCancel().show());
             row.addView(del);
             cardT.addView(row);
             if (i < list.size() - 1) cardT.addView(divider());
@@ -427,22 +426,23 @@ public class MainActivity extends Activity {
     }
 
     void saveTemplateDialog() {
-        final EditText et = new EditText(this);
-        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        et.setHint("Sablon neve"); et.setHintTextColor(MUTED); et.setTextColor(TXT);
-        et.setText("Saját edzés"); et.setSelectAllOnFocus(true);
-        FrameLayout wrap = new FrameLayout(this);
-        wrap.setPadding(dp(20), dp(8), dp(20), 0); wrap.addView(et);
-        new AlertDialog.Builder(this)
-                .setTitle("Sablon mentése")
-                .setView(wrap)
-                .setPositiveButton("Mentés", (d, w) -> {
+        final EditText et = sheetInput("Sablon neve", false);
+        et.setText("Saját edzés");
+        et.setSelectAllOnFocus(true);
+        LinearLayout box = vbox();
+        box.setPadding(dp(6), dp(2), dp(6), dp(4));
+        box.addView(et);
+        String summary = "⏱ " + cfg[WORK_K] + "/" + cfg[REST_K] + " mp · " + cfg[ROUND_K] + " kör · előkész. " + cfg[PREP_K] + " mp";
+        new Sheet(this, "Sablon mentése", summary)
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
                     String name = et.getText().toString().trim();
                     if (name.isEmpty()) name = "Saját edzés";
                     Workouts.add(this, new Workouts.W(name, cfg[PREP_K], cfg[WORK_K], cfg[REST_K], cfg[ROUND_K]));
                     refreshTemplates();
                 })
-                .setNegativeButton("Mégse", null).show();
+                .addCancel()
+                .show();
     }
 
     // ---- Heti cél ----
@@ -539,9 +539,10 @@ public class MainActivity extends Activity {
         int target = prefs.getInt("wg_target", 0);
 
         LinearLayout box = vbox();
-        box.setPadding(dp(20), dp(10), dp(20), 0);
-        box.addView(text("Mit mérjen a cél?", 13, MUTED, false));
-        box.addView(gap(8));
+        box.setPadding(dp(6), dp(2), dp(6), dp(4));
+        TextView lbl1 = text("Mit mérjen a cél?", 13, MUTED, false);
+        lbl1.setPadding(dp(2), 0, 0, dp(8));
+        box.addView(lbl1);
         LinearLayout modes = hbox();
         final Button[] mb = new Button[3];
         String[] mn = {"Edzés (db)", "Idő (perc)", "Táv (km)"};
@@ -564,34 +565,33 @@ public class MainActivity extends Activity {
         }
         box.addView(modes, new LinearLayout.LayoutParams(-1, -2));
         box.addView(gap(12));
-        box.addView(text("Heti célérték", 13, MUTED, false));
-        final EditText et = new EditText(this);
+        TextView lbl2 = text("Heti célérték", 13, MUTED, false);
+        lbl2.setPadding(dp(2), 0, 0, dp(6));
+        box.addView(lbl2);
+        final EditText et = sheetInput("pl. 3", false);
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
-        et.setTextColor(TXT); et.setHintTextColor(MUTED);
-        et.setHint("pl. 3");
         if (target > 0) { et.setText(String.valueOf(target)); et.setSelectAllOnFocus(true); }
         box.addView(et);
 
-        AlertDialog.Builder b = new AlertDialog.Builder(this)
-                .setTitle("Heti cél")
-                .setView(box)
-                .setPositiveButton("Mentés", (d, w) -> {
-                    try {
-                        int v = Integer.parseInt(et.getText().toString().trim());
-                        if (v > 0) {
-                            prefs.edit().putInt("wg_mode", mode[0]).putInt("wg_target", v).apply();
-                            refreshGoal();
-                        }
-                    } catch (Exception ignored) {}
-                })
-                .setNegativeButton("Mégse", null);
+        Sheet sheet = new Sheet(this, "Heti cél", "Tűzz ki heti célt, és kövesd a haladást");
+        sheet.addCustom(box);
+        sheet.addPrimary("Mentés", () -> {
+            try {
+                int v = Integer.parseInt(et.getText().toString().trim());
+                if (v > 0) {
+                    prefs.edit().putInt("wg_mode", mode[0]).putInt("wg_target", v).apply();
+                    refreshGoal();
+                }
+            } catch (Exception ignored) {}
+        });
         if (target > 0) {
-            b.setNeutralButton("Cél törlése", (d, w) -> {
+            sheet.addDestructive("Cél törlése", () -> {
                 prefs.edit().putInt("wg_target", 0).apply();
                 refreshGoal();
             });
         }
-        b.show();
+        sheet.addCancel();
+        sheet.show();
     }
 
     // ---- Edzésprogramok ----
@@ -624,20 +624,21 @@ public class MainActivity extends Activity {
 
     void chooseProgram() {
         final java.util.List<Programs.P> all = Programs.all(this);
-        String[] items = new String[all.size() + 2];
-        items[0] = "🏃 Futás (intervallum)";
-        for (int i = 0; i < all.size(); i++)
-            items[i + 1] = all.get(i).title() + "  (" + all.get(i).ex.length + " gyakorlat)";
-        items[items.length - 1] = "➕ Új saját program…";
-        new AlertDialog.Builder(this)
-                .setTitle("Edzés típusa")
-                .setItems(items, (d, which) -> {
-                    if (which == 0) { programName = ""; saveProgram(); }
-                    else if (which == items.length - 1) newProgramDialog();
-                    else { programName = all.get(which - 1).name; saveProgram(); }
-                })
-                .setNegativeButton("Mégse", null)
-                .show();
+        Sheet sheet = new Sheet(this, "Edzés típusa", "Futás vagy gyakorlatsor körökben");
+        sheet.addRow("🏃", "Futás (intervallum)", "Klasszikus futás/pihenő ismétlés",
+                programName == null || programName.isEmpty(), true,
+                () -> { programName = ""; saveProgram(); });
+        for (Programs.P p : all) {
+            final String pn = p.name;
+            StringBuilder sub = new StringBuilder(p.ex.length + " gyakorlat · ");
+            for (int j = 0; j < p.ex.length && j < 3; j++) sub.append(j > 0 ? ", " : "").append(p.ex[j]);
+            if (p.ex.length > 3) sub.append("…");
+            sheet.addRow(p.emoji, p.name, sub.toString(), pn.equals(programName), true,
+                    () -> { programName = pn; saveProgram(); });
+        }
+        sheet.addPrimary("➕  Új saját program", this::newProgramDialog);
+        sheet.addCancel();
+        sheet.show();
     }
 
     void saveProgram() {
@@ -648,28 +649,21 @@ public class MainActivity extends Activity {
 
     void newProgramDialog() {
         LinearLayout box = vbox();
-        box.setPadding(dp(20), dp(10), dp(20), 0);
-        final EditText name = new EditText(this);
-        name.setHint("Program neve (pl. Reggeli torna)");
-        name.setTextColor(TXT); name.setHintTextColor(MUTED);
-        name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        box.setPadding(dp(6), dp(2), dp(6), dp(4));
+        final EditText name = sheetInput("Program neve (pl. Reggeli torna)", false);
         box.addView(name);
-        box.addView(gap(10));
-        box.addView(text("Gyakorlatok – soronként egy:", 13, MUTED, false));
-        final EditText exs = new EditText(this);
-        exs.setHint("Plank\nHasprés\nGuggolás");
-        exs.setTextColor(TXT); exs.setHintTextColor(MUTED);
-        exs.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        box.addView(gap(12));
+        TextView lbl = text("Gyakorlatok – soronként egy:", 13, MUTED, false);
+        lbl.setPadding(dp(4), 0, 0, dp(6));
+        box.addView(lbl);
+        final EditText exs = sheetInput("Plank\nHasprés\nGuggolás", true);
         exs.setMinLines(4);
         exs.setGravity(Gravity.TOP);
         box.addView(exs);
-        ScrollView svw = new ScrollView(this);
-        svw.addView(box);
-        new AlertDialog.Builder(this)
-                .setTitle("Új saját program")
-                .setView(svw)
-                .setPositiveButton("Mentés", (d, w) -> {
+
+        new Sheet(this, "Új saját program")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
                     String n = name.getText().toString().trim();
                     java.util.ArrayList<String> list = new java.util.ArrayList<>();
                     for (String line : exs.getText().toString().split("\n")) {
@@ -685,21 +679,39 @@ public class MainActivity extends Activity {
                     programName = n;
                     saveProgram();
                 })
-                .setNegativeButton("Mégse", null)
+                .addCancel()
                 .show();
+    }
+
+    /** Egységes stílusú beviteli mező a lapokhoz (sötét, lekerekített üveg). */
+    EditText sheetInput(String hint, boolean multiline) {
+        EditText et = new EditText(this);
+        et.setHint(hint);
+        et.setTextColor(TXT);
+        et.setHintTextColor(MUTED);
+        et.setBackgroundColor(0x00000000);
+        int type = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+        if (multiline) type |= InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+        et.setInputType(type);
+        et.setPadding(dp(14), dp(12), dp(14), dp(12));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x1AFFFFFF);
+        bg.setCornerRadius(dp(14));
+        bg.setStroke(dp(1), GLASS_LINE);
+        et.setBackground(bg);
+        return et;
     }
 
     boolean maybeDeleteCustomProgram() {
         final Programs.P p = Programs.byName(this, programName);
         if (p == null || !p.custom) return false;
-        new AlertDialog.Builder(this)
-                .setMessage("Törlöd a(z) „" + p.name + "\" saját programot?")
-                .setPositiveButton("Törlés", (d, w) -> {
+        new Sheet(this, "Program törlése", "Törlöd a(z) „" + p.name + "\" saját programot?")
+                .addDestructive("Törlés", () -> {
                     Programs.removeCustom(this, p.name);
                     programName = "";
                     saveProgram();
                 })
-                .setNegativeButton("Mégse", null)
+                .addCancel()
                 .show();
         return true;
     }
@@ -845,18 +857,16 @@ public class MainActivity extends Activity {
     }
 
     void showNumberDialog(int key, int min, int max, String title) {
-        final EditText et = new EditText(this);
+        final EditText et = sheetInput("", false);
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
         et.setText(String.valueOf(cfg[key]));
         et.setSelectAllOnFocus(true);
-        int pad = dp(20);
-        FrameLayout wrap = new FrameLayout(this);
-        wrap.setPadding(pad, dp(8), pad, 0);
-        wrap.addView(et);
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setView(wrap)
-                .setPositiveButton("OK", (d, w) -> {
+        LinearLayout box = vbox();
+        box.setPadding(dp(6), dp(2), dp(6), dp(4));
+        box.addView(et);
+        new Sheet(this, title, "Írd be a pontos értéket (" + min + "–" + max + ")")
+                .addCustom(box)
+                .addPrimary("OK", () -> {
                     try {
                         int v = Math.max(min, Math.min(max, Integer.parseInt(et.getText().toString().trim())));
                         cfg[key] = v;
@@ -865,7 +875,7 @@ public class MainActivity extends Activity {
                         updateTotal();
                     } catch (Exception ignored) {}
                 })
-                .setNegativeButton("Mégse", null)
+                .addCancel()
                 .show();
     }
 
@@ -903,19 +913,21 @@ public class MainActivity extends Activity {
     }
 
     void chooseSound(final boolean forWork) {
-        final String[] names = new String[Beeper.SOUNDS.length];
-        for (int i = 0; i < names.length; i++) names[i] = Beeper.SOUNDS[i].name;
         int cur = forWork ? workSoundIdx : restSoundIdx;
-        new AlertDialog.Builder(this)
-                .setTitle(forWork ? "Futás hangja" : "Pihenő hangja")
-                .setSingleChoiceItems(names, cur, (d, which) -> {
-                    Beeper.play(which);
-                    if (forWork) { workSoundIdx = which; prefs.edit().putInt("ws", which).apply(); }
-                    else { restSoundIdx = which; prefs.edit().putInt("rs", which).apply(); }
-                    updateSoundLabels();
-                })
-                .setPositiveButton("Kész", null)
-                .show();
+        final Sheet sheet = new Sheet(this, forWork ? "Futás hangja" : "Pihenő hangja",
+                "Koppints a meghallgatáshoz");
+        for (int i = 0; i < Beeper.SOUNDS.length; i++) {
+            final int which = i;
+            sheet.addRow("🔊", Beeper.SOUNDS[i].name, null, i == cur, false, () -> {
+                Beeper.play(which);
+                if (forWork) { workSoundIdx = which; prefs.edit().putInt("ws", which).apply(); }
+                else { restSoundIdx = which; prefs.edit().putInt("rs", which).apply(); }
+                updateSoundLabels();
+                sheet.selectOnly(which);
+            });
+        }
+        sheet.addPrimary("Kész", null);
+        sheet.show();
     }
 
     void updateSoundLabels() {
@@ -1088,12 +1100,10 @@ public class MainActivity extends Activity {
     /** Leállításkor: ha az edzés még nem fejeződött be, rákérdez a mentésre. */
     void confirmStop() {
         if (finished) { cmd(TimerService.ACTION_STOP); showRun(false); return; }
-        new AlertDialog.Builder(this)
-                .setTitle("Edzés leállítása")
-                .setMessage("Az edzés még nem fejeződött be. Mented a naplóba?")
-                .setPositiveButton("Mentés", (d, w) -> { cmd(TimerService.ACTION_STOP_SAVE); showRun(false); })
-                .setNegativeButton("Ne mentsd", (d, w) -> { cmd(TimerService.ACTION_STOP); showRun(false); })
-                .setNeutralButton("Mégse", null)
+        new Sheet(this, "Edzés leállítása", "Az edzés még nem fejeződött be. Mented a naplóba?")
+                .addPrimary("💾  Mentés a naplóba", () -> { cmd(TimerService.ACTION_STOP_SAVE); showRun(false); })
+                .addDestructive("Elvetés mentés nélkül", () -> { cmd(TimerService.ACTION_STOP); showRun(false); })
+                .addCancel()
                 .show();
     }
 
@@ -1233,73 +1243,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    // ================= Előzmények =================
-
-    void showHistory() {
-        JSONArray arr = History.load(this);
-        ScrollView sv = new ScrollView(this);
-        LinearLayout list = vbox();
-        list.setPadding(dp(20), dp(8), dp(20), dp(8));
-        final AlertDialog[] dlg = new AlertDialog[1];
-        if (arr.length() == 0) {
-            list.addView(text("Még nincs elmentett edzés.\nFejezz be egy edzést, és itt megjelenik.", 14, MUTED, false));
-        } else {
-            SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd  HH:mm", new Locale("hu"));
-            for (int k = 0; k < arr.length(); k++) {
-                JSONObject o = arr.optJSONObject(k);
-                if (o == null) continue;
-                final long ts = o.optLong("ts");
-                LinearLayout item = vbox();
-                item.setPadding(dp(2), dp(10), dp(2), dp(10));
-                item.setClickable(true);
-                item.setOnClickListener(v -> {
-                    if (dlg[0] != null) dlg[0].dismiss();
-                    startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts));
-                });
-                item.addView(text(df.format(new Date(ts)), 13, MUTED, false));
-                String wname = o.optString("name", "");
-                item.addView(text(wname.isEmpty() ? "🏃 Futás" : "🏋️ " + wname, 13.5f, tAccent, true));
-                double dist = o.optDouble("dist", -1);
-                String line = "⏱ " + fmtLong(o.optInt("dur")) + "   ·   " + o.optInt("rounds") + " kör";
-                if (dist >= 0) line += "   ·   📍 " + fmtDist(dist);
-                item.addView(text(line, 15.5f, TXT, true));
-                String sub = o.optInt("work") + " mp futás / " + o.optInt("rest") + " mp pihenő";
-                int cal = (int) Math.round(o.optDouble("cal", 0));
-                if (cal > 0) sub += "  ·  🔥 " + cal + " kcal";
-                item.addView(text(sub, 12, MUTED, false));
-                if (dist >= 0) {
-                    int dur = o.optInt("dur");
-                    double avg = o.optDouble("avgspeed", -1);
-                    if (avg < 0) avg = dur > 0 ? dist / dur * 3.6 : 0;
-                    double mx = o.optDouble("maxspeed", -1);
-                    String sp = "🏃 átlag " + fmtSpeed(avg);
-                    if (mx >= 0) sp += "  ·  max " + fmtSpeed(mx);
-                    item.addView(text(sp, 12.5f, tAccent, false));
-                }
-                item.addView(text("Részletek megnyitása ›", 11.5f, tAccent, false));
-                list.addView(item);
-                if (k < arr.length() - 1) {
-                    View dv = new View(this);
-                    dv.setBackgroundColor(LINE);
-                    list.addView(dv, new LinearLayout.LayoutParams(-1, dp(1)));
-                }
-            }
-        }
-        sv.addView(list);
-        AlertDialog.Builder b = new AlertDialog.Builder(this)
-                .setTitle("Korábbi edzések")
-                .setView(sv)
-                .setPositiveButton("Bezár", null);
-        if (arr.length() > 0) {
-            b.setNegativeButton("Törlés", (d, w) ->
-                    new AlertDialog.Builder(this)
-                            .setMessage("Biztosan törlöd az összes elmentett edzést?")
-                            .setPositiveButton("Törlés", (dd, ww) -> History.clear(this))
-                            .setNegativeButton("Mégse", null)
-                            .show());
-        }
-        dlg[0] = b.show();
-    }
 
     // ================= Engedélyek =================
 
