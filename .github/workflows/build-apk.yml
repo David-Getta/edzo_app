@@ -31,6 +31,28 @@ jobs:
         # Minden buildnél növekvő versionCode, hogy az Android frissítésként telepítse.
         run: echo "VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
 
+      - name: Fetch generated artwork
+        # A Higgsfielddel generált látványos háttér- és fejlécképeket a build
+        # gépe tölti le (a fejlesztői sandbox nem éri el a CDN-t). Ha egy URL
+        # nem elérhető, az app kódból rajzolt gradienssel esik vissza.
+        run: |
+          mkdir -p app/src/main/res/drawable
+          dl() {
+            url="$1"; out="app/src/main/res/drawable/$2"
+            if curl -fsSL "$url" -o "$out.tmp"; then
+              if head -c 4 "$out.tmp" | grep -q "PNG"; then
+                mv "$out.tmp" "$out"; echo "OK: $out"
+              else
+                echo "NEM PNG: $out"; rm -f "$out.tmp"
+              fi
+            else
+              echo "SIKERTELEN letöltés: $url"; rm -f "$out.tmp"
+            fi
+          }
+          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260715_200539_75314005-d590-455d-a2dc-5175f26cefcf.png" "bg_main.png"
+          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260715_200611_c0bf98ac-b875-47ca-9ef5-2d3e6a60a295.png" "hero_run.png"
+          ls -la app/src/main/res/drawable/ || true
+
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace --no-daemon
 
@@ -61,7 +83,7 @@ jobs:
           name: "My trainer – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            My trainer automatikus build (v2.4, build ${{ github.run_number }}).
+            My trainer automatikus build (v2.5, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"

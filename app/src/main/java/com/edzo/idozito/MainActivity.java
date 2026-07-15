@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -22,9 +23,11 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -50,6 +53,8 @@ public class MainActivity extends Activity {
     static final int TXT = 0xFFF2F5FF, MUTED = 0xFF93A0C4, LINE = 0xFF2A3552, ACCENT = 0xFF8B9BFF;
     static final int INDIGO = 0xFF6366F1, VIOLET = 0xFF8B5CF6;
     static final int WORK = 0xFF22C55E, REST = 0xFF38BDF8, PREP = 0xFFF59E0B, DONE = 0xFFA78BFA;
+    // Áttetsző „üveg" felületek – a generált háttérkép finoman átüt rajtuk
+    static final int GLASS = 0xE61A2238, GLASS2 = 0xD9212B47, GLASS_LINE = 0x33FFFFFF;
 
     static final int PREP_K = 0, WORK_K = 1, REST_K = 2, ROUND_K = 3;
     final int[] cfg = new int[4];
@@ -114,6 +119,7 @@ public class MainActivity extends Activity {
 
         root = new FrameLayout(this);
         root.setBackgroundColor(BG);
+        addBackgroundImage(root);
         root.addView(buildSetup());
         root.addView(buildRun());
         setContentView(root);
@@ -136,6 +142,40 @@ public class MainActivity extends Activity {
         Reminders.scheduleAll(this);
     }
 
+    // ================= Háttérkép =================
+
+    /** A Higgsfielddel generált háttérkép + sötét fátyol (a szöveg olvashatóságáért). */
+    void addBackgroundImage(FrameLayout host) {
+        int id = drawableId("bg_main");
+        if (id == 0) return;
+        try {
+            ImageView img = new ImageView(this);
+            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            img.setImageResource(id);
+            host.addView(img, new FrameLayout.LayoutParams(-1, -1));
+            View scrim = new View(this);
+            GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0x800B1020, 0xD90B1020, 0xF20B1020});
+            scrim.setBackground(g);
+            host.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
+        } catch (Exception ignored) {}
+    }
+
+    int drawableId(String name) {
+        try { return getResources().getIdentifier(name, "drawable", getPackageName()); }
+        catch (Exception e) { return 0; }
+    }
+
+    /** Lekerekített sarkú vágás egy nézethez (API 21+). */
+    void roundClip(View v, final int radiusDp) {
+        v.setClipToOutline(true);
+        v.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View view, Outline o) {
+                o.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dp(radiusDp));
+            }
+        });
+    }
+
     // ================= SETUP =================
 
     View buildSetup() {
@@ -146,22 +186,8 @@ public class MainActivity extends Activity {
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
 
-        // Fejléc banner (gradiens)
-        LinearLayout banner = hbox();
-        banner.setGravity(Gravity.CENTER_VERTICAL);
-        banner.setPadding(dp(20), dp(20), dp(20), dp(20));
-        GradientDrawable bbg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
-        bbg.setCornerRadius(dp(22));
-        banner.setBackground(bbg);
-        LinearLayout btitles = vbox();
-        btitles.addView(text("My trainer", 25, 0xFFFFFFFF, true));
-        TextView bsub = text("Intervallum edző · készen állsz? 💪", 13, 0xFFFFFFFF, false);
-        bsub.setAlpha(0.85f);
-        btitles.addView(bsub);
-        banner.addView(btitles, new LinearLayout.LayoutParams(0, -2, 1f));
-        TextView bico = text("🏃", 34, 0xFFFFFFFF, false);
-        banner.addView(bico);
-        col.addView(banner, new LinearLayout.LayoutParams(-1, -2));
+        // Fejléc banner – Higgsfield hero kép (ha van), különben gradiens
+        col.addView(buildBanner(), new LinearLayout.LayoutParams(-1, dp(140)));
         col.addView(gap(14));
 
         // Heti cél (dinamikus kártya)
@@ -281,12 +307,51 @@ public class MainActivity extends Activity {
         return setupScroll;
     }
 
+    /** A fejléc: futó-sziluett hero kép sötét átmenettel és a címmel, vagy gradiens. */
+    View buildBanner() {
+        FrameLayout banner = new FrameLayout(this);
+        roundClip(banner, 22);
+        int heroId = drawableId("hero_run");
+        if (heroId != 0) {
+            try {
+                ImageView hero = new ImageView(this);
+                hero.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                hero.setImageResource(heroId);
+                banner.addView(hero, new FrameLayout.LayoutParams(-1, -1));
+                View sc = new View(this);
+                GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                        new int[]{0xF20B1020, 0x990B1020, 0x1A000000});
+                sc.setBackground(g);
+                banner.addView(sc, new FrameLayout.LayoutParams(-1, -1));
+            } catch (Exception e) {
+                setGradientBg(banner);
+            }
+        } else {
+            setGradientBg(banner);
+        }
+        LinearLayout btitles = vbox();
+        btitles.setPadding(dp(22), dp(20), dp(22), dp(20));
+        btitles.addView(text("My trainer", 27, 0xFFFFFFFF, true));
+        TextView bsub = text("Intervallum edző · készen állsz? 💪", 13, 0xFFFFFFFF, false);
+        bsub.setAlpha(0.92f);
+        btitles.addView(bsub);
+        FrameLayout.LayoutParams tlp = new FrameLayout.LayoutParams(-2, -2);
+        tlp.gravity = Gravity.CENTER_VERTICAL;
+        banner.addView(btitles, tlp);
+        return banner;
+    }
+
+    void setGradientBg(View v) {
+        GradientDrawable bbg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
+        v.setBackground(bbg);
+    }
+
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD);
+        bg.setColor(GLASS);
         bg.setCornerRadius(dp(20));
-        bg.setStroke(dp(1), LINE);
+        bg.setStroke(dp(1), GLASS_LINE);
         c.setBackground(bg);
         return c;
     }
@@ -298,7 +363,7 @@ public class MainActivity extends Activity {
         t.setGravity(Gravity.CENTER);
         t.setPadding(dp(14), dp(18), dp(14), dp(18));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), LINE);
+        bg.setColor(GLASS); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), GLASS_LINE);
         t.setBackground(bg);
         t.setClickable(true);
         TextView e = text(emoji, 26, TXT, false); e.setGravity(Gravity.CENTER);
@@ -659,9 +724,9 @@ public class MainActivity extends Activity {
         b.setGravity(Gravity.CENTER);
         b.setPadding(dp(10), dp(14), dp(10), dp(14));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD2);
+        bg.setColor(GLASS2);
         bg.setCornerRadius(dp(14));
-        bg.setStroke(dp(1), LINE);
+        bg.setStroke(dp(1), GLASS_LINE);
         b.setBackground(bg);
         b.setClickable(true);
         TextView t = text(name, 13.5f, TXT, true);
@@ -885,6 +950,11 @@ public class MainActivity extends Activity {
         runView.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
         runView.setGravity(Gravity.CENTER);
         runView.setPadding(dp(22), dp(22), dp(22), dp(28));
+        // Az edzés-képernyő majdnem áttetsző sötét fátyol – a háttérkép finoman átdereng,
+        // de a fókusz a körgyűrűn marad.
+        GradientDrawable runBg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0xF20B1020, 0xF7060912});
+        runView.setBackground(runBg);
 
         phaseLabel = text("FUTÁS", 15, MUTED, true);
         phaseLabel.setGravity(Gravity.CENTER);
