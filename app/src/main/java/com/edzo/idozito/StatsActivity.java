@@ -44,8 +44,8 @@ public class StatsActivity extends Activity {
         hist = History.load(this);
 
         ScrollView sv = new ScrollView(this);
-        sv.setBackgroundColor(BG);
         sv.setFillViewport(true);
+        sv.setVerticalScrollBarEnabled(false);
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
 
@@ -116,8 +116,9 @@ public class StatsActivity extends Activity {
         }
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(sv);
+        setContentView(Ux.scaffold(this, sv, "bg_stats"));
         refreshChart();
+        col.post(() -> Ux.enterChildren(col, 30, 45));
     }
 
     // ---------------- Aggregálás ----------------
@@ -439,7 +440,7 @@ public class StatsActivity extends Activity {
         LinearLayout t = vbox();
         t.setPadding(dp(12), dp(12), dp(12), dp(12));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD2); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), LINE);
+        bg.setColor(0xD9212B47); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), 0x24FFFFFF);
         t.setBackground(bg);
         t.addView(text(value, 18, TXT, true));
         t.addView(text(label, 12, MUTED, false));
@@ -471,7 +472,7 @@ public class StatsActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), LINE);
+        bg.setColor(0xE61A2238); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }

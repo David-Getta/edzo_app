@@ -49,7 +49,7 @@ public class ProfileActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         ScrollView sv = new ScrollView(this);
-        sv.setBackgroundColor(BG);
+        sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
@@ -165,14 +165,14 @@ public class ProfileActivity extends Activity {
         col.addView(gap(14));
 
         Button clear = ghost("Mérések törlése");
-        clear.setOnClickListener(v -> new android.app.AlertDialog.Builder(this)
-                .setMessage("Törlöd az összes mentett mérést?")
-                .setPositiveButton("Törlés", (d, w) -> { Profile.clearMeasurements(this); refreshChart(); })
-                .setNegativeButton("Mégse", null).show());
+        clear.setOnClickListener(v -> new Sheet(this, "Mérések törlése", "Törlöd az összes mentett mérést?")
+                .addDestructive("Törlés", () -> { Profile.clearMeasurements(this); refreshChart(); })
+                .addCancel().show());
         col.addView(clear);
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(sv);
+        setContentView(Ux.scaffold(this, sv, "bg_profile"));
+        col.post(() -> Ux.enterChildren(col, 30, 45));
 
         loadValues();
         recompute();
@@ -445,9 +445,9 @@ public class ProfileActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD);
+        bg.setColor(0xE61A2238);
         bg.setCornerRadius(dp(20));
-        bg.setStroke(dp(1), LINE);
+        bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }

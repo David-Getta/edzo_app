@@ -51,6 +51,8 @@ jobs:
           }
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260715_200539_75314005-d590-455d-a2dc-5175f26cefcf.png" "bg_main.png"
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260715_200611_c0bf98ac-b875-47ca-9ef5-2d3e6a60a295.png" "hero_run.png"
+          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260715_220558_55e39f82-619e-45f9-b725-1e679129b96c.png" "bg_stats.png"
+          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260715_220807_077cdfcc-2805-4dc1-b70c-89dba07d575a.png" "bg_profile.png"
           ls -la app/src/main/res/drawable/ || true
 
       - name: Build debug APK
@@ -83,7 +85,7 @@ jobs:
           name: "My trainer – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            My trainer automatikus build (v2.6, build ${{ github.run_number }}).
+            My trainer automatikus build (v2.7, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"

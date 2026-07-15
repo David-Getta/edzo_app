@@ -27,7 +27,7 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         ScrollView sv = new ScrollView(this);
-        sv.setBackgroundColor(BG);
+        sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
@@ -96,14 +96,14 @@ public class SettingsActivity extends Activity {
         col.addView(gap(24));
 
         Button reset = ghost("↺  Alaphelyzet");
-        reset.setOnClickListener(v -> new android.app.AlertDialog.Builder(this)
-                .setMessage("Visszaállítod az alapértelmezett beállításokat?")
-                .setPositiveButton("Igen", (d, w) -> { Theme.resetAll(this); Beeper.masterVolume = Theme.volume(this); recreate(); })
-                .setNegativeButton("Mégse", null).show());
+        reset.setOnClickListener(v -> new Sheet(this, "Alaphelyzet", "Visszaállítod az alapértelmezett beállításokat?")
+                .addDestructive("Visszaállítás", () -> { Theme.resetAll(this); Beeper.masterVolume = Theme.volume(this); recreate(); })
+                .addCancel().show());
         col.addView(reset);
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(sv);
+        setContentView(Ux.scaffold(this, sv, "bg_main"));
+        col.post(() -> Ux.enterChildren(col, 30, 45));
     }
 
     // ---------------- Színsor ----------------
@@ -216,9 +216,9 @@ public class SettingsActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD);
+        bg.setColor(0xE61A2238);
         bg.setCornerRadius(dp(20));
-        bg.setStroke(dp(1), LINE);
+        bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }

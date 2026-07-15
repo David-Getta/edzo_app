@@ -43,7 +43,7 @@ public class RemindersActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         ScrollView sv = new ScrollView(this);
-        sv.setBackgroundColor(BG);
+        sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
@@ -76,7 +76,8 @@ public class RemindersActivity extends Activity {
         col.addView(listBox, lp());
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(sv);
+        setContentView(Ux.scaffold(this, sv, "bg_main"));
+        col.post(() -> Ux.enterChildren(col, 30, 45));
         refresh();
     }
 
@@ -151,10 +152,9 @@ public class RemindersActivity extends Activity {
         box.addView(tp);
         box.addView(et);
 
-        new AlertDialog.Builder(this)
-                .setTitle(existing == null ? "Új emlékeztető" : "Emlékeztető szerkesztése")
-                .setView(box)
-                .setPositiveButton("Mentés", (d, w) -> {
+        new Sheet(this, existing == null ? "Új emlékeztető" : "Emlékeztető szerkesztése")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
                     int nh = tp.getHour(), nm = tp.getMinute();
                     String txt = et.getText().toString().trim();
                     List<Reminders.Reminder> all = Reminders.load(this);
@@ -172,7 +172,7 @@ public class RemindersActivity extends Activity {
                     if (target != null) Reminders.scheduleOne(this, target);
                     refresh();
                 })
-                .setNegativeButton("Mégse", null)
+                .addCancel()
                 .show();
     }
 
@@ -185,9 +185,9 @@ public class RemindersActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD);
+        bg.setColor(0xE61A2238);
         bg.setCornerRadius(dp(16));
-        bg.setStroke(dp(1), LINE);
+        bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }

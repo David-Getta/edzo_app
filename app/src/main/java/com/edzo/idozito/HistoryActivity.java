@@ -80,6 +80,7 @@ public class HistoryActivity extends Activity {
         sv.addView(col, new FrameLayout.LayoutParams(-1, -2));
         root.addView(sv);
         setContentView(root);
+        col.post(() -> Ux.enterChildren(col, 30, 55)); // beúszó kártyák
     }
 
     // ---- Hero összegző ----
@@ -107,14 +108,16 @@ public class HistoryActivity extends Activity {
         inner.setPadding(dp(18), dp(16), dp(18), dp(16));
         inner.addView(text("Összes teljesítményed", 13, 0xE6FFFFFF, true));
         inner.addView(gap(12));
+        final double distKm = dist / 1000.0;
         LinearLayout r1 = hbox();
-        r1.addView(heroStat("🔁", String.valueOf(count), "edzés"), heroLp());
-        r1.addView(heroStat("📍", fmtKm(dist), "össztáv"), heroLp());
+        r1.addView(heroStatNum("🔁", count, "edzés", v -> String.valueOf((int) v)), heroLp());
+        r1.addView(heroStatNum("📍", (float) distKm, "össztáv",
+                v -> v <= 0 ? "0" : String.format(Locale.US, "%.1f km", v)), heroLp());
         inner.addView(r1, lp());
         inner.addView(gap(10));
         LinearLayout r2 = hbox();
         r2.addView(heroStat("⏱", fmtHm((int) dur), "összidő"), heroLp());
-        r2.addView(heroStat("🔥", Math.round(cal) + "", "kcal"), heroLp());
+        r2.addView(heroStatNum("🔥", (float) cal, "kcal", v -> String.valueOf(Math.round(v))), heroLp());
         inner.addView(r2, lp());
         inner.addView(gap(12));
         TextView wk = text("🗓  " + thisWeek + " edzés ezen a héten", 12.5f, 0xF2FFFFFF, true);
@@ -131,6 +134,19 @@ public class HistoryActivity extends Activity {
         top.addView(text(value, 22, 0xFFFFFFFF, true));
         c.addView(top);
         c.addView(text(label, 12, 0xC8FFFFFF, false));
+        return c;
+    }
+
+    View heroStatNum(String emoji, float target, String label, Ux.Fmt f) {
+        LinearLayout c = vbox();
+        LinearLayout top = hbox();
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        top.addView(text(emoji + " ", 15, 0xF2FFFFFF, false));
+        TextView val = text("0", 22, 0xFFFFFFFF, true);
+        top.addView(val);
+        c.addView(top);
+        c.addView(text(label, 12, 0xC8FFFFFF, false));
+        Ux.countUp(val, target, f);
         return c;
     }
 
@@ -288,6 +304,7 @@ public class HistoryActivity extends Activity {
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             img.setImageResource(id);
             host.addView(img, new FrameLayout.LayoutParams(-1, -1));
+            Ux.kenBurns(img);
             View scrim = new View(this);
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{0x990B1020, 0xE00B1020, 0xF50B1020});

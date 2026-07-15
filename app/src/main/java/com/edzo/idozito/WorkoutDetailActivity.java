@@ -38,7 +38,7 @@ public class WorkoutDetailActivity extends Activity {
         JSONArray track = SessionStore.loadTrack(this, ts);
 
         ScrollView sv = new ScrollView(this);
-        sv.setBackgroundColor(BG);
+        sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
         LinearLayout col = vbox();
         col.setPadding(dp(20), dp(20), dp(20), dp(36));
@@ -46,7 +46,7 @@ public class WorkoutDetailActivity extends Activity {
         if (e == null) {
             col.addView(text("Az edzés nem található.", 15, MUTED, false));
             sv.addView(col);
-            setContentView(sv);
+            setContentView(Ux.scaffold(this, sv, "bg_main"));
             return;
         }
 
@@ -164,7 +164,8 @@ public class WorkoutDetailActivity extends Activity {
         }
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(sv);
+        setContentView(Ux.scaffold(this, sv, "bg_main"));
+        col.post(() -> Ux.enterChildren(col, 30, 42));
     }
 
     /** Az edzés összefoglalója szövegként, bármely appba küldhető (üzenet, közösségi média...). */
@@ -346,7 +347,7 @@ public class WorkoutDetailActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), LINE);
+        bg.setColor(0xE61A2238); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }

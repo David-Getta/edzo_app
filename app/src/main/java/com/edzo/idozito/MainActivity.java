@@ -153,6 +153,7 @@ public class MainActivity extends Activity {
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             img.setImageResource(id);
             host.addView(img, new FrameLayout.LayoutParams(-1, -1));
+            Ux.kenBurns(img); // lassan „élő" háttér
             View scrim = new View(this);
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{0x800B1020, 0xD90B1020, 0xF20B1020});
@@ -304,6 +305,7 @@ public class MainActivity extends Activity {
         col.addView(hint, new LinearLayout.LayoutParams(-1, -2));
 
         setupScroll.addView(col, new FrameLayout.LayoutParams(-1, -2));
+        col.post(() -> Ux.enterChildren(col, 40, 50)); // egymás utáni beúszás
         return setupScroll;
     }
 
