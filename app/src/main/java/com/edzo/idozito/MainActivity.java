@@ -73,6 +73,9 @@ public class MainActivity extends Activity {
     LinearLayout runView;
     LinearLayout templatesBox;
     LinearLayout goalBox;
+    LinearLayout progressBox;
+    LinearLayout planBar;
+    TextView planCaption;
     TextView totalText;
     final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
@@ -130,6 +133,7 @@ public class MainActivity extends Activity {
         updateProgramUI();
         refreshTemplates();
         refreshGoal();
+        refreshProgress();
 
         java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -190,6 +194,13 @@ public class MainActivity extends Activity {
 
         // Fejléc banner – Higgsfield hero kép (ha van), különben gradiens
         col.addView(buildBanner(), new LinearLayout.LayoutParams(-1, dp(140)));
+        col.addView(gap(12));
+
+        // Haladás-csík (szint / sorozat / edzésszám) – koppintásra Statisztika
+        progressBox = hbox();
+        progressBox.setClickable(true);
+        progressBox.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
+        col.addView(progressBox, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(14));
 
         // Heti cél (dinamikus kártya)
@@ -278,9 +289,23 @@ public class MainActivity extends Activity {
         col.addView(card2, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(18));
 
+        // Edzés felépítése – arányos színsáv
+        LinearLayout planWrap = vbox();
+        TextView planTitle = text("Az edzés felépítése", 12.5f, MUTED, true);
+        planTitle.setPadding(dp(2), 0, 0, dp(8));
+        planWrap.addView(planTitle);
+        planBar = hbox();
+        roundClip(planBar, 7);
+        planWrap.addView(planBar, new LinearLayout.LayoutParams(-1, dp(14)));
+        planWrap.addView(gap(6));
+        planCaption = text("", 11.5f, MUTED, false);
+        planWrap.addView(planCaption);
+        col.addView(planWrap, new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(16));
+
         totalText = text("", 13, MUTED, false);
         totalText.setGravity(Gravity.CENTER);
-        totalText.setPadding(0, dp(4), 0, dp(20));
+        totalText.setPadding(0, dp(4), 0, dp(18));
         col.addView(totalText, new LinearLayout.LayoutParams(-1, -2));
 
         Button start = primaryButton("▶  Indítás");
@@ -532,13 +557,94 @@ public class MainActivity extends Activity {
         return v;
     }
 
-    long weekStartMs() {
+    long weekStartMs() { return weekStartOf(System.currentTimeMillis()); }
+
+    long weekStartOf(long ts) {
         java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(ts);
         c.setFirstDayOfWeek(java.util.Calendar.MONDAY);
         c.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY);
         c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
         c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
         return c.getTimeInMillis();
+    }
+
+    long prevWeekOf(long ws) { return weekStartOf(ws - 3L * 24 * 3600 * 1000); }
+
+    int weekStreak(JSONArray arr) {
+        java.util.HashSet<Long> weeks = new java.util.HashSet<>();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null) weeks.add(weekStartOf(o.optLong("ts")));
+        }
+        long wk = weekStartMs();
+        if (!weeks.contains(wk)) wk = prevWeekOf(wk);
+        int s = 0;
+        while (weeks.contains(wk)) { s++; wk = prevWeekOf(wk); }
+        return s;
+    }
+
+    // ---- Haladás-csík (szint / sorozat / edzésszám) ----
+
+    void refreshProgress() {
+        if (progressBox == null) return;
+        progressBox.removeAllViews();
+        JSONArray arr = History.load(this);
+        long xp = Levels.totalXp(arr);
+        int lvl = Levels.levelForXp(xp);
+        progressBox.addView(progressChip("⭐", "Szint " + lvl, Levels.title(lvl)), progChipLp());
+        progressBox.addView(progressChip("🔥", weekStreak(arr) + " hét", "sorozat"), progChipLp());
+        progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
+    }
+
+    View progressChip(String emoji, String value, String label) {
+        LinearLayout c = vbox();
+        c.setGravity(Gravity.CENTER);
+        c.setPadding(dp(6), dp(12), dp(6), dp(12));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(GLASS); bg.setCornerRadius(dp(16)); bg.setStroke(dp(1), GLASS_LINE);
+        c.setBackground(bg);
+        TextView v = text(emoji + " " + value, 15, TXT, true); v.setGravity(Gravity.CENTER);
+        TextView l = text(label, 11, MUTED, false); l.setGravity(Gravity.CENTER);
+        c.addView(v); c.addView(l);
+        return c;
+    }
+
+    LinearLayout.LayoutParams progChipLp() {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
+        p.leftMargin = dp(4); p.rightMargin = dp(4);
+        return p;
+    }
+
+    // ---- Edzés-felépítés sáv ----
+
+    void refreshPlanBar() {
+        if (planBar == null) return;
+        planBar.removeAllViews();
+        Programs.P p = Programs.byName(this, programName);
+        int len = p == null ? 1 : p.ex.length;
+        int n = cfg[ROUND_K] * len;
+        int warm = cfg[WARM_K], prep = cfg[PREP_K], work = cfg[WORK_K] * n,
+                rest = cfg[REST_K] * Math.max(0, n - 1), cool = cfg[COOL_K];
+        int total = warm + prep + work + rest + cool;
+        if (total <= 0) { if (planCaption != null) planCaption.setText(""); return; }
+        addSeg(warm, PREP);
+        addSeg(prep, 0xFF8AA0C4);
+        addSeg(work, tWork);
+        addSeg(rest, tRest);
+        addSeg(cool, 0xFF22FFC2);
+        int wp = Math.round(work * 100f / total), rp = Math.round(rest * 100f / total);
+        String cap = "🏃 Munka " + wp + "%";
+        if (rest > 0) cap += "    💤 Pihenő " + rp + "%";
+        if (warm > 0 || cool > 0) cap += "    ➕ bemelegítés/levezetés";
+        if (planCaption != null) planCaption.setText(cap);
+    }
+
+    void addSeg(int secs, int color) {
+        if (secs <= 0) return;
+        View v = new View(this);
+        v.setBackgroundColor(color);
+        planBar.addView(v, new LinearLayout.LayoutParams(0, -1, secs));
     }
 
     void goalDialog() {
@@ -961,6 +1067,7 @@ public class MainActivity extends Activity {
         String s = "Teljes idő: " + fmtLong(total);
         if (len > 1) s += "  ·  " + len + " gyakorlat × " + cfg[ROUND_K] + " kör";
         totalText.setText(s);
+        refreshPlanBar();
     }
 
     // ================= RUN =================
@@ -1173,7 +1280,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); }
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); }
         }
     };
 
@@ -1282,6 +1389,7 @@ public class MainActivity extends Activity {
         pauseBtn.setEnabled(false);
         pauseBtn.setText("Kész");
         refreshGoal();
+        refreshProgress();
     }
 
     void setPhaseUI(int phase, int round) { setPhaseUI(phase, round, cfg[ROUND_K]); }
@@ -1325,6 +1433,7 @@ public class MainActivity extends Activity {
             receiverRegistered = true;
         }
         refreshGoal();
+        refreshProgress();
     }
 
     @Override
