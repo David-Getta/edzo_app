@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
     LinearLayout programCard;
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
-    TextView exText, nextText;
+    TextView exText, nextText, recordText;
     TextView statElapsed, statCal, statSteps;
     Button pauseBtn;
     ProgressRing ring;
@@ -1005,7 +1005,22 @@ public class MainActivity extends Activity {
         nextText = text("", 13, MUTED, false);
         nextText.setGravity(Gravity.CENTER);
         runView.addView(nextText);
-        runView.addView(gap(14));
+        runView.addView(gap(12));
+
+        // Rekord-jelvény (befejezéskor, ha új csúcs)
+        recordText = text("", 14, 0xFF0B0B0B, true);
+        recordText.setGravity(Gravity.CENTER);
+        recordText.setPadding(dp(16), dp(9), dp(16), dp(9));
+        GradientDrawable rbg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{0xFFFFD24D, 0xFFFFB020});
+        rbg.setCornerRadius(dp(22));
+        recordText.setBackground(rbg);
+        recordText.setVisibility(View.GONE);
+        LinearLayout recWrap = hbox();
+        recWrap.setGravity(Gravity.CENTER);
+        recWrap.addView(recordText);
+        runView.addView(recWrap);
+        runView.addView(gap(12));
 
         // Élő statisztikák: eltelt idő, kalória, lépések
         LinearLayout stats = hbox();
@@ -1092,6 +1107,7 @@ public class MainActivity extends Activity {
         distanceText.setText(trackDistance && hasLocationPermission() ? "📍 0 m" : "");
         exText.setVisibility(View.GONE);
         nextText.setText(prog != null && prog.ex.length > 0 ? "Következő: " + prog.ex[0] : "");
+        recordText.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -1196,6 +1212,20 @@ public class MainActivity extends Activity {
         statElapsed.setText(fmtLong(dur));
         statCal.setText(cal + " kcal");
         statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
+
+        String records = i.getStringExtra(TimerService.EX_RECORDS);
+        if (records != null && !records.isEmpty()) {
+            recordText.setText(records.equals("első edzés")
+                    ? "🎉 Első edzés a naplóban!"
+                    : "🏆 Új rekord: " + records);
+            recordText.setVisibility(View.VISIBLE);
+            recordText.setScaleX(0.7f); recordText.setScaleY(0.7f); recordText.setAlpha(0f);
+            recordText.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(430)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        } else {
+            recordText.setVisibility(View.GONE);
+        }
+
         lastPaused = false;
         pauseBtn.setEnabled(false);
         pauseBtn.setText("Kész");

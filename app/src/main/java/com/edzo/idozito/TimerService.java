@@ -58,7 +58,7 @@ public class TimerService extends Service {
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
-            EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname";
+            EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname", EX_RECORDS = "records";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2;
 
@@ -389,9 +389,15 @@ public class TimerService extends Service {
         handler.removeCallbacks(ticker);
         Beeper.finish();
         buzz(new long[]{0, 120, 80, 120, 80, 240});
-        speak("Edzés kész. Szép munka!");
         int durationSec = currentDurationSec();
+        String records = computeRecords();     // a mentés ELŐTT, a korábbi edzésekhez képest
         saveSession(rounds);
+        if (!records.isEmpty()) {
+            speak("Edzés kész. Új rekord! Szép munka!");
+            buzz(new long[]{0, 90, 60, 90, 60, 90, 60, 350});
+        } else {
+            speak("Edzés kész. Szép munka!");
+        }
 
         Intent done = new Intent(B_DONE).setPackage(getPackageName());
         done.putExtra(EX_DUR, durationSec);
@@ -401,9 +407,42 @@ public class TimerService extends Service {
         done.putExtra(EX_STEPS, steps);
         done.putExtra(EX_SPEED, (float) ((distanceM > 0 && workMs > 0)
                 ? distanceM / (workMs / 1000.0) * 3.6 : -1));
+        done.putExtra(EX_RECORDS, records);
         sendBroadcast(done);
 
         stopEverything();
+    }
+
+    /** Új személyes rekordok a KORÁBBI edzésekhez képest (mentés előtt hívandó). */
+    private String computeRecords() {
+        JSONArray h = History.load(this);
+        if (h.length() == 0) return "első edzés";
+        double bestDist = 0, bestSpeed = 0, bestCal = 0;
+        int bestDur = 0;
+        for (int i = 0; i < h.length(); i++) {
+            org.json.JSONObject o = h.optJSONObject(i);
+            if (o == null) continue;
+            bestDist = Math.max(bestDist, o.optDouble("dist", -1));
+            bestDur = Math.max(bestDur, o.optInt("dur"));
+            double av = o.optDouble("avgspeed", -1);
+            if (av < 0) { double d = o.optDouble("dist", -1); int du = o.optInt("dur"); if (d > 0 && du > 0) av = d / du * 3.6; }
+            bestSpeed = Math.max(bestSpeed, av);
+            bestCal = Math.max(bestCal, o.optDouble("cal", 0));
+        }
+        int newDur = currentDurationSec();
+        double newSpeed = (distanceM > 0 && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
+        double newCal = estimateCalories();
+        StringBuilder r = new StringBuilder();
+        if (distanceM > 0 && distanceM > bestDist + 1) append(r, "leghosszabb táv");
+        if (bestDur > 0 && newDur > bestDur) append(r, "leghosszabb idő");
+        if (newSpeed > 0 && newSpeed > bestSpeed + 0.05) append(r, "leggyorsabb átlag");
+        if (bestCal > 0 && newCal > bestCal + 1) append(r, "legtöbb kalória");
+        return r.toString();
+    }
+
+    private void append(StringBuilder sb, String s) {
+        if (sb.length() > 0) sb.append(", ");
+        sb.append(s);
     }
 
     private void stopEverything() {
