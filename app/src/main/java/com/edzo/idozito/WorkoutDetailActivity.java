@@ -347,7 +347,7 @@ public class WorkoutDetailActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE61A2238); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setColor(0xE6121A33); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }

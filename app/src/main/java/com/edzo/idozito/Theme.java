@@ -13,28 +13,30 @@ public final class Theme {
 
     static final String PREFS = "edzo";
 
-    // Választható színek (paletta).
+    // Választható színek (paletta) – Cyber cián-magenta arculat.
     public static final int[] SWATCHES = {
-            0xFF6366F1, // indigó
-            0xFF8B5CF6, // ibolya
+            0xFF22E0FF, // cián
+            0xFFFF3DDB, // magenta
+            0xFF7A5CFF, // ibolya
+            0xFF22FFC2, // menta
             0xFF3B82F6, // kék
-            0xFF06B6D4, // türkiz
-            0xFF22C55E, // zöld
-            0xFFF59E0B, // borostyán
-            0xFFEF4444, // piros
-            0xFFEC4899, // rózsaszín
+            0xFFA6FF3D, // lime
+            0xFFFFC24D, // arany
+            0xFFFF5D73, // korall
     };
 
-    static final int DEF_ACCENT = 0xFF6366F1;
-    static final int DEF_WORK = 0xFF22C55E;
-    static final int DEF_REST = 0xFF06B6D4;
+    static final int DEF_ACCENT = 0xFF22E0FF;   // cián
+    static final int DEF_ACCENT2 = 0xFFFF3DDB;  // magenta (a márka-gradiens másik vége)
+    static final int DEF_WORK = 0xFF22E0FF;      // futás = cián
+    static final int DEF_REST = 0xFF7A5CFF;      // pihenő = ibolya
 
     private static SharedPreferences p(Context c) {
         return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
     public static int accent(Context c) { return p(c).getInt("c_accent", DEF_ACCENT); }
-    public static int accent2(Context c) { return lighten(accent(c), 0.24f); }
+    /** A márka-gradiens másik vége (alapból magenta), így a cián→magenta átmenet mindenütt egységes. */
+    public static int accent2(Context c) { return p(c).getInt("c_accent2", DEF_ACCENT2); }
     public static int work(Context c) { return p(c).getInt("c_work", DEF_WORK); }
     public static int rest(Context c) { return p(c).getInt("c_rest", DEF_REST); }
 
@@ -55,7 +57,7 @@ public final class Theme {
 
     public static void resetAll(Context c) {
         p(c).edit()
-                .remove("c_accent").remove("c_work").remove("c_rest")
+                .remove("c_accent").remove("c_accent2").remove("c_work").remove("c_rest")
                 .remove("volume").remove("vibrate").remove("cd_secs").remove("pace")
                 .apply();
         bumpRev(c);

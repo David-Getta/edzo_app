@@ -34,7 +34,7 @@ public class ProfileActivity extends Activity {
     static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
     static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
     static final int ACCENT = MainActivity.ACCENT, INDIGO = MainActivity.INDIGO, VIOLET = MainActivity.VIOLET;
-    static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFF8B9BFF, FAT_C = 0xFFF59E0B;
+    static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFF22E0FF, FAT_C = 0xFFF59E0B;
 
     EditText heightEt, weightEt, bodyFatEt, byEt, bmEt, bdEt, goalLossEt;
     TextView bmiValue, bmiCat, ageLabel, bmrValue, goalInfo;
@@ -445,7 +445,7 @@ public class ProfileActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE61A2238);
+        bg.setColor(0xE6121A33);
         bg.setCornerRadius(dp(20));
         bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);

@@ -95,7 +95,7 @@ public final class Ux {
                 kenBurns(img);
                 View scrim = new View(a);
                 GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                        new int[]{0x8C0B1020, 0xDE0B1020, 0xF50B1020});
+                        new int[]{0x8C070912, 0xDE070912, 0xF5070912});
                 scrim.setBackground(g);
                 root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
             } catch (Exception ignored) {}

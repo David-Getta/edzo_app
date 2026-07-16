@@ -75,7 +75,7 @@ public final class Sheet {
         if (title != null) {
             TextView t = new TextView(act);
             t.setText(title);
-            t.setTextColor(0xFFF2F5FF);
+            t.setTextColor(0xFFEAF6FF);
             t.setTextSize(19);
             t.setTypeface(null, Typeface.BOLD);
             t.setGravity(Gravity.CENTER);
@@ -85,7 +85,7 @@ public final class Sheet {
         if (subtitle != null) {
             TextView s = new TextView(act);
             s.setText(subtitle);
-            s.setTextColor(0xFF93A0C4);
+            s.setTextColor(0xFF8AA0C4);
             s.setTextSize(13);
             s.setGravity(Gravity.CENTER);
             s.setPadding(dp(8), 0, dp(8), dp(12));
@@ -151,14 +151,14 @@ public final class Sheet {
         mid.setOrientation(LinearLayout.VERTICAL);
         TextView t = new TextView(a);
         t.setText(title);
-        t.setTextColor(0xFFF2F5FF);
+        t.setTextColor(0xFFEAF6FF);
         t.setTextSize(16);
         t.setTypeface(null, Typeface.BOLD);
         mid.addView(t);
         if (sub != null) {
             TextView s = new TextView(a);
             s.setText(sub);
-            s.setTextColor(0xFF93A0C4);
+            s.setTextColor(0xFF8AA0C4);
             s.setTextSize(12.5f);
             mid.addView(s);
         }
@@ -239,9 +239,9 @@ public final class Sheet {
     }
 
     public Sheet addPrimary(String title, OnTap tap) { addButton(title, 0, 0xFFFFFFFF, true, true, tap); return this; }
-    public Sheet addNeutral(String title, OnTap tap) { addButton(title, 0x22FFFFFF, 0xFFF2F5FF, false, true, tap); return this; }
+    public Sheet addNeutral(String title, OnTap tap) { addButton(title, 0x22FFFFFF, 0xFFEAF6FF, false, true, tap); return this; }
     public Sheet addDestructive(String title, OnTap tap) { addButton(title, 0x33FF453A, 0xFFFF6B6B, false, true, tap); return this; }
-    public Sheet addCancel() { addButton("Mégse", 0x14FFFFFF, 0xFF93A0C4, false, true, null); return this; }
+    public Sheet addCancel() { addButton("Mégse", 0x14FFFFFF, 0xFF8AA0C4, false, true, null); return this; }
 
     // ---- Megjelenítés ----
 

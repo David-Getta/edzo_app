@@ -28,7 +28,7 @@ public class HistoryActivity extends Activity {
 
     static final int BG = MainActivity.BG, TXT = MainActivity.TXT, MUTED = MainActivity.MUTED,
             LINE = MainActivity.LINE, GLASS = MainActivity.GLASS, GLASS_LINE = MainActivity.GLASS_LINE;
-    static final int RUN_C = 0xFF38BDF8, GYM_C = 0xFF8B5CF6; // futás / erő szín
+    static final int RUN_C = 0xFF22E0FF, GYM_C = 0xFFFF3DDB; // futás = cián / erő = magenta
 
     int accent, accent2;
     boolean pace;
@@ -307,7 +307,7 @@ public class HistoryActivity extends Activity {
             Ux.kenBurns(img);
             View scrim = new View(this);
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x990B1020, 0xE00B1020, 0xF50B1020});
+                    new int[]{0x99070912, 0xE0070912, 0xF5070912});
             scrim.setBackground(g);
             host.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         } catch (Exception ignored) {}

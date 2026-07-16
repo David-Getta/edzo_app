@@ -49,12 +49,12 @@ import java.util.Locale;
 public class MainActivity extends Activity {
 
     // Színek
-    static final int BG = 0xFF0B1020, CARD = 0xFF1A2238, CARD2 = 0xFF212B47;
-    static final int TXT = 0xFFF2F5FF, MUTED = 0xFF93A0C4, LINE = 0xFF2A3552, ACCENT = 0xFF8B9BFF;
-    static final int INDIGO = 0xFF6366F1, VIOLET = 0xFF8B5CF6;
-    static final int WORK = 0xFF22C55E, REST = 0xFF38BDF8, PREP = 0xFFF59E0B, DONE = 0xFFA78BFA;
+    static final int BG = 0xFF070912, CARD = 0xFF121A33, CARD2 = 0xFF19224A;
+    static final int TXT = 0xFFEAF6FF, MUTED = 0xFF8AA0C4, LINE = 0xFF25335C, ACCENT = 0xFF22E0FF;
+    static final int INDIGO = 0xFF22E0FF, VIOLET = 0xFFFF3DDB; // márka-gradiens: cián → magenta
+    static final int WORK = 0xFF22E0FF, REST = 0xFF7A5CFF, PREP = 0xFFFFC24D, DONE = 0xFFFF3DDB;
     // Áttetsző „üveg" felületek – a generált háttérkép finoman átüt rajtuk
-    static final int GLASS = 0xE61A2238, GLASS2 = 0xD9212B47, GLASS_LINE = 0x33FFFFFF;
+    static final int GLASS = 0xE6121A33, GLASS2 = 0xD919224A, GLASS_LINE = 0x33FFFFFF;
 
     static final int PREP_K = 0, WORK_K = 1, REST_K = 2, ROUND_K = 3;
     final int[] cfg = new int[4];
@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
             Ux.kenBurns(img); // lassan „élő" háttér
             View scrim = new View(this);
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x800B1020, 0xD90B1020, 0xF20B1020});
+                    new int[]{0x80070912, 0xD9070912, 0xF2070912});
             scrim.setBackground(g);
             host.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         } catch (Exception ignored) {}
@@ -322,7 +322,7 @@ public class MainActivity extends Activity {
                 banner.addView(hero, new FrameLayout.LayoutParams(-1, -1));
                 View sc = new View(this);
                 GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                        new int[]{0xF20B1020, 0x990B1020, 0x1A000000});
+                        new int[]{0xF2070912, 0x99070912, 0x1A000000});
                 sc.setBackground(g);
                 banner.addView(sc, new FrameLayout.LayoutParams(-1, -1));
             } catch (Exception e) {
@@ -967,7 +967,7 @@ public class MainActivity extends Activity {
         // Az edzés-képernyő majdnem áttetsző sötét fátyol – a háttérkép finoman átdereng,
         // de a fókusz a körgyűrűn marad.
         GradientDrawable runBg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0xF20B1020, 0xF7060912});
+                new int[]{0xF2070912, 0xF7060912});
         runView.setBackground(runBg);
 
         phaseLabel = text("FUTÁS", 15, MUTED, true);

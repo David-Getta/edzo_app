@@ -440,7 +440,7 @@ public class StatsActivity extends Activity {
         LinearLayout t = vbox();
         t.setPadding(dp(12), dp(12), dp(12), dp(12));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xD9212B47); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), 0x24FFFFFF);
+        bg.setColor(0xD919224A); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), 0x24FFFFFF);
         t.setBackground(bg);
         t.addView(text(value, 18, TXT, true));
         t.addView(text(label, 12, MUTED, false));
@@ -472,7 +472,7 @@ public class StatsActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE61A2238); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setColor(0xE6121A33); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
         c.setBackground(bg);
         return c;
     }
@@ -493,7 +493,7 @@ public class StatsActivity extends Activity {
     static class BarChart extends View {
         private double[] vals;
         private String[] labels;
-        private int color = 0xFF6366F1;
+        private int color = 0xFF22E0FF;
         private String unit = "";
         private final Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint txt = new Paint(Paint.ANTI_ALIAS_FLAG);
