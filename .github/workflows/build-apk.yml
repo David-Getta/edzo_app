@@ -52,7 +52,7 @@ jobs:
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_121951_ae5ec316-944b-4b32-848d-e0d7ef07ca63.png" "bg_main.png"
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122006_a68ab320-af8c-4dbb-8ecb-8ca93fcd4343.png" "hero_run.png"
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122018_b1f2c5bc-fa99-4724-abb8-5729d52b220f.png" "bg_stats.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122104_bcd9a3ba-e976-493a-b55e-2911fcba5f61.png" "bg_profile.png"
+          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122900_5d288077-4db1-4065-a241-2849f139d6c9.png" "bg_profile.png"
           ls -la app/src/main/res/drawable/ || true
 
       - name: Build debug APK
