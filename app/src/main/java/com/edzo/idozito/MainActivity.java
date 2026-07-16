@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
     LinearLayout programCard;
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
-    TextView exText, exDesc, nextText, recordText;
+    TextView exText, exDesc, nextText, recordText, levelText;
     TextView statElapsed, statCal, statSteps;
     Button pauseBtn;
     ProgressRing ring;
@@ -1031,6 +1031,21 @@ public class MainActivity extends Activity {
         recWrap.setGravity(Gravity.CENTER);
         recWrap.addView(recordText);
         runView.addView(recWrap);
+        runView.addView(gap(8));
+
+        // Szintlépés-jelvény (befejezéskor, ha új szint)
+        levelText = text("", 14, 0xFFFFFFFF, true);
+        levelText.setGravity(Gravity.CENTER);
+        levelText.setPadding(dp(16), dp(9), dp(16), dp(9));
+        GradientDrawable lbg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{tAccent, tAccent2});
+        lbg.setCornerRadius(dp(22));
+        levelText.setBackground(lbg);
+        levelText.setVisibility(View.GONE);
+        LinearLayout lvlWrap = hbox();
+        lvlWrap.setGravity(Gravity.CENTER);
+        lvlWrap.addView(levelText);
+        runView.addView(lvlWrap);
         runView.addView(gap(12));
 
         // Élő statisztikák: eltelt idő, kalória, lépések
@@ -1126,6 +1141,7 @@ public class MainActivity extends Activity {
         exDesc.setVisibility(View.GONE);
         nextText.setText(prog != null && prog.ex.length > 0 ? "Következő: " + prog.ex[0] : "");
         recordText.setVisibility(View.GONE);
+        levelText.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -1247,6 +1263,19 @@ public class MainActivity extends Activity {
                     .setInterpolator(new android.view.animation.OvershootInterpolator()).start();
         } else {
             recordText.setVisibility(View.GONE);
+        }
+
+        String levelup = i.getStringExtra(TimerService.EX_LEVELUP);
+        if (levelup != null && !levelup.isEmpty()) {
+            String[] parts = levelup.split("\\|");
+            String lvlLabel = parts.length == 2 ? "Szint " + parts[0] + " · " + parts[1] : parts[0];
+            levelText.setText("⭐ Új szint! " + lvlLabel);
+            levelText.setVisibility(View.VISIBLE);
+            levelText.setScaleX(0.7f); levelText.setScaleY(0.7f); levelText.setAlpha(0f);
+            levelText.animate().scaleX(1f).scaleY(1f).alpha(1f).setStartDelay(250).setDuration(430)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        } else {
+            levelText.setVisibility(View.GONE);
         }
 
         lastPaused = false;

@@ -52,7 +52,10 @@ public class StatsActivity extends Activity {
         col.addView(text("Statisztika", 22, TXT, true));
         col.addView(gap(4));
         col.addView(text("Heti, havi és összesített teljesítményed.", 13, MUTED, false));
-        col.addView(gap(20));
+        col.addView(gap(18));
+
+        col.addView(levelCard(), lp());
+        col.addView(gap(18));
 
         long now = System.currentTimeMillis();
         long weekStart = weekStart(now);
@@ -157,6 +160,72 @@ public class StatsActivity extends Activity {
                 {"⚡ Átlag táv", t.count > 0 && t.distM > 0 ? fmtDist(t.distM / t.count) : "—"},
         });
         return grid;
+    }
+
+    // ---------------- Szint / XP ----------------
+
+    View levelCard() {
+        long xp = Levels.totalXp(hist);
+        int lvl = Levels.levelForXp(xp);
+        float frac = Levels.progress(xp);
+        long toNext = Levels.xpToNext(xp);
+
+        LinearLayout c = vbox();
+        GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Theme.accent(this), Theme.accent2(this)});
+        g.setCornerRadius(dp(22));
+        c.setBackground(g);
+        c.setPadding(dp(20), dp(18), dp(20), dp(18));
+
+        LinearLayout top = hbox();
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout left = vbox();
+        left.addView(text("⭐ Szint " + lvl, 26, 0xFFFFFFFF, true));
+        left.addView(text(Levels.title(lvl), 14, 0xE6FFFFFF, true));
+        top.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
+        final TextView xpVal = text("0 XP", 15, 0xFFFFFFFF, true);
+        xpVal.setGravity(Gravity.END);
+        top.addView(xpVal);
+        c.addView(top, lp());
+        c.addView(gap(12));
+
+        // Animált haladássáv
+        LinearLayout barBg = hbox();
+        GradientDrawable bgd = new GradientDrawable();
+        bgd.setColor(0x40000000);
+        bgd.setCornerRadius(dp(7));
+        barBg.setBackground(bgd);
+        final View fill = new View(this);
+        GradientDrawable fgd = new GradientDrawable();
+        fgd.setColor(0xFFFFFFFF);
+        fgd.setCornerRadius(dp(7));
+        fill.setBackground(fgd);
+        final LinearLayout.LayoutParams fillLp = new LinearLayout.LayoutParams(0, dp(14), 0.0001f);
+        final LinearLayout.LayoutParams spLp = new LinearLayout.LayoutParams(0, dp(14), 1f);
+        final View spacer = new View(this);
+        barBg.addView(fill, fillLp);
+        barBg.addView(spacer, spLp);
+        c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
+        c.addView(gap(10));
+
+        c.addView(text(toNext > 0 ? toNext + " XP a(z) " + (lvl + 1) + ". szintig ("
+                + Levels.title(lvl + 1) + ")" : "Maximális szint elérve! 🏆", 12.5f, 0xE6FFFFFF, false));
+
+        // animációk
+        final float target = Math.max(0.0001f, frac);
+        android.animation.ValueAnimator a = android.animation.ValueAnimator.ofFloat(0f, target);
+        a.setDuration(900);
+        a.setStartDelay(150);
+        a.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        a.addUpdateListener(an -> {
+            float v = (float) an.getAnimatedValue();
+            fillLp.weight = v;
+            spLp.weight = 1f - v;
+            barBg.requestLayout();
+        });
+        a.start();
+        Ux.countUp(xpVal, xp, v -> Math.round(v) + " XP");
+        return c;
     }
 
     // ---------------- Rekordok + heti sorozat ----------------

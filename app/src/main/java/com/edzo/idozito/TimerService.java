@@ -59,7 +59,8 @@ public class TimerService extends Service {
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
-            EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname", EX_RECORDS = "records";
+            EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname", EX_RECORDS = "records",
+            EX_LEVELUP = "levelup";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2, T_WARMUP = 3, T_COOLDOWN = 4;
 
@@ -402,6 +403,7 @@ public class TimerService extends Service {
         buzz(new long[]{0, 120, 80, 120, 80, 240});
         int durationSec = currentDurationSec();
         String records = computeRecords();     // a mentés ELŐTT, a korábbi edzésekhez képest
+        String levelUp = computeLevelUp();
         saveSession(rounds);
         if (!records.isEmpty()) {
             speak("Edzés kész. Új rekord! Szép munka!");
@@ -419,6 +421,7 @@ public class TimerService extends Service {
         done.putExtra(EX_SPEED, (float) ((distanceM > 0 && workMs > 0)
                 ? distanceM / (workMs / 1000.0) * 3.6 : -1));
         done.putExtra(EX_RECORDS, records);
+        done.putExtra(EX_LEVELUP, levelUp);
         sendBroadcast(done);
 
         stopEverything();
@@ -454,6 +457,16 @@ public class TimerService extends Service {
     private void append(StringBuilder sb, String s) {
         if (sb.length() > 0) sb.append(", ");
         sb.append(s);
+    }
+
+    /** Ha az edzés XP-je új szintre emel, visszaadja az új szint címét; különben "". */
+    private String computeLevelUp() {
+        JSONArray h = History.load(this);
+        long prevXp = Levels.totalXp(h);
+        int prevLvl = Levels.levelForXp(prevXp);
+        long newXp = prevXp + Levels.xpForSession(currentDurationSec(), distanceM);
+        int newLvl = Levels.levelForXp(newXp);
+        return newLvl > prevLvl ? newLvl + "|" + Levels.title(newLvl) : "";
     }
 
     private void stopEverything() {
