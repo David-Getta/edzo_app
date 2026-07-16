@@ -1,0 +1,119 @@
+package com.edzo.idozito;
+
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Locale;
+
+/**
+ * Heti visszatekintő: vasárnap este egy értesítés összegzi a hét edzéseit
+ * (darabszám, táv, idő) és biztat a következő hétre.
+ */
+public class WeeklyReceiver extends BroadcastReceiver {
+
+    static final String CHANNEL = "edzo_recap";
+    static final int REQ = 77, NOTIF_ID = 9100;
+
+    /** Következő vasárnap 19:00-ra ütemez, majd hetente ismétel. */
+    public static void schedule(Context c) {
+        AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 19);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        if (cal.getTimeInMillis() <= System.currentTimeMillis()) {
+            cal.add(Calendar.DAY_OF_YEAR, 7);
+        }
+        Intent i = new Intent(c, WeeklyReceiver.class).setAction("com.edzo.idozito.WEEKLY");
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
+        PendingIntent pi = PendingIntent.getBroadcast(c, REQ, i, flags);
+        try {
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY * 7, pi);
+        } catch (Exception ignored) {}
+    }
+
+    @Override
+    public void onReceive(Context c, Intent intent) {
+        long from = weekStart(System.currentTimeMillis());
+        JSONArray h = History.load(c);
+        int count = 0;
+        double dist = 0;
+        long dur = 0;
+        for (int k = 0; k < h.length(); k++) {
+            JSONObject o = h.optJSONObject(k);
+            if (o == null || o.optLong("ts") < from) continue;
+            count++;
+            double d = o.optDouble("dist", -1);
+            if (d > 0) dist += d;
+            dur += o.optInt("dur");
+        }
+
+        String title, text;
+        if (count == 0) {
+            title = "Új hét, új esély 💪";
+            text = "Ezen a héten még nem edzettél. Egy rövid edzés is számít – kezdd el most!";
+        } else {
+            title = "Heti összegzés 🏁";
+            StringBuilder sb = new StringBuilder();
+            sb.append(count).append(count == 1 ? " edzés" : " edzés");
+            if (dist > 0) sb.append("  ·  ").append(String.format(Locale.US, "%.1f km", dist / 1000.0));
+            sb.append("  ·  ").append(dur / 60).append(" perc mozgás. ");
+            sb.append(count >= 4 ? "Fantasztikus hét! 🔥" : "Szép munka – jövő héten még többet! 💪");
+            text = sb.toString();
+        }
+
+        NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+        if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(CHANNEL) == null) {
+            NotificationChannel ch = new NotificationChannel(CHANNEL, "Heti összegzés",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            ch.setDescription("Heti visszatekintő az edzéseidről");
+            nm.createNotificationChannel(ch);
+        }
+
+        Intent open = new Intent(c, StatsActivity.class);
+        open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
+        PendingIntent pi = PendingIntent.getActivity(c, REQ, open, flags);
+
+        Notification.Builder b = Build.VERSION.SDK_INT >= 26
+                ? new Notification.Builder(c, CHANNEL)
+                : new Notification.Builder(c);
+        b.setContentTitle(title)
+                .setContentText(text)
+                .setStyle(new Notification.BigTextStyle().bigText(text))
+                .setSmallIcon(android.R.drawable.ic_menu_recent_history)
+                .setAutoCancel(true)
+                .setContentIntent(pi);
+        nm.notify(NOTIF_ID, b.build());
+    }
+
+    static long weekStart(long ts) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(ts);
+        c.setFirstDayOfWeek(Calendar.MONDAY);
+        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
+}

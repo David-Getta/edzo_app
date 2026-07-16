@@ -71,6 +71,10 @@
             android:exported="false" />
 
         <receiver
+            android:name=".WeeklyReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".BootReceiver"
             android:exported="true">
             <intent-filter>
@@ -78,6 +82,12 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name=".ShareProvider"
+            android:authorities="com.edzo.idozito.share"
+            android:exported="false"
+            android:grantUriPermissions="true" />
 
         <service
             android:name=".TimerService"

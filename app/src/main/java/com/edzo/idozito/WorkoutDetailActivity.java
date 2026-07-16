@@ -2,9 +2,13 @@ package com.edzo.idozito;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -103,7 +107,13 @@ public class WorkoutDetailActivity extends Activity {
         sbg.setColor(CARD2); sbg.setCornerRadius(dp(15)); sbg.setStroke(dp(1), LINE);
         share.setBackground(sbg);
         final JSONObject entry = e;
-        share.setOnClickListener(v -> shareWorkout(entry));
+        share.setOnClickListener(v -> new Sheet(this, "Edzés megosztása")
+                .addRow("🖼️", "Kép megosztása", "Látványos összegző kártya", false, true,
+                        () -> shareWorkoutImage(entry))
+                .addRow("✍️", "Szöveg megosztása", "Rövid összefoglaló szövegben", false, true,
+                        () -> shareWorkout(entry))
+                .addCancel()
+                .show());
         col.addView(share, lp());
         col.addView(gap(18));
 
@@ -166,6 +176,96 @@ public class WorkoutDetailActivity extends Activity {
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffold(this, sv, "bg_main"));
         col.post(() -> Ux.enterChildren(col, 30, 42));
+    }
+
+    /** Látványos cyber összegző kártya képként megosztva. */
+    void shareWorkoutImage(JSONObject e) {
+        try {
+            Bitmap bmp = renderShareCard(e);
+            ShareProvider.shareImage(this, bmp, "edzes_" + e.optLong("ts"));
+        } catch (Exception ex) {
+            shareWorkout(e); // vészmegoldás: szöveg
+        }
+    }
+
+    Bitmap renderShareCard(JSONObject e) {
+        final int W = 1080, H = 1350, M = 80;
+        Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(bmp);
+
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        cv.drawRect(0, 0, W, H, p);
+        p.setShader(null);
+
+        // felső akcentcsík (cián → magenta)
+        Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
+        bar.setShader(null);
+
+        Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tp.setColor(0xFFEAF6FF);
+        tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setTextSize(78);
+        cv.drawText("My trainer", M, 250, tp);
+
+        Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sp.setColor(0xFF8AA0C4);
+        sp.setTextSize(38);
+        String wname = e.optString("name", "");
+        String type = wname.isEmpty() ? "Futás" : wname;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd  HH:mm", new Locale("hu"));
+        cv.drawText(type + "  ·  " + df.format(new Date(e.optLong("ts"))), M, 312, sp);
+
+        // értékek
+        int dur = e.optInt("dur");
+        double dist = e.optDouble("dist", -1);
+        double avg = e.optDouble("avgspeed", -1);
+        if (avg < 0 && dist > 0 && dur > 0) avg = dist / dur * 3.6;
+        double mx = e.optDouble("maxspeed", -1);
+        int steps = e.optInt("steps", 0);
+        double cal = e.optDouble("cal", 0);
+        int rounds = e.optInt("rounds", 0);
+
+        String[][] tiles = {
+                {"Idő", fmtDur(dur)},
+                {"Táv", dist >= 0 ? fmtDist(dist) : "—"},
+                {"Átlag", avg > 0 ? fmtSpeed(avg) : "—"},
+                {"Max", mx > 0 ? fmtSpeed(mx) : "—"},
+                {"Kalória", Math.round(cal) + " kcal"},
+                {steps > 0 ? "Lépések" : "Körök", steps > 0 ? String.valueOf(steps) : String.valueOf(rounds)},
+        };
+
+        int gap = 28, cols = 2;
+        int cardW = (W - 2 * M - gap) / cols;
+        int cardH = 200;
+        int startY = 380;
+        Paint cardBg = new Paint(Paint.ANTI_ALIAS_FLAG);
+        cardBg.setColor(0x14FFFFFF);
+        Paint val = new Paint(Paint.ANTI_ALIAS_FLAG);
+        val.setColor(0xFFFFFFFF);
+        val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        val.setTextSize(58);
+        Paint lab = new Paint(Paint.ANTI_ALIAS_FLAG);
+        lab.setColor(0xFF8AA0C4);
+        lab.setTextSize(34);
+        for (int i = 0; i < tiles.length; i++) {
+            int cx = M + (i % cols) * (cardW + gap);
+            int cy = startY + (i / cols) * (cardH + gap);
+            cv.drawRoundRect(new RectF(cx, cy, cx + cardW, cy + cardH), 28, 28, cardBg);
+            cv.drawText(tiles[i][1], cx + 34, cy + 96, val);
+            cv.drawText(tiles[i][0], cx + 34, cy + 150, lab);
+        }
+
+        // lábléc
+        Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fp.setColor(0xFF22E0FF);
+        fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setTextSize(38);
+        fp.setTextAlign(Paint.Align.CENTER);
+        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 70, fp);
+        return bmp;
     }
 
     /** Az edzés összefoglalója szövegként, bármely appba küldhető (üzenet, közösségi média...). */

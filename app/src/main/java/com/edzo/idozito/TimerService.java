@@ -54,13 +54,14 @@ public class TimerService extends Service {
     // Extra kulcsok
     public static final String EX_PREP = "prep", EX_WORK = "work", EX_REST = "rest",
             EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_CD = "cd",
-            EX_VIBE = "vibe", EX_VOICE = "voice", EX_NAMES = "names", EX_PNAME = "pname";
+            EX_VIBE = "vibe", EX_VOICE = "voice", EX_NAMES = "names", EX_PNAME = "pname",
+            EX_WARM = "warm", EX_COOL = "cool";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
             EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname", EX_RECORDS = "records";
 
-    public static final int T_PREP = 0, T_WORK = 1, T_REST = 2;
+    public static final int T_PREP = 0, T_WORK = 1, T_REST = 2, T_WARMUP = 3, T_COOLDOWN = 4;
 
     static final String CHANNEL = "edzo_timer";
     static final int NOTIF_ID = 42;
@@ -73,7 +74,7 @@ public class TimerService extends Service {
     }
 
     // Konfiguráció
-    private int prep, work, rest, rounds, workSound, restSound;
+    private int prep, work, rest, rounds, workSound, restSound, warm, cool;
     private int cdSecs = 3;
     private boolean track, vibeOn = true, voice;
     private String[] exNames;    // gyakorlatnevek (null/üres = sima futás)
@@ -184,6 +185,8 @@ public class TimerService extends Service {
                 work = intent.getIntExtra(EX_WORK, 10);
                 rest = intent.getIntExtra(EX_REST, 30);
                 rounds = intent.getIntExtra(EX_ROUNDS, 8);
+                warm = intent.getIntExtra(EX_WARM, 0);
+                cool = intent.getIntExtra(EX_COOL, 0);
                 workSound = intent.getIntExtra(EX_WS, 2);
                 restSound = intent.getIntExtra(EX_RS, 1);
                 track = intent.getBooleanExtra(EX_TRACK, false);
@@ -251,6 +254,7 @@ public class TimerService extends Service {
 
     private void buildPlan() {
         plan.clear();
+        if (warm > 0) plan.add(new Step(T_WARMUP, warm, 0));
         if (prep > 0) plan.add(new Step(T_PREP, prep, 0));
         int len = exLen();
         int n = rounds * len; // összes munka-szakasz (gyakorlat vagy futás)
@@ -260,6 +264,7 @@ public class TimerService extends Service {
             plan.add(new Step(T_WORK, work, round, label));
             if (rest > 0 && k < n - 1) plan.add(new Step(T_REST, rest, round));
         }
+        if (cool > 0) plan.add(new Step(T_COOLDOWN, cool, 0));
     }
 
     /** Gyakorlatok száma egy körben (1 = sima futás mód). */
@@ -285,6 +290,12 @@ public class TimerService extends Service {
         } else if (s.type == T_PREP) {
             if (!first) { Beeper.play(restSound); buzz(120); }
             speak("Felkészülés.");
+        } else if (s.type == T_WARMUP) {
+            Beeper.play(restSound); buzz(120);
+            speak("Bemelegítés. Kezdjük lazán.");
+        } else if (s.type == T_COOLDOWN) {
+            Beeper.play(restSound); buzz(120);
+            speak("Levezetés. Lassíts le.");
         }
         postNotification();
         broadcastTick();
@@ -657,6 +668,8 @@ public class TimerService extends Service {
                     : (stepEndElapsed - SystemClock.elapsedRealtime()) / 1000.0;
             if (remain < 0) remain = 0;
             String name = s.type == T_PREP ? "Előkészület"
+                    : s.type == T_WARMUP ? "Bemelegítés"
+                    : s.type == T_COOLDOWN ? "Levezetés"
                     : s.type == T_WORK ? (s.label != null ? s.label : "Futás") : "Pihenő";
             text = name + " · " + (int) Math.ceil(remain) + " mp · Kör "
                     + Math.max(1, s.round) + "/" + rounds + (paused ? " · szünet" : "");

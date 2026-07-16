@@ -56,9 +56,9 @@ public class MainActivity extends Activity {
     // Áttetsző „üveg" felületek – a generált háttérkép finoman átüt rajtuk
     static final int GLASS = 0xE6121A33, GLASS2 = 0xD919224A, GLASS_LINE = 0x33FFFFFF;
 
-    static final int PREP_K = 0, WORK_K = 1, REST_K = 2, ROUND_K = 3;
-    final int[] cfg = new int[4];
-    final int[] DEF = {10, 10, 30, 8};
+    static final int PREP_K = 0, WORK_K = 1, REST_K = 2, ROUND_K = 3, WARM_K = 4, COOL_K = 5;
+    final int[] cfg = new int[6];
+    final int[] DEF = {10, 10, 30, 8, 0, 0};
     int workSoundIdx = 2, restSoundIdx = 1;
     boolean trackDistance = false, precount = true, voice = false;
     String programName = ""; // üres = sima futás (intervallum)
@@ -74,13 +74,13 @@ public class MainActivity extends Activity {
     LinearLayout templatesBox;
     LinearLayout goalBox;
     TextView totalText;
-    final TextView[] valueLabels = new TextView[4];
+    final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
     TextView programLabel, programPreview, workRowTitle, workRowSub;
     LinearLayout programCard;
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
-    TextView exText, nextText, recordText;
+    TextView exText, exDesc, nextText, recordText;
     TextView statElapsed, statCal, statSteps;
     Button pauseBtn;
     ProgressRing ring;
@@ -109,7 +109,7 @@ public class MainActivity extends Activity {
         tPace = Theme.paceMode(this);
         Beeper.masterVolume = Theme.volume(this);
         builtRev = Theme.rev(this);
-        for (int i = 0; i < 4; i++) cfg[i] = prefs.getInt("k" + i, DEF[i]);
+        for (int i = 0; i < 6; i++) cfg[i] = prefs.getInt("k" + i, DEF[i]);
         workSoundIdx = prefs.getInt("ws", 2);
         restSoundIdx = prefs.getInt("rs", 1);
         trackDistance = prefs.getBoolean("track", false);
@@ -140,6 +140,7 @@ public class MainActivity extends Activity {
             perms.add(Manifest.permission.ACTIVITY_RECOGNITION);
         if (!perms.isEmpty()) requestPermissions(perms.toArray(new String[0]), REQ_NOTIF);
         Reminders.scheduleAll(this);
+        WeeklyReceiver.schedule(this);
     }
 
     // ================= Háttérkép =================
@@ -221,6 +222,8 @@ public class MainActivity extends Activity {
 
         // Idő-beállítások
         LinearLayout card = card();
+        card.addView(stepperRow("Bemelegítés", "Könnyű ráhangolódás az elején", WARM_K, 0, 1800));
+        card.addView(divider());
         card.addView(stepperRow("Előkészület", "Visszaszámlálás indulás előtt", PREP_K, 0, 600));
         card.addView(divider());
         card.addView(stepperRow("Futás", "Aktív időszak hossza", WORK_K, 1, 3600));
@@ -228,6 +231,8 @@ public class MainActivity extends Activity {
         card.addView(stepperRow("Pihenő", "Pihenés két futás között", REST_K, 0, 3600));
         card.addView(divider());
         card.addView(stepperRow("Körök", "Hányszor ismételjük", ROUND_K, 1, 99));
+        card.addView(divider());
+        card.addView(stepperRow("Levezetés", "Lassú levezetés a végén", COOL_K, 0, 1800));
         col.addView(card, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(8));
         TextView tip = text("A számra koppintva pontos értéket írhatsz be.", 11.5f, MUTED, false);
@@ -938,12 +943,12 @@ public class MainActivity extends Activity {
     }
 
     void refreshValues() {
-        for (int i = 0; i < 4; i++) if (valueLabels[i] != null) valueLabels[i].setText(String.valueOf(cfg[i]));
+        for (int i = 0; i < 6; i++) if (valueLabels[i] != null) valueLabels[i].setText(String.valueOf(cfg[i]));
     }
 
     void saveAll() {
         SharedPreferences.Editor e = prefs.edit();
-        for (int i = 0; i < 4; i++) e.putInt("k" + i, cfg[i]);
+        for (int i = 0; i < 6; i++) e.putInt("k" + i, cfg[i]);
         e.apply();
     }
 
@@ -951,7 +956,8 @@ public class MainActivity extends Activity {
         Programs.P p = Programs.byName(this, programName);
         int len = p == null ? 1 : p.ex.length;
         int n = cfg[ROUND_K] * len; // összes munka-szakasz
-        int total = cfg[PREP_K] + cfg[WORK_K] * n + cfg[REST_K] * Math.max(0, n - 1);
+        int total = cfg[WARM_K] + cfg[PREP_K] + cfg[WORK_K] * n
+                + cfg[REST_K] * Math.max(0, n - 1) + cfg[COOL_K];
         String s = "Teljes idő: " + fmtLong(total);
         if (len > 1) s += "  ·  " + len + " gyakorlat × " + cfg[ROUND_K] + " kör";
         totalText.setText(s);
@@ -979,6 +985,11 @@ public class MainActivity extends Activity {
         exText.setVisibility(View.GONE);
         exText.setPadding(0, dp(6), 0, 0);
         runView.addView(exText);
+        exDesc = text("", 12.5f, MUTED, false);
+        exDesc.setGravity(Gravity.CENTER);
+        exDesc.setVisibility(View.GONE);
+        exDesc.setPadding(dp(12), dp(4), dp(12), 0);
+        runView.addView(exDesc);
         runView.addView(gap(12));
 
         int size = (int) (getResources().getDisplayMetrics().widthPixels * 0.72f);
@@ -1082,6 +1093,8 @@ public class MainActivity extends Activity {
         i.putExtra(TimerService.EX_WORK, cfg[WORK_K]);
         i.putExtra(TimerService.EX_REST, cfg[REST_K]);
         i.putExtra(TimerService.EX_ROUNDS, cfg[ROUND_K]);
+        i.putExtra(TimerService.EX_WARM, cfg[WARM_K]);
+        i.putExtra(TimerService.EX_COOL, cfg[COOL_K]);
         i.putExtra(TimerService.EX_WS, workSoundIdx);
         i.putExtra(TimerService.EX_RS, restSoundIdx);
         i.putExtra(TimerService.EX_TRACK, trackDistance && hasLocationPermission());
@@ -1101,11 +1114,16 @@ public class MainActivity extends Activity {
         finished = false;
         pauseBtn.setEnabled(true);
         pauseBtn.setText("Szünet");
-        setPhaseUI(cfg[PREP_K] > 0 ? TimerService.T_PREP : TimerService.T_WORK, 1);
-        timeText.setText(fmt(cfg[PREP_K] > 0 ? cfg[PREP_K] : cfg[WORK_K]));
+        int firstPhase = cfg[WARM_K] > 0 ? TimerService.T_WARMUP
+                : cfg[PREP_K] > 0 ? TimerService.T_PREP : TimerService.T_WORK;
+        int firstDur = cfg[WARM_K] > 0 ? cfg[WARM_K]
+                : cfg[PREP_K] > 0 ? cfg[PREP_K] : cfg[WORK_K];
+        setPhaseUI(firstPhase, 1);
+        timeText.setText(fmt(firstDur));
         ring.setProgress(1f);
         distanceText.setText(trackDistance && hasLocationPermission() ? "📍 0 m" : "");
         exText.setVisibility(View.GONE);
+        exDesc.setVisibility(View.GONE);
         nextText.setText(prog != null && prog.ex.length > 0 ? "Következő: " + prog.ex[0] : "");
         recordText.setVisibility(View.GONE);
         showRun(true);
@@ -1163,8 +1181,12 @@ public class MainActivity extends Activity {
             phaseLabel.setText("GYAKORLAT");
             exText.setText(stepName);
             exText.setVisibility(View.VISIBLE);
+            String desc = Programs.descOf(stepName);
+            exDesc.setText(desc);
+            exDesc.setVisibility(desc.isEmpty() ? View.GONE : View.VISIBLE);
         } else {
             exText.setVisibility(View.GONE);
+            exDesc.setVisibility(View.GONE);
         }
         nextText.setText(nextName != null ? "Következő: " + nextName : "");
         timeText.setText(fmt(remain));
@@ -1200,6 +1222,7 @@ public class MainActivity extends Activity {
         phaseLabel.setText("KÉSZ");
         phaseLabel.setTextColor(DONE);
         exText.setVisibility(View.GONE);
+        exDesc.setVisibility(View.GONE);
         nextText.setText("Elmentve a naplóba ✔");
         ring.setColor(DONE);
         ring.setProgress(1f);
@@ -1235,15 +1258,24 @@ public class MainActivity extends Activity {
     void setPhaseUI(int phase, int round) { setPhaseUI(phase, round, cfg[ROUND_K]); }
 
     void setPhaseUI(int phase, int round, int rounds) {
-        int color = phase == TimerService.T_PREP ? PREP : phase == TimerService.T_WORK ? tWork : tRest;
+        int color = phase == TimerService.T_PREP ? PREP
+                : phase == TimerService.T_WORK ? tWork
+                : phase == TimerService.T_WARMUP ? PREP
+                : phase == TimerService.T_COOLDOWN ? tRest
+                : tRest;
         phaseLabel.setText(phaseName(phase));
         phaseLabel.setTextColor(color);
         ring.setColor(color);
-        roundInfo.setText("Kör " + Math.max(1, round) + " / " + rounds);
+        boolean showRounds = phase == TimerService.T_WORK || phase == TimerService.T_REST || phase == TimerService.T_PREP;
+        roundInfo.setText(showRounds ? "Kör " + Math.max(1, round) + " / " + rounds : "");
     }
 
     String phaseName(int phase) {
-        return phase == TimerService.T_PREP ? "ELŐKÉSZÜLÉS" : phase == TimerService.T_WORK ? "FUTÁS" : "PIHENŐ";
+        return phase == TimerService.T_PREP ? "ELŐKÉSZÜLÉS"
+                : phase == TimerService.T_WORK ? "FUTÁS"
+                : phase == TimerService.T_WARMUP ? "BEMELEGÍTÉS"
+                : phase == TimerService.T_COOLDOWN ? "LEVEZETÉS"
+                : "PIHENŐ";
     }
 
     @Override
