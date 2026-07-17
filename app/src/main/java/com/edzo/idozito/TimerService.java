@@ -44,6 +44,7 @@ public class TimerService extends Service {
     public static final String ACTION_STOP = "com.edzo.idozito.STOP";
     public static final String ACTION_STOP_SAVE = "com.edzo.idozito.STOP_SAVE";
     public static final String ACTION_SKIP = "com.edzo.idozito.SKIP";
+    public static final String ACTION_ADD_TIME = "com.edzo.idozito.ADD_TIME";
     public static final String ACTION_SYNC = "com.edzo.idozito.SYNC";
 
     // Broadcastok (Service -> Activity)
@@ -55,7 +56,7 @@ public class TimerService extends Service {
     public static final String EX_PREP = "prep", EX_WORK = "work", EX_REST = "rest",
             EX_ROUNDS = "rounds", EX_WS = "ws", EX_RS = "rs", EX_TRACK = "track", EX_CD = "cd",
             EX_VIBE = "vibe", EX_VOICE = "voice", EX_NAMES = "names", EX_PNAME = "pname",
-            EX_WARM = "warm", EX_COOL = "cool";
+            EX_WARM = "warm", EX_COOL = "cool", EX_DELTA = "delta";
     public static final String EX_PHASE = "phase", EX_REMAIN = "remain", EX_ROUND = "round",
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
@@ -201,6 +202,7 @@ public class TimerService extends Service {
             case ACTION_PAUSE: pause(); break;
             case ACTION_RESUME: resume(); break;
             case ACTION_SKIP: skipStep(); break;
+            case ACTION_ADD_TIME: addTime(intent.getIntExtra(EX_DELTA, 0)); break;
             case ACTION_SYNC: broadcastTick(); break;
             case ACTION_STOP:
                 sendBroadcast(new Intent(B_STOPPED).setPackage(getPackageName()));
@@ -357,6 +359,23 @@ public class TimerService extends Service {
         idx++;
         if (idx >= plan.size()) { finishWorkout(); return; }
         beginStep(false);
+    }
+
+    /** Az aktuális szakasz hosszának módosítása menet közben (±mp). */
+    private void addTime(int deltaSec) {
+        if (!running || deltaSec == 0) return;
+        long dm = deltaSec * 1000L;
+        if (paused) {
+            remainingAtPause = Math.max(1000, remainingAtPause + dm);
+        } else {
+            long remain = stepEndElapsed - SystemClock.elapsedRealtime();
+            remain = Math.max(1000, remain + dm);
+            stepEndElapsed = SystemClock.elapsedRealtime() + remain;
+            lastShownSec = -1;
+        }
+        buzz(20);
+        postNotification();
+        broadcastTick();
     }
 
     private void pause() {

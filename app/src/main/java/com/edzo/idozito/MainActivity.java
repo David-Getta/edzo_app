@@ -1165,6 +1165,20 @@ public class MainActivity extends Activity {
         runView.addView(stats);
         runView.addView(gap(22));
 
+        // Idő-módosítás menet közben
+        LinearLayout adj = hbox();
+        adj.setGravity(Gravity.CENTER);
+        Button minus15 = timeAdjBtn("−15 mp");
+        Button plus15 = timeAdjBtn("+15 mp");
+        minus15.setOnClickListener(v -> { if (!finished) addTime(-15); });
+        plus15.setOnClickListener(v -> { if (!finished) addTime(15); });
+        LinearLayout.LayoutParams amp = new LinearLayout.LayoutParams(-2, -2);
+        amp.rightMargin = dp(10);
+        adj.addView(minus15, amp);
+        adj.addView(plus15);
+        runView.addView(adj);
+        runView.addView(gap(14));
+
         LinearLayout controls = hbox();
         pauseBtn = ghostButton("Szünet");
         Button skip = ghostButton("⏭");
@@ -1255,6 +1269,12 @@ public class MainActivity extends Activity {
 
     void cmd(String action) {
         startService(new Intent(this, TimerService.class).setAction(action));
+    }
+
+    void addTime(int deltaSec) {
+        startService(new Intent(this, TimerService.class)
+                .setAction(TimerService.ACTION_ADD_TIME)
+                .putExtra(TimerService.EX_DELTA, deltaSec));
     }
 
     /** Leállításkor: ha az edzés még nem fejeződött be, rákérdez a mentésre. */
@@ -1499,6 +1519,25 @@ public class MainActivity extends Activity {
         b.setBackground(bg);
         b.setTextColor(0xFFFFFFFF);
         b.setTextSize(18);
+        return b;
+    }
+
+    Button timeAdjBtn(String label) {
+        Button b = new Button(this);
+        b.setText(label);
+        b.setAllCaps(false);
+        b.setTextColor(TXT);
+        b.setTypeface(null, Typeface.BOLD);
+        b.setTextSize(14);
+        b.setStateListAnimator(null);
+        b.setMinWidth(0);
+        b.setMinHeight(0);
+        b.setPadding(dp(18), dp(10), dp(18), dp(10));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(CARD2);
+        bg.setCornerRadius(dp(14));
+        bg.setStroke(dp(1), LINE);
+        b.setBackground(bg);
         return b;
     }
 
