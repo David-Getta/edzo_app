@@ -23,6 +23,12 @@ public final class Mobility {
     static Item it(String n, String d, String v) { return new Item(n, d, v); }
     static Group g(String t, Item... i) { return new Group(t, i); }
 
+    /** Rövid levezető nyújtás edzés után (a fő izomcsoportokra, 8 gyakorlat). */
+    public static final String[] COOLDOWN_NAMES = {
+            "Álló combhajlító", "Álló combnyújtás", "Falnál vádlinyújtás", "Fekvő 4-es nyújtás",
+            "Kitöréses csípőnyújtás", "Széles hátizom nyújtás", "Deltoid keresztnyújtás", "Tarkónyújtás"
+    };
+
     // ---------------- Bemelegítés ----------------
     public static final Group[] WARMUP = {
             g("Dinamikus bemelegítés",

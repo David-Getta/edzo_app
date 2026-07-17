@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
     TextView phaseLabel, timeText, roundInfo, distanceText;
     TextView exText, exDesc, nextText, recordText, levelText;
     TextView statElapsed, statCal, statSteps;
-    Button pauseBtn;
+    Button pauseBtn, cooldownBtn;
     ProgressRing ring;
     boolean lastPaused = false;
     boolean finished = false;
@@ -1216,6 +1216,15 @@ public class MainActivity extends Activity {
         controls.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         runView.addView(controls);
 
+        // Levezető nyújtás gomb (csak a befejező képernyőn látszik)
+        cooldownBtn = ghostButton("🧘  Levezető nyújtás");
+        cooldownBtn.setVisibility(View.GONE);
+        cooldownBtn.setOnClickListener(v ->
+                startRoutine(Mobility.COOLDOWN_NAMES, "Levezető nyújtás", 30, 5, 3));
+        LinearLayout.LayoutParams cbLp = new LinearLayout.LayoutParams(-1, -2);
+        cbLp.topMargin = dp(12);
+        runView.addView(cooldownBtn, cbLp);
+
         return runView;
     }
 
@@ -1283,6 +1292,7 @@ public class MainActivity extends Activity {
         nextText.setText(prog != null && prog.ex.length > 0 ? "Következő: " + prog.ex[0] : "");
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
+        cooldownBtn.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -1320,6 +1330,7 @@ public class MainActivity extends Activity {
         nextText.setText("Következő: " + names[0]);
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
+        cooldownBtn.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -1485,6 +1496,7 @@ public class MainActivity extends Activity {
         lastPaused = false;
         pauseBtn.setEnabled(false);
         pauseBtn.setText("Kész");
+        cooldownBtn.setVisibility(View.VISIBLE);
         refreshGoal();
         refreshProgress();
     }
