@@ -325,6 +325,10 @@ public class MainActivity extends Activity {
                 featureTile("🔔", "Emlékeztetők", () -> startActivity(new Intent(this, RemindersActivity.class)))));
         grid.addView(gap(10));
         grid.addView(tileRow(
+                featureTile("🧘", "Nyújtás & mobilitás", () -> startActivity(new Intent(this, MobilityActivity.class))),
+                featureTile("📖", "Gyakorlatok", () -> startActivity(new Intent(this, LibraryActivity.class)))));
+        grid.addView(gap(10));
+        grid.addView(tileRow(
                 featureTile("⚙️", "Beállítások", () -> startActivity(new Intent(this, SettingsActivity.class))),
                 featureTile("💾", "Sablon mentése", this::saveTemplateDialog)));
         col.addView(grid, new LinearLayout.LayoutParams(-1, -2));
