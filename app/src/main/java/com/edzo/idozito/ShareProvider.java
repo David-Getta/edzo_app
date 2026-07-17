@@ -85,6 +85,7 @@ public class ShareProvider extends ContentProvider {
     @Override public String getType(Uri uri) {
         String n = uri.getLastPathSegment();
         if (n != null && n.endsWith(".csv")) return "text/csv";
+        if (n != null && n.endsWith(".json")) return "application/json";
         return "image/png";
     }
     @Override public Uri insert(Uri uri, ContentValues values) { return null; }

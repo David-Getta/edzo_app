@@ -1,6 +1,8 @@
 package com.edzo.idozito;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ public class SettingsActivity extends Activity {
     static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
 
     TextView volLabel;
+    static final int REQ_IMPORT = 4201;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -133,6 +136,20 @@ public class SettingsActivity extends Activity {
         Button export = ghost("📤  Előzmények exportálása (CSV)");
         export.setOnClickListener(v -> exportCsv());
         col.addView(export);
+        col.addView(gap(10));
+
+        Button backup = ghost("💾  Biztonsági mentés (fájl)");
+        backup.setOnClickListener(v -> ShareProvider.shareTextFile(this,
+                Backup.exportJson(this), "my_trainer_mentes.json", "application/json"));
+        col.addView(backup);
+        col.addView(gap(10));
+
+        Button restore = ghost("📥  Visszaállítás fájlból");
+        restore.setOnClickListener(v -> new Sheet(this, "Visszaállítás",
+                "Ez FELÜLÍRJA a jelenlegi adataidat (előzmények, beállítások, programok). Folytatod?")
+                .addPrimary("Fájl kiválasztása", this::pickBackupFile)
+                .addCancel().show());
+        col.addView(restore);
         col.addView(gap(24));
 
         Button reset = ghost("↺  Alaphelyzet");
@@ -178,6 +195,51 @@ public class SettingsActivity extends Activity {
               .append(o.optInt("steps", 0)).append('\n');
         }
         ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_elozmenyek.csv", "text/csv");
+    }
+
+    // ---------------- Biztonsági mentés / visszaállítás ----------------
+
+    void pickBackupFile() {
+        try {
+            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("*/*");
+            startActivityForResult(i, REQ_IMPORT);
+        } catch (Exception e) {
+            Toast.makeText(this, "Nem található fájlkezelő.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req == REQ_IMPORT && res == RESULT_OK && data != null && data.getData() != null) {
+            try {
+                String json = readAll(data.getData());
+                if (Backup.importJson(this, json)) {
+                    Beeper.masterVolume = Theme.volume(this);
+                    Reminders.scheduleAll(this);
+                    WeeklyReceiver.schedule(this);
+                    Theme.bumpRev(this); // hogy a főképernyő is újraépüljön
+                    Toast.makeText(this, "Visszaállítva. 👍", Toast.LENGTH_LONG).show();
+                    recreate();
+                } else {
+                    Toast.makeText(this, "Ez nem My trainer mentésfájl.", Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Nem sikerült beolvasni a fájlt.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    String readAll(Uri uri) throws Exception {
+        java.io.InputStream is = getContentResolver().openInputStream(uri);
+        java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+        byte[] buf = new byte[4096];
+        int n;
+        while ((n = is.read(buf)) > 0) bos.write(buf, 0, n);
+        is.close();
+        return new String(bos.toByteArray(), "UTF-8");
     }
 
     // ---------------- Színsor ----------------
