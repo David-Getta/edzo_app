@@ -15,6 +15,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -104,6 +105,8 @@ public class TimerService extends Service {
     private Vibrator vibrator;
     private PowerManager.WakeLock wakeLock;
     private NotificationManager nm;
+    private AudioManager audioManager;
+    private Object focusRequest; // AudioFocusRequest (API 26+)
 
     // GPS
     private LocationManager lm;
@@ -249,6 +252,7 @@ public class TimerService extends Service {
         stepEndElapsed = SystemClock.elapsedRealtime() + (long) plan.get(0).dur * 1000L;
         startForeground(NOTIF_ID, buildNotification());
         acquireWakeLock();
+        requestAudioFocus();
         startSteps();
         if (track) startLocation();
         beginStep(true);
@@ -495,6 +499,7 @@ public class TimerService extends Service {
         stopLocation();
         stopSteps();
         releaseWakeLock();
+        abandonAudioFocus();
         stopForeground(true);
         stopSelf();
     }
@@ -664,6 +669,43 @@ public class TimerService extends Service {
         wakeLock = null;
     }
 
+    // ---------------- Audio-fókusz (zene halkítása) ----------------
+
+    private void requestAudioFocus() {
+        if (!Theme.duckMusic(this)) return;
+        try {
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager == null) return;
+            if (Build.VERSION.SDK_INT >= 26) {
+                android.media.AudioAttributes attrs = new android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build();
+                android.media.AudioFocusRequest req =
+                        new android.media.AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                                .setAudioAttributes(attrs)
+                                .build();
+                focusRequest = req;
+                audioManager.requestAudioFocus(req);
+            } else {
+                audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC,
+                        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void abandonAudioFocus() {
+        try {
+            if (audioManager == null) return;
+            if (Build.VERSION.SDK_INT >= 26 && focusRequest != null) {
+                audioManager.abandonAudioFocusRequest((android.media.AudioFocusRequest) focusRequest);
+            } else {
+                audioManager.abandonAudioFocus(null);
+            }
+        } catch (Exception ignored) {}
+        focusRequest = null;
+    }
+
     // ---------------- Értesítés ----------------
 
     private void createChannel() {
@@ -756,6 +798,7 @@ public class TimerService extends Service {
         stopLocation();
         stopSteps();
         releaseWakeLock();
+        abandonAudioFocus();
         try { if (tts != null) { tts.stop(); tts.shutdown(); } } catch (Exception ignored) {}
     }
 

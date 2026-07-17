@@ -117,6 +117,11 @@ public class SettingsActivity extends Activity {
         live.setChecked(Theme.liveBg(this));
         notif.addView(switchRow("Élő háttér-animáció", live));
         live.setOnCheckedChangeListener((btn, c) -> { Theme.setBool(this, "livebg", c); recreate(); });
+        notif.addView(divider());
+        Switch duck = new Switch(this);
+        duck.setChecked(Theme.duckMusic(this));
+        notif.addView(switchRow("Zene halkítása edzés közben", duck));
+        duck.setOnCheckedChangeListener((btn, c) -> Theme.setBool(this, "duck", c));
         col.addView(notif, lp());
         col.addView(gap(14));
 
