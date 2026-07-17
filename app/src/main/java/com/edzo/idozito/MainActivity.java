@@ -725,7 +725,7 @@ public class MainActivity extends Activity {
                     if (i > 0) sb.append("  ·  ");
                     sb.append(p.ex[i]);
                 }
-                if (p.custom) sb.append("\n(A saját programot hosszan nyomva törölheted.)");
+                if (p.custom) sb.append("\n(A kártyát hosszan nyomva szerkesztheted vagy törölheted.)");
                 programPreview.setText(sb.toString());
                 programPreview.setVisibility(View.VISIBLE);
             }
@@ -761,10 +761,13 @@ public class MainActivity extends Activity {
         vibrateShort();
     }
 
-    void newProgramDialog() {
+    void newProgramDialog() { editProgramDialog(null); }
+
+    void editProgramDialog(final Programs.P existing) {
         LinearLayout box = vbox();
         box.setPadding(dp(6), dp(2), dp(6), dp(4));
         final EditText name = sheetInput("Program neve (pl. Reggeli torna)", false);
+        if (existing != null) name.setText(existing.name);
         box.addView(name);
         box.addView(gap(12));
         TextView lbl = text("Gyakorlatok – soronként egy:", 13, MUTED, false);
@@ -773,9 +776,14 @@ public class MainActivity extends Activity {
         final EditText exs = sheetInput("Plank\nHasprés\nGuggolás", true);
         exs.setMinLines(4);
         exs.setGravity(Gravity.TOP);
+        if (existing != null) {
+            StringBuilder sb = new StringBuilder();
+            for (String e : existing.ex) { if (sb.length() > 0) sb.append("\n"); sb.append(e); }
+            exs.setText(sb.toString());
+        }
         box.addView(exs);
 
-        new Sheet(this, "Új saját program")
+        new Sheet(this, existing == null ? "Új saját program" : "Program szerkesztése")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
                     String n = name.getText().toString().trim();
@@ -789,6 +797,7 @@ public class MainActivity extends Activity {
                         return;
                     }
                     if (n.isEmpty()) n = "Saját program";
+                    if (existing != null) Programs.removeCustom(this, existing.name);
                     Programs.addCustom(this, n, list.toArray(new String[0]));
                     programName = n;
                     saveProgram();
@@ -819,8 +828,9 @@ public class MainActivity extends Activity {
     boolean maybeDeleteCustomProgram() {
         final Programs.P p = Programs.byName(this, programName);
         if (p == null || !p.custom) return false;
-        new Sheet(this, "Program törlése", "Törlöd a(z) „" + p.name + "\" saját programot?")
-                .addDestructive("Törlés", () -> {
+        new Sheet(this, p.title(), p.ex.length + " gyakorlat")
+                .addPrimary("✏️  Szerkesztés", () -> editProgramDialog(p))
+                .addDestructive("🗑  Törlés", () -> {
                     Programs.removeCustom(this, p.name);
                     programName = "";
                     saveProgram();
