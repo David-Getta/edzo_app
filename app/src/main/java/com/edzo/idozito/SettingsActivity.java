@@ -12,6 +12,14 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Testreszabás: színek, hangerő, rezgés, visszaszámlálás hossza, sebesség-egység.
@@ -93,6 +101,23 @@ public class SettingsActivity extends Activity {
         col.addView(text("Sebesség kijelzése", 15.5f, TXT, true));
         col.addView(gap(8));
         col.addView(paceChips(), lp());
+        col.addView(gap(18));
+
+        // --- Értesítések és adatok ---
+        LinearLayout notif = card();
+        Switch recap = new Switch(this);
+        recap.setChecked(Theme.recapEnabled(this));
+        notif.addView(switchRow("Heti visszatekintő értesítés", recap));
+        recap.setOnCheckedChangeListener((btn, c) -> {
+            Theme.setBool(this, "recap", c);
+            WeeklyReceiver.schedule(this);
+        });
+        col.addView(notif, lp());
+        col.addView(gap(14));
+
+        Button export = ghost("📤  Előzmények exportálása (CSV)");
+        export.setOnClickListener(v -> exportCsv());
+        col.addView(export);
         col.addView(gap(24));
 
         Button reset = ghost("↺  Alaphelyzet");
@@ -104,6 +129,40 @@ public class SettingsActivity extends Activity {
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffold(this, sv, "bg_main"));
         col.post(() -> Ux.enterChildren(col, 30, 45));
+    }
+
+    // ---------------- CSV export ----------------
+
+    void exportCsv() {
+        JSONArray h = History.load(this);
+        if (h.length() == 0) {
+            Toast.makeText(this, "Nincs elmentett edzés.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("datum;tipus;ido_mp;tav_m;korok;atlag_kmh;max_kmh;kaloria;lepesek\n");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o == null) continue;
+            String name = o.optString("name", "");
+            String type = (name.isEmpty() ? "Futas" : name).replace(';', ',');
+            double dist = o.optDouble("dist", -1);
+            int dur = o.optInt("dur");
+            double avg = o.optDouble("avgspeed", -1);
+            if (avg < 0 && dist > 0 && dur > 0) avg = dist / dur * 3.6;
+            double mx = o.optDouble("maxspeed", -1);
+            sb.append(df.format(new Date(o.optLong("ts")))).append(';')
+              .append(type).append(';')
+              .append(dur).append(';')
+              .append(dist >= 0 ? String.valueOf(Math.round(dist)) : "").append(';')
+              .append(o.optInt("rounds")).append(';')
+              .append(avg > 0 ? String.format(Locale.US, "%.2f", avg) : "").append(';')
+              .append(mx > 0 ? String.format(Locale.US, "%.2f", mx) : "").append(';')
+              .append(Math.round(o.optDouble("cal", 0))).append(';')
+              .append(o.optInt("steps", 0)).append('\n');
+        }
+        ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_elozmenyek.csv", "text/csv");
     }
 
     // ---------------- Színsor ----------------

@@ -25,10 +25,18 @@ public class WeeklyReceiver extends BroadcastReceiver {
     static final String CHANNEL = "edzo_recap";
     static final int REQ = 77, NOTIF_ID = 9100;
 
-    /** Következő vasárnap 19:00-ra ütemez, majd hetente ismétel. */
+    /** Következő vasárnap 19:00-ra ütemez, majd hetente ismétel. Ha ki van kapcsolva, törli. */
     public static void schedule(Context c) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
+        Intent base = new Intent(c, WeeklyReceiver.class).setAction("com.edzo.idozito.WEEKLY");
+        int baseFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) baseFlags |= PendingIntent.FLAG_IMMUTABLE;
+        PendingIntent basePi = PendingIntent.getBroadcast(c, REQ, base, baseFlags);
+        if (!Theme.recapEnabled(c)) {
+            try { am.cancel(basePi); } catch (Exception ignored) {}
+            return;
+        }
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 19);
         cal.set(Calendar.MINUTE, 0);

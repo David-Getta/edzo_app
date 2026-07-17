@@ -46,6 +46,8 @@ public final class Theme {
     public static int countdownSecs(Context c) { return p(c).getInt("cd_secs", 3); }
     /** false = km/h, true = perc/km (tempó). */
     public static boolean paceMode(Context c) { return p(c).getBoolean("pace", false); }
+    /** Heti visszatekintő értesítés be/ki. */
+    public static boolean recapEnabled(Context c) { return p(c).getBoolean("recap", true); }
 
     /** Minden UI-t érintő változásnál nő; a MainActivity ez alapján épül újra. */
     public static int rev(Context c) { return p(c).getInt("theme_rev", 0); }
@@ -58,7 +60,7 @@ public final class Theme {
     public static void resetAll(Context c) {
         p(c).edit()
                 .remove("c_accent").remove("c_accent2").remove("c_work").remove("c_rest")
-                .remove("volume").remove("vibrate").remove("cd_secs").remove("pace")
+                .remove("volume").remove("vibrate").remove("cd_secs").remove("pace").remove("recap")
                 .apply();
         bumpRev(c);
     }

@@ -45,6 +45,23 @@ public class ShareProvider extends ContentProvider {
         } catch (Exception ignored) {}
     }
 
+    /** Szövegfájl (pl. CSV) mentése és megosztás-választó megnyitása. */
+    public static void shareTextFile(Activity a, String content, String name, String mime) {
+        try {
+            File f = new File(dir(a), name);
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(content.getBytes("UTF-8"));
+            fos.flush();
+            fos.close();
+            Uri uri = Uri.parse("content://" + AUTHORITY + "/" + f.getName());
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType(mime);
+            i.putExtra(Intent.EXTRA_STREAM, uri);
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            a.startActivity(Intent.createChooser(i, "Előzmények exportálása"));
+        } catch (Exception ignored) {}
+    }
+
     private File fileFor(Uri uri) {
         String name = uri.getLastPathSegment();
         return new File(dir(getContext()), name);
@@ -65,7 +82,11 @@ public class ShareProvider extends ContentProvider {
         return c;
     }
 
-    @Override public String getType(Uri uri) { return "image/png"; }
+    @Override public String getType(Uri uri) {
+        String n = uri.getLastPathSegment();
+        if (n != null && n.endsWith(".csv")) return "text/csv";
+        return "image/png";
+    }
     @Override public Uri insert(Uri uri, ContentValues values) { return null; }
     @Override public int delete(Uri uri, String selection, String[] selectionArgs) { return 0; }
     @Override public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) { return 0; }

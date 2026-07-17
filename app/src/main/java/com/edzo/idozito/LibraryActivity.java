@@ -86,7 +86,7 @@ public class LibraryActivity extends Activity {
             col.addView(gap(18));
         }
 
-        col.addView(text("Tipp: a saját programjaidhoz is adhatsz gyakorlatokat az „Edzés típusa" választóban.",
+        col.addView(text("Tipp: a saját programjaidhoz is adhatsz gyakorlatokat az „Edzés típusa” választóban.",
                 12.5f, MUTED, false));
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
