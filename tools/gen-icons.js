@@ -34,11 +34,11 @@ function drawIcon(size, { padding = 0.14 } = {}) {
       const inBadge = cornerDist <= corner;
 
       if (inBadge) {
-        // Vertical brand gradient (indigo -> violet).
-        const t = y / size;
-        r = Math.round(lerp(79, 124, t));
-        g = Math.round(lerp(70, 58, t));
-        b = Math.round(lerp(229, 237, t));
+        // Átlós márka-gradiens: cián (#22E0FF) -> magenta (#FF3DDB).
+        const t = (x + y) / (2 * size);
+        r = Math.round(lerp(34, 255, t));
+        g = Math.round(lerp(224, 61, t));
+        b = Math.round(lerp(255, 219, t));
         a = 255;
       }
 
