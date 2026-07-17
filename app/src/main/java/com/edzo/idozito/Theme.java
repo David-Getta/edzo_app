@@ -52,6 +52,8 @@ public final class Theme {
     public static boolean liveBg(Context c) { return p(c).getBoolean("livebg", true); }
     /** Zene halkítása (audio-fókusz) edzés közben be/ki. */
     public static boolean duckMusic(Context c) { return p(c).getBoolean("duck", true); }
+    /** Képernyő ébren tartása edzés közben (amíg a futás-képernyőt nézed). */
+    public static boolean keepScreenOn(Context c) { return p(c).getBoolean("screenon", true); }
 
     /** Minden UI-t érintő változásnál nő; a MainActivity ez alapján épül újra. */
     public static int rev(Context c) { return p(c).getInt("theme_rev", 0); }
@@ -64,7 +66,7 @@ public final class Theme {
     public static void resetAll(Context c) {
         p(c).edit()
                 .remove("c_accent").remove("c_accent2").remove("c_work").remove("c_rest")
-                .remove("volume").remove("vibrate").remove("cd_secs").remove("pace").remove("recap").remove("livebg").remove("duck")
+                .remove("volume").remove("vibrate").remove("cd_secs").remove("pace").remove("recap").remove("livebg").remove("duck").remove("screenon")
                 .apply();
         bumpRev(c);
     }

@@ -1229,6 +1229,9 @@ public class MainActivity extends Activity {
     void showRun(boolean run) {
         setupScroll.setVisibility(run ? View.GONE : View.VISIBLE);
         runView.setVisibility(run ? View.VISIBLE : View.GONE);
+        int flag = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        if (run && Theme.keepScreenOn(this)) getWindow().addFlags(flag);
+        else getWindow().clearFlags(flag);
     }
 
     // ================= Service parancsok =================

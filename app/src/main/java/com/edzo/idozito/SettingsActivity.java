@@ -122,6 +122,11 @@ public class SettingsActivity extends Activity {
         duck.setChecked(Theme.duckMusic(this));
         notif.addView(switchRow("Zene halkítása edzés közben", duck));
         duck.setOnCheckedChangeListener((btn, c) -> Theme.setBool(this, "duck", c));
+        notif.addView(divider());
+        Switch screenOn = new Switch(this);
+        screenOn.setChecked(Theme.keepScreenOn(this));
+        notif.addView(switchRow("Képernyő ébren tartása edzés közben", screenOn));
+        screenOn.setOnCheckedChangeListener((btn, c) -> Theme.setBool(this, "screenon", c));
         col.addView(notif, lp());
         col.addView(gap(14));
 
