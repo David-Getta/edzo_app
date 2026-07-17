@@ -71,6 +71,13 @@ public class MobilityActivity extends Activity {
     void render() {
         for (int i = 0; i < 3; i++) styleChip(chips[i], i == section);
         body.removeAllViews();
+
+        Button start = startBtn("▶  Vezetett " + sectionLabel() + " indítása");
+        start.setOnClickListener(v -> chooseHold());
+        body.addView(start);
+        body.addView(text("A telefon időzíti és bemondja a gyakorlatokat, egymás után.", 12, MUTED, false));
+        body.addView(gap(16));
+
         Mobility.Group[] groups = section == 0 ? Mobility.WARMUP
                 : section == 1 ? Mobility.STRETCH : Mobility.ROLLING;
         for (Mobility.Group grp : groups) {
@@ -128,6 +135,56 @@ public class MobilityActivity extends Activity {
         lp.leftMargin = dp(10);
         b.setLayoutParams(lp);
         b.setOnClickListener(v -> openVideo(query));
+        return b;
+    }
+
+    // ---- Vezetett rutin ----
+
+    String sectionLabel() { return section == 0 ? "bemelegítés" : section == 1 ? "nyújtás" : "hengerezés"; }
+    String routineLabel() { return section == 0 ? "Bemelegítés" : section == 1 ? "Nyújtás" : "Hengerezés"; }
+
+    String[] sectionNames() {
+        Mobility.Group[] groups = section == 0 ? Mobility.WARMUP
+                : section == 1 ? Mobility.STRETCH : Mobility.ROLLING;
+        java.util.ArrayList<String> l = new java.util.ArrayList<>();
+        for (Mobility.Group g : groups) for (Mobility.Item it : g.items) l.add(it.name);
+        return l.toArray(new String[0]);
+    }
+
+    void chooseHold() {
+        new Sheet(this, "Vezetett " + sectionLabel(), "Meddig tartson egy gyakorlat?")
+                .addRow("⏱", "20 másodperc", null, false, true, () -> launchRoutine(20))
+                .addRow("⏱", "30 másodperc", null, false, true, () -> launchRoutine(30))
+                .addRow("⏱", "45 másodperc", null, false, true, () -> launchRoutine(45))
+                .addCancel()
+                .show();
+    }
+
+    void launchRoutine(int hold) {
+        Intent i = new Intent(this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        i.putExtra("r_names", sectionNames());
+        i.putExtra("r_label", routineLabel());
+        i.putExtra("r_work", hold);
+        i.putExtra("r_rest", section == 0 ? 4 : 6);
+        i.putExtra("r_prep", 5);
+        startActivity(i);
+    }
+
+    Button startBtn(String label) {
+        Button b = new Button(this);
+        b.setText(label);
+        b.setAllCaps(false);
+        b.setTextColor(0xFFFFFFFF);
+        b.setTypeface(null, Typeface.BOLD);
+        b.setTextSize(16);
+        b.setStateListAnimator(null);
+        b.setPadding(dp(16), dp(15), dp(16), dp(15));
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{accent, Theme.accent2(this)});
+        bg.setCornerRadius(dp(16));
+        b.setBackground(bg);
+        b.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         return b;
     }
 

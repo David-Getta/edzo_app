@@ -145,6 +145,7 @@ public class MainActivity extends Activity {
         if (!perms.isEmpty()) requestPermissions(perms.toArray(new String[0]), REQ_NOTIF);
         Reminders.scheduleAll(this);
         WeeklyReceiver.schedule(this);
+        handleRoutineIntent(getIntent());
     }
 
     // ================= Háttérkép =================
@@ -1279,6 +1280,63 @@ public class MainActivity extends Activity {
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
         showRun(true);
+    }
+
+    /** Vezetett rutin indítása tetszőleges gyakorlatlistából (pl. nyújtás/bemelegítés). */
+    void startRoutine(String[] names, String label, int work, int rest, int prep) {
+        if (names == null || names.length == 0) return;
+        Intent i = new Intent(this, TimerService.class).setAction(TimerService.ACTION_START);
+        i.putExtra(TimerService.EX_PREP, prep);
+        i.putExtra(TimerService.EX_WORK, work);
+        i.putExtra(TimerService.EX_REST, rest);
+        i.putExtra(TimerService.EX_ROUNDS, 1);
+        i.putExtra(TimerService.EX_WARM, 0);
+        i.putExtra(TimerService.EX_COOL, 0);
+        i.putExtra(TimerService.EX_WS, workSoundIdx);
+        i.putExtra(TimerService.EX_RS, restSoundIdx);
+        i.putExtra(TimerService.EX_TRACK, false);
+        i.putExtra(TimerService.EX_CD, precount ? Theme.countdownSecs(this) : 0);
+        i.putExtra(TimerService.EX_VIBE, Theme.vibrate(this));
+        i.putExtra(TimerService.EX_VOICE, voice);
+        i.putExtra(TimerService.EX_NAMES, names);
+        i.putExtra(TimerService.EX_PNAME, label);
+        if (Build.VERSION.SDK_INT >= 26) startForegroundService(i);
+        else startService(i);
+
+        lastPaused = false;
+        finished = false;
+        pauseBtn.setEnabled(true);
+        pauseBtn.setText("Szünet");
+        setPhaseUI(prep > 0 ? TimerService.T_PREP : TimerService.T_WORK, 1);
+        timeText.setText(fmt(prep > 0 ? prep : work));
+        ring.setProgress(1f);
+        distanceText.setText("");
+        exText.setVisibility(View.GONE);
+        exDesc.setVisibility(View.GONE);
+        nextText.setText("Következő: " + names[0]);
+        recordText.setVisibility(View.GONE);
+        levelText.setVisibility(View.GONE);
+        showRun(true);
+    }
+
+    /** Ha másik képernyő vezetett rutint kért (intent-extrákkal), elindítjuk. */
+    void handleRoutineIntent(Intent intent) {
+        if (intent == null) return;
+        String[] names = intent.getStringArrayExtra("r_names");
+        if (names == null || names.length == 0) return;
+        String label = intent.getStringExtra("r_label");
+        int work = intent.getIntExtra("r_work", 30);
+        int rest = intent.getIntExtra("r_rest", 5);
+        int prep = intent.getIntExtra("r_prep", 5);
+        intent.removeExtra("r_names"); // ne induljon újra forgatás/visszatérés után
+        startRoutine(names, label != null ? label : "Mobilitás", work, rest, prep);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleRoutineIntent(intent);
     }
 
     void cmd(String action) {
