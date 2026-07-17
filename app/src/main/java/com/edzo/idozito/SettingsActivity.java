@@ -112,6 +112,11 @@ public class SettingsActivity extends Activity {
             Theme.setBool(this, "recap", c);
             WeeklyReceiver.schedule(this);
         });
+        notif.addView(divider());
+        Switch live = new Switch(this);
+        live.setChecked(Theme.liveBg(this));
+        notif.addView(switchRow("Élő háttér-animáció", live));
+        live.setOnCheckedChangeListener((btn, c) -> { Theme.setBool(this, "livebg", c); recreate(); });
         col.addView(notif, lp());
         col.addView(gap(14));
 

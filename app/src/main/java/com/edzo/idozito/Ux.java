@@ -26,8 +26,9 @@ public final class Ux {
         catch (Exception e) { return 0; }
     }
 
-    /** Lassan „élő" háttér: finom, végtelenített zoom + pásztázás. */
+    /** Lassan „élő" háttér: finom, végtelenített zoom + pásztázás. Kikapcsolható a Beállításokban. */
     public static void kenBurns(final View v) {
+        if (!Theme.liveBg(v.getContext())) return; // statikus háttér, ha ki van kapcsolva
         v.setScaleX(1.12f); v.setScaleY(1.12f);
         ValueAnimator a = ValueAnimator.ofFloat(0f, 1f);
         a.setDuration(19000);
