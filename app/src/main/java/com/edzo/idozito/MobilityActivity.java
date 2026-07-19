@@ -69,7 +69,7 @@ public class MobilityActivity extends Activity {
     }
 
     void render() {
-        for (int i = 0; i < 3; i++) styleChip(chips[i], i == section);
+        for (int i = 0; i < 3; i++) styleChip(chips[i], i == section, sectionColor(i));
         body.removeAllViews();
 
         Button start = startBtn("▶  Vezetett " + sectionLabel() + " indítása");
@@ -129,7 +129,7 @@ public class MobilityActivity extends Activity {
         b.setMinHeight(0);
         b.setPadding(dp(14), dp(9), dp(14), dp(9));
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{accent, Theme.accent2(this)});
+                new int[]{sectionColor(section), sectionColor2(section)});
         bg.setCornerRadius(dp(14));
         b.setBackground(bg);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
@@ -143,6 +143,11 @@ public class MobilityActivity extends Activity {
 
     String sectionLabel() { return section == 0 ? "bemelegítés" : section == 1 ? "nyújtás" : "hengerezés"; }
     String routineLabel() { return section == 0 ? "Bemelegítés" : section == 1 ? "Nyújtás" : "Hengerezés"; }
+
+    // Szekciónkénti akcentszínek: bemelegítés = meleg narancs, nyújtás = cián,
+    // hengerezés = magenta – így vizuálisan is elkülönül a három terület.
+    int sectionColor(int s) { return s == 0 ? 0xFFFF7A2F : s == 1 ? accent : Theme.accent2(this); }
+    int sectionColor2(int s) { return s == 0 ? 0xFFFFB259 : s == 1 ? Theme.accent2(this) : accent; }
 
     String[] sectionNames() {
         Mobility.Group[] groups = section == 0 ? Mobility.WARMUP
@@ -182,7 +187,7 @@ public class MobilityActivity extends Activity {
         b.setStateListAnimator(null);
         b.setPadding(dp(16), dp(15), dp(16), dp(15));
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{accent, Theme.accent2(this)});
+                new int[]{sectionColor(section), sectionColor2(section)});
         bg.setCornerRadius(dp(16));
         b.setBackground(bg);
         b.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
@@ -208,14 +213,14 @@ public class MobilityActivity extends Activity {
         b.setTextSize(12.5f);
         b.setPadding(dp(6), dp(11), dp(6), dp(11));
         b.setStateListAnimator(null);
-        styleChip(b, sel);
+        styleChip(b, sel, accent);
         return b;
     }
 
-    void styleChip(Button b, boolean sel) {
+    void styleChip(Button b, boolean sel, int selColor) {
         GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(dp(13));
-        if (sel) { bg.setColor(accent); b.setTextColor(0xFFFFFFFF); }
+        if (sel) { bg.setColor(selColor); b.setTextColor(0xFFFFFFFF); }
         else { bg.setColor(CARD2); bg.setStroke(dp(1), LINE); b.setTextColor(TXT); }
         b.setBackground(bg);
     }
