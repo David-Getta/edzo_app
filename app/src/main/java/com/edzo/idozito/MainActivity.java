@@ -261,25 +261,10 @@ public class MainActivity extends Activity {
         col.addView(shareHint);
         col.addView(gap(10));
 
-        // Heti aktivitás (7 pont – mely napokon edzettél ezen a héten)
-        weekBox = vbox();
-        col.addView(weekBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Heti cél (dinamikus kártya)
+        // Heti cél (dinamikus kártya) – rövid, motiváló, felül marad
         goalBox = vbox();
         col.addView(goalBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Legutóbbi edzés (dinamikus kártya, koppintásra a részletek)
-        recentBox = vbox();
-        col.addView(recentBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Kitüntetések (dinamikus – megszerzett jelvények, koppintásra a teljes lista)
-        badgesBox = vbox();
-        col.addView(badgesBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
-        col.addView(gap(14));
-        col.addView(dailyTipCard());
+        col.addView(gap(6));
 
         // Sablonok
         LinearLayout presets = hbox();
@@ -386,6 +371,24 @@ public class MainActivity extends Activity {
         start.setOnClickListener(v -> startWorkout());
         col.addView(start);
         col.addView(gap(22));
+
+        // ---- Áttekintés / motiváció (a fő indítás alatt) ----
+
+        // Heti aktivitás (7 pont – mely napokon edzettél ezen a héten)
+        weekBox = vbox();
+        col.addView(weekBox, new LinearLayout.LayoutParams(-1, -2));
+
+        // Legutóbbi edzés (dinamikus kártya, koppintásra a részletek)
+        recentBox = vbox();
+        col.addView(recentBox, new LinearLayout.LayoutParams(-1, -2));
+
+        // Kitüntetések (dinamikus – megszerzett jelvények, koppintásra a teljes lista)
+        badgesBox = vbox();
+        col.addView(badgesBox, new LinearLayout.LayoutParams(-1, -2));
+
+        // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
+        col.addView(dailyTipCard());
+        col.addView(gap(16));
 
         // Funkció-csempék (2 oszlop)
         LinearLayout grid = vbox();
