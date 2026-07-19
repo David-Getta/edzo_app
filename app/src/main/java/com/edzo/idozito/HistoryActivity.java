@@ -192,6 +192,8 @@ public class HistoryActivity extends Activity {
         topRow.addView(badge(isRun ? "🏃 Futás" : "🏋️ " + name, typeColor), new LinearLayout.LayoutParams(-2, -2));
         View sp = new View(this);
         topRow.addView(sp, new LinearLayout.LayoutParams(0, 1, 1f));
+        String moodE = History.moodEmoji(o.optInt("mood", 0));
+        if (!moodE.isEmpty()) topRow.addView(text(moodE + "  ", 15, TXT, false));
         topRow.addView(text(df.format(new Date(ts)), 11.5f, MUTED, false));
         body.addView(topRow, lp());
         body.addView(gap(10));
