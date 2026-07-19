@@ -35,7 +35,11 @@ public final class Badges {
         new Badge("time600", "⏱️", "Órák hőse",    "Összesen 600 perc edzés"),
         new Badge("early",   "🌅", "Korán kelő",   "Edzés reggel 7 előtt"),
         new Badge("night",   "🌙", "Éjjeli bagoly","Edzés este 22 után"),
+        new Badge("run21",   "🏅", "Félmaraton",   "Fuss le 21 km-t egy edzésen"),
         new Badge("dist42",  "🌍", "Maratoni táv", "Összesen 42 km megtéve"),
+        new Badge("dist100", "🌟", "Százas klub",  "Összesen 100 km megtéve"),
+        new Badge("streak8", "📆", "Vasakarat",    "8 hetes sorozat egymás után"),
+        new Badge("c100",    "🎖️", "Századik",     "100 elvégzett edzés"),
     };
 
     /** A megszerzett kitüntetések azonosítói az előzmény alapján. */
@@ -65,13 +69,17 @@ public final class Badges {
         if (count >= 10) out.add("c10");
         if (count >= 25) out.add("c25");
         if (count >= 50) out.add("c50");
+        if (count >= 100) out.add("c100");
         if (bestStreakWeeks >= 4) out.add("streak4");
+        if (bestStreakWeeks >= 8) out.add("streak8");
         if (maxRun >= 5000) out.add("run5");
         if (maxRun >= 10000) out.add("run10");
+        if (maxRun >= 21000) out.add("run21");
         if (totalSec >= 600 * 60) out.add("time600");
         if (early) out.add("early");
         if (night) out.add("night");
         if (totalM >= 42000) out.add("dist42");
+        if (totalM >= 100000) out.add("dist100");
         return out;
     }
 
