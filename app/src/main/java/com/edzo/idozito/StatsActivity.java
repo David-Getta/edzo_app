@@ -41,11 +41,13 @@ public class StatsActivity extends Activity {
     TextView chartCaption;
     Button[] metricBtns = new Button[4];
     int metric = 0; // 0 táv, 1 idő, 2 kalória, 3 edzésszám
+    int lastCount = -1;
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         hist = History.load(this);
+        lastCount = hist.length();
 
         ScrollView sv = new ScrollView(this);
         sv.setFillViewport(true);
@@ -140,6 +142,13 @@ public class StatsActivity extends Activity {
         setContentView(Ux.scaffold(this, sv, "bg_stats"));
         refreshChart();
         col.post(() -> Ux.enterChildren(col, 30, 45));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ha időközben változott az edzésszám (pl. törlés), frissítsük a statisztikát.
+        if (lastCount >= 0 && History.load(this).length() != lastCount) recreate();
     }
 
     // ---------------- Aggregálás ----------------
