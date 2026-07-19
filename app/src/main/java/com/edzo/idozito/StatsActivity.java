@@ -527,6 +527,7 @@ public class StatsActivity extends Activity {
         cardV.setPadding(dp(12), dp(14), dp(12), dp(12));
         LinearLayout grid = hbox();
         grid.setGravity(Gravity.CENTER);
+        int activeDays = 0;
         for (int w = 0; w < 12; w++) {
             LinearLayout colW = vbox();
             for (int d = 0; d < 7; d++) {
@@ -535,7 +536,7 @@ public class StatsActivity extends Activity {
                 GradientDrawable bg = new GradientDrawable();
                 bg.setCornerRadius(dp(3));
                 if (ms > today0) bg.setColor(0x00000000);
-                else if (days.contains(ms)) bg.setColor(MainActivity.ACCENT);
+                else if (days.contains(ms)) { bg.setColor(MainActivity.ACCENT); activeDays++; }
                 else bg.setColor(0x1AFFFFFF);
                 cell.setBackground(bg);
                 LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(dp(15), dp(15));
@@ -546,7 +547,7 @@ public class StatsActivity extends Activity {
             grid.addView(colW);
         }
         cardV.addView(grid);
-        TextView legend = text("Minden négyzet egy nap · a kiemelt négyzetek edzésnapok", 11.5f, MUTED, false);
+        TextView legend = text(activeDays + " aktív nap az elmúlt 12 hétben · a kiemelt négyzetek edzésnapok", 11.5f, MUTED, false);
         legend.setGravity(Gravity.CENTER);
         legend.setPadding(0, dp(10), 0, 0);
         cardV.addView(legend);
