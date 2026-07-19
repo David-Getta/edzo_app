@@ -990,13 +990,79 @@ public class MainActivity extends Activity {
             shown++;
         }
         c.addView(strip);
-        TextView hint = text("Koppints az összes kitüntetés megtekintéséhez", 11.5f, MUTED, false);
+        TextView hint = text("Koppints a listáért · tartsd nyomva a megosztáshoz 📤", 11.5f, MUTED, false);
         hint.setPadding(dp(2), dp(10), 0, 0);
         c.addView(hint);
         c.setClickable(true);
         c.setOnClickListener(v -> showBadgesSheet());
+        c.setOnLongClickListener(v -> { shareBadgesCard(); return true; });
         badgesBox.addView(c);
         badgesBox.addView(gap(14));
+    }
+
+    void shareBadgesCard() {
+        try {
+            Bitmap bmp = renderBadgesCard(currentBadges());
+            ShareProvider.shareImage(this, bmp, "my-trainer-kituntetesek");
+        } catch (Exception ignored) {}
+    }
+
+    Bitmap renderBadgesCard(java.util.HashSet<String> got) {
+        final int W = 1080, H = 1350, M = 80;
+        Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(bmp);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        cv.drawRect(0, 0, W, H, p);
+        p.setShader(null);
+
+        Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
+        bar.setShader(null);
+
+        Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tp.setColor(0xFFEAF6FF);
+        tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setTextSize(72);
+        cv.drawText("Kitüntetéseim 🏅", M, 240, tp);
+
+        Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sp.setColor(0xFF22E0FF);
+        sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        sp.setTextSize(40);
+        cv.drawText(got.size() + " / " + Badges.ALL.length + " megszerezve  ·  My trainer", M, 300, sp);
+
+        int cols = 2, gap = 24;
+        int cardW = (W - 2 * M - gap) / cols;
+        int cardH = 128;
+        int startY = 360;
+        Paint emo = new Paint(Paint.ANTI_ALIAS_FLAG); emo.setTextSize(56);
+        Paint name = new Paint(Paint.ANTI_ALIAS_FLAG);
+        name.setColor(0xFFEAF6FF);
+        name.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        name.setTextSize(30);
+        for (int i = 0; i < Badges.ALL.length; i++) {
+            Badges.Badge b = Badges.ALL[i];
+            boolean earned = got.contains(b.id);
+            int cx = M + (i % cols) * (cardW + gap);
+            int cy = startY + (i / cols) * (cardH + gap);
+            Paint bg = new Paint(Paint.ANTI_ALIAS_FLAG);
+            bg.setColor(earned ? 0x2622E0FF : 0x0EFFFFFF);
+            cv.drawRoundRect(new RectF(cx, cy, cx + cardW, cy + cardH), 24, 24, bg);
+            emo.setAlpha(earned ? 255 : 90);
+            cv.drawText(earned ? b.emoji : "🔒", cx + 28, cy + 82, emo);
+            name.setAlpha(earned ? 255 : 120);
+            cv.drawText(b.title, cx + 108, cy + 74, name);
+        }
+
+        Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fp.setColor(0xFF22E0FF);
+        fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setTextSize(36);
+        fp.setTextAlign(Paint.Align.CENTER);
+        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 60, fp);
+        return bmp;
     }
 
     View badgeChip(String emoji, boolean earned) {
