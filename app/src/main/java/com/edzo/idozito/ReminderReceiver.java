@@ -20,7 +20,7 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent intent) {
         String text = intent.getStringExtra("text");
         int id = intent.getIntExtra("id", 1);
-        if (text == null || text.trim().isEmpty()) text = "Ideje mozogni! 💪";
+        if (text == null || text.trim().isEmpty()) text = defaultMessage();
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
@@ -47,5 +47,19 @@ public class ReminderReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setContentIntent(pi);
         nm.notify(20000 + id, b.build());
+    }
+
+    /** Váltakozó, motiváló alapüzenet, ha az emlékeztetőhöz nincs saját szöveg. */
+    private static String defaultMessage() {
+        String[] msgs = {
+            "Ideje mozogni! 💪",
+            "Egy rövid edzés is számít – rajta! 🔥",
+            "A jövőbeli éned megköszöni ezt az edzést. 🙌",
+            "Tartsd a sorozatod – edzés ideje! 🏃",
+            "Csak 10 perc, és máris jobban leszel. ✨",
+            "Mozdulj meg, tornáztasd meg a tested! 🧘",
+            "A legjobb idő az edzésre: most. ⏱️"
+        };
+        return msgs[(int) (System.currentTimeMillis() / 60000 % msgs.length)];
     }
 }
