@@ -92,7 +92,11 @@ public class MainActivity extends Activity {
     TextView phaseLabel, timeText, roundInfo, distanceText;
     TextView exText, exDesc, nextText, recordText, levelText;
     TextView statElapsed, statCal, statSteps;
-    Button pauseBtn, cooldownBtn;
+    Button pauseBtn, cooldownBtn, shareBtn;
+    // A legutóbb befejezett edzés adatai a megosztás-kártyához.
+    int lastDur, lastRounds, lastCal, lastSteps;
+    double lastDist = -1; float lastAvg = -1; String lastRecords = "";
+    boolean lastWasRun = true;
     ProgressRing ring;
     boolean lastPaused = false;
     boolean finished = false;
@@ -960,6 +964,81 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {}
     }
 
+    // A befejező képernyőn: az imént teljesített edzés megosztható kártyaként.
+    void shareLastWorkout() {
+        try {
+            Bitmap bmp = renderWorkoutCard();
+            ShareProvider.shareImage(this, bmp, "my-trainer-edzes");
+        } catch (Exception ignored) {}
+    }
+
+    Bitmap renderWorkoutCard() {
+        final int W = 1080, H = 1350, M = 80;
+        Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(bmp);
+
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        cv.drawRect(0, 0, W, H, p);
+        p.setShader(null);
+
+        Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
+        bar.setShader(null);
+
+        Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tp.setColor(0xFFEAF6FF);
+        tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setTextSize(78);
+        cv.drawText("My trainer", M, 250, tp);
+
+        Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sp.setColor(0xFF22E0FF);
+        sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        sp.setTextSize(44);
+        String head = (lastWasRun ? "🏃 Futás" : "🏋️ Edzés") + "  ·  kész! ✔";
+        cv.drawText(head, M, 320, sp);
+
+        String[][] tiles = {
+                {"Idő", fmtLong(lastDur)},
+                {lastWasRun ? "Táv" : "Körök", lastWasRun ? fmtDist(lastDist) : String.valueOf(lastRounds)},
+                {"Átlag", lastAvg > 0 ? fmtSpeed(lastAvg) : "—"},
+                {"Kalória", lastCal + " kcal"},
+                {"Lépések", lastSteps > 0 ? String.valueOf(lastSteps) : "—"},
+                {"Rekord", (lastRecords != null && !lastRecords.isEmpty()) ? "🏆 Új!" : "—"},
+        };
+
+        int gap = 28, cols = 2;
+        int cardW = (W - 2 * M - gap) / cols;
+        int cardH = 200;
+        int startY = 400;
+        Paint cardBg = new Paint(Paint.ANTI_ALIAS_FLAG);
+        cardBg.setColor(0x14FFFFFF);
+        Paint val = new Paint(Paint.ANTI_ALIAS_FLAG);
+        val.setColor(0xFFFFFFFF);
+        val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        val.setTextSize(54);
+        Paint lab = new Paint(Paint.ANTI_ALIAS_FLAG);
+        lab.setColor(0xFF8AA0C4);
+        lab.setTextSize(34);
+        for (int i = 0; i < tiles.length; i++) {
+            int cx = M + (i % cols) * (cardW + gap);
+            int cy = startY + (i / cols) * (cardH + gap);
+            cv.drawRoundRect(new RectF(cx, cy, cx + cardW, cy + cardH), 28, 28, cardBg);
+            cv.drawText(tiles[i][1], cx + 34, cy + 96, val);
+            cv.drawText(tiles[i][0], cx + 34, cy + 150, lab);
+        }
+
+        Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fp.setColor(0xFF22E0FF);
+        fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setTextSize(38);
+        fp.setTextAlign(Paint.Align.CENTER);
+        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 70, fp);
+        return bmp;
+    }
+
     Bitmap renderProgressCard(JSONArray arr) {
         final int W = 1080, H = 1350, M = 80;
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
@@ -1662,6 +1741,14 @@ public class MainActivity extends Activity {
         cbLp.topMargin = dp(12);
         runView.addView(cooldownBtn, cbLp);
 
+        // Megosztás gomb (csak a befejező képernyőn látszik)
+        shareBtn = ghostButton("📤  Edzés megosztása");
+        shareBtn.setVisibility(View.GONE);
+        shareBtn.setOnClickListener(v -> shareLastWorkout());
+        LinearLayout.LayoutParams sbLp = new LinearLayout.LayoutParams(-1, -2);
+        sbLp.topMargin = dp(10);
+        runView.addView(shareBtn, sbLp);
+
         return runView;
     }
 
@@ -1730,6 +1817,7 @@ public class MainActivity extends Activity {
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
+        shareBtn.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -1768,6 +1856,7 @@ public class MainActivity extends Activity {
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
+        shareBtn.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -1885,6 +1974,8 @@ public class MainActivity extends Activity {
         int cal = i.getIntExtra(TimerService.EX_CAL, 0);
         int steps = i.getIntExtra(TimerService.EX_STEPS, 0);
         float avg = i.getFloatExtra(TimerService.EX_SPEED, -1);
+        lastDur = dur; lastDist = dist; lastRounds = rounds; lastCal = cal;
+        lastSteps = steps; lastAvg = avg; lastWasRun = dist >= 0;
         showRun(true);
         finished = true;
         phaseLabel.setText("KÉSZ");
@@ -1905,6 +1996,7 @@ public class MainActivity extends Activity {
         statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
 
         String records = i.getStringExtra(TimerService.EX_RECORDS);
+        lastRecords = records != null ? records : "";
         if (records != null && !records.isEmpty()) {
             recordText.setText(records.equals("első edzés")
                     ? "🎉 Első edzés a naplóban!"
@@ -1934,6 +2026,7 @@ public class MainActivity extends Activity {
         pauseBtn.setEnabled(false);
         pauseBtn.setText("Kész");
         cooldownBtn.setVisibility(View.VISIBLE);
+        shareBtn.setVisibility(View.VISIBLE);
         refreshGoal();
         refreshProgress();
         refreshRecent();
