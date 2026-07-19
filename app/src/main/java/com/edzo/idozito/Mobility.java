@@ -83,6 +83,12 @@ public final class Mobility {
             g("Belső comb (adduktor)",
                     it("Pillangó ülés", "Talpak össze, engedd a térded a föld felé.", "pillangó nyújtás belső comb"),
                     it("Oldalkitöréses nyújtás", "Egyik térd hajlik, másik láb nyújtva oldalt.", "adduktor nyújtás oldalkitörés")),
+            g("Deréktáj (alsó hát)",
+                    it("Térd-mellkas nyújtás", "Hanyatt húzd a térded a mellkasodhoz, tartsd lazán.", "térd mellkashoz nyújtás alsó hát"),
+                    it("Gyermekpóz", "Térdelésből ülj a sarokra, karok előre, homlok le.", "gyermekpóz nyújtás")),
+            g("Gerinc rotáció",
+                    it("Fekvő gerinccsavarás", "Hanyatt ejtsd a hajlított térded oldalra, váll a földön.", "fekvő gerinccsavarás nyújtás"),
+                    it("Térdelő szálfűzés", "Négykézláb fűzd a kart a másik alá, csavard a hátad.", "térdelő gerinc rotáció nyújtás")),
     };
 
     // ---------------- Hengerezés (SMR) ----------------
