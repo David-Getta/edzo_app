@@ -97,6 +97,7 @@ public class MainActivity extends Activity {
     TextView exText, exDesc, nextText, recordText, levelText;
     TextView statElapsed, statCal, statSteps, statRemain;
     Button pauseBtn, cooldownBtn, shareBtn;
+    View overallFill;
     LinearLayout moodRow;
     TextView[] moodChips;
     // A legutóbb befejezett edzés adatai a megosztás-kártyához.
@@ -1952,6 +1953,23 @@ public class MainActivity extends Activity {
                 new int[]{0xF2070912, 0xF7060912});
         runView.setBackground(runBg);
 
+        // Teljes edzés-folyamat sáv (legfelül): hol tartunk az egész edzésben.
+        FrameLayout obar = new FrameLayout(this);
+        GradientDrawable otrack = new GradientDrawable();
+        otrack.setColor(0x22FFFFFF); otrack.setCornerRadius(dp(3));
+        obar.setBackground(otrack);
+        overallFill = new View(this);
+        GradientDrawable ofill = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{tAccent, tAccent2});
+        ofill.setCornerRadius(dp(3));
+        overallFill.setBackground(ofill);
+        overallFill.setPivotX(0f);
+        overallFill.setScaleX(0f);
+        obar.addView(overallFill, new FrameLayout.LayoutParams(-1, dp(5)));
+        LinearLayout.LayoutParams obarLp = new LinearLayout.LayoutParams(-1, dp(5));
+        obarLp.bottomMargin = dp(14);
+        runView.addView(obar, obarLp);
+
         phaseLabel = text("FUTÁS", 15, MUTED, true);
         phaseLabel.setGravity(Gravity.CENTER);
         phaseLabel.setLetterSpacing(0.22f);
@@ -2230,6 +2248,7 @@ public class MainActivity extends Activity {
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
         if (moodRow != null) moodRow.setVisibility(View.GONE);
+        if (overallFill != null) overallFill.setScaleX(0f);
         showRun(true);
     }
 
@@ -2270,6 +2289,7 @@ public class MainActivity extends Activity {
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
         if (moodRow != null) moodRow.setVisibility(View.GONE);
+        if (overallFill != null) overallFill.setScaleX(0f);
         showRun(true);
     }
 
@@ -2403,6 +2423,9 @@ public class MainActivity extends Activity {
         int steps = i.getIntExtra(TimerService.EX_STEPS, 0);
         int cal = i.getIntExtra(TimerService.EX_CAL, 0);
         int totalRemain = i.getIntExtra(TimerService.EX_TOTALREMAIN, 0);
+        int totalDur = elapsed + totalRemain;
+        if (overallFill != null)
+            overallFill.setScaleX(totalDur > 0 ? Math.max(0f, Math.min(1f, (float) elapsed / totalDur)) : 0f);
         statElapsed.setText(fmtLong(elapsed));
         statRemain.setText(fmtLong(totalRemain));
         statCal.setText(cal + " kcal");
@@ -2442,6 +2465,7 @@ public class MainActivity extends Activity {
         distanceText.setText(line);
         statElapsed.setText(fmtLong(dur));
         statRemain.setText("0:00");
+        if (overallFill != null) overallFill.setScaleX(1f);
         statCal.setText(cal + " kcal");
         statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
 
