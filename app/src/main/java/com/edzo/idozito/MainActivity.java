@@ -962,6 +962,8 @@ public class MainActivity extends Activity {
             row.addView(col, new LinearLayout.LayoutParams(0, -2, 1f));
         }
         c.addView(row);
+        c.setClickable(true);
+        c.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
         weekBox.addView(c);
         weekBox.addView(gap(14));
     }
