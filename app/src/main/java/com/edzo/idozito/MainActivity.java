@@ -820,6 +820,8 @@ public class MainActivity extends Activity {
             return greet + " Ma még nem edzettél – hajrá! 🔥";
         }
         int ds = dayStreak(arr);
+        // Magas napi sorozatnál gyengéd pihenő-emlékeztető (a pihenés is fejlődés).
+        if (ds >= 6) return greet + " " + ds + " napos sorozat! 🌙 A pihenő is fejlődés – hallgass a testedre.";
         if (ds > 1) return greet + " " + ds + " napos sorozat 🔥";
         int ws = weekStreak(arr);
         if (ws > 1) return greet + " " + ws + " hetes sorozat 🔥";
