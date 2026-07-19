@@ -81,11 +81,12 @@ public class WorkoutDetailActivity extends Activity {
             noteCard.addView(nt);
             col.addView(noteCard, lp());
         }
-        final long ts = e.optLong("ts");
+        final int curMoodVal = e.optInt("mood", 0);
+        final String curNoteVal = e.optString("note", "");
         TextView editJournal = text("✏️  Napló szerkesztése (hangulat / jegyzet)", 13, Theme.accent(this), true);
         editJournal.setPadding(0, dp(10), 0, 0);
         editJournal.setClickable(true);
-        editJournal.setOnClickListener(v -> editJournalSheet(ts, e.optInt("mood", 0), e.optString("note", "")));
+        editJournal.setOnClickListener(v -> editJournalSheet(ts, curMoodVal, curNoteVal));
         col.addView(editJournal);
         col.addView(gap(18));
 
