@@ -75,7 +75,8 @@ public class MobilityActivity extends Activity {
         Button start = startBtn("▶  Vezetett " + sectionLabel() + " indítása");
         start.setOnClickListener(v -> chooseHold());
         body.addView(start);
-        body.addView(text("A telefon időzíti és bemondja a gyakorlatokat, egymás után.", 12, MUTED, false));
+        int exCount = sectionNames().length;
+        body.addView(text(exCount + " gyakorlat · a telefon időzíti és bemondja őket, egymás után.", 12, MUTED, false));
         body.addView(gap(16));
 
         Mobility.Group[] groups = section == 0 ? Mobility.WARMUP
