@@ -83,6 +83,8 @@ public class MainActivity extends Activity {
     TextView bannerSub;
     LinearLayout recentBox;
     LinearLayout badgesBox;
+    final View[] presetViews = new View[3];
+    final int[][] presetSpecs = {{30, 10, 8}, {60, 20, 6}, {20, 10, 8}};
     LinearLayout weekBox;
     LinearLayout recordsBox;
     TextView totalText;
@@ -274,10 +276,12 @@ public class MainActivity extends Activity {
 
         // Sablonok
         LinearLayout presets = hbox();
-        presets.addView(preset("HIIT", "30/10 mp · 8×", 30, 10, 8), presetLp());
-        presets.addView(preset("Tempó", "60/20 mp · 6×", 60, 20, 6), presetLp());
-        presets.addView(preset("Tabata", "20/10 mp · 8×", 20, 10, 8), presetLp());
+        presetViews[0] = preset("HIIT", "30/10 mp · 8×", 30, 10, 8);
+        presetViews[1] = preset("Tempó", "60/20 mp · 6×", 60, 20, 6);
+        presetViews[2] = preset("Tabata", "20/10 mp · 8×", 20, 10, 8);
+        for (View pv : presetViews) presets.addView(pv, presetLp());
         col.addView(presets, new LinearLayout.LayoutParams(-1, -2));
+        highlightPresets();
         col.addView(gap(12));
 
         // Saját mentett sablonok (dinamikus)
@@ -1907,6 +1911,23 @@ public class MainActivity extends Activity {
         if (len > 1) s += "  ·  " + len + " gyakorlat × " + cfg[ROUND_K] + " kör";
         totalText.setText(s);
         refreshPlanBar();
+        highlightPresets();
+    }
+
+    // A jelenlegi beállításnak megfelelő preset kiemelése (ha egyezik).
+    void highlightPresets() {
+        if (presetViews[0] == null) return;
+        for (int i = 0; i < 3; i++) {
+            if (presetViews[i] == null) continue;
+            boolean active = cfg[WORK_K] == presetSpecs[i][0]
+                    && cfg[REST_K] == presetSpecs[i][1]
+                    && cfg[ROUND_K] == presetSpecs[i][2];
+            GradientDrawable bg = new GradientDrawable();
+            bg.setColor(active ? ((tAccent & 0xFFFFFF) | 0x33000000) : GLASS2);
+            bg.setCornerRadius(dp(14));
+            bg.setStroke(dp(active ? 2 : 1), active ? tAccent : GLASS_LINE);
+            presetViews[i].setBackground(bg);
+        }
     }
 
     // ================= RUN =================
