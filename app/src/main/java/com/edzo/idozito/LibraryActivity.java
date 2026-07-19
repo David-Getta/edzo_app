@@ -90,7 +90,7 @@ public class LibraryActivity extends Activity {
                 12.5f, MUTED, false));
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_main"));
+        setContentView(Ux.scaffold(this, sv, "bg_library"));
         col.post(() -> Ux.enterChildren(col, 30, 40));
     }
 
