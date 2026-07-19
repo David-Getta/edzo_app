@@ -46,6 +46,8 @@ public final class Programs {
                     "Jumping jack", "Magas térd", "Burpee", "Hegymászó", "Deszka ugrás", "Boxoló ütés"}, false),
             new P("Mag & egyensúly", "🎯", new String[]{
                     "Plank", "Oldalplank", "Madár-kutya", "Csípőemelés (híd)", "Szuperman", "Fal-ülés"}, false),
+            new P("Reggeli mobilitás", "🌅", new String[]{
+                    "Nyakkörzés", "Karkörzés", "Törzsdöntés", "Szuperman", "Csípőemelés (híd)", "Guggolás"}, false),
     };
 
     /** Saját programok betöltése. */
