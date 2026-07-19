@@ -54,6 +54,8 @@ public final class Theme {
     public static boolean duckMusic(Context c) { return p(c).getBoolean("duck", true); }
     /** Képernyő ébren tartása edzés közben (amíg a futás-képernyőt nézed). */
     public static boolean keepScreenOn(Context c) { return p(c).getBoolean("screenon", true); }
+    /** Díszítő animációk (gomb-lüktetés, konfetti, sáv-feltöltődés) be/ki. */
+    public static boolean animEnabled(Context c) { return p(c).getBoolean("anim", true); }
 
     /** Minden UI-t érintő változásnál nő; a MainActivity ez alapján épül újra. */
     public static int rev(Context c) { return p(c).getInt("theme_rev", 0); }

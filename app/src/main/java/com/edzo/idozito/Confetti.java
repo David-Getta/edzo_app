@@ -80,6 +80,7 @@ public final class Confetti extends View {
     /** Konfetti indítása a megadott gyökér FrameLayout tetején, a téma színeivel. */
     public static void burst(FrameLayout root) {
         if (root == null) return;
+        if (!Theme.animEnabled(root.getContext())) return;
         try {
             Confetti c = new Confetti(root.getContext(),
                     Theme.accent(root.getContext()), Theme.accent2(root.getContext()));

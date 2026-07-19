@@ -130,6 +130,11 @@ public class SettingsActivity extends Activity {
         screenOn.setChecked(Theme.keepScreenOn(this));
         notif.addView(switchRow("Képernyő ébren tartása edzés közben", screenOn));
         screenOn.setOnCheckedChangeListener((btn, c) -> Theme.setBool(this, "screenon", c));
+        notif.addView(divider());
+        Switch anim = new Switch(this);
+        anim.setChecked(Theme.animEnabled(this));
+        notif.addView(switchRow("Díszítő animációk (lüktetés, konfetti)", anim));
+        anim.setOnCheckedChangeListener((btn, c) -> { Theme.setBool(this, "anim", c); recreate(); });
         col.addView(notif, lp());
         col.addView(gap(14));
 

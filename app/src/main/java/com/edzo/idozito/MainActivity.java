@@ -504,6 +504,7 @@ public class MainActivity extends Activity {
 
     /** Finom, végtelen lüktetés egy nézeten (a fő indítás gomb kiemeléséhez). */
     void pulse(View v) {
+        if (!Theme.animEnabled(this)) return;
         try {
             android.animation.ObjectAnimator sx = android.animation.ObjectAnimator.ofFloat(v, "scaleX", 1f, 1.03f);
             android.animation.ObjectAnimator sy = android.animation.ObjectAnimator.ofFloat(v, "scaleY", 1f, 1.03f);
@@ -850,10 +851,12 @@ public class MainActivity extends Activity {
         barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
         barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
         // Finom „feltöltődő" animáció: a kitöltés balról nő a helyére.
-        fill.setPivotX(0f);
-        fill.setScaleX(0f);
-        fill.animate().scaleX(1f).setStartDelay(160).setDuration(680)
-                .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
+        if (Theme.animEnabled(this)) {
+            fill.setPivotX(0f);
+            fill.setScaleX(0f);
+            fill.animate().scaleX(1f).setStartDelay(160).setDuration(680)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
+        }
         c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
         c.addView(gap(6));
         c.addView(text("Még " + toNext + " XP a(z) " + (lvl + 1) + ". szintig", 11.5f, MUTED, false));
