@@ -30,6 +30,9 @@ public final class Badges {
         new Badge("c25",     "🏆", "Bajnok",       "25 elvégzett edzés"),
         new Badge("c50",     "👑", "Legenda",      "50 elvégzett edzés"),
         new Badge("streak4", "📅", "Heti rutin",   "4 hetes sorozat egymás után"),
+        new Badge("day3",    "⚡", "Lendület",     "3 egymást követő edzésnap"),
+        new Badge("day7",    "🗓️", "Heti hős",     "7 egymást követő edzésnap"),
+        new Badge("day30",   "💎", "Gyémánt rutin","30 egymást követő edzésnap"),
         new Badge("run5",    "🏃", "5K klub",      "Fuss le 5 km-t egy edzésen"),
         new Badge("run10",   "🚀", "10K hős",      "Fuss le 10 km-t egy edzésen"),
         new Badge("time600", "⏱️", "Órák hőse",    "Összesen 600 perc edzés"),
@@ -49,6 +52,8 @@ public final class Badges {
         double totalM = 0; long totalSec = 0;
         double maxRun = 0;
         boolean early = false, night = false;
+        HashSet<Long> days = new HashSet<>();
+        java.util.Calendar c = java.util.Calendar.getInstance();
         for (int i = 0; i < arr.length(); i++) {
             JSONObject o = arr.optJSONObject(i);
             if (o == null) continue;
@@ -57,12 +62,23 @@ public final class Badges {
             if (d > 0) { totalM += d; if (d > maxRun) maxRun = d; }
             long ts = o.optLong("ts", 0);
             if (ts > 0) {
-                java.util.Calendar c = java.util.Calendar.getInstance();
                 c.setTimeInMillis(ts);
                 int h = c.get(java.util.Calendar.HOUR_OF_DAY);
                 if (h < 7) early = true;
                 if (h >= 22) night = true;
+                c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
+                c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
+                days.add(c.getTimeInMillis());
             }
+        }
+        // A valaha volt leghosszabb egymást követő edzésnap-sorozat.
+        int bestDayStreak = 0;
+        long oneDay = 24L * 3600 * 1000;
+        for (Long day : days) {
+            if (days.contains(day - oneDay)) continue; // csak a sorozat elejéről
+            int s = 0; long cur = day;
+            while (days.contains(cur)) { s++; cur += oneDay; }
+            if (s > bestDayStreak) bestDayStreak = s;
         }
         if (count >= 1) out.add("first");
         if (count >= 5) out.add("c5");
@@ -72,6 +88,9 @@ public final class Badges {
         if (count >= 100) out.add("c100");
         if (bestStreakWeeks >= 4) out.add("streak4");
         if (bestStreakWeeks >= 8) out.add("streak8");
+        if (bestDayStreak >= 3) out.add("day3");
+        if (bestDayStreak >= 7) out.add("day7");
+        if (bestDayStreak >= 30) out.add("day30");
         if (maxRun >= 5000) out.add("run5");
         if (maxRun >= 10000) out.add("run10");
         if (maxRun >= 21000) out.add("run21");
