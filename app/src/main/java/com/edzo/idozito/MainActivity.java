@@ -814,7 +814,9 @@ public class MainActivity extends Activity {
         long xp = Levels.totalXp(arr);
         int lvl = Levels.levelForXp(xp);
         progressBox.addView(progressChip("⭐", "Szint " + lvl, Levels.title(lvl)), progChipLp());
-        progressBox.addView(progressChip("🔥", weekStreak(arr) + " hét", "sorozat"), progChipLp());
+        int ds = dayStreak(arr);
+        String streakVal = ds > 1 ? ds + " nap" : weekStreak(arr) + " hét";
+        progressBox.addView(progressChip("🔥", streakVal, "sorozat"), progChipLp());
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
         refreshLevelBar(arr, lvl, xp);
