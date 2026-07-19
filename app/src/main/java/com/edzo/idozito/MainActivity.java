@@ -372,6 +372,7 @@ public class MainActivity extends Activity {
         Button start = primaryButton("▶  Indítás");
         start.setOnClickListener(v -> startWorkout());
         col.addView(start);
+        pulse(start); // finom, figyelemfelhívó lüktetés a fő indítás gombon
         col.addView(gap(22));
 
         // ---- Áttekintés / motiváció (a fő indítás alatt) ----
@@ -494,6 +495,21 @@ public class MainActivity extends Activity {
             Ux.enter(body, 0);
         });
         return c;
+    }
+
+    /** Finom, végtelen lüktetés egy nézeten (a fő indítás gomb kiemeléséhez). */
+    void pulse(View v) {
+        try {
+            android.animation.ObjectAnimator sx = android.animation.ObjectAnimator.ofFloat(v, "scaleX", 1f, 1.03f);
+            android.animation.ObjectAnimator sy = android.animation.ObjectAnimator.ofFloat(v, "scaleY", 1f, 1.03f);
+            for (android.animation.ObjectAnimator a : new android.animation.ObjectAnimator[]{sx, sy}) {
+                a.setDuration(1150);
+                a.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+                a.setRepeatMode(android.animation.ValueAnimator.REVERSE);
+                a.setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator());
+                a.start();
+            }
+        } catch (Exception ignored) {}
     }
 
     void setGradientBg(View v) {
