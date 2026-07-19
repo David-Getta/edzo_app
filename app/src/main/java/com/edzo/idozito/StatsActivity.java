@@ -547,11 +547,79 @@ public class StatsActivity extends Activity {
             grid.addView(colW);
         }
         cardV.addView(grid);
-        TextView legend = text(activeDays + " aktív nap az elmúlt 12 hétben · a kiemelt négyzetek edzésnapok", 11.5f, MUTED, false);
+        TextView legend = text(activeDays + " aktív nap az elmúlt 12 hétben · tartsd nyomva a megosztáshoz 📤", 11.5f, MUTED, false);
         legend.setGravity(Gravity.CENTER);
         legend.setPadding(0, dp(10), 0, 0);
         cardV.addView(legend);
+        cardV.setClickable(true);
+        cardV.setOnLongClickListener(v -> { shareHeatmap(); return true; });
         return cardV;
+    }
+
+    void shareHeatmap() {
+        try { ShareProvider.shareImage(this, renderHeatmapCard(), "my-trainer-aktivitas"); }
+        catch (Exception ignored) {}
+    }
+
+    Bitmap renderHeatmapCard() {
+        final int W = 1080, H = 900, M = 70;
+        // Napkészlet és időablak (ugyanaz, mint a képernyőn).
+        java.util.HashSet<Long> days = new java.util.HashSet<>();
+        Calendar cc = Calendar.getInstance();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            cc.setTimeInMillis(o.optLong("ts"));
+            cc.set(Calendar.HOUR_OF_DAY, 0); cc.set(Calendar.MINUTE, 0);
+            cc.set(Calendar.SECOND, 0); cc.set(Calendar.MILLISECOND, 0);
+            days.add(cc.getTimeInMillis());
+        }
+        Calendar t = Calendar.getInstance();
+        t.set(Calendar.HOUR_OF_DAY, 0); t.set(Calendar.MINUTE, 0);
+        t.set(Calendar.SECOND, 0); t.set(Calendar.MILLISECOND, 0);
+        long today0 = t.getTimeInMillis();
+        Calendar cur = (Calendar) t.clone();
+        cur.setFirstDayOfWeek(Calendar.MONDAY);
+        cur.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        cur.add(Calendar.WEEK_OF_YEAR, -11);
+
+        Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+        Canvas cvn = new Canvas(bmp);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        cvn.drawRect(0, 0, W, H, p); p.setShader(null);
+        Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        cvn.drawRoundRect(new RectF(M, 110, W - M, 124), 8, 8, bar); bar.setShader(null);
+        Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tp.setColor(0xFFEAF6FF); tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setTextSize(70);
+        cvn.drawText("Aktivitásom – 12 hét", M, 225, tp);
+
+        int cell = 60, gap = 12;
+        int gridW = 12 * cell + 11 * gap;
+        int x0 = (W - gridW) / 2, y0 = 300;
+        int active = 0;
+        Paint cp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        for (int w = 0; w < 12; w++) {
+            for (int d = 0; d < 7; d++) {
+                long ms = cur.getTimeInMillis();
+                int cx = x0 + w * (cell + gap), cy = y0 + d * (cell + gap);
+                if (ms > today0) cp.setColor(0x11FFFFFF);
+                else if (days.contains(ms)) { cp.setColor(0xFF22E0FF); active++; }
+                else cp.setColor(0x1AFFFFFF);
+                cvn.drawRoundRect(new RectF(cx, cy, cx + cell, cy + cell), 12, 12, cp);
+                cur.add(Calendar.DAY_OF_YEAR, 1);
+            }
+        }
+        Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sp.setColor(0xFF8AA0C4); sp.setTextSize(38); sp.setTextAlign(Paint.Align.CENTER);
+        cvn.drawText(active + " aktív nap az elmúlt 12 hétben", W / 2f, y0 + 7 * (cell + gap) + 40, sp);
+        Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fp.setColor(0xFF22E0FF); fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setTextSize(34); fp.setTextAlign(Paint.Align.CENTER);
+        cvn.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 45, fp);
+        return bmp;
     }
 
     LinearLayout calendarCard() {
