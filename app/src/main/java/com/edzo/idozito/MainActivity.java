@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -202,8 +205,12 @@ public class MainActivity extends Activity {
         progressBox = hbox();
         progressBox.setClickable(true);
         progressBox.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
+        progressBox.setOnLongClickListener(v -> { shareProgressCard(); return true; });
         col.addView(progressBox, new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(14));
+        TextView shareHint = text("Koppints a részletekért · tartsd nyomva a megosztáshoz 📤", 11, MUTED, false);
+        shareHint.setPadding(dp(4), dp(6), 0, 0);
+        col.addView(shareHint);
+        col.addView(gap(10));
 
         // Heti cél (dinamikus kártya)
         goalBox = vbox();
@@ -667,6 +674,95 @@ public class MainActivity extends Activity {
         progressBox.addView(progressChip("🔥", weekStreak(arr) + " hét", "sorozat"), progChipLp());
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+    }
+
+    // A haladás-csík hosszan nyomva: megosztható „büszkeség-kártya" kép a szintről,
+    // sorozatról és összesített statisztikákról (Instagram/Messenger…).
+    void shareProgressCard() {
+        try {
+            JSONArray arr = History.load(this);
+            Bitmap bmp = renderProgressCard(arr);
+            ShareProvider.shareImage(this, bmp, "my-trainer-haladas");
+        } catch (Exception ignored) {}
+    }
+
+    Bitmap renderProgressCard(JSONArray arr) {
+        final int W = 1080, H = 1350, M = 80;
+        Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(bmp);
+
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        cv.drawRect(0, 0, W, H, p);
+        p.setShader(null);
+
+        Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
+        bar.setShader(null);
+
+        Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tp.setColor(0xFFEAF6FF);
+        tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setTextSize(78);
+        cv.drawText("My trainer", M, 250, tp);
+
+        long xp = Levels.totalXp(arr);
+        int lvl = Levels.levelForXp(xp);
+        int streak = weekStreak(arr);
+        int count = arr.length();
+        long totalSec = 0; double totalM = 0;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) continue;
+            totalSec += o.optInt("dur");
+            double d = o.optDouble("dist", 0); if (d > 0) totalM += d;
+        }
+
+        Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sp.setColor(0xFF22E0FF);
+        sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        sp.setTextSize(46);
+        cv.drawText("⭐ Szint " + lvl + " · " + Levels.title(lvl), M, 322, sp);
+
+        String[][] tiles = {
+                {"Szint", String.valueOf(lvl)},
+                {"Sorozat", streak + " hét"},
+                {"Edzés", String.valueOf(count)},
+                {"Össz. idő", (totalSec / 60) + " perc"},
+                {"Össz. táv", totalM >= 1000 ? String.format(new java.util.Locale("hu"), "%.1f km", totalM / 1000.0)
+                        : Math.round(totalM) + " m"},
+                {"XP", String.valueOf(xp)},
+        };
+
+        int gap = 28, cols = 2;
+        int cardW = (W - 2 * M - gap) / cols;
+        int cardH = 200;
+        int startY = 400;
+        Paint cardBg = new Paint(Paint.ANTI_ALIAS_FLAG);
+        cardBg.setColor(0x14FFFFFF);
+        Paint val = new Paint(Paint.ANTI_ALIAS_FLAG);
+        val.setColor(0xFFFFFFFF);
+        val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        val.setTextSize(58);
+        Paint lab = new Paint(Paint.ANTI_ALIAS_FLAG);
+        lab.setColor(0xFF8AA0C4);
+        lab.setTextSize(34);
+        for (int i = 0; i < tiles.length; i++) {
+            int cx = M + (i % cols) * (cardW + gap);
+            int cy = startY + (i / cols) * (cardH + gap);
+            cv.drawRoundRect(new RectF(cx, cy, cx + cardW, cy + cardH), 28, 28, cardBg);
+            cv.drawText(tiles[i][1], cx + 34, cy + 96, val);
+            cv.drawText(tiles[i][0], cx + 34, cy + 150, lab);
+        }
+
+        Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fp.setColor(0xFF22E0FF);
+        fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setTextSize(38);
+        fp.setTextAlign(Paint.Align.CENTER);
+        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 70, fp);
+        return bmp;
     }
 
     View progressChip(String emoji, String value, String label) {
