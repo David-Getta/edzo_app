@@ -101,6 +101,10 @@ public class StatsActivity extends Activity {
         col.addView(badgesCard(), lp());
         col.addView(gap(16));
 
+        col.addView(sectionTitle("Aktivitás – elmúlt 12 hét"));
+        col.addView(heatmapCard(), lp());
+        col.addView(gap(16));
+
         SimpleDateFormat mf = new SimpleDateFormat("yyyy. MMMM", new Locale("hu"));
         col.addView(sectionTitle("Naptár – " + mf.format(new Date())));
         col.addView(calendarCard(), lp());
@@ -497,6 +501,57 @@ public class StatsActivity extends Activity {
     }
 
     // ---------------- Naptár (aktuális hónap) ----------------
+
+    // 12 hetes aktivitás-hőtérkép (GitHub-stílusú): oszlop = hét, sor = nap.
+    LinearLayout heatmapCard() {
+        java.util.HashSet<Long> days = new java.util.HashSet<>();
+        Calendar c = Calendar.getInstance();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            c.setTimeInMillis(o.optLong("ts"));
+            c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0);
+            days.add(c.getTimeInMillis());
+        }
+        Calendar t = Calendar.getInstance();
+        t.set(Calendar.HOUR_OF_DAY, 0); t.set(Calendar.MINUTE, 0);
+        t.set(Calendar.SECOND, 0); t.set(Calendar.MILLISECOND, 0);
+        long today0 = t.getTimeInMillis();
+        Calendar cur = (Calendar) t.clone();
+        cur.setFirstDayOfWeek(Calendar.MONDAY);
+        cur.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        cur.add(Calendar.WEEK_OF_YEAR, -11);
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(12), dp(14), dp(12), dp(12));
+        LinearLayout grid = hbox();
+        grid.setGravity(Gravity.CENTER);
+        for (int w = 0; w < 12; w++) {
+            LinearLayout colW = vbox();
+            for (int d = 0; d < 7; d++) {
+                long ms = cur.getTimeInMillis();
+                View cell = new View(this);
+                GradientDrawable bg = new GradientDrawable();
+                bg.setCornerRadius(dp(3));
+                if (ms > today0) bg.setColor(0x00000000);
+                else if (days.contains(ms)) bg.setColor(MainActivity.ACCENT);
+                else bg.setColor(0x1AFFFFFF);
+                cell.setBackground(bg);
+                LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(dp(15), dp(15));
+                clp.setMargins(dp(2), dp(2), dp(2), dp(2));
+                colW.addView(cell, clp);
+                cur.add(Calendar.DAY_OF_YEAR, 1);
+            }
+            grid.addView(colW);
+        }
+        cardV.addView(grid);
+        TextView legend = text("Minden négyzet egy nap · a kiemelt négyzetek edzésnapok", 11.5f, MUTED, false);
+        legend.setGravity(Gravity.CENTER);
+        legend.setPadding(0, dp(10), 0, 0);
+        cardV.addView(legend);
+        return cardV;
+    }
 
     LinearLayout calendarCard() {
         Calendar now = Calendar.getInstance();
