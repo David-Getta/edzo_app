@@ -209,6 +209,10 @@ public class MainActivity extends Activity {
         goalBox = vbox();
         col.addView(goalBox, new LinearLayout.LayoutParams(-1, -2));
 
+        // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
+        col.addView(gap(14));
+        col.addView(dailyTipCard());
+
         // Sablonok
         LinearLayout presets = hbox();
         presets.addView(preset("HIIT", "30/10 mp · 8×", 30, 10, 8), presetLp());
@@ -377,6 +381,42 @@ public class MainActivity extends Activity {
         tlp.gravity = Gravity.CENTER_VERTICAL;
         banner.addView(btitles, tlp);
         return banner;
+    }
+
+    static final String[] TIPS = {
+        "A rendszeresség többet ér, mint az intenzitás. Heti 3 rövid edzés is csodákra képes. 💪",
+        "Melegíts be mindig – a bemelegítés csökkenti a sérülésveszélyt és javítja a teljesítményt. 🔥",
+        "Igyál eleget! Már 2% folyadékvesztés is rontja a teljesítményt. 💧",
+        "A pihenőnap is edzés: ilyenkor épül és erősödik az izom. 😴",
+        "Lélegezz a hasaddal – a mély légzés stabilizál és több oxigént ad. 🫁",
+        "Nyújts edzés után: rugalmasabb izmok, kevesebb izomláz. 🧘",
+        "A helyes technika fontosabb, mint a nagy súly vagy a gyors tempó. ✅",
+        "Alvás nélkül nincs regeneráció – célozz 7-8 óra pihenést. 🌙",
+        "Kis célok, nagy győzelmek: tűzz ki egy elérhető heti célt. 🎯",
+        "A hengerezés (foam rolling) oldja a feszes izmokat és javítja a mozgástartományt. 🌀",
+        "Ne edzés előtt egyél nagyot – adj a testednek 1-2 órát az emésztésre. 🍽️",
+        "A fokozatosság kulcs: hetente max 10%-kal növeld a terhelést. 📈",
+        "A jó zene akár 15%-kal is növelheti a kitartásodat. 🎵",
+        "Edzés után 30 percen belül a fehérje segíti a regenerációt. 🥤"
+    };
+
+    View dailyTipCard() {
+        final LinearLayout c = card();
+        c.setPadding(dp(16), dp(14), dp(16), dp(14));
+        final TextView head = text("💡 Napi tipp", 12, tAccent, true);
+        int doy = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
+        final int[] idx = { ((doy % TIPS.length) + TIPS.length) % TIPS.length };
+        final TextView body = text(TIPS[idx[0]], 13.5f, TXT, false);
+        body.setPadding(0, dp(6), 0, 0);
+        c.addView(head);
+        c.addView(body);
+        c.setClickable(true);
+        c.setOnClickListener(v -> {
+            idx[0] = (idx[0] + 1) % TIPS.length;
+            body.setText(TIPS[idx[0]]);
+            Ux.enter(body, 0);
+        });
+        return c;
     }
 
     void setGradientBg(View v) {
