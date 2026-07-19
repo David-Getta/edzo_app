@@ -367,7 +367,8 @@ public class HistoryActivity extends Activity {
     // ---- Háttér ----
 
     void addBg(FrameLayout host) {
-        int id = getResources().getIdentifier("bg_main", "drawable", getPackageName());
+        int id = getResources().getIdentifier("bg_history", "drawable", getPackageName());
+        if (id == 0) id = getResources().getIdentifier("bg_main", "drawable", getPackageName());
         if (id == 0) return;
         try {
             ImageView img = new ImageView(this);
