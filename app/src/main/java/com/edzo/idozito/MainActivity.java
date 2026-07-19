@@ -825,7 +825,20 @@ public class MainActivity extends Activity {
         c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
         c.addView(gap(6));
         c.addView(text("Még " + toNext + " XP a(z) " + (lvl + 1) + ". szintig", 11.5f, MUTED, false));
+        c.setClickable(true);
+        c.setOnClickListener(v -> showLevelsSheet(lvl));
         levelBar.addView(c);
+    }
+
+    void showLevelsSheet(int currentLvl) {
+        Sheet s = new Sheet(this, "Szintek ⭐", "XP-t az edzések percei, távja és minden befejezett edzés adnak");
+        for (int i = 1; i <= 10; i++) {
+            String sub = "Szükséges XP: " + Levels.xpForLevel(i)
+                    + (i == currentLvl ? "  ·  itt tartasz" : "");
+            s.addRow("⭐", "Szint " + i + " – " + Levels.title(i), sub, i == currentLvl, false, null);
+        }
+        s.addCancel();
+        s.show();
     }
 
     // Legutóbbi edzés kártya a főképernyőn – koppintásra a részletek nézet nyílik.
