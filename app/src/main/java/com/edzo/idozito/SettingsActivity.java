@@ -163,6 +163,14 @@ public class SettingsActivity extends Activity {
                 .addCancel().show());
         col.addView(reset);
 
+        // App-verzió kijelzése (a telepített csomagból olvasva)
+        String ver = "";
+        try { ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception ignored) {}
+        TextView verLabel = text("My trainer" + (ver.isEmpty() ? "" : "  ·  v" + ver), 12, MUTED, false);
+        verLabel.setGravity(Gravity.CENTER);
+        verLabel.setPadding(0, dp(20), 0, dp(4));
+        col.addView(verLabel);
+
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffold(this, sv, "bg_main"));
         col.post(() -> Ux.enterChildren(col, 30, 45));
