@@ -164,6 +164,7 @@ public class MainActivity extends Activity {
         Reminders.scheduleAll(this);
         WeeklyReceiver.schedule(this);
         handleRoutineIntent(getIntent());
+        handleRepeatIntent(getIntent());
         maybeShowWelcome();
     }
 
@@ -2246,11 +2247,42 @@ public class MainActivity extends Activity {
         startRoutine(names, label != null ? label : "Mobilitás", work, rest, prep);
     }
 
+    // Egy korábbi edzés beállításainak betöltése (a részletek nézetből „megismétlés").
+    void handleRepeatIntent(Intent intent) {
+        if (intent == null) return;
+        long rts = intent.getLongExtra("repeat_ts", 0);
+        if (rts == 0) return;
+        intent.removeExtra("repeat_ts");
+        JSONArray arr = History.load(this);
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null || o.optLong("ts") != rts) continue;
+            int work = o.optInt("work", cfg[WORK_K]);
+            int rest = o.optInt("rest", cfg[REST_K]);
+            int rounds = o.optInt("rounds", cfg[ROUND_K]);
+            if (work > 0) cfg[WORK_K] = work;
+            cfg[REST_K] = Math.max(0, rest);
+            if (rounds > 0) cfg[ROUND_K] = rounds;
+            programName = o.optString("name", "");
+            prefs.edit().putString("progname", programName).apply();
+            saveAll();
+            refreshValues();
+            updateProgramUI();
+            updateTotal();
+            refreshPlanBar();
+            showRun(false);
+            android.widget.Toast.makeText(this, "Edzés betöltve – nyomd meg az Indítást ▶",
+                    android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         handleRoutineIntent(intent);
+        handleRepeatIntent(intent);
     }
 
     void cmd(String action) {

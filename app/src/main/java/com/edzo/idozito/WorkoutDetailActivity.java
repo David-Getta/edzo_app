@@ -2,6 +2,7 @@ package com.edzo.idozito;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -88,6 +89,16 @@ public class WorkoutDetailActivity extends Activity {
         editJournal.setClickable(true);
         editJournal.setOnClickListener(v -> editJournalSheet(ts, curMoodVal, curNoteVal));
         col.addView(editJournal);
+        TextView repeat = text("🔁  Edzés megismétlése (beállítások betöltése)", 13, Theme.accent(this), true);
+        repeat.setPadding(0, dp(8), 0, 0);
+        repeat.setClickable(true);
+        repeat.setOnClickListener(v -> {
+            startActivity(new Intent(this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .putExtra("repeat_ts", ts));
+            finish();
+        });
+        col.addView(repeat);
         col.addView(gap(18));
 
         // ---- Összegzés ----
