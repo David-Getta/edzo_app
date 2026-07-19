@@ -32,6 +32,7 @@ public class HistoryActivity extends Activity {
 
     int accent, accent2;
     boolean pace;
+    int lastCount = -1; // az onCreate-kori edzésszám (törlés után frissítéshez)
     // Szűrő: 0 = mind, 1 = futás, 2 = erő/gyakorlat
     int filter = 0;
     LinearLayout listBox;
@@ -57,6 +58,7 @@ public class HistoryActivity extends Activity {
         col.setPadding(dp(18), dp(22), dp(18), dp(40));
 
         JSONArray arr = History.load(this);
+        lastCount = arr.length();
 
         // Fejléc
         LinearLayout head = hbox();
@@ -87,6 +89,13 @@ public class HistoryActivity extends Activity {
         root.addView(sv);
         setContentView(root);
         col.post(() -> Ux.enterChildren(col, 30, 55)); // beúszó kártyák
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ha időközben törölték egy edzést (a részletek nézetből), frissítsük a listát.
+        if (lastCount >= 0 && History.load(this).length() != lastCount) recreate();
     }
 
     // ---- Szűrő ----
