@@ -849,6 +849,11 @@ public class MainActivity extends Activity {
         float f = Math.max(0.001f, Math.min(1f, frac));
         barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
         barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
+        // Finom „feltöltődő" animáció: a kitöltés balról nő a helyére.
+        fill.setPivotX(0f);
+        fill.setScaleX(0f);
+        fill.animate().scaleX(1f).setStartDelay(160).setDuration(680)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
         c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
         c.addView(gap(6));
         c.addView(text("Még " + toNext + " XP a(z) " + (lvl + 1) + ". szintig", 11.5f, MUTED, false));
