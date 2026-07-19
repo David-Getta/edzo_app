@@ -1000,6 +1000,8 @@ public class MainActivity extends Activity {
         r2.addView(recordChip("🔁", maxRounds > 0 ? String.valueOf(maxRounds) : "—", "legtöbb kör"), progChipLp());
         r2.addView(recordChip("🔥", bestStreak + " hét", "leghosszabb sorozat"), progChipLp());
         c.addView(r2);
+        c.setClickable(true);
+        c.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
         recordsBox.addView(c);
         recordsBox.addView(gap(14));
     }
