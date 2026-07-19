@@ -932,6 +932,14 @@ public class MainActivity extends Activity {
         TextView s = text(stat, 13.5f, tAccent, false);
         s.setPadding(0, dp(6), 0, 0);
         c.addView(s);
+        String note = o.optString("note", "");
+        if (!note.isEmpty()) {
+            TextView nt = text("📝 " + note, 12.5f, MUTED, false);
+            nt.setMaxLines(2);
+            nt.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            nt.setPadding(0, dp(6), 0, 0);
+            c.addView(nt);
+        }
         c.setClickable(true);
         c.setOnClickListener(v -> startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts)));
         recentBox.addView(c);
