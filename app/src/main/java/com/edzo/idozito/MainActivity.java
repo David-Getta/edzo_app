@@ -179,7 +179,8 @@ public class MainActivity extends Activity {
                 {"⏱️", "Intervallum edzés", "Bemelegítés, munka, pihenő, körök és levezetés – minden testre szabható."},
                 {"🏃", "Futás követése", "GPS-táv, tempó, lépések és kalória automatikus mérése."},
                 {"🧘", "Nyújtás & mobilitás", "Vezetett bemelegítés, nyújtás és hengerezés videós útmutatóval."},
-                {"📊", "Haladás & szintek", "Gyűjts XP-t, lépj szintet, és tartsd a heti sorozatod."}
+                {"🏅", "Kitüntetések & szintek", "Gyűjts XP-t, szintet és jelvényeket, tartsd a sorozatod."},
+                {"📝", "Edzésnapló", "Jelöld a hangulatod és írj jegyzetet minden edzéshez."}
             };
             for (String[] f : feats) {
                 LinearLayout row = hbox();
@@ -483,7 +484,14 @@ public class MainActivity extends Activity {
         "Melegíts be dinamikusan, nyújts statikusan – edzés után. 🤸",
         "A fájdalom és a kellemetlen feszülés nem ugyanaz – figyelj a testedre. 🧠",
         "Váltogasd az edzéstípusokat, hogy ne állj meg a fejlődésben. 🔄",
-        "A folyamatos haladás titka a türelem – ne add fel! 🌱"
+        "A folyamatos haladás titka a türelem – ne add fel! 🌱",
+        "Jegyzeteld fel, hogy érezted magad – így látod majd a mintázatokat. 📝",
+        "A törzsizom minden mozgás alapja – ne hagyd ki a plankeket. 🧱",
+        "Kis lépések, nagy eredmény: heti 1% javulás egy év alatt hatalmas. 📊",
+        "A magnézium és a kálium segít az izomgörcsök megelőzésében. 🍌",
+        "Ne edz üres gyomorral hosszú kardiót – legyen egy kis energia. 🍎",
+        "A lassú, kontrollált mozdulatok hatékonyabbak, mint a kapkodás. 🐢",
+        "Pihenj eleget két nehéz edzés között – a test edzés közt épül. 🛌"
     };
 
     View dailyTipCard() {
