@@ -1,32 +1,50 @@
 # My trainer 🏃⏱️
 
-Egyszerű **intervallum (HIIT) edző időzítő** Androidra. Beállíthatsz
-előkészületet, futás- és pihenőidőt, valamint a körök számát. Minden
-szakaszváltásnál **sípol és rezeg** a telefon, az utolsó 3 másodpercben pedig
-visszaszámol.
+Teljes értékű **edzőtárs Androidra** – intervallum (HIIT) időzítő, futáskövetés,
+nyújtás & mobilitás, edzésnapló, játékos motiváció és részletes statisztikák.
+Sötét, „cyber” cián-magenta megjelenés, sok látvánnyal és finom animációkkal.
+Tiszta natív Android (Java, programozott felület, külső függőségek nélkül).
 
 ## Funkciók
 
-- ⏱️ Beállítható **Előkészület / Futás / Pihenő** idő és **Körök** száma –
-  **másodpercre pontosan** (léptető nyomva tartva gyorsul, vagy a számra
-  koppintva beírható a pontos érték)
-- 🔊 **Hangválasztás**: több síphang közül, **külön** a futás és **külön** a
-  pihenő kezdetére, előhallgatással; a **3-2-1 visszaszámláló csipogás
-  ki/be kapcsolható**; plusz **rezgés**
-- 🌙 **Fut kikapcsolt képernyővel is** – háttérszolgáltatás + wake lock,
-  így a sípszó és az időzítő sötét képernyőnél is megy
-- 🗣️ **Hangos bemondás (beszéd)** – a telefon kimondja a szakaszokat
-  („Futás", „Pihenő", „Utolsó kör", „Edzés kész"), bekapcsolható
-- 🎛️ **Vezérlés az értesítésből** – Szünet / Folytatás / Leállítás gombok
-  a lezárt képernyőről is, az app megnyitása nélkül
-- 📍 **GPS táv- és sebességmérés** (opcionális) – lefutott táv és **km/h**
-  menet közben, valamint **átlag- és max sebesség** a naplóban
-- 📜 **Korábbi edzések** naplója (dátum, idő, táv, sebesség, körök)
-- 📊 **Profil / BMI** – magasság, testsúly, kor, testzsír; élő **BMI** +
-  kategória, és a testsúly/BMI/testzsír **változása diagramon**
-- ⚡ Gyors sablonok (HIIT, Tempó, Tabata)
-- 🟢 Nagy, színkódolt körkijelző és aktuális kör számláló
-- 💾 A beállítások megjegyzésre kerülnek
+### ⏱️ Edzés & időzítő
+- Testre szabható **Bemelegítés / Előkészület / Futás / Pihenő / Körök /
+  Levezetés** – másodpercre pontosan (léptető gyorsulással vagy beírással)
+- **Élő folyamatsáv** (hol tartasz az egész edzésben) + **teljes hátralévő idő**
+- Gyors sablonok (**HIIT / Tempó / Tabata**) az aktív sablon kiemelésével
+- **8 beépített program** (törzs, teljes test, láb, kar, zsírégető HIIT,
+  mag & egyensúly, reggeli mobilitás…) + saját programok, gyakorlat-leírásokkal
+- 🔊 Hangválasztás (külön futás/pihenő), előhallgatás, 3-2-1 csipogás, rezgés
+- 🗣️ Hangos bemondás (TTS), 🎛️ vezérlés az értesítésből, 🌙 fut kikapcsolt
+  képernyővel is (foreground service + wake lock)
+
+### 🏃 Futás & mérés
+- **GPS táv, tempó (perc/km vagy km/h), lépések, kalória**, átlag/max sebesség
+- Útvonal, kör-splitek és sebesség-diagram az edzés részleteinél
+
+### 🧘 Nyújtás & mobilitás
+- Külön képernyő **Bemelegítés / Nyújtás / Hengerezés** szekciókkal (színkódolt)
+- Izmonként ≥2 nyújtás, deréktáj/gerinc, foam rolling – mind **videós útmutatóval**
+- **Vezetett rutinok** (a telefon időzíti és bemondja a gyakorlatokat)
+
+### 🏅 Motiváció & napló
+- **Szintek + XP-sáv**, 20 gyűjthető **kitüntetés** (haladás-jelzéssel),
+  személyes **rekordok**, **napi és heti sorozat** (óraátállás-biztos),
+  sorozat-veszély figyelmeztetés, gyengéd pihenő-emlékeztető, **konfetti**
+- **Edzésnapló**: edzés utáni **hangulat** (😣😐🙂💪) és **szöveges jegyzet**,
+  utólag szerkeszthető
+- **Heti cél** (edzésszám / perc / km) folyamatjelzővel
+
+### 📊 Statisztika & előzmények
+- Heti / havi / összes összesítők, **heti trend**, 8-hetes diagram,
+  havi naptár, **12 hetes aktivitás-hőtérkép**, hangulat-eloszlás
+- **Előzmények** típusszűrővel (futás / erő), egyedi edzés törlése
+- **Profil / BMI** – testadatok, élő BMI + kategória, változás-diagram
+
+### 📤 Megosztás & adatok
+- Edzés / haladás / kitüntetések / statisztika / hőtérkép **megosztása képként**
+- **Biztonsági mentés / visszaállítás** fájlba, **CSV export**
+- Testre szabható színek, animáció-kapcsoló, emlékeztetők, heti visszatekintő
 
 ## Automatikus frissítés (ajánlott) — Obtainium
 
@@ -36,9 +54,7 @@ ingyenes app ezt figyeli, és **magától frissít**:
 
 1. Telepítsd az **Obtainium**-ot (Play Store / F-Droid / GitHub Release).
 2. Add hozzá a repó URL-jét: `https://github.com/David-Getta/edzo_app`
-3. Mivel a repó privát, add meg az Obtainium beállításaiban a GitHub
-   fiókodat / egy olvasó (repo-hozzáférésű) personal access tokent.
-4. Innentől az Obtainium jelzi és telepíti az új verziókat.
+3. Innentől az Obtainium jelzi és telepíti az új verziókat.
 
 Minden build **egyedi taggel** (`build-N`) és **növekvő `versionCode`-dal**
 készül, így az Obtainium és az Android is frissítésként ismeri fel.
