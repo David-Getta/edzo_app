@@ -66,18 +66,17 @@ public final class Badges {
                 int h = c.get(java.util.Calendar.HOUR_OF_DAY);
                 if (h < 7) early = true;
                 if (h >= 22) night = true;
-                c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
-                c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
-                days.add(c.getTimeInMillis());
+                days.add(dayStart(c, ts));
             }
         }
         // A valaha volt leghosszabb egymást követő edzésnap-sorozat.
+        // A napléptetés óraátállás-biztos: normalizált éjfélekkel dolgozunk
+        // (±12/36 óra eltolás után újranormalizálva mindig a szomszéd napra esünk).
         int bestDayStreak = 0;
-        long oneDay = 24L * 3600 * 1000;
         for (Long day : days) {
-            if (days.contains(day - oneDay)) continue; // csak a sorozat elejéről
+            if (days.contains(dayStart(c, day - 12L * 3600 * 1000))) continue; // csak a sorozat elejéről
             int s = 0; long cur = day;
-            while (days.contains(cur)) { s++; cur += oneDay; }
+            while (days.contains(cur)) { s++; cur = dayStart(c, cur + 36L * 3600 * 1000); }
             if (s > bestDayStreak) bestDayStreak = s;
         }
         if (count >= 1) out.add("first");
@@ -100,6 +99,14 @@ public final class Badges {
         if (totalM >= 42000) out.add("dist42");
         if (totalM >= 100000) out.add("dist100");
         return out;
+    }
+
+    /** Az adott időbélyeg helyi napjának éjféli (nap eleji) időbélyege. */
+    private static long dayStart(java.util.Calendar c, long ts) {
+        c.setTimeInMillis(ts);
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
     }
 
     /** A megszerzett badge-ek listája megjelenítési sorrendben. */

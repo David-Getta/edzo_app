@@ -736,10 +736,10 @@ public class MainActivity extends Activity {
             if (o != null) days.add(dayStartOf(o.optLong("ts")));
         }
         long day = dayStartMs();
-        long oneDay = 24L * 3600 * 1000;
-        if (!days.contains(day)) day -= oneDay; // a mai nap még türelmi idő
+        // Napléptetés óraátállás-biztosan: 12 órát visszalépve újranormalizálunk.
+        if (!days.contains(day)) day = dayStartOf(day - 12L * 3600 * 1000); // a mai nap még türelmi idő
         int s = 0;
-        while (days.contains(day)) { s++; day -= oneDay; }
+        while (days.contains(day)) { s++; day = dayStartOf(day - 12L * 3600 * 1000); }
         return s;
     }
 
