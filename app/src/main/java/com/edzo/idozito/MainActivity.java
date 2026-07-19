@@ -2263,7 +2263,10 @@ public class MainActivity extends Activity {
             if (work > 0) cfg[WORK_K] = work;
             cfg[REST_K] = Math.max(0, rest);
             if (rounds > 0) cfg[ROUND_K] = rounds;
-            programName = o.optString("name", "");
+            // Csak akkor állítjuk be a programot, ha valódi (ismert) program neve;
+            // különben sima futás módra esünk vissza (pl. korábbi mobilitás rutin).
+            String nm = o.optString("name", "");
+            programName = Programs.byName(this, nm) != null ? nm : "";
             prefs.edit().putString("progname", programName).apply();
             saveAll();
             refreshValues();
