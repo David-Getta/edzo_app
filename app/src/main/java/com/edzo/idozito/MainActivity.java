@@ -728,6 +728,29 @@ public class MainActivity extends Activity {
         return s;
     }
 
+    // Egymást követő edzésnapok száma (ma vagy tegnap végződő sorozat).
+    int dayStreak(JSONArray arr) {
+        java.util.HashSet<Long> days = new java.util.HashSet<>();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null) days.add(dayStartOf(o.optLong("ts")));
+        }
+        long day = dayStartMs();
+        long oneDay = 24L * 3600 * 1000;
+        if (!days.contains(day)) day -= oneDay; // a mai nap még türelmi idő
+        int s = 0;
+        while (days.contains(day)) { s++; day -= oneDay; }
+        return s;
+    }
+
+    long dayStartOf(long ts) {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(ts);
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
+
     // A valaha volt leghosszabb megszakítás nélküli heti sorozat (kitüntetésekhez).
     int bestWeekStreak(JSONArray arr) {
         java.util.HashSet<Long> weeks = new java.util.HashSet<>();
@@ -765,8 +788,10 @@ public class MainActivity extends Activity {
             if (o != null && o.optLong("ts") >= dayStart) { today = true; break; }
         }
         if (!today) return greet + " Ma még nem edzettél – hajrá! 🔥";
-        int streak = weekStreak(arr);
-        if (streak > 1) return greet + " " + streak + " hetes sorozat 🔥";
+        int ds = dayStreak(arr);
+        if (ds > 1) return greet + " " + ds + " napos sorozat 🔥";
+        int ws = weekStreak(arr);
+        if (ws > 1) return greet + " " + ws + " hetes sorozat 🔥";
         return greet + " Szép munka ma! ✅";
     }
 
