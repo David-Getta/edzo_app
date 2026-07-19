@@ -63,6 +63,8 @@ public class StatsActivity extends Activity {
 
         col.addView(sectionTitle("Ezen a héten"));
         col.addView(totalsCard(totals(weekStart, now + 1)), lp());
+        col.addView(gap(10));
+        col.addView(trendCard(weekStart, now), lp());
         col.addView(gap(16));
 
         col.addView(sectionTitle("Ebben a hónapban"));
@@ -229,6 +231,39 @@ public class StatsActivity extends Activity {
     }
 
     // ---------------- Rekordok + heti sorozat ----------------
+
+    /** Az e heti teljesítmény összevetése az előző héttel (trend-nyilakkal). */
+    LinearLayout trendCard(long weekStart, long now) {
+        long lastStart = weekStart - WEEK;
+        Totals cur = totals(weekStart, now + 1);
+        Totals prev = totals(lastStart, weekStart);
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(12), dp(14), dp(12));
+        c.addView(text("Az előző héthez képest", 12.5f, MUTED, true));
+        c.addView(gap(8));
+        c.addView(trendRow("🔁 Edzések", cur.count, prev.count, String.valueOf(cur.count)));
+        c.addView(gap(6));
+        c.addView(trendRow("📍 Táv", cur.distM, prev.distM, cur.distM > 0 ? fmtDist(cur.distM) : "0"));
+        c.addView(gap(6));
+        c.addView(trendRow("⏱ Idő", cur.durSec, prev.durSec, fmtDur((int) cur.durSec)));
+        return c;
+    }
+
+    View trendRow(String label, double cur, double prev, String valueText) {
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(text(label, 13.5f, TXT, false), new LinearLayout.LayoutParams(0, -2, 1f));
+        row.addView(text(valueText, 13.5f, TXT, true));
+        String arrow; int color;
+        double diff = cur - prev;
+        if (Math.abs(diff) < 0.0001) { arrow = "  ± 0"; color = MUTED; }
+        else if (diff > 0) { arrow = "  ▲"; color = 0xFF06D6A0; }
+        else { arrow = "  ▼"; color = 0xFFEF476F; }
+        TextView a = text(arrow, 13.5f, color, true);
+        a.setPadding(dp(8), 0, 0, 0);
+        row.addView(a);
+        return row;
+    }
 
     LinearLayout recordsCard() {
         double bestDist = -1, bestAvg = -1, bestCal = 0;
