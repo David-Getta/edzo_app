@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
     LinearLayout planBar;
     TextView planCaption;
     TextView bannerSub;
+    LinearLayout recentBox;
     TextView totalText;
     final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
@@ -138,6 +139,7 @@ public class MainActivity extends Activity {
         refreshTemplates();
         refreshGoal();
         refreshProgress();
+        refreshRecent();
 
         java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -250,6 +252,10 @@ public class MainActivity extends Activity {
         // Heti cél (dinamikus kártya)
         goalBox = vbox();
         col.addView(goalBox, new LinearLayout.LayoutParams(-1, -2));
+
+        // Legutóbbi edzés (dinamikus kártya, koppintásra a részletek)
+        recentBox = vbox();
+        col.addView(recentBox, new LinearLayout.LayoutParams(-1, -2));
 
         // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
         col.addView(gap(14));
@@ -709,6 +715,51 @@ public class MainActivity extends Activity {
         progressBox.addView(progressChip("🔥", weekStreak(arr) + " hét", "sorozat"), progChipLp());
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+    }
+
+    // Legutóbbi edzés kártya a főképernyőn – koppintásra a részletek nézet nyílik.
+    void refreshRecent() {
+        if (recentBox == null) return;
+        recentBox.removeAllViews();
+        JSONArray arr = History.load(this);
+        if (arr.length() == 0) return;
+        JSONObject o = null; long best = Long.MIN_VALUE;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject e = arr.optJSONObject(i);
+            if (e != null && e.optLong("ts") > best) { best = e.optLong("ts"); o = e; }
+        }
+        if (o == null) return;
+        final long ts = o.optLong("ts");
+        String name = o.optString("name", "");
+        boolean isRun = name.isEmpty();
+        String title = isRun ? "🏃 Futás" : "🏋️ " + name;
+        int dur = o.optInt("dur");
+        double dist = o.optDouble("dist", -1);
+        int rounds = o.optInt("rounds", 0);
+        String stat = "⏱ " + fmtLong(dur);
+        if (isRun && dist >= 0) stat += "   ·   📍 " + fmtDist(dist);
+        else if (rounds > 0) stat += "   ·   🔁 " + rounds + " kör";
+        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("MM.dd  HH:mm", new java.util.Locale("hu"));
+
+        TextView head = text("Legutóbbi edzés", 13, MUTED, true);
+        head.setPadding(dp(2), dp(4), 0, dp(8));
+        recentBox.addView(head);
+
+        LinearLayout c = card();
+        c.setPadding(dp(16), dp(14), dp(16), dp(14));
+        LinearLayout topRow = hbox();
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
+        TextView t = text(title, 16, TXT, true);
+        topRow.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
+        topRow.addView(text(df.format(new java.util.Date(ts)), 12, MUTED, false));
+        c.addView(topRow);
+        TextView s = text(stat, 13.5f, tAccent, false);
+        s.setPadding(0, dp(6), 0, 0);
+        c.addView(s);
+        c.setClickable(true);
+        c.setOnClickListener(v -> startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts)));
+        recentBox.addView(c);
+        recentBox.addView(gap(14));
     }
 
     // A haladás-csík hosszan nyomva: megosztható „büszkeség-kártya" kép a szintről,
@@ -1586,7 +1637,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); }
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); refreshRecent(); }
         }
     };
 
@@ -1741,6 +1792,7 @@ public class MainActivity extends Activity {
         }
         refreshGoal();
         refreshProgress();
+        refreshRecent();
     }
 
     @Override
