@@ -909,7 +909,16 @@ public class MainActivity extends Activity {
         if (recentBox == null) return;
         recentBox.removeAllViews();
         JSONArray arr = History.load(this);
-        if (arr.length() == 0) return;
+        if (arr.length() == 0) {
+            // Barátságos üres állapot új felhasználónak.
+            LinearLayout empty = card();
+            empty.setPadding(dp(16), dp(16), dp(16), dp(16));
+            empty.addView(text("🚀 Itt jelennek meg az eredményeid", 15, TXT, true));
+            empty.addView(text("Fejezd be az első edzésed, és itt látod majd a legutóbbi edzésed, rekordjaid és a naplód.", 12.5f, MUTED, false));
+            recentBox.addView(empty);
+            recentBox.addView(gap(14));
+            return;
+        }
         JSONObject o = null; long best = Long.MIN_VALUE;
         for (int i = 0; i < arr.length(); i++) {
             JSONObject e = arr.optJSONObject(i);
