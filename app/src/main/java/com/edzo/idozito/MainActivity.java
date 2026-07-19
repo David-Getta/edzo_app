@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
     TextView bannerSub;
     LinearLayout recentBox;
     LinearLayout badgesBox;
+    LinearLayout weekBox;
     TextView totalText;
     final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
@@ -142,6 +143,7 @@ public class MainActivity extends Activity {
         refreshProgress();
         refreshRecent();
         refreshBadges();
+        refreshWeekDots();
         // Első futáskor a már meglévő kitüntetéseket „látottnak" jelöljük, hogy
         // ne az összeset ünnepelje meg egyszerre a legközelebbi edzés után.
         if (!prefs.contains("badges_seen"))
@@ -254,6 +256,10 @@ public class MainActivity extends Activity {
         shareHint.setPadding(dp(4), dp(6), 0, 0);
         col.addView(shareHint);
         col.addView(gap(10));
+
+        // Heti aktivitás (7 pont – mely napokon edzettél ezen a héten)
+        weekBox = vbox();
+        col.addView(weekBox, new LinearLayout.LayoutParams(-1, -2));
 
         // Heti cél (dinamikus kártya)
         goalBox = vbox();
@@ -787,6 +793,59 @@ public class MainActivity extends Activity {
         c.setOnClickListener(v -> startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts)));
         recentBox.addView(c);
         recentBox.addView(gap(14));
+    }
+
+    // ---- Heti aktivitás pontok ----
+
+    void refreshWeekDots() {
+        if (weekBox == null) return;
+        weekBox.removeAllViews();
+        JSONArray arr = History.load(this);
+        long ws = weekStartMs();
+        boolean[] days = new boolean[7];
+        int trained = 0;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) continue;
+            long ts = o.optLong("ts");
+            if (ts < ws) continue;
+            long diff = ts - ws;
+            int idx = (int) (diff / (24L * 3600 * 1000));
+            if (idx >= 0 && idx < 7 && !days[idx]) { days[idx] = true; trained++; }
+        }
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setFirstDayOfWeek(java.util.Calendar.MONDAY);
+        int todayIdx = ((cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7); // H=0 … V=6
+
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(14), dp(14), dp(14));
+        TextView head = text("Heti aktivitás  ·  " + trained + "/7 nap", 13, MUTED, true);
+        head.setPadding(dp(2), 0, 0, dp(10));
+        c.addView(head);
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER);
+        String[] labels = {"H", "K", "Sze", "Cs", "P", "Szo", "V"};
+        for (int i = 0; i < 7; i++) {
+            LinearLayout col = vbox();
+            col.setGravity(Gravity.CENTER);
+            TextView dot = text(days[i] ? "✓" : "", 14, days[i] ? 0xFF08121F : MUTED, true);
+            dot.setGravity(Gravity.CENTER);
+            dot.setWidth(dp(34)); dot.setHeight(dp(34));
+            GradientDrawable bg = new GradientDrawable();
+            bg.setShape(GradientDrawable.OVAL);
+            if (days[i]) bg.setColor(tAccent);
+            else { bg.setColor(0x14FFFFFF); bg.setStroke(dp(1), i == todayIdx ? tAccent : GLASS_LINE); }
+            dot.setBackground(bg);
+            col.addView(dot);
+            TextView lab = text(labels[i], 11, i == todayIdx ? tAccent : MUTED, i == todayIdx);
+            lab.setGravity(Gravity.CENTER);
+            lab.setPadding(0, dp(5), 0, 0);
+            col.addView(lab);
+            row.addView(col, new LinearLayout.LayoutParams(0, -2, 1f));
+        }
+        c.addView(row);
+        weekBox.addView(c);
+        weekBox.addView(gap(14));
     }
 
     // ---- Kitüntetések ----
@@ -1766,7 +1825,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); refreshRecent(); refreshBadges(); checkNewBadges(); }
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); refreshRecent(); refreshBadges(); refreshWeekDots(); checkNewBadges(); }
         }
     };
 
@@ -1879,6 +1938,7 @@ public class MainActivity extends Activity {
         refreshProgress();
         refreshRecent();
         refreshBadges();
+        refreshWeekDots();
         checkNewBadges();
     }
 
@@ -1926,6 +1986,7 @@ public class MainActivity extends Activity {
         refreshProgress();
         refreshRecent();
         refreshBadges();
+        refreshWeekDots();
     }
 
     @Override
