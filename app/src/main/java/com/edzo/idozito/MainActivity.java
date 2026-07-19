@@ -1147,16 +1147,46 @@ public class MainActivity extends Activity {
 
     void showBadgesSheet() {
         java.util.HashSet<String> got = currentBadges();
+        JSONArray arr = History.load(this);
+        int count = arr.length();
+        double totalM = 0, maxRun = 0; long totalSec = 0;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) continue;
+            totalSec += o.optInt("dur");
+            double d = o.optDouble("dist", 0);
+            if (d > 0) { totalM += d; if (d > maxRun) maxRun = d; }
+        }
         Sheet s = new Sheet(this, "Kitüntetések 🏅", got.size() + " / " + Badges.ALL.length + " megszerezve");
         for (Badges.Badge b : Badges.ALL) {
             boolean earned = got.contains(b.id);
-            s.addRow(earned ? b.emoji : "🔒",
-                    b.title,
-                    earned ? b.desc : b.desc + "  (zárolva)",
-                    earned, false, null);
+            String sub = b.desc;
+            if (!earned) {
+                String hint = badgeHint(b.id, count, maxRun, totalM, totalSec);
+                sub = hint != null ? b.desc + "  ·  " + hint : b.desc + "  (zárolva)";
+            }
+            s.addRow(earned ? b.emoji : "🔒", b.title, sub, earned, false, null);
         }
         s.addCancel();
         s.show();
+    }
+
+    // Haladás-felirat a még nem teljesített, számlálós kitüntetésekhez (pl. "45 / 50").
+    String badgeHint(String id, int count, double maxRun, double totalM, long totalSec) {
+        switch (id) {
+            case "c5":      return count + " / 5 edzés";
+            case "c10":     return count + " / 10 edzés";
+            case "c25":     return count + " / 25 edzés";
+            case "c50":     return count + " / 50 edzés";
+            case "c100":    return count + " / 100 edzés";
+            case "run5":    return fmtDist(maxRun) + " / 5 km (leghosszabb futás)";
+            case "run10":   return fmtDist(maxRun) + " / 10 km (leghosszabb futás)";
+            case "run21":   return fmtDist(maxRun) + " / 21 km (leghosszabb futás)";
+            case "dist42":  return fmtDist(totalM) + " / 42 km összesen";
+            case "dist100": return fmtDist(totalM) + " / 100 km összesen";
+            case "time600": return (totalSec / 60) + " / 600 perc";
+            default:        return null;
+        }
     }
 
     // Edzés után: ha új kitüntetés született, ünnepeljük meg egy lappal.
