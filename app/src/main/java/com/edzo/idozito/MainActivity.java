@@ -2019,6 +2019,7 @@ public class MainActivity extends Activity {
         LinearLayout stats = hbox();
         statElapsed = statCell(stats, "Eltelt");
         statRemain = statCell(stats, "Hátra");
+        statRemain.setTextColor(tAccent); // a hátralévő idő a kulcsinfó – kiemeljük
         statCal = statCell(stats, "Kalória");
         statSteps = statCell(stats, "Lépés");
         stats.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
