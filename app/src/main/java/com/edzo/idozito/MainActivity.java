@@ -2067,9 +2067,41 @@ public class MainActivity extends Activity {
             moodBtns.addView(cell, new LinearLayout.LayoutParams(0, -2, 1f));
         }
         moodRow.addView(moodBtns);
+        Button noteBtn = ghostButton("📝  Jegyzet hozzáadása");
+        LinearLayout.LayoutParams nbLp = new LinearLayout.LayoutParams(-1, -2);
+        nbLp.topMargin = dp(10);
+        noteBtn.setOnClickListener(v -> noteSheet());
+        moodRow.addView(noteBtn, nbLp);
         runView.addView(moodRow, new LinearLayout.LayoutParams(-1, -2));
 
         return runView;
+    }
+
+    // Szöveges jegyzet felvétele a legutóbbi edzéshez egy alsó lapon.
+    void noteSheet() {
+        final EditText et = new EditText(this);
+        et.setHint("Hogy ment? Írj egy rövid jegyzetet…");
+        et.setText(History.latestNote(this));
+        et.setTextColor(TXT);
+        et.setHintTextColor(MUTED);
+        et.setTextSize(15);
+        et.setMinLines(3);
+        et.setGravity(Gravity.TOP | Gravity.START);
+        et.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x14FFFFFF); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), GLASS_LINE);
+        et.setBackground(bg);
+        et.setPadding(dp(14), dp(12), dp(14), dp(12));
+        new Sheet(this, "Edzés jegyzet 📝", "Mentődik ehhez az edzéshez")
+                .addCustom(et)
+                .addPrimary("Mentés", () -> {
+                    History.setNoteForLatest(this, et.getText().toString());
+                    android.widget.Toast.makeText(this, "Jegyzet elmentve 📝", android.widget.Toast.LENGTH_SHORT).show();
+                })
+                .addCancel()
+                .show();
     }
 
     // A kiválasztott hangulat mentése a legutóbbi edzéshez + vizuális visszajelzés.

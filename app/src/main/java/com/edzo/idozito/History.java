@@ -67,6 +67,27 @@ public final class History {
         try { return new JSONArray(s); } catch (Exception e) { return new JSONArray(); }
     }
 
+    /** Szöveges jegyzet mentése a legfrissebb edzéshez. */
+    public static void setNoteForLatest(Context ctx, String note) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        JSONArray arr = load(ctx);
+        if (arr.length() == 0) return;
+        try {
+            JSONObject o = arr.optJSONObject(0);
+            if (o == null) return;
+            if (note == null) note = "";
+            o.put("note", note.trim());
+            p.edit().putString(KEY, arr.toString()).apply();
+        } catch (Exception ignored) {}
+    }
+
+    /** A legfrissebb edzés jegyzete, vagy üres string. */
+    public static String latestNote(Context ctx) {
+        JSONArray arr = load(ctx);
+        JSONObject o = arr.optJSONObject(0);
+        return o == null ? "" : o.optString("note", "");
+    }
+
     /** Hangulat (1–4) emojija, vagy üres string, ha nincs. */
     public static String moodEmoji(int mood) {
         switch (mood) {

@@ -68,6 +68,17 @@ public class WorkoutDetailActivity extends Activity {
             col.addView(gap(4));
             col.addView(text(moodE + "  " + (mv >= 1 && mv <= 4 ? ml[mv] : ""), 14, TXT, true));
         }
+        String note = e.optString("note", "");
+        if (!note.isEmpty()) {
+            col.addView(gap(8));
+            LinearLayout noteCard = card();
+            noteCard.setPadding(dp(14), dp(12), dp(14), dp(12));
+            noteCard.addView(text("📝 Jegyzet", 12, MUTED, true));
+            TextView nt = text(note, 14.5f, TXT, false);
+            nt.setPadding(0, dp(6), 0, 0);
+            noteCard.addView(nt);
+            col.addView(noteCard, lp());
+        }
         col.addView(gap(18));
 
         // ---- Összegzés ----
