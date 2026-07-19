@@ -76,6 +76,7 @@ public class MainActivity extends Activity {
     LinearLayout progressBox;
     LinearLayout planBar;
     TextView planCaption;
+    TextView bannerSub;
     TextView totalText;
     final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
@@ -369,9 +370,9 @@ public class MainActivity extends Activity {
         LinearLayout btitles = vbox();
         btitles.setPadding(dp(22), dp(20), dp(22), dp(20));
         btitles.addView(text("My trainer", 27, 0xFFFFFFFF, true));
-        TextView bsub = text("Intervallum edző · készen állsz? 💪", 13, 0xFFFFFFFF, false);
-        bsub.setAlpha(0.92f);
-        btitles.addView(bsub);
+        bannerSub = text(bannerSubtitle(), 13, 0xFFFFFFFF, false);
+        bannerSub.setAlpha(0.92f);
+        btitles.addView(bannerSub);
         FrameLayout.LayoutParams tlp = new FrameLayout.LayoutParams(-2, -2);
         tlp.gravity = Gravity.CENTER_VERTICAL;
         banner.addView(btitles, tlp);
@@ -589,6 +590,31 @@ public class MainActivity extends Activity {
         return s;
     }
 
+    long dayStartMs() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
+
+    // Személyre szabott, napszakhoz és sorozathoz igazodó üdvözlő felirat a fejlécben.
+    String bannerSubtitle() {
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        String greet = hour < 10 ? "Jó reggelt!" : hour < 18 ? "Szia!" : "Jó estét!";
+        JSONArray arr = History.load(this);
+        if (arr.length() == 0) return greet + " Kezdd el az első edzésed 💪";
+        long dayStart = dayStartMs();
+        boolean today = false;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null && o.optLong("ts") >= dayStart) { today = true; break; }
+        }
+        if (!today) return greet + " Ma még nem edzettél – hajrá! 🔥";
+        int streak = weekStreak(arr);
+        if (streak > 1) return greet + " " + streak + " hetes sorozat 🔥";
+        return greet + " Szép munka ma! ✅";
+    }
+
     // ---- Haladás-csík (szint / sorozat / edzésszám) ----
 
     void refreshProgress() {
@@ -600,6 +626,7 @@ public class MainActivity extends Activity {
         progressBox.addView(progressChip("⭐", "Szint " + lvl, Levels.title(lvl)), progChipLp());
         progressBox.addView(progressChip("🔥", weekStreak(arr) + " hét", "sorozat"), progChipLp());
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
+        if (bannerSub != null) bannerSub.setText(bannerSubtitle());
     }
 
     View progressChip(String emoji, String value, String label) {
