@@ -84,6 +84,9 @@ public class WorkoutDetailActivity extends Activity {
         }
         final int curMoodVal = e.optInt("mood", 0);
         final String curNoteVal = e.optString("note", "");
+        TextView actLabel = text("MŰVELETEK", 11, MUTED, true);
+        actLabel.setPadding(0, dp(14), 0, dp(2));
+        col.addView(actLabel);
         TextView editJournal = text("✏️  Napló szerkesztése (hangulat / jegyzet)", 13, Theme.accent(this), true);
         editJournal.setPadding(0, dp(10), 0, 0);
         editJournal.setClickable(true);
