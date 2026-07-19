@@ -1046,6 +1046,7 @@ public class MainActivity extends Activity {
             if (fresh.isEmpty()) return;
             root.post(() -> {
                 if (isFinishing()) return;
+                Confetti.burst(root);
                 Badges.Badge b = fresh.get(0);
                 String sub = fresh.size() == 1 ? b.desc
                         : b.desc + "  (+" + (fresh.size() - 1) + " további)";
@@ -2123,6 +2124,10 @@ public class MainActivity extends Activity {
         } else {
             levelText.setVisibility(View.GONE);
         }
+
+        // Ünneplő konfetti új rekordnál vagy szintlépésnél.
+        if ((records != null && !records.isEmpty()) || (levelup != null && !levelup.isEmpty()))
+            Confetti.burst(root);
 
         lastPaused = false;
         pauseBtn.setEnabled(false);
