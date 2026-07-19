@@ -62,7 +62,7 @@ public class TimerService extends Service {
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
             EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname", EX_RECORDS = "records",
-            EX_LEVELUP = "levelup";
+            EX_LEVELUP = "levelup", EX_TOTALREMAIN = "totalremain";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2, T_WARMUP = 3, T_COOLDOWN = 4;
 
@@ -564,6 +564,10 @@ public class TimerService extends Service {
         i.putExtra(EX_STEPS, steps);
         i.putExtra(EX_CAL, (int) Math.round(estimateCalories()));
         i.putExtra(EX_PAUSED, paused);
+        // Teljes hátralévő idő: az aktuális szakasz maradéka + a hátralévő szakaszok.
+        int futureSec = 0;
+        for (int j = idx + 1; j < plan.size(); j++) futureSec += plan.get(j).dur;
+        i.putExtra(EX_TOTALREMAIN, (int) Math.ceil(remain) + futureSec);
         if (s.label != null) i.putExtra(EX_STEPNAME, s.label);
         String nx = nextWorkLabel();
         if (nx != null) i.putExtra(EX_NEXTNAME, nx);

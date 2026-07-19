@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
     TextView exText, exDesc, nextText, recordText, levelText;
-    TextView statElapsed, statCal, statSteps;
+    TextView statElapsed, statCal, statSteps, statRemain;
     Button pauseBtn, cooldownBtn, shareBtn;
     // A legutóbb befejezett edzés adatai a megosztás-kártyához.
     int lastDur, lastRounds, lastCal, lastSteps;
@@ -1963,6 +1963,7 @@ public class MainActivity extends Activity {
         // Élő statisztikák: eltelt idő, kalória, lépések
         LinearLayout stats = hbox();
         statElapsed = statCell(stats, "Eltelt");
+        statRemain = statCell(stats, "Hátra");
         statCal = statCell(stats, "Kalória");
         statSteps = statCell(stats, "Lépés");
         stats.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
@@ -2227,7 +2228,9 @@ public class MainActivity extends Activity {
         int elapsed = i.getIntExtra(TimerService.EX_ELAPSED, 0);
         int steps = i.getIntExtra(TimerService.EX_STEPS, 0);
         int cal = i.getIntExtra(TimerService.EX_CAL, 0);
+        int totalRemain = i.getIntExtra(TimerService.EX_TOTALREMAIN, 0);
         statElapsed.setText(fmtLong(elapsed));
+        statRemain.setText(fmtLong(totalRemain));
         statCal.setText(cal + " kcal");
         statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
 
@@ -2264,6 +2267,7 @@ public class MainActivity extends Activity {
         if (avg > 0) line += "  ·  ⌀ " + fmtSpeed(avg);
         distanceText.setText(line);
         statElapsed.setText(fmtLong(dur));
+        statRemain.setText("0:00");
         statCal.setText(cal + " kcal");
         statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
 
