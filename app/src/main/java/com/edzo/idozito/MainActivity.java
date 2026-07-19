@@ -77,6 +77,7 @@ public class MainActivity extends Activity {
     LinearLayout templatesBox;
     LinearLayout goalBox;
     LinearLayout progressBox;
+    LinearLayout levelBar;
     LinearLayout planBar;
     TextView planCaption;
     TextView bannerSub;
@@ -257,6 +258,10 @@ public class MainActivity extends Activity {
         shareHint.setPadding(dp(4), dp(6), 0, 0);
         col.addView(shareHint);
         col.addView(gap(10));
+
+        // Szint-folyamat sáv (XP a következő szintig)
+        levelBar = vbox();
+        col.addView(levelBar, new LinearLayout.LayoutParams(-1, -2));
 
         // Heti cél (dinamikus kártya) – rövid, motiváló, felül marad
         goalBox = vbox();
@@ -766,6 +771,40 @@ public class MainActivity extends Activity {
         progressBox.addView(progressChip("🔥", weekStreak(arr) + " hét", "sorozat"), progChipLp());
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+        refreshLevelBar(arr, lvl, xp);
+    }
+
+    void refreshLevelBar(JSONArray arr, int lvl, long xp) {
+        if (levelBar == null) return;
+        levelBar.removeAllViews();
+        float frac = Levels.progress(xp);
+        long toNext = Levels.xpToNext(xp);
+        levelBar.addView(gap(10));
+        LinearLayout c = card();
+        c.setPadding(dp(16), dp(12), dp(16), dp(12));
+        LinearLayout top = hbox();
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        top.addView(text("⭐ Szint " + lvl + " · " + Levels.title(lvl), 13.5f, TXT, true),
+                new LinearLayout.LayoutParams(0, -2, 1f));
+        top.addView(text(Math.round(frac * 100) + "%", 13, tAccent, true));
+        c.addView(top);
+        c.addView(gap(8));
+        LinearLayout barBg = hbox();
+        GradientDrawable bgd = new GradientDrawable();
+        bgd.setColor(CARD2); bgd.setCornerRadius(dp(6));
+        barBg.setBackground(bgd);
+        View fill = new View(this);
+        GradientDrawable fgd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{tAccent, tAccent2});
+        fgd.setCornerRadius(dp(6));
+        fill.setBackground(fgd);
+        float f = Math.max(0.001f, Math.min(1f, frac));
+        barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
+        barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
+        c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
+        c.addView(gap(6));
+        c.addView(text("Még " + toNext + " XP a(z) " + (lvl + 1) + ". szintig", 11.5f, MUTED, false));
+        levelBar.addView(c);
     }
 
     // Legutóbbi edzés kártya a főképernyőn – koppintásra a részletek nézet nyílik.
