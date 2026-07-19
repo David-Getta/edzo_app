@@ -74,6 +74,7 @@ public class MainActivity extends Activity {
     FrameLayout root;
     ScrollView setupScroll;
     LinearLayout runView;
+    ScrollView runScroll;
     LinearLayout templatesBox;
     LinearLayout goalBox;
     LinearLayout progressBox;
@@ -2140,7 +2141,16 @@ public class MainActivity extends Activity {
         moodRow.addView(noteBtn, nbLp);
         runView.addView(moodRow, new LinearLayout.LayoutParams(-1, -2));
 
-        return runView;
+        // Görgethetővé tesszük, hogy kis kijelzőn se vágódjon le a tartalom
+        // (a befejező képernyőn sok elem van). fillViewport: rövid tartalomnál
+        // középre igazít, hosszúnál görgethető.
+        runScroll = new ScrollView(this);
+        runScroll.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+        runScroll.setFillViewport(true);
+        runScroll.setVerticalScrollBarEnabled(false);
+        runView.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+        runScroll.addView(runView);
+        return runScroll;
     }
 
     // Szöveges jegyzet felvétele a legutóbbi edzéshez egy alsó lapon.
@@ -2196,7 +2206,7 @@ public class MainActivity extends Activity {
 
     void showRun(boolean run) {
         setupScroll.setVisibility(run ? View.GONE : View.VISIBLE);
-        runView.setVisibility(run ? View.VISIBLE : View.GONE);
+        runScroll.setVisibility(run ? View.VISIBLE : View.GONE);
         int flag = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
         if (run && Theme.keepScreenOn(this)) getWindow().addFlags(flag);
         else getWindow().clearFlags(flag);
@@ -2369,7 +2379,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (runView.getVisibility() == View.VISIBLE) confirmStop();
+        if (runScroll != null && runScroll.getVisibility() == View.VISIBLE) confirmStop();
         else super.onBackPressed();
     }
 
@@ -2540,7 +2550,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         // Ha a Beállításokban változott a téma, építsük újra (kivéve edzés közben).
-        if (Theme.rev(this) != builtRev && (runView == null || runView.getVisibility() != View.VISIBLE)) {
+        if (Theme.rev(this) != builtRev && (runScroll == null || runScroll.getVisibility() != View.VISIBLE)) {
             recreate();
             return;
         }
