@@ -42,6 +42,10 @@ public final class Programs {
                     "Fekvőtámasz", "Tricepsz tolódzkodás", "Plank vállérintés", "Karkörzés", "Szuperman", "Szűk fekvőtámasz"}, false),
             new P("Nyújtás", "🧘", new String[]{
                     "Nyakkörzés", "Vállnyújtás", "Törzsdöntés", "Combhajlító nyújtás", "Csípőnyújtás", "Vádlinyújtás"}, false),
+            new P("Zsírégető HIIT", "🔥", new String[]{
+                    "Jumping jack", "Magas térd", "Burpee", "Hegymászó", "Deszka ugrás", "Boxoló ütés"}, false),
+            new P("Mag & egyensúly", "🎯", new String[]{
+                    "Plank", "Oldalplank", "Madár-kutya", "Csípőemelés (híd)", "Szuperman", "Fal-ülés"}, false),
     };
 
     /** Saját programok betöltése. */
@@ -137,6 +141,11 @@ public final class Programs {
             case "Combhajlító nyújtás": return "Nyújtott láb, hajolj előre, érintsd a lábfejed felé.";
             case "Csípőnyújtás": return "Kitörés-tartásban told előre a csípőd, nyújtsd a hajlítót.";
             case "Vádlinyújtás": return "Fal felé dőlve nyújtott hátsó láb, sarok a földön.";
+            case "Magas térd": return "Helyben futás, húzd a térded csípőmagasságig, gyors ütem.";
+            case "Deszka ugrás": return "Plank-tartás, ugrálj terpeszbe és zárt lábra a lábaddal.";
+            case "Boxoló ütés": return "Enyhe guggolóállás, üss előre gyorsan, felváltva a karokkal.";
+            case "Oldalplank": return "Oldalfekvés alkartámaszon, egyenes test, tartsd a csípőd fenn.";
+            case "Madár-kutya": return "Négykézláb, nyújtsd ki az ellentétes kart és lábat, tartsd.";
             default: return "";
         }
     }
