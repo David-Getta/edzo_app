@@ -61,6 +61,13 @@ public class WorkoutDetailActivity extends Activity {
         col.addView(text(wname.isEmpty() ? "🏃 Futás (intervallum)" : "🏋️ " + wname, 14.5f, Theme.accent(this), true));
         col.addView(gap(2));
         col.addView(text(df.format(new Date(e.optLong("ts"))), 13.5f, MUTED, false));
+        String moodE = History.moodEmoji(e.optInt("mood", 0));
+        if (!moodE.isEmpty()) {
+            String[] ml = {"", "Nehéz volt", "Rendben ment", "Jó volt", "Szuper volt"};
+            int mv = e.optInt("mood", 0);
+            col.addView(gap(4));
+            col.addView(text(moodE + "  " + (mv >= 1 && mv <= 4 ? ml[mv] : ""), 14, TXT, true));
+        }
         col.addView(gap(18));
 
         // ---- Összegzés ----

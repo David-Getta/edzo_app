@@ -48,10 +48,34 @@ public final class History {
         }
     }
 
+    /** Hangulat/érzés (1–4) mentése a legfrissebb edzéshez. */
+    public static void setMoodForLatest(Context ctx, int mood) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        JSONArray arr = load(ctx);
+        if (arr.length() == 0) return;
+        try {
+            JSONObject o = arr.optJSONObject(0);
+            if (o == null) return;
+            o.put("mood", mood);
+            p.edit().putString(KEY, arr.toString()).apply();
+        } catch (Exception ignored) {}
+    }
+
     public static JSONArray load(Context ctx) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String s = p.getString(KEY, "[]");
         try { return new JSONArray(s); } catch (Exception e) { return new JSONArray(); }
+    }
+
+    /** Hangulat (1–4) emojija, vagy üres string, ha nincs. */
+    public static String moodEmoji(int mood) {
+        switch (mood) {
+            case 1: return "😣";
+            case 2: return "😐";
+            case 3: return "🙂";
+            case 4: return "💪";
+            default: return "";
+        }
     }
 
     public static void clear(Context ctx) {

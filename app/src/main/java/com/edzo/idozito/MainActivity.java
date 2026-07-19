@@ -95,6 +95,8 @@ public class MainActivity extends Activity {
     TextView exText, exDesc, nextText, recordText, levelText;
     TextView statElapsed, statCal, statSteps, statRemain;
     Button pauseBtn, cooldownBtn, shareBtn;
+    LinearLayout moodRow;
+    TextView[] moodChips;
     // A legutóbb befejezett edzés adatai a megosztás-kártyához.
     int lastDur, lastRounds, lastCal, lastSteps;
     double lastDist = -1; float lastAvg = -1; String lastRecords = "";
@@ -905,6 +907,8 @@ public class MainActivity extends Activity {
         String name = o.optString("name", "");
         boolean isRun = name.isEmpty();
         String title = isRun ? "🏃 Futás" : "🏋️ " + name;
+        String moodE = History.moodEmoji(o.optInt("mood", 0));
+        if (!moodE.isEmpty()) title = title + "  " + moodE;
         int dur = o.optInt("dur");
         double dist = o.optDouble("dist", -1);
         int rounds = o.optInt("rounds", 0);
@@ -2035,7 +2039,48 @@ public class MainActivity extends Activity {
         sbLp.topMargin = dp(10);
         runView.addView(shareBtn, sbLp);
 
+        // Hangulat-választó (csak a befejező képernyőn) – naplózza, milyen volt az edzés.
+        moodRow = vbox();
+        moodRow.setVisibility(View.GONE);
+        TextView moodTitle = text("Milyen volt az edzés?", 13, MUTED, false);
+        moodTitle.setGravity(Gravity.CENTER);
+        moodTitle.setPadding(0, dp(16), 0, dp(8));
+        moodRow.addView(moodTitle);
+        LinearLayout moodBtns = hbox();
+        moodBtns.setGravity(Gravity.CENTER);
+        String[] emo = {"😣", "😐", "🙂", "💪"};
+        String[] lab = {"Nehéz", "Rendben", "Jó", "Szuper"};
+        moodChips = new TextView[4];
+        for (int m = 0; m < 4; m++) {
+            final int mood = m + 1;
+            LinearLayout cell = vbox();
+            cell.setGravity(Gravity.CENTER);
+            cell.setPadding(dp(8), dp(6), dp(8), dp(6));
+            TextView e = text(emo[m], 26, TXT, false);
+            e.setGravity(Gravity.CENTER);
+            TextView l = text(lab[m], 11, MUTED, false);
+            l.setGravity(Gravity.CENTER);
+            cell.addView(e); cell.addView(l);
+            cell.setClickable(true);
+            cell.setOnClickListener(v -> pickMood(mood));
+            moodChips[m] = e;
+            moodBtns.addView(cell, new LinearLayout.LayoutParams(0, -2, 1f));
+        }
+        moodRow.addView(moodBtns);
+        runView.addView(moodRow, new LinearLayout.LayoutParams(-1, -2));
+
         return runView;
+    }
+
+    // A kiválasztott hangulat mentése a legutóbbi edzéshez + vizuális visszajelzés.
+    void pickMood(int mood) {
+        History.setMoodForLatest(this, mood);
+        if (moodChips != null) {
+            for (int m = 0; m < moodChips.length; m++)
+                moodChips[m].setAlpha(m == mood - 1 ? 1f : 0.35f);
+        }
+        refreshRecent();
+        android.widget.Toast.makeText(this, "Elmentve a naplóba 📝", android.widget.Toast.LENGTH_SHORT).show();
     }
 
     TextView statCell(LinearLayout parent, String label) {
@@ -2104,6 +2149,7 @@ public class MainActivity extends Activity {
         levelText.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
+        if (moodRow != null) moodRow.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -2143,6 +2189,7 @@ public class MainActivity extends Activity {
         levelText.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
+        if (moodRow != null) moodRow.setVisibility(View.GONE);
         showRun(true);
     }
 
@@ -2320,6 +2367,10 @@ public class MainActivity extends Activity {
         pauseBtn.setText("Kész");
         cooldownBtn.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(View.VISIBLE);
+        if (moodRow != null) {
+            moodRow.setVisibility(View.VISIBLE);
+            if (moodChips != null) for (TextView t : moodChips) t.setAlpha(1f);
+        }
         refreshHome();
         checkNewBadges();
     }
