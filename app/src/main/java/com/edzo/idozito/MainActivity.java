@@ -81,6 +81,7 @@ public class MainActivity extends Activity {
     TextView planCaption;
     TextView bannerSub;
     LinearLayout recentBox;
+    LinearLayout badgesBox;
     TextView totalText;
     final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
@@ -140,6 +141,11 @@ public class MainActivity extends Activity {
         refreshGoal();
         refreshProgress();
         refreshRecent();
+        refreshBadges();
+        // Első futáskor a már meglévő kitüntetéseket „látottnak" jelöljük, hogy
+        // ne az összeset ünnepelje meg egyszerre a legközelebbi edzés után.
+        if (!prefs.contains("badges_seen"))
+            prefs.edit().putStringSet("badges_seen", new java.util.HashSet<>(currentBadges())).apply();
 
         java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -256,6 +262,10 @@ public class MainActivity extends Activity {
         // Legutóbbi edzés (dinamikus kártya, koppintásra a részletek)
         recentBox = vbox();
         col.addView(recentBox, new LinearLayout.LayoutParams(-1, -2));
+
+        // Kitüntetések (dinamikus – megszerzett jelvények, koppintásra a teljes lista)
+        badgesBox = vbox();
+        col.addView(badgesBox, new LinearLayout.LayoutParams(-1, -2));
 
         // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
         col.addView(gap(14));
@@ -678,6 +688,23 @@ public class MainActivity extends Activity {
         return s;
     }
 
+    // A valaha volt leghosszabb megszakítás nélküli heti sorozat (kitüntetésekhez).
+    int bestWeekStreak(JSONArray arr) {
+        java.util.HashSet<Long> weeks = new java.util.HashSet<>();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null) weeks.add(weekStartOf(o.optLong("ts")));
+        }
+        int best = 0;
+        for (Long w : weeks) {
+            if (weeks.contains(prevWeekOf(w))) continue; // csak a sorozat elejéről indulunk
+            int s = 0; long cur = w;
+            while (weeks.contains(cur)) { s++; cur = weekStartOf(cur + 10L * 24 * 3600 * 1000); }
+            if (s > best) best = s;
+        }
+        return best;
+    }
+
     long dayStartMs() {
         java.util.Calendar c = java.util.Calendar.getInstance();
         c.set(java.util.Calendar.HOUR_OF_DAY, 0); c.set(java.util.Calendar.MINUTE, 0);
@@ -760,6 +787,108 @@ public class MainActivity extends Activity {
         c.setOnClickListener(v -> startActivity(new Intent(this, WorkoutDetailActivity.class).putExtra("ts", ts)));
         recentBox.addView(c);
         recentBox.addView(gap(14));
+    }
+
+    // ---- Kitüntetések ----
+
+    java.util.HashSet<String> currentBadges() {
+        JSONArray arr = History.load(this);
+        return Badges.earned(arr, bestWeekStreak(arr));
+    }
+
+    void refreshBadges() {
+        if (badgesBox == null) return;
+        badgesBox.removeAllViews();
+        java.util.HashSet<String> got = currentBadges();
+
+        TextView head = text("Kitüntetések  ·  " + got.size() + "/" + Badges.ALL.length, 13, MUTED, true);
+        head.setPadding(dp(2), dp(4), 0, dp(8));
+        badgesBox.addView(head);
+
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(14), dp(14), dp(14));
+        LinearLayout strip = hbox();
+        strip.setGravity(Gravity.CENTER_VERTICAL);
+        // Legfeljebb 6 jelvény a szalagon (megszerzettek elöl), a többi a lapon.
+        int shown = 0;
+        for (Badges.Badge b : Badges.ALL) {
+            boolean earned = got.contains(b.id);
+            if (!earned) continue;
+            if (shown >= 6) break;
+            strip.addView(badgeChip(b.emoji, true), badgeChipLp());
+            shown++;
+        }
+        for (Badges.Badge b : Badges.ALL) {
+            if (shown >= 6) break;
+            if (got.contains(b.id)) continue;
+            strip.addView(badgeChip("🔒", false), badgeChipLp());
+            shown++;
+        }
+        c.addView(strip);
+        TextView hint = text("Koppints az összes kitüntetés megtekintéséhez", 11.5f, MUTED, false);
+        hint.setPadding(dp(2), dp(10), 0, 0);
+        c.addView(hint);
+        c.setClickable(true);
+        c.setOnClickListener(v -> showBadgesSheet());
+        badgesBox.addView(c);
+        badgesBox.addView(gap(14));
+    }
+
+    View badgeChip(String emoji, boolean earned) {
+        TextView t = text(emoji, 22, TXT, false);
+        t.setGravity(Gravity.CENTER);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setShape(GradientDrawable.OVAL);
+        bg.setColor(earned ? ((tAccent & 0xFFFFFF) | 0x33000000) : 0x14FFFFFF);
+        bg.setStroke(dp(1), earned ? tAccent : GLASS_LINE);
+        t.setBackground(bg);
+        t.setWidth(dp(44)); t.setHeight(dp(44));
+        if (!earned) t.setAlpha(0.6f);
+        return t;
+    }
+
+    LinearLayout.LayoutParams badgeChipLp() {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, -2);
+        p.rightMargin = dp(8);
+        return p;
+    }
+
+    void showBadgesSheet() {
+        java.util.HashSet<String> got = currentBadges();
+        Sheet s = new Sheet(this, "Kitüntetések 🏅", got.size() + " / " + Badges.ALL.length + " megszerezve");
+        for (Badges.Badge b : Badges.ALL) {
+            boolean earned = got.contains(b.id);
+            s.addRow(earned ? b.emoji : "🔒",
+                    b.title,
+                    earned ? b.desc : b.desc + "  (zárolva)",
+                    earned, false, null);
+        }
+        s.addCancel();
+        s.show();
+    }
+
+    // Edzés után: ha új kitüntetés született, ünnepeljük meg egy lappal.
+    void checkNewBadges() {
+        try {
+            java.util.HashSet<String> got = currentBadges();
+            java.util.Set<String> seen = prefs.getStringSet("badges_seen", new java.util.HashSet<>());
+            java.util.List<Badges.Badge> fresh = new java.util.ArrayList<>();
+            for (Badges.Badge b : Badges.ALL) {
+                if (got.contains(b.id) && !seen.contains(b.id)) fresh.add(b);
+            }
+            // A jelenlegi állapot elmentése (akkor is, ha nincs új – idempotens).
+            prefs.edit().putStringSet("badges_seen", new java.util.HashSet<>(got)).apply();
+            if (fresh.isEmpty()) return;
+            root.post(() -> {
+                if (isFinishing()) return;
+                Badges.Badge b = fresh.get(0);
+                String sub = fresh.size() == 1 ? b.desc
+                        : b.desc + "  (+" + (fresh.size() - 1) + " további)";
+                new Sheet(this, b.emoji + "  " + b.title, "Új kitüntetés! " + sub)
+                    .addPrimary("Szuper! 🎉", () -> {})
+                    .show();
+            });
+        } catch (Exception ignored) {}
     }
 
     // A haladás-csík hosszan nyomva: megosztható „büszkeség-kártya" kép a szintről,
@@ -1637,7 +1766,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); refreshRecent(); }
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); refreshRecent(); refreshBadges(); checkNewBadges(); }
         }
     };
 
@@ -1748,6 +1877,9 @@ public class MainActivity extends Activity {
         cooldownBtn.setVisibility(View.VISIBLE);
         refreshGoal();
         refreshProgress();
+        refreshRecent();
+        refreshBadges();
+        checkNewBadges();
     }
 
     void setPhaseUI(int phase, int round) { setPhaseUI(phase, round, cfg[ROUND_K]); }
@@ -1793,6 +1925,7 @@ public class MainActivity extends Activity {
         refreshGoal();
         refreshProgress();
         refreshRecent();
+        refreshBadges();
     }
 
     @Override
