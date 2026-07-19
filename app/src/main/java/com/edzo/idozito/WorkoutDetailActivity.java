@@ -222,8 +222,10 @@ public class WorkoutDetailActivity extends Activity {
         sp.setTextSize(38);
         String wname = e.optString("name", "");
         String type = wname.isEmpty() ? "Futás" : wname;
+        String moodE = History.moodEmoji(e.optInt("mood", 0));
         SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd  HH:mm", new Locale("hu"));
-        cv.drawText(type + "  ·  " + df.format(new Date(e.optLong("ts"))), M, 312, sp);
+        cv.drawText(type + "  ·  " + df.format(new Date(e.optLong("ts")))
+                + (moodE.isEmpty() ? "" : "  " + moodE), M, 312, sp);
 
         // értékek
         int dur = e.optInt("dur");
