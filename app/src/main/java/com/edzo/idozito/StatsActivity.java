@@ -87,6 +87,14 @@ public class StatsActivity extends Activity {
         col.addView(recordsCard(), lp());
         col.addView(gap(16));
 
+        int[] moodCounts = moodCounts();
+        int moodTotal = moodCounts[1] + moodCounts[2] + moodCounts[3] + moodCounts[4];
+        if (moodTotal > 0) {
+            col.addView(sectionTitle("Hangulat"));
+            col.addView(moodCard(moodCounts, moodTotal), lp());
+            col.addView(gap(16));
+        }
+
         col.addView(sectionTitle("Jelvények"));
         col.addView(badgesCard(), lp());
         col.addView(gap(16));
@@ -337,6 +345,49 @@ public class StatsActivity extends Activity {
         fp.setTextAlign(Paint.Align.CENTER);
         cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 60, fp);
         return bmp;
+    }
+
+    /** A hangulat-jelölések száma [_, 1..4] indexelve (0-s index nem használt). */
+    int[] moodCounts() {
+        int[] c = new int[5];
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            int m = o.optInt("mood", 0);
+            if (m >= 1 && m <= 4) c[m]++;
+        }
+        return c;
+    }
+
+    LinearLayout moodCard(int[] c, int total) {
+        String[] emo = {"", "😣", "😐", "🙂", "💪"};
+        String[] lab = {"", "Nehéz", "Rendben", "Jó", "Szuper"};
+        LinearLayout card = card();
+        card.setPadding(dp(14), dp(12), dp(14), dp(12));
+        for (int m = 4; m >= 1; m--) {
+            int pct = Math.round(c[m] * 100f / total);
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(6), 0, dp(6));
+            row.addView(text(emo[m] + "  " + lab[m], 14, TXT, false), new LinearLayout.LayoutParams(dp(120), -2));
+            // arány-sáv
+            LinearLayout barBg = hbox();
+            GradientDrawable bg = new GradientDrawable();
+            bg.setColor(CARD2); bg.setCornerRadius(dp(5));
+            barBg.setBackground(bg);
+            View fill = new View(this);
+            GradientDrawable fg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                    new int[]{MainActivity.ACCENT, 0xFFFF3DDB});
+            fg.setCornerRadius(dp(5));
+            fill.setBackground(fg);
+            float f = Math.max(0.02f, pct / 100f);
+            barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
+            barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
+            row.addView(barBg, new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text("  " + pct + "%", 13, MUTED, true), new LinearLayout.LayoutParams(dp(52), -2));
+            card.addView(row, lp());
+        }
+        return card;
     }
 
     LinearLayout recordsCard() {
