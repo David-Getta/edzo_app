@@ -32,6 +32,12 @@ public class HistoryActivity extends Activity {
 
     int accent, accent2;
     boolean pace;
+    // Szűrő: 0 = mind, 1 = futás, 2 = erő/gyakorlat
+    int filter = 0;
+    LinearLayout listBox;
+    JSONArray histArr;
+    SimpleDateFormat listDf;
+    final TextView[] filterChips = new TextView[3];
 
     @Override
     protected void onCreate(Bundle b) {
@@ -67,20 +73,73 @@ public class HistoryActivity extends Activity {
             col.addView(emptyState());
         } else {
             col.addView(heroSummary(arr), lp());
-            col.addView(gap(18));
-            SimpleDateFormat df = new SimpleDateFormat("yyyy. MMM d. · HH:mm", new Locale("hu"));
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject o = arr.optJSONObject(i);
-                if (o == null) continue;
-                col.addView(entryCard(o, df), lp());
-                col.addView(gap(12));
-            }
+            col.addView(gap(14));
+            histArr = arr;
+            listDf = new SimpleDateFormat("yyyy. MMM d. · HH:mm", new Locale("hu"));
+            col.addView(filterRow(), lp());
+            col.addView(gap(12));
+            listBox = vbox();
+            col.addView(listBox, lp());
+            renderList();
         }
 
         sv.addView(col, new FrameLayout.LayoutParams(-1, -2));
         root.addView(sv);
         setContentView(root);
         col.post(() -> Ux.enterChildren(col, 30, 55)); // beúszó kártyák
+    }
+
+    // ---- Szűrő ----
+
+    View filterRow() {
+        LinearLayout row = hbox();
+        String[] labels = {"Mind", "🏃 Futás", "🏋️ Erő"};
+        for (int i = 0; i < 3; i++) {
+            final int idx = i;
+            TextView c = text(labels[i], 13, TXT, true);
+            c.setGravity(Gravity.CENTER);
+            c.setPadding(dp(10), dp(9), dp(10), dp(9));
+            c.setClickable(true);
+            c.setOnClickListener(v -> { filter = idx; styleFilters(); renderList(); });
+            filterChips[i] = c;
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(0, -2, 1f);
+            clp.leftMargin = dp(3); clp.rightMargin = dp(3);
+            row.addView(c, clp);
+        }
+        styleFilters();
+        return row;
+    }
+
+    void styleFilters() {
+        for (int i = 0; i < 3; i++) {
+            boolean sel = i == filter;
+            GradientDrawable bg = new GradientDrawable();
+            bg.setCornerRadius(dp(13));
+            if (sel) { bg.setColor(accent); filterChips[i].setTextColor(0xFF08121F); }
+            else { bg.setColor(GLASS); bg.setStroke(dp(1), GLASS_LINE); filterChips[i].setTextColor(TXT); }
+            filterChips[i].setBackground(bg);
+        }
+    }
+
+    void renderList() {
+        if (listBox == null) return;
+        listBox.removeAllViews();
+        int shown = 0;
+        for (int i = 0; i < histArr.length(); i++) {
+            JSONObject o = histArr.optJSONObject(i);
+            if (o == null) continue;
+            boolean isRun = o.optString("name", "").isEmpty();
+            if (filter == 1 && !isRun) continue;
+            if (filter == 2 && isRun) continue;
+            listBox.addView(entryCard(o, listDf), lp());
+            listBox.addView(gap(12));
+            shown++;
+        }
+        if (shown == 0) {
+            TextView none = text("Nincs ilyen típusú edzés.", 13, MUTED, false);
+            none.setPadding(dp(4), dp(10), 0, 0);
+            listBox.addView(none);
+        }
     }
 
     // ---- Hero összegző ----
