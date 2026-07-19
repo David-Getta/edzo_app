@@ -788,7 +788,20 @@ public class MainActivity extends Activity {
             JSONObject o = arr.optJSONObject(i);
             if (o != null && o.optLong("ts") >= dayStart) { today = true; break; }
         }
-        if (!today) return greet + " Ma még nem edzettél – hajrá! 🔥";
+        if (!today) {
+            // Veszélyben a heti sorozat? (nem edzett még ezen a héten, és a hét vége felé jár)
+            long ws = weekStartMs();
+            boolean thisWeek = false;
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.optJSONObject(i);
+                if (o != null && o.optLong("ts") >= ws) { thisWeek = true; break; }
+            }
+            int dowIdx = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
+            int wk = weekStreak(arr);
+            if (!thisWeek && wk >= 1 && dowIdx >= 3)
+                return greet + " ⚠️ Veszélyben a " + wk + " hetes sorozatod – edz még a héten!";
+            return greet + " Ma még nem edzettél – hajrá! 🔥";
+        }
         int ds = dayStreak(arr);
         if (ds > 1) return greet + " " + ds + " napos sorozat 🔥";
         int ws = weekStreak(arr);
