@@ -279,40 +279,42 @@ public class StatsActivity extends Activity {
     /** Előző hét kezdete (óraátállítás-biztos: 3 nappal visszalépve normalizálunk). */
     long prevWeek(long ws) { return weekStart(ws - 3L * 24 * 3600 * 1000); }
 
+    /** A valaha volt leghosszabb megszakítás nélküli heti sorozat. */
+    int bestWeekStreak() {
+        java.util.HashSet<Long> weeks = new java.util.HashSet<>();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o != null) weeks.add(weekStart(o.optLong("ts")));
+        }
+        int best = 0;
+        for (Long w : weeks) {
+            if (weeks.contains(prevWeek(w))) continue;
+            int s = 0; long cur = w;
+            while (weeks.contains(cur)) { s++; cur = weekStart(cur + 10L * 24 * 3600 * 1000); }
+            if (s > best) best = s;
+        }
+        return best;
+    }
+
     // ---------------- Jelvények ----------------
 
     LinearLayout badgesCard() {
-        int count = 0;
-        double totalDist = 0, totalCal = 0, bestDist = 0;
-        for (int i = 0; i < hist.length(); i++) {
-            JSONObject o = hist.optJSONObject(i);
-            if (o == null) continue;
-            count++;
-            double d = o.optDouble("dist", -1);
-            if (d > 0) { totalDist += d; if (d > bestDist) bestDist = d; }
-            totalCal += o.optDouble("cal", 0);
-        }
-        int streak = weekStreak();
-        String[] emo = {"🥇", "🔟", "💯", "🏅", "🚀", "🔥", "⚡", "🌍", "🍔", "👑"};
-        String[] name = {"Első edzés", "10 edzés", "50 edzés", "5 km egy edzésen",
-                "10 km egy edzésen", "3 hetes sorozat", "8 hetes sorozat",
-                "100 km összesen", "5000 kcal összesen", "100 edzés"};
-        boolean[] got = {count >= 1, count >= 10, count >= 50, bestDist >= 5000,
-                bestDist >= 10000, streak >= 3, streak >= 8,
-                totalDist >= 100000, totalCal >= 5000, count >= 100};
+        // A közös Badges definíció alapján (ugyanaz, mint a főképernyőn), hogy a
+        // két helyen mindig ugyanazok a kitüntetések és feltételek jelenjenek meg.
+        java.util.HashSet<String> got = Badges.earned(hist, bestWeekStreak());
+        Badges.Badge[] all = Badges.ALL;
 
         LinearLayout grid = card();
         grid.setPadding(dp(6), dp(6), dp(6), dp(6));
-        for (int i = 0; i < name.length; i += 2) {
+        for (int i = 0; i < all.length; i += 2) {
             LinearLayout row = hbox();
-            row.addView(badgeTile(emo[i], name[i], got[i]), tileLp());
-            if (i + 1 < name.length) row.addView(badgeTile(emo[i + 1], name[i + 1], got[i + 1]), tileLp());
+            row.addView(badgeTile(all[i].emoji, all[i].title, got.contains(all[i].id)), tileLp());
+            if (i + 1 < all.length)
+                row.addView(badgeTile(all[i + 1].emoji, all[i + 1].title, got.contains(all[i + 1].id)), tileLp());
             else row.addView(new View(this), tileLp());
             grid.addView(row, lp());
         }
-        int earned = 0;
-        for (boolean g : got) if (g) earned++;
-        TextView cap = text(earned + " / " + name.length + " jelvény megszerezve", 12, MUTED, false);
+        TextView cap = text(got.size() + " / " + all.length + " jelvény megszerezve", 12, MUTED, false);
         cap.setGravity(Gravity.CENTER);
         cap.setPadding(0, dp(4), 0, dp(6));
         grid.addView(cap, lp());
