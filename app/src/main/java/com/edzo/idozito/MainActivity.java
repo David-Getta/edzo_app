@@ -150,6 +150,41 @@ public class MainActivity extends Activity {
         Reminders.scheduleAll(this);
         WeeklyReceiver.schedule(this);
         handleRoutineIntent(getIntent());
+        maybeShowWelcome();
+    }
+
+    // Első indításkor egy barátságos üdvözlő lap bemutatja a fő funkciókat.
+    void maybeShowWelcome() {
+        if (prefs.getBoolean("welcomed", false)) return;
+        root.post(() -> {
+            if (isFinishing()) return;
+            LinearLayout box = vbox();
+            box.setPadding(dp(8), dp(4), dp(8), dp(10));
+            String[][] feats = {
+                {"⏱️", "Intervallum edzés", "Bemelegítés, munka, pihenő, körök és levezetés – minden testre szabható."},
+                {"🏃", "Futás követése", "GPS-táv, tempó, lépések és kalória automatikus mérése."},
+                {"🧘", "Nyújtás & mobilitás", "Vezetett bemelegítés, nyújtás és hengerezés videós útmutatóval."},
+                {"📊", "Haladás & szintek", "Gyűjts XP-t, lépj szintet, és tartsd a heti sorozatod."}
+            };
+            for (String[] f : feats) {
+                LinearLayout row = hbox();
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(dp(4), dp(8), dp(4), dp(8));
+                TextView ic = text(f[0], 24, TXT, false);
+                ic.setPadding(0, 0, dp(14), 0);
+                row.addView(ic);
+                LinearLayout mid = vbox();
+                mid.addView(text(f[1], 15, TXT, true));
+                mid.addView(text(f[2], 12.5f, MUTED, false));
+                row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
+                box.addView(row);
+            }
+            prefs.edit().putBoolean("welcomed", true).apply();
+            new Sheet(this, "Üdv a My trainerben! 👋", "Néhány dolog, amit tud az app:")
+                .addCustom(box)
+                .addPrimary("Kezdjük! 💪", () -> {})
+                .show();
+        });
     }
 
     // ================= Háttérkép =================
