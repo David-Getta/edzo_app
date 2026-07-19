@@ -83,6 +83,7 @@ public class MainActivity extends Activity {
     LinearLayout recentBox;
     LinearLayout badgesBox;
     LinearLayout weekBox;
+    LinearLayout recordsBox;
     TextView totalText;
     final TextView[] valueLabels = new TextView[6];
     TextView workSoundLabel, restSoundLabel;
@@ -143,11 +144,7 @@ public class MainActivity extends Activity {
         updateSoundLabels();
         updateProgramUI();
         refreshTemplates();
-        refreshGoal();
-        refreshProgress();
-        refreshRecent();
-        refreshBadges();
-        refreshWeekDots();
+        refreshHome();
         // Első futáskor a már meglévő kitüntetéseket „látottnak" jelöljük, hogy
         // ne az összeset ünnepelje meg egyszerre a legközelebbi edzés után.
         if (!prefs.contains("badges_seen"))
@@ -385,6 +382,10 @@ public class MainActivity extends Activity {
         // Kitüntetések (dinamikus – megszerzett jelvények, koppintásra a teljes lista)
         badgesBox = vbox();
         col.addView(badgesBox, new LinearLayout.LayoutParams(-1, -2));
+
+        // Személyes rekordok (dinamikus – legjobb táv, idő, kör, sorozat)
+        recordsBox = vbox();
+        col.addView(recordsBox, new LinearLayout.LayoutParams(-1, -2));
 
         // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
         col.addView(dailyTipCard());
@@ -745,6 +746,16 @@ public class MainActivity extends Activity {
 
     // ---- Haladás-csík (szint / sorozat / edzésszám) ----
 
+    // A főképernyő összes dinamikus kártyájának frissítése egy helyről.
+    void refreshHome() {
+        refreshGoal();
+        refreshProgress();
+        refreshRecent();
+        refreshBadges();
+        refreshWeekDots();
+        refreshRecords();
+    }
+
     void refreshProgress() {
         if (progressBox == null) return;
         progressBox.removeAllViews();
@@ -853,6 +864,55 @@ public class MainActivity extends Activity {
         c.addView(row);
         weekBox.addView(c);
         weekBox.addView(gap(14));
+    }
+
+    // ---- Személyes rekordok ----
+
+    void refreshRecords() {
+        if (recordsBox == null) return;
+        recordsBox.removeAllViews();
+        JSONArray arr = History.load(this);
+        if (arr.length() == 0) return;
+        double maxDist = 0; int maxDur = 0, maxRounds = 0;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) continue;
+            double d = o.optDouble("dist", 0); if (d > maxDist) maxDist = d;
+            int dur = o.optInt("dur"); if (dur > maxDur) maxDur = dur;
+            int r = o.optInt("rounds", 0); if (r > maxRounds) maxRounds = r;
+        }
+        int bestStreak = bestWeekStreak(arr);
+
+        TextView head = text("Személyes rekordok", 13, MUTED, true);
+        head.setPadding(dp(2), dp(4), 0, dp(8));
+        recordsBox.addView(head);
+
+        LinearLayout c = card();
+        c.setPadding(dp(12), dp(12), dp(12), dp(12));
+        LinearLayout r1 = hbox();
+        r1.addView(recordChip("🏃", maxDist > 0 ? fmtDist(maxDist) : "—", "leghosszabb futás"), progChipLp());
+        r1.addView(recordChip("⏱️", fmtLong(maxDur), "leghosszabb edzés"), progChipLp());
+        c.addView(r1);
+        c.addView(gap(8));
+        LinearLayout r2 = hbox();
+        r2.addView(recordChip("🔁", maxRounds > 0 ? String.valueOf(maxRounds) : "—", "legtöbb kör"), progChipLp());
+        r2.addView(recordChip("🔥", bestStreak + " hét", "leghosszabb sorozat"), progChipLp());
+        c.addView(r2);
+        recordsBox.addView(c);
+        recordsBox.addView(gap(14));
+    }
+
+    View recordChip(String emoji, String value, String label) {
+        LinearLayout c = vbox();
+        c.setGravity(Gravity.CENTER);
+        c.setPadding(dp(6), dp(10), dp(6), dp(10));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x14FFFFFF); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), GLASS_LINE);
+        c.setBackground(bg);
+        TextView v = text(emoji + " " + value, 15, TXT, true); v.setGravity(Gravity.CENTER);
+        TextView l = text(label, 10.5f, MUTED, false); l.setGravity(Gravity.CENTER);
+        c.addView(v); c.addView(l);
+        return c;
     }
 
     // ---- Kitüntetések ----
@@ -1917,7 +1977,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshGoal(); refreshProgress(); refreshRecent(); refreshBadges(); refreshWeekDots(); checkNewBadges(); }
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshHome(); checkNewBadges(); }
         }
     };
 
@@ -2030,11 +2090,7 @@ public class MainActivity extends Activity {
         pauseBtn.setText("Kész");
         cooldownBtn.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(View.VISIBLE);
-        refreshGoal();
-        refreshProgress();
-        refreshRecent();
-        refreshBadges();
-        refreshWeekDots();
+        refreshHome();
         checkNewBadges();
     }
 
@@ -2078,11 +2134,7 @@ public class MainActivity extends Activity {
             else registerReceiver(rx, f);
             receiverRegistered = true;
         }
-        refreshGoal();
-        refreshProgress();
-        refreshRecent();
-        refreshBadges();
-        refreshWeekDots();
+        refreshHome();
     }
 
     @Override
