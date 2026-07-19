@@ -97,6 +97,19 @@ public final class History {
         } catch (Exception ignored) {}
     }
 
+    /** Egy adott (ts szerinti) edzés törlése a naplóból. */
+    public static void deleteByTs(Context ctx, long ts) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        JSONArray arr = load(ctx);
+        JSONArray out = new JSONArray();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null && o.optLong("ts") == ts) continue; // kihagyjuk
+            if (o != null) out.put(o);
+        }
+        p.edit().putString(KEY, out.toString()).apply();
+    }
+
     /** A legfrissebb edzés jegyzete, vagy üres string. */
     public static String latestNote(Context ctx) {
         JSONArray arr = load(ctx);

@@ -99,6 +99,18 @@ public class WorkoutDetailActivity extends Activity {
             finish();
         });
         col.addView(repeat);
+        TextView del = text("🗑️  Edzés törlése a naplóból", 13, 0xFFFF6B6B, true);
+        del.setPadding(0, dp(8), 0, 0);
+        del.setClickable(true);
+        del.setOnClickListener(v -> new Sheet(this, "Edzés törlése",
+                "Biztosan törlöd ezt az edzést a naplóból? Nem vonható vissza.")
+                .addDestructive("Törlés", () -> {
+                    History.deleteByTs(this, ts);
+                    Toast.makeText(this, "Edzés törölve", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addCancel().show());
+        col.addView(del);
         col.addView(gap(18));
 
         // ---- Összegzés ----
