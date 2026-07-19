@@ -501,7 +501,7 @@ public class MainActivity extends Activity {
     View dailyTipCard() {
         final LinearLayout c = card();
         c.setPadding(dp(16), dp(14), dp(16), dp(14));
-        final TextView head = text("💡 Napi tipp", 12, tAccent, true);
+        final TextView head = text("💡 Napi tipp  ·  koppints az újért", 12, tAccent, true);
         int doy = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
         final int[] idx = { ((doy % TIPS.length) + TIPS.length) % TIPS.length };
         final TextView body = text(TIPS[idx[0]], 13.5f, TXT, false);
