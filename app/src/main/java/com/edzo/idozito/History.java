@@ -81,6 +81,22 @@ public final class History {
         } catch (Exception ignored) {}
     }
 
+    /** Egy adott (ts szerinti) edzés mezőjének frissítése. */
+    public static void updateByTs(Context ctx, long ts, String key, Object value) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        JSONArray arr = load(ctx);
+        try {
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.optJSONObject(i);
+                if (o != null && o.optLong("ts") == ts) {
+                    o.put(key, value);
+                    p.edit().putString(KEY, arr.toString()).apply();
+                    return;
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
     /** A legfrissebb edzés jegyzete, vagy üres string. */
     public static String latestNote(Context ctx) {
         JSONArray arr = load(ctx);

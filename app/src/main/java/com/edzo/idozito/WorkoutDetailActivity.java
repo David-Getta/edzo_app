@@ -14,9 +14,11 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -79,6 +81,12 @@ public class WorkoutDetailActivity extends Activity {
             noteCard.addView(nt);
             col.addView(noteCard, lp());
         }
+        final long ts = e.optLong("ts");
+        TextView editJournal = text("✏️  Napló szerkesztése (hangulat / jegyzet)", 13, Theme.accent(this), true);
+        editJournal.setPadding(0, dp(10), 0, 0);
+        editJournal.setClickable(true);
+        editJournal.setOnClickListener(v -> editJournalSheet(ts, e.optInt("mood", 0), e.optString("note", "")));
+        col.addView(editJournal);
         col.addView(gap(18));
 
         // ---- Összegzés ----
@@ -458,6 +466,63 @@ public class WorkoutDetailActivity extends Activity {
         t.addView(text(value, 18, TXT, true));
         t.addView(text(label, 12, MUTED, false));
         return t;
+    }
+
+    // Hangulat + jegyzet utólagos szerkesztése egy adott edzéshez.
+    void editJournalSheet(long ts, int curMood, String curNote) {
+        final int[] sel = { curMood };
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(text("Milyen volt?", 13, MainActivity.MUTED, false));
+        LinearLayout moodRow = hbox();
+        moodRow.setGravity(Gravity.CENTER);
+        moodRow.setPadding(0, dp(6), 0, dp(6));
+        String[] emo = {"😣", "😐", "🙂", "💪"};
+        final TextView[] chips = new TextView[4];
+        for (int m = 0; m < 4; m++) {
+            final int mood = m + 1;
+            TextView c = text(emo[m], 26, MainActivity.TXT, false);
+            c.setGravity(Gravity.CENTER);
+            c.setPadding(dp(10), dp(4), dp(10), dp(4));
+            c.setAlpha(curMood == 0 || curMood == mood ? 1f : 0.35f);
+            c.setClickable(true);
+            c.setOnClickListener(v -> {
+                sel[0] = mood;
+                for (int k = 0; k < 4; k++) chips[k].setAlpha(k == mood - 1 ? 1f : 0.35f);
+            });
+            chips[m] = c;
+            moodRow.addView(c, new LinearLayout.LayoutParams(0, -2, 1f));
+        }
+        box.addView(moodRow);
+        final EditText et = new EditText(this);
+        et.setHint("Jegyzet…");
+        et.setText(curNote);
+        et.setTextColor(MainActivity.TXT);
+        et.setHintTextColor(MainActivity.MUTED);
+        et.setTextSize(15);
+        et.setMinLines(3);
+        et.setGravity(Gravity.TOP | Gravity.START);
+        et.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x14FFFFFF); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), MainActivity.GLASS_LINE);
+        et.setBackground(bg);
+        et.setPadding(dp(14), dp(12), dp(14), dp(12));
+        LinearLayout.LayoutParams etLp = new LinearLayout.LayoutParams(-1, -2);
+        etLp.topMargin = dp(10);
+        box.addView(et, etLp);
+
+        new Sheet(this, "Napló szerkesztése 📝", null)
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    if (sel[0] >= 1) History.updateByTs(this, ts, "mood", sel[0]);
+                    History.updateByTs(this, ts, "note", et.getText().toString().trim());
+                    Toast.makeText(this, "Elmentve 📝", Toast.LENGTH_SHORT).show();
+                    recreate();
+                })
+                .addCancel()
+                .show();
     }
 
     LinearLayout vbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
