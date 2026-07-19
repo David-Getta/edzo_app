@@ -475,7 +475,12 @@ public class MainActivity extends Activity {
         "Ne edzés előtt egyél nagyot – adj a testednek 1-2 órát az emésztésre. 🍽️",
         "A fokozatosság kulcs: hetente max 10%-kal növeld a terhelést. 📈",
         "A jó zene akár 15%-kal is növelheti a kitartásodat. 🎵",
-        "Edzés után 30 percen belül a fehérje segíti a regenerációt. 🥤"
+        "Edzés után 30 percen belül a fehérje segíti a regenerációt. 🥤",
+        "A séta is edzés – napi 8000 lépés sokat javít az egészségeden. 🚶",
+        "Melegíts be dinamikusan, nyújts statikusan – edzés után. 🤸",
+        "A fájdalom és a kellemetlen feszülés nem ugyanaz – figyelj a testedre. 🧠",
+        "Váltogasd az edzéstípusokat, hogy ne állj meg a fejlődésben. 🔄",
+        "A folyamatos haladás titka a türelem – ne add fel! 🌱"
     };
 
     View dailyTipCard() {
