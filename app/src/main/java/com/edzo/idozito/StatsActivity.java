@@ -2,8 +2,12 @@ package com.edzo.idozito;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -55,6 +59,10 @@ public class StatsActivity extends Activity {
         col.addView(gap(18));
 
         col.addView(levelCard(), lp());
+        col.addView(gap(10));
+        Button shareStats = chip("📤  Statisztika megosztása képként", false);
+        shareStats.setOnClickListener(v -> shareStats());
+        col.addView(shareStats, lp());
         col.addView(gap(18));
 
         long now = System.currentTimeMillis();
@@ -263,6 +271,72 @@ public class StatsActivity extends Activity {
         a.setPadding(dp(8), 0, 0, 0);
         row.addView(a);
         return row;
+    }
+
+    void shareStats() {
+        try {
+            ShareProvider.shareImage(this, renderStatsCard(), "my-trainer-statisztika");
+        } catch (Exception ignored) {}
+    }
+
+    Bitmap renderStatsCard() {
+        final int W = 1080, H = 1350, M = 80;
+        long now = System.currentTimeMillis();
+        Totals wk = totals(weekStart(now), now + 1);
+        Totals mo = totals(monthStart(now), now + 1);
+        Totals all = totals(0, now + 1);
+        long xp = Levels.totalXp(hist);
+        int lvl = Levels.levelForXp(xp);
+
+        Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(bmp);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        cv.drawRect(0, 0, W, H, p);
+        p.setShader(null);
+        Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
+        bar.setShader(null);
+        Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tp.setColor(0xFFEAF6FF);
+        tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setTextSize(74);
+        cv.drawText("Statisztikám", M, 240, tp);
+        Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sp.setColor(0xFF22E0FF);
+        sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        sp.setTextSize(40);
+        cv.drawText("⭐ Szint " + lvl + " · " + Levels.title(lvl), M, 300, sp);
+
+        String[][] rows = {
+                {"Ezen a héten", wk.count + " edzés", wk.distM > 0 ? fmtDist(wk.distM) : "—", (int) wk.durSec / 60 + " perc"},
+                {"Ebben a hónapban", mo.count + " edzés", mo.distM > 0 ? fmtDist(mo.distM) : "—", (int) mo.durSec / 60 + " perc"},
+                {"Összesen", all.count + " edzés", all.distM > 0 ? fmtDist(all.distM) : "—", (int) all.durSec / 60 + " perc"},
+        };
+        int y = 380, rowH = 250;
+        Paint sec = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sec.setColor(0xFF8AA0C4); sec.setTextSize(36);
+        Paint big = new Paint(Paint.ANTI_ALIAS_FLAG);
+        big.setColor(0xFFFFFFFF);
+        big.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        big.setTextSize(44);
+        Paint bgp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bgp.setColor(0x14FFFFFF);
+        for (String[] r : rows) {
+            cv.drawRoundRect(new RectF(M, y, W - M, y + rowH - 30), 28, 28, bgp);
+            cv.drawText(r[0], M + 34, y + 66, sec);
+            cv.drawText(r[1] + "   ·   " + r[2] + "   ·   " + r[3], M + 34, y + 140, big);
+            y += rowH;
+        }
+
+        Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fp.setColor(0xFF22E0FF);
+        fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setTextSize(36);
+        fp.setTextAlign(Paint.Align.CENTER);
+        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 60, fp);
+        return bmp;
     }
 
     LinearLayout recordsCard() {
