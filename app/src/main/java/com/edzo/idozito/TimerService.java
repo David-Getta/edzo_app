@@ -114,7 +114,8 @@ public class TimerService extends Service {
     private double distanceM = -1; // -1 = nincs mérés
     private boolean tracking;
     private LocationListener locListener;
-    private double maxSpeedMps, curSpeedMps;
+    private double maxSpeedMps, curSpeedMps, prevSpeedMps;
+    private boolean prevSpeedValid; // volt-e érvényes előző sebességminta (tüskeszűréshez)
     private long lastFixElapsed;
     private boolean inWorkPhase;      // csak FUTÁS szakaszban mérünk sebességet/távot
     private long workMs, lastTickElapsed; // futással töltött idő (átlaghoz)
@@ -235,6 +236,8 @@ public class TimerService extends Service {
         distanceM = track ? 0 : -1;
         maxSpeedMps = 0;
         curSpeedMps = 0;
+        prevSpeedMps = 0;
+        prevSpeedValid = false;
         lastFixElapsed = 0;
         steps = 0;
         movingMs = 0;
@@ -591,7 +594,7 @@ public class TimerService extends Service {
             @Override public void onLocationChanged(Location loc) {
                 long now = SystemClock.elapsedRealtime();
                 // Csak a FUTÁS szakaszban mérünk; pihenő/szünet alatt nem gyűjtünk sebességet/távot.
-                if (paused || !inWorkPhase) { curSpeedMps = 0; lastLoc = loc; lastFixElapsed = now; return; }
+                if (paused || !inWorkPhase) { curSpeedMps = 0; prevSpeedValid = false; lastLoc = loc; lastFixElapsed = now; return; }
                 if (loc.hasAccuracy() && loc.getAccuracy() > 40) return;
                 double sp = loc.hasSpeed() ? loc.getSpeed() : -1;
                 if (lastLoc != null) {
@@ -604,9 +607,26 @@ public class TimerService extends Service {
                         if (dt > 0.2) sp = d / dt;
                     }
                 }
-                if (sp >= 0 && sp < 12) { // futáshoz reális felső korlát (~43 km/h), GPS-tüskék kiszűrése
+                // Sebesség: csak jó pontosságú fixből fogadjuk el (a táv laza 40 m-t tűr,
+                // de a sebesség sokkal érzékenyebb a GPS-zajra), és futáshoz reális tartományban.
+                boolean goodForSpeed = !loc.hasAccuracy() || loc.getAccuracy() <= 25;
+                // Ha van sebesség-pontosság (API 26+), a bizonytalan mintát is eldobjuk.
+                if (goodForSpeed && android.os.Build.VERSION.SDK_INT >= 26
+                        && loc.hasSpeedAccuracy() && loc.getSpeedAccuracyMetersPerSecond() > 2.5f)
+                    goodForSpeed = false;
+                if (sp >= 0 && sp < 11 && goodForSpeed) { // ~40 km/h abszolút plafon
                     curSpeedMps = sp;
-                    if (sp > maxSpeedMps) maxSpeedMps = sp;
+                    // A MAX sebességet csak akkor frissítjük, ha a magas érték KÉT egymást
+                    // követő fixből is kijön (a két olvasat kisebbikét vesszük). Így egyetlen
+                    // GPS-tüske nem tud irreális csúcsot okozni (pl. 30 km/h futás közben).
+                    if (prevSpeedValid) {
+                        double sustained = Math.min(sp, prevSpeedMps);
+                        if (sustained > maxSpeedMps) maxSpeedMps = sustained;
+                    }
+                    prevSpeedMps = sp;
+                    prevSpeedValid = true;
+                } else {
+                    prevSpeedValid = false; // megszakadt folytonosság → új tüske sem számít önmagában
                 }
                 // Mozgásidő (amíg ténylegesen halad)
                 if (lastFixElapsed > 0) {
