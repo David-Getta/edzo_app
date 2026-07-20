@@ -2432,8 +2432,12 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (runScroll != null && runScroll.getVisibility() == View.VISIBLE) confirmStop();
-        else super.onBackPressed();
+        if (runScroll != null && runScroll.getVisibility() == View.VISIBLE) {
+            // A befejező képernyőn a Vissza egyszerűen visszavisz a főképernyőre
+            // (nincs mit „leállítani"); edzés közben viszont megerősítést kérünk.
+            if (finished) { showRun(false); refreshHome(); }
+            else confirmStop();
+        } else super.onBackPressed();
     }
 
     // ================= Broadcast fogadás =================
