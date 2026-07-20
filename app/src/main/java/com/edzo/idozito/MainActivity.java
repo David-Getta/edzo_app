@@ -2473,7 +2473,16 @@ public class MainActivity extends Activity {
             exDesc.setVisibility(desc.isEmpty() ? View.GONE : View.VISIBLE);
         } else {
             exText.setVisibility(View.GONE);
-            exDesc.setVisibility(View.GONE);
+            // Pihenő közben a KÖVETKEZŐ gyakorlat leírását mutatjuk, hogy fel lehessen
+            // készülni a technikára, mielőtt elkezdődik.
+            String nextDesc = (phase == TimerService.T_REST && nextName != null)
+                    ? Programs.descOf(nextName) : "";
+            if (!nextDesc.isEmpty()) {
+                exDesc.setText(nextDesc);
+                exDesc.setVisibility(View.VISIBLE);
+            } else {
+                exDesc.setVisibility(View.GONE);
+            }
         }
         nextText.setText(nextName != null ? "Következő: " + nextName : "");
         boolean tickChanged = remain != lastRemainShown;
