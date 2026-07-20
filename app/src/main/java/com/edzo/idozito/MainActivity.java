@@ -506,7 +506,11 @@ public class MainActivity extends Activity {
         "A magnézium és a kálium segít az izomgörcsök megelőzésében. 🍌",
         "Ne edz üres gyomorral hosszú kardiót – legyen egy kis energia. 🍎",
         "A lassú, kontrollált mozdulatok hatékonyabbak, mint a kapkodás. 🐢",
-        "Pihenj eleget két nehéz edzés között – a test edzés közt épül. 🛌"
+        "Pihenj eleget két nehéz edzés között – a test edzés közt épül. 🛌",
+        "A motiváció elfogy, a szokás megmarad – edz mindig ugyanabban az időben. ⏰",
+        "Nehéz nap? Egy 5 perces rövid edzés is fenntartja a lendületet. ⚡",
+        "Lélegezz ki az erőkifejtésnél, vegyél levegőt a leengedésnél. 🌬️",
+        "Deload hét: 4-6 hetente vegyél vissza kicsit, hogy a tested utolérje magát. 🔧"
     };
 
     View dailyTipCard() {
