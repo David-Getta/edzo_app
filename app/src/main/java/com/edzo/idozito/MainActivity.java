@@ -108,6 +108,7 @@ public class MainActivity extends Activity {
     ProgressRing ring;
     boolean lastPaused = false;
     boolean finished = false;
+    int lastRemainShown = -1;
 
     // Téma (Beállításokból)
     int tAccent, tAccent2, tWork, tRest;
@@ -539,6 +540,17 @@ public class MainActivity extends Activity {
                 a.setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator());
                 a.start();
             }
+        } catch (Exception ignored) {}
+    }
+
+    /** Egyszeri „dobbanás" a visszaszámláló számon (utolsó 3 mp). */
+    void pulseTime() {
+        try {
+            timeText.animate().cancel();
+            timeText.setScaleX(1.3f);
+            timeText.setScaleY(1.3f);
+            timeText.animate().scaleX(1f).scaleY(1f).setDuration(320)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
         } catch (Exception ignored) {}
     }
 
@@ -2432,7 +2444,12 @@ public class MainActivity extends Activity {
             exDesc.setVisibility(View.GONE);
         }
         nextText.setText(nextName != null ? "Következő: " + nextName : "");
+        boolean tickChanged = remain != lastRemainShown;
+        lastRemainShown = remain;
         timeText.setText(fmt(remain));
+        // Az utolsó 3 másodpercben a szám lüktet – a csipogással szinkronban,
+        // hogy vizuálisan is érezni lehessen a visszaszámlálás feszültségét.
+        if (tickChanged && !paused && remain > 0 && remain <= 3 && Theme.animEnabled(this)) pulseTime();
         ring.setProgress(prog);
         distanceText.setText(dist >= 0
                 ? "📍 " + fmtDist(dist) + "   ·   " + fmtSpeed(speed)
