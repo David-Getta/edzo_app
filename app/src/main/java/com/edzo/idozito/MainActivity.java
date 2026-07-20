@@ -2736,8 +2736,12 @@ public class MainActivity extends Activity {
     static class ProgressRing extends View {
         private final Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint fgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint glowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint dotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint corePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final RectF rect = new RectF();
         private float progress = 1f;
+        private int fgColor = WORK;
 
         ProgressRing(Context c) {
             super(c);
@@ -2746,10 +2750,17 @@ public class MainActivity extends Activity {
             fgPaint.setStyle(Paint.Style.STROKE);
             fgPaint.setStrokeCap(Paint.Cap.ROUND);
             fgPaint.setColor(WORK);
+            // Lágy fényudvar: szélesebb, áttetsző ív a fő ív alatt.
+            glowPaint.setStyle(Paint.Style.STROKE);
+            glowPaint.setStrokeCap(Paint.Cap.ROUND);
+            // A vezető pont ("üstökösfej") és a fehér magja prémium hatásért.
+            dotPaint.setStyle(Paint.Style.FILL);
+            corePaint.setStyle(Paint.Style.FILL);
+            corePaint.setColor(0xFFFFFFFF);
         }
 
         void setProgress(float p) { progress = Math.max(0f, Math.min(1f, p)); invalidate(); }
-        void setColor(int col) { fgPaint.setColor(col); invalidate(); }
+        void setColor(int col) { fgColor = col; fgPaint.setColor(col); invalidate(); }
 
         @Override
         protected void onDraw(Canvas canvas) {
@@ -2757,10 +2768,25 @@ public class MainActivity extends Activity {
             float stroke = w * 0.058f;
             bgPaint.setStrokeWidth(stroke);
             fgPaint.setStrokeWidth(stroke);
+            glowPaint.setStrokeWidth(stroke * 1.9f);
+            glowPaint.setColor((fgColor & 0x00FFFFFF) | 0x55000000); // ~33% alfa, azonos szín
             float pad = stroke / 2f + w * 0.02f;
             rect.set(pad, pad, w - pad, getHeight() - pad);
+            float sweep = 360f * progress;
             canvas.drawArc(rect, 0, 360, false, bgPaint);
-            canvas.drawArc(rect, -90, 360f * progress, false, fgPaint);
+            if (progress > 0f) {
+                canvas.drawArc(rect, -90, sweep, false, glowPaint);
+                canvas.drawArc(rect, -90, sweep, false, fgPaint);
+                // Vezető pont a haladás csúcsán.
+                double ang = Math.toRadians(-90 + sweep);
+                float cx = rect.centerX(), cy = rect.centerY();
+                float radius = rect.width() / 2f;
+                float dx = cx + (float) (radius * Math.cos(ang));
+                float dy = cy + (float) (radius * Math.sin(ang));
+                dotPaint.setColor(fgColor);
+                canvas.drawCircle(dx, dy, stroke * 0.62f, dotPaint);
+                canvas.drawCircle(dx, dy, stroke * 0.26f, corePaint);
+            }
         }
     }
 }
