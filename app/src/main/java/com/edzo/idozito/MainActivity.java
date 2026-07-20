@@ -84,8 +84,8 @@ public class MainActivity extends Activity {
     TextView bannerSub;
     LinearLayout recentBox;
     LinearLayout badgesBox;
-    final View[] presetViews = new View[3];
-    final int[][] presetSpecs = {{30, 10, 8}, {60, 20, 6}, {20, 10, 8}};
+    final View[] presetViews = new View[4];
+    final int[][] presetSpecs = {{30, 10, 8}, {60, 20, 6}, {20, 10, 8}, {20, 40, 6}};
     LinearLayout weekBox;
     LinearLayout recordsBox;
     TextView totalText;
@@ -276,13 +276,20 @@ public class MainActivity extends Activity {
         col.addView(goalBox, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(6));
 
-        // Sablonok
-        LinearLayout presets = hbox();
+        // Sablonok – 2×2 rács (a Kezdő gyengéd, hosszabb pihenővel)
         presetViews[0] = preset("HIIT", "30/10 mp · 8×", 30, 10, 8);
         presetViews[1] = preset("Tempó", "60/20 mp · 6×", 60, 20, 6);
         presetViews[2] = preset("Tabata", "20/10 mp · 8×", 20, 10, 8);
-        for (View pv : presetViews) presets.addView(pv, presetLp());
-        col.addView(presets, new LinearLayout.LayoutParams(-1, -2));
+        presetViews[3] = preset("Kezdő", "20/40 mp · 6×", 20, 40, 6);
+        LinearLayout presetsRow1 = hbox();
+        presetsRow1.addView(presetViews[0], presetLp());
+        presetsRow1.addView(presetViews[1], presetLp());
+        LinearLayout presetsRow2 = hbox();
+        presetsRow2.addView(presetViews[2], presetLp());
+        presetsRow2.addView(presetViews[3], presetLp());
+        col.addView(presetsRow1, new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(8));
+        col.addView(presetsRow2, new LinearLayout.LayoutParams(-1, -2));
         highlightPresets();
         col.addView(gap(12));
 
@@ -1930,7 +1937,7 @@ public class MainActivity extends Activity {
     // A jelenlegi beállításnak megfelelő preset kiemelése (ha egyezik).
     void highlightPresets() {
         if (presetViews[0] == null) return;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < presetViews.length; i++) {
             if (presetViews[i] == null) continue;
             boolean active = cfg[WORK_K] == presetSpecs[i][0]
                     && cfg[REST_K] == presetSpecs[i][1]
