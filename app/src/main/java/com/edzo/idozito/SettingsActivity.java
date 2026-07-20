@@ -163,6 +163,23 @@ public class SettingsActivity extends Activity {
                 .addCancel().show());
         col.addView(reset);
 
+        // Az app ajánlása – megosztja a telepítő linket (Obtainium/GitHub Release).
+        Button shareApp = ghost("📣  Ajánld egy barátnak");
+        shareApp.setOnClickListener(v -> {
+            try {
+                Intent s = new Intent(Intent.ACTION_SEND);
+                s.setType("text/plain");
+                s.putExtra(Intent.EXTRA_SUBJECT, "My trainer – edzőtárs app");
+                s.putExtra(Intent.EXTRA_TEXT,
+                        "Ezt az ingyenes edzőtárs appot használom (HIIT időzítő, futáskövetés, "
+                        + "edzésnapló): https://github.com/David-Getta/edzo_app\n\n"
+                        + "Telepítés Obtainiummal (magától frissül) vagy a legújabb APK-val: "
+                        + "https://github.com/David-Getta/edzo_app/releases/latest");
+                startActivity(Intent.createChooser(s, "Megosztás"));
+            } catch (Exception ignored) {}
+        });
+        col.addView(shareApp);
+
         // App-verzió kijelzése (a telepített csomagból olvasva)
         String ver = "";
         try { ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception ignored) {}
