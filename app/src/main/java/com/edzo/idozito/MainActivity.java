@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
     TextView phaseLabel, timeText, roundInfo, distanceText;
     TextView exText, exDesc, nextText, recordText, levelText;
     TextView statElapsed, statCal, statSteps, statRemain;
-    Button pauseBtn, cooldownBtn, shareBtn;
+    Button pauseBtn, cooldownBtn, shareBtn, againBtn;
     View overallFill;
     LinearLayout moodRow;
     TextView[] moodChips;
@@ -108,6 +108,7 @@ public class MainActivity extends Activity {
     ProgressRing ring;
     boolean lastPaused = false;
     boolean finished = false;
+    boolean lastWasRoutine = false;
     int lastRemainShown = -1;
 
     // Téma (Beállításokból)
@@ -2127,6 +2128,14 @@ public class MainActivity extends Activity {
         sbLp.topMargin = dp(10);
         runView.addView(shareBtn, sbLp);
 
+        // Újrakezdés gomb (csak a befejező képernyőn) – ugyanaz az edzés még egyszer.
+        againBtn = ghostButton("🔁  Újra kezdés");
+        againBtn.setVisibility(View.GONE);
+        againBtn.setOnClickListener(v -> startWorkout());
+        LinearLayout.LayoutParams agLp = new LinearLayout.LayoutParams(-1, -2);
+        agLp.topMargin = dp(10);
+        runView.addView(againBtn, agLp);
+
         // Hangulat-választó (csak a befejező képernyőn) – naplózza, milyen volt az edzés.
         moodRow = vbox();
         moodRow.setVisibility(View.GONE);
@@ -2237,6 +2246,7 @@ public class MainActivity extends Activity {
 
     void startWorkout() {
         if (cfg[WORK_K] < 1) return;
+        lastWasRoutine = false;
         Intent i = new Intent(this, TimerService.class).setAction(TimerService.ACTION_START);
         i.putExtra(TimerService.EX_PREP, cfg[PREP_K]);
         i.putExtra(TimerService.EX_WORK, cfg[WORK_K]);
@@ -2278,6 +2288,7 @@ public class MainActivity extends Activity {
         levelText.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
+        if (againBtn != null) againBtn.setVisibility(View.GONE);
         if (moodRow != null) moodRow.setVisibility(View.GONE);
         if (overallFill != null) overallFill.setScaleX(0f);
         showRun(true);
@@ -2286,6 +2297,7 @@ public class MainActivity extends Activity {
     /** Vezetett rutin indítása tetszőleges gyakorlatlistából (pl. nyújtás/bemelegítés). */
     void startRoutine(String[] names, String label, int work, int rest, int prep) {
         if (names == null || names.length == 0) return;
+        lastWasRoutine = true;
         Intent i = new Intent(this, TimerService.class).setAction(TimerService.ACTION_START);
         i.putExtra(TimerService.EX_PREP, prep);
         i.putExtra(TimerService.EX_WORK, work);
@@ -2319,6 +2331,7 @@ public class MainActivity extends Activity {
         levelText.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
+        if (againBtn != null) againBtn.setVisibility(View.GONE);
         if (moodRow != null) moodRow.setVisibility(View.GONE);
         if (overallFill != null) overallFill.setScaleX(0f);
         showRun(true);
@@ -2541,6 +2554,7 @@ public class MainActivity extends Activity {
         pauseBtn.setText("Kész");
         cooldownBtn.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(View.VISIBLE);
+        if (againBtn != null) againBtn.setVisibility(lastWasRoutine ? View.GONE : View.VISIBLE);
         if (moodRow != null) {
             moodRow.setVisibility(View.VISIBLE);
             if (moodChips != null) for (TextView t : moodChips) t.setAlpha(1f);
