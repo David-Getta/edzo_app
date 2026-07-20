@@ -2110,6 +2110,7 @@ public class MainActivity extends Activity {
         LinearLayout controls = hbox();
         pauseBtn = ghostButton("Szünet");
         Button skip = ghostButton("⏭");
+        skip.setContentDescription("Szakasz átugrása"); // képernyőolvasóknak
         Button stop = ghostButton("Leállítás");
         pauseBtn.setOnClickListener(v -> {
             if (lastPaused) cmd(TimerService.ACTION_RESUME);
@@ -2176,6 +2177,7 @@ public class MainActivity extends Activity {
             l.setGravity(Gravity.CENTER);
             cell.addView(e); cell.addView(l);
             cell.setClickable(true);
+            cell.setContentDescription("Hangulat: " + lab[m]); // képernyőolvasóknak
             cell.setOnClickListener(v -> pickMood(mood));
             moodChips[m] = e;
             moodBtns.addView(cell, new LinearLayout.LayoutParams(0, -2, 1f));
