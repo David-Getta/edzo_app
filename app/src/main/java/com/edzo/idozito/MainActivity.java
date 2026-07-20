@@ -2506,7 +2506,15 @@ public class MainActivity extends Activity {
         nextText.setText("Elmentve a naplóba ✔");
         ring.setColor(DONE);
         ring.setProgress(1f);
+        timeText.animate().cancel();
         timeText.setText("✓");
+        if (Theme.animEnabled(this)) {
+            timeText.setScaleX(0.6f); timeText.setScaleY(0.6f);
+            timeText.animate().scaleX(1f).scaleY(1f).setDuration(460)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        } else {
+            timeText.setScaleX(1f); timeText.setScaleY(1f);
+        }
         roundInfo.setText(rounds + " kör kész 💪");
         String line = "Idő: " + fmtLong(dur);
         if (dist >= 0) line += "  ·  📍 " + fmtDist(dist);
