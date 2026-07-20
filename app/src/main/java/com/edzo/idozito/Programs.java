@@ -48,6 +48,10 @@ public final class Programs {
                     "Plank", "Oldalplank", "Madár-kutya", "Csípőemelés (híd)", "Szuperman", "Fal-ülés"}, false),
             new P("Reggeli mobilitás", "🌅", new String[]{
                     "Nyakkörzés", "Karkörzés", "Törzsdöntés", "Szuperman", "Csípőemelés (híd)", "Guggolás"}, false),
+            // A klasszikus tudományos „7 perces edzés" – 12 gyakorlat, 30 mp / 10 mp pihenő.
+            new P("7 perces edzés", "⏳", new String[]{
+                    "Jumping jack", "Fal-ülés", "Fekvőtámasz", "Hasprés", "Fellépés székre", "Guggolás",
+                    "Tricepsz tolódzkodás", "Plank", "Magas térd", "Kitörés", "Forgó fekvőtámasz", "Oldalplank"}, false),
     };
 
     /** Saját programok betöltése. */
@@ -148,6 +152,8 @@ public final class Programs {
             case "Boxoló ütés": return "Enyhe guggolóállás, üss előre gyorsan, felváltva a karokkal.";
             case "Oldalplank": return "Oldalfekvés alkartámaszon, egyenes test, tartsd a csípőd fenn.";
             case "Madár-kutya": return "Négykézláb, nyújtsd ki az ellentétes kart és lábat, tartsd.";
+            case "Fellépés székre": return "Lépj fel egy stabil székre/lépcsőre, váltott lábbal, kontrolláltan.";
+            case "Forgó fekvőtámasz": return "Fekvőtámasz, majd fordulj oldalra, nyújtsd a felső kart a plafon felé.";
             default: return "";
         }
     }
