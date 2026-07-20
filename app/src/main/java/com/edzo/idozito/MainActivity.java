@@ -213,7 +213,8 @@ public class MainActivity extends Activity {
 
     /** A Higgsfielddel generált háttérkép + sötét fátyol (a szöveg olvashatóságáért). */
     void addBackgroundImage(FrameLayout host) {
-        int id = drawableId("bg_main");
+        int id = drawableId(dailyHomeBg());
+        if (id == 0) id = drawableId("bg_main");
         if (id == 0) return;
         try {
             ImageView img = new ImageView(this);
@@ -232,6 +233,16 @@ public class MainActivity extends Activity {
     int drawableId(String name) {
         try { return getResources().getIdentifier(name, "drawable", getPackageName()); }
         catch (Exception e) { return 0; }
+    }
+
+    /** Naponta váltakozó főképernyő-háttér a látványos változatosságért.
+        A meglévő változatok közül a nap száma alapján választ; ha egy változat
+        nincs jelen (pl. régebbi build), a bg_main-re esik vissza. */
+    String dailyHomeBg() {
+        String[] variants = {"bg_main", "bg_main2", "bg_main3"};
+        int doy = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
+        String name = variants[((doy % variants.length) + variants.length) % variants.length];
+        return drawableId(name) != 0 ? name : "bg_main";
     }
 
     /** Lekerekített sarkú vágás egy nézethez (API 21+). */
