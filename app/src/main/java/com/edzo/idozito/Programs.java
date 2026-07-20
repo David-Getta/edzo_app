@@ -52,6 +52,9 @@ public final class Programs {
             new P("7 perces edzés", "⏳", new String[]{
                     "Jumping jack", "Fal-ülés", "Fekvőtámasz", "Hasprés", "Fellépés székre", "Guggolás",
                     "Tricepsz tolódzkodás", "Plank", "Magas térd", "Kitörés", "Forgó fekvőtámasz", "Oldalplank"}, false),
+            // Kezdőknek: kíméletes, ugrás nélküli teljes testes bevezető.
+            new P("Kezdő teljes test", "🔰", new String[]{
+                    "Guggolás", "Fal-ülés", "Csípőemelés (híd)", "Plank", "Karkörzés", "Vádliemelés"}, false),
     };
 
     /** Saját programok betöltése. */
