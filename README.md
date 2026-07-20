@@ -3,7 +3,9 @@
 Teljes értékű **edzőtárs Androidra** – intervallum (HIIT) időzítő, futáskövetés,
 nyújtás & mobilitás, edzésnapló, játékos motiváció és részletes statisztikák.
 Sötét, „cyber” cián-magenta megjelenés, sok látvánnyal és finom animációkkal.
-Tiszta natív Android (Java, programozott felület, külső függőségek nélkül).
+Minden képernyőnek saját, generált látványos háttere van, a főképernyő háttere
+pedig **naponta váltakozik**. Tiszta natív Android (Java, programozott felület,
+külső függőségek nélkül).
 
 ## Funkciók
 
@@ -11,9 +13,12 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - Testre szabható **Bemelegítés / Előkészület / Futás / Pihenő / Körök /
   Levezetés** – másodpercre pontosan (léptető gyorsulással vagy beírással)
 - **Élő folyamatsáv** (hol tartasz az egész edzésben) + **teljes hátralévő idő**
+- Látványos **világító körgyűrű** vezető ponttal, az utolsó 3 mp-ben lüktető
+  számláló, a végén ünneplő pipa – és **egygombos újraindítás** ugyanarra az edzésre
 - Gyors sablonok (**HIIT / Tempó / Tabata**) az aktív sablon kiemelésével
-- **8 beépített program** (törzs, teljes test, láb, kar, zsírégető HIIT,
-  mag & egyensúly, reggeli mobilitás…) + saját programok, gyakorlat-leírásokkal
+- **10 beépített program** (törzs, teljes test, láb, kar, zsírégető HIIT,
+  mag & egyensúly, reggeli mobilitás, **klasszikus 7 perces edzés**,
+  **kezdő teljes test**…) + saját programok, gyakorlat-leírásokkal
 - 🔊 Hangválasztás (külön futás/pihenő), előhallgatás, 3-2-1 csipogás, rezgés
 - 🗣️ Hangos bemondás (TTS), 🎛️ vezérlés az értesítésből, 🌙 fut kikapcsolt
   képernyővel is (foreground service + wake lock)
