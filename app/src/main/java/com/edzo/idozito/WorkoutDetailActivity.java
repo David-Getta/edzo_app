@@ -53,7 +53,7 @@ public class WorkoutDetailActivity extends Activity {
         if (e == null) {
             col.addView(text("Az edzés nem található.", 15, MUTED, false));
             sv.addView(col);
-            setContentView(Ux.scaffold(this, sv, "bg_main"));
+            setContentView(Ux.scaffold(this, sv, "bg_workout"));
             return;
         }
 
@@ -227,7 +227,7 @@ public class WorkoutDetailActivity extends Activity {
         }
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_main"));
+        setContentView(Ux.scaffold(this, sv, "bg_workout"));
         col.post(() -> Ux.enterChildren(col, 30, 42));
     }
 
