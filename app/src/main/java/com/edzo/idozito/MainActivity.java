@@ -2473,9 +2473,12 @@ public class MainActivity extends Activity {
             exDesc.setVisibility(desc.isEmpty() ? View.GONE : View.VISIBLE);
         } else {
             exText.setVisibility(View.GONE);
-            // Pihenő közben a KÖVETKEZŐ gyakorlat leírását mutatjuk, hogy fel lehessen
-            // készülni a technikára, mielőtt elkezdődik.
-            String nextDesc = (phase == TimerService.T_REST && nextName != null)
+            // Pihenő / előkészület / bemelegítés közben a KÖVETKEZŐ gyakorlat leírását
+            // mutatjuk, hogy fel lehessen készülni a technikára, mielőtt elkezdődik.
+            boolean prePhase = phase == TimerService.T_REST
+                    || phase == TimerService.T_PREP
+                    || phase == TimerService.T_WARMUP;
+            String nextDesc = (prePhase && nextName != null)
                     ? Programs.descOf(nextName) : "";
             if (!nextDesc.isEmpty()) {
                 exDesc.setText(nextDesc);
