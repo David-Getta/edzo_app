@@ -700,6 +700,7 @@ public class MainActivity extends Activity {
         } else {
             double done = weekProgress(mode);
             float frac = (float) Math.min(1.0, done / target);
+            boolean reached = frac >= 1f;
             LinearLayout inner = vbox();
             inner.setPadding(dp(18), dp(14), dp(18), dp(14));
             LinearLayout top = hbox();
@@ -716,8 +717,9 @@ public class MainActivity extends Activity {
             bgd.setColor(CARD2); bgd.setCornerRadius(dp(6));
             barBg.setBackground(bgd);
             View fill = new View(this);
+            // Teljesítés esetén arany sáv az ünnepléshez, egyébként a téma színe.
             GradientDrawable fgd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                    new int[]{tAccent, tAccent2});
+                    reached ? new int[]{0xFFFFC107, 0xFFFF8F00} : new int[]{tAccent, tAccent2});
             fgd.setCornerRadius(dp(6));
             fill.setBackground(fgd);
             barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(12), Math.max(0.001f, frac)));
@@ -726,13 +728,13 @@ public class MainActivity extends Activity {
             inner.addView(gap(8));
 
             String sub;
-            if (frac >= 1f) sub = "Kész! Teljesítetted a heti célod 🎉";
+            if (reached) sub = "Kész! Teljesítetted a heti célod 🎉";
             else {
                 double left2 = target - done;
                 String leftS = mode == 2 ? String.format(Locale.US, "%.1f", left2) : String.valueOf((int) Math.ceil(left2));
                 sub = Math.round(frac * 100) + "% · még " + leftS + " " + GOAL_UNITS[mode] + " a célig";
             }
-            inner.addView(text(sub, 12, MUTED, false));
+            inner.addView(text(sub, reached ? 12.5f : 12, reached ? 0xFFFFC107 : MUTED, reached));
             cardG.addView(inner);
         }
         goalBox.addView(cardG, new LinearLayout.LayoutParams(-1, -2));
