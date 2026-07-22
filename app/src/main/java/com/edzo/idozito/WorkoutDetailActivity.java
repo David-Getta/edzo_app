@@ -186,15 +186,26 @@ public class WorkoutDetailActivity extends Activity {
 
         // ---- Splitek (km) ----
         String[] splits = computeSplits(track);
+        int[] splitSecs = computeSplitSecs(track);
+        // A leggyorsabb km kiemelése (csak ha van legalább 2, hogy legyen mihez mérni).
+        int fastest = -1;
+        if (splitSecs.length >= 2) {
+            int best = Integer.MAX_VALUE;
+            for (int i = 0; i < splitSecs.length; i++)
+                if (splitSecs[i] > 0 && splitSecs[i] < best) { best = splitSecs[i]; fastest = i; }
+        }
+        int acc = Theme.accent(this);
         if (splits.length > 0) {
             col.addView(text("Körök kilométerenként", 17, TXT, true));
             col.addView(gap(10));
             LinearLayout splitCard = card();
             for (int i = 0; i < splits.length; i++) {
+                boolean isFast = i == fastest;
                 LinearLayout row = hbox();
                 row.setPadding(dp(16), dp(11), dp(16), dp(11));
-                row.addView(text((i + 1) + ". km", 14.5f, MUTED, false), new LinearLayout.LayoutParams(0, -2, 1f));
-                row.addView(text(splits[i], 15.5f, TXT, true));
+                row.addView(text((isFast ? "🔥 " : "") + (i + 1) + ". km", 14.5f, isFast ? acc : MUTED, isFast),
+                        new LinearLayout.LayoutParams(0, -2, 1f));
+                row.addView(text(splits[i], 15.5f, isFast ? acc : TXT, true));
                 splitCard.addView(row);
                 if (i < splits.length - 1) {
                     View dv = new View(this);
@@ -420,6 +431,27 @@ public class WorkoutDetailActivity extends Activity {
             prevT = t;
             int sec = (int) Math.round(split);
             out[km - 1] = fmtDur(sec) + "  (" + paceStr(split) + ")";
+        }
+        return out;
+    }
+
+    /** A km-splitek nyers másodpercei (a leggyorsabb km kiemeléséhez). */
+    int[] computeSplitSecs(JSONArray track) {
+        int n = track.length();
+        if (n < 2) return new int[0];
+        double maxDist = 0;
+        for (int i = 0; i < n; i++) {
+            JSONArray p = track.optJSONArray(i);
+            if (p != null && p.length() >= 5) maxDist = Math.max(maxDist, p.optDouble(4, 0));
+        }
+        int kms = (int) (maxDist / 1000.0);
+        if (kms < 1) return new int[0];
+        int[] out = new int[kms];
+        double prevT = 0;
+        for (int km = 1; km <= kms; km++) {
+            double t = timeAtDist(track, km * 1000.0);
+            out[km - 1] = (int) Math.round(t - prevT);
+            prevT = t;
         }
         return out;
     }
