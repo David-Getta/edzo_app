@@ -84,19 +84,24 @@ public class StrengthActivity extends Activity {
     void refreshSummary() {
         summaryBox.removeAllViews();
         long since = System.currentTimeMillis() - 7L * 24 * 3600 * 1000;
-        double vol = 0;
-        int count = 0;
+        double vol = 0, allVol = 0;
+        int count = 0, allCount = 0;
         for (StrengthLog.Entry e : StrengthLog.load(this)) {
-            if (e.ts >= since) { vol += e.volume(); count++; }
+            double v = e.volume();
+            allVol += v; allCount++;
+            if (e.ts >= since) { vol += v; count++; }
         }
-        if (count == 0) return; // csak akkor mutatjuk, ha volt edzés a héten
+        if (allCount == 0) return; // csak akkor mutatjuk, ha van bejegyzés
         LinearLayout card = card();
         LinearLayout inner = vbox();
         inner.setPadding(dp(16), dp(14), dp(16), dp(14));
         inner.addView(text("📊  Utolsó 7 nap", 12.5f, MUTED, true));
         inner.addView(gap(4));
         inner.addView(text(Math.round(vol) + " kg összvolumen", 20, Theme.accent(this), true));
-        inner.addView(text(count + " bejegyzés", 12.5f, MUTED, false));
+        inner.addView(text(count + " bejegyzés az elmúlt héten", 12.5f, MUTED, false));
+        inner.addView(gap(8));
+        inner.addView(text("Összesen: " + Math.round(allVol) + " kg · " + allCount + " alkalom",
+                12.5f, MUTED, false));
         card.addView(inner);
         summaryBox.addView(card, lp());
     }
