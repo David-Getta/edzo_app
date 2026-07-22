@@ -143,6 +143,11 @@ public class SettingsActivity extends Activity {
         col.addView(export);
         col.addView(gap(10));
 
+        Button exportStr = ghost("🏋️  Erősítő napló exportálása (CSV)");
+        exportStr.setOnClickListener(v -> exportStrengthCsv());
+        col.addView(exportStr);
+        col.addView(gap(10));
+
         Button backup = ghost("💾  Biztonsági mentés (fájl)");
         backup.setOnClickListener(v -> ShareProvider.shareTextFile(this,
                 Backup.exportJson(this), "my_trainer_mentes.json", "application/json"));
@@ -225,6 +230,31 @@ public class SettingsActivity extends Activity {
               .append(o.optInt("steps", 0)).append('\n');
         }
         ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_elozmenyek.csv", "text/csv");
+    }
+
+    void exportStrengthCsv() {
+        java.util.List<StrengthLog.Entry> list = StrengthLog.load(this);
+        if (list.isEmpty()) {
+            Toast.makeText(this, "Nincs erősítő bejegyzés.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("datum;gyakorlat;sorozat;ismetles;suly_kg;volumen_kg\n");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        for (StrengthLog.Entry e : list) {
+            String d = df.format(new Date(e.ts));
+            String name = e.name == null ? "" : e.name.replace(';', ',');
+            int setNo = 1;
+            for (StrengthLog.SetEntry s : e.sets) {
+                sb.append(d).append(';')
+                  .append(name).append(';')
+                  .append(setNo++).append(';')
+                  .append(s.reps).append(';')
+                  .append(String.format(Locale.US, "%.1f", s.weight)).append(';')
+                  .append(String.format(Locale.US, "%.1f", s.reps * s.weight)).append('\n');
+            }
+        }
+        ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_erosito.csv", "text/csv");
     }
 
     // ---------------- Biztonsági mentés / visszaállítás ----------------
