@@ -1034,7 +1034,7 @@ public class MainActivity extends Activity {
     void refreshWeekDots() {
         if (weekBox == null) return;
         weekBox.removeAllViews();
-        JSONArray arr = History.load(this);
+        JSONArray arr = activityLog();   // erősítő napok is beleszámítanak
         long ws = weekStartMs();
         boolean[] days = new boolean[7];
         int trained = 0;
