@@ -2499,8 +2499,10 @@ public class MainActivity extends Activity {
         // hogy vizuálisan is érezni lehessen a visszaszámlálás feszültségét.
         if (tickChanged && !paused && remain > 0 && remain <= 3 && Theme.animEnabled(this)) pulseTime();
         ring.setProgress(prog);
+        float avgSpeed = i.getFloatExtra(TimerService.EX_AVGSPEED, -1);
         distanceText.setText(dist >= 0
                 ? "📍 " + fmtDist(dist) + "   ·   " + fmtSpeed(speed)
+                        + (avgSpeed > 0 ? "   ·   ⌀ " + fmtSpeed(avgSpeed) : "")
                 : "");
 
         int elapsed = i.getIntExtra(TimerService.EX_ELAPSED, 0);

@@ -62,7 +62,7 @@ public class TimerService extends Service {
             EX_PROGRESS = "prog", EX_DIST = "dist", EX_PAUSED = "paused", EX_DUR = "dur",
             EX_SPEED = "speed", EX_ELAPSED = "elapsed", EX_STEPS = "steps", EX_CAL = "cal",
             EX_STEPNAME = "stepname", EX_NEXTNAME = "nextname", EX_RECORDS = "records",
-            EX_LEVELUP = "levelup", EX_TOTALREMAIN = "totalremain";
+            EX_LEVELUP = "levelup", EX_TOTALREMAIN = "totalremain", EX_AVGSPEED = "avgspd";
 
     public static final int T_PREP = 0, T_WORK = 1, T_REST = 2, T_WARMUP = 3, T_COOLDOWN = 4;
 
@@ -563,6 +563,10 @@ public class TimerService extends Service {
         i.putExtra(EX_PROGRESS, (float) (s.dur > 0 ? remain / s.dur : 0));
         i.putExtra(EX_DIST, distanceM);
         i.putExtra(EX_SPEED, (float) (paused ? 0 : curSpeedMps * 3.6));
+        // Élő átlagsebesség (a futással töltött idő alapján), hogy menet közben is
+        // látszódjon az összteljesítmény, ne csak a végén.
+        i.putExtra(EX_AVGSPEED, (float) ((distanceM > 0 && workMs > 0)
+                ? distanceM / (workMs / 1000.0) * 3.6 : -1));
         i.putExtra(EX_ELAPSED, (int) ((SystemClock.elapsedRealtime() - sessionStart - pausedAccum) / 1000));
         i.putExtra(EX_STEPS, steps);
         i.putExtra(EX_CAL, (int) Math.round(estimateCalories()));
