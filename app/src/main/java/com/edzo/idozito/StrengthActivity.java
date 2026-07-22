@@ -3,7 +3,13 @@ package com.edzo.idozito;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
@@ -34,6 +40,12 @@ public class StrengthActivity extends Activity {
 
     LinearLayout recordsBox, listBox, summaryBox;
 
+    // Pihenő-időzítő a sorozatok között
+    final Handler restHandler = new Handler(Looper.getMainLooper());
+    Runnable restTick;
+    long restEnd;
+    TextView restText;
+
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -51,6 +63,9 @@ public class StrengthActivity extends Activity {
         Button add = primary("＋  Új bejegyzés");
         add.setOnClickListener(v -> addEntryDialog());
         col.addView(add);
+        col.addView(gap(16));
+
+        col.addView(restCard());
         col.addView(gap(16));
 
         summaryBox = vbox();
@@ -363,6 +378,88 @@ public class StrengthActivity extends Activity {
     String fmtKg(double w) {
         if (Math.abs(w - Math.round(w)) < 0.05) return String.valueOf(Math.round(w));
         return String.format(new Locale("hu"), "%.1f", w);
+    }
+
+    // ---------- Pihenő-időzítő ----------
+
+    LinearLayout restCard() {
+        LinearLayout card = card();
+        LinearLayout inner = vbox();
+        inner.setPadding(dp(16), dp(14), dp(16), dp(14));
+        inner.addView(text("⏱  Pihenő a sorozatok között", 14, TXT, true));
+        inner.addView(gap(10));
+
+        LinearLayout row = hbox();
+        int[] secs = {60, 90, 120, 180};
+        String[] lbl = {"1:00", "1:30", "2:00", "3:00"};
+        for (int i = 0; i < secs.length; i++) {
+            final int s = secs[i];
+            Button b = ghost(lbl[i]);
+            b.setTextSize(14);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
+            p.leftMargin = dp(3); p.rightMargin = dp(3);
+            b.setLayoutParams(p);
+            b.setOnClickListener(v -> startRest(s));
+            row.addView(b);
+        }
+        inner.addView(row);
+
+        restText = text("", 24, Theme.accent(this), true);
+        restText.setGravity(Gravity.CENTER);
+        restText.setPadding(0, dp(12), 0, 0);
+        restText.setVisibility(View.GONE);
+        restText.setClickable(true);
+        restText.setOnClickListener(v -> stopRest());   // koppintással megszakítható
+        inner.addView(restText);
+
+        card.addView(inner);
+        return card;
+    }
+
+    void startRest(int secs) {
+        restEnd = SystemClock.elapsedRealtime() + secs * 1000L;
+        if (restTick == null) {
+            restTick = () -> {
+                if (restText == null) return;
+                long left = restEnd - SystemClock.elapsedRealtime();
+                if (left <= 0) {
+                    restText.setText("Pihenő letelt! 💪  (koppints)");
+                    restEndBeep();
+                    return;
+                }
+                int s = (int) Math.ceil(left / 1000.0);
+                restText.setText("⏱  " + (s / 60) + ":" + String.format(Locale.US, "%02d", s % 60)
+                        + "   (koppints a leállításhoz)");
+                restHandler.postDelayed(restTick, 200);
+            };
+        }
+        restHandler.removeCallbacks(restTick);
+        restText.setVisibility(View.VISIBLE);
+        restHandler.post(restTick);
+    }
+
+    void stopRest() {
+        restHandler.removeCallbacks(restTick);
+        if (restText != null) restText.setVisibility(View.GONE);
+    }
+
+    void restEndBeep() {
+        try { Beeper.finish(); } catch (Exception ignored) {}
+        if (!Theme.vibrate(this)) return;
+        try {
+            Vibrator vb = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            if (vb != null && vb.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= 26)
+                    vb.vibrate(VibrationEffect.createOneShot(450, VibrationEffect.DEFAULT_AMPLITUDE));
+                else vb.vibrate(450);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (restTick != null) restHandler.removeCallbacks(restTick);
     }
 
     // ---------- UI segédek ----------
