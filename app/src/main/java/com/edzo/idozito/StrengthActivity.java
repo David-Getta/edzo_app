@@ -99,11 +99,18 @@ public class StrengthActivity extends Activity {
                 card.addView(dv);
             }
             first = false;
-            LinearLayout row = vbox();
+            final String exName = n;
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
             row.setPadding(dp(16), dp(12), dp(16), dp(12));
-            row.addView(text(n, 15.5f, TXT, true));
+            LinearLayout rl = vbox();
+            rl.addView(text(n, 15.5f, TXT, true));
             String sub = "Max " + fmtKg(rec[0]) + " kg   ·   becsült 1RM ~" + fmtKg(rec[1]) + " kg";
-            row.addView(text(sub, 12.5f, MUTED, false));
+            rl.addView(text(sub, 12.5f, MUTED, false));
+            row.addView(rl, new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text("📈", 15, MUTED, false));
+            row.setClickable(true);
+            row.setOnClickListener(v -> showProgress(exName));
             card.addView(row);
         }
         recordsBox.addView(card, lp());
@@ -147,6 +154,34 @@ public class StrengthActivity extends Activity {
             listBox.addView(card, lp());
             listBox.addView(gap(10));
         }
+    }
+
+    // ---------- Fejlődés (súly-grafikon) ----------
+
+    void showProgress(String name) {
+        List<StrengthLog.Entry> all = StrengthLog.load(this);
+        List<Double> tops = new ArrayList<>();
+        for (int i = all.size() - 1; i >= 0; i--) {        // régi → új sorrend
+            if (name.equals(all.get(i).name)) tops.add(all.get(i).topWeight());
+        }
+        double[] rec = StrengthLog.recordsFor(this, name);
+        LinearLayout box = vbox();
+        box.setPadding(dp(8), dp(4), dp(8), dp(4));
+        box.addView(text("Max " + fmtKg(rec[0]) + " kg   ·   becsült 1RM ~" + fmtKg(rec[1]) + " kg",
+                14, TXT, true));
+        box.addView(gap(10));
+        if (tops.size() >= 2) {
+            double[] arr = new double[tops.size()];
+            for (int i = 0; i < arr.length; i++) arr[i] = tops.get(i);
+            ProfileActivity.ChartView chart = new ProfileActivity.ChartView(this);
+            chart.setData(arr, Theme.accent(this), "kg");
+            box.addView(chart, new LinearLayout.LayoutParams(-1, dp(160)));
+            box.addView(gap(6));
+            box.addView(text(tops.size() + " alkalom · a felső súly alakulása", 12, MUTED, false));
+        } else {
+            box.addView(text("Legalább 2 alkalom kell a grafikonhoz. Rögzíts még egyet!", 13, MUTED, false));
+        }
+        new Sheet(this, name, "Fejlődés").addCustom(box).addNeutral("Bezár", () -> {}).show();
     }
 
     // ---------- Új bejegyzés ----------
