@@ -224,6 +224,11 @@ public class StrengthActivity extends Activity {
         nameEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         box.addView(nameEt);
 
+        // Előre deklarálva, hogy a névchipek elő tudják tölteni a legutóbbi alkalmat.
+        final LinearLayout setsBox = vbox();
+        final List<EditText> repsList = new ArrayList<>();
+        final List<EditText> wList = new ArrayList<>();
+
         // Gyors nevek vízszintes chip-sávban
         box.addView(gap(8));
         LinearLayout chips = hbox();
@@ -233,7 +238,11 @@ public class StrengthActivity extends Activity {
             LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
             clp.rightMargin = dp(6);
             chip.setLayoutParams(clp);
-            chip.setOnClickListener(v -> { nameEt.setText(n); nameEt.setSelection(n.length()); });
+            chip.setOnClickListener(v -> {
+                nameEt.setText(n);
+                nameEt.setSelection(n.length());
+                prefillFromLast(n, setsBox, repsList, wList);
+            });
             chips.addView(chip);
         }
         HorizontalScrollView hs = new HorizontalScrollView(this);
@@ -245,9 +254,6 @@ public class StrengthActivity extends Activity {
         box.addView(text("Sorozatok (ismétlés × súly kg)", 13, MUTED, true));
         box.addView(gap(4));
 
-        final LinearLayout setsBox = vbox();
-        final List<EditText> repsList = new ArrayList<>();
-        final List<EditText> wList = new ArrayList<>();
         box.addView(setsBox);
         for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
 
@@ -274,6 +280,27 @@ public class StrengthActivity extends Activity {
                 })
                 .addCancel()
                 .show();
+    }
+
+    /** A sorozat-mezők feltöltése az adott gyakorlat legutóbbi bejegyzéséből. */
+    void prefillFromLast(String name, LinearLayout setsBox, List<EditText> repsList, List<EditText> wList) {
+        StrengthLog.Entry last = null;
+        for (StrengthLog.Entry e : StrengthLog.load(this)) {   // a lista legújabb elöl
+            if (name.equals(e.name)) { last = e; break; }
+        }
+        setsBox.removeAllViews();
+        repsList.clear();
+        wList.clear();
+        if (last == null || last.sets.isEmpty()) {
+            for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
+            return;
+        }
+        for (StrengthLog.SetEntry s : last.sets) {
+            addSetRow(setsBox, repsList, wList);
+            int idx = repsList.size() - 1;
+            repsList.get(idx).setText(String.valueOf(s.reps));
+            wList.get(idx).setText(fmtKg(s.weight));
+        }
     }
 
     void addSetRow(LinearLayout setsBox, List<EditText> repsList, List<EditText> wList) {
