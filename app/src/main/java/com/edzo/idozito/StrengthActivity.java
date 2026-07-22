@@ -61,7 +61,7 @@ public class StrengthActivity extends Activity {
         col.addView(gap(20));
 
         Button add = primary("＋  Új bejegyzés");
-        add.setOnClickListener(v -> addEntryDialog());
+        add.setOnClickListener(v -> addEntryDialog(null, -1));
         col.addView(add);
         col.addView(gap(16));
 
@@ -196,7 +196,8 @@ public class StrengthActivity extends Activity {
 
             card.addView(inner);
             card.setClickable(true);
-            card.setOnClickListener(v -> new Sheet(this, e.name, "Bejegyzés törlése?")
+            card.setOnClickListener(v -> new Sheet(this, e.name, "Szerkesztés vagy törlés?")
+                    .addNeutral("✏️  Szerkesztés", () -> addEntryDialog(e, idx))
                     .addDestructive("Törlés", () -> { StrengthLog.removeAt(this, idx); refresh(); })
                     .addCancel().show());
             listBox.addView(card, lp());
@@ -234,7 +235,7 @@ public class StrengthActivity extends Activity {
 
     // ---------- Új bejegyzés ----------
 
-    void addEntryDialog() {
+    void addEntryDialog(final StrengthLog.Entry edit, final int editIdx) {
         final LinearLayout box = vbox();
         box.setPadding(dp(10), dp(6), dp(10), 0);
 
@@ -243,6 +244,7 @@ public class StrengthActivity extends Activity {
         nameEt.setHintTextColor(MUTED);
         nameEt.setTextColor(TXT);
         nameEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        if (edit != null) nameEt.setText(edit.name);
         box.addView(nameEt);
 
         // Előre deklarálva, hogy a névchipek elő tudják tölteni a legutóbbi alkalmat.
@@ -276,7 +278,16 @@ public class StrengthActivity extends Activity {
         box.addView(gap(4));
 
         box.addView(setsBox);
-        for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
+        if (edit != null && !edit.sets.isEmpty()) {
+            for (StrengthLog.SetEntry s : edit.sets) {
+                addSetRow(setsBox, repsList, wList);
+                int idx = repsList.size() - 1;
+                repsList.get(idx).setText(String.valueOf(s.reps));
+                wList.get(idx).setText(fmtKg(s.weight));
+            }
+        } else {
+            for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
+        }
 
         Button more = ghost("＋  Sorozat");
         more.setTextSize(13.5f);
@@ -284,7 +295,7 @@ public class StrengthActivity extends Activity {
         box.addView(gap(4));
         box.addView(more);
 
-        new Sheet(this, "Új bejegyzés")
+        new Sheet(this, edit != null ? "Bejegyzés szerkesztése" : "Új bejegyzés")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
                     String name = nameEt.getText().toString().trim();
@@ -301,9 +312,14 @@ public class StrengthActivity extends Activity {
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
-                    StrengthLog.add(this, new StrengthLog.Entry(System.currentTimeMillis(), name, sets));
+                    // Szerkesztésnél a helyén cseréljük, az eredeti időpontot megtartva.
+                    long ts = edit != null ? edit.ts : System.currentTimeMillis();
+                    StrengthLog.Entry ne = new StrengthLog.Entry(ts, name, sets);
+                    if (edit != null) StrengthLog.replaceAt(this, editIdx, ne);
+                    else StrengthLog.add(this, ne);
                     refresh();
-                    Toast.makeText(this, "Mentve ✔  (" + sets.size() + " sorozat)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, (edit != null ? "Frissítve ✔  (" : "Mentve ✔  (")
+                            + sets.size() + " sorozat)", Toast.LENGTH_SHORT).show();
                 })
                 .addCancel()
                 .show();

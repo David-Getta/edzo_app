@@ -110,6 +110,12 @@ public final class StrengthLog {
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }
     }
 
+    /** Egy bejegyzés cseréje a helyén (szerkesztéshez – megtartja a sorrendet). */
+    public static void replaceAt(Context c, int idx, Entry e) {
+        List<Entry> l = load(c);
+        if (idx >= 0 && idx < l.size()) { l.set(idx, e); save(c, l); }
+    }
+
     /** Ismert gyakorlatnevek: a korábban használtak (legutóbbi elöl) + a gyakoriak. */
     public static List<String> knownNames(Context c) {
         LinkedHashMap<String, Boolean> seen = new LinkedHashMap<>();
