@@ -31,7 +31,7 @@ public class StrengthActivity extends Activity {
     static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
     static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
 
-    LinearLayout recordsBox, listBox;
+    LinearLayout recordsBox, listBox, summaryBox;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -50,7 +50,11 @@ public class StrengthActivity extends Activity {
         Button add = primary("＋  Új bejegyzés");
         add.setOnClickListener(v -> addEntryDialog());
         col.addView(add);
-        col.addView(gap(18));
+        col.addView(gap(16));
+
+        summaryBox = vbox();
+        col.addView(summaryBox, lp());
+        col.addView(gap(16));
 
         col.addView(text("Rekordok", 15.5f, TXT, true));
         col.addView(gap(10));
@@ -70,8 +74,31 @@ public class StrengthActivity extends Activity {
     }
 
     void refresh() {
+        refreshSummary();
         refreshRecords();
         refreshList();
+    }
+
+    // ---------- Heti összegző ----------
+
+    void refreshSummary() {
+        summaryBox.removeAllViews();
+        long since = System.currentTimeMillis() - 7L * 24 * 3600 * 1000;
+        double vol = 0;
+        int count = 0;
+        for (StrengthLog.Entry e : StrengthLog.load(this)) {
+            if (e.ts >= since) { vol += e.volume(); count++; }
+        }
+        if (count == 0) return; // csak akkor mutatjuk, ha volt edzés a héten
+        LinearLayout card = card();
+        LinearLayout inner = vbox();
+        inner.setPadding(dp(16), dp(14), dp(16), dp(14));
+        inner.addView(text("📊  Utolsó 7 nap", 12.5f, MUTED, true));
+        inner.addView(gap(4));
+        inner.addView(text(Math.round(vol) + " kg összvolumen", 20, Theme.accent(this), true));
+        inner.addView(text(count + " bejegyzés", 12.5f, MUTED, false));
+        card.addView(inner);
+        summaryBox.addView(card, lp());
     }
 
     // ---------- Rekordok ----------
