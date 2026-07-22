@@ -32,6 +32,12 @@ külső függőségek nélkül).
 - Izmonként ≥2 nyújtás, deréktáj/gerinc, foam rolling – mind **videós útmutatóval**
 - **Vezetett rutinok** (a telefon időzíti és bemondja a gyakorlatokat)
 
+### 🏋️ Erősítő edzésnapló
+- **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), gyors-választó
+  gyakorlatnevekkel
+- **Rekordok**: max súly és **becsült 1RM** (Epley) gyakorlatonként
+- **Súly-fejlődési grafikon** minden gyakorlathoz, teljes volumen kijelzés
+
 ### 🏅 Motiváció & napló
 - **Szintek + XP-sáv**, 20 gyűjthető **kitüntetés** (haladás-jelzéssel),
   személyes **rekordok**, **napi és heti sorozat** (óraátállás-biztos),
