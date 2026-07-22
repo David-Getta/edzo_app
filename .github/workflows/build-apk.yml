@@ -61,6 +61,7 @@ jobs:
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_142758_ecbd1582-903e-4027-b997-dfa802a8f6a6.png" "bg_workout.png"
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_144953_b7dc325b-ebe5-4cb2-9b8a-7791b76dc6fc.png" "bg_main2.png"
           dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_145129_871d9e58-1399-458c-8eb3-318503d06b81.png" "bg_main3.png"
+          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260722_175618_5f6d28b3-6f30-4594-a795-4e503335ddf8.png" "bg_main4.png"
           # PNG → WebP a jóval kisebb APK-ért (a háttérképek nagyok). Ha a cwebp
           # nem elérhető vagy hibázik, marad a PNG – így a build sosem törik el.
           if ! command -v cwebp >/dev/null 2>&1; then sudo apt-get update -qq && sudo apt-get install -y -qq webp || true; fi
@@ -100,7 +101,7 @@ jobs:
           name: "My trainer – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            My trainer automatikus build (v6.78, build ${{ github.run_number }}).
+            My trainer automatikus build (v6.79, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"

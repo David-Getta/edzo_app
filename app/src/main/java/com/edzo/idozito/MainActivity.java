@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
         A meglévő változatok közül a nap száma alapján választ; ha egy változat
         nincs jelen (pl. régebbi build), a bg_main-re esik vissza. */
     String dailyHomeBg() {
-        String[] variants = {"bg_main", "bg_main2", "bg_main3"};
+        String[] variants = {"bg_main", "bg_main2", "bg_main3", "bg_main4"};
         int doy = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
         String name = variants[((doy % variants.length) + variants.length) % variants.length];
         return drawableId(name) != 0 ? name : "bg_main";
