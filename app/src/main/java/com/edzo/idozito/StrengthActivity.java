@@ -13,6 +13,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -279,9 +280,15 @@ public class StrengthActivity extends Activity {
                         double w = parseDouble(wList.get(i).getText().toString());
                         if (reps > 0) sets.add(new StrengthLog.SetEntry(reps, Math.max(0, w)));
                     }
-                    if (sets.isEmpty()) return; // nincs érvényes sorozat → nem mentünk
+                    if (sets.isEmpty()) {
+                        // Nincs érvényes sorozat – legalább visszajelzünk, miért nem mentünk.
+                        Toast.makeText(this, "Nem mentettem: adj meg legalább egy sorozatot (ismétlés).",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     StrengthLog.add(this, new StrengthLog.Entry(System.currentTimeMillis(), name, sets));
                     refresh();
+                    Toast.makeText(this, "Mentve ✔  (" + sets.size() + " sorozat)", Toast.LENGTH_SHORT).show();
                 })
                 .addCancel()
                 .show();
