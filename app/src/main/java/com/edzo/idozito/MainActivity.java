@@ -444,6 +444,10 @@ public class MainActivity extends Activity {
         grid.addView(tileRow(
                 featureTile("⚙️", "Beállítások", () -> startActivity(new Intent(this, SettingsActivity.class))),
                 featureTile("💾", "Sablon mentése", this::saveTemplateDialog)));
+        grid.addView(gap(10));
+        grid.addView(tileRow(
+                featureTile("🏋️", "Erősítő napló", () -> startActivity(new Intent(this, StrengthActivity.class))),
+                new View(this)));
         col.addView(grid, new LinearLayout.LayoutParams(-1, -2));
 
         col.addView(gap(24));
