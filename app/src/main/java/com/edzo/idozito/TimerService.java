@@ -447,6 +447,13 @@ public class TimerService extends Service {
         } else {
             speak("Edzés kész. Szép munka!");
         }
+        // Futásnál hangos összefoglaló: táv + átlagtempó (a képernyő nézése nélkül is).
+        if (distanceM > 0 && workMs > 0) {
+            String km = String.format(new Locale("hu"), "%.1f", distanceM / 1000.0);
+            int ps = (int) Math.round((workMs / 1000.0) / (distanceM / 1000.0)); // mp/km
+            String pace = (ps / 60) + " perc " + (ps % 60) + " másodperc";
+            speakAdd("Összesen " + km + " kilométer, átlagtempó " + pace + " per kilométer.");
+        }
 
         Intent done = new Intent(B_DONE).setPackage(getPackageName());
         done.putExtra(EX_DUR, durationSec);
