@@ -404,7 +404,7 @@ public class StatsActivity extends Activity {
     }
 
     LinearLayout recordsCard() {
-        double bestDist = -1, bestAvg = -1, bestCal = 0;
+        double bestDist = -1, bestAvg = -1, bestMax = -1, bestCal = 0;
         int bestDur = 0, bestSteps = 0;
         for (int i = 0; i < hist.length(); i++) {
             JSONObject o = hist.optJSONObject(i);
@@ -416,6 +416,8 @@ public class StatsActivity extends Activity {
             double avg = o.optDouble("avgspeed", -1);
             if (avg < 0 && d > 0 && dur > 0) avg = d / dur * 3.6;
             if (avg > bestAvg) bestAvg = avg;
+            double mx = o.optDouble("maxspeed", -1);
+            if (mx > bestMax) bestMax = mx;
             double cal = o.optDouble("cal", 0);
             if (cal > bestCal) bestCal = cal;
             int st = o.optInt("steps", 0);
@@ -429,6 +431,7 @@ public class StatsActivity extends Activity {
                 {"🏆 Leghosszabb táv", bestDist > 0 ? fmtDist(bestDist) : "—"},
                 {"⏱ Leghosszabb edzés", bestDur > 0 ? fmtDur(bestDur) : "—"},
                 {"⚡ Legjobb átlag", bestAvg > 0 ? fmtSpeed(bestAvg) : "—"},
+                {"🚀 Legjobb csúcs", bestMax > 0 ? fmtSpeed(bestMax) : "—"},
                 {"🍩 Legtöbb kalória", bestCal > 0 ? Math.round(bestCal) + " kcal" : "—"},
                 {"👟 Legtöbb lépés", bestSteps > 0 ? String.valueOf(bestSteps) : "—"},
         });
