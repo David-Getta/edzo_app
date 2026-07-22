@@ -788,6 +788,22 @@ public class MainActivity extends Activity {
     }
 
     // Egymást követő edzésnapok száma (ma vagy tegnap végződő sorozat).
+    /** Egyesített aktivitás-napló a motivációhoz: időzítős edzések + erősítő
+        bejegyzések (a streak-számításhoz csak a „ts" időbélyeg kell). Így egy
+        erősítő nap is beleszámít a napi/heti sorozatba a főképernyő feliratában. */
+    JSONArray activityLog() {
+        JSONArray merged = new JSONArray();
+        JSONArray h = History.load(this);
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o != null) merged.put(o);
+        }
+        for (StrengthLog.Entry e : StrengthLog.load(this)) {
+            try { merged.put(new JSONObject().put("ts", e.ts)); } catch (Exception ignored) {}
+        }
+        return merged;
+    }
+
     int dayStreak(JSONArray arr) {
         java.util.HashSet<Long> days = new java.util.HashSet<>();
         for (int i = 0; i < arr.length(); i++) {
@@ -838,7 +854,7 @@ public class MainActivity extends Activity {
     String bannerSubtitle() {
         int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
         String greet = hour < 10 ? "Jó reggelt!" : hour < 18 ? "Szia!" : "Jó estét!";
-        JSONArray arr = History.load(this);
+        JSONArray arr = activityLog();   // időzítős edzések + erősítő bejegyzések együtt
         if (arr.length() == 0) return greet + " Kezdd el az első edzésed 💪";
         long dayStart = dayStartMs();
         boolean today = false;
