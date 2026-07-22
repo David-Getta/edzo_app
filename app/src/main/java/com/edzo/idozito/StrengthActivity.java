@@ -66,6 +66,11 @@ public class StrengthActivity extends Activity {
         col.addView(gap(16));
 
         col.addView(restCard());
+        col.addView(gap(12));
+
+        Button plate = ghost("🧮  Súlytárcsa-kalkulátor");
+        plate.setOnClickListener(v -> openPlateCalc());
+        col.addView(plate);
         col.addView(gap(16));
 
         summaryBox = vbox();
@@ -394,6 +399,63 @@ public class StrengthActivity extends Activity {
     String fmtKg(double w) {
         if (Math.abs(w - Math.round(w)) < 0.05) return String.valueOf(Math.round(w));
         return String.format(new Locale("hu"), "%.1f", w);
+    }
+
+    // ---------- Súlytárcsa-kalkulátor ----------
+
+    void openPlateCalc() {
+        LinearLayout box = vbox();
+        box.setPadding(dp(10), dp(4), dp(10), 0);
+
+        box.addView(text("Cél súly (kg)", 12.5f, MUTED, false));
+        final EditText target = numEt("pl. 60");
+        target.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        box.addView(target, lp());
+        box.addView(gap(8));
+
+        box.addView(text("Rúd súlya (kg)", 12.5f, MUTED, false));
+        final EditText bar = numEt("20");
+        bar.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        bar.setText("20");
+        box.addView(bar, lp());
+        box.addView(gap(12));
+
+        final TextView result = text("", 15, TXT, true);
+        result.setGravity(Gravity.CENTER);
+        result.setPadding(dp(4), dp(8), dp(4), dp(4));
+
+        Button calc = primary("Számol");
+        calc.setOnClickListener(v -> result.setText(
+                platePlan(parseDouble(target.getText().toString()),
+                        parseDouble(bar.getText().toString()))));
+        box.addView(calc);
+        box.addView(result);
+
+        new Sheet(this, "Súlytárcsa-kalkulátor", "Mennyi tárcsa kell oldalanként?")
+                .addCustom(box).addNeutral("Bezár", () -> {}).show();
+    }
+
+    /** Standard tárcsákból (25…1,25 kg) kiszámolja az oldalankénti terhelést. */
+    String platePlan(double target, double bar) {
+        if (target <= 0) return "Adj meg egy cél súlyt.";
+        if (bar < 0) bar = 0;
+        if (target < bar) return "A rúd nehezebb a célnál.";
+        double perSide = (target - bar) / 2.0;
+        double[] plates = {25, 20, 15, 10, 5, 2.5, 1.25};
+        StringBuilder sb = new StringBuilder();
+        double rem = perSide;
+        for (double p : plates) {
+            int n = (int) Math.floor(rem / p + 1e-6);
+            if (n > 0) {
+                if (sb.length() > 0) sb.append("  +  ");
+                sb.append(n).append("×").append(fmtKg(p));
+                rem -= n * p;
+            }
+        }
+        String plan = sb.length() == 0 ? "(nincs tárcsa – csak a rúd)" : sb.toString();
+        String res = "Oldalanként:\n" + plan;
+        if (rem > 0.01) res += "\n(≈ nem jön ki pontosan, marad " + fmtKg(rem) + " kg/oldal)";
+        return res;
     }
 
     // ---------- Pihenő-időzítő ----------
