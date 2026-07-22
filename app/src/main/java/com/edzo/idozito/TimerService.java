@@ -120,6 +120,7 @@ public class TimerService extends Service {
     private boolean inWorkPhase;      // csak FUTÁS szakaszban mérünk sebességet/távot
     private long workMs, lastTickElapsed; // futással töltött idő (átlaghoz)
     private int lastKm;               // utoljára bejelentett teljes kilométer
+    private int lastKmTimeSec;         // futásidő az előző km-jelzésnél (a rész-tempóhoz)
 
     // Bővített mérések
     private SensorManager sensorManager;
@@ -176,8 +177,16 @@ public class TimerService extends Service {
     private void announceKm(int km) {
         buzz(new long[]{0, 50, 80, 50});
         int sec = (int) (workMs / 1000);
+        int split = sec - lastKmTimeSec; // az utolsó kilométer ideje (rész-tempó)
+        lastKmTimeSec = sec;
         String t = sec >= 60 ? (sec / 60) + " perc " + (sec % 60) + " másodperc" : sec + " másodperc";
-        speakAdd(km + " kilométer. Futásidő: " + t + ".");
+        String msg = km + " kilométer. Futásidő: " + t + ".";
+        if (split > 0) {
+            String pace = split >= 60 ? (split / 60) + " perc " + (split % 60) + " másodperc"
+                    : split + " másodperc";
+            msg += " Az utolsó kilométer: " + pace + ".";
+        }
+        speakAdd(msg);
     }
 
     @Override
@@ -244,6 +253,7 @@ public class TimerService extends Service {
         workMs = 0;
         lastTickElapsed = 0;
         lastKm = 0;
+        lastKmTimeSec = 0;
         inWorkPhase = false;
         elevGainM = 0;
         lastAlt = null;
