@@ -148,7 +148,17 @@ public class SettingsActivity extends Activity {
         col.addView(exportStr);
         col.addView(gap(10));
 
-        Button backup = ghost("💾  Biztonsági mentés (fájl)");
+        col.addView(text("☁️  Automatikus mentés (Google-fiók)", 15.5f, TXT, true));
+        col.addView(gap(4));
+        col.addView(text("Az adataid (előzmények, erősítő napló, beállítások, programok) "
+                + "automatikusan mentődnek a Google-fiókodba. Új eszközön, UGYANAZZAL a "
+                + "Google-fiókkal telepítve a rendszer magától visszatölti őket – bejelentkezés "
+                + "nélkül. Ehhez a telefonon bekapcsolt Google biztonsági mentés kell "
+                + "(Beállítások › Google › Biztonsági mentés). Kézi mentésként az alábbi fájl is használható.",
+                12.5f, MUTED, false));
+        col.addView(gap(14));
+
+        Button backup = ghost("💾  Kézi mentés fájlba");
         backup.setOnClickListener(v -> ShareProvider.shareTextFile(this,
                 Backup.exportJson(this), "my_trainer_mentes.json", "application/json"));
         col.addView(backup);
