@@ -134,6 +134,8 @@ public class MainActivity extends Activity {
 
     // Téma (Beállításokból)
     int tAccent, tAccent2, tWork, tRest;
+    // Blaze csak egyszer köszönjön app-indításonként (nem minden újraépítéskor).
+    static boolean mascotGreeted = false;
     boolean tPace;
     int builtRev;
 
@@ -183,6 +185,14 @@ public class MainActivity extends Activity {
         updateProgramUI();
         refreshTemplates();
         refreshHome();
+        // Blaze, a kabalafigura üdvözöl belépéskor (egyszer app-indításonként).
+        if (!mascotGreeted) {
+            mascotGreeted = true;
+            final int gh = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+            final String hello = Mascot.greeting(prefs.getString("user_name", ""), gh);
+            new Handler(Looper.getMainLooper()).postDelayed(
+                    () -> Toast.makeText(this, hello, Toast.LENGTH_LONG).show(), 500);
+        }
         // Első futáskor a már meglévő kitüntetéseket „látottnak" jelöljük, hogy
         // ne az összeset ünnepelje meg egyszerre a legközelebbi edzés után.
         if (!prefs.contains("badges_seen"))
@@ -449,6 +459,10 @@ public class MainActivity extends Activity {
 
         // ---- Áttekintés / motiváció (a fő indítás alatt) ----
 
+        // Blaze, a tűzfarkas kabalafigura – állapotfüggő biztatás, koppintásra új.
+        col.addView(mascotCard(), new LinearLayout.LayoutParams(-1, -2));
+        col.addView(gap(16));
+
         // Heti aktivitás (7 pont – mely napokon edzettél ezen a héten)
         weekBox = vbox();
         col.addView(weekBox, new LinearLayout.LayoutParams(-1, -2));
@@ -617,6 +631,65 @@ public class MainActivity extends Activity {
         bg.setStroke(dp(1), GLASS_LINE);
         c.setBackground(bg);
         return c;
+    }
+
+    // ---- Kabalafigura: Blaze, a tűzfarkas ----
+
+    /** Blaze kártyája a kezdőképernyő tetején: avatar + beszédbuborék, koppintásra biztat. */
+    View mascotCard() {
+        JSONArray arr = activityLog();
+        long dayStart = dayStartMs();
+        boolean today = false;
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null && o.optLong("ts") >= dayStart) { today = true; break; }
+        }
+        int ds = dayStreak(arr), ws = weekStreak(arr);
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        boolean risk = !today && ws >= 1 && hour >= 16;
+        String userName = prefs.getString("user_name", "");
+        String msg = Mascot.line(this, userName, arr.length(), today, ds, ws, risk, hour);
+        String moodE = Mascot.mood(today, ds, risk);
+
+        LinearLayout cardM = card();
+        cardM.setOrientation(LinearLayout.HORIZONTAL);
+        cardM.setGravity(Gravity.CENTER_VERTICAL);
+        cardM.setPadding(dp(14), dp(14), dp(16), dp(14));
+
+        // Avatar: tűz-gradiens korong + farkas + hangulat-emoji.
+        FrameLayout badge = new FrameLayout(this);
+        GradientDrawable bbg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
+        bbg.setShape(GradientDrawable.OVAL);
+        badge.setBackground(bbg);
+        badge.setElevation(dp(3));
+        TextView face = new TextView(this);
+        face.setText(Mascot.FACE);
+        face.setTextSize(30);
+        face.setGravity(Gravity.CENTER);
+        badge.addView(face, new FrameLayout.LayoutParams(-1, -1));
+        TextView moodTv = new TextView(this);
+        moodTv.setText(moodE);
+        moodTv.setTextSize(15);
+        FrameLayout.LayoutParams mlp = new FrameLayout.LayoutParams(-2, -2);
+        mlp.gravity = Gravity.BOTTOM | Gravity.END;
+        badge.addView(moodTv, mlp);
+        LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(dp(60), dp(60));
+        blp.rightMargin = dp(14);
+        cardM.addView(badge, blp);
+
+        LinearLayout txtCol = vbox();
+        txtCol.addView(text(Mascot.NAME + " 🔥", 12.5f, tAccent, true));
+        final TextView body = text(msg, 14, TXT, false);
+        body.setPadding(0, dp(3), 0, 0);
+        txtCol.addView(body);
+        cardM.addView(txtCol, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        cardM.setClickable(true);
+        cardM.setOnClickListener(v -> {
+            body.setText(Mascot.pep());
+            v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+        });
+        return cardM;
     }
 
     // ---- Funkció-csempék ----

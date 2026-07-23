@@ -1,0 +1,94 @@
+package com.edzo.idozito;
+
+import android.content.Context;
+
+/**
+ * „Blaze", a Grit tűzfarkas kabalafigurája. Duolingo-stílusú társ: állapotfüggő,
+ * lelkesítő üzeneteket ad a kezdőképernyőn és az értesítésekben. A karakter
+ * hangja: energikus, kicsit vad, de bátorító – falkaszellem + tűz.
+ */
+public final class Mascot {
+
+    private Mascot() {}
+
+    public static final String NAME = "Blaze";
+    public static final String FACE = "🐺";   // tűzfarkas (a 🔥-t a keret/üzenet adja)
+
+    /** Hangulat-emoji az avatar sarkába, az aktuális állapot szerint. */
+    public static String mood(boolean today, int dayStreak, boolean streakRisk) {
+        if (today && dayStreak >= 3) return "🔥";
+        if (today) return "😄";
+        if (streakRisk) return "😤";
+        return "🐺";
+    }
+
+    private static String who(String userName) {
+        return (userName == null || userName.trim().isEmpty()) ? "falkatárs" : userName.trim();
+    }
+
+    /** Fő buzdító sor Blaze hangján a kezdőképernyőre. */
+    public static String line(Context c, String userName, int totalWorkouts,
+                              boolean today, int dayStreak, int weekStreak,
+                              boolean streakRisk, int hour) {
+        String u = who(userName);
+        if (totalWorkouts == 0)
+            return "Szia, Blaze vagyok! 🐺🔥 Csináljuk meg az első edzésed – a falka veled van!";
+        if (today && dayStreak >= 3)
+            return dayStreak + " napos széria, " + u + "! 🔥 Égsz, mint a láng – ne állj meg!";
+        if (today)
+            return "Ma már letudtad, " + u + "! 💪 Büszke vagyok rád, falkatárs.";
+        if (streakRisk)
+            return "Vigyázz a szériádra, " + u + "! 🔥 Ne hagyd kihunyni a lángot – egy rövid kör is elég!";
+        if (hour >= 17)
+            return "Még nem mozogtál ma… 🐺 Gyújtsuk be a lángot egy gyors edzéssel! 🔥";
+        String[] day = {
+                "Készen állsz, " + u + "? 🐺 Egy kis GRIT, és kész az edzés!",
+                "A falka vár! 🔥 Csapjunk bele egy körbe.",
+                "Ma is legyőzzük a tegnapi éned! 💪🐺",
+        };
+        return day[(int) (System.currentTimeMillis() / 60000 % day.length)];
+    }
+
+    /** Koppintásra cserélődő rövid biztatások. */
+    private static final String[] PEP = {
+            "Nincs kifogás, csak GRIT! 🔥",
+            "Egy lépés ma többet ér, mint egy terv holnap. 🐺",
+            "A fájdalom elmúlik, a büszkeség marad. 💪",
+            "Lassú haladás is haladás – ne állj meg! 🔥",
+            "A falka együtt erős. Hajrá! 🐺",
+            "Te irányítasz, nem a lustaság. 💪🔥",
+            "Morogj rá a lustaságra – aztán mozdulj! 🐺🔥",
+    };
+
+    public static String pep() {
+        return PEP[(int) (Math.random() * PEP.length)];
+    }
+
+    /** Belépéskori üdvözlés + motiváció Blaze hangján (napszakhoz igazodva). */
+    public static String greeting(String userName, int hour) {
+        String u = who(userName);
+        String hi = hour < 10 ? "Jó reggelt" : hour < 18 ? "Szia" : "Jó estét";
+        String[] motiv = {
+                "ma is legyőzzük a tegnapi éned! 💪🔥",
+                "a falka veled van – csináljuk! 🐺",
+                "egy kis GRIT, és kész a mai edzés! 🔥",
+                "ne feledd: a kitartás legyőz mindent! 💪",
+                "gyújtsuk be a napot egy jó edzéssel! 🔥🐺",
+        };
+        String m = motiv[(int) (Math.random() * motiv.length)];
+        return hi + ", " + u + "! 🐺🔥 Blaze vagyok – " + m;
+    }
+
+    /** Értesítés-szöveg Blaze hangján (proaktív emlékeztetőhöz). */
+    public static String nudge(String userName, boolean streakRisk, int dayStreak) {
+        String u = who(userName);
+        if (streakRisk && dayStreak >= 1)
+            return "Ne hagyd kihunyni a " + dayStreak + " napos lángod, " + u + "! 🔥 Egy rövid edzés is számít.";
+        String[] n = {
+                "Hé, " + u + "! 🐺 A falka téged vár – gyújtsuk be a mai edzést! 🔥",
+                "Blaze itt! 🔥 Ideje egy kis GRIT-nek. Menni fog!",
+                "Mozdulj meg ma, " + u + "! 💪 Egy gyors kör, és büszke leszel magadra. 🐺",
+        };
+        return n[(int) (System.currentTimeMillis() / 60000 % n.length)];
+    }
+}

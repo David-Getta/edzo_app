@@ -20,7 +20,7 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent intent) {
         String text = intent.getStringExtra("text");
         int id = intent.getIntExtra("id", 1);
-        if (text == null || text.trim().isEmpty()) text = defaultMessage();
+        if (text == null || text.trim().isEmpty()) text = defaultMessage(c);
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
@@ -40,7 +40,8 @@ public class ReminderReceiver extends BroadcastReceiver {
         Notification.Builder b = Build.VERSION.SDK_INT >= 26
                 ? new Notification.Builder(c, CHANNEL)
                 : new Notification.Builder(c);
-        b.setContentTitle("Grit")
+        // Az értesítést Blaze, a kabalafigura „mondja".
+        b.setContentTitle("Blaze 🐺🔥")
                 .setContentText(text)
                 .setStyle(new Notification.BigTextStyle().bigText(text))
                 .setSmallIcon(android.R.drawable.ic_popup_reminder)
@@ -49,17 +50,10 @@ public class ReminderReceiver extends BroadcastReceiver {
         nm.notify(20000 + id, b.build());
     }
 
-    /** Váltakozó, motiváló alapüzenet, ha az emlékeztetőhöz nincs saját szöveg. */
-    private static String defaultMessage() {
-        String[] msgs = {
-            "Ideje mozogni! 💪",
-            "Egy rövid edzés is számít – rajta! 🔥",
-            "A jövőbeli éned megköszöni ezt az edzést. 🙌",
-            "Tartsd a sorozatod – edzés ideje! 🏃",
-            "Csak 10 perc, és máris jobban leszel. ✨",
-            "Mozdulj meg, tornáztasd meg a tested! 🧘",
-            "A legjobb idő az edzésre: most. ⏱️"
-        };
-        return msgs[(int) (System.currentTimeMillis() / 60000 % msgs.length)];
+    /** Ha az emlékeztetőhöz nincs saját szöveg, Blaze hangján szól a nudge. */
+    private static String defaultMessage(Context c) {
+        String userName = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                .getString("user_name", "");
+        return Mascot.nudge(userName, false, 0);
     }
 }
