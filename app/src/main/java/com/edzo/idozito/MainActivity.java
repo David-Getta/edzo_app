@@ -1034,7 +1034,7 @@ public class MainActivity extends Activity {
         else if (rounds > 0) stat += "   ·   🔁 " + rounds + " kör";
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("MM.dd  HH:mm", new java.util.Locale("hu"));
 
-        TextView head = text("Legutóbbi edzés", 13, MUTED, true);
+        TextView head = text("🕘 Legutóbbi edzés", 13, 0xFF5FD0FF, true);
         head.setPadding(dp(2), dp(4), 0, dp(8));
         recentBox.addView(head);
 
@@ -1087,7 +1087,7 @@ public class MainActivity extends Activity {
 
         LinearLayout c = card();
         c.setPadding(dp(14), dp(14), dp(14), dp(14));
-        TextView head = text("Heti aktivitás  ·  " + trained + "/7 nap", 13, MUTED, true);
+        TextView head = text("📅 Heti aktivitás  ·  " + trained + "/7 nap", 13, 0xFF7FE1A6, true);
         head.setPadding(dp(2), 0, 0, dp(10));
         c.addView(head);
         LinearLayout row = hbox();
@@ -1135,7 +1135,7 @@ public class MainActivity extends Activity {
         }
         int bestStreak = bestWeekStreak(arr);
 
-        TextView head = text("Személyes rekordok", 13, MUTED, true);
+        TextView head = text("🏆 Személyes rekordok", 13, 0xFFFFD166, true);
         head.setPadding(dp(2), dp(4), 0, dp(8));
         recordsBox.addView(head);
 
@@ -1181,7 +1181,7 @@ public class MainActivity extends Activity {
         badgesBox.removeAllViews();
         java.util.HashSet<String> got = currentBadges();
 
-        TextView head = text("Kitüntetések  ·  " + got.size() + "/" + Badges.ALL.length, 13, MUTED, true);
+        TextView head = text("🎖 Kitüntetések  ·  " + got.size() + "/" + Badges.ALL.length, 13, 0xFFB98CFF, true);
         head.setPadding(dp(2), dp(4), 0, dp(8));
         badgesBox.addView(head);
 
