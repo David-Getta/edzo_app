@@ -517,6 +517,8 @@ public class MainActivity extends Activity {
         FrameLayout.LayoutParams tlp = new FrameLayout.LayoutParams(-2, -2);
         tlp.gravity = Gravity.CENTER_VERTICAL;
         banner.addView(btitles, tlp);
+        // A fejlécre koppintva személyre szabható a megszólítás (neved).
+        btitles.setOnClickListener(v -> editNameDialog());
         return banner;
     }
 
@@ -853,6 +855,28 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    // A fejléc megszólításának személyre szabása (üres = napszak szerinti alap).
+    void editNameDialog() {
+        final EditText et = sheetInput("A neved (pl. Dávid)", false);
+        et.setText(prefs.getString("user_name", ""));
+        et.setSelectAllOnFocus(true);
+        LinearLayout box = vbox();
+        box.setPadding(dp(6), dp(2), dp(6), dp(4));
+        box.addView(et);
+        new Sheet(this, "Megszólítás", "Így köszönt majd az app a kezdőképernyőn.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    prefs.edit().putString("user_name", et.getText().toString().trim()).apply();
+                    if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+                })
+                .addNeutral("Törlés", () -> {
+                    prefs.edit().remove("user_name").apply();
+                    if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+                })
+                .addCancel()
+                .show();
+    }
+
     // ---- Heti cél ----
 
     static final String[] GOAL_UNITS = {"edzés", "perc", "km"};
@@ -1028,7 +1052,9 @@ public class MainActivity extends Activity {
     // Személyre szabott, napszakhoz és sorozathoz igazodó üdvözlő felirat a fejlécben.
     String bannerSubtitle() {
         int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
-        String greet = hour < 10 ? "Jó reggelt!" : hour < 18 ? "Szia!" : "Jó estét!";
+        String base = hour < 10 ? "Jó reggelt" : hour < 18 ? "Szia" : "Jó estét";
+        String nm = prefs.getString("user_name", "").trim();
+        String greet = nm.isEmpty() ? base + "!" : base + ", " + nm + "!";
         JSONArray arr = activityLog();   // időzítős edzések + erősítő bejegyzések együtt
         if (arr.length() == 0) return greet + " Kezdd el az első edzésed 💪";
         long dayStart = dayStartMs();
