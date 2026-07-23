@@ -31,8 +31,7 @@ import java.util.Locale;
  */
 public class ProfileActivity extends Activity {
 
-    static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
-    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
+    static int BG, CARD, CARD2, TXT, MUTED, LINE;
     static final int ACCENT = MainActivity.ACCENT, INDIGO = MainActivity.INDIGO, VIOLET = MainActivity.VIOLET;
     static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFF22E0FF, FAT_C = 0xFFF59E0B;
 
@@ -48,6 +47,7 @@ public class ProfileActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); BG=MainActivity.BG; CARD=MainActivity.CARD; CARD2=MainActivity.CARD2; TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; LINE=MainActivity.LINE;
         ScrollView sv = new ScrollView(this);
         sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
@@ -445,9 +445,9 @@ public class ProfileActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE6121A33);
+        bg.setColor(MainActivity.GLASS);
         bg.setCornerRadius(dp(20));
-        bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setStroke(dp(1), MainActivity.GLASS_LINE);
         c.setBackground(bg);
         return c;
     }

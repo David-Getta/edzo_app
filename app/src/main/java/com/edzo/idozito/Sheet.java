@@ -36,6 +36,7 @@ public final class Sheet {
     private final LinearLayout footer;
     private final List<TextView> checks = new ArrayList<>();
     private final int accent, accent2;
+    private final boolean lm;   // világos mód
 
     public Sheet(Activity act, String title) {
         this(act, title, null);
@@ -46,6 +47,7 @@ public final class Sheet {
         this.d = act.getResources().getDisplayMetrics().density;
         this.accent = Theme.accent(act);
         this.accent2 = Theme.accent2(act);
+        this.lm = Theme.light(act);
 
         dialog = new Dialog(act);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -54,17 +56,17 @@ public final class Sheet {
         panel = new LinearLayout(act);
         panel.setOrientation(LinearLayout.VERTICAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xF3161C2E);
+        bg.setColor(lm ? 0xFFFFFFFF : 0xF3161C2E);
         float r = dp(30);
         bg.setCornerRadii(new float[]{r, r, r, r, 0, 0, 0, 0});
-        bg.setStroke(dp(1), 0x24FFFFFF);
+        bg.setStroke(dp(1), lm ? 0x14000000 : 0x24FFFFFF);
         panel.setBackground(bg);
         panel.setPadding(dp(12), dp(10), dp(12), dp(16));
 
         // Fogantyú
         View grab = new View(act);
         GradientDrawable gd = new GradientDrawable();
-        gd.setColor(0x59FFFFFF);
+        gd.setColor(lm ? 0x33000000 : 0x59FFFFFF);
         gd.setCornerRadius(dp(3));
         LinearLayout.LayoutParams glp = new LinearLayout.LayoutParams(dp(42), dp(5));
         glp.gravity = Gravity.CENTER_HORIZONTAL;
@@ -75,7 +77,7 @@ public final class Sheet {
         if (title != null) {
             TextView t = new TextView(act);
             t.setText(title);
-            t.setTextColor(0xFFEAF6FF);
+            t.setTextColor(lm ? 0xFF16203A : 0xFFEAF6FF);
             t.setTextSize(19);
             t.setTypeface(null, Typeface.BOLD);
             t.setGravity(Gravity.CENTER);
@@ -85,7 +87,7 @@ public final class Sheet {
         if (subtitle != null) {
             TextView s = new TextView(act);
             s.setText(subtitle);
-            s.setTextColor(0xFF8AA0C4);
+            s.setTextColor(lm ? 0xFF5C6B86 : 0xFF8AA0C4);
             s.setTextSize(13);
             s.setGravity(Gravity.CENTER);
             s.setPadding(dp(8), 0, dp(8), dp(12));
@@ -127,9 +129,9 @@ public final class Sheet {
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(dp(10), dp(11), dp(14), dp(11));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x14FFFFFF);
+        bg.setColor(lm ? 0x0A000000 : 0x14FFFFFF);
         bg.setCornerRadius(dp(17));
-        bg.setStroke(dp(1), 0x1FFFFFFF);
+        bg.setStroke(dp(1), lm ? 0x14000000 : 0x1FFFFFFF);
         row.setBackground(bg);
         row.setClickable(true);
 
@@ -151,14 +153,14 @@ public final class Sheet {
         mid.setOrientation(LinearLayout.VERTICAL);
         TextView t = new TextView(a);
         t.setText(title);
-        t.setTextColor(0xFFEAF6FF);
+        t.setTextColor(lm ? 0xFF16203A : 0xFFEAF6FF);
         t.setTextSize(16);
         t.setTypeface(null, Typeface.BOLD);
         mid.addView(t);
         if (sub != null) {
             TextView s = new TextView(a);
             s.setText(sub);
-            s.setTextColor(0xFF8AA0C4);
+            s.setTextColor(lm ? 0xFF5C6B86 : 0xFF8AA0C4);
             s.setTextSize(12.5f);
             mid.addView(s);
         }
@@ -239,9 +241,9 @@ public final class Sheet {
     }
 
     public Sheet addPrimary(String title, OnTap tap) { addButton(title, 0, 0xFFFFFFFF, true, true, tap); return this; }
-    public Sheet addNeutral(String title, OnTap tap) { addButton(title, 0x22FFFFFF, 0xFFEAF6FF, false, true, tap); return this; }
-    public Sheet addDestructive(String title, OnTap tap) { addButton(title, 0x33FF453A, 0xFFFF6B6B, false, true, tap); return this; }
-    public Sheet addCancel() { addButton("Mégse", 0x14FFFFFF, 0xFF8AA0C4, false, true, null); return this; }
+    public Sheet addNeutral(String title, OnTap tap) { addButton(title, lm ? 0x12000000 : 0x22FFFFFF, lm ? 0xFF16203A : 0xFFEAF6FF, false, true, tap); return this; }
+    public Sheet addDestructive(String title, OnTap tap) { addButton(title, lm ? 0x1AFF453A : 0x33FF453A, 0xFFE23B3B, false, true, tap); return this; }
+    public Sheet addCancel() { addButton("Mégse", lm ? 0x0A000000 : 0x14FFFFFF, lm ? 0xFF5C6B86 : 0xFF8AA0C4, false, true, null); return this; }
 
     // ---- Megjelenítés ----
 

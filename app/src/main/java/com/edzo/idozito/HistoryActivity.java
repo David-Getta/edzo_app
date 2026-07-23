@@ -26,8 +26,7 @@ import java.util.Locale;
  */
 public class HistoryActivity extends Activity {
 
-    static final int BG = MainActivity.BG, TXT = MainActivity.TXT, MUTED = MainActivity.MUTED,
-            LINE = MainActivity.LINE, GLASS = MainActivity.GLASS, GLASS_LINE = MainActivity.GLASS_LINE;
+    static int BG, TXT, MUTED, LINE, GLASS, GLASS_LINE;
     static final int RUN_C = 0xFF22E0FF, GYM_C = 0xFFFF3DDB; // futás = cián / erő = magenta
 
     int accent, accent2;
@@ -43,6 +42,7 @@ public class HistoryActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); BG=MainActivity.BG; TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; LINE=MainActivity.LINE; GLASS=MainActivity.GLASS; GLASS_LINE=MainActivity.GLASS_LINE;
         accent = Theme.accent(this);
         accent2 = Theme.accent2(this);
         pace = Theme.paceMode(this);
@@ -87,7 +87,11 @@ public class HistoryActivity extends Activity {
 
         sv.addView(col, new FrameLayout.LayoutParams(-1, -2));
         root.addView(sv);
-        setContentView(root);
+        LinearLayout navStack = new LinearLayout(this);
+        navStack.setOrientation(LinearLayout.VERTICAL);
+        navStack.addView(root, new LinearLayout.LayoutParams(-1, 0, 1f));
+        navStack.addView(Ux.bottomNav(this, -1), new LinearLayout.LayoutParams(-1, -2));
+        setContentView(navStack);
         col.post(() -> Ux.enterChildren(col, 30, 55)); // beúszó kártyák
     }
 
@@ -367,6 +371,13 @@ public class HistoryActivity extends Activity {
     // ---- Háttér ----
 
     void addBg(FrameLayout host) {
+        if (Theme.light(this)) {
+            View g = new View(this);
+            g.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0xFFEDF1F8, 0xFFF3F5FA}));
+            host.addView(g, new FrameLayout.LayoutParams(-1, -1));
+            return;
+        }
         int id = getResources().getIdentifier("bg_history", "drawable", getPackageName());
         if (id == 0) id = getResources().getIdentifier("bg_main", "drawable", getPackageName());
         if (id == 0) return;

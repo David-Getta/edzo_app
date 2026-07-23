@@ -28,8 +28,7 @@ import java.util.Locale;
  */
 public class SettingsActivity extends Activity {
 
-    static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
-    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
+    static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     TextView volLabel;
     static final int REQ_IMPORT = 4201;
@@ -37,6 +36,7 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); BG=MainActivity.BG; CARD=MainActivity.CARD; CARD2=MainActivity.CARD2; TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; LINE=MainActivity.LINE;
         ScrollView sv = new ScrollView(this);
         sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
@@ -48,13 +48,11 @@ public class SettingsActivity extends Activity {
         col.addView(text("Szabd testre a megjelenést és a hangokat.", 13, MUTED, false));
         col.addView(gap(20));
 
-        // --- Megjelenés: világos / sötét mód ---
-        LinearLayout appearance = card();
-        Switch lightSw = new Switch(this);
-        lightSw.setChecked(Theme.light(this));
-        appearance.addView(switchRow("🌗  Világos mód", lightSw));
-        lightSw.setOnCheckedChangeListener((btn, c) -> { Theme.setBool(this, "lightmode", c); recreate(); });
-        col.addView(appearance, lp());
+        // --- Megjelenés: koppintható mód-váltó (nem be/ki kapcsoló) ---
+        final boolean isLight = Theme.light(this);
+        Button modeBtn = ghost((isLight ? "☀️  Világos mód" : "🌙  Sötét mód") + "   ·   koppints a váltáshoz");
+        modeBtn.setOnClickListener(v -> { Theme.setBool(this, "lightmode", !Theme.light(this)); recreate(); });
+        col.addView(modeBtn);
         col.addView(gap(18));
 
         // --- Színek ---
@@ -213,7 +211,7 @@ public class SettingsActivity extends Activity {
         col.addView(verLabel);
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffoldNav(this, sv, "bg_settings", -1));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_settings", 4));
         col.post(() -> Ux.enterChildren(col, 30, 45));
     }
 
@@ -431,9 +429,9 @@ public class SettingsActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE6121A33);
+        bg.setColor(MainActivity.GLASS);
         bg.setCornerRadius(dp(20));
-        bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setStroke(dp(1), MainActivity.GLASS_LINE);
         c.setBackground(bg);
         return c;
     }

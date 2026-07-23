@@ -21,9 +21,7 @@ import android.widget.Toast;
  */
 public class MobilityActivity extends Activity {
 
-    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED,
-            GLASS = MainActivity.GLASS, GLASS_LINE = MainActivity.GLASS_LINE,
-            LINE = MainActivity.LINE, CARD2 = MainActivity.CARD2;
+    static int TXT, MUTED, GLASS, GLASS_LINE, LINE, CARD2;
 
     int accent;
     int section = 0; // 0 bemelegítés, 1 nyújtás, 2 hengerezés
@@ -33,6 +31,7 @@ public class MobilityActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; GLASS=MainActivity.GLASS; GLASS_LINE=MainActivity.GLASS_LINE; LINE=MainActivity.LINE; CARD2=MainActivity.CARD2;
         accent = Theme.accent(this);
 
         ScrollView sv = new ScrollView(this);

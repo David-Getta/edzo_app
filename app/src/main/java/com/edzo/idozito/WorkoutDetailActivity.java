@@ -34,12 +34,12 @@ import java.util.Locale;
  */
 public class WorkoutDetailActivity extends Activity {
 
-    static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
-    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
+    static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); BG=MainActivity.BG; CARD=MainActivity.CARD; CARD2=MainActivity.CARD2; TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; LINE=MainActivity.LINE;
         long ts = getIntent().getLongExtra("ts", 0);
         JSONObject e = findEntry(ts);
         JSONArray track = SessionStore.loadTrack(this, ts);
@@ -591,7 +591,7 @@ public class WorkoutDetailActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE6121A33); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setColor(MainActivity.GLASS); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), MainActivity.GLASS_LINE);
         c.setBackground(bg);
         return c;
     }

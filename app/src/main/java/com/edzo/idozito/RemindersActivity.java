@@ -25,8 +25,7 @@ import java.util.Locale;
  */
 public class RemindersActivity extends Activity {
 
-    static final int BG = MainActivity.BG, CARD = MainActivity.CARD, CARD2 = MainActivity.CARD2;
-    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED, LINE = MainActivity.LINE;
+    static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     static final String[] SUGGESTIONS = {
             "Ideje edzeni! 💪",
@@ -42,6 +41,7 @@ public class RemindersActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); BG=MainActivity.BG; CARD=MainActivity.CARD; CARD2=MainActivity.CARD2; TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; LINE=MainActivity.LINE;
         ScrollView sv = new ScrollView(this);
         sv.setVerticalScrollBarEnabled(false);
         sv.setFillViewport(true);
@@ -185,9 +185,9 @@ public class RemindersActivity extends Activity {
     LinearLayout card() {
         LinearLayout c = vbox();
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE6121A33);
+        bg.setColor(MainActivity.GLASS);
         bg.setCornerRadius(dp(16));
-        bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setStroke(dp(1), MainActivity.GLASS_LINE);
         c.setBackground(bg);
         return c;
     }

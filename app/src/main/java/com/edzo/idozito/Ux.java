@@ -109,6 +109,14 @@ public final class Ux {
 
     /** A háttérkép + fátyol hozzáadása egy gyökér FrameLayouthoz. */
     static void addBg(Activity a, FrameLayout root, String primaryName) {
+        if (Theme.light(a)) {
+            // Világos módban tiszta világos alap (nincs sötét fotó-háttér).
+            View g = new View(a);
+            g.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0xFFEDF1F8, 0xFFF3F5FA}));
+            root.addView(g, new FrameLayout.LayoutParams(-1, -1));
+            return;
+        }
         int id = drawableId(a, primaryName);
         if (id == 0) id = drawableId(a, "bg_main");
         if (id == 0) return;
@@ -132,17 +140,18 @@ public final class Ux {
      */
     public static LinearLayout bottomNav(final Activity a, final int active) {
         final float d = a.getResources().getDisplayMetrics().density;
+        boolean lm = Theme.light(a);
         LinearLayout bar = new LinearLayout(a);
         bar.setOrientation(LinearLayout.HORIZONTAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xF20A0F1E);
-        bg.setStroke((int) (1 * d), 0x22FFFFFF);
+        bg.setColor(lm ? 0xFFFFFFFF : 0xF20A0F1E);
+        bg.setStroke((int) (1 * d), lm ? 0x14000000 : 0x22FFFFFF);
         bar.setBackground(bg);
 
-        final String[] emo = {"🏠", "📈", "🏋️", "👤"};
-        final String[] lbl = {"Kezdő", "Statok", "Erő", "Profil"};
+        final String[] emo = {"🏠", "📈", "🏋️", "👤", "⚙️"};
+        final String[] lbl = {"Kezdő", "Statok", "Erő", "Profil", "Beáll."};
         final Class<?>[] target = {MainActivity.class, StatsActivity.class,
-                StrengthActivity.class, ProfileActivity.class};
+                StrengthActivity.class, ProfileActivity.class, SettingsActivity.class};
         int accent = Theme.accent(a);
 
         for (int i = 0; i < emo.length; i++) {

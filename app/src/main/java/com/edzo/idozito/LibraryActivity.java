@@ -16,12 +16,12 @@ import android.widget.TextView;
  */
 public class LibraryActivity extends Activity {
 
-    static final int TXT = MainActivity.TXT, MUTED = MainActivity.MUTED,
-            GLASS = MainActivity.GLASS, GLASS_LINE = MainActivity.GLASS_LINE, LINE = MainActivity.LINE;
+    static int TXT, MUTED, GLASS, GLASS_LINE, LINE;
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        MainActivity.applyPalette(this); TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; GLASS=MainActivity.GLASS; GLASS_LINE=MainActivity.GLASS_LINE; LINE=MainActivity.LINE;
         int accent = Theme.accent(this);
 
         ScrollView sv = new ScrollView(this);
