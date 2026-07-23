@@ -64,7 +64,7 @@ public class MobilityActivity extends Activity {
         col.addView(body, lp());
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_mobility"));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_mobility", -1));
         render();
     }
 

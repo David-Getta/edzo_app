@@ -76,7 +76,7 @@ public class RemindersActivity extends Activity {
         col.addView(listBox, lp());
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_reminders"));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_reminders", -1));
         col.post(() -> Ux.enterChildren(col, 30, 45));
         refresh();
     }

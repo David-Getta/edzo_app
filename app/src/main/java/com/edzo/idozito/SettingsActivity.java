@@ -194,7 +194,7 @@ public class SettingsActivity extends Activity {
         col.addView(verLabel);
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_settings"));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_settings", -1));
         col.post(() -> Ux.enterChildren(col, 30, 45));
     }
 
