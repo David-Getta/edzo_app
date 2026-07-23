@@ -71,6 +71,11 @@ public class StrengthActivity extends Activity {
         Button plate = ghost("🧮  Súlytárcsa-kalkulátor");
         plate.setOnClickListener(v -> openPlateCalc());
         col.addView(plate);
+        col.addView(gap(10));
+
+        Button orm = ghost("📈  1RM & százalék kalkulátor");
+        orm.setOnClickListener(v -> openOneRmCalc());
+        col.addView(orm);
         col.addView(gap(16));
 
         summaryBox = vbox();
@@ -456,6 +461,48 @@ public class StrengthActivity extends Activity {
         String res = "Oldalanként:\n" + plan;
         if (rem > 0.01) res += "\n(≈ nem jön ki pontosan, marad " + fmtKg(rem) + " kg/oldal)";
         return res;
+    }
+
+    // ---------- 1RM & százalék kalkulátor ----------
+
+    void openOneRmCalc() {
+        LinearLayout box = vbox();
+        box.setPadding(dp(10), dp(4), dp(10), 0);
+
+        box.addView(text("Felemelt súly (kg)", 12.5f, MUTED, false));
+        final EditText w = numEt("pl. 80");
+        w.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        box.addView(w, lp());
+        box.addView(gap(8));
+
+        box.addView(text("Ismétlésszám", 12.5f, MUTED, false));
+        final EditText r = numEt("pl. 5");
+        r.setInputType(InputType.TYPE_CLASS_NUMBER);
+        box.addView(r, lp());
+        box.addView(gap(12));
+
+        final TextView result = text("", 14, TXT, false);
+        result.setPadding(dp(6), dp(8), dp(6), dp(4));
+
+        Button calc = primary("Számol");
+        calc.setOnClickListener(v -> result.setText(
+                oneRmPlan(parseDouble(w.getText().toString()), parseInt(r.getText().toString()))));
+        box.addView(calc);
+        box.addView(result);
+
+        new Sheet(this, "1RM & százalék", "Becsült max és edzéssúlyok")
+                .addCustom(box).addNeutral("Bezár", () -> {}).show();
+    }
+
+    /** Epley-becslés + a leggyakoribb edzés-százalékok táblázata. */
+    String oneRmPlan(double w, int reps) {
+        if (w <= 0 || reps <= 0) return "Adj meg súlyt és ismétlést.";
+        double orm = w * (1 + reps / 30.0);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Becsült 1RM:  ").append(fmtKg(orm)).append(" kg\n\n");
+        int[] pct = {95, 90, 85, 80, 75, 70, 65, 60};
+        for (int p : pct) sb.append(p).append("%   =   ").append(fmtKg(orm * p / 100.0)).append(" kg\n");
+        return sb.toString().trim();
     }
 
     // ---------- Pihenő-időzítő ----------
