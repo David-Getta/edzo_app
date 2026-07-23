@@ -1789,24 +1789,36 @@ public class MainActivity extends Activity {
     }
 
     LinearLayout stepperRow(String title, String sub, final int key, final int min, final int max) {
+        final int accent = stepColor(key);
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(18), dp(17), dp(18), dp(17));
+        row.setPadding(dp(12), dp(15), dp(16), dp(15));
+
+        // Fázis-szín sáv balra: minden sort jól elkülönít egymástól.
+        View barV = new View(this);
+        GradientDrawable barBg = new GradientDrawable();
+        barBg.setColor(accent);
+        barBg.setCornerRadius(dp(3));
+        LinearLayout.LayoutParams barLp = new LinearLayout.LayoutParams(dp(4), dp(38));
+        barLp.rightMargin = dp(12);
+        barV.setLayoutParams(barLp);
+        barV.setBackground(barBg);
+        row.addView(barV);
 
         LinearLayout labels = vbox();
-        TextView titleTv = text(title, 15.5f, TXT, true);
+        TextView titleTv = text(stepEmoji(key) + "  " + title, 15.5f, TXT, true);
         TextView subTv = text(sub, 12, MUTED, false);
         labels.addView(titleTv);
         labels.addView(subTv);
         if (key == WORK_K) { workRowTitle = titleTv; workRowSub = subTv; }
         row.addView(labels, new LinearLayout.LayoutParams(0, -2, 1f));
 
-        Button minus = stepButton("−");
+        Button minus = stepButton("−", 0);           // semleges
         LinearLayout valCol = vbox();
         valCol.setGravity(Gravity.CENTER_HORIZONTAL);
-        TextView val = text("0", 22, TXT, true);
+        TextView val = text("0", 22, accent, true);  // a fázis színében
         val.setGravity(Gravity.CENTER);
-        val.setMinWidth(dp(56));
+        val.setMinWidth(dp(52));
         val.setPadding(dp(4), dp(2), dp(4), dp(2));
         val.setOnClickListener(v -> showNumberDialog(key, min, max,
                 title + (key == ROUND_K ? " (kör)" : " (mp)")));
@@ -1815,11 +1827,11 @@ public class MainActivity extends Activity {
         unit.setGravity(Gravity.CENTER);
         valCol.addView(val);
         valCol.addView(unit);
-        Button plus = stepButton("+");
+        Button plus = stepButton("+", accent);        // a fázis színében kiemelve
 
         LinearLayout.LayoutParams valLp = new LinearLayout.LayoutParams(-2, -2);
-        valLp.leftMargin = dp(10);
-        valLp.rightMargin = dp(10);
+        valLp.leftMargin = dp(8);
+        valLp.rightMargin = dp(8);
 
         attachStepper(minus, key, -1, min, max);
         attachStepper(plus, key, 1, min, max);
@@ -1831,19 +1843,51 @@ public class MainActivity extends Activity {
         return row;
     }
 
-    Button stepButton(String label) {
+    /** Fázisonként eltérő szín, hogy a beállító-sorok jól elkülönüljenek. */
+    int stepColor(int key) {
+        switch (key) {
+            case WARM_K:  return 0xFFFFA24B;   // narancs – bemelegítés
+            case PREP_K:  return 0xFFFFD166;   // sárga – előkészület
+            case WORK_K:  return tWork;        // munka szín
+            case REST_K:  return tRest;        // pihenő szín
+            case ROUND_K: return tAccent;      // akcent – körök
+            case COOL_K:  return 0xFF5FD0FF;   // világoskék – levezetés
+            default:      return TXT;
+        }
+    }
+
+    String stepEmoji(int key) {
+        switch (key) {
+            case WARM_K:  return "🔥";
+            case PREP_K:  return "⏳";
+            case WORK_K:  return "🏃";
+            case REST_K:  return "💤";
+            case ROUND_K: return "🔁";
+            case COOL_K:  return "🧘";
+            default:      return "";
+        }
+    }
+
+    Button stepButton(String label, int tint) {
         Button b = new Button(this);
         b.setText(label);
-        b.setTextColor(TXT);
         b.setTextSize(22);
         b.setTypeface(null, Typeface.BOLD);
         b.setAllCaps(false);
         b.setPadding(0, 0, 0, 0);
         b.setStateListAnimator(null);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(CARD2);
         bg.setCornerRadius(dp(12));
-        bg.setStroke(dp(1), LINE);
+        if (tint != 0) {
+            // „+” gomb a fázis színében kiemelve (ez a fő művelet).
+            bg.setColor((tint & 0x00FFFFFF) | 0x2E000000);
+            bg.setStroke(dp(1), (tint & 0x00FFFFFF) | 0x77000000);
+            b.setTextColor(tint);
+        } else {
+            bg.setColor(CARD2);
+            bg.setStroke(dp(1), LINE);
+            b.setTextColor(TXT);
+        }
         b.setBackground(bg);
         b.setLayoutParams(new LinearLayout.LayoutParams(dp(44), dp(44)));
         return b;
