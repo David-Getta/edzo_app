@@ -408,7 +408,12 @@ public class MainActivity extends Activity {
         totalText.setPadding(0, dp(4), 0, dp(18));
         col.addView(totalText, new LinearLayout.LayoutParams(-1, -2));
 
+        // A fő művelet: nagyobb, magasabb, kiemelt „Indítás" gomb – könnyen elérhető.
         Button start = primaryButton("▶  Indítás");
+        start.setTextSize(21);
+        start.setPadding(dp(18), dp(22), dp(18), dp(22));
+        start.setLetterSpacing(0.03f);
+        try { start.setElevation(dp(6)); } catch (Exception ignored) {}
         start.setOnClickListener(v -> startWorkout());
         col.addView(start);
         pulse(start); // finom, figyelemfelhívó lüktetés a fő indítás gombon
