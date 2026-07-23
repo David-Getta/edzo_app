@@ -16,6 +16,7 @@ public class BootReceiver extends BroadcastReceiver {
                 || "android.intent.action.QUICKBOOT_POWERON".equals(a)) {
             Reminders.scheduleAll(c);
             WeeklyReceiver.schedule(c);
+            DailyNudgeReceiver.schedule(c);
         }
     }
 }

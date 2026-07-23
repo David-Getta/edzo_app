@@ -146,6 +146,14 @@ public class SettingsActivity extends Activity {
             WeeklyReceiver.schedule(this);
         });
         notif.addView(divider());
+        Switch blaze = new Switch(this);
+        blaze.setChecked(Theme.blazeNudge(this));
+        notif.addView(switchRow("🐺 Blaze napi biztatása", blaze));
+        blaze.setOnCheckedChangeListener((btn, c) -> {
+            Theme.setBool(this, "blaze_nudge", c);
+            DailyNudgeReceiver.schedule(this);
+        });
+        notif.addView(divider());
         Switch live = new Switch(this);
         live.setChecked(Theme.liveBg(this));
         notif.addView(switchRow("Élő háttér-animáció", live));
