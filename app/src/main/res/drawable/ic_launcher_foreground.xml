@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Grit app-ikon előtér: fehér, kézjegy-szerű aláírás (sztár-autogram),
-     lendületes írott vonal + alá­húzás flourish + i-pont. -->
+<!-- Grit app-ikon előtér: Blaze, a tűzfarkas kabalafigura – vastag, geometrikus
+     fehér farkasfej (hegyes fülek, éles szemek, orr), a márka bordó hátterén. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- A név lendületes írott vonala. -->
-    <path
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="5.5"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="#00000000"
-        android:pathData="M22,58 C26,40 34,36 40,50 C44,60 40,64 46,56 C52,46 56,46 60,56 C63,62 62,64 68,56 C74,46 80,50 86,40" />
-    <!-- Alá­húzás flourish, felfelé kunkorodó véggel. -->
-    <path
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="5"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="#00000000"
-        android:pathData="M22,75 C36,84 62,85 80,74 C83,72 85,71 88,67" />
-    <!-- i-pont. -->
+    <!-- Fülek (fehér, hegyes háromszögek). -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M74,45 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0" />
+        android:pathData="M27,52 L37,22 L51,45 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M81,52 L71,22 L57,45 Z" />
+    <!-- Fej (fehér, lefelé keskenyedő ötszög – áll a csúcsa). -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,40 L77,40 L74,59 L54,85 L34,59 Z" />
+    <!-- Szemek (éles, sötét bordó háromszögek). -->
+    <path
+        android:fillColor="#3A0810"
+        android:pathData="M41,50 L55,52 L44,61 Z" />
+    <path
+        android:fillColor="#3A0810"
+        android:pathData="M67,50 L53,52 L64,61 Z" />
+    <!-- Orr (sötét bordó háromszög az áll fölött). -->
+    <path
+        android:fillColor="#3A0810"
+        android:pathData="M48,68 L60,68 L54,78 Z" />
 </vector>
