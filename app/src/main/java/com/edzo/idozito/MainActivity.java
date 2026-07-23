@@ -650,17 +650,27 @@ public class MainActivity extends Activity {
         TextView title = text("Saját sablonok", 13, MUTED, true);
         title.setPadding(dp(2), 0, 0, dp(8));
         templatesBox.addView(title);
+        final int[] tplColors = {0xFF5FD0FF, 0xFF7FE1A6, 0xFFFFA24B, 0xFFB98CFF, 0xFFFF7BA6, 0xFFFFD166};
         LinearLayout cardT = card();
         for (int i = 0; i < list.size(); i++) {
             final int idx = i;
             final Workouts.W w = list.get(i);
+            final int tc = tplColors[i % tplColors.length];
             LinearLayout row = hbox();
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(dp(16), dp(12), dp(8), dp(12));
+            row.setPadding(dp(12), dp(12), dp(8), dp(12));
             row.setClickable(true);
             row.setOnClickListener(v -> loadTemplate(w));
+            // Színes sáv balra – minden sablon jól elkülönül és látványosabb.
+            View tbar = new View(this);
+            GradientDrawable tbarBg = new GradientDrawable();
+            tbarBg.setColor(tc); tbarBg.setCornerRadius(dp(3));
+            LinearLayout.LayoutParams tbarLp = new LinearLayout.LayoutParams(dp(4), dp(34));
+            tbarLp.rightMargin = dp(12);
+            tbar.setLayoutParams(tbarLp); tbar.setBackground(tbarBg);
+            row.addView(tbar);
             LinearLayout left = vbox();
-            left.addView(text(w.name, 15.5f, TXT, true));
+            left.addView(text(w.name, 15.5f, tc, true));
             left.addView(text(w.work + "/" + w.rest + " mp · " + w.rounds + "× · előkész. " + w.prep + " mp", 12, MUTED, false));
             row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
             Button del = new Button(this);
