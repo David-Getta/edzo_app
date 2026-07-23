@@ -52,12 +52,27 @@ import java.util.Locale;
 public class MainActivity extends Activity {
 
     // Színek
-    static final int BG = 0xFF070912, CARD = 0xFF121A33, CARD2 = 0xFF19224A;
-    static final int TXT = 0xFFEAF6FF, MUTED = 0xFF8AA0C4, LINE = 0xFF25335C, ACCENT = 0xFF22E0FF;
+    // A paletta futásidőben vált sötét ↔ világos között (lásd applyPalette()).
+    static int BG = 0xFF070912, CARD = 0xFF121A33, CARD2 = 0xFF19224A;
+    static int TXT = 0xFFEAF6FF, MUTED = 0xFF8AA0C4, LINE = 0xFF25335C;
+    static final int ACCENT = 0xFF22E0FF;
     static final int INDIGO = 0xFF22E0FF, VIOLET = 0xFFFF3DDB; // márka-gradiens: cián → magenta
     static final int WORK = 0xFF22E0FF, REST = 0xFF7A5CFF, PREP = 0xFFFFC24D, DONE = 0xFFFF3DDB;
     // Áttetsző „üveg" felületek – a generált háttérkép finoman átüt rajtuk
-    static final int GLASS = 0xE6121A33, GLASS2 = 0xD919224A, GLASS_LINE = 0x33FFFFFF;
+    static int GLASS = 0xE6121A33, GLASS2 = 0xD919224A, GLASS_LINE = 0x33FFFFFF;
+
+    /** A világos/sötét paletta beállítása. Minden képernyő ezt hívja az onCreate elején. */
+    static void applyPalette(Context c) {
+        if (Theme.light(c)) {
+            BG = 0xFFF3F5FA; CARD = 0xFFFFFFFF; CARD2 = 0xFFEAEEF6;
+            TXT = 0xFF16203A; MUTED = 0xFF5C6B86; LINE = 0xFFD7DEEC;
+            GLASS = 0xF7FFFFFF; GLASS2 = 0xF2FFFFFF; GLASS_LINE = 0x1F000000;
+        } else {
+            BG = 0xFF070912; CARD = 0xFF121A33; CARD2 = 0xFF19224A;
+            TXT = 0xFFEAF6FF; MUTED = 0xFF8AA0C4; LINE = 0xFF25335C;
+            GLASS = 0xE6121A33; GLASS2 = 0xD919224A; GLASS_LINE = 0x33FFFFFF;
+        }
+    }
 
     static final int PREP_K = 0, WORK_K = 1, REST_K = 2, ROUND_K = 3, WARM_K = 4, COOL_K = 5;
     final int[] cfg = new int[6];
@@ -127,6 +142,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        applyPalette(this);   // sötét/világos paletta a UI építése előtt
         prefs = getSharedPreferences("edzo", MODE_PRIVATE);
         tAccent = Theme.accent(this);
         tAccent2 = Theme.accent2(this);
@@ -222,6 +238,14 @@ public class MainActivity extends Activity {
 
     /** A Higgsfielddel generált háttérkép + sötét fátyol (a szöveg olvashatóságáért). */
     void addBackgroundImage(FrameLayout host) {
+        if (Theme.light(this)) {
+            // Világos módban nincs sötét fotó-háttér – tiszta, világos alap a jó kontraszthoz.
+            View g = new View(this);
+            g.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0xFFEDF1F8, 0xFFF3F5FA}));
+            host.addView(g, new FrameLayout.LayoutParams(-1, -1));
+            return;
+        }
         int id = drawableId(dailyHomeBg());
         if (id == 0) id = drawableId("bg_main");
         if (id == 0) return;
@@ -2094,7 +2118,7 @@ public class MainActivity extends Activity {
         // Az edzés-képernyő majdnem áttetsző sötét fátyol – a háttérkép finoman átdereng,
         // de a fókusz a körgyűrűn marad.
         GradientDrawable runBg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0xF2070912, 0xF7060912});
+                Theme.light(this) ? new int[]{0xFFF3F5FA, 0xFFEDF1F8} : new int[]{0xF2070912, 0xF7060912});
         runView.setBackground(runBg);
 
         // Teljes edzés-folyamat sáv (legfelül): hol tartunk az egész edzésben.

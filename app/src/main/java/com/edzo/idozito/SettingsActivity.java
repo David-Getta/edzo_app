@@ -48,6 +48,15 @@ public class SettingsActivity extends Activity {
         col.addView(text("Szabd testre a megjelenést és a hangokat.", 13, MUTED, false));
         col.addView(gap(20));
 
+        // --- Megjelenés: világos / sötét mód ---
+        LinearLayout appearance = card();
+        Switch lightSw = new Switch(this);
+        lightSw.setChecked(Theme.light(this));
+        appearance.addView(switchRow("🌗  Világos mód", lightSw));
+        lightSw.setOnCheckedChangeListener((btn, c) -> { Theme.setBool(this, "lightmode", c); recreate(); });
+        col.addView(appearance, lp());
+        col.addView(gap(18));
+
         // --- Színek ---
         LinearLayout colors = card();
         colors.addView(colorRow("Akcentszín", "c_accent", Theme.DEF_ACCENT));
