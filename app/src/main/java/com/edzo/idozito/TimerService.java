@@ -25,11 +25,13 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 
 import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * A háttérben futó időzítő. Foreground service + részleges wake lock, így akkor is
@@ -86,6 +88,7 @@ public class TimerService extends Service {
     // Beszéd (TTS)
     private TextToSpeech tts;
     private boolean ttsReady;
+    private boolean triedGoogleTts;   // a Google motor jóval jobb magyar hangot ad
 
     // Állapot
     private final ArrayList<Step> plan = new ArrayList<>();
@@ -147,18 +150,71 @@ public class TimerService extends Service {
     }
 
     private void initTts() {
+        // Előbb kifejezetten a Google TTS motort próbáljuk: ennek a magyar hangja
+        // jóval természetesebb és érthetőbb, mint a legtöbb gyári (pl. Samsung/Pico)
+        // motoré, amely gyakran „idegen akcentussal" olvassa a magyar szöveget.
+        triedGoogleTts = true;
         try {
-            tts = new TextToSpeech(this, status -> {
-                if (status == TextToSpeech.SUCCESS) {
-                    ttsReady = true;
-                    try {
-                        int r = tts.setLanguage(new Locale("hu", "HU"));
-                        if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            tts.setLanguage(Locale.getDefault());
-                        }
-                    } catch (Exception ignored) {}
-                }
-            });
+            tts = new TextToSpeech(this, this::onTtsInit, "com.google.android.tts");
+        } catch (Exception e) {
+            triedGoogleTts = false;
+            try { tts = new TextToSpeech(this, this::onTtsInit); } catch (Exception ignored) {}
+        }
+    }
+
+    private void onTtsInit(int status) {
+        if (status != TextToSpeech.SUCCESS) {
+            // A Google motor nem elérhető – essünk vissza a rendszer alapértelmezettjére.
+            if (retryWithDefaultEngine()) return;
+            return;
+        }
+        try {
+            int r = tts.setLanguage(new Locale("hu", "HU"));
+            if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
+                // A jelenlegi motor nem tud magyarul – próbáljuk a rendszer motorját,
+                // hogy ne egy idegen nyelvű hang olvassa fel a magyar szöveget.
+                if (retryWithDefaultEngine()) return;
+                tts.setLanguage(Locale.getDefault());
+            }
+            selectBestHungarianVoice();
+            // Kicsit lassabb, tagoltabb beszéd + semleges hangmagasság a jobb érthetőségért.
+            tts.setSpeechRate(0.96f);
+            tts.setPitch(1.0f);
+        } catch (Exception ignored) {}
+        ttsReady = true;
+    }
+
+    /** Ha a Google motorral próbálkoztunk és nem jött be, egyszer újrapróbáljuk a
+     *  rendszer alapértelmezett motorjával. true = újraindítás folyamatban. */
+    private boolean retryWithDefaultEngine() {
+        if (!triedGoogleTts) return false;
+        triedGoogleTts = false;
+        try { if (tts != null) tts.shutdown(); } catch (Exception ignored) {}
+        tts = null;
+        try { tts = new TextToSpeech(this, this::onTtsInit); return true; } catch (Exception ignored) {}
+        return false;
+    }
+
+    /** A legjobb elérhető magyar hang kiválasztása: lehetőleg helyben (hálózat nélkül)
+     *  elérhető és a legmagasabb minőségű. Enélkül a motor néha egy gyenge, alap
+     *  hangot használ. */
+    private void selectBestHungarianVoice() {
+        try {
+            Set<Voice> voices = tts.getVoices();
+            if (voices == null) return;
+            Voice best = null;
+            for (Voice v : voices) {
+                if (v == null || v.getLocale() == null) continue;
+                if (!"hun".equalsIgnoreCase(v.getLocale().getISO3Language())) continue;
+                if (v.getFeatures() != null
+                        && v.getFeatures().contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED)) continue;
+                if (best == null) { best = v; continue; }
+                boolean vLocal = !v.isNetworkConnectionRequired();
+                boolean bLocal = !best.isNetworkConnectionRequired();
+                if (vLocal != bLocal) { if (vLocal) best = v; continue; }
+                if (v.getQuality() > best.getQuality()) best = v;
+            }
+            if (best != null) tts.setVoice(best);
         } catch (Exception ignored) {}
     }
 

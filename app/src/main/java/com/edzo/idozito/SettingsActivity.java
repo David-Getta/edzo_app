@@ -100,6 +100,29 @@ public class SettingsActivity extends Activity {
         col.addView(audio, lp());
         col.addView(gap(18));
 
+        // --- Hangbemondás minősége (rendszer TTS) ---
+        col.addView(text("🗣️  Magyar hang minősége", 15.5f, TXT, true));
+        col.addView(gap(4));
+        col.addView(text("Az edzés közbeni bemondás a rendszer felolvasó motorját használja. "
+                + "A legszebb magyar hangért érdemes a Google felolvasót választani, és a "
+                + "magyar hangot letölteni (Beszéd → Nyelv → Magyar).", 12.5f, MUTED, false));
+        col.addView(gap(10));
+        Button ttsBtn = ghost("⚙️  Felolvasó (TTS) beállításai");
+        ttsBtn.setOnClickListener(v -> {
+            // A rendszer felolvasó-beállításai; ha nem nyílik meg, a hangbeállítások.
+            try {
+                startActivity(new Intent("com.android.settings.TTS_SETTINGS")
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (Exception e) {
+                try { startActivity(new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS)); }
+                catch (Exception e2) {
+                    Toast.makeText(this, "A beállítás nem érhető el ezen a készüléken.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        col.addView(ttsBtn);
+        col.addView(gap(18));
+
         // --- Visszaszámlálás hossza ---
         col.addView(text("Visszaszámláló csipogás hossza", 15.5f, TXT, true));
         col.addView(gap(8));
