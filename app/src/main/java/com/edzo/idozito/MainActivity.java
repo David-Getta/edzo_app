@@ -92,6 +92,7 @@ public class MainActivity extends Activity {
     ScrollView runScroll;
     LinearLayout templatesBox;
     LinearLayout goalBox;
+    LinearLayout gridBox;
     LinearLayout progressBox;
     LinearLayout levelBar;
     LinearLayout planBar;
@@ -465,28 +466,14 @@ public class MainActivity extends Activity {
         col.addView(dailyTipCard());
         col.addView(gap(16));
 
-        // Funkció-csempék (2 oszlop)
-        LinearLayout grid = vbox();
-        grid.addView(tileRow(
-                featureTile("📜", "Előzmények", 0xFF8B9DFF, () -> startActivity(new Intent(this, HistoryActivity.class))),
-                featureTile("📈", "Statisztika", 0xFF5FD0FF, () -> startActivity(new Intent(this, StatsActivity.class)))));
-        grid.addView(gap(10));
-        grid.addView(tileRow(
-                featureTile("📊", "Profil / BMI", 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))),
-                featureTile("🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class)))));
-        grid.addView(gap(10));
-        grid.addView(tileRow(
-                featureTile("🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))),
-                featureTile("📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class)))));
-        grid.addView(gap(10));
-        grid.addView(tileRow(
-                featureTile("⚙️", "Beállítások", 0xFF9AA7C7, () -> startActivity(new Intent(this, SettingsActivity.class))),
-                featureTile("💾", "Sablon mentése", 0xFF7FE1A6, this::saveTemplateDialog)));
-        grid.addView(gap(10));
-        grid.addView(tileRow(
-                featureTile("🏋️", "Erősítő napló", 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))),
-                new View(this)));
-        col.addView(grid, new LinearLayout.LayoutParams(-1, -2));
+        // Funkció-csempék (2 oszlop) – átrendezhető és elrejthető (testreszabható).
+        gridBox = vbox();
+        col.addView(gridBox, new LinearLayout.LayoutParams(-1, -2));
+        refreshTileGrid();
+        col.addView(gap(10));
+        Button customize = ghostButton("🎛  Csempék testreszabása");
+        customize.setOnClickListener(v -> reorderTilesDialog());
+        col.addView(customize);
 
         col.addView(gap(24));
         TextView hint = text("A telefon a képernyő kikapcsolása után is folytatja az edzést és sípol.\nNe halkítsd le a hangot.",
@@ -667,6 +654,131 @@ public class MainActivity extends Activity {
         row.addView(a, l); row.addView(b, r);
         row.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         return row;
+    }
+
+    // ---- Testreszabható csempék (átrendezés + elrejtés) ----
+
+    /** Egy funkció-csempe leírása: azonosító, ikon, felirat, szín, művelet. */
+    final class TileDef {
+        final String id, emoji, label; final int color; final Runnable action;
+        TileDef(String id, String emoji, String label, int color, Runnable action) {
+            this.id = id; this.emoji = emoji; this.label = label; this.color = color; this.action = action;
+        }
+    }
+
+    java.util.List<TileDef> allTileDefs() {
+        java.util.List<TileDef> t = new java.util.ArrayList<>();
+        t.add(new TileDef("history", "📜", "Előzmények", 0xFF8B9DFF, () -> startActivity(new Intent(this, HistoryActivity.class))));
+        t.add(new TileDef("stats", "📈", "Statisztika", 0xFF5FD0FF, () -> startActivity(new Intent(this, StatsActivity.class))));
+        t.add(new TileDef("profile", "📊", "Profil / BMI", 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
+        t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
+        t.add(new TileDef("mobility", "🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
+        t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
+        t.add(new TileDef("strength", "🏋️", "Erősítő napló", 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
+        t.add(new TileDef("template", "💾", "Sablon mentése", 0xFF7FE1A6, this::saveTemplateDialog));
+        t.add(new TileDef("settings", "⚙️", "Beállítások", 0xFF9AA7C7, () -> startActivity(new Intent(this, SettingsActivity.class))));
+        return t;
+    }
+
+    java.util.List<String> tileOrder() {
+        java.util.List<String> known = new java.util.ArrayList<>();
+        for (TileDef d : allTileDefs()) known.add(d.id);
+        java.util.List<String> order = new java.util.ArrayList<>();
+        String s = prefs.getString("tile_order", "");
+        if (!s.isEmpty()) for (String id : s.split(",")) if (known.contains(id) && !order.contains(id)) order.add(id);
+        for (String id : known) if (!order.contains(id)) order.add(id); // új csempék a végére
+        return order;
+    }
+
+    java.util.Set<String> tileHidden() {
+        java.util.Set<String> h = new java.util.HashSet<>();
+        String s = prefs.getString("tile_hidden", "");
+        if (!s.isEmpty()) for (String id : s.split(",")) if (!id.isEmpty()) h.add(id);
+        return h;
+    }
+
+    String joinCsv(java.util.Collection<String> c) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : c) { if (sb.length() > 0) sb.append(','); sb.append(s); }
+        return sb.toString();
+    }
+
+    void refreshTileGrid() {
+        if (gridBox == null) return;
+        gridBox.removeAllViews();
+        java.util.Map<String, TileDef> byId = new java.util.HashMap<>();
+        for (TileDef d : allTileDefs()) byId.put(d.id, d);
+        java.util.Set<String> hidden = tileHidden();
+        java.util.List<View> tiles = new java.util.ArrayList<>();
+        for (String id : tileOrder()) {
+            TileDef d = byId.get(id);
+            if (d == null || hidden.contains(id)) continue;
+            tiles.add(featureTile(d.emoji, d.label, d.color, d.action));
+        }
+        for (int i = 0; i < tiles.size(); i += 2) {
+            View b = (i + 1 < tiles.size()) ? tiles.get(i + 1) : new View(this);
+            gridBox.addView(tileRow(tiles.get(i), b));
+            if (i + 2 < tiles.size()) gridBox.addView(gap(10));
+        }
+    }
+
+    void reorderTilesDialog() {
+        final java.util.List<String> order = new java.util.ArrayList<>(tileOrder());
+        final java.util.Set<String> hidden = new java.util.HashSet<>(tileHidden());
+        final java.util.Map<String, TileDef> byId = new java.util.HashMap<>();
+        for (TileDef d : allTileDefs()) byId.put(d.id, d);
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), dp(2), dp(4), 0);
+        final Runnable[] render = new Runnable[1];
+        render[0] = () -> {
+            box.removeAllViews();
+            for (int i = 0; i < order.size(); i++) {
+                final int idx = i;
+                final String id = order.get(i);
+                TileDef d = byId.get(id);
+                if (d == null) continue;
+                final boolean hid = hidden.contains(id);
+                LinearLayout row = hbox();
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(dp(8), dp(7), dp(4), dp(7));
+                row.addView(text(d.emoji + "  " + d.label, 15, hid ? MUTED : TXT, !hid),
+                        new LinearLayout.LayoutParams(0, -2, 1f));
+                Button eye = smallIconBtn(hid ? "🚫" : "👁");
+                eye.setOnClickListener(v -> { if (hid) hidden.remove(id); else hidden.add(id); render[0].run(); });
+                row.addView(eye);
+                Button up = smallIconBtn("↑");
+                up.setAlpha(idx > 0 ? 1f : 0.3f);
+                up.setOnClickListener(v -> { if (idx > 0) { java.util.Collections.swap(order, idx, idx - 1); render[0].run(); } });
+                row.addView(up);
+                Button down = smallIconBtn("↓");
+                down.setAlpha(idx < order.size() - 1 ? 1f : 0.3f);
+                down.setOnClickListener(v -> { if (idx < order.size() - 1) { java.util.Collections.swap(order, idx, idx + 1); render[0].run(); } });
+                row.addView(down);
+                box.addView(row);
+            }
+        };
+        render[0].run();
+        new Sheet(this, "Csempék testreszabása", "Rendezd át (↑↓) vagy rejtsd el (👁) a csempéket")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    prefs.edit().putString("tile_order", joinCsv(order))
+                            .putString("tile_hidden", joinCsv(hidden)).apply();
+                    refreshTileGrid();
+                })
+                .addCancel().show();
+    }
+
+    Button smallIconBtn(String label) {
+        Button b = new Button(this);
+        b.setText(label); b.setAllCaps(false); b.setTextColor(TXT); b.setTextSize(16);
+        b.setStateListAnimator(null); b.setPadding(0, 0, 0, 0);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(CARD2); bg.setCornerRadius(dp(10)); bg.setStroke(dp(1), LINE);
+        b.setBackground(bg);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(40), dp(40));
+        p.leftMargin = dp(5);
+        b.setLayoutParams(p);
+        return b;
     }
 
     // ---- Saját sablonok ----
