@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Grit app-ikon előtér: vastag, fehér „G" monogram (a GRIT szó kezdőbetűje). -->
+<!-- Grit app-ikon előtér: fehér, kézjegy-szerű aláírás (sztár-autogram),
+     lendületes írott vonal + alá­húzás flourish + i-pont. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- A név lendületes írott vonala. -->
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="12"
+        android:strokeWidth="5.5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000"
-        android:pathData="M76,42 A25,25 0 1 0 76,66 L76,54 L58,54" />
+        android:pathData="M22,58 C26,40 34,36 40,50 C44,60 40,64 46,56 C52,46 56,46 60,56 C63,62 62,64 68,56 C74,46 80,50 86,40" />
+    <!-- Alá­húzás flourish, felfelé kunkorodó véggel. -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M22,75 C36,84 62,85 80,74 C83,72 85,71 88,67" />
+    <!-- i-pont. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,45 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0" />
 </vector>

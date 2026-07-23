@@ -3030,19 +3030,18 @@ public class MainActivity extends Activity {
         return b;
     }
 
-    /** „GRIT" szó-logó: vastag, kalapácsolt betűk, az „I" karmazsin, záró karmazsin ponttal. */
+    /** „Grit" logó: kézjegy-szerű, írott (aláírás) stílusú felirat, a végén
+     *  karmazsin ponttal – összhangban az aláírásos app-ikonnal. */
     TextView gritWordmark(float sizeSp) {
         TextView t = new TextView(this);
-        String s = "GRIT.";
+        String s = "Grit.";
         SpannableString sp = new SpannableString(s);
-        // Az „I" (3. betű) és a záró pont karmazsin – ez a szójáték a névvel.
-        sp.setSpan(new ForegroundColorSpan(0xFFE11D2E), 2, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sp.setSpan(new ForegroundColorSpan(0xFFE11D2E), 4, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         t.setText(sp);
         t.setTextColor(0xFFFFFFFF);
         t.setTextSize(sizeSp);
-        t.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD));
-        t.setLetterSpacing(0.14f);
+        // Írott, „aláírás" jellegű betűtípus (kézjegy-hatás).
+        t.setTypeface(Typeface.create("cursive", Typeface.BOLD_ITALIC));
         t.setIncludeFontPadding(false);
         return t;
     }
