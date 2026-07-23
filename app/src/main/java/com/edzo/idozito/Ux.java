@@ -176,6 +176,9 @@ public final class Ux {
                 Intent it = new Intent(a, target[idx]);
                 if (target[idx] == MainActivity.class)
                     it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                else
+                    // Ha a fül már a veremben van, előrehozzuk (nem hozunk létre duplikátumot).
+                    it.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 a.startActivity(it);
                 a.overridePendingTransition(0, 0); // azonnali váltás, nincs lassú animáció
             });
