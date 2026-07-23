@@ -34,9 +34,15 @@ külső függőségek nélkül).
 
 ### 🏋️ Erősítő edzésnapló
 - **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), gyors-választó
-  gyakorlatnevekkel
+  gyakorlatnevekkel, a legutóbbi alkalom **automatikus előtöltésével**
+- **Szerkesztés & törlés** – utólag javítható bejegyzések
 - **Rekordok**: max súly és **becsült 1RM** (Epley) gyakorlatonként
-- **Súly-fejlődési grafikon** minden gyakorlathoz, teljes volumen kijelzés
+- **Súly-fejlődési grafikon**, heti és összesített **volumen**
+- ⏱️ **Pihenő-időzítő** a sorozatok között (sípszó + rezgés)
+- 🧮 **Súlytárcsa-kalkulátor** (mennyi tárcsa oldalanként) és
+  📈 **1RM & százalék kalkulátor** (edzés-súlyok programozáshoz)
+- Az erősítő napok a **napi/heti sorozatba** is beleszámítanak, és **CSV-be**
+  exportálhatók
 
 ### 🏅 Motiváció & napló
 - **Szintek + XP-sáv**, 20 gyűjthető **kitüntetés** (haladás-jelzéssel),
