@@ -86,6 +86,7 @@ public class MainActivity extends Activity {
     LinearLayout badgesBox;
     final View[] presetViews = new View[4];
     final int[][] presetSpecs = {{30, 10, 8}, {60, 20, 6}, {20, 10, 8}, {20, 40, 6}};
+    final int[] presetColors = {0xFFFF6B6B, 0xFF5FD0FF, 0xFFFFA24B, 0xFF7FE1A6};
     LinearLayout weekBox;
     LinearLayout recordsBox;
     TextView totalText;
@@ -298,10 +299,10 @@ public class MainActivity extends Activity {
         col.addView(gap(6));
 
         // Sablonok – 2×2 rács (a Kezdő gyengéd, hosszabb pihenővel)
-        presetViews[0] = preset("HIIT", "30/10 mp · 8×", 30, 10, 8);
-        presetViews[1] = preset("Tempó", "60/20 mp · 6×", 60, 20, 6);
-        presetViews[2] = preset("Tabata", "20/10 mp · 8×", 20, 10, 8);
-        presetViews[3] = preset("Kezdő", "20/40 mp · 6×", 20, 40, 6);
+        presetViews[0] = preset("HIIT", "30/10 mp · 8×", presetColors[0], 30, 10, 8);
+        presetViews[1] = preset("Tempó", "60/20 mp · 6×", presetColors[1], 60, 20, 6);
+        presetViews[2] = preset("Tabata", "20/10 mp · 8×", presetColors[2], 20, 10, 8);
+        presetViews[3] = preset("Kezdő", "20/40 mp · 6×", presetColors[3], 20, 40, 6);
         LinearLayout presetsRow1 = hbox();
         presetsRow1.addView(presetViews[0], presetLp());
         presetsRow1.addView(presetViews[1], presetLp());
@@ -1780,17 +1781,17 @@ public class MainActivity extends Activity {
         return lp;
     }
 
-    View preset(String name, String sub, final int work, final int rest, final int rounds) {
+    View preset(String name, String sub, final int color, final int work, final int rest, final int rounds) {
         LinearLayout b = vbox();
         b.setGravity(Gravity.CENTER);
         b.setPadding(dp(10), dp(14), dp(10), dp(14));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(GLASS2);
+        bg.setColor((color & 0x00FFFFFF) | 0x14000000);
         bg.setCornerRadius(dp(14));
-        bg.setStroke(dp(1), GLASS_LINE);
+        bg.setStroke(dp(1), (color & 0x00FFFFFF) | 0x44000000);
         b.setBackground(bg);
         b.setClickable(true);
-        TextView t = text(name, 13.5f, TXT, true);
+        TextView t = text(name, 13.5f, color, true);   // preset neve a saját színében
         t.setGravity(Gravity.CENTER);
         TextView s = text(sub, 11, MUTED, false);
         s.setGravity(Gravity.CENTER);
@@ -2059,10 +2060,11 @@ public class MainActivity extends Activity {
             boolean active = cfg[WORK_K] == presetSpecs[i][0]
                     && cfg[REST_K] == presetSpecs[i][1]
                     && cfg[ROUND_K] == presetSpecs[i][2];
+            int pc = presetColors[i];
             GradientDrawable bg = new GradientDrawable();
-            bg.setColor(active ? ((tAccent & 0xFFFFFF) | 0x33000000) : GLASS2);
+            bg.setColor((pc & 0x00FFFFFF) | (active ? 0x40000000 : 0x14000000));
             bg.setCornerRadius(dp(14));
-            bg.setStroke(dp(active ? 2 : 1), active ? tAccent : GLASS_LINE);
+            bg.setStroke(dp(active ? 2 : 1), active ? pc : ((pc & 0x00FFFFFF) | 0x44000000));
             presetViews[i].setBackground(bg);
         }
     }
