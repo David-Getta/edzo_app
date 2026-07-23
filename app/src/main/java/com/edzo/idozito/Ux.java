@@ -2,13 +2,17 @@ package com.edzo.idozito;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -85,23 +89,93 @@ public final class Ux {
     public static FrameLayout scaffold(Activity a, View content, String primaryName) {
         FrameLayout root = new FrameLayout(a);
         root.setBackgroundColor(MainActivity.BG);
-        int id = drawableId(a, primaryName);
-        if (id == 0) id = drawableId(a, "bg_main");
-        if (id != 0) {
-            try {
-                ImageView img = new ImageView(a);
-                img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                img.setImageResource(id);
-                root.addView(img, new FrameLayout.LayoutParams(-1, -1));
-                kenBurns(img);
-                View scrim = new View(a);
-                GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                        new int[]{0x8C070912, 0xDE070912, 0xF5070912});
-                scrim.setBackground(g);
-                root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
-            } catch (Exception ignored) {}
-        }
+        addBg(a, root, primaryName);
         root.addView(content, new FrameLayout.LayoutParams(-1, -1));
         return root;
+    }
+
+    /** Mint a scaffold, de alul egy állandó navigációs sávval (Kezdő/Statok/Erő/Profil). */
+    public static FrameLayout scaffoldNav(Activity a, View content, String primaryName, int activeIndex) {
+        FrameLayout root = new FrameLayout(a);
+        root.setBackgroundColor(MainActivity.BG);
+        addBg(a, root, primaryName);
+        LinearLayout stack = new LinearLayout(a);
+        stack.setOrientation(LinearLayout.VERTICAL);
+        stack.addView(content, new LinearLayout.LayoutParams(-1, 0, 1f));
+        stack.addView(bottomNav(a, activeIndex), new LinearLayout.LayoutParams(-1, -2));
+        root.addView(stack, new FrameLayout.LayoutParams(-1, -1));
+        return root;
+    }
+
+    /** A háttérkép + fátyol hozzáadása egy gyökér FrameLayouthoz. */
+    static void addBg(Activity a, FrameLayout root, String primaryName) {
+        int id = drawableId(a, primaryName);
+        if (id == 0) id = drawableId(a, "bg_main");
+        if (id == 0) return;
+        try {
+            ImageView img = new ImageView(a);
+            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            img.setImageResource(id);
+            root.addView(img, new FrameLayout.LayoutParams(-1, -1));
+            kenBurns(img);
+            View scrim = new View(a);
+            GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0x8C070912, 0xDE070912, 0xF5070912});
+            scrim.setBackground(g);
+            root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
+        } catch (Exception ignored) {}
+    }
+
+    /**
+     * Állandó alsó navigációs sáv a fő képernyők közti gyors váltáshoz.
+     * activeIndex: 0=Kezdő, 1=Statok, 2=Erő, 3=Profil.
+     */
+    public static LinearLayout bottomNav(final Activity a, final int active) {
+        final float d = a.getResources().getDisplayMetrics().density;
+        LinearLayout bar = new LinearLayout(a);
+        bar.setOrientation(LinearLayout.HORIZONTAL);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0xF20A0F1E);
+        bg.setStroke((int) (1 * d), 0x22FFFFFF);
+        bar.setBackground(bg);
+
+        final String[] emo = {"🏠", "📈", "🏋️", "👤"};
+        final String[] lbl = {"Kezdő", "Statok", "Erő", "Profil"};
+        final Class<?>[] target = {MainActivity.class, StatsActivity.class,
+                StrengthActivity.class, ProfileActivity.class};
+        int accent = Theme.accent(a);
+
+        for (int i = 0; i < emo.length; i++) {
+            final int idx = i;
+            boolean on = i == active;
+            LinearLayout item = new LinearLayout(a);
+            item.setOrientation(LinearLayout.VERTICAL);
+            item.setGravity(Gravity.CENTER);
+            item.setPadding(0, (int) (8 * d), 0, (int) (7 * d));
+            item.setClickable(true);
+            TextView e = new TextView(a);
+            e.setText(emo[i]);
+            e.setTextSize(19);
+            e.setGravity(Gravity.CENTER);
+            e.setAlpha(on ? 1f : 0.55f);
+            TextView l = new TextView(a);
+            l.setText(lbl[i]);
+            l.setTextSize(10.5f);
+            l.setGravity(Gravity.CENTER);
+            l.setPadding(0, (int) (2 * d), 0, 0);
+            l.setTextColor(on ? accent : 0xFF8AA0C4);
+            if (on) l.setTypeface(null, Typeface.BOLD);
+            item.addView(e);
+            item.addView(l);
+            item.setOnClickListener(v -> {
+                if (idx == active) return;
+                Intent it = new Intent(a, target[idx]);
+                if (target[idx] == MainActivity.class)
+                    it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                a.startActivity(it);
+            });
+            bar.addView(item, new LinearLayout.LayoutParams(0, -2, 1f));
+        }
+        return bar;
     }
 }

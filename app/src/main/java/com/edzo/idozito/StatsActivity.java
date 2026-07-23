@@ -143,7 +143,7 @@ public class StatsActivity extends Activity {
         }
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_stats"));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_stats", 1));
         refreshChart();
         col.post(() -> Ux.enterChildren(col, 30, 45));
     }

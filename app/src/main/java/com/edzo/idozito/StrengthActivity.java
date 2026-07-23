@@ -94,7 +94,7 @@ public class StrengthActivity extends Activity {
         col.addView(listBox, lp());
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_workout"));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_workout", 2));
         col.post(() -> Ux.enterChildren(col, 30, 45));
         refresh();
     }

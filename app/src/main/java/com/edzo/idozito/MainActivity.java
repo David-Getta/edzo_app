@@ -106,6 +106,7 @@ public class MainActivity extends Activity {
     double lastDist = -1; float lastAvg = -1; String lastRecords = "";
     boolean lastWasRun = true;
     ProgressRing ring;
+    View bottomNavBar;
     boolean lastPaused = false;
     boolean finished = false;
     boolean lastWasRoutine = false;
@@ -146,7 +147,14 @@ public class MainActivity extends Activity {
         addBackgroundImage(root);
         root.addView(buildSetup());
         root.addView(buildRun());
-        setContentView(root);
+        // Állandó alsó navigációs sáv: a tartalom fölötte görög, a sáv fixen alul marad.
+        // Edzés közben elrejtjük, hogy a visszaszámlálás fókuszban maradjon.
+        LinearLayout navStack = new LinearLayout(this);
+        navStack.setOrientation(LinearLayout.VERTICAL);
+        navStack.addView(root, new LinearLayout.LayoutParams(-1, 0, 1f));
+        bottomNavBar = Ux.bottomNav(this, 0);
+        navStack.addView(bottomNavBar, new LinearLayout.LayoutParams(-1, -2));
+        setContentView(navStack);
         showRun(false);
 
         refreshValues();
@@ -2276,6 +2284,7 @@ public class MainActivity extends Activity {
     void showRun(boolean run) {
         setupScroll.setVisibility(run ? View.GONE : View.VISIBLE);
         runScroll.setVisibility(run ? View.VISIBLE : View.GONE);
+        if (bottomNavBar != null) bottomNavBar.setVisibility(run ? View.GONE : View.VISIBLE);
         int flag = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
         if (run && Theme.keepScreenOn(this)) getWindow().addFlags(flag);
         else getWindow().clearFlags(flag);

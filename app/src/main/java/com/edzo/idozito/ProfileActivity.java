@@ -171,7 +171,7 @@ public class ProfileActivity extends Activity {
         col.addView(clear);
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffold(this, sv, "bg_profile"));
+        setContentView(Ux.scaffoldNav(this, sv, "bg_profile", 3));
         col.post(() -> Ux.enterChildren(col, 30, 45));
 
         loadValues();
