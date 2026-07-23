@@ -13,22 +13,22 @@ public final class Theme {
 
     static final String PREFS = "edzo";
 
-    // Választható színek (paletta) – Cyber cián-magenta arculat.
+    // Választható színek (paletta) – „Grit" karmazsin arculat.
     public static final int[] SWATCHES = {
-            0xFF22E0FF, // cián
-            0xFFFF3DDB, // magenta
-            0xFF7A5CFF, // ibolya
-            0xFF22FFC2, // menta
-            0xFF3B82F6, // kék
-            0xFFA6FF3D, // lime
+            0xFFE11D2E, // karmazsin
+            0xFFFF4757, // skarlát
+            0xFFFF6B3D, // parázs
             0xFFFFC24D, // arany
-            0xFFFF5D73, // korall
+            0xFF14B8A6, // teal
+            0xFF3B82F6, // kék
+            0xFFA855F7, // lila
+            0xFF22E0FF, // cián
     };
 
-    static final int DEF_ACCENT = 0xFF22E0FF;   // cián
-    static final int DEF_ACCENT2 = 0xFFFF3DDB;  // magenta (a márka-gradiens másik vége)
-    static final int DEF_WORK = 0xFF22E0FF;      // futás = cián
-    static final int DEF_REST = 0xFF7A5CFF;      // pihenő = ibolya
+    static final int DEF_ACCENT = 0xFFE11D2E;   // karmazsin
+    static final int DEF_ACCENT2 = 0xFFFF4757;  // skarlát (a márka-gradiens másik vége)
+    static final int DEF_WORK = 0xFFE11D2E;      // futás = karmazsin
+    static final int DEF_REST = 0xFF14B8A6;      // pihenő = teal (jól elkülönül a futástól)
 
     private static SharedPreferences p(Context c) {
         return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);

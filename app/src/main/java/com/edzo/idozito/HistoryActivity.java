@@ -27,7 +27,7 @@ import java.util.Locale;
 public class HistoryActivity extends Activity {
 
     static int BG, TXT, MUTED, LINE, GLASS, GLASS_LINE;
-    static final int RUN_C = 0xFF22E0FF, GYM_C = 0xFFFF3DDB; // futás = cián / erő = magenta
+    static final int RUN_C = 0xFFE11D2E, GYM_C = 0xFFFF4757; // futás = cián / erő = magenta
 
     int accent, accent2;
     boolean pace;

@@ -33,7 +33,7 @@ public class ProfileActivity extends Activity {
 
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
     static final int ACCENT = MainActivity.ACCENT, INDIGO = MainActivity.INDIGO, VIOLET = MainActivity.VIOLET;
-    static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFF22E0FF, FAT_C = 0xFFF59E0B;
+    static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFFE11D2E, FAT_C = 0xFFF59E0B;
 
     EditText heightEt, weightEt, bodyFatEt, byEt, bmEt, bdEt, goalLossEt;
     TextView bmiValue, bmiCat, ageLabel, bmrValue, goalInfo;

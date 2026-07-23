@@ -316,7 +316,7 @@ public class StatsActivity extends Activity {
         cv.drawRect(0, 0, W, H, p);
         p.setShader(null);
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
         bar.setShader(null);
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -325,7 +325,7 @@ public class StatsActivity extends Activity {
         tp.setTextSize(74);
         cv.drawText("Statisztikám", M, 240, tp);
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sp.setColor(0xFF22E0FF);
+        sp.setColor(0xFFE11D2E);
         sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         sp.setTextSize(40);
         cv.drawText("⭐ Szint " + lvl + " · " + Levels.title(lvl), M, 300, sp);
@@ -352,7 +352,7 @@ public class StatsActivity extends Activity {
         }
 
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fp.setColor(0xFF22E0FF);
+        fp.setColor(0xFFE11D2E);
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(36);
         fp.setTextAlign(Paint.Align.CENTER);
@@ -390,7 +390,7 @@ public class StatsActivity extends Activity {
             barBg.setBackground(bg);
             View fill = new View(this);
             GradientDrawable fg = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                    new int[]{MainActivity.ACCENT, 0xFFFF3DDB});
+                    new int[]{MainActivity.ACCENT, 0xFFFF4757});
             fg.setCornerRadius(dp(5));
             fill.setBackground(fg);
             float f = Math.max(0.02f, pct / 100f);
@@ -592,7 +592,7 @@ public class StatsActivity extends Activity {
         p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
         cvn.drawRect(0, 0, W, H, p); p.setShader(null);
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cvn.drawRoundRect(new RectF(M, 110, W - M, 124), 8, 8, bar); bar.setShader(null);
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
         tp.setColor(0xFFEAF6FF); tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -609,7 +609,7 @@ public class StatsActivity extends Activity {
                 long ms = cur.getTimeInMillis();
                 int cx = x0 + w * (cell + gap), cy = y0 + d * (cell + gap);
                 if (ms > today0) cp.setColor(0x11FFFFFF);
-                else if (days.contains(ms)) { cp.setColor(0xFF22E0FF); active++; }
+                else if (days.contains(ms)) { cp.setColor(0xFFE11D2E); active++; }
                 else cp.setColor(0x1AFFFFFF);
                 cvn.drawRoundRect(new RectF(cx, cy, cx + cell, cy + cell), 12, 12, cp);
                 cur.add(Calendar.DAY_OF_YEAR, 1);
@@ -619,7 +619,7 @@ public class StatsActivity extends Activity {
         sp.setColor(0xFF8AA0C4); sp.setTextSize(38); sp.setTextAlign(Paint.Align.CENTER);
         cvn.drawText(active + " aktív nap az elmúlt 12 hétben", W / 2f, y0 + 7 * (cell + gap) + 40, sp);
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fp.setColor(0xFF22E0FF); fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        fp.setColor(0xFFE11D2E); fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(34); fp.setTextAlign(Paint.Align.CENTER);
         cvn.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 45, fp);
         return bmp;
@@ -860,7 +860,7 @@ public class StatsActivity extends Activity {
     static class BarChart extends View {
         private double[] vals;
         private String[] labels;
-        private int color = 0xFF22E0FF;
+        private int color = 0xFFE11D2E;
         private String unit = "";
         private final Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint txt = new Paint(Paint.ANTI_ALIAS_FLAG);

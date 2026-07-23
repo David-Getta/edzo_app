@@ -264,7 +264,7 @@ public class WorkoutDetailActivity extends Activity {
 
         // felső akcentcsík (cián → magenta)
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
         bar.setShader(null);
 
@@ -326,7 +326,7 @@ public class WorkoutDetailActivity extends Activity {
 
         // lábléc
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fp.setColor(0xFF22E0FF);
+        fp.setColor(0xFFE11D2E);
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(38);
         fp.setTextAlign(Paint.Align.CENTER);

@@ -23,6 +23,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,26 +54,26 @@ import java.util.Locale;
  */
 public class MainActivity extends Activity {
 
-    // Színek
+    // Színek – „Grit" karmazsin arculat meleg szénfekete alapon.
     // A paletta futásidőben vált sötét ↔ világos között (lásd applyPalette()).
-    static int BG = 0xFF070912, CARD = 0xFF121A33, CARD2 = 0xFF19224A;
-    static int TXT = 0xFFEAF6FF, MUTED = 0xFF8AA0C4, LINE = 0xFF25335C;
-    static final int ACCENT = 0xFF22E0FF;
-    static final int INDIGO = 0xFF22E0FF, VIOLET = 0xFFFF3DDB; // márka-gradiens: cián → magenta
-    static final int WORK = 0xFF22E0FF, REST = 0xFF7A5CFF, PREP = 0xFFFFC24D, DONE = 0xFFFF3DDB;
+    static int BG = 0xFF0C0A0B, CARD = 0xFF171214, CARD2 = 0xFF221619;
+    static int TXT = 0xFFF5ECEE, MUTED = 0xFFA98F95, LINE = 0xFF3A2A2E;
+    static final int ACCENT = 0xFFE11D2E;
+    static final int INDIGO = 0xFFFF4757, VIOLET = 0xFFB0142A; // márka-gradiens: skarlát → mély karmazsin
+    static final int WORK = 0xFFE11D2E, REST = 0xFF14B8A6, PREP = 0xFFFFC24D, DONE = 0xFFFF4757;
     // Áttetsző „üveg" felületek – a generált háttérkép finoman átüt rajtuk
-    static int GLASS = 0xE6121A33, GLASS2 = 0xD919224A, GLASS_LINE = 0x33FFFFFF;
+    static int GLASS = 0xE6171214, GLASS2 = 0xD9221619, GLASS_LINE = 0x33FFFFFF;
 
     /** A világos/sötét paletta beállítása. Minden képernyő ezt hívja az onCreate elején. */
     static void applyPalette(Context c) {
         if (Theme.light(c)) {
-            BG = 0xFFF3F5FA; CARD = 0xFFFFFFFF; CARD2 = 0xFFEAEEF6;
-            TXT = 0xFF16203A; MUTED = 0xFF5C6B86; LINE = 0xFFD7DEEC;
+            BG = 0xFFF7F3F4; CARD = 0xFFFFFFFF; CARD2 = 0xFFF1EAEC;
+            TXT = 0xFF1E1416; MUTED = 0xFF75636A; LINE = 0xFFE3D8DC;
             GLASS = 0xF7FFFFFF; GLASS2 = 0xF2FFFFFF; GLASS_LINE = 0x1F000000;
         } else {
-            BG = 0xFF070912; CARD = 0xFF121A33; CARD2 = 0xFF19224A;
-            TXT = 0xFFEAF6FF; MUTED = 0xFF8AA0C4; LINE = 0xFF25335C;
-            GLASS = 0xE6121A33; GLASS2 = 0xD919224A; GLASS_LINE = 0x33FFFFFF;
+            BG = 0xFF0C0A0B; CARD = 0xFF171214; CARD2 = 0xFF221619;
+            TXT = 0xFFF5ECEE; MUTED = 0xFFA98F95; LINE = 0xFF3A2A2E;
+            GLASS = 0xE6171214; GLASS2 = 0xD9221619; GLASS_LINE = 0x33FFFFFF;
         }
     }
 
@@ -510,7 +513,7 @@ public class MainActivity extends Activity {
         }
         LinearLayout btitles = vbox();
         btitles.setPadding(dp(22), dp(20), dp(22), dp(20));
-        btitles.addView(text("Grit", 27, 0xFFFFFFFF, true));
+        btitles.addView(gritWordmark(34));
         bannerSub = text(bannerSubtitle(), 13, 0xFFFFFFFF, false);
         bannerSub.setAlpha(0.92f);
         btitles.addView(bannerSub);
@@ -678,7 +681,7 @@ public class MainActivity extends Activity {
         t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
         t.add(new TileDef("strength", "🏋️", "Erősítő napló", 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
         t.add(new TileDef("template", "💾", "Sablon mentése", 0xFF7FE1A6, this::saveTemplateDialog));
-        t.add(new TileDef("settings", "⚙️", "Beállítások", 0xFF9AA7C7, () -> startActivity(new Intent(this, SettingsActivity.class))));
+        // A Beállítások szándékosan nincs itt: külön füle van az alsó menüsorban.
         return t;
     }
 
@@ -1399,7 +1402,7 @@ public class MainActivity extends Activity {
         p.setShader(null);
 
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
         bar.setShader(null);
 
@@ -1410,7 +1413,7 @@ public class MainActivity extends Activity {
         cv.drawText("Kitüntetéseim 🏅", M, 240, tp);
 
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sp.setColor(0xFF22E0FF);
+        sp.setColor(0xFFE11D2E);
         sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         sp.setTextSize(40);
         cv.drawText(got.size() + " / " + Badges.ALL.length + " megszerezve  ·  Grit", M, 300, sp);
@@ -1439,7 +1442,7 @@ public class MainActivity extends Activity {
         }
 
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fp.setColor(0xFF22E0FF);
+        fp.setColor(0xFFE11D2E);
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(36);
         fp.setTextAlign(Paint.Align.CENTER);
@@ -1564,7 +1567,7 @@ public class MainActivity extends Activity {
         p.setShader(null);
 
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
         bar.setShader(null);
 
@@ -1575,7 +1578,7 @@ public class MainActivity extends Activity {
         cv.drawText("Grit", M, 250, tp);
 
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sp.setColor(0xFF22E0FF);
+        sp.setColor(0xFFE11D2E);
         sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         sp.setTextSize(44);
         String head = (lastWasRun ? "🏃 Futás" : "🏋️ Edzés") + "  ·  kész! ✔";
@@ -1612,7 +1615,7 @@ public class MainActivity extends Activity {
         }
 
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fp.setColor(0xFF22E0FF);
+        fp.setColor(0xFFE11D2E);
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(38);
         fp.setTextAlign(Paint.Align.CENTER);
@@ -1631,7 +1634,7 @@ public class MainActivity extends Activity {
         p.setShader(null);
 
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFF22E0FF, 0xFFFF3DDB, Shader.TileMode.CLAMP));
+        bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
         bar.setShader(null);
 
@@ -1654,7 +1657,7 @@ public class MainActivity extends Activity {
         }
 
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sp.setColor(0xFF22E0FF);
+        sp.setColor(0xFFE11D2E);
         sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         sp.setTextSize(46);
         cv.drawText("⭐ Szint " + lvl + " · " + Levels.title(lvl), M, 322, sp);
@@ -1691,7 +1694,7 @@ public class MainActivity extends Activity {
         }
 
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fp.setColor(0xFF22E0FF);
+        fp.setColor(0xFFE11D2E);
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(38);
         fp.setTextAlign(Paint.Align.CENTER);
@@ -2976,10 +2979,12 @@ public class MainActivity extends Activity {
     Button primaryButton(String label) {
         Button b = baseButton(label);
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
-        bg.setCornerRadius(dp(18));
+        bg.setCornerRadius(dp(14));   // valamivel szögletesebb = keményebb, „grit" karakter
         b.setBackground(bg);
         b.setTextColor(0xFFFFFFFF);
         b.setTextSize(18);
+        b.setLetterSpacing(0.03f);
+        b.setElevation(dp(5));
         return b;
     }
 
@@ -3006,7 +3011,7 @@ public class MainActivity extends Activity {
         Button b = baseButton(label);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(CARD2);
-        bg.setCornerRadius(dp(15));
+        bg.setCornerRadius(dp(13));   // szögletesebb, tömörebb megjelenés
         bg.setStroke(dp(1), LINE);
         b.setBackground(bg);
         b.setTextSize(16);
@@ -3023,6 +3028,23 @@ public class MainActivity extends Activity {
         b.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         b.setStateListAnimator(null);
         return b;
+    }
+
+    /** „GRIT" szó-logó: vastag, kalapácsolt betűk, az „I" karmazsin, záró karmazsin ponttal. */
+    TextView gritWordmark(float sizeSp) {
+        TextView t = new TextView(this);
+        String s = "GRIT.";
+        SpannableString sp = new SpannableString(s);
+        // Az „I" (3. betű) és a záró pont karmazsin – ez a szójáték a névvel.
+        sp.setSpan(new ForegroundColorSpan(0xFFE11D2E), 2, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sp.setSpan(new ForegroundColorSpan(0xFFE11D2E), 4, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        t.setText(sp);
+        t.setTextColor(0xFFFFFFFF);
+        t.setTextSize(sizeSp);
+        t.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD));
+        t.setLetterSpacing(0.14f);
+        t.setIncludeFontPadding(false);
+        return t;
     }
 
     int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }

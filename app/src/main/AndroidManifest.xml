@@ -16,7 +16,8 @@
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher_grit"
+        android:roundIcon="@drawable/ic_launcher_grit"
         android:label="Grit"
         android:supportsRtl="false"
         android:theme="@android:style/Theme.Material.NoActionBar">
