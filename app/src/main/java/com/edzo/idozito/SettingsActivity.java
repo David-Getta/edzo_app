@@ -214,7 +214,7 @@ public class SettingsActivity extends Activity {
             try {
                 Intent s = new Intent(Intent.ACTION_SEND);
                 s.setType("text/plain");
-                s.putExtra(Intent.EXTRA_SUBJECT, "My trainer – edzőtárs app");
+                s.putExtra(Intent.EXTRA_SUBJECT, "Grit – edzőtárs app");
                 s.putExtra(Intent.EXTRA_TEXT,
                         "Ezt az ingyenes edzőtárs appot használom (HIIT időzítő, futáskövetés, "
                         + "edzésnapló): https://github.com/David-Getta/edzo_app\n\n"
@@ -228,7 +228,7 @@ public class SettingsActivity extends Activity {
         // App-verzió kijelzése (a telepített csomagból olvasva)
         String ver = "";
         try { ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception ignored) {}
-        TextView verLabel = text("My trainer" + (ver.isEmpty() ? "" : "  ·  v" + ver), 12, MUTED, false);
+        TextView verLabel = text("Grit" + (ver.isEmpty() ? "" : "  ·  v" + ver), 12, MUTED, false);
         verLabel.setGravity(Gravity.CENTER);
         verLabel.setPadding(0, dp(20), 0, dp(4));
         col.addView(verLabel);
@@ -324,7 +324,7 @@ public class SettingsActivity extends Activity {
                     Toast.makeText(this, "Visszaállítva. 👍", Toast.LENGTH_LONG).show();
                     recreate();
                 } else {
-                    Toast.makeText(this, "Ez nem My trainer mentésfájl.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Ez nem Grit mentésfájl.", Toast.LENGTH_LONG).show();
                 }
             } catch (Exception e) {
                 Toast.makeText(this, "Nem sikerült beolvasni a fájlt.", Toast.LENGTH_LONG).show();

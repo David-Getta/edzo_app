@@ -228,7 +228,7 @@ public class MainActivity extends Activity {
                 box.addView(row);
             }
             prefs.edit().putBoolean("welcomed", true).apply();
-            new Sheet(this, "Üdv a My trainerben! 👋", "Néhány dolog, amit tud az app:")
+            new Sheet(this, "Üdv a Grit appban! 👋", "Néhány dolog, amit tud az app:")
                 .addCustom(box)
                 .addPrimary("Kezdjük! 💪", () -> {})
                 .show();
@@ -510,7 +510,7 @@ public class MainActivity extends Activity {
         }
         LinearLayout btitles = vbox();
         btitles.setPadding(dp(22), dp(20), dp(22), dp(20));
-        btitles.addView(text("My trainer", 27, 0xFFFFFFFF, true));
+        btitles.addView(text("Grit", 27, 0xFFFFFFFF, true));
         bannerSub = text(bannerSubtitle(), 13, 0xFFFFFFFF, false);
         bannerSub.setAlpha(0.92f);
         btitles.addView(bannerSub);
@@ -1413,7 +1413,7 @@ public class MainActivity extends Activity {
         sp.setColor(0xFF22E0FF);
         sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         sp.setTextSize(40);
-        cv.drawText(got.size() + " / " + Badges.ALL.length + " megszerezve  ·  My trainer", M, 300, sp);
+        cv.drawText(got.size() + " / " + Badges.ALL.length + " megszerezve  ·  Grit", M, 300, sp);
 
         int cols = 2, gap = 24;
         int cardW = (W - 2 * M - gap) / cols;
@@ -1572,7 +1572,7 @@ public class MainActivity extends Activity {
         tp.setColor(0xFFEAF6FF);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(78);
-        cv.drawText("My trainer", M, 250, tp);
+        cv.drawText("Grit", M, 250, tp);
 
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
         sp.setColor(0xFF22E0FF);
@@ -1639,7 +1639,7 @@ public class MainActivity extends Activity {
         tp.setColor(0xFFEAF6FF);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(78);
-        cv.drawText("My trainer", M, 250, tp);
+        cv.drawText("Grit", M, 250, tp);
 
         long xp = Levels.totalXp(arr);
         int lvl = Levels.levelForXp(xp);

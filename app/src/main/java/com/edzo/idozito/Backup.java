@@ -45,7 +45,7 @@ public final class Backup {
         }
     }
 
-    /** Visszaállítás; true, ha érvényes My trainer mentésfájl volt. */
+    /** Visszaállítás; true, ha érvényes Grit (my_trainer) mentésfájl volt. */
     public static boolean importJson(Context c, String json) {
         try {
             JSONObject root = new JSONObject(json);

@@ -272,7 +272,7 @@ public class WorkoutDetailActivity extends Activity {
         tp.setColor(0xFFEAF6FF);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(78);
-        cv.drawText("My trainer", M, 250, tp);
+        cv.drawText("Grit", M, 250, tp);
 
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
         sp.setColor(0xFF8AA0C4);
@@ -347,7 +347,7 @@ public class WorkoutDetailActivity extends Activity {
         int rounds = e.optInt("rounds", 0);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("🏃 My trainer – edzés · ").append(df.format(new Date(e.optLong("ts")))).append("\n");
+        sb.append("🏃 Grit – edzés · ").append(df.format(new Date(e.optLong("ts")))).append("\n");
         String nm = e.optString("name", "");
         if (!nm.isEmpty()) sb.append("🏋️ ").append(nm).append("\n");
         sb.append("⏱ Idő: ").append(fmtDur(dur));

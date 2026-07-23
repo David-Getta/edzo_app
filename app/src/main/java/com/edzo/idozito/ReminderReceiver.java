@@ -27,7 +27,7 @@ public class ReminderReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(CHANNEL) == null) {
             NotificationChannel ch = new NotificationChannel(CHANNEL, "Emlékeztetők",
                     NotificationManager.IMPORTANCE_DEFAULT);
-            ch.setDescription("My trainer emlékeztetők");
+            ch.setDescription("Grit emlékeztetők");
             nm.createNotificationChannel(ch);
         }
 
@@ -40,7 +40,7 @@ public class ReminderReceiver extends BroadcastReceiver {
         Notification.Builder b = Build.VERSION.SDK_INT >= 26
                 ? new Notification.Builder(c, CHANNEL)
                 : new Notification.Builder(c);
-        b.setContentTitle("My trainer")
+        b.setContentTitle("Grit")
                 .setContentText(text)
                 .setStyle(new Notification.BigTextStyle().bigText(text))
                 .setSmallIcon(android.R.drawable.ic_popup_reminder)

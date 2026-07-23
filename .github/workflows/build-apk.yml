@@ -98,10 +98,10 @@ jobs:
           # A GitHub "latest release" mindig a legújabbra mutat, így a fix
           # .../releases/latest link is működik.
           tag_name: build-${{ github.run_number }}
-          name: "My trainer – build ${{ github.run_number }}"
+          name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            My trainer automatikus build (v8.0, build ${{ github.run_number }}).
+            Grit automatikus build (v8.1, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"
