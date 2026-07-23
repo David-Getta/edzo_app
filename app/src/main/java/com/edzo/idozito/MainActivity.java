@@ -438,23 +438,23 @@ public class MainActivity extends Activity {
         // Funkció-csempék (2 oszlop)
         LinearLayout grid = vbox();
         grid.addView(tileRow(
-                featureTile("📜", "Előzmények", () -> startActivity(new Intent(this, HistoryActivity.class))),
-                featureTile("📈", "Statisztika", () -> startActivity(new Intent(this, StatsActivity.class)))));
+                featureTile("📜", "Előzmények", 0xFF8B9DFF, () -> startActivity(new Intent(this, HistoryActivity.class))),
+                featureTile("📈", "Statisztika", 0xFF5FD0FF, () -> startActivity(new Intent(this, StatsActivity.class)))));
         grid.addView(gap(10));
         grid.addView(tileRow(
-                featureTile("📊", "Profil / BMI", () -> startActivity(new Intent(this, ProfileActivity.class))),
-                featureTile("🔔", "Emlékeztetők", () -> startActivity(new Intent(this, RemindersActivity.class)))));
+                featureTile("📊", "Profil / BMI", 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))),
+                featureTile("🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class)))));
         grid.addView(gap(10));
         grid.addView(tileRow(
-                featureTile("🧘", "Nyújtás & mobilitás", () -> startActivity(new Intent(this, MobilityActivity.class))),
-                featureTile("📖", "Gyakorlatok", () -> startActivity(new Intent(this, LibraryActivity.class)))));
+                featureTile("🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))),
+                featureTile("📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class)))));
         grid.addView(gap(10));
         grid.addView(tileRow(
-                featureTile("⚙️", "Beállítások", () -> startActivity(new Intent(this, SettingsActivity.class))),
-                featureTile("💾", "Sablon mentése", this::saveTemplateDialog)));
+                featureTile("⚙️", "Beállítások", 0xFF9AA7C7, () -> startActivity(new Intent(this, SettingsActivity.class))),
+                featureTile("💾", "Sablon mentése", 0xFF7FE1A6, this::saveTemplateDialog)));
         grid.addView(gap(10));
         grid.addView(tileRow(
-                featureTile("🏋️", "Erősítő napló", () -> startActivity(new Intent(this, StrengthActivity.class))),
+                featureTile("🏋️", "Erősítő napló", 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))),
                 new View(this)));
         col.addView(grid, new LinearLayout.LayoutParams(-1, -2));
 
@@ -599,18 +599,33 @@ public class MainActivity extends Activity {
 
     // ---- Funkció-csempék ----
 
-    View featureTile(String emoji, String label, Runnable onTap) {
+    View featureTile(String emoji, String label, int accent, Runnable onTap) {
         LinearLayout t = vbox();
         t.setGravity(Gravity.CENTER);
-        t.setPadding(dp(14), dp(18), dp(14), dp(18));
+        t.setPadding(dp(14), dp(16), dp(14), dp(16));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(GLASS); bg.setCornerRadius(dp(18)); bg.setStroke(dp(1), GLASS_LINE);
+        // Halvány színes tint + színes keret → minden csempe jól elkülönül.
+        bg.setColor((accent & 0x00FFFFFF) | 0x17000000);
+        bg.setCornerRadius(dp(18));
+        bg.setStroke(dp(1), (accent & 0x00FFFFFF) | 0x55000000);
         t.setBackground(bg);
         t.setClickable(true);
-        TextView e = text(emoji, 26, TXT, false); e.setGravity(Gravity.CENTER);
-        TextView l = text(label, 13.5f, TXT, true); l.setGravity(Gravity.CENTER);
-        l.setPadding(0, dp(6), 0, 0);
-        t.addView(e); t.addView(l);
+
+        // Színes kör az ikon mögött – látványos és gyorsan beazonosítható.
+        TextView e = text(emoji, 23, TXT, false);
+        e.setGravity(Gravity.CENTER);
+        GradientDrawable ring = new GradientDrawable();
+        ring.setShape(GradientDrawable.OVAL);
+        ring.setColor((accent & 0x00FFFFFF) | 0x33000000);
+        e.setBackground(ring);
+        LinearLayout.LayoutParams elp = new LinearLayout.LayoutParams(dp(44), dp(44));
+        elp.gravity = Gravity.CENTER_HORIZONTAL;
+
+        TextView l = text(label, 13, TXT, true);
+        l.setGravity(Gravity.CENTER);
+        l.setPadding(0, dp(8), 0, 0);
+        t.addView(e, elp);
+        t.addView(l);
         t.setOnClickListener(v -> onTap.run());
         return t;
     }
