@@ -151,31 +151,63 @@ public final class Ux {
             LinearLayout item = new LinearLayout(a);
             item.setOrientation(LinearLayout.VERTICAL);
             item.setGravity(Gravity.CENTER);
-            item.setPadding(0, (int) (8 * d), 0, (int) (7 * d));
+            item.setPadding(0, (int) (7 * d), 0, (int) (6 * d));
             item.setClickable(true);
+            // Aktív fül: kiemelő „pill" háttér. Minden fül: azonnali megnyomás-visszajelzés.
+            item.setBackground(navItemBg(accent, on, d));
+
             TextView e = new TextView(a);
             e.setText(emo[i]);
-            e.setTextSize(19);
+            e.setTextSize(on ? 21 : 18);
             e.setGravity(Gravity.CENTER);
-            e.setAlpha(on ? 1f : 0.55f);
+            e.setAlpha(on ? 1f : 0.5f);
             TextView l = new TextView(a);
             l.setText(lbl[i]);
             l.setTextSize(10.5f);
             l.setGravity(Gravity.CENTER);
             l.setPadding(0, (int) (2 * d), 0, 0);
-            l.setTextColor(on ? accent : 0xFF8AA0C4);
+            l.setTextColor(on ? accent : 0xFF7C90B4);
             if (on) l.setTypeface(null, Typeface.BOLD);
             item.addView(e);
             item.addView(l);
             item.setOnClickListener(v -> {
                 if (idx == active) return;
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
                 Intent it = new Intent(a, target[idx]);
                 if (target[idx] == MainActivity.class)
                     it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 a.startActivity(it);
+                a.overridePendingTransition(0, 0); // azonnali váltás, nincs lassú animáció
             });
-            bar.addView(item, new LinearLayout.LayoutParams(0, -2, 1f));
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(0, -2, 1f);
+            ip.leftMargin = (int) (5 * d);
+            ip.rightMargin = (int) (5 * d);
+            ip.topMargin = (int) (5 * d);
+            ip.bottomMargin = (int) (5 * d);
+            bar.addView(item, ip);
         }
         return bar;
+    }
+
+    /** Alsó-navigációs fül háttere: aktívnál kiemelő pill, egyébként megnyomás-visszajelzés. */
+    private static android.graphics.drawable.Drawable navItemBg(int accent, boolean active, float d) {
+        float r = 16 * d;
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setColor((accent & 0x00FFFFFF) | 0x33000000);
+        pressed.setCornerRadius(r);
+        if (active) {
+            GradientDrawable base = new GradientDrawable();
+            base.setColor((accent & 0x00FFFFFF) | 0x24000000);
+            base.setCornerRadius(r);
+            base.setStroke((int) (1 * d), (accent & 0x00FFFFFF) | 0x55000000);
+            android.graphics.drawable.StateListDrawable sld = new android.graphics.drawable.StateListDrawable();
+            sld.addState(new int[]{android.R.attr.state_pressed}, pressed);
+            sld.addState(new int[]{}, base);
+            return sld;
+        }
+        android.graphics.drawable.StateListDrawable sld = new android.graphics.drawable.StateListDrawable();
+        sld.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        sld.addState(new int[]{}, new android.graphics.drawable.ColorDrawable(0x00000000));
+        return sld;
     }
 }
