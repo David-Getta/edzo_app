@@ -2792,7 +2792,7 @@ public class MainActivity extends Activity {
             if (a == null) return;
             if (TimerService.B_TICK.equals(a)) onTick(i);
             else if (TimerService.B_DONE.equals(a)) onDone(i);
-            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshHome(); checkNewBadges(); BlazeWidget.refresh(this); }
+            else if (TimerService.B_STOPPED.equals(a)) { showRun(false); refreshHome(); checkNewBadges(); BlazeWidget.refresh(c); }
         }
     };
 
