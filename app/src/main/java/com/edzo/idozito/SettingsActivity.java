@@ -153,6 +153,14 @@ public class SettingsActivity extends Activity {
             Theme.setBool(this, "blaze_nudge", c);
             DailyNudgeReceiver.schedule(this);
         });
+        // Blaze értesítésének időpontja (azonnal újraütemez).
+        TextView nudgeCap = text("Blaze mikor szóljon?", 12.5f, MUTED, false);
+        nudgeCap.setPadding(dp(14), dp(2), dp(14), dp(6));
+        notif.addView(nudgeCap);
+        LinearLayout hourWrap = vbox();
+        hourWrap.setPadding(dp(8), 0, dp(8), dp(10));
+        hourWrap.addView(nudgeHourChips());
+        notif.addView(hourWrap);
         notif.addView(divider());
         Switch live = new Switch(this);
         live.setChecked(Theme.liveBg(this));
@@ -399,6 +407,29 @@ public class SettingsActivity extends Activity {
             b.setOnClickListener(v -> {
                 Theme.setInt(this, key, val);
                 for (int j = 0; j < btns.length; j++) styleChip(btns[j], values[j] == val);
+            });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
+            lp.leftMargin = dp(4); lp.rightMargin = dp(4);
+            row.addView(b, lp);
+            btns[i] = b;
+        }
+        return row;
+    }
+
+    /** Blaze napi értesítésének órája – választás után azonnal újraütemez. */
+    View nudgeHourChips() {
+        final int[] hours = {8, 12, 18, 20};
+        String[] labels = {"8:00", "12:00", "18:00", "20:00"};
+        LinearLayout row = hbox();
+        final Button[] btns = new Button[hours.length];
+        final int cur = Theme.nudgeHour(this);
+        for (int i = 0; i < hours.length; i++) {
+            final int val = hours[i];
+            Button b = chip(labels[i], val == cur);
+            b.setOnClickListener(v -> {
+                Theme.setInt(this, "blaze_hour", val);
+                DailyNudgeReceiver.schedule(this);
+                for (int j = 0; j < btns.length; j++) styleChip(btns[j], hours[j] == val);
             });
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
             lp.leftMargin = dp(4); lp.rightMargin = dp(4);

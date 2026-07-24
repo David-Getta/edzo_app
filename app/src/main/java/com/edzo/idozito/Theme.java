@@ -50,6 +50,8 @@ public final class Theme {
     public static boolean recapEnabled(Context c) { return p(c).getBoolean("recap", true); }
     /** Blaze (kabalafigura) napi motiváló értesítése be/ki. */
     public static boolean blazeNudge(Context c) { return p(c).getBoolean("blaze_nudge", true); }
+    /** Blaze napi értesítésének órája (0-23). */
+    public static int nudgeHour(Context c) { return p(c).getInt("blaze_hour", 18); }
     /** Élő (mozgó) háttér-animáció be/ki. */
     public static boolean liveBg(Context c) { return p(c).getBoolean("livebg", true); }
     /** Zene halkítása (audio-fókusz) edzés közben be/ki. */

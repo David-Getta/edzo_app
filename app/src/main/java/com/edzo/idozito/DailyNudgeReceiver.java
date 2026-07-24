@@ -23,9 +23,9 @@ import java.util.Calendar;
 public class DailyNudgeReceiver extends BroadcastReceiver {
 
     static final String CHANNEL = "edzo_blaze";
-    static final int REQ = 88, NOTIF_ID = 9200, HOUR = 18;
+    static final int REQ = 88, NOTIF_ID = 9200;
 
-    /** Napi 18:00-ra ütemez, majd naponta ismétel. Ha ki van kapcsolva, törli. */
+    /** A beállított napi időpontra ütemez, majd naponta ismétel. Ha ki van kapcsolva, törli. */
     public static void schedule(Context c) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
@@ -38,7 +38,7 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             return;
         }
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, HOUR);
+        cal.set(Calendar.HOUR_OF_DAY, Theme.nudgeHour(c));
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
@@ -55,7 +55,10 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         if (workedOutToday(c)) return;   // ma már edzett – nem nyaggatjuk
 
         String userName = c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getString("user_name", "");
-        String text = Mascot.nudge(userName, true, 0);
+        // A tegnapig tartó napi széria: ha van, Blaze kifejezetten arra figyelmeztet,
+        // hogy ne szakadjon meg ("ne hagyd kihunyni a X napos lángod").
+        int streak = streakBeforeToday(c);
+        String text = Mascot.nudge(userName, streak >= 1, streak);
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
@@ -83,6 +86,26 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setContentIntent(pi);
         nm.notify(NOTIF_ID, b.build());
+    }
+
+    /** Hány egymást követő napon edzett tegnappal bezárólag (ma nélkül). */
+    private static int streakBeforeToday(Context c) {
+        long dayMs = 24L * 60 * 60 * 1000;
+        long todayStart = todayStart();
+        JSONArray h = History.load(c);
+        int streak = 0;
+        for (int k = 1; k <= 365; k++) {
+            long from = todayStart - k * dayMs, to = todayStart - (k - 1) * dayMs;
+            boolean hit = false;
+            for (int i = 0; i < h.length(); i++) {
+                JSONObject o = h.optJSONObject(i);
+                long ts = o == null ? 0 : o.optLong("ts");
+                if (ts >= from && ts < to) { hit = true; break; }
+            }
+            if (!hit) break;
+            streak++;
+        }
+        return streak;
     }
 
     private static boolean workedOutToday(Context c) {
