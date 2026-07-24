@@ -493,8 +493,12 @@ public class StatsActivity extends Activity {
         int streak = weekStreak();
         LinearLayout grid = card();
         grid.setPadding(dp(6), dp(6), dp(6), dp(6));
+        int dayNow = Streaks.current(this, hist);
+        int dayBest = Streaks.best(this, hist);
         addTiles(grid, new String[][]{
                 {"🔥 Heti sorozat", streak + " hét"},
+                {"⚡ Napi széria", dayNow + " nap"},
+                {"🏅 Leghosszabb széria", dayBest + " nap"},
                 {"🏆 Leghosszabb táv", bestDist > 0 ? fmtDist(bestDist) : "—"},
                 {"⏱ Leghosszabb edzés", bestDur > 0 ? fmtDur(bestDur) : "—"},
                 {"⚡ Legjobb átlag", bestAvg > 0 ? fmtSpeed(bestAvg) : "—"},

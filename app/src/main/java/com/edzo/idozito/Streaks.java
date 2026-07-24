@@ -50,6 +50,34 @@ public final class Streaks {
         return s;
     }
 
+    /** A valaha volt leghosszabb (terv-tudatos) napi széria az előzményekben. */
+    public static int best(Context ctx, JSONArray arr) {
+        HashSet<Long> days = daySet(arr);
+        if (days.isEmpty()) return 0;
+        boolean hasPlan = !Theme.planDays(ctx).isEmpty();
+        long min = Long.MAX_VALUE;
+        for (Long d : days) if (d < min) min = d;
+        Calendar cur = Calendar.getInstance();
+        cur.setTimeInMillis(min);
+        zero(cur);
+        Calendar today = Calendar.getInstance();
+        zero(today);
+        long end = today.getTimeInMillis();
+        int run = 0, best = 0;
+        for (int k = 0; k < 3700 && cur.getTimeInMillis() <= end; k++) {
+            if (days.contains(cur.getTimeInMillis())) {
+                run++;
+                if (run > best) best = run;
+            } else {
+                int dowIdx = (cur.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+                boolean restDay = hasPlan && !Theme.isPlanDay(ctx, dowIdx);
+                if (!restDay) run = 0;
+            }
+            cur.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        return best;
+    }
+
     private static HashSet<Long> daySet(JSONArray arr) {
         HashSet<Long> days = new HashSet<>();
         Calendar c = Calendar.getInstance();
