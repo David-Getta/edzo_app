@@ -53,6 +53,23 @@ public class RemindersActivity extends Activity {
         col.addView(text("Napi értesítések – szabd testre az időt és a szöveget.", 13, MUTED, false));
         col.addView(gap(20));
 
+        // Blaze automatikus napi biztatása – itt is látszik, hogy mikor szól.
+        if (Theme.blazeNudge(this)) {
+            LinearLayout blazeCard = card();
+            blazeCard.setPadding(dp(14), dp(12), dp(14), dp(12));
+            blazeCard.addView(text("🐺 Blaze napi biztatása  ·  "
+                    + Theme.nudgeHour(this) + ":00", 14.5f, TXT, true));
+            TextView bSub = text("Edzésnapokon magától szól, ha aznap még nem edzettél. "
+                    + "Időpont és ki/be a Beállításokban.", 12.5f, MUTED, false);
+            bSub.setPadding(0, dp(4), 0, 0);
+            blazeCard.addView(bSub);
+            blazeCard.setClickable(true);
+            blazeCard.setOnClickListener(v ->
+                    startActivity(new android.content.Intent(this, SettingsActivity.class)));
+            col.addView(blazeCard, lp());
+            col.addView(gap(14));
+        }
+
         Button add = primary("＋  Új emlékeztető");
         add.setOnClickListener(v -> addOrEdit(null, ""));
         col.addView(add);
