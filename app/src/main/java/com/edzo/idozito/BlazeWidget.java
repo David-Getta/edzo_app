@@ -48,6 +48,14 @@ public class BlazeWidget extends AppWidgetProvider {
         else msg = Mascot.nudge(userName, false, 0);
         rv.setTextViewText(R.id.blaze_msg, msg);
 
+        // A ▶ gomb által indítandó edzés rövid leírása (program vagy intervallum).
+        android.content.SharedPreferences p = c.getSharedPreferences("edzo", Context.MODE_PRIVATE);
+        String prog = p.getString("progname", "");
+        String cfg = !prog.isEmpty() ? "▶ " + prog
+                : "▶ " + p.getInt("k1", 10) + "/" + p.getInt("k2", 30) + " mp · "
+                    + p.getInt("k3", 8) + " kör";
+        rv.setTextViewText(R.id.widget_cfg, cfg);
+
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
 

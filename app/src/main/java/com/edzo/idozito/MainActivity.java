@@ -3215,6 +3215,8 @@ public class MainActivity extends Activity {
             try { unregisterReceiver(rx); } catch (Exception ignored) {}
             receiverRegistered = false;
         }
+        // A widget vegye át az esetleg megváltozott edzés-beállítást (▶ leírás).
+        BlazeWidget.refresh(this);
     }
 
 
