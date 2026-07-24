@@ -1582,8 +1582,11 @@ public class MainActivity extends Activity {
             headTxt = "📅 Heti terv  ·  " + plannedDone + "/" + plannedCount + " edzésnap kész";
         else
             headTxt = "📅 Heti aktivitás  ·  " + trained + "/7 nap";
-        TextView head = text(headTxt, 13, 0xFF7FE1A6, true);
+        TextView head = text(headTxt + "  ✎", 13, 0xFF7FE1A6, true);
         head.setPadding(dp(2), 0, 0, dp(10));
+        // A fejlécre koppintva rögtön szerkeszthetők az edzésnapok.
+        head.setClickable(true);
+        head.setOnClickListener(v -> editPlanDaysSheet());
         c.addView(head);
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER);
@@ -1619,8 +1622,69 @@ public class MainActivity extends Activity {
         c.addView(row);
         c.setClickable(true);
         c.setOnClickListener(v -> startActivity(new Intent(this, StatsActivity.class)));
+        c.setOnLongClickListener(v -> { editPlanDaysSheet(); return true; });
         weekBox.addView(c);
         weekBox.addView(gap(14));
+    }
+
+    /** Edzésnapok gyors szerkesztése a kezdőlapról (a Beállítások megnyitása nélkül). */
+    void editPlanDaysSheet() {
+        final boolean[] sel = new boolean[7];
+        String cur = Theme.planDays(this);
+        if (!cur.isEmpty()) for (String d : cur.split(",")) {
+            try { int i = Integer.parseInt(d.trim()); if (i >= 0 && i < 7) sel[i] = true; }
+            catch (Exception ignored) {}
+        }
+        String[] labels = {"H", "K", "Sze", "Cs", "P", "Szo", "V"};
+        final TextView[] chips = new TextView[7];
+        LinearLayout rowChips = hbox();
+        rowChips.setGravity(Gravity.CENTER);
+        rowChips.setPadding(0, dp(10), 0, dp(4));
+        for (int i = 0; i < 7; i++) {
+            final int idx = i;
+            TextView ch = text(labels[i], 13, sel[i] ? 0xFFFFFFFF : MUTED, true);
+            ch.setGravity(Gravity.CENTER);
+            ch.setHeight(dp(40));
+            styleDayChip(ch, sel[i]);
+            ch.setClickable(true);
+            ch.setOnClickListener(v -> {
+                sel[idx] = !sel[idx];
+                styleDayChip(chips[idx], sel[idx]);
+                chips[idx].setTextColor(sel[idx] ? 0xFFFFFFFF : MUTED);
+            });
+            chips[i] = ch;
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(0, -2, 1f);
+            clp.leftMargin = dp(2); clp.rightMargin = dp(2);
+            rowChips.addView(ch, clp);
+        }
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(text("Jelöld ki, mely napokon tervezel edzeni. Üresen hagyva minden nap edzésnap.",
+                12.5f, MUTED, false));
+        box.addView(rowChips);
+        new Sheet(this, "📅 Edzésnapok")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 7; i++) if (sel[i]) {
+                        if (sb.length() > 0) sb.append(",");
+                        sb.append(i);
+                    }
+                    prefs.edit().putString("plan_days", sb.toString()).apply();
+                    BlazeWidget.refresh(this);
+                    if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+                    refreshHome();
+                })
+                .addCancel()
+                .show();
+    }
+
+    void styleDayChip(TextView ch, boolean on) {
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(dp(12));
+        if (on) bg.setColor(Theme.accent(this));
+        else { bg.setColor(CARD2); bg.setStroke(dp(1), LINE); }
+        ch.setBackground(bg);
     }
 
     // ---- Személyes rekordok ----
