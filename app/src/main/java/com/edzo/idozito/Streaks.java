@@ -1,0 +1,72 @@
+package com.edzo.idozito;
+
+import android.content.Context;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.HashSet;
+
+/**
+ * Közös, terv-tudatos („okos") napi széria-számítás. Ha be vannak állítva
+ * edzésnapok, a pihenőnap nem töri meg a szériát – csak a kihagyott tervezett
+ * edzésnap. Terv nélkül a hagyományos, naptári számítás él. A pihenőnapok nem
+ * is számítanak bele a szériába, csak átugorja őket a számláló.
+ */
+public final class Streaks {
+
+    private Streaks() {}
+
+    /** Napi széria mával bezárólag; a mai nap türelmi idő (ha ma még nincs edzés, tegnaptól számol). */
+    public static int current(Context c, JSONArray arr) {
+        return count(c, arr, true);
+    }
+
+    /** Napi széria tegnappal bezárólag (a még élő, ma megmenthető széria). */
+    public static int untilYesterday(Context c, JSONArray arr) {
+        return count(c, arr, false);
+    }
+
+    private static int count(Context ctx, JSONArray arr, boolean includeToday) {
+        HashSet<Long> days = daySet(arr);
+        boolean hasPlan = !Theme.planDays(ctx).isEmpty();
+        Calendar cur = Calendar.getInstance();
+        zero(cur);
+        // Naptári léptetéssel megyünk visszafelé (óraátállás-biztos).
+        if (!includeToday || !days.contains(cur.getTimeInMillis()))
+            cur.add(Calendar.DAY_OF_YEAR, -1);
+        int s = 0;
+        for (int k = 0; k < 730; k++) {
+            if (days.contains(cur.getTimeInMillis())) {
+                s++;
+            } else {
+                int dowIdx = (cur.get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
+                boolean restDay = hasPlan && !Theme.isPlanDay(ctx, dowIdx);
+                if (!restDay) break; // kihagyott edzésnap (vagy terv nélkül bármely nap) megtöri
+            }
+            cur.add(Calendar.DAY_OF_YEAR, -1);
+        }
+        return s;
+    }
+
+    private static HashSet<Long> daySet(JSONArray arr) {
+        HashSet<Long> days = new HashSet<>();
+        Calendar c = Calendar.getInstance();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) continue;
+            c.setTimeInMillis(o.optLong("ts"));
+            zero(c);
+            days.add(c.getTimeInMillis());
+        }
+        return days;
+    }
+
+    private static void zero(Calendar c) {
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+    }
+}

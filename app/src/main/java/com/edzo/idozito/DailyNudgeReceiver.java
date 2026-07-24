@@ -93,22 +93,7 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
 
     /** Hány egymást követő napon edzett tegnappal bezárólag (ma nélkül). */
     private static int streakBeforeToday(Context c) {
-        long dayMs = 24L * 60 * 60 * 1000;
-        long todayStart = todayStart();
-        JSONArray h = History.load(c);
-        int streak = 0;
-        for (int k = 1; k <= 365; k++) {
-            long from = todayStart - k * dayMs, to = todayStart - (k - 1) * dayMs;
-            boolean hit = false;
-            for (int i = 0; i < h.length(); i++) {
-                JSONObject o = h.optJSONObject(i);
-                long ts = o == null ? 0 : o.optLong("ts");
-                if (ts >= from && ts < to) { hit = true; break; }
-            }
-            if (!hit) break;
-            streak++;
-        }
-        return streak;
+        return Streaks.untilYesterday(c, History.load(c));
     }
 
     private static boolean workedOutToday(Context c) {

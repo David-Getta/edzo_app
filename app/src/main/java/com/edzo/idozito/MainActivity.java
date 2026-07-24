@@ -1233,17 +1233,8 @@ public class MainActivity extends Activity {
     }
 
     int dayStreak(JSONArray arr) {
-        java.util.HashSet<Long> days = new java.util.HashSet<>();
-        for (int i = 0; i < arr.length(); i++) {
-            JSONObject o = arr.optJSONObject(i);
-            if (o != null) days.add(dayStartOf(o.optLong("ts")));
-        }
-        long day = dayStartMs();
-        // Napléptetés óraátállás-biztosan: 12 órát visszalépve újranormalizálunk.
-        if (!days.contains(day)) day = dayStartOf(day - 12L * 3600 * 1000); // a mai nap még türelmi idő
-        int s = 0;
-        while (days.contains(day)) { s++; day = dayStartOf(day - 12L * 3600 * 1000); }
-        return s;
+        // Terv-tudatos ("okos") széria: pihenőnap nem töri meg – lásd Streaks.
+        return Streaks.current(this, arr);
     }
 
     long dayStartOf(long ts) {

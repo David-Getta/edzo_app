@@ -89,52 +89,12 @@ public class BlazeWidget extends AppWidgetProvider {
 
     /** Egymást követő edzésnapok száma tegnappal bezárólag (a még élő széria). */
     private static int streakUntilYesterday(Context c) {
-        long dayMs = 24L * 60 * 60 * 1000;
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        long todayStart = cal.getTimeInMillis();
-        JSONArray h = History.load(c);
-        int streak = 0;
-        for (int k = 1; k <= 365; k++) {
-            long from = todayStart - k * dayMs, to = todayStart - (k - 1) * dayMs;
-            boolean hit = false;
-            for (int i = 0; i < h.length(); i++) {
-                JSONObject o = h.optJSONObject(i);
-                long ts = o == null ? 0 : o.optLong("ts");
-                if (ts >= from && ts < to) { hit = true; break; }
-            }
-            if (!hit) break;
-            streak++;
-        }
-        return streak;
+        return Streaks.untilYesterday(c, History.load(c));
     }
 
     /** Egymást követő edzésnapok száma mával bezárólag. */
     private static int streakDays(Context c) {
-        long dayMs = 24L * 60 * 60 * 1000;
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        long todayStart = cal.getTimeInMillis();
-        JSONArray h = History.load(c);
-        int streak = 0;
-        for (int k = 0; k <= 365; k++) {
-            long from = todayStart - k * dayMs, to = todayStart - (k - 1) * dayMs;
-            boolean hit = false;
-            for (int i = 0; i < h.length(); i++) {
-                JSONObject o = h.optJSONObject(i);
-                long ts = o == null ? 0 : o.optLong("ts");
-                if (ts >= from && ts < to) { hit = true; break; }
-            }
-            if (!hit) break;
-            streak++;
-        }
-        return streak;
+        return Streaks.current(c, History.load(c));
     }
 
     private static boolean workedOutToday(Context c) {
