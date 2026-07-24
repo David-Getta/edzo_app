@@ -97,6 +97,7 @@ public class MainActivity extends Activity {
     LinearLayout goalBox;
     LinearLayout gridBox;
     LinearLayout sectionsBox;
+    LinearLayout insightBox;
     java.util.LinkedHashMap<String, View> sectionViews;
     LinearLayout progressBox;
     LinearLayout levelBar;
@@ -474,9 +475,11 @@ public class MainActivity extends Activity {
         LinearLayout tipWrap = vbox();
         tipWrap.addView(dailyTipCard());
         tipWrap.addView(gap(16));
+        insightBox = vbox();
         sectionViews = new java.util.LinkedHashMap<>();
         sectionViews.put("mascot", mascotWrap);
         sectionViews.put("week", weekBox);
+        sectionViews.put("insight", insightBox);
         sectionViews.put("recent", recentBox);
         sectionViews.put("badges", badgesBox);
         sectionViews.put("records", recordsBox);
@@ -871,9 +874,9 @@ public class MainActivity extends Activity {
 
     // ---- Testreszabható kezdőlap-szakaszok (átrendezés + elrejtés) ----
 
-    static final String[] SECT_IDS = {"mascot", "week", "recent", "badges", "records", "tip"};
-    static final String[] SECT_NAMES = {"🐺 Blaze", "📅 Heti aktivitás", "🕘 Legutóbbi edzés",
-            "🎖 Kitüntetések", "🏆 Rekordok", "💡 Napi tipp"};
+    static final String[] SECT_IDS = {"mascot", "week", "insight", "recent", "badges", "records", "tip"};
+    static final String[] SECT_NAMES = {"🐺 Blaze", "📅 Heti aktivitás", "📊 Heti összevetés",
+            "🕘 Legutóbbi edzés", "🎖 Kitüntetések", "🏆 Rekordok", "💡 Napi tipp"};
 
     java.util.List<String> sectOrder() {
         java.util.List<String> order = new java.util.ArrayList<>();
@@ -1261,7 +1264,63 @@ public class MainActivity extends Activity {
         refreshRecent();
         refreshBadges();
         refreshWeekDots();
+        refreshInsight();
         refreshRecords();
+    }
+
+    // ---- Heti összevetés (e hét vs. előző hét) ----
+
+    void refreshInsight() {
+        if (insightBox == null) return;
+        insightBox.removeAllViews();
+        JSONArray arr = activityLog();
+        long ws = weekStartMs();
+        long prevWs = ws - 7L * 24 * 3600 * 1000;
+        int cThis = 0, cPrev = 0;
+        long durThis = 0, durPrev = 0;
+        double mThis = 0, mPrev = 0;   // méterben
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o == null) continue;
+            long ts = o.optLong("ts");
+            double d = o.optDouble("dist", 0);
+            if (ts >= ws) { cThis++; durThis += o.optInt("dur"); if (d > 0) mThis += d; }
+            else if (ts >= prevWs) { cPrev++; durPrev += o.optInt("dur"); if (d > 0) mPrev += d; }
+        }
+        if (cThis == 0 && cPrev == 0) return;   // nincs mihez mérni
+
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(14), dp(14), dp(14));
+        TextView head = text("📊 Heti összevetés  ·  előző héthez képest", 13, 0xFF5FD0FF, true);
+        head.setPadding(dp(2), 0, 0, dp(8));
+        c.addView(head);
+        c.addView(insightRow("🏁 Edzések", cThis + " db", cThis - cPrev, ""));
+        c.addView(insightRow("⏱ Mozgás", (durThis / 60) + " perc", (durThis - durPrev) / 60.0, "perc"));
+        if (mThis > 0 || mPrev > 0)
+            c.addView(insightRow("📍 Táv",
+                    String.format(new Locale("hu"), "%.1f km", mThis / 1000.0),
+                    (mThis - mPrev) / 1000.0, "km"));
+        insightBox.addView(c);
+        insightBox.addView(gap(14));
+    }
+
+    View insightRow(String label, String value, double delta, String unit) {
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(2), dp(3), 0, dp(3));
+        row.addView(text(label, 13.5f, MUTED, false), new LinearLayout.LayoutParams(0, -2, 1f));
+        row.addView(text(value, 14, TXT, true));
+        String dTxt; int dCol;
+        if (Math.abs(delta) < 0.05) { dTxt = "   =";  dCol = MUTED; }
+        else if (delta > 0) { dTxt = "   ↑ " + fmtDelta(delta, unit); dCol = 0xFF7FE1A6; }
+        else { dTxt = "   ↓ " + fmtDelta(-delta, unit); dCol = 0xFFFF6B6B; }
+        row.addView(text(dTxt, 13, dCol, true));
+        return row;
+    }
+
+    String fmtDelta(double v, String unit) {
+        if ("km".equals(unit)) return String.format(new Locale("hu"), "%.1f km", v);
+        return (int) Math.round(v) + (unit.isEmpty() ? "" : " " + unit);
     }
 
     void refreshProgress() {
