@@ -367,7 +367,12 @@ public class TimerService extends Service {
             // Félútnál egyszeri extra biztatás (legalább 4 körös edzésnél).
             if (!halfwayCheered && !lastRound && rounds >= 4 && s.round == rounds / 2 + 1) {
                 halfwayCheered = true;
-                speakAdd("Félúton túl vagy. Hajrá, ne állj meg!");
+                String[] cheer = {
+                        "Félúton túl vagy. Hajrá, ne állj meg!",
+                        "A nehezén túl vagy. Innen már hazafelé megy!",
+                        "Félidő! Erős vagy, tartsd a tempót!",
+                };
+                speakAdd(cheer[(int) (Math.random() * cheer.length)]);
             }
         } else if (s.type == T_REST) {
             Beeper.play(restSound); buzz(120);
