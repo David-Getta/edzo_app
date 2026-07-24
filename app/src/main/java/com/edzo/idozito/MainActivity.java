@@ -119,6 +119,7 @@ public class MainActivity extends Activity {
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
     TextView exText, exDesc, nextText, recordText, levelText, blazePraise;
+    TextView mascotBody, mascotMoodTv;
     TextView statElapsed, statCal, statSteps, statRemain;
     Button pauseBtn, cooldownBtn, shareBtn, againBtn;
     View overallFill;
@@ -648,8 +649,9 @@ public class MainActivity extends Activity {
 
     // ---- Kabalafigura: Blaze, a tűzfarkas ----
 
-    /** Blaze kártyája a kezdőképernyő tetején: avatar + beszédbuborék, koppintásra biztat. */
-    View mascotCard() {
+    /** Blaze aktuális üzenetének és hangulatának újraszámolása (edzés után is friss). */
+    void refreshMascot() {
+        if (mascotBody == null) return;
         JSONArray arr = activityLog();
         long dayStart = dayStartMs();
         boolean today = false;
@@ -710,8 +712,12 @@ public class MainActivity extends Activity {
                 if (!yTrained) msg = Mascot.comeback(userName);
             }
         }
-        String moodE = Mascot.mood(today, ds, risk);
+        mascotBody.setText(msg);
+        if (mascotMoodTv != null) mascotMoodTv.setText(Mascot.mood(today, ds, risk));
+    }
 
+    /** Blaze kártyája a kezdőképernyő tetején: avatar + beszédbuborék, koppintásra biztat. */
+    View mascotCard() {
         LinearLayout cardM = card();
         cardM.setOrientation(LinearLayout.HORIZONTAL);
         cardM.setGravity(Gravity.CENTER_VERTICAL);
@@ -728,12 +734,11 @@ public class MainActivity extends Activity {
         face.setTextSize(30);
         face.setGravity(Gravity.CENTER);
         badge.addView(face, new FrameLayout.LayoutParams(-1, -1));
-        TextView moodTv = new TextView(this);
-        moodTv.setText(moodE);
-        moodTv.setTextSize(15);
+        mascotMoodTv = new TextView(this);
+        mascotMoodTv.setTextSize(15);
         FrameLayout.LayoutParams mlp = new FrameLayout.LayoutParams(-2, -2);
         mlp.gravity = Gravity.BOTTOM | Gravity.END;
-        badge.addView(moodTv, mlp);
+        badge.addView(mascotMoodTv, mlp);
         LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(dp(60), dp(60));
         blp.rightMargin = dp(14);
         cardM.addView(badge, blp);
@@ -744,16 +749,17 @@ public class MainActivity extends Activity {
         int lvlNow = Levels.levelForXp(xpNow);
         txtCol.addView(text(Mascot.NAME + " 🔥  ·  Szint " + lvlNow + " – " + Levels.title(lvlNow),
                 12.5f, tAccent, true));
-        final TextView body = text(msg, 14, TXT, false);
-        body.setPadding(0, dp(3), 0, 0);
-        txtCol.addView(body);
+        mascotBody = text("", 14, TXT, false);
+        mascotBody.setPadding(0, dp(3), 0, 0);
+        txtCol.addView(mascotBody);
         cardM.addView(txtCol, new LinearLayout.LayoutParams(0, -2, 1f));
 
         cardM.setClickable(true);
         cardM.setOnClickListener(v -> {
-            body.setText(Mascot.pep());
+            mascotBody.setText(Mascot.pep());
             v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
         });
+        refreshMascot();
         return cardM;
     }
 
@@ -1318,6 +1324,7 @@ public class MainActivity extends Activity {
         refreshWeekDots();
         refreshInsight();
         refreshRecords();
+        refreshMascot();
     }
 
     // ---- Heti összevetés (e hét vs. előző hét) ----
