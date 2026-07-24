@@ -541,8 +541,11 @@ public class ProfileActivity extends Activity {
             dot.setStyle(Paint.Style.FILL);
             grid.setStyle(Paint.Style.STROKE);
             grid.setStrokeWidth(density);
-            grid.setColor(LINE);
-            txt.setColor(MUTED);
+            // A MainActivity palettája minden képernyőn inicializálódik (applyPalette),
+            // a saját statikus színeink viszont csak a Profil megnyitása után – ezért
+            // azokra nem támaszkodhatunk (láthatatlan feliratokat okozott).
+            grid.setColor(MainActivity.LINE != 0 ? MainActivity.LINE : 0x2EFFFFFF);
+            txt.setColor(MainActivity.MUTED != 0 ? MainActivity.MUTED : 0xFFA98F95);
             txt.setTextSize(density * 11f);
         }
 
@@ -566,7 +569,9 @@ public class ProfileActivity extends Activity {
                 float y = padT + (H - padT - padB) * g / 2f;
                 canvas.drawLine(padL, y, W - padR, y, grid);
                 double val = mx - (mx - mn) * g / 2.0;
-                canvas.drawText(fmt(val), density * 4, y + density * 4, txt);
+                // A felső címke mellé a mértékegység is kikerül.
+                canvas.drawText(fmt(val) + (g == 0 && !unit.isEmpty() ? " " + unit : ""),
+                        density * 4, y + density * 4, txt);
             }
 
             path.reset();

@@ -258,7 +258,7 @@ public class WorkoutDetailActivity extends Activity {
         Canvas cv = new Canvas(bmp);
 
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF140B0D, 0xFF1A0E10, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, W, H, p);
         p.setShader(null);
 
@@ -269,13 +269,13 @@ public class WorkoutDetailActivity extends Activity {
         bar.setShader(null);
 
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setColor(0xFFEAF6FF);
+        tp.setColor(0xFFF5ECEE);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(78);
         cv.drawText("Grit", M, 250, tp);
 
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sp.setColor(0xFF8AA0C4);
+        sp.setColor(0xFFA98F95);
         sp.setTextSize(38);
         String wname = e.optString("name", "");
         String type = wname.isEmpty() ? "Futás" : wname;
@@ -314,7 +314,7 @@ public class WorkoutDetailActivity extends Activity {
         val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         val.setTextSize(58);
         Paint lab = new Paint(Paint.ANTI_ALIAS_FLAG);
-        lab.setColor(0xFF8AA0C4);
+        lab.setColor(0xFFA98F95);
         lab.setTextSize(34);
         for (int i = 0; i < tiles.length; i++) {
             int cx = M + (i % cols) * (cardW + gap);

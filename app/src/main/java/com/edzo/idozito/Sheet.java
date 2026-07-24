@@ -77,7 +77,7 @@ public final class Sheet {
         if (title != null) {
             TextView t = new TextView(act);
             t.setText(title);
-            t.setTextColor(lm ? 0xFF16203A : 0xFFEAF6FF);
+            t.setTextColor(lm ? 0xFF241B1D : 0xFFF5ECEE);
             t.setTextSize(19);
             t.setTypeface(null, Typeface.BOLD);
             t.setGravity(Gravity.CENTER);
@@ -87,7 +87,7 @@ public final class Sheet {
         if (subtitle != null) {
             TextView s = new TextView(act);
             s.setText(subtitle);
-            s.setTextColor(lm ? 0xFF5C6B86 : 0xFF8AA0C4);
+            s.setTextColor(lm ? 0xFF7E666C : 0xFFA98F95);
             s.setTextSize(13);
             s.setGravity(Gravity.CENTER);
             s.setPadding(dp(8), 0, dp(8), dp(12));
@@ -153,14 +153,14 @@ public final class Sheet {
         mid.setOrientation(LinearLayout.VERTICAL);
         TextView t = new TextView(a);
         t.setText(title);
-        t.setTextColor(lm ? 0xFF16203A : 0xFFEAF6FF);
+        t.setTextColor(lm ? 0xFF241B1D : 0xFFF5ECEE);
         t.setTextSize(16);
         t.setTypeface(null, Typeface.BOLD);
         mid.addView(t);
         if (sub != null) {
             TextView s = new TextView(a);
             s.setText(sub);
-            s.setTextColor(lm ? 0xFF5C6B86 : 0xFF8AA0C4);
+            s.setTextColor(lm ? 0xFF7E666C : 0xFFA98F95);
             s.setTextSize(12.5f);
             mid.addView(s);
         }
@@ -241,9 +241,9 @@ public final class Sheet {
     }
 
     public Sheet addPrimary(String title, OnTap tap) { addButton(title, 0, 0xFFFFFFFF, true, true, tap); return this; }
-    public Sheet addNeutral(String title, OnTap tap) { addButton(title, lm ? 0x12000000 : 0x22FFFFFF, lm ? 0xFF16203A : 0xFFEAF6FF, false, true, tap); return this; }
+    public Sheet addNeutral(String title, OnTap tap) { addButton(title, lm ? 0x12000000 : 0x22FFFFFF, lm ? 0xFF241B1D : 0xFFF5ECEE, false, true, tap); return this; }
     public Sheet addDestructive(String title, OnTap tap) { addButton(title, lm ? 0x1AFF453A : 0x33FF453A, 0xFFE23B3B, false, true, tap); return this; }
-    public Sheet addCancel() { addButton("Mégse", lm ? 0x0A000000 : 0x14FFFFFF, lm ? 0xFF5C6B86 : 0xFF8AA0C4, false, true, null); return this; }
+    public Sheet addCancel() { addButton("Mégse", lm ? 0x0A000000 : 0x14FFFFFF, lm ? 0xFF7E666C : 0xFFA98F95, false, true, null); return this; }
 
     // ---- Megjelenítés ----
 

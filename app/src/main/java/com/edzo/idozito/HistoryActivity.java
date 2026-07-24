@@ -389,7 +389,7 @@ public class HistoryActivity extends Activity {
             Ux.kenBurns(img);
             View scrim = new View(this);
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x99070912, 0xE0070912, 0xF5070912});
+                    new int[]{0x99140B0D, 0xE0140B0D, 0xF5140B0D});
             scrim.setBackground(g);
             host.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         } catch (Exception ignored) {}

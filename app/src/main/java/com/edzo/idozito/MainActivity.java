@@ -281,7 +281,7 @@ public class MainActivity extends Activity {
             Ux.kenBurns(img); // lassan „élő" háttér
             View scrim = new View(this);
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x80070912, 0xD9070912, 0xF2070912});
+                    new int[]{0x80140B0D, 0xD9140B0D, 0xF2140B0D});
             scrim.setBackground(g);
             host.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         } catch (Exception ignored) {}
@@ -531,7 +531,7 @@ public class MainActivity extends Activity {
                 banner.addView(hero, new FrameLayout.LayoutParams(-1, -1));
                 View sc = new View(this);
                 GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                        new int[]{0xF2070912, 0x99070912, 0x1A000000});
+                        new int[]{0xF2140B0D, 0x99140B0D, 0x1A000000});
                 sc.setBackground(g);
                 banner.addView(sc, new FrameLayout.LayoutParams(-1, -1));
             } catch (Exception e) {
@@ -1732,7 +1732,7 @@ public class MainActivity extends Activity {
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(bmp);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF140B0D, 0xFF1A0E10, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, W, H, p);
         p.setShader(null);
 
@@ -1742,7 +1742,7 @@ public class MainActivity extends Activity {
         bar.setShader(null);
 
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setColor(0xFFEAF6FF);
+        tp.setColor(0xFFF5ECEE);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(72);
         cv.drawText("Kitüntetéseim 🏅", M, 240, tp);
@@ -1759,7 +1759,7 @@ public class MainActivity extends Activity {
         int startY = 360;
         Paint emo = new Paint(Paint.ANTI_ALIAS_FLAG); emo.setTextSize(56);
         Paint name = new Paint(Paint.ANTI_ALIAS_FLAG);
-        name.setColor(0xFFEAF6FF);
+        name.setColor(0xFFF5ECEE);
         name.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         name.setTextSize(30);
         for (int i = 0; i < Badges.ALL.length; i++) {
@@ -1897,7 +1897,7 @@ public class MainActivity extends Activity {
         Canvas cv = new Canvas(bmp);
 
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF140B0D, 0xFF1A0E10, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, W, H, p);
         p.setShader(null);
 
@@ -1907,7 +1907,7 @@ public class MainActivity extends Activity {
         bar.setShader(null);
 
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setColor(0xFFEAF6FF);
+        tp.setColor(0xFFF5ECEE);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(78);
         cv.drawText("Grit", M, 250, tp);
@@ -1939,7 +1939,7 @@ public class MainActivity extends Activity {
         val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         val.setTextSize(54);
         Paint lab = new Paint(Paint.ANTI_ALIAS_FLAG);
-        lab.setColor(0xFF8AA0C4);
+        lab.setColor(0xFFA98F95);
         lab.setTextSize(34);
         for (int i = 0; i < tiles.length; i++) {
             int cx = M + (i % cols) * (cardW + gap);
@@ -1964,7 +1964,7 @@ public class MainActivity extends Activity {
         Canvas cv = new Canvas(bmp);
 
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF140B0D, 0xFF1A0E10, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, W, H, p);
         p.setShader(null);
 
@@ -1974,7 +1974,7 @@ public class MainActivity extends Activity {
         bar.setShader(null);
 
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setColor(0xFFEAF6FF);
+        tp.setColor(0xFFF5ECEE);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(78);
         cv.drawText("Grit", M, 250, tp);
@@ -2018,7 +2018,7 @@ public class MainActivity extends Activity {
         val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         val.setTextSize(58);
         Paint lab = new Paint(Paint.ANTI_ALIAS_FLAG);
-        lab.setColor(0xFF8AA0C4);
+        lab.setColor(0xFFA98F95);
         lab.setTextSize(34);
         for (int i = 0; i < tiles.length; i++) {
             int cx = M + (i % cols) * (cardW + gap);
@@ -2069,7 +2069,7 @@ public class MainActivity extends Activity {
         int total = warm + prep + work + rest + cool;
         if (total <= 0) { if (planCaption != null) planCaption.setText(""); return; }
         addSeg(warm, PREP);
-        addSeg(prep, 0xFF8AA0C4);
+        addSeg(prep, 0xFFA98F95);
         addSeg(work, tWork);
         addSeg(rest, tRest);
         addSeg(cool, 0xFF22FFC2);
@@ -2594,7 +2594,7 @@ public class MainActivity extends Activity {
         // Az edzés-képernyő majdnem áttetsző sötét fátyol – a háttérkép finoman átdereng,
         // de a fókusz a körgyűrűn marad.
         GradientDrawable runBg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                Theme.light(this) ? new int[]{0xFFF3F5FA, 0xFFEDF1F8} : new int[]{0xF2070912, 0xF7060912});
+                Theme.light(this) ? new int[]{0xFFF3F5FA, 0xFFEDF1F8} : new int[]{0xF2140B0D, 0xF7120A0C});
         runView.setBackground(runBg);
 
         // Teljes edzés-folyamat sáv (legfelül): hol tartunk az egész edzésben.

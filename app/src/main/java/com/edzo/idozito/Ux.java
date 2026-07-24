@@ -127,8 +127,10 @@ public final class Ux {
             root.addView(img, new FrameLayout.LayoutParams(-1, -1));
             kenBurns(img);
             View scrim = new View(a);
+            // Bordó-fekete fátyol a Grit-palettához (a régi éjkék helyett) – így a
+            // háttérfotók is a karmazsin témához igazodnak.
             GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x8C070912, 0xDE070912, 0xF5070912});
+                    new int[]{0xA6120A0C, 0xE60F0A0B, 0xF80C0A0B});
             scrim.setBackground(g);
             root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         } catch (Exception ignored) {}
@@ -144,7 +146,7 @@ public final class Ux {
         LinearLayout bar = new LinearLayout(a);
         bar.setOrientation(LinearLayout.HORIZONTAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(lm ? 0xFFFFFFFF : 0xF20A0F1E);
+        bg.setColor(lm ? 0xFFFFFFFF : 0xF2151012);
         bg.setStroke((int) (1 * d), lm ? 0x14000000 : 0x22FFFFFF);
         bar.setBackground(bg);
 

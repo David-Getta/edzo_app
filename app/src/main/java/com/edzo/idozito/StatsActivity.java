@@ -379,7 +379,7 @@ public class StatsActivity extends Activity {
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(bmp);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF140B0D, 0xFF1A0E10, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, W, H, p);
         p.setShader(null);
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -387,7 +387,7 @@ public class StatsActivity extends Activity {
         cv.drawRoundRect(new RectF(M, 120, W - M, 134), 8, 8, bar);
         bar.setShader(null);
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setColor(0xFFEAF6FF);
+        tp.setColor(0xFFF5ECEE);
         tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(74);
         cv.drawText("Statisztikám", M, 240, tp);
@@ -406,7 +406,7 @@ public class StatsActivity extends Activity {
         };
         int y = 380, rowH = 250;
         Paint sec = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sec.setColor(0xFF8AA0C4); sec.setTextSize(36);
+        sec.setColor(0xFFA98F95); sec.setTextSize(36);
         Paint big = new Paint(Paint.ANTI_ALIAS_FLAG);
         big.setColor(0xFFFFFFFF);
         big.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -662,13 +662,13 @@ public class StatsActivity extends Activity {
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
         Canvas cvn = new Canvas(bmp);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, W, H, 0xFF070912, 0xFF0C1024, Shader.TileMode.CLAMP));
+        p.setShader(new LinearGradient(0, 0, W, H, 0xFF140B0D, 0xFF1A0E10, Shader.TileMode.CLAMP));
         cvn.drawRect(0, 0, W, H, p); p.setShader(null);
         Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
         bar.setShader(new LinearGradient(M, 0, W - M, 0, 0xFFE11D2E, 0xFFFF4757, Shader.TileMode.CLAMP));
         cvn.drawRoundRect(new RectF(M, 110, W - M, 124), 8, 8, bar); bar.setShader(null);
         Paint tp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tp.setColor(0xFFEAF6FF); tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        tp.setColor(0xFFF5ECEE); tp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         tp.setTextSize(70);
         cvn.drawText("Aktivitásom – 12 hét", M, 225, tp);
 
@@ -689,7 +689,7 @@ public class StatsActivity extends Activity {
             }
         }
         Paint sp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sp.setColor(0xFF8AA0C4); sp.setTextSize(38); sp.setTextAlign(Paint.Align.CENTER);
+        sp.setColor(0xFFA98F95); sp.setTextSize(38); sp.setTextAlign(Paint.Align.CENTER);
         cvn.drawText(active + " aktív nap az elmúlt 12 hétben", W / 2f, y0 + 7 * (cell + gap) + 40, sp);
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
         fp.setColor(0xFFE11D2E); fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
