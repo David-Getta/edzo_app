@@ -51,6 +51,11 @@ public class BlazeWidget extends AppWidgetProvider {
         else msg = Mascot.nudge(userName, false, 0);
         rv.setTextViewText(R.id.blaze_msg, msg);
 
+        // A címsorban az élő széria is látszik (2 naptól).
+        int shownStreak = today ? streakDays(c) : liveStreak;
+        rv.setTextViewText(R.id.widget_title,
+                shownStreak >= 2 ? "Blaze 🔥 " + shownStreak : "Blaze 🔥");
+
         // A ▶ gomb által indítandó edzés rövid leírása (program vagy intervallum).
         android.content.SharedPreferences p = c.getSharedPreferences("edzo", Context.MODE_PRIVATE);
         String prog = p.getString("progname", "");

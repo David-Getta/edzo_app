@@ -33,8 +33,14 @@ public final class Mascot {
         String u = who(userName);
         if (totalWorkouts == 0)
             return "Szia, Blaze vagyok! 🐺🔥 Csináljuk meg az első edzésed – a falka veled van!";
-        if (restDay && !today)
-            return "Ma pihenőnap, " + u + " – a regeneráció is edzés! 🌙🐺 Holnap újra hajtunk.";
+        if (restDay && !today) {
+            String[] rest = {
+                    "Ma pihenőnap, " + u + " – a regeneráció is edzés! 🌙🐺 Holnap újra hajtunk.",
+                    "Pihenőnap, " + u + "! 🌙 Egy kis nyújtás vagy mobilitás azért jólesne. 🧘🐺",
+                    "Ma töltekezünk, " + u + " – aludj, egyél, nyújts! 🌙💪 A falka holnap újra fut.",
+            };
+            return rest[(int) (System.currentTimeMillis() / 3600000 % rest.length)];
+        }
         if (today && dayStreak >= 3)
             return dayStreak + " napos széria, " + u + "! 🔥 Égsz, mint a láng – ne állj meg!";
         if (today)
