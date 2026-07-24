@@ -81,6 +81,12 @@ public final class Mascot {
         return hi + ", " + u + "! 🐺🔥 Blaze vagyok – " + m;
     }
 
+    /** Visszavágó-hívás, ha tegnap elmaradt egy tervezett edzésnap. */
+    public static String comeback(String userName) {
+        String u = who(userName);
+        return "Tegnap kimaradt az edzés, " + u + " – semmi baj, ma visszavágunk! 🐺🔥";
+    }
+
     /** Heti terv állása edzés után: ünneplés vagy a hátralévő napok. */
     public static String planStatus(String userName, boolean planComplete, int futureRemaining) {
         String u = who(userName);

@@ -692,6 +692,24 @@ public class MainActivity extends Activity {
             // különben (elmulasztott múltbeli terv-nap, de több hátralévő nincs):
             // marad az általános dicséret.
         }
+
+        // Ha tegnap tervezett edzésnap volt, de kimaradt, Blaze visszavágásra hív.
+        // (A késő délutáni széria-figyelmeztetés fontosabb, azt nem írjuk felül.)
+        if (!today && !restDay && !risk && arr.length() > 0
+                && !Theme.planDays(this).isEmpty()) {
+            int yIdx = dowIdx == 0 ? 6 : dowIdx - 1;
+            if (Theme.isPlanDay(this, yIdx)) {
+                long dayMs = 24L * 3600 * 1000;
+                long todayStart = dayStartMs();
+                boolean yTrained = false;
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject o = arr.optJSONObject(i);
+                    long ts = o == null ? 0 : o.optLong("ts");
+                    if (ts >= todayStart - dayMs && ts < todayStart) { yTrained = true; break; }
+                }
+                if (!yTrained) msg = Mascot.comeback(userName);
+            }
+        }
         String moodE = Mascot.mood(today, ds, risk);
 
         LinearLayout cardM = card();
