@@ -67,4 +67,16 @@
             android:maxLines="3"
             android:ellipsize="end" />
     </LinearLayout>
+
+    <!-- Gyorsindítás: egy koppintással azonnal elindul az edzés. -->
+    <TextView
+        android:id="@+id/blaze_start"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
+        android:text="▶"
+        android:textSize="20sp"
+        android:textColor="#6E1120"
+        android:background="@drawable/widget_start_bg" />
 </LinearLayout>

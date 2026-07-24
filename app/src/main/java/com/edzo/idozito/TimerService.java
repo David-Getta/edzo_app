@@ -94,6 +94,8 @@ public class TimerService extends Service {
     private final ArrayList<Step> plan = new ArrayList<>();
     private int idx;
     private boolean running, paused;
+    /** Fut-e éppen edzés (a widget-gyorsindítás dupla indítás ellen ellenőrzi). */
+    public static volatile boolean activeNow;
     private long stepEndElapsed, remainingAtPause;
     private int lastShownSec;
     private int completedRounds; // teljesített (végigment) körök száma
@@ -292,6 +294,7 @@ public class TimerService extends Service {
         buildPlan();
         if (plan.isEmpty()) { stopEverything(); return; }
         running = true;
+        activeNow = true;
         paused = false;
         idx = 0;
         completedRounds = 0;
@@ -490,6 +493,7 @@ public class TimerService extends Service {
 
     private void finishWorkout() {
         running = false;
+        activeNow = false;
         handler.removeCallbacks(ticker);
         Beeper.finish();
         buzz(new long[]{0, 120, 80, 120, 80, 240});
@@ -570,6 +574,7 @@ public class TimerService extends Service {
 
     private void stopEverything() {
         running = false;
+        activeNow = false;
         paused = false;
         handler.removeCallbacks(ticker);
         stopLocation();
@@ -895,6 +900,7 @@ public class TimerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        activeNow = false;
         handler.removeCallbacks(ticker);
         stopLocation();
         stopSteps();

@@ -211,6 +211,7 @@ public class MainActivity extends Activity {
         DailyNudgeReceiver.schedule(this);
         handleRoutineIntent(getIntent());
         handleRepeatIntent(getIntent());
+        handleQuickStartIntent(getIntent());
         maybeShowWelcome();
     }
 
@@ -2762,12 +2763,24 @@ public class MainActivity extends Activity {
         }
     }
 
+    // Gyorsindítás a widget ▶ gombjáról: azonnal elindítja az edzést a jelenlegi
+    // beállításokkal. Ha már fut edzés, nem indít rá újat.
+    void handleQuickStartIntent(Intent intent) {
+        if (intent == null || !intent.getBooleanExtra("quick_start", false)) return;
+        intent.removeExtra("quick_start");
+        if (TimerService.activeNow) return;
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!TimerService.activeNow && !isFinishing()) startWorkout();
+        }, 400);
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         handleRoutineIntent(intent);
         handleRepeatIntent(intent);
+        handleQuickStartIntent(intent);
     }
 
     void cmd(String action) {

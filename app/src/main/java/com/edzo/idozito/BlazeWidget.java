@@ -46,12 +46,18 @@ public class BlazeWidget extends AppWidgetProvider {
                 : Mascot.nudge(userName, false, 0);
         rv.setTextViewText(R.id.blaze_msg, msg);
 
-        Intent open = new Intent(c, MainActivity.class);
-        open.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent pi = PendingIntent.getActivity(c, 0, open, flags);
-        rv.setOnClickPendingIntent(R.id.widget_root, pi);
+
+        Intent open = new Intent(c, MainActivity.class);
+        open.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        rv.setOnClickPendingIntent(R.id.widget_root, PendingIntent.getActivity(c, 0, open, flags));
+
+        // Gyorsindítás: megnyitja az appot és azonnal elindítja az edzést.
+        Intent quick = new Intent(c, MainActivity.class);
+        quick.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        quick.putExtra("quick_start", true);
+        rv.setOnClickPendingIntent(R.id.blaze_start, PendingIntent.getActivity(c, 1, quick, flags));
 
         mgr.updateAppWidget(id, rv);
     }
