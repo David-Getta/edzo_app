@@ -136,6 +136,15 @@ public class SettingsActivity extends Activity {
         col.addView(paceChips(), lp());
         col.addView(gap(18));
 
+        // --- Edzésnapok terve ---
+        col.addView(text("📅 Edzésnapok", 15.5f, TXT, true));
+        col.addView(gap(4));
+        col.addView(text("Jelöld ki, mely napokon tervezel edzeni – Blaze csak ezeken a "
+                + "napokon emlékeztet. Üresen hagyva minden nap edzésnap.", 12.5f, MUTED, false));
+        col.addView(gap(8));
+        col.addView(planDayChips(), lp());
+        col.addView(gap(18));
+
         // --- Értesítések és adatok ---
         LinearLayout notif = card();
         Switch recap = new Switch(this);
@@ -410,6 +419,39 @@ public class SettingsActivity extends Activity {
             });
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
             lp.leftMargin = dp(4); lp.rightMargin = dp(4);
+            row.addView(b, lp);
+            btns[i] = b;
+        }
+        return row;
+    }
+
+    /** Tervezett edzésnapok (többes kijelölés, 0=hétfő .. 6=vasárnap). */
+    View planDayChips() {
+        String[] labels = {"H", "K", "Sze", "Cs", "P", "Szo", "V"};
+        LinearLayout row = hbox();
+        final Button[] btns = new Button[7];
+        final java.util.Set<String> sel = new java.util.HashSet<>();
+        String cur = Theme.planDays(this);
+        if (!cur.isEmpty()) for (String d : cur.split(",")) if (!d.isEmpty()) sel.add(d);
+        for (int i = 0; i < 7; i++) {
+            final String id = String.valueOf(i);
+            Button b = chip(labels[i], sel.contains(id));
+            b.setOnClickListener(v -> {
+                if (sel.contains(id)) sel.remove(id); else sel.add(id);
+                StringBuilder sb = new StringBuilder();
+                for (int d = 0; d < 7; d++)
+                    if (sel.contains(String.valueOf(d))) {
+                        if (sb.length() > 0) sb.append(',');
+                        sb.append(d);
+                    }
+                // Közvetlen mentés rev-bump nélkül: nem kell újraépíteni a UI-t,
+                // a chip stílusát helyben frissítjük.
+                getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                        .putString("plan_days", sb.toString()).apply();
+                styleChip((Button) v, sel.contains(id));
+            });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
+            lp.leftMargin = dp(2); lp.rightMargin = dp(2);
             row.addView(b, lp);
             btns[i] = b;
         }

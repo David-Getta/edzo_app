@@ -52,6 +52,9 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context c, Intent intent) {
         if (!Theme.blazeNudge(c)) return;
+        // Pihenőnapon (nem tervezett edzésnapon) Blaze nem nyaggat.
+        int dowIdx = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
+        if (!Theme.isPlanDay(c, dowIdx)) return;
         if (workedOutToday(c)) return;   // ma már edzett – nem nyaggatjuk
 
         String userName = c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getString("user_name", "");

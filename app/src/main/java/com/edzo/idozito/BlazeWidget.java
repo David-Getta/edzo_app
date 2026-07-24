@@ -41,9 +41,11 @@ public class BlazeWidget extends AppWidgetProvider {
         String userName = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
                 .getString("user_name", "");
         boolean today = workedOutToday(c);
-        String msg = today
-                ? praise(userName, streakDays(c))
-                : Mascot.nudge(userName, false, 0);
+        int dowIdx = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
+        String msg;
+        if (today) msg = praise(userName, streakDays(c));
+        else if (!Theme.isPlanDay(c, dowIdx)) msg = "Ma pihenőnap – tölts fel! 🌙🐺";
+        else msg = Mascot.nudge(userName, false, 0);
         rv.setTextViewText(R.id.blaze_msg, msg);
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;

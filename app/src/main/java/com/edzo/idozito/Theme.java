@@ -52,6 +52,17 @@ public final class Theme {
     public static boolean blazeNudge(Context c) { return p(c).getBoolean("blaze_nudge", true); }
     /** Blaze napi értesítésének órája (0-23). */
     public static int nudgeHour(Context c) { return p(c).getInt("blaze_hour", 18); }
+
+    /** Tervezett edzésnapok CSV-ben (0=hétfő .. 6=vasárnap); üres = minden nap. */
+    public static String planDays(Context c) { return p(c).getString("plan_days", ""); }
+    /** Edzésnap-e az adott nap (0=hétfő .. 6=vasárnap)? Üres terv = minden nap az. */
+    public static boolean isPlanDay(Context c, int dowIdx) {
+        String s = planDays(c);
+        if (s.isEmpty()) return true;
+        for (String d : s.split(",")) if (String.valueOf(dowIdx).equals(d)) return true;
+        return false;
+    }
+    public static void setStr(Context c, String key, String v) { p(c).edit().putString(key, v).apply(); bumpRev(c); }
     /** Élő (mozgó) háttér-animáció be/ki. */
     public static boolean liveBg(Context c) { return p(c).getBoolean("livebg", true); }
     /** Zene halkítása (audio-fókusz) edzés közben be/ki. */

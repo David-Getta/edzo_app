@@ -647,10 +647,13 @@ public class MainActivity extends Activity {
             if (o != null && o.optLong("ts") >= dayStart) { today = true; break; }
         }
         int ds = dayStreak(arr), ws = weekStreak(arr);
-        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
-        boolean risk = !today && ws >= 1 && hour >= 16;
+        java.util.Calendar calNow = java.util.Calendar.getInstance();
+        int hour = calNow.get(java.util.Calendar.HOUR_OF_DAY);
+        int dowIdx = (calNow.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
+        boolean restDay = !Theme.isPlanDay(this, dowIdx);
+        boolean risk = !today && !restDay && ws >= 1 && hour >= 16;
         String userName = prefs.getString("user_name", "");
-        String msg = Mascot.line(this, userName, arr.length(), today, ds, ws, risk, hour);
+        String msg = Mascot.line(this, userName, arr.length(), today, ds, ws, risk, hour, restDay);
         String moodE = Mascot.mood(today, ds, risk);
 
         LinearLayout cardM = card();

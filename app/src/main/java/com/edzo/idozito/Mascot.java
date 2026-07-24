@@ -29,10 +29,12 @@ public final class Mascot {
     /** Fő buzdító sor Blaze hangján a kezdőképernyőre. */
     public static String line(Context c, String userName, int totalWorkouts,
                               boolean today, int dayStreak, int weekStreak,
-                              boolean streakRisk, int hour) {
+                              boolean streakRisk, int hour, boolean restDay) {
         String u = who(userName);
         if (totalWorkouts == 0)
             return "Szia, Blaze vagyok! 🐺🔥 Csináljuk meg az első edzésed – a falka veled van!";
+        if (restDay && !today)
+            return "Ma pihenőnap, " + u + " – a regeneráció is edzés! 🌙🐺 Holnap újra hajtunk.";
         if (today && dayStreak >= 3)
             return dayStreak + " napos széria, " + u + "! 🔥 Égsz, mint a láng – ne állj meg!";
         if (today)
