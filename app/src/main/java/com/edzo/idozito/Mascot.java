@@ -121,6 +121,12 @@ public final class Mascot {
             return "Az első edzésed, " + u + "! 🐺🎉 Ezt sose felejted el – a falka büszke rád!";
         if (totalWorkouts == 10 || totalWorkouts == 25 || totalWorkouts == 50 || totalWorkouts == 100)
             return totalWorkouts + ". edzés, " + u + "! 🏆🔥 Ez már nem szerencse – ez GRIT!";
+        if (dayStreak == 7)
+            return "Egy teljes hét megállás nélkül, " + u + "! 🗓️🔥 A láng már magától lobog!";
+        if (dayStreak == 14)
+            return "Két hét minden nap, " + u + "! 💎 Ez már nem szokás – ez életmód.";
+        if (dayStreak == 30)
+            return "30 napos széria, " + u + "! 👑🔥 Gyémánt rutin – a falka legendája vagy!";
         if (dayStreak >= 7)
             return dayStreak + " napja minden nap, " + u + "! 🔥🔥 Te vagy a falka lángja!";
         if (dayStreak >= 3)
