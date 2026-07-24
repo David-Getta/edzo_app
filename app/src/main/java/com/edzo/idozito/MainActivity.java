@@ -1333,9 +1333,26 @@ public class MainActivity extends Activity {
         cal.setFirstDayOfWeek(java.util.Calendar.MONDAY);
         int todayIdx = ((cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7); // H=0 … V=6
 
+        // Edzésnapok terve: a tervezett napok jelölést kapnak, a fejléc pedig a
+        // terv teljesítését mutatja (ha van beállított terv).
+        boolean hasPlan = !Theme.planDays(this).isEmpty();
+        boolean[] plan = new boolean[7];
+        int plannedCount = 0, plannedDone = 0;
+        for (int i = 0; i < 7; i++) {
+            plan[i] = Theme.isPlanDay(this, i);
+            if (hasPlan && plan[i]) { plannedCount++; if (days[i]) plannedDone++; }
+        }
+
         LinearLayout c = card();
         c.setPadding(dp(14), dp(14), dp(14), dp(14));
-        TextView head = text("📅 Heti aktivitás  ·  " + trained + "/7 nap", 13, 0xFF7FE1A6, true);
+        String headTxt;
+        if (hasPlan && plannedCount > 0 && plannedDone >= plannedCount)
+            headTxt = "🏆 Heti terv teljesítve!  ·  " + plannedDone + "/" + plannedCount + " edzésnap";
+        else if (hasPlan)
+            headTxt = "📅 Heti terv  ·  " + plannedDone + "/" + plannedCount + " edzésnap kész";
+        else
+            headTxt = "📅 Heti aktivitás  ·  " + trained + "/7 nap";
+        TextView head = text(headTxt, 13, 0xFF7FE1A6, true);
         head.setPadding(dp(2), 0, 0, dp(10));
         c.addView(head);
         LinearLayout row = hbox();
@@ -1350,10 +1367,20 @@ public class MainActivity extends Activity {
             GradientDrawable bg = new GradientDrawable();
             bg.setShape(GradientDrawable.OVAL);
             if (days[i]) bg.setColor(tAccent);
-            else { bg.setColor(0x14FFFFFF); bg.setStroke(dp(1), i == todayIdx ? tAccent : GLASS_LINE); }
+            else {
+                bg.setColor(0x14FFFFFF);
+                if (i == todayIdx) bg.setStroke(dp(1), tAccent);
+                else if (hasPlan && plan[i])
+                    // Tervezett (még nem teljesített) nap: szaggatott akcent-gyűrű.
+                    bg.setStroke(dp(1), (tAccent & 0x00FFFFFF) | 0xAA000000, dp(4), dp(3));
+                else bg.setStroke(dp(1), GLASS_LINE);
+            }
             dot.setBackground(bg);
             col.addView(dot);
-            TextView lab = text(labels[i], 11, i == todayIdx ? tAccent : MUTED, i == todayIdx);
+            boolean isPlanDayLbl = hasPlan && plan[i];
+            TextView lab = text(labels[i], 11,
+                    i == todayIdx ? tAccent : (isPlanDayLbl ? TXT : MUTED),
+                    i == todayIdx || isPlanDayLbl);
             lab.setGravity(Gravity.CENTER);
             lab.setPadding(0, dp(5), 0, 0);
             col.addView(lab);
