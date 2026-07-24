@@ -88,6 +88,8 @@ public final class Theme {
         p(c).edit()
                 .remove("c_accent").remove("c_accent2").remove("c_work").remove("c_rest")
                 .remove("volume").remove("vibrate").remove("cd_secs").remove("pace").remove("recap").remove("livebg").remove("duck").remove("screenon")
+                .remove("anim").remove("lightmode").remove("blaze_nudge").remove("blaze_hour")
+                .remove("plan_days").remove("tts_rate")
                 .apply();
         bumpRev(c);
     }

@@ -74,15 +74,15 @@ public class WeeklyReceiver extends BroadcastReceiver {
 
         String title, text;
         if (count == 0) {
-            title = "Új hét, új esély 💪";
-            text = "Ezen a héten még nem edzettél. Egy rövid edzés is számít – kezdd el most!";
+            title = "Blaze: új hét, új esély! 🐺";
+            text = "Ezen a héten még nem edzettél. Egy rövid edzés is számít – a falka veled van! 🔥";
         } else {
-            title = "Heti összegzés 🏁";
+            title = "Blaze heti összefoglalója 🐺🔥";
             StringBuilder sb = new StringBuilder();
             sb.append(count).append(count == 1 ? " edzés" : " edzés");
             if (dist > 0) sb.append("  ·  ").append(String.format(Locale.US, "%.1f km", dist / 1000.0));
             sb.append("  ·  ").append(dur / 60).append(" perc mozgás. ");
-            sb.append(count >= 4 ? "Fantasztikus hét! 🔥" : "Szép munka – jövő héten még többet! 💪");
+            sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
             text = sb.toString();
         }
 
