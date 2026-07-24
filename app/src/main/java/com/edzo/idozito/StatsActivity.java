@@ -105,6 +105,12 @@ public class StatsActivity extends Activity {
         col.addView(heatmapCard(), lp());
         col.addView(gap(16));
 
+        if (!Theme.planDays(this).isEmpty()) {
+            col.addView(sectionTitle("Terv-teljesítés – elmúlt 4 hét"));
+            col.addView(adherenceCard(), lp());
+            col.addView(gap(16));
+        }
+
         SimpleDateFormat mf = new SimpleDateFormat("yyyy. MMMM", new Locale("hu"));
         col.addView(sectionTitle("Naptár – " + mf.format(new Date())));
         col.addView(calendarCard(), lp());
@@ -257,6 +263,67 @@ public class StatsActivity extends Activity {
         a.start();
         Ux.countUp(xpVal, xp, v -> Math.round(v) + " XP");
         return c;
+    }
+
+    /** Az elmúlt 28 nap tervezett edzésnapjaiból hányat sikerült teljesíteni. */
+    LinearLayout adherenceCard() {
+        java.util.HashSet<Long> days = new java.util.HashSet<>();
+        Calendar c = Calendar.getInstance();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            c.setTimeInMillis(o.optLong("ts"));
+            c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0);
+            days.add(c.getTimeInMillis());
+        }
+        Calendar cur = Calendar.getInstance();
+        cur.set(Calendar.HOUR_OF_DAY, 0); cur.set(Calendar.MINUTE, 0);
+        cur.set(Calendar.SECOND, 0); cur.set(Calendar.MILLISECOND, 0);
+        int planned = 0, done = 0;
+        for (int k = 0; k < 28; k++) {
+            int dowIdx = (cur.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+            if (Theme.isPlanDay(this, dowIdx)) {
+                planned++;
+                if (days.contains(cur.getTimeInMillis())) done++;
+            }
+            cur.add(Calendar.DAY_OF_YEAR, -1);
+        }
+        int pct = planned == 0 ? 0 : (int) Math.round(100.0 * done / planned);
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(16), dp(14), dp(16), dp(14));
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        TextView big = text(pct + "%", 26, Theme.accent(this), true);
+        row.addView(big, new LinearLayout.LayoutParams(-2, -2));
+        TextView det = text("  " + done + " / " + planned + " tervezett edzésnap teljesítve",
+                13.5f, MUTED, false);
+        row.addView(det);
+        cardV.addView(row, lp());
+        cardV.addView(gap(10));
+
+        LinearLayout barBg = hbox();
+        GradientDrawable bgd = new GradientDrawable();
+        bgd.setColor(0x22FFFFFF);
+        bgd.setCornerRadius(dp(6));
+        barBg.setBackground(bgd);
+        View fill = new View(this);
+        GradientDrawable fgd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{Theme.accent(this), Theme.accent2(this)});
+        fgd.setCornerRadius(dp(6));
+        fill.setBackground(fgd);
+        View spacer = new View(this);
+        barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(12), Math.max(0.0001f, pct / 100f)));
+        barBg.addView(spacer, new LinearLayout.LayoutParams(0, dp(12), 1f - Math.min(1f, pct / 100f)));
+        cardV.addView(barBg, lp());
+        cardV.addView(gap(8));
+
+        String hint = pct >= 90 ? "Kiváló fegyelem – a terv nálad kőbe van vésve! 🏆"
+                : pct >= 60 ? "Szép ritmus – még egy kis odafigyelés, és tökéletes! 💪"
+                : "A terv csak akkor él, ha követed – hajrá a héten! 🔥";
+        cardV.addView(text(hint, 12.5f, MUTED, false));
+        return cardV;
     }
 
     // ---------------- Rekordok + heti sorozat ----------------
