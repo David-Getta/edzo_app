@@ -758,6 +758,8 @@ public class MainActivity extends Activity {
         cardM.setOnClickListener(v -> {
             mascotBody.setText(Mascot.pep());
             v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+            // Pár másodperc után visszaáll az állapot szerinti üzenetre.
+            mascotBody.postDelayed(this::refreshMascot, 8000);
         });
         refreshMascot();
         return cardM;
@@ -1302,6 +1304,8 @@ public class MainActivity extends Activity {
             int wk = weekStreak(arr);
             if (!thisWeek && wk >= 1 && dowIdx >= 3)
                 return greet + " ⚠️ Veszélyben a " + wk + " hetes sorozatod – edz még a héten!";
+            if (!Theme.isPlanDay(this, dowIdx))
+                return greet + " Ma pihenőnap – a regeneráció is fejlődés! 🌙";
             return greet + " Ma még nem edzettél – hajrá! 🔥";
         }
         int ds = dayStreak(arr);
