@@ -94,12 +94,12 @@ public class BlazeWidget extends AppWidgetProvider {
 
     /** Egymást követő edzésnapok száma tegnappal bezárólag (a még élő széria). */
     private static int streakUntilYesterday(Context c) {
-        return Streaks.untilYesterday(c, History.load(c));
+        return Streaks.untilYesterday(c, History.loadAll(c));
     }
 
     /** Egymást követő edzésnapok száma mával bezárólag. */
     private static int streakDays(Context c) {
-        return Streaks.current(c, History.load(c));
+        return Streaks.current(c, History.loadAll(c));
     }
 
     private static boolean workedOutToday(Context c) {
@@ -109,7 +109,7 @@ public class BlazeWidget extends AppWidgetProvider {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         long start = cal.getTimeInMillis();
-        JSONArray h = History.load(c);
+        JSONArray h = History.loadAll(c);
         for (int i = 0; i < h.length(); i++) {
             JSONObject o = h.optJSONObject(i);
             if (o != null && o.optLong("ts") >= start) return true;

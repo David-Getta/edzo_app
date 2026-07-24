@@ -18,6 +18,22 @@ public final class History {
     static final String KEY = "history";
     static final int MAX = 100;
 
+    /** Egyesített aktivitás-napló: időzítős edzések + erősítő bejegyzések (csak
+        „ts" időbélyeggel). A széria- és „ma edzett-e" számításokhoz így az
+        erősítő nap is beleszámít mindenhol (widget, értesítés, kezdőlap). */
+    public static JSONArray loadAll(Context ctx) {
+        JSONArray merged = new JSONArray();
+        JSONArray h = load(ctx);
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o != null) merged.put(o);
+        }
+        for (StrengthLog.Entry e : StrengthLog.load(ctx)) {
+            try { merged.put(new JSONObject().put("ts", e.ts)); } catch (Exception ignored) {}
+        }
+        return merged;
+    }
+
     /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
                            int rounds, int work, int rest, double maxSpeedKmh,

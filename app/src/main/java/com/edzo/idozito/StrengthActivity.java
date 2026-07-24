@@ -327,6 +327,8 @@ public class StrengthActivity extends Activity {
                     StrengthLog.Entry ne = new StrengthLog.Entry(ts, name, sets);
                     if (edit != null) StrengthLog.replaceAt(this, editIdx, ne);
                     else StrengthLog.add(this, ne);
+                    // Az erősítő edzés is számít: a widget azonnal tudjon róla.
+                    BlazeWidget.refresh(this);
                     refresh();
                     Toast.makeText(this, (edit != null ? "Frissítve ✔  (" : "Mentve ✔  (")
                             + sets.size() + " sorozat)", Toast.LENGTH_SHORT).show();

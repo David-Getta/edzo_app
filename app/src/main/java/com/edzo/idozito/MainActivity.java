@@ -1239,16 +1239,7 @@ public class MainActivity extends Activity {
         bejegyzések (a streak-számításhoz csak a „ts" időbélyeg kell). Így egy
         erősítő nap is beleszámít a napi/heti sorozatba a főképernyő feliratában. */
     JSONArray activityLog() {
-        JSONArray merged = new JSONArray();
-        JSONArray h = History.load(this);
-        for (int i = 0; i < h.length(); i++) {
-            JSONObject o = h.optJSONObject(i);
-            if (o != null) merged.put(o);
-        }
-        for (StrengthLog.Entry e : StrengthLog.load(this)) {
-            try { merged.put(new JSONObject().put("ts", e.ts)); } catch (Exception ignored) {}
-        }
-        return merged;
+        return History.loadAll(this);
     }
 
     int dayStreak(JSONArray arr) {
