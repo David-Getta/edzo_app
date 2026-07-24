@@ -63,6 +63,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
         int count = 0;
         double dist = 0;
         long dur = 0;
+        boolean[] trainedDay = new boolean[7];
         for (int k = 0; k < h.length(); k++) {
             JSONObject o = h.optJSONObject(k);
             if (o == null || o.optLong("ts") < from) continue;
@@ -70,6 +71,14 @@ public class WeeklyReceiver extends BroadcastReceiver {
             double d = o.optDouble("dist", -1);
             if (d > 0) dist += d;
             dur += o.optInt("dur");
+            int idx = (int) ((o.optLong("ts") - from) / (24L * 3600 * 1000));
+            if (idx >= 0 && idx < 7) trainedDay[idx] = true;
+        }
+        // Heti terv állása (ha van beállítva edzésnap-terv).
+        boolean hasPlan = !Theme.planDays(c).isEmpty();
+        int plannedCount = 0, plannedDone = 0;
+        if (hasPlan) for (int i2 = 0; i2 < 7; i2++) {
+            if (Theme.isPlanDay(c, i2)) { plannedCount++; if (trainedDay[i2]) plannedDone++; }
         }
 
         String title, text;
@@ -81,8 +90,14 @@ public class WeeklyReceiver extends BroadcastReceiver {
             StringBuilder sb = new StringBuilder();
             sb.append(count).append(count == 1 ? " edzés" : " edzés");
             if (dist > 0) sb.append("  ·  ").append(String.format(Locale.US, "%.1f km", dist / 1000.0));
-            sb.append("  ·  ").append(dur / 60).append(" perc mozgás. ");
-            sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
+            sb.append("  ·  ").append(dur / 60).append(" perc mozgás");
+            if (hasPlan && plannedCount > 0)
+                sb.append("  ·  Terv: ").append(plannedDone).append("/").append(plannedCount).append(" edzésnap");
+            sb.append(". ");
+            if (hasPlan && plannedCount > 0 && plannedDone >= plannedCount)
+                sb.append("Heti terv teljesítve – büszke a falka! 🏆🔥");
+            else
+                sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
             text = sb.toString();
         }
 
