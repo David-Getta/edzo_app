@@ -543,7 +543,7 @@ public class SettingsActivity extends Activity {
     /** Blaze napi értesítésének órája – választás után azonnal újraütemez. */
     View nudgeHourChips() {
         final int[] hours = {8, 12, 18, 20, 21};
-        String[] labels = {"8:00", "12:00", "18:00", "20:00"};
+        String[] labels = {"8:00", "12:00", "18:00", "20:00", "21:00"};
         LinearLayout row = hbox();
         final Button[] btns = new Button[hours.length];
         final int cur = Theme.nudgeHour(this);
