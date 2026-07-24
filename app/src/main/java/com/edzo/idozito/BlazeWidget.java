@@ -78,7 +78,13 @@ public class BlazeWidget extends AppWidgetProvider {
     private static String praise(String userName, int streak) {
         String u = (userName == null || userName.trim().isEmpty()) ? "falkatárs" : userName.trim();
         if (streak >= 2) return "Ma már letudtad, " + u + "! 🔥 " + streak + " napos széria – ég a láng!";
-        return "Ma már letudtad, " + u + "! 💪🔥 Büszke vagyok rád.";
+        String[] p = {
+                "Ma már letudtad, " + u + "! 💪🔥 Büszke vagyok rád.",
+                "Kipipálva a mai, " + u + "! 🐺 Megérdemelt pihenés. 🔥",
+                "Mai edzés: kész! 💪 Blaze büszkén vonyít, " + u + "! 🐺",
+        };
+        // Óránként váltakozó dicséret, hogy a widget ne legyen egyhangú.
+        return p[(int) (System.currentTimeMillis() / 3600000 % p.length)];
     }
 
     /** Egymást követő edzésnapok száma tegnappal bezárólag (a még élő széria). */
