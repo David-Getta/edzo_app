@@ -150,13 +150,15 @@ public final class Ux {
         bg.setStroke((int) (1 * d), lm ? 0x14000000 : 0x22FFFFFF);
         bar.setBackground(bg);
 
-        final String[] emo = {"🏠", "📈", "🏋️", "👤", "⚙️"};
+        // Saját rajzolású vektor-ikonok az emojik helyett (futásidőben színezve).
+        final int[] icons = {R.drawable.ic_nav_home, R.drawable.ic_nav_stats,
+                R.drawable.ic_nav_strength, R.drawable.ic_nav_profile, R.drawable.ic_nav_settings};
         final String[] lbl = {"Kezdő", "Statok", "Erő", "Profil", "Beáll."};
         final Class<?>[] target = {MainActivity.class, StatsActivity.class,
                 StrengthActivity.class, ProfileActivity.class, SettingsActivity.class};
         int accent = Theme.accent(a);
 
-        for (int i = 0; i < emo.length; i++) {
+        for (int i = 0; i < icons.length; i++) {
             final int idx = i;
             boolean on = i == active;
             LinearLayout item = new LinearLayout(a);
@@ -167,19 +169,22 @@ public final class Ux {
             // Aktív fül: kiemelő „pill" háttér. Minden fül: azonnali megnyomás-visszajelzés.
             item.setBackground(navItemBg(accent, on, d));
 
-            TextView e = new TextView(a);
-            e.setText(emo[i]);
-            e.setTextSize(on ? 21 : 18);
-            e.setGravity(Gravity.CENTER);
-            e.setAlpha(on ? 1f : 0.5f);
+            int inactive = lm ? 0xFF8A7176 : 0xFFA08A90;
+            ImageView e = new ImageView(a);
+            e.setImageResource(icons[i]);
+            e.setColorFilter(on ? accent : inactive);
+            e.setAlpha(on ? 1f : 0.75f);
+            int isz = (int) ((on ? 23 : 21) * d);
+            LinearLayout.LayoutParams elp = new LinearLayout.LayoutParams(isz, isz);
+            elp.gravity = Gravity.CENTER_HORIZONTAL;
             TextView l = new TextView(a);
             l.setText(lbl[i]);
             l.setTextSize(10.5f);
             l.setGravity(Gravity.CENTER);
-            l.setPadding(0, (int) (2 * d), 0, 0);
-            l.setTextColor(on ? accent : 0xFF7C90B4);
+            l.setPadding(0, (int) (3 * d), 0, 0);
+            l.setTextColor(on ? accent : inactive);
             if (on) l.setTypeface(null, Typeface.BOLD);
-            item.addView(e);
+            item.addView(e, elp);
             item.addView(l);
             item.setOnClickListener(v -> {
                 if (idx == active) return;
