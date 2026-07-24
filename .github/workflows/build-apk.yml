@@ -55,6 +55,8 @@ jobs:
           TRO="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165303_3556b778-152e-4f05-a0de-6d857b903504.png"
           BAR="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165649_b8d7b23f-9127-4913-850b-65a7d08b29cf.png"
           ABS="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165902_e5d94bca-333c-4065-a062-0c8719050cab.png"
+          # Blaze, a saját gyártású kabalafigura (Duolingo-stílusú lapos maszkot).
+          BLZ="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_181540_4d4f2826-defd-4541-92c9-7034542ad4d8.png"
           dl "$GYM" "bg_main.png"
           dl "$RUN" "hero_run.png"
           dl "$TRO" "bg_stats.png"
@@ -68,6 +70,7 @@ jobs:
           dl "$BAR" "bg_main2.png"
           dl "$ABS" "bg_main3.png"
           dl "$GYM" "bg_main4.png"
+          dl "$BLZ" "blaze.png"
           # PNG → WebP a jóval kisebb APK-ért (a háttérképek nagyok). Ha a cwebp
           # nem elérhető vagy hibázik, marad a PNG – így a build sosem törik el.
           if ! command -v cwebp >/dev/null 2>&1; then sudo apt-get update -qq && sudo apt-get install -y -qq webp || true; fi
@@ -107,7 +110,7 @@ jobs:
           name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            Grit automatikus build (v12.9, build ${{ github.run_number }}).
+            Grit automatikus build (v13.0, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"

@@ -742,17 +742,31 @@ public class MainActivity extends Activity {
         cardM.setGravity(Gravity.CENTER_VERTICAL);
         cardM.setPadding(dp(14), dp(14), dp(16), dp(14));
 
-        // Avatar: tűz-gradiens korong + farkas + hangulat-emoji.
+        // Avatar: saját gyártású Blaze-kép (ha elérhető), különben emoji-korong.
         FrameLayout badge = new FrameLayout(this);
         GradientDrawable bbg = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{tAccent, tAccent2});
         bbg.setShape(GradientDrawable.OVAL);
         badge.setBackground(bbg);
         badge.setElevation(dp(3));
-        TextView face = new TextView(this);
-        face.setText(Mascot.FACE);
-        face.setTextSize(30);
-        face.setGravity(Gravity.CENTER);
-        badge.addView(face, new FrameLayout.LayoutParams(-1, -1));
+        int blazeId = drawableId("blaze");
+        if (blazeId != 0) {
+            ImageView iv = new ImageView(this);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageResource(blazeId);
+            iv.setClipToOutline(true);
+            iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                @Override public void getOutline(View v, android.graphics.Outline o) {
+                    o.setOval(0, 0, v.getWidth(), v.getHeight());
+                }
+            });
+            badge.addView(iv, new FrameLayout.LayoutParams(-1, -1));
+        } else {
+            TextView face = new TextView(this);
+            face.setText(Mascot.FACE);
+            face.setTextSize(30);
+            face.setGravity(Gravity.CENTER);
+            badge.addView(face, new FrameLayout.LayoutParams(-1, -1));
+        }
         mascotMoodTv = new TextView(this);
         mascotMoodTv.setTextSize(15);
         FrameLayout.LayoutParams mlp = new FrameLayout.LayoutParams(-2, -2);

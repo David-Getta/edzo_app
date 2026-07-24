@@ -10,6 +10,8 @@
     android:background="@drawable/widget_bg"
     android:padding="14dp">
 
+    <!-- Saját gyártású Blaze-kép; a képkockák eltérő paddingje adja a
+         „szuszogó" (bólogató) animációt. -->
     <ViewFlipper
         android:id="@+id/blaze_flipper"
         android:layout_width="54dp"
@@ -19,26 +21,26 @@
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out">
 
-        <TextView
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="34sp"
-            android:text="🐺" />
+            android:scaleType="fitCenter"
+            android:padding="1dp"
+            android:src="@drawable/blaze" />
 
-        <TextView
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="34sp"
-            android:text="🐺💨" />
+            android:scaleType="fitCenter"
+            android:padding="4dp"
+            android:src="@drawable/blaze" />
 
-        <TextView
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="34sp"
-            android:text="🐺🔥" />
+            android:scaleType="fitCenter"
+            android:padding="0dp"
+            android:src="@drawable/blaze" />
     </ViewFlipper>
 
     <LinearLayout
