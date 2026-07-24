@@ -96,6 +96,8 @@ public class MainActivity extends Activity {
     LinearLayout templatesBox;
     LinearLayout goalBox;
     LinearLayout gridBox;
+    LinearLayout sectionsBox;
+    java.util.LinkedHashMap<String, View> sectionViews;
     LinearLayout progressBox;
     LinearLayout levelBar;
     LinearLayout planBar;
@@ -460,38 +462,41 @@ public class MainActivity extends Activity {
         col.addView(gap(22));
 
         // ---- Áttekintés / motiváció (a fő indítás alatt) ----
-
-        // Blaze, a tűzfarkas kabalafigura – állapotfüggő biztatás, koppintásra új.
-        col.addView(mascotCard(), new LinearLayout.LayoutParams(-1, -2));
-        col.addView(gap(16));
-
-        // Heti aktivitás (7 pont – mely napokon edzettél ezen a héten)
+        // A szakaszok (Blaze, heti aktivitás, legutóbbi edzés, kitüntetések,
+        // rekordok, napi tipp) átrendezhetők és elrejthetők – testreszabhatók.
         weekBox = vbox();
-        col.addView(weekBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Legutóbbi edzés (dinamikus kártya, koppintásra a részletek)
         recentBox = vbox();
-        col.addView(recentBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Kitüntetések (dinamikus – megszerzett jelvények, koppintásra a teljes lista)
         badgesBox = vbox();
-        col.addView(badgesBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Személyes rekordok (dinamikus – legjobb táv, idő, kör, sorozat)
         recordsBox = vbox();
-        col.addView(recordsBox, new LinearLayout.LayoutParams(-1, -2));
-
-        // Napi tipp (naponta forgó motivációs / edzés-tanács kártya, koppintásra új)
-        col.addView(dailyTipCard());
-        col.addView(gap(16));
+        LinearLayout mascotWrap = vbox();
+        mascotWrap.addView(mascotCard(), new LinearLayout.LayoutParams(-1, -2));
+        mascotWrap.addView(gap(16));
+        LinearLayout tipWrap = vbox();
+        tipWrap.addView(dailyTipCard());
+        tipWrap.addView(gap(16));
+        sectionViews = new java.util.LinkedHashMap<>();
+        sectionViews.put("mascot", mascotWrap);
+        sectionViews.put("week", weekBox);
+        sectionViews.put("recent", recentBox);
+        sectionViews.put("badges", badgesBox);
+        sectionViews.put("records", recordsBox);
+        sectionViews.put("tip", tipWrap);
+        sectionsBox = vbox();
+        col.addView(sectionsBox, new LinearLayout.LayoutParams(-1, -2));
+        refreshSections();
 
         // Funkció-csempék (2 oszlop) – átrendezhető és elrejthető (testreszabható).
         gridBox = vbox();
         col.addView(gridBox, new LinearLayout.LayoutParams(-1, -2));
         refreshTileGrid();
         col.addView(gap(10));
-        Button customize = ghostButton("🎛  Csempék testreszabása");
-        customize.setOnClickListener(v -> reorderTilesDialog());
+        Button customize = ghostButton("🎛  Kezdőlap testreszabása");
+        customize.setOnClickListener(v -> new Sheet(this, "Kezdőlap testreszabása")
+                .addRow("🧩", "Csempék", "Funkció-csempék sorrendje és elrejtése", false, true,
+                        this::reorderTilesDialog)
+                .addRow("📚", "Szakaszok", "Kártyák (Blaze, heti terv, rekordok…) sorrendje", false, true,
+                        this::reorderSectionsDialog)
+                .addCancel().show());
         col.addView(customize);
 
         col.addView(gap(24));
@@ -862,6 +867,86 @@ public class MainActivity extends Activity {
         p.leftMargin = dp(5);
         b.setLayoutParams(p);
         return b;
+    }
+
+    // ---- Testreszabható kezdőlap-szakaszok (átrendezés + elrejtés) ----
+
+    static final String[] SECT_IDS = {"mascot", "week", "recent", "badges", "records", "tip"};
+    static final String[] SECT_NAMES = {"🐺 Blaze", "📅 Heti aktivitás", "🕘 Legutóbbi edzés",
+            "🎖 Kitüntetések", "🏆 Rekordok", "💡 Napi tipp"};
+
+    java.util.List<String> sectOrder() {
+        java.util.List<String> order = new java.util.ArrayList<>();
+        String s = prefs.getString("sect_order", "");
+        if (!s.isEmpty())
+            for (String id : s.split(","))
+                if (java.util.Arrays.asList(SECT_IDS).contains(id) && !order.contains(id)) order.add(id);
+        for (String id : SECT_IDS) if (!order.contains(id)) order.add(id); // új szakaszok a végére
+        return order;
+    }
+
+    java.util.Set<String> sectHidden() {
+        java.util.Set<String> h = new java.util.HashSet<>();
+        String s = prefs.getString("sect_hidden", "");
+        if (!s.isEmpty()) for (String id : s.split(",")) if (!id.isEmpty()) h.add(id);
+        return h;
+    }
+
+    void refreshSections() {
+        if (sectionsBox == null || sectionViews == null) return;
+        sectionsBox.removeAllViews();
+        java.util.Set<String> hidden = sectHidden();
+        for (String id : sectOrder()) {
+            View v = sectionViews.get(id);
+            if (v == null || hidden.contains(id)) continue;
+            if (v.getParent() instanceof android.view.ViewGroup)
+                ((android.view.ViewGroup) v.getParent()).removeView(v);
+            sectionsBox.addView(v, new LinearLayout.LayoutParams(-1, -2));
+        }
+    }
+
+    void reorderSectionsDialog() {
+        final java.util.List<String> order = new java.util.ArrayList<>(sectOrder());
+        final java.util.Set<String> hidden = new java.util.HashSet<>(sectHidden());
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), dp(2), dp(4), 0);
+        final Runnable[] render = new Runnable[1];
+        render[0] = () -> {
+            box.removeAllViews();
+            for (int i = 0; i < order.size(); i++) {
+                final int idx = i;
+                final String id = order.get(i);
+                int nameIdx = java.util.Arrays.asList(SECT_IDS).indexOf(id);
+                if (nameIdx < 0) continue;
+                final boolean hid = hidden.contains(id);
+                LinearLayout row = hbox();
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(dp(8), dp(7), dp(4), dp(7));
+                row.addView(text(SECT_NAMES[nameIdx], 15, hid ? MUTED : TXT, !hid),
+                        new LinearLayout.LayoutParams(0, -2, 1f));
+                Button eye = smallIconBtn(hid ? "🚫" : "👁");
+                eye.setOnClickListener(v -> { if (hid) hidden.remove(id); else hidden.add(id); render[0].run(); });
+                row.addView(eye);
+                Button up = smallIconBtn("↑");
+                up.setAlpha(idx > 0 ? 1f : 0.3f);
+                up.setOnClickListener(v -> { if (idx > 0) { java.util.Collections.swap(order, idx, idx - 1); render[0].run(); } });
+                row.addView(up);
+                Button down = smallIconBtn("↓");
+                down.setAlpha(idx < order.size() - 1 ? 1f : 0.3f);
+                down.setOnClickListener(v -> { if (idx < order.size() - 1) { java.util.Collections.swap(order, idx, idx + 1); render[0].run(); } });
+                row.addView(down);
+                box.addView(row);
+            }
+        };
+        render[0].run();
+        new Sheet(this, "Szakaszok testreszabása", "Rendezd át (↑↓) vagy rejtsd el (👁) a kártyákat")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    prefs.edit().putString("sect_order", joinCsv(order))
+                            .putString("sect_hidden", joinCsv(hidden)).apply();
+                    refreshSections();
+                })
+                .addCancel().show();
     }
 
     // ---- Saját sablonok ----
