@@ -47,6 +47,8 @@ public final class Mascot {
                 "Készen állsz, " + u + "? 🐺 Egy kis GRIT, és kész az edzés!",
                 "A falka vár! 🔥 Csapjunk bele egy körbe.",
                 "Ma is legyőzzük a tegnapi éned! 💪🐺",
+                "Egy kör most, büszkeség egész nap! 🔥",
+                "A láng nem gyúl meg magától, " + u + " – csiholjuk! 🐺🔥",
         };
         return day[(int) (System.currentTimeMillis() / 60000 % day.length)];
     }
@@ -60,6 +62,10 @@ public final class Mascot {
             "A falka együtt erős. Hajrá! 🐺",
             "Te irányítasz, nem a lustaság. 💪🔥",
             "Morogj rá a lustaságra – aztán mozdulj! 🐺🔥",
+            "Az erő nem adottság – megszerzed. 💪",
+            "Minden kör egy tégla a jobbik énedhez. 🧱🔥",
+            "Nem kell tökéletesnek lenni, csak elkezdeni. 🐺",
+            "A verejték ma a mosoly holnap. 😤🔥",
     };
 
     public static String pep() {
@@ -76,6 +82,8 @@ public final class Mascot {
                 "egy kis GRIT, és kész a mai edzés! 🔥",
                 "ne feledd: a kitartás legyőz mindent! 💪",
                 "gyújtsuk be a napot egy jó edzéssel! 🔥🐺",
+                "a legjobb időpont az edzésre: most! ⏱🔥",
+                "minden nap egy új esély erősödni! 🐺💪",
         };
         String m = motiv[(int) (Math.random() * motiv.length)];
         return hi + ", " + u + "! 🐺🔥 Blaze vagyok – " + m;
@@ -111,6 +119,8 @@ public final class Mascot {
                 "Kipipálva, " + u + "! 🔥 A mai éned legyőzte a tegnapit.",
                 "Szép munka, " + u + "! 🐺 A falka veled ünnepel!",
                 "Megcsináltad, " + u + "! 💪🔥 Ez a kitartás visz előre.",
+                "Újabb győzelem, " + u + "! 🏅 A láng ma is fellobbant. 🔥",
+                "Ez GRIT volt, " + u + "! 🐺🔥 Holnap találkozunk!",
         };
         return p[(int) (Math.random() * p.length)];
     }
@@ -124,6 +134,8 @@ public final class Mascot {
                 "Hé, " + u + "! 🐺 A falka téged vár – gyújtsuk be a mai edzést! 🔥",
                 "Blaze itt! 🔥 Ideje egy kis GRIT-nek. Menni fog!",
                 "Mozdulj meg ma, " + u + "! 💪 Egy gyors kör, és büszke leszel magadra. 🐺",
+                "Aúúú! 🐺 A mai edzés még hiányzik – pár perc, és megvan! 🔥",
+                "Ne hagyd, hogy a kanapé nyerjen, " + u + "! 💪 Egy rövid kör is győzelem.",
         };
         return n[(int) (System.currentTimeMillis() / 60000 % n.length)];
     }
