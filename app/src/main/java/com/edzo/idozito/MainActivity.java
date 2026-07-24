@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
     LinearLayout programCard;
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
-    TextView exText, exDesc, nextText, recordText, levelText;
+    TextView exText, exDesc, nextText, recordText, levelText, blazePraise;
     TextView statElapsed, statCal, statSteps, statRemain;
     Button pauseBtn, cooldownBtn, shareBtn, againBtn;
     View overallFill;
@@ -2472,6 +2472,20 @@ public class MainActivity extends Activity {
         controls.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
         runView.addView(controls);
 
+        // Blaze dicsérete (csak a befejező képernyőn látszik)
+        blazePraise = text("", 14.5f, TXT, true);
+        blazePraise.setGravity(Gravity.CENTER);
+        blazePraise.setVisibility(View.GONE);
+        GradientDrawable bpBg = new GradientDrawable();
+        bpBg.setColor((tAccent & 0x00FFFFFF) | 0x1F000000);
+        bpBg.setCornerRadius(dp(14));
+        bpBg.setStroke(dp(1), (tAccent & 0x00FFFFFF) | 0x55000000);
+        blazePraise.setBackground(bpBg);
+        blazePraise.setPadding(dp(14), dp(12), dp(14), dp(12));
+        LinearLayout.LayoutParams bpLp = new LinearLayout.LayoutParams(-1, -2);
+        bpLp.topMargin = dp(12);
+        runView.addView(blazePraise, bpLp);
+
         // Levezető nyújtás gomb (csak a befejező képernyőn látszik)
         cooldownBtn = ghostButton("🧘  Levezető nyújtás");
         cooldownBtn.setVisibility(View.GONE);
@@ -2649,6 +2663,7 @@ public class MainActivity extends Activity {
         nextText.setText(prog != null && prog.ex.length > 0 ? "Következő: " + prog.ex[0] : "");
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
+        if (blazePraise != null) blazePraise.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
         if (againBtn != null) againBtn.setVisibility(View.GONE);
@@ -2692,6 +2707,7 @@ public class MainActivity extends Activity {
         nextText.setText("Következő: " + names[0]);
         recordText.setVisibility(View.GONE);
         levelText.setVisibility(View.GONE);
+        if (blazePraise != null) blazePraise.setVisibility(View.GONE);
         cooldownBtn.setVisibility(View.GONE);
         shareBtn.setVisibility(View.GONE);
         if (againBtn != null) againBtn.setVisibility(View.GONE);
@@ -2941,6 +2957,15 @@ public class MainActivity extends Activity {
         lastPaused = false;
         pauseBtn.setEnabled(false);
         pauseBtn.setText("Kész");
+        // Blaze személyre szabott dicsérete (széria- és mérföldkő-tudatos).
+        if (blazePraise != null) {
+            JSONArray actArr = activityLog();
+            blazePraise.setText("🐺 " + Mascot.praiseFinish(
+                    prefs.getString("user_name", ""), dayStreak(actArr), actArr.length()));
+            blazePraise.setVisibility(View.VISIBLE);
+            blazePraise.setAlpha(0f);
+            blazePraise.animate().alpha(1f).setStartDelay(350).setDuration(420).start();
+        }
         cooldownBtn.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(View.VISIBLE);
         if (againBtn != null) againBtn.setVisibility(lastWasRoutine ? View.GONE : View.VISIBLE);

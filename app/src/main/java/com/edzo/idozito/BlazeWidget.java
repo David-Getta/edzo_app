@@ -42,7 +42,7 @@ public class BlazeWidget extends AppWidgetProvider {
                 .getString("user_name", "");
         boolean today = workedOutToday(c);
         String msg = today
-                ? praise(userName)
+                ? praise(userName, streakDays(c))
                 : Mascot.nudge(userName, false, 0);
         rv.setTextViewText(R.id.blaze_msg, msg);
 
@@ -56,9 +56,35 @@ public class BlazeWidget extends AppWidgetProvider {
         mgr.updateAppWidget(id, rv);
     }
 
-    private static String praise(String userName) {
+    private static String praise(String userName, int streak) {
         String u = (userName == null || userName.trim().isEmpty()) ? "falkatárs" : userName.trim();
+        if (streak >= 2) return "Ma már letudtad, " + u + "! 🔥 " + streak + " napos széria – ég a láng!";
         return "Ma már letudtad, " + u + "! 💪🔥 Büszke vagyok rád.";
+    }
+
+    /** Egymást követő edzésnapok száma mával bezárólag. */
+    private static int streakDays(Context c) {
+        long dayMs = 24L * 60 * 60 * 1000;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long todayStart = cal.getTimeInMillis();
+        JSONArray h = History.load(c);
+        int streak = 0;
+        for (int k = 0; k <= 365; k++) {
+            long from = todayStart - k * dayMs, to = todayStart - (k - 1) * dayMs;
+            boolean hit = false;
+            for (int i = 0; i < h.length(); i++) {
+                JSONObject o = h.optJSONObject(i);
+                long ts = o == null ? 0 : o.optLong("ts");
+                if (ts >= from && ts < to) { hit = true; break; }
+            }
+            if (!hit) break;
+            streak++;
+        }
+        return streak;
     }
 
     private static boolean workedOutToday(Context c) {

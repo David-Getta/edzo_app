@@ -79,6 +79,26 @@ public final class Mascot {
         return hi + ", " + u + "! 🐺🔥 Blaze vagyok – " + m;
     }
 
+    /** Dicséret az edzés befejező képernyőjére, széria- és mérföldkő-tudatosan. */
+    public static String praiseFinish(String userName, int dayStreak, int totalWorkouts) {
+        String u = who(userName);
+        if (totalWorkouts == 1)
+            return "Az első edzésed, " + u + "! 🐺🎉 Ezt sose felejted el – a falka büszke rád!";
+        if (totalWorkouts == 10 || totalWorkouts == 25 || totalWorkouts == 50 || totalWorkouts == 100)
+            return totalWorkouts + ". edzés, " + u + "! 🏆🔥 Ez már nem szerencse – ez GRIT!";
+        if (dayStreak >= 7)
+            return dayStreak + " napja minden nap, " + u + "! 🔥🔥 Te vagy a falka lángja!";
+        if (dayStreak >= 3)
+            return dayStreak + " napos széria, " + u + "! 🔥 Egyre erősebb a lángod – így tovább!";
+        String[] p = {
+                "Ez az, " + u + "! 💪 Blaze büszkén vonyít: aúúú! 🐺",
+                "Kipipálva, " + u + "! 🔥 A mai éned legyőzte a tegnapit.",
+                "Szép munka, " + u + "! 🐺 A falka veled ünnepel!",
+                "Megcsináltad, " + u + "! 💪🔥 Ez a kitartás visz előre.",
+        };
+        return p[(int) (Math.random() * p.length)];
+    }
+
     /** Értesítés-szöveg Blaze hangján (proaktív emlékeztetőhöz). */
     public static String nudge(String userName, boolean streakRisk, int dayStreak) {
         String u = who(userName);
