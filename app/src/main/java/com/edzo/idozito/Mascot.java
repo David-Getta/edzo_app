@@ -81,6 +81,14 @@ public final class Mascot {
         return hi + ", " + u + "! 🐺🔥 Blaze vagyok – " + m;
     }
 
+    /** Heti terv állása edzés után: ünneplés vagy a hátralévő napok. */
+    public static String planStatus(String userName, boolean planComplete, int futureRemaining) {
+        String u = who(userName);
+        if (planComplete)
+            return "Heti terv kész, " + u + "! 🏆🐺 Minden edzésnapot teljesítettél – büszke a falka!";
+        return "Ma megvolt, " + u + "! 💪 Még " + futureRemaining + " edzésnap van hátra a héten – tartsd a tempót! 🔥";
+    }
+
     /** Dicséret az edzés befejező képernyőjére, széria- és mérföldkő-tudatosan. */
     public static String praiseFinish(String userName, int dayStreak, int totalWorkouts) {
         String u = who(userName);

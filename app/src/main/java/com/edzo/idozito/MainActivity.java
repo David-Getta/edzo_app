@@ -665,6 +665,33 @@ public class MainActivity extends Activity {
         boolean risk = !today && !restDay && ws >= 1 && hour >= 16;
         String userName = prefs.getString("user_name", "");
         String msg = Mascot.line(this, userName, arr.length(), today, ds, ws, risk, hour, restDay);
+
+        // Ha van heti terv és ma már edzett, Blaze a terv állásáról beszél.
+        if (today && !Theme.planDays(this).isEmpty()) {
+            long wsMs = weekStartMs();
+            boolean[] done = new boolean[7];
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.optJSONObject(i);
+                if (o == null) continue;
+                long ts = o.optLong("ts");
+                if (ts < wsMs) continue;
+                int di = (int) ((ts - wsMs) / (24L * 3600 * 1000));
+                if (di >= 0 && di < 7) done[di] = true;
+            }
+            int plannedCount = 0, plannedDone = 0, futureRemaining = 0;
+            for (int i = 0; i < 7; i++) {
+                if (!Theme.isPlanDay(this, i)) continue;
+                plannedCount++;
+                if (done[i]) plannedDone++;
+                else if (i > dowIdx) futureRemaining++;
+            }
+            if (plannedCount > 0 && plannedDone >= plannedCount)
+                msg = Mascot.planStatus(userName, true, 0);
+            else if (futureRemaining > 0)
+                msg = Mascot.planStatus(userName, false, futureRemaining);
+            // különben (elmulasztott múltbeli terv-nap, de több hátralévő nincs):
+            // marad az általános dicséret.
+        }
         String moodE = Mascot.mood(today, ds, risk);
 
         LinearLayout cardM = card();
