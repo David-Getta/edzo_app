@@ -121,6 +121,11 @@ public class SettingsActivity extends Activity {
             }
         });
         col.addView(ttsBtn);
+        col.addView(gap(10));
+        // Bemondás sebessége (edzés közbeni hangutasítások).
+        col.addView(text("Bemondás sebessége", 13, MUTED, false));
+        col.addView(gap(6));
+        col.addView(speechRateChips(), lp());
         col.addView(gap(18));
 
         // --- Visszaszámlálás hossza ---
@@ -452,6 +457,28 @@ public class SettingsActivity extends Activity {
             });
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
             lp.leftMargin = dp(2); lp.rightMargin = dp(2);
+            row.addView(b, lp);
+            btns[i] = b;
+        }
+        return row;
+    }
+
+    /** Hangbemondás sebessége (a következő edzésnél lép életbe). */
+    View speechRateChips() {
+        final float[] rates = {0.85f, 0.96f, 1.15f};
+        String[] labels = {"Lassú", "Normál", "Gyors"};
+        LinearLayout row = hbox();
+        final Button[] btns = new Button[rates.length];
+        final float cur = Theme.speechRate(this);
+        for (int i = 0; i < rates.length; i++) {
+            final float val = rates[i];
+            Button b = chip(labels[i], Math.abs(val - cur) < 0.01f);
+            b.setOnClickListener(v -> {
+                Theme.setFloat(this, "tts_rate", val);
+                for (int j = 0; j < btns.length; j++) styleChip(btns[j], Math.abs(rates[j] - val) < 0.01f);
+            });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
+            lp.leftMargin = dp(4); lp.rightMargin = dp(4);
             row.addView(b, lp);
             btns[i] = b;
         }

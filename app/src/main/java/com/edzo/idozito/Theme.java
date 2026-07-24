@@ -52,6 +52,8 @@ public final class Theme {
     public static boolean blazeNudge(Context c) { return p(c).getBoolean("blaze_nudge", true); }
     /** Blaze napi értesítésének órája (0-23). */
     public static int nudgeHour(Context c) { return p(c).getInt("blaze_hour", 18); }
+    /** Hangbemondás (TTS) sebessége: 0.85 = lassú, 0.96 = normál, 1.15 = gyors. */
+    public static float speechRate(Context c) { return p(c).getFloat("tts_rate", 0.96f); }
 
     /** Tervezett edzésnapok CSV-ben (0=hétfő .. 6=vasárnap); üres = minden nap. */
     public static String planDays(Context c) { return p(c).getString("plan_days", ""); }

@@ -179,8 +179,8 @@ public class TimerService extends Service {
                 tts.setLanguage(Locale.getDefault());
             }
             selectBestHungarianVoice();
-            // Kicsit lassabb, tagoltabb beszéd + semleges hangmagasság a jobb érthetőségért.
-            tts.setSpeechRate(0.96f);
+            // A beszédsebesség a Beállításokban állítható; semleges hangmagasság.
+            tts.setSpeechRate(Theme.speechRate(this));
             tts.setPitch(1.0f);
         } catch (Exception ignored) {}
         ttsReady = true;
