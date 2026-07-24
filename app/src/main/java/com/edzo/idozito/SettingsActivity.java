@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -126,6 +127,11 @@ public class SettingsActivity extends Activity {
         col.addView(text("Bemondás sebessége", 13, MUTED, false));
         col.addView(gap(6));
         col.addView(speechRateChips(), lp());
+        col.addView(gap(10));
+        // Azonnali próba: így hangzik majd a bemondás edzés közben.
+        Button testVoice = ghost("🔊  Teszt bemondás");
+        testVoice.setOnClickListener(v -> testSpeak());
+        col.addView(testVoice);
         col.addView(gap(18));
 
         // --- Visszaszámlálás hossza ---
@@ -461,6 +467,53 @@ public class SettingsActivity extends Activity {
             btns[i] = b;
         }
         return row;
+    }
+
+    // ---- Teszt bemondás (ugyanazzal a motorral és sebességgel, mint edzésnél) ----
+
+    private TextToSpeech testTts;
+    private boolean testTriedGoogle;
+
+    void testSpeak() {
+        releaseTestTts();
+        testTriedGoogle = true;
+        try {
+            testTts = new TextToSpeech(this, this::onTestTtsInit, "com.google.android.tts");
+        } catch (Exception e) {
+            testTriedGoogle = false;
+            try { testTts = new TextToSpeech(this, this::onTestTtsInit); } catch (Exception ignored) {}
+        }
+    }
+
+    private void onTestTtsInit(int status) {
+        if (status != TextToSpeech.SUCCESS || testTts == null) {
+            // A Google motor nem elérhető – egyszer újrapróbáljuk az alapértelmezettel.
+            if (testTriedGoogle) {
+                testTriedGoogle = false;
+                releaseTestTts();
+                try { testTts = new TextToSpeech(this, this::onTestTtsInit); } catch (Exception ignored) {}
+            }
+            return;
+        }
+        try {
+            testTts.setLanguage(new Locale("hu", "HU"));
+            testTts.setSpeechRate(Theme.speechRate(this));
+            testTts.speak("Szia! Így fogok beszélni edzés közben. Hajrá, csináljuk!",
+                    TextToSpeech.QUEUE_FLUSH, null, "grit_test");
+        } catch (Exception ignored) {}
+    }
+
+    private void releaseTestTts() {
+        if (testTts != null) {
+            try { testTts.stop(); testTts.shutdown(); } catch (Exception ignored) {}
+            testTts = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releaseTestTts();
     }
 
     /** Hangbemondás sebessége (a következő edzésnél lép életbe). */
