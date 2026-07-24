@@ -88,6 +88,14 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 .setSmallIcon(android.R.drawable.ic_popup_reminder)
                 .setAutoCancel(true)
                 .setContentIntent(pi);
+        // Akciógomb: egy koppintás, és azonnal indul az edzés (widget-gyorsindítás útvonala).
+        Intent quick = new Intent(c, MainActivity.class);
+        quick.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        quick.putExtra("quick_start", true);
+        PendingIntent qpi = PendingIntent.getActivity(c, REQ + 1, quick, flags);
+        b.addAction(new Notification.Action.Builder((android.graphics.drawable.Icon) null,
+                "▶ Edzés indítása", qpi).build());
         nm.notify(NOTIF_ID, b.build());
     }
 
