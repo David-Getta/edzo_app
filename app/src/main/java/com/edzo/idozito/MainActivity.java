@@ -595,6 +595,11 @@ public class MainActivity extends Activity {
         "A lassú, kontrollált mozdulatok hatékonyabbak, mint a kapkodás. 🐢",
         "Pihenj eleget két nehéz edzés között – a test edzés közt épül. 🛌",
         "A motiváció elfogy, a szokás megmarad – edz mindig ugyanabban az időben. ⏰",
+        "Készítsd ki előre az edzőruhád – a legnehezebb lépés az elkezdés. 👟",
+        "Az intervall-edzés rövid, de hatásos: 15 perc is felér egy órás tempóval. ⚡",
+        "Edzés közben kortyolj, ne vedelj – kis adagokban jobban hasznosul a víz. 🥛",
+        "A hideg zuhany edzés után csökkenti az izomlázat és felfrissít. 🚿",
+        "Naponta ugyanannyit aludni ugyanolyan fontos, mint eleget aludni. 🕘",
         "Nehéz nap? Egy 5 perces rövid edzés is fenntartja a lendületet. ⚡",
         "Lélegezz ki az erőkifejtésnél, vegyél levegőt a leengedésnél. 🌬️",
         "Deload hét: 4-6 hetente vegyél vissza kicsit, hogy a tested utolérje magát. 🔧"
