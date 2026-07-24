@@ -3228,11 +3228,18 @@ public class MainActivity extends Activity {
         // Blaze személyre szabott dicsérete (széria- és mérföldkő-tudatos).
         if (blazePraise != null) {
             JSONArray actArr = activityLog();
+            int dsNow = dayStreak(actArr);
             blazePraise.setText("🐺 " + Mascot.praiseFinish(
-                    prefs.getString("user_name", ""), dayStreak(actArr), actArr.length()));
+                    prefs.getString("user_name", ""), dsNow, actArr.length()));
             blazePraise.setVisibility(View.VISIBLE);
             blazePraise.setAlpha(0f);
             blazePraise.animate().alpha(1f).setStartDelay(350).setDuration(420).start();
+            // Széria-mérföldkő (3/7/14/30/50/100 nap): külön konfetti-ünneplés.
+            boolean milestone = dsNow == 3 || dsNow == 7 || dsNow == 14
+                    || dsNow == 30 || dsNow == 50 || dsNow == 100;
+            if (milestone && (records == null || records.isEmpty())
+                    && (levelup == null || levelup.isEmpty()))
+                Confetti.burst(root);
         }
         cooldownBtn.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(View.VISIBLE);
