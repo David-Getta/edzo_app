@@ -654,6 +654,7 @@ public class StatsActivity extends Activity {
         first.set(year, month, 1);
         int offset = (first.get(Calendar.DAY_OF_WEEK) + 5) % 7; // hétfő = 0
         int dim = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+        boolean hasPlan = !Theme.planDays(this).isEmpty();
         int day = 1;
         while (day <= dim) {
             LinearLayout row = hbox();
@@ -676,6 +677,13 @@ public class StatsActivity extends Activity {
                     GradientDrawable bg = new GradientDrawable();
                     bg.setColor(0);
                     bg.setStroke(dp(1), Theme.accent(this));
+                    bg.setCornerRadius(dp(10));
+                    t.setBackground(bg);
+                } else if (hasPlan && Theme.isPlanDay(this, c)) {
+                    // Tervezett edzésnap: halvány szaggatott gyűrű.
+                    GradientDrawable bg = new GradientDrawable();
+                    bg.setColor(0);
+                    bg.setStroke(dp(1), (Theme.accent(this) & 0x00FFFFFF) | 0x55000000, dp(4), dp(3));
                     bg.setCornerRadius(dp(10));
                     t.setBackground(bg);
                 }
