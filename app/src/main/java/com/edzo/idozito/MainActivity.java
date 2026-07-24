@@ -228,9 +228,10 @@ public class MainActivity extends Activity {
             String[][] feats = {
                 {"⏱️", "Intervallum edzés", "Bemelegítés, munka, pihenő, körök és levezetés – minden testre szabható."},
                 {"🏃", "Futás követése", "GPS-táv, tempó, lépések és kalória automatikus mérése."},
-                {"🧘", "Nyújtás & mobilitás", "Vezetett bemelegítés, nyújtás és hengerezés videós útmutatóval."},
+                {"🐺", "Blaze, az edzőtársad", "Köszönt, emlékeztet és megdicsér – a falka mindig veled van."},
+                {"📅", "Edzésnapok terve", "Beállításokban kijelölheted, mely napokon edzel – pihenőnapon nem nyaggatunk."},
                 {"🏅", "Kitüntetések & szintek", "Gyűjts XP-t, szintet és jelvényeket, tartsd a sorozatod."},
-                {"📝", "Edzésnapló", "Jelöld a hangulatod és írj jegyzetet minden edzéshez."}
+                {"🎛", "Minden testreszabható", "Színek, mód, kezdőlap-kártyák és csempék sorrendje – a te appod."}
             };
             for (String[] f : feats) {
                 LinearLayout row = hbox();
@@ -246,9 +247,11 @@ public class MainActivity extends Activity {
                 box.addView(row);
             }
             prefs.edit().putBoolean("welcomed", true).apply();
-            new Sheet(this, "Üdv a Grit appban! 👋", "Néhány dolog, amit tud az app:")
+            new Sheet(this, "Üdv a Gritben! 🐺🔥", "Szia, Blaze vagyok, a falkavezér! Ezt tudja az appod:")
                 .addCustom(box)
-                .addPrimary("Kezdjük! 💪", () -> {})
+                // Rögtön megkérdezzük a nevét, hogy az app az első perctől
+                // személyre szabottan szólítsa meg (kihagyható).
+                .addPrimary("Kezdjük! 💪", this::editNameDialog)
                 .show();
         });
     }
