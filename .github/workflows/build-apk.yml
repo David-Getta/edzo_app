@@ -49,19 +49,25 @@ jobs:
               echo "SIKERTELEN letöltés: $url"; rm -f "$out.tmp"
             fi
           }
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_121951_ae5ec316-944b-4b32-848d-e0d7ef07ca63.png" "bg_main.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122006_a68ab320-af8c-4dbb-8ecb-8ca93fcd4343.png" "hero_run.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122018_b1f2c5bc-fa99-4724-abb8-5729d52b220f.png" "bg_stats.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260716_122900_5d288077-4db1-4065-a241-2849f139d6c9.png" "bg_profile.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260719_191837_c7175d08-dd9c-4bae-83b5-2c9cc8ebfd29.png" "bg_mobility.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260719_192336_8b7228c2-04b8-46f8-a029-c7076b83e621.png" "bg_library.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260719_233006_36e03ce3-20d2-41ff-a0c5-5cf02862f9e0.png" "bg_history.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_122932_43a534a2-9660-4c48-a653-490d5e43a254.png" "bg_reminders.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_132016_f591fa65-3e89-455b-b91d-6a4dba66986a.png" "bg_settings.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_142758_ecbd1582-903e-4027-b997-dfa802a8f6a6.png" "bg_workout.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_144953_b7dc325b-ebe5-4cb2-9b8a-7791b76dc6fc.png" "bg_main2.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260720_145129_871d9e58-1399-458c-8eb3-318503d06b81.png" "bg_main3.png"
-          dl "https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260722_175618_5f6d28b3-6f30-4594-a795-4e503335ddf8.png" "bg_main4.png"
+          # Grit karmazsin/bordó témájú hátterek (2026-07-24-i Higgsfield-generálás).
+          GYM="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_164927_2d4f1c90-97f6-404c-9168-1f38ffda6738.png"
+          RUN="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165456_93cf9056-1916-4b99-a93b-7034d02d5df8.png"
+          TRO="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165303_3556b778-152e-4f05-a0de-6d857b903504.png"
+          BAR="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165649_b8d7b23f-9127-4913-850b-65a7d08b29cf.png"
+          ABS="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165902_e5d94bca-333c-4065-a062-0c8719050cab.png"
+          dl "$GYM" "bg_main.png"
+          dl "$RUN" "hero_run.png"
+          dl "$TRO" "bg_stats.png"
+          dl "$ABS" "bg_profile.png"
+          dl "$ABS" "bg_mobility.png"
+          dl "$BAR" "bg_library.png"
+          dl "$TRO" "bg_history.png"
+          dl "$ABS" "bg_reminders.png"
+          dl "$ABS" "bg_settings.png"
+          dl "$BAR" "bg_workout.png"
+          dl "$BAR" "bg_main2.png"
+          dl "$ABS" "bg_main3.png"
+          dl "$GYM" "bg_main4.png"
           # PNG → WebP a jóval kisebb APK-ért (a háttérképek nagyok). Ha a cwebp
           # nem elérhető vagy hibázik, marad a PNG – így a build sosem törik el.
           if ! command -v cwebp >/dev/null 2>&1; then sudo apt-get update -qq && sudo apt-get install -y -qq webp || true; fi
@@ -101,7 +107,7 @@ jobs:
           name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            Grit automatikus build (v12.5, build ${{ github.run_number }}).
+            Grit automatikus build (v12.6, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"
