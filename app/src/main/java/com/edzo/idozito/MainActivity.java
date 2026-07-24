@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
     LinearLayout planBar;
     TextView planCaption;
     TextView bannerSub;
+    TextView streakChip;
     LinearLayout recentBox;
     LinearLayout badgesBox;
     final View[] presetViews = new View[4];
@@ -548,6 +549,19 @@ public class MainActivity extends Activity {
         FrameLayout.LayoutParams tlp = new FrameLayout.LayoutParams(-2, -2);
         tlp.gravity = Gravity.CENTER_VERTICAL;
         banner.addView(btitles, tlp);
+        // Duolingo-stílusú lángjelző a sarokban: az élő napi széria.
+        streakChip = text("", 13.5f, 0xFFFFFFFF, true);
+        streakChip.setPadding(dp(11), dp(6), dp(11), dp(6));
+        GradientDrawable scg = new GradientDrawable();
+        scg.setColor(0x66000000);
+        scg.setCornerRadius(dp(20));
+        streakChip.setBackground(scg);
+        FrameLayout.LayoutParams slp = new FrameLayout.LayoutParams(-2, -2);
+        slp.gravity = Gravity.TOP | Gravity.END;
+        slp.topMargin = dp(14);
+        slp.rightMargin = dp(14);
+        banner.addView(streakChip, slp);
+        refreshStreakChip();
         // A fejlécre koppintva személyre szabható a megszólítás (neved).
         btitles.setOnClickListener(v -> editNameDialog());
         return banner;
@@ -1308,6 +1322,18 @@ public class MainActivity extends Activity {
         return greet + " Szép munka ma! ✅";
     }
 
+    /** A fejléc lángjelzőjének frissítése: 2 naptól mutatja az élő szériát. */
+    void refreshStreakChip() {
+        if (streakChip == null) return;
+        int ds = dayStreak(activityLog());
+        if (ds >= 2) {
+            streakChip.setVisibility(View.VISIBLE);
+            streakChip.setText("🔥 " + ds);
+        } else {
+            streakChip.setVisibility(View.GONE);
+        }
+    }
+
     // ---- Haladás-csík (szint / sorozat / edzésszám) ----
 
     // A főképernyő összes dinamikus kártyájának frissítése egy helyről.
@@ -1320,6 +1346,7 @@ public class MainActivity extends Activity {
         refreshInsight();
         refreshRecords();
         refreshMascot();
+        refreshStreakChip();
     }
 
     // ---- Heti összevetés (e hét vs. előző hét) ----
