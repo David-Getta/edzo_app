@@ -363,7 +363,7 @@ public class StatsActivity extends Activity {
 
     void shareStats() {
         try {
-            ShareProvider.shareImage(this, renderStatsCard(), "my-trainer-statisztika");
+            ShareProvider.shareImage(this, renderStatsCard(), "grit-statisztika");
         } catch (Exception ignored) {}
     }
 
@@ -395,7 +395,9 @@ public class StatsActivity extends Activity {
         sp.setColor(0xFFE11D2E);
         sp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         sp.setTextSize(40);
-        cv.drawText("⭐ Szint " + lvl + " · " + Levels.title(lvl), M, 300, sp);
+        int shareDs = Streaks.current(this, hist);
+        cv.drawText("⭐ Szint " + lvl + " · " + Levels.title(lvl)
+                + (shareDs >= 2 ? "  ·  🔥 " + shareDs + " napos széria" : ""), M, 300, sp);
 
         String[][] rows = {
                 {"Ezen a héten", wk.count + " edzés", wk.distM > 0 ? fmtDist(wk.distM) : "—", (int) wk.durSec / 60 + " perc"},
@@ -423,7 +425,7 @@ public class StatsActivity extends Activity {
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(36);
         fp.setTextAlign(Paint.Align.CENTER);
-        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 60, fp);
+        cv.drawText("GRIT  ·  edzésnapló", W / 2f, H - 60, fp);
         return bmp;
     }
 
@@ -631,7 +633,7 @@ public class StatsActivity extends Activity {
     }
 
     void shareHeatmap() {
-        try { ShareProvider.shareImage(this, renderHeatmapCard(), "my-trainer-aktivitas"); }
+        try { ShareProvider.shareImage(this, renderHeatmapCard(), "grit-aktivitas"); }
         catch (Exception ignored) {}
     }
 
@@ -692,7 +694,7 @@ public class StatsActivity extends Activity {
         Paint fp = new Paint(Paint.ANTI_ALIAS_FLAG);
         fp.setColor(0xFFE11D2E); fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(34); fp.setTextAlign(Paint.Align.CENTER);
-        cvn.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 45, fp);
+        cvn.drawText("GRIT  ·  edzésnapló", W / 2f, H - 45, fp);
         return bmp;
     }
 

@@ -330,7 +330,7 @@ public class WorkoutDetailActivity extends Activity {
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(38);
         fp.setTextAlign(Paint.Align.CENTER);
-        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 70, fp);
+        cv.drawText("GRIT  ·  edzésnapló", W / 2f, H - 70, fp);
         return bmp;
     }
 

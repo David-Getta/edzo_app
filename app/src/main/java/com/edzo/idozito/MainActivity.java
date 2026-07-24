@@ -1718,7 +1718,7 @@ public class MainActivity extends Activity {
     void shareBadgesCard() {
         try {
             Bitmap bmp = renderBadgesCard(currentBadges());
-            ShareProvider.shareImage(this, bmp, "my-trainer-kituntetesek");
+            ShareProvider.shareImage(this, bmp, "grit-kituntetesek");
         } catch (Exception ignored) {}
     }
 
@@ -1776,7 +1776,7 @@ public class MainActivity extends Activity {
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(36);
         fp.setTextAlign(Paint.Align.CENTER);
-        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 60, fp);
+        cv.drawText("GRIT  ·  edzésnapló", W / 2f, H - 60, fp);
         return bmp;
     }
 
@@ -1874,7 +1874,7 @@ public class MainActivity extends Activity {
         try {
             JSONArray arr = History.load(this);
             Bitmap bmp = renderProgressCard(arr);
-            ShareProvider.shareImage(this, bmp, "my-trainer-haladas");
+            ShareProvider.shareImage(this, bmp, "grit-haladas");
         } catch (Exception ignored) {}
     }
 
@@ -1882,7 +1882,7 @@ public class MainActivity extends Activity {
     void shareLastWorkout() {
         try {
             Bitmap bmp = renderWorkoutCard();
-            ShareProvider.shareImage(this, bmp, "my-trainer-edzes");
+            ShareProvider.shareImage(this, bmp, "grit-edzes");
         } catch (Exception ignored) {}
     }
 
@@ -1949,7 +1949,7 @@ public class MainActivity extends Activity {
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(38);
         fp.setTextAlign(Paint.Align.CENTER);
-        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 70, fp);
+        cv.drawText("GRIT  ·  edzésnapló", W / 2f, H - 70, fp);
         return bmp;
     }
 
@@ -2028,7 +2028,7 @@ public class MainActivity extends Activity {
         fp.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         fp.setTextSize(38);
         fp.setTextAlign(Paint.Align.CENTER);
-        cv.drawText("MY TRAINER  ·  edzésnapló", W / 2f, H - 70, fp);
+        cv.drawText("GRIT  ·  edzésnapló", W / 2f, H - 70, fp);
         return bmp;
     }
 
