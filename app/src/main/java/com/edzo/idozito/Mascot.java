@@ -92,7 +92,12 @@ public final class Mascot {
     /** Visszavágó-hívás, ha tegnap elmaradt egy tervezett edzésnap. */
     public static String comeback(String userName) {
         String u = who(userName);
-        return "Tegnap kimaradt az edzés, " + u + " – semmi baj, ma visszavágunk! 🐺🔥";
+        String[] cb = {
+                "Tegnap kimaradt az edzés, " + u + " – semmi baj, ma visszavágunk! 🐺🔥",
+                "A tegnapi nap elszaladt, " + u + "… de a mai a miénk! 💪🔥",
+                "Egy kihagyott nap nem tör meg, " + u + " – ma duplán ég a láng! 🔥🐺",
+        };
+        return cb[(int) (System.currentTimeMillis() / 3600000 % cb.length)];
     }
 
     /** Heti terv állása edzés után: ünneplés vagy a hátralévő napok. */
