@@ -43,8 +43,11 @@ public class BlazeWidget extends AppWidgetProvider {
         boolean today = workedOutToday(c);
         int dowIdx = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
         String msg;
+        int liveStreak = streakUntilYesterday(c);
         if (today) msg = praise(userName, streakDays(c));
         else if (!Theme.isPlanDay(c, dowIdx)) msg = "Ma pihenőnap – tölts fel! 🌙🐺";
+        else if (liveStreak >= 2)
+            msg = liveStreak + " napos széria él – ne hagyd ma megszakadni! 🔥🐺";
         else msg = Mascot.nudge(userName, false, 0);
         rv.setTextViewText(R.id.blaze_msg, msg);
 
@@ -76,6 +79,31 @@ public class BlazeWidget extends AppWidgetProvider {
         String u = (userName == null || userName.trim().isEmpty()) ? "falkatárs" : userName.trim();
         if (streak >= 2) return "Ma már letudtad, " + u + "! 🔥 " + streak + " napos széria – ég a láng!";
         return "Ma már letudtad, " + u + "! 💪🔥 Büszke vagyok rád.";
+    }
+
+    /** Egymást követő edzésnapok száma tegnappal bezárólag (a még élő széria). */
+    private static int streakUntilYesterday(Context c) {
+        long dayMs = 24L * 60 * 60 * 1000;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long todayStart = cal.getTimeInMillis();
+        JSONArray h = History.load(c);
+        int streak = 0;
+        for (int k = 1; k <= 365; k++) {
+            long from = todayStart - k * dayMs, to = todayStart - (k - 1) * dayMs;
+            boolean hit = false;
+            for (int i = 0; i < h.length(); i++) {
+                JSONObject o = h.optJSONObject(i);
+                long ts = o == null ? 0 : o.optLong("ts");
+                if (ts >= from && ts < to) { hit = true; break; }
+            }
+            if (!hit) break;
+            streak++;
+        }
+        return streak;
     }
 
     /** Egymást követő edzésnapok száma mával bezárólag. */
