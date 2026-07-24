@@ -99,6 +99,7 @@ public class TimerService extends Service {
     private long stepEndElapsed, remainingAtPause;
     private int lastShownSec;
     private int completedRounds; // teljesített (végigment) körök száma
+    private boolean halfwayCheered; // félúti biztatás csak egyszer hangozzon el
     private int completedWork;   // teljesített munka-szakaszok (gyakorlatok) száma
 
     // Időmérés
@@ -296,6 +297,7 @@ public class TimerService extends Service {
         running = true;
         activeNow = true;
         paused = false;
+        halfwayCheered = false;
         idx = 0;
         completedRounds = 0;
         completedWork = 0;
@@ -362,6 +364,11 @@ public class TimerService extends Service {
             Beeper.play(workSound); buzz(new long[]{0, 60, 60, 60});
             if (s.label != null) speak(s.label + "!");
             else speak(lastRound ? "Utolsó kör. Futás!" : "Futás!");
+            // Félútnál egyszeri extra biztatás (legalább 4 körös edzésnél).
+            if (!halfwayCheered && !lastRound && rounds >= 4 && s.round == rounds / 2 + 1) {
+                halfwayCheered = true;
+                speakAdd("Félúton túl vagy. Hajrá, ne állj meg!");
+            }
         } else if (s.type == T_REST) {
             Beeper.play(restSound); buzz(120);
             String nx = nextWorkLabel();

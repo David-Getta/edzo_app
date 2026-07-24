@@ -739,7 +739,11 @@ public class MainActivity extends Activity {
         cardM.addView(badge, blp);
 
         LinearLayout txtCol = vbox();
-        txtCol.addView(text(Mascot.NAME + " 🔥", 12.5f, tAccent, true));
+        // Blaze neve mellett a saját szinted címe – a kabala „ismeri" a haladásod.
+        long xpNow = Levels.totalXp(History.load(this));
+        int lvlNow = Levels.levelForXp(xpNow);
+        txtCol.addView(text(Mascot.NAME + " 🔥  ·  Szint " + lvlNow + " – " + Levels.title(lvlNow),
+                12.5f, tAccent, true));
         final TextView body = text(msg, 14, TXT, false);
         body.setPadding(0, dp(3), 0, 0);
         txtCol.addView(body);
