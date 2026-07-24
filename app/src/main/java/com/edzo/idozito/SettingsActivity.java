@@ -356,6 +356,8 @@ public class SettingsActivity extends Activity {
                     Beeper.masterVolume = Theme.volume(this);
                     Reminders.scheduleAll(this);
                     WeeklyReceiver.schedule(this);
+                    DailyNudgeReceiver.schedule(this);
+                    BlazeWidget.refresh(this);
                     Theme.bumpRev(this); // hogy a főképernyő is újraépüljön
                     Toast.makeText(this, "Visszaállítva. 👍", Toast.LENGTH_LONG).show();
                     recreate();
