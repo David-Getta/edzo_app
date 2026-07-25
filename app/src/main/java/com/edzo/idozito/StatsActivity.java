@@ -553,7 +553,7 @@ public class StatsActivity extends Activity {
     LinearLayout badgesCard() {
         // A közös Badges definíció alapján (ugyanaz, mint a főképernyőn), hogy a
         // két helyen mindig ugyanazok a kitüntetések és feltételek jelenjenek meg.
-        java.util.HashSet<String> got = Badges.earned(hist, bestWeekStreak());
+        java.util.HashSet<String> got = Badges.earned(hist, bestWeekStreak(), getSharedPreferences("edzo", MODE_PRIVATE).getInt("challenge_done_count", 0));
         Badges.Badge[] all = Badges.ALL;
 
         LinearLayout grid = card();

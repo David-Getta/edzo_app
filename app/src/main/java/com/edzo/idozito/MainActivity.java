@@ -1837,7 +1837,7 @@ public class MainActivity extends Activity {
 
     java.util.HashSet<String> currentBadges() {
         JSONArray arr = History.load(this);
-        return Badges.earned(arr, bestWeekStreak(arr));
+        return Badges.earned(arr, bestWeekStreak(arr), prefs.getInt("challenge_done_count", 0));
     }
 
     void refreshBadges() {
