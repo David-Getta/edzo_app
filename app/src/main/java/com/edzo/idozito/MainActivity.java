@@ -1433,7 +1433,19 @@ public class MainActivity extends Activity {
         c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
         c.addView(gap(8));
         c.addView(text(done ? "Blaze büszkén vonyít: ez az, falkatárs! 🐺🔥"
-                : cur + " / " + target + " " + unit + " – hajrá! 💪", 12.5f, MUTED, false));
+                : cur + " / " + target + " " + unit + " – koppints, és csapj bele! 💪", 12.5f, MUTED, false));
+
+        // Koppintásra cselekszik: időzítős kihívásnál indít, súlyzósnál az Erő oldalt nyitja.
+        if (!done) {
+            c.setClickable(true);
+            c.setOnClickListener(v -> {
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+                if ("ismétlés".equals(unit))
+                    startActivity(new Intent(this, StrengthActivity.class));
+                else if (!TimerService.activeNow)
+                    startWorkout();
+            });
+        }
 
         challengeBox.addView(c, new LinearLayout.LayoutParams(-1, -2));
         challengeBox.addView(gap(16));
