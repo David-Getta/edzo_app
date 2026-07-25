@@ -252,7 +252,11 @@ public class DietActivity extends Activity {
         for (double s : sums) max = Math.max(max, s);
         int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
         if (goal > 0) max = Math.max(max, goal);
-        weekCard.addView(text("Elmúlt 7 nap", 12.5f, MUTED, true));
+        double weekSum = 0; int daysWith = 0;
+        for (double sVal : sums) { weekSum += sVal; if (sVal > 0) daysWith++; }
+        weekCard.addView(text("Elmúlt 7 nap"
+                + (daysWith > 0 ? "  ·  átlag " + Math.round(weekSum / daysWith) + " kcal/nap" : ""),
+                12.5f, MUTED, true));
         SimpleDateFormat dnf = new SimpleDateFormat("EEE", new Locale("hu"));
         for (int k = 6; k >= 0; k--) {
             LinearLayout row = hbox();
@@ -364,7 +368,8 @@ public class DietActivity extends Activity {
         box.addView(gap(10));
 
         box.addView(text("Vagy add meg a teljes adag grammját – az üresen hagyott "
-                + "összetevők közt arányosan elosztjuk:", 12, MUTED, false));
+                + "összetevők közt elosztjuk. Ha ezt is üresen hagyod, az ételek "
+                + "tipikus adagjával számolunk.", 12, MUTED, false));
         final EditText totalEt = input("Teljes adag (g), nem kötelező");
         totalEt.setInputType(InputType.TYPE_CLASS_NUMBER);
         box.addView(totalEt, lp());
