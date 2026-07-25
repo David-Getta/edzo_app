@@ -407,20 +407,29 @@ public class DietActivity extends Activity {
                     + "mit ettél (pl. rántott hús rizzsel).", Toast.LENGTH_LONG).show();
             return;
         }
-        // Közös gramm szétosztása a megadatlan összetevők közt (arányosan).
+        // Ételek felismerése előre (a tipikus adagméretekhez is kell).
+        List<Foods.Food> resolved = new ArrayList<>();
+        for (String fq : foods) resolved.add(Foods.find(fq));
+
+        // Közös gramm szétosztása a megadatlan összetevők közt; ha nincs közös
+        // gramm sem, az adott étel tipikus adagjával számolunk.
         double total = parse(totalEt.getText().toString());
         double given = 0; int missing = 0;
         for (double g : grams) { if (g > 0) given += g; else missing++; }
         if (missing > 0) {
             double remain = total > given ? total - given : 0;
-            double each = remain > 0 ? remain / missing : 150; // ésszerű alap: 150 g
-            for (int i = 0; i < grams.size(); i++) if (grams.get(i) <= 0) grams.set(i, each);
+            double each = remain > 0 ? remain / missing : -1;
+            for (int i = 0; i < grams.size(); i++)
+                if (grams.get(i) <= 0) {
+                    Foods.Food f = resolved.get(i);
+                    grams.set(i, each > 0 ? each : (f != null ? f.portion : 150));
+                }
         }
 
         List<MealLog.Item> items = new ArrayList<>();
         boolean estimated = false;
         for (int i = 0; i < foods.size(); i++) {
-            Foods.Food f = Foods.find(foods.get(i));
+            Foods.Food f = resolved.get(i);
             int kcal100;
             double prot100;
             String label;
