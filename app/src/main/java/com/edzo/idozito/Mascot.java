@@ -72,6 +72,9 @@ public final class Mascot {
             "Minden kör egy tégla a jobbik énedhez. 🧱🔥",
             "Nem kell tökéletesnek lenni, csak elkezdeni. 🐺",
             "A verejték ma a mosoly holnap. 😤🔥",
+            "A kényelem zóna szép hely, de ott nem nő semmi. 🌵",
+            "Egy kihívás egy nap – és a farkas jóllakik. 🎯🐺",
+            "A tested bírja. A fejed dönti el. 🧠🔥",
     };
 
     public static String pep() {
