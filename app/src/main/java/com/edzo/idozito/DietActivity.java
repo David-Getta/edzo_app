@@ -67,6 +67,11 @@ public class DietActivity extends Activity {
         Button add = primary("＋  Étkezés hozzáadása");
         add.setOnClickListener(v -> addMealDialog());
         col.addView(add);
+        col.addView(gap(8));
+        Button table = ghost("📖  Kalóriatáblázat");
+        table.setTextSize(13.5f);
+        table.setOnClickListener(v -> foodTableSheet());
+        col.addView(table);
         quickBox = vbox();
         col.addView(quickBox, lp());
         col.addView(gap(18));
@@ -721,6 +726,59 @@ public class DietActivity extends Activity {
     double parse(String s) {
         try { return Double.parseDouble(s.trim().replace(',', '.')); }
         catch (Exception e) { return 0; }
+    }
+
+    /** Kereshető kalóriatáblázat a beépített étel-adatbázisból. */
+    void foodTableSheet() {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        final EditText search = input("Keresés (pl. csirke)");
+        box.addView(search, lp());
+        final LinearLayout listV = vbox();
+        LinearLayout.LayoutParams llp = lp();
+        llp.topMargin = dp(8);
+        box.addView(listV, llp);
+        final Runnable render = () -> {
+            listV.removeAllViews();
+            String q = Foods.norm(search.getText().toString().trim());
+            int shown = 0;
+            for (Foods.Food f : Foods.ALL) {
+                if (!q.isEmpty() && !Foods.norm(f.name).contains(q)) {
+                    boolean stemHit = false;
+                    for (String st : f.stems)
+                        if (Foods.norm(st).contains(q)) { stemHit = true; break; }
+                    if (!stemHit) continue;
+                }
+                if (shown >= 25) {
+                    listV.addView(text("… szűkítsd a keresést a többihez", 11.5f, MUTED, false));
+                    break;
+                }
+                LinearLayout row = hbox();
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.addView(text(f.name, 13.5f, TXT, false),
+                        new LinearLayout.LayoutParams(0, -2, 1f));
+                row.addView(text(f.kcal100 + " kcal · " + (Math.round(f.prot100 * 10) / 10.0)
+                        + "g P /100g", 12, MUTED, false));
+                LinearLayout.LayoutParams rl = lp();
+                rl.topMargin = dp(7);
+                listV.addView(row, rl);
+                shown++;
+            }
+            if (shown == 0)
+                listV.addView(text("Nincs találat – az étkezésnél becsléssel is menthetsz.",
+                        12, MUTED, false));
+        };
+        search.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) { render.run(); }
+        });
+        render.run();
+        new Sheet(this, "Kalóriatáblázat 📖",
+                "kcal és fehérje 100 grammonként (közelítő értékek)")
+                .addCustom(box)
+                .addCancel()
+                .show();
     }
 
     /** Dátum + idő választó egy bejegyzés időpontjának utólagos módosításához. */
