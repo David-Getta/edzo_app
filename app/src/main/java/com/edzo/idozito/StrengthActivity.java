@@ -118,12 +118,14 @@ public class StrengthActivity extends Activity {
     void refreshSummary() {
         summaryBox.removeAllViews();
         long since = System.currentTimeMillis() - 7L * 24 * 3600 * 1000;
-        double vol = 0, allVol = 0;
+        long prevSince = System.currentTimeMillis() - 14L * 24 * 3600 * 1000;
+        double vol = 0, allVol = 0, prevVol = 0;
         int count = 0, allCount = 0;
         for (StrengthLog.Entry e : StrengthLog.load(this)) {
             double v = e.volume();
             allVol += v; allCount++;
             if (e.ts >= since) { vol += v; count++; }
+            else if (e.ts >= prevSince) prevVol += v;
         }
         if (allCount == 0) return; // csak akkor mutatjuk, ha van bejegyzés
         LinearLayout card = card();
@@ -133,6 +135,13 @@ public class StrengthActivity extends Activity {
         inner.addView(gap(4));
         inner.addView(text(Math.round(vol) + " kg összvolumen", 20, Theme.accent(this), true));
         inner.addView(text(count + " bejegyzés az elmúlt héten", 12.5f, MUTED, false));
+        // Trend az azt megelőző 7 naphoz képest.
+        if (prevVol > 0) {
+            double ch = (vol - prevVol) / prevVol * 100;
+            String arrow = ch >= 5 ? "📈" : ch <= -5 ? "📉" : "➖";
+            inner.addView(text(arrow + "  " + (ch >= 0 ? "+" : "") + Math.round(ch)
+                    + "% volumen az előző héthez képest", 12.5f, MUTED, false));
+        }
         inner.addView(gap(8));
         inner.addView(text("Összesen: " + Math.round(allVol) + " kg · " + allCount + " alkalom",
                 12.5f, MUTED, false));
