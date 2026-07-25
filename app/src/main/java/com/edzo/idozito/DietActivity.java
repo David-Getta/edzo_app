@@ -165,6 +165,8 @@ public class DietActivity extends Activity {
                         }
                     } catch (Exception ignored) {}
                 }
+                sh.addRow("✏️", "Szerkesztés", "Összetevők és grammok módosítása",
+                        false, true, () -> addMealDialog(m, idx));
                 sh.addRow("🔁", "Újra most", "Ugyanez az étkezés naplózása mostani időponttal",
                         false, true, () -> {
                             MealLog.add(this, new MealLog.Meal(System.currentTimeMillis(),
@@ -312,19 +314,33 @@ public class DietActivity extends Activity {
 
     // ---------- Új étkezés ----------
 
-    void addMealDialog() {
+    void addMealDialog() { addMealDialog(null, -1); }
+
+    /** Új étkezés felvitele, vagy meglévő szerkesztése (existing != null esetén). */
+    void addMealDialog(final MealLog.Meal existing, final int editIdx) {
         final LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
 
         final EditText nameEt = input("Étkezés neve (pl. Rántott hús rizzsel)");
+        if (existing != null) nameEt.setText(existing.name);
         box.addView(nameEt, lp());
         box.addView(gap(10));
 
         box.addView(text("Összetevők (étel + gramm)", 12.5f, MUTED, true));
         final LinearLayout itemsBox = vbox();
         final List<EditText[]> rows = new ArrayList<>();
-        addItemRow(itemsBox, rows);
-        addItemRow(itemsBox, rows);
+        if (existing != null) {
+            for (MealLog.Item it : existing.items) {
+                addItemRow(itemsBox, rows);
+                EditText[] r = rows.get(rows.size() - 1);
+                r[0].setText(it.food);
+                r[1].setText(String.valueOf(Math.round(it.grams)));
+            }
+            addItemRow(itemsBox, rows);
+        } else {
+            addItemRow(itemsBox, rows);
+            addItemRow(itemsBox, rows);
+        }
         box.addView(itemsBox, lp());
 
         Button more = ghost("＋  Összetevő");
@@ -339,9 +355,9 @@ public class DietActivity extends Activity {
         totalEt.setInputType(InputType.TYPE_CLASS_NUMBER);
         box.addView(totalEt, lp());
 
-        new Sheet(this, "Új étkezés 🍽")
+        new Sheet(this, existing == null ? "Új étkezés 🍽" : "Étkezés szerkesztése ✏️")
                 .addCustom(box)
-                .addPrimary("Mentés", () -> saveMeal(nameEt, rows, totalEt))
+                .addPrimary("Mentés", () -> saveMeal(nameEt, rows, totalEt, existing, editIdx))
                 .addCancel()
                 .show();
     }
@@ -361,7 +377,8 @@ public class DietActivity extends Activity {
         rows.add(new EditText[]{food, grams});
     }
 
-    void saveMeal(EditText nameEt, List<EditText[]> rows, EditText totalEt) {
+    void saveMeal(EditText nameEt, List<EditText[]> rows, EditText totalEt,
+                  MealLog.Meal existing, int editIdx) {
         List<String> foods = new ArrayList<>();
         List<Double> grams = new ArrayList<>();
         for (EditText[] r : rows) {
@@ -402,8 +419,11 @@ public class DietActivity extends Activity {
             double g = grams.get(i);
             items.add(new MealLog.Item(label, g, kcal100 * g / 100.0));
         }
-        MealLog.Meal meal = new MealLog.Meal(System.currentTimeMillis(),
-                nameEt.getText().toString().trim(), items, "");
+        // Szerkesztésnél az eredeti időpont és fotó megmarad.
+        long ts = existing != null ? existing.ts : System.currentTimeMillis();
+        String photo = existing != null ? existing.photo : "";
+        MealLog.Meal meal = new MealLog.Meal(ts, nameEt.getText().toString().trim(), items, photo);
+        if (existing != null) MealLog.removeAt(this, editIdx);
         MealLog.add(this, meal);
         refresh();
         String msg = "Mentve ✔  " + Math.round(meal.kcal()) + " kcal";
