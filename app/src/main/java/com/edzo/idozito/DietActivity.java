@@ -190,6 +190,8 @@ public class DietActivity extends Activity {
                         });
                 sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
+                sh.addRow("🕒", "Időpont módosítása", "Ha máskor etted, mint amikor beírtad",
+                        false, true, () -> editMealTime(m));
                 sh.addDestructive("🗑 Törlés", () -> { MealLog.removeByTs(this, m.ts); refresh(); });
                 sh.addCancel().show();
             });
@@ -700,6 +702,29 @@ public class DietActivity extends Activity {
     double parse(String s) {
         try { return Double.parseDouble(s.trim().replace(',', '.')); }
         catch (Exception e) { return 0; }
+    }
+
+    /** Dátum + idő választó egy bejegyzés időpontjának utólagos módosításához. */
+    void editMealTime(final MealLog.Meal m) {
+        final Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(m.ts);
+        new android.app.DatePickerDialog(this, (dp, y, mo, d) ->
+                new android.app.TimePickerDialog(this, (tp, h, min) -> {
+                    Calendar nc = Calendar.getInstance();
+                    nc.set(y, mo, d, h, min, 0);
+                    nc.set(Calendar.MILLISECOND, 0);
+                    long nts = nc.getTimeInMillis();
+                    if (nts > System.currentTimeMillis()) {
+                        Toast.makeText(this, "Jövőbeli időpont nem adható meg.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    MealLog.updateTs(this, m.ts, nts);
+                    refresh();
+                    Ux.blazeCard(this, "🕒 Időpont átállítva ✔");
+                }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show(),
+                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
+                .show();
     }
 
     /** Napszak szerinti címke a névtelen étkezéseknek (Reggeli/Ebéd/Vacsora…). */

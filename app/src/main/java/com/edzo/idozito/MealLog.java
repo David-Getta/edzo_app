@@ -111,6 +111,17 @@ public final class MealLog {
         save(c, l);
     }
 
+    /** Bejegyzés időpontjának módosítása (a fotó és minden más adat megmarad). */
+    public static void updateTs(Context c, long oldTs, long newTs) {
+        List<Meal> l = load(c);
+        for (int i = 0; i < l.size(); i++)
+            if (l.get(i).ts == oldTs) {
+                Meal m = l.get(i);
+                l.set(i, new Meal(newTs, m.name, m.items, m.photo));
+            }
+        save(c, l);
+    }
+
     /** Bejegyzés törlése időbélyeg alapján (rendezés-független). */
     public static void removeByTs(Context c, long ts) {
         List<Meal> l = load(c);
