@@ -227,6 +227,23 @@ public class MainActivity extends Activity {
             if (isFinishing()) return;
             LinearLayout box = vbox();
             box.setPadding(dp(8), dp(4), dp(8), dp(10));
+            // Blaze saját képe az üdvözlő lap tetején (ha elérhető).
+            int blazeWelcome = drawableId("blaze");
+            if (blazeWelcome != 0) {
+                ImageView iv = new ImageView(this);
+                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                iv.setImageResource(blazeWelcome);
+                iv.setClipToOutline(true);
+                iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                    @Override public void getOutline(View v, android.graphics.Outline o) {
+                        o.setOval(0, 0, v.getWidth(), v.getHeight());
+                    }
+                });
+                LinearLayout.LayoutParams ivlp = new LinearLayout.LayoutParams(dp(88), dp(88));
+                ivlp.gravity = Gravity.CENTER_HORIZONTAL;
+                ivlp.bottomMargin = dp(6);
+                box.addView(iv, ivlp);
+            }
             String[][] feats = {
                 {"⏱️", "Intervallum edzés", "Bemelegítés, munka, pihenő, körök és levezetés – minden testre szabható."},
                 {"🏃", "Futás követése", "GPS-táv, tempó, lépések és kalória automatikus mérése."},
@@ -251,9 +268,9 @@ public class MainActivity extends Activity {
             prefs.edit().putBoolean("welcomed", true).apply();
             new Sheet(this, "Üdv a Gritben! 🐺🔥", "Szia, Blaze vagyok, a falkavezér! Ezt tudja az appod:")
                 .addCustom(box)
-                // Rögtön megkérdezzük a nevét, hogy az app az első perctől
-                // személyre szabottan szólítsa meg (kihagyható).
-                .addPrimary("Kezdjük! 💪", this::editNameDialog)
+                // Rögtön megkérdezzük a nevét, majd az edzésnapjait is, hogy az
+                // app az első perctől személyre szabott legyen (kihagyható).
+                .addPrimary("Kezdjük! 💪", () -> editNameDialog(this::editPlanDaysSheet))
                 .show();
         });
     }
@@ -1118,7 +1135,10 @@ public class MainActivity extends Activity {
     }
 
     // A fejléc megszólításának személyre szabása (üres = napszak szerinti alap).
-    void editNameDialog() {
+    void editNameDialog() { editNameDialog(null); }
+
+    /** Mint fent; mentés után az opcionális folytatás fut (pl. edzésnap-választó az üdvözlőben). */
+    void editNameDialog(final Runnable after) {
         final EditText et = sheetInput("A neved (pl. Dávid)", false);
         et.setText(prefs.getString("user_name", ""));
         et.setSelectAllOnFocus(true);
@@ -1130,10 +1150,12 @@ public class MainActivity extends Activity {
                 .addPrimary("Mentés", () -> {
                     prefs.edit().putString("user_name", et.getText().toString().trim()).apply();
                     if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+                    if (after != null) after.run();
                 })
                 .addNeutral("Törlés", () -> {
                     prefs.edit().remove("user_name").apply();
                     if (bannerSub != null) bannerSub.setText(bannerSubtitle());
+                    if (after != null) after.run();
                 })
                 .addCancel()
                 .show();
