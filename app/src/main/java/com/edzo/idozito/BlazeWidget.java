@@ -48,7 +48,15 @@ public class BlazeWidget extends AppWidgetProvider {
         else if (!Theme.isPlanDay(c, dowIdx)) msg = "Ma pihenőnap – tölts fel! 🌙🐺";
         else if (liveStreak >= 2)
             msg = liveStreak + " napos széria él – ne hagyd ma megszakadni! 🔥🐺";
-        else msg = Mascot.nudge(userName, false, 0);
+        else {
+            // Ha nincs élő széria, a mai kihívás a legjobb hívószó.
+            String ch = null;
+            try {
+                Object[] cst = Challenges.state(c);
+                if ((int) cst[2] < (int) cst[3]) ch = "🎯 " + cst[0];
+            } catch (Exception ignored) {}
+            msg = ch != null ? ch : Mascot.nudge(userName, false, 0);
+        }
         rv.setTextViewText(R.id.blaze_msg, msg);
 
         // A címsorban az élő széria is látszik (2 naptól).

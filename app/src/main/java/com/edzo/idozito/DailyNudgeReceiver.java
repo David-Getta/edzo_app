@@ -62,6 +62,11 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         // hogy ne szakadjon meg ("ne hagyd kihunyni a X napos lángod").
         int streak = streakBeforeToday(c);
         String text = Mascot.nudge(userName, streak >= 1, streak);
+        // A mai kihívás is bekerül az üzenetbe, ha még nincs teljesítve.
+        try {
+            Object[] cst = Challenges.state(c);
+            if ((int) cst[2] < (int) cst[3]) text += "\n🎯 " + cst[0];
+        } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
