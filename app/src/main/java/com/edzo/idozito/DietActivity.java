@@ -230,7 +230,14 @@ public class DietActivity extends Activity {
             grams.add(parse(r[1].getText().toString()));
         }
         if (foods.isEmpty()) {
-            Toast.makeText(this, "Adj meg legalább egy összetevőt.", Toast.LENGTH_LONG).show();
+            // Okos bevitel: ha csak a nevet írtad be ("rántott hús rizzsel"),
+            // az összetevőket a névből ismerjük fel.
+            List<Foods.Food> guessed = Foods.findAll(nameEt.getText().toString());
+            for (Foods.Food f : guessed) { foods.add(f.name); grams.add(0.0); }
+        }
+        if (foods.isEmpty()) {
+            Toast.makeText(this, "Adj meg legalább egy összetevőt, vagy írd a névbe, "
+                    + "mit ettél (pl. rántott hús rizzsel).", Toast.LENGTH_LONG).show();
             return;
         }
         // Közös gramm szétosztása a megadatlan összetevők közt (arányosan).

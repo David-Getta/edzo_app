@@ -143,6 +143,30 @@ public final class Foods {
         return null;
     }
 
+    /** Az összes étel, ami a szövegben felismerhető (a szöveg sorrendjében, ismétlés nélkül). */
+    public static List<Food> findAll(String query) {
+        String q = norm(query);
+        List<Food> out = new ArrayList<>();
+        List<Integer> pos = new ArrayList<>();
+        for (Food f : ALL) {
+            int best = -1;
+            for (String st : f.stems) {
+                int p = q.indexOf(norm(st));
+                if (p >= 0 && (best < 0 || p < best)) best = p;
+            }
+            if (best >= 0) { out.add(f); pos.add(best); }
+        }
+        // Egyszerű rendezés előfordulási hely szerint.
+        for (int i = 0; i < out.size(); i++)
+            for (int j = i + 1; j < out.size(); j++)
+                if (pos.get(j) < pos.get(i)) {
+                    Food tf = out.get(i); out.set(i, out.get(j)); out.set(j, tf);
+                    int tp = pos.get(i); pos.set(i, pos.get(j)); pos.set(j, tp);
+                }
+        // Átfedő találatok szűrése (pl. "rántott hús" és "hús"): a hosszabb marad.
+        return out;
+    }
+
     /** Ismert ételnevek (javaslatokhoz). */
     public static List<String> names() {
         List<String> out = new ArrayList<>();
