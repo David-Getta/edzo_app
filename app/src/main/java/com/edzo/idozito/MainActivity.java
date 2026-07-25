@@ -1705,7 +1705,7 @@ public class MainActivity extends Activity {
         for (int i = 0; i < 7; i++) {
             LinearLayout col = vbox();
             col.setGravity(Gravity.CENTER);
-            TextView dot = text(days[i] ? "✓" : "", 14, days[i] ? 0xFF08121F : MUTED, true);
+            TextView dot = text(days[i] ? "✓" : "", 14, days[i] ? 0xFFFFFFFF : MUTED, true);
             dot.setGravity(Gravity.CENTER);
             dot.setWidth(dp(34)); dot.setHeight(dp(34));
             GradientDrawable bg = new GradientDrawable();

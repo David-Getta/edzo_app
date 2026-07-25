@@ -136,7 +136,7 @@ public class HistoryActivity extends Activity {
             boolean sel = i == filter;
             GradientDrawable bg = new GradientDrawable();
             bg.setCornerRadius(dp(13));
-            if (sel) { bg.setColor(accent); filterChips[i].setTextColor(0xFF08121F); }
+            if (sel) { bg.setColor(accent); filterChips[i].setTextColor(0xFFFFFFFF); }
             else { bg.setColor(GLASS); bg.setStroke(dp(1), GLASS_LINE); filterChips[i].setTextColor(TXT); }
             filterChips[i].setBackground(bg);
         }
