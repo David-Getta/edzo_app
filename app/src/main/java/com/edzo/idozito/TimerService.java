@@ -371,6 +371,8 @@ public class TimerService extends Service {
                         "Félúton túl vagy. Hajrá, ne állj meg!",
                         "A nehezén túl vagy. Innen már hazafelé megy!",
                         "Félidő! Erős vagy, tartsd a tempót!",
+                        "A fele megvan. A falka veled fut!",
+                        "Félidő! Minden kör közelebb visz a célhoz!",
                 };
                 speakAdd(cheer[(int) (Math.random() * cheer.length)]);
             }
