@@ -1556,8 +1556,12 @@ public class MainActivity extends Activity {
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
         // Mai kalória (csak ha ma már naplóztál ételt az Étrendben).
         double kcalToday = MealLog.todayKcal(this);
-        if (kcalToday > 0)
-            progressBox.addView(progressChip("🍽", Math.round(kcalToday) + "", "kcal ma"), progChipLp());
+        if (kcalToday > 0) {
+            int kGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+            String kv = kGoal > 0 ? Math.round(kcalToday) + "/" + kGoal
+                    : String.valueOf(Math.round(kcalToday));
+            progressBox.addView(progressChip("🍽", kv, "kcal ma"), progChipLp());
+        }
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
         refreshLevelBar(arr, lvl, xp);
     }

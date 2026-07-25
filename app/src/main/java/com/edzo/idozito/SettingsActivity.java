@@ -337,7 +337,7 @@ public class SettingsActivity extends Activity {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("datum;etkezes;osszetevo;gramm;kcal\n");
+        sb.append("datum;etkezes;osszetevo;gramm;kcal;feherje_g\n");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
         for (MealLog.Meal m : meals) {
             String when = df.format(new Date(m.ts));
@@ -347,7 +347,8 @@ public class SettingsActivity extends Activity {
                   .append(name).append(';')
                   .append(it.food.replace(';', ',')).append(';')
                   .append(Math.round(it.grams)).append(';')
-                  .append(Math.round(it.kcal)).append('\n');
+                  .append(Math.round(it.kcal)).append(';')
+                  .append(it.protein > 0 ? String.valueOf(Math.round(it.protein)) : "").append('\n');
             }
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_etrend.csv", "text/csv");
