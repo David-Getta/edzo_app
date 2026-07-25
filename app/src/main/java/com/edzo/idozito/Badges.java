@@ -45,6 +45,8 @@ public final class Badges {
         new Badge("c100",    "🎖️", "Századik",     "100 elvégzett edzés"),
         new Badge("ch5",     "🎯", "Kihívó",       "Teljesíts 5 napi kihívást"),
         new Badge("ch25",    "🏹", "Célvadász",    "Teljesíts 25 napi kihívást"),
+        new Badge("pw4",     "🗓", "Tervkövető",   "4 hét, amikor a teljes heti terv teljesült"),
+        new Badge("pw12",    "🛡", "Tervbajnok",   "12 teljesített terv-hét"),
     };
 
     /** Visszafelé kompatibilis változat (kihívás-számláló nélkül). */
@@ -52,8 +54,13 @@ public final class Badges {
         return earned(arr, bestStreakWeeks, 0);
     }
 
-    /** A megszerzett kitüntetések azonosítói az előzmény alapján. */
     public static HashSet<String> earned(JSONArray arr, int bestStreakWeeks, int challengesDone) {
+        return earned(arr, bestStreakWeeks, challengesDone, 0);
+    }
+
+    /** A megszerzett kitüntetések azonosítói az előzmény alapján. */
+    public static HashSet<String> earned(JSONArray arr, int bestStreakWeeks, int challengesDone,
+                                         int planWeeks) {
         HashSet<String> out = new HashSet<>();
         int count = arr.length();
         double totalM = 0; long totalSec = 0;
@@ -107,6 +114,8 @@ public final class Badges {
         if (totalM >= 100000) out.add("dist100");
         if (challengesDone >= 5) out.add("ch5");
         if (challengesDone >= 25) out.add("ch25");
+        if (planWeeks >= 4) out.add("pw4");
+        if (planWeeks >= 12) out.add("pw12");
         return out;
     }
 
