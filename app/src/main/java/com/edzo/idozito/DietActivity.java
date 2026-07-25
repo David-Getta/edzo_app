@@ -31,7 +31,7 @@ public class DietActivity extends Activity {
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     LinearLayout listBox;
-    LinearLayout todayCard, weekCard;
+    LinearLayout todayCard, weekCard, quickBox;
     static final int REQ_PHOTO = 61;
     long pendingPhotoTs;
 
@@ -67,6 +67,8 @@ public class DietActivity extends Activity {
         Button add = primary("＋  Étkezés hozzáadása");
         add.setOnClickListener(v -> addMealDialog());
         col.addView(add);
+        quickBox = vbox();
+        col.addView(quickBox, lp());
         col.addView(gap(18));
 
         col.addView(text("Étkezések", 15.5f, TXT, true));
@@ -83,6 +85,7 @@ public class DietActivity extends Activity {
     void refresh() {
         refreshToday();
         refreshWeek();
+        refreshQuick();
         listBox.removeAllViews();
         List<MealLog.Meal> meals = MealLog.load(this);
         // Mindig időrendben (szerkesztés után se ugorjon a lista elejére a bejegyzés).
@@ -192,6 +195,61 @@ public class DietActivity extends Activity {
             });
             listBox.addView(c, lp());
             listBox.addView(gap(10));
+        }
+    }
+
+    /** Gyors-naplózás: a leggyakoribb étkezések csipjei, egy koppintásra újra. */
+    void refreshQuick() {
+        quickBox.removeAllViews();
+        List<MealLog.Meal> meals = MealLog.load(this);
+        java.util.LinkedHashMap<String, MealLog.Meal> latest = new java.util.LinkedHashMap<>();
+        java.util.HashMap<String, Integer> count = new java.util.HashMap<>();
+        for (MealLog.Meal m : meals) {
+            if (m.items.isEmpty()) continue;
+            String key = m.name.isEmpty() ? m.items.get(0).food : m.name;
+            Integer c = count.get(key);
+            count.put(key, c == null ? 1 : c + 1);
+            if (!latest.containsKey(key)) latest.put(key, m); // a load() legújabb-elöl sorrendű
+        }
+        List<String> keys = new ArrayList<>(latest.keySet());
+        java.util.Collections.sort(keys, (a, b2) -> count.get(b2) - count.get(a));
+        int shown = 0;
+        LinearLayout row = null;
+        for (String key : keys) {
+            if (count.get(key) < 2 || shown >= 3) break; // csak ami tényleg visszatérő
+            final MealLog.Meal src = latest.get(key);
+            if (row == null) {
+                quickBox.addView(gap(10));
+                TextView t = text("Gyakoriak – koppints az újranaplózáshoz", 11.5f, MUTED, false);
+                quickBox.addView(t);
+                row = hbox();
+                android.widget.HorizontalScrollView hsv =
+                        new android.widget.HorizontalScrollView(this);
+                hsv.setHorizontalScrollBarEnabled(false);
+                hsv.addView(row, new android.widget.FrameLayout.LayoutParams(-2, -2));
+                LinearLayout.LayoutParams rl = lp();
+                rl.topMargin = dp(6);
+                quickBox.addView(hsv, rl);
+            }
+            TextView chip = text((key.length() > 16 ? key.substring(0, 15) + "…" : key)
+                    + " · " + Math.round(src.kcal()) + " kcal", 12, TXT, true);
+            GradientDrawable cbg = new GradientDrawable();
+            cbg.setColor(CARD2);
+            cbg.setCornerRadius(dp(18));
+            cbg.setStroke(dp(1), LINE);
+            chip.setBackground(cbg);
+            chip.setPadding(dp(12), dp(8), dp(12), dp(8));
+            chip.setClickable(true);
+            chip.setOnClickListener(v -> {
+                MealLog.add(this, new MealLog.Meal(System.currentTimeMillis(),
+                        src.name, src.items, ""));
+                refresh();
+                Ux.blazeCard(this, "🍽 Újra naplózva ✔  " + Math.round(src.kcal()) + " kcal");
+            });
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
+            clp.rightMargin = dp(8);
+            row.addView(chip, clp);
+            shown++;
         }
     }
 
