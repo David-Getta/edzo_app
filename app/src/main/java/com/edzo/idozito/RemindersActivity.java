@@ -34,6 +34,9 @@ public class RemindersActivity extends Activity {
             "Ne nassolj, tartsd a célod! 🥗",
             "Nyújts, állj fel egy percre 🧘",
             "Menj egy sétára! 🚶",
+            "Kihívás-idő! Nézd meg a mai célod 🎯",
+            "Esti nyújtás – jobb alvás 🌙🧘",
+            "A falka számít rád – egy rövid kör? 🐺🔥",
     };
 
     LinearLayout listBox;
