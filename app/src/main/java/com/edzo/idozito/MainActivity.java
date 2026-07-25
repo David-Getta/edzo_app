@@ -1552,6 +1552,10 @@ public class MainActivity extends Activity {
         String streakVal = ds > 1 ? ds + " nap" : weekStreak(arr) + " hét";
         progressBox.addView(progressChip("🔥", streakVal, "sorozat"), progChipLp());
         progressBox.addView(progressChip("🏁", String.valueOf(arr.length()), "edzés"), progChipLp());
+        // Mai kalória (csak ha ma már naplóztál ételt az Étrendben).
+        double kcalToday = MealLog.todayKcal(this);
+        if (kcalToday > 0)
+            progressBox.addView(progressChip("🍽", Math.round(kcalToday) + "", "kcal ma"), progChipLp());
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
         refreshLevelBar(arr, lvl, xp);
     }
