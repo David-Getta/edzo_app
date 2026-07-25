@@ -125,6 +125,13 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 .setSmallIcon(android.R.drawable.ic_menu_recent_history)
                 .setAutoCancel(true)
                 .setContentIntent(pi);
+        // Blaze saját grafikája nagy ikonként (ha a build tartalmazza).
+        try {
+            int bid = c.getResources().getIdentifier("blaze", "drawable", c.getPackageName());
+            android.graphics.Bitmap bm = bid == 0 ? null
+                    : android.graphics.BitmapFactory.decodeResource(c.getResources(), bid);
+            if (bm != null && bm.getWidth() > 1) b.setLargeIcon(bm);
+        } catch (Exception ignored) {}
         nm.notify(NOTIF_ID, b.build());
     }
 

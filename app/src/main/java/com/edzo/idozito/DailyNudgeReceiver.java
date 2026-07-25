@@ -88,6 +88,13 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 .setSmallIcon(android.R.drawable.ic_popup_reminder)
                 .setAutoCancel(true)
                 .setContentIntent(pi);
+        // Blaze saját grafikája nagy ikonként (ha a build tartalmazza).
+        try {
+            int bid = c.getResources().getIdentifier("blaze", "drawable", c.getPackageName());
+            android.graphics.Bitmap bm = bid == 0 ? null
+                    : android.graphics.BitmapFactory.decodeResource(c.getResources(), bid);
+            if (bm != null && bm.getWidth() > 1) b.setLargeIcon(bm);
+        } catch (Exception ignored) {}
         // Akciógomb: egy koppintás, és azonnal indul az edzés (widget-gyorsindítás útvonala).
         Intent quick = new Intent(c, MainActivity.class);
         quick.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
