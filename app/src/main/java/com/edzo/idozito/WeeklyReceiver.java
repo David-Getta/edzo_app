@@ -103,6 +103,22 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
             text = sb.toString();
         }
+        // Étrend-sor annak, aki a héten naplózott: naplózott napok + kcal-átlag.
+        try {
+            long dayMs = 24L * 3600 * 1000;
+            boolean[] loggedDay = new boolean[7];
+            double kcalWeek = 0;
+            for (MealLog.Meal m : MealLog.load(c)) {
+                if (m.ts < from) continue;
+                int idx = (int) ((m.ts - from) / dayMs);
+                if (idx >= 0 && idx < 7) { loggedDay[idx] = true; kcalWeek += m.kcal(); }
+            }
+            int loggedDays = 0;
+            for (boolean ld : loggedDay) if (ld) loggedDays++;
+            if (loggedDays > 0)
+                text += "\n🍽 Étrend: " + loggedDays + " naplózott nap, átlag "
+                        + Math.round(kcalWeek / loggedDays) + " kcal/nap.";
+        } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
