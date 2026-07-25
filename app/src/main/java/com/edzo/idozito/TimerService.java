@@ -576,7 +576,8 @@ public class TimerService extends Service {
 
     /** Ha az edzés XP-je új szintre emel, visszaadja az új szint címét; különben "". */
     private String computeLevelUp() {
-        JSONArray h = History.load(this);
+        // Egyesített napló (erősítő edzésekkel), hogy a kijelzett szinttel egyezzen.
+        JSONArray h = History.loadAll(this);
         long prevXp = Levels.totalXp(h);
         int prevLvl = Levels.levelForXp(prevXp);
         long newXp = prevXp + Levels.xpForSession(currentDurationSec(), distanceM);

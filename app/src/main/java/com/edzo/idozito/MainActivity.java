@@ -795,7 +795,7 @@ public class MainActivity extends Activity {
 
         LinearLayout txtCol = vbox();
         // Blaze neve mellett a saját szinted címe – a kabala „ismeri" a haladásod.
-        long xpNow = Levels.totalXp(History.load(this));
+        long xpNow = Levels.totalXp(History.loadAll(this));
         int lvlNow = Levels.levelForXp(xpNow);
         txtCol.addView(text(Mascot.NAME + " 🔥  ·  Szint " + lvlNow + " – " + Levels.title(lvlNow),
                 12.5f, tAccent, true));
@@ -1439,7 +1439,7 @@ public class MainActivity extends Activity {
     void refreshProgress() {
         if (progressBox == null) return;
         progressBox.removeAllViews();
-        JSONArray arr = History.load(this);
+        JSONArray arr = History.loadAll(this);
         long xp = Levels.totalXp(arr);
         int lvl = Levels.levelForXp(xp);
         progressBox.addView(progressChip("⭐", "Szint " + lvl, Levels.title(lvl)), progChipLp());
@@ -1968,7 +1968,7 @@ public class MainActivity extends Activity {
     // sorozatról és összesített statisztikákról (Instagram/Messenger…).
     void shareProgressCard() {
         try {
-            JSONArray arr = History.load(this);
+            JSONArray arr = History.loadAll(this);
             Bitmap bmp = renderProgressCard(arr);
             ShareProvider.shareImage(this, bmp, "grit-haladas");
         } catch (Exception ignored) {}

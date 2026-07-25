@@ -202,7 +202,7 @@ public class StatsActivity extends Activity {
     // ---------------- Szint / XP ----------------
 
     View levelCard() {
-        long xp = Levels.totalXp(hist);
+        long xp = Levels.totalXp(History.loadAll(this)); // erősítő edzésekkel együtt
         int lvl = Levels.levelForXp(xp);
         float frac = Levels.progress(xp);
         long toNext = Levels.xpToNext(xp);
@@ -373,7 +373,7 @@ public class StatsActivity extends Activity {
         Totals wk = totals(weekStart(now), now + 1);
         Totals mo = totals(monthStart(now), now + 1);
         Totals all = totals(0, now + 1);
-        long xp = Levels.totalXp(hist);
+        long xp = Levels.totalXp(History.loadAll(this)); // erősítő edzésekkel együtt
         int lvl = Levels.levelForXp(xp);
 
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
