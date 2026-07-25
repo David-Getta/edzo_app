@@ -444,6 +444,26 @@ public class DietActivity extends Activity {
         final EditText nameEt = input("Étkezés neve (pl. Rántott hús rizzsel)");
         if (existing != null) nameEt.setText(existing.name);
         box.addView(nameEt, lp());
+        // Élő visszajelzés: mit ismer fel az app a beírt névből.
+        final TextView reco = text("", 11.5f, MUTED, false);
+        reco.setPadding(dp(2), dp(4), 0, 0);
+        box.addView(reco);
+        nameEt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                String q = s.toString().trim();
+                if (q.length() < 3) { reco.setText(""); return; }
+                List<Foods.Food> g = Foods.findAll(q);
+                if (g.isEmpty()) { reco.setText("🔍 Ezt még nem ismerem – írd be lent összetevőnként!"); return; }
+                StringBuilder sb = new StringBuilder("✔ Felismerve: ");
+                for (int i = 0; i < g.size(); i++) {
+                    if (i > 0) sb.append(" + ");
+                    sb.append(g.get(i).name);
+                }
+                reco.setText(sb.toString());
+            }
+        });
         box.addView(gap(10));
 
         box.addView(text("Összetevők (étel + gramm)", 12.5f, MUTED, true));
