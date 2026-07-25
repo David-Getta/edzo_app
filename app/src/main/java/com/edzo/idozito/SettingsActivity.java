@@ -261,10 +261,27 @@ public class SettingsActivity extends Activity {
         });
         col.addView(shareApp);
 
+        col.addView(gap(10));
+        // Frissítés-ellenőrzés: a legújabb kiadás oldala (Obtainium magától is frissít).
+        Button updates = ghost("⬆️  Frissítések keresése");
+        updates.setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        android.net.Uri.parse("https://github.com/David-Getta/edzo_app/releases/latest")));
+            } catch (Exception ignored) {}
+        });
+        col.addView(updates);
+
         // App-verzió kijelzése (a telepített csomagból olvasva)
         String ver = "";
-        try { ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception ignored) {}
-        TextView verLabel = text("Grit" + (ver.isEmpty() ? "" : "  ·  v" + ver), 12, MUTED, false);
+        long vc = 0;
+        try {
+            android.content.pm.PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            ver = pi.versionName;
+            vc = pi.versionCode;
+        } catch (Exception ignored) {}
+        TextView verLabel = text("Grit" + (ver == null || ver.isEmpty() ? "" : "  ·  v" + ver)
+                + (vc > 1000 ? "  ·  build " + (vc - 1000) : ""), 12, MUTED, false);
         verLabel.setGravity(Gravity.CENTER);
         verLabel.setPadding(0, dp(20), 0, dp(4));
         col.addView(verLabel);
