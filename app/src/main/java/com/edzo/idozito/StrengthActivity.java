@@ -330,8 +330,18 @@ public class StrengthActivity extends Activity {
                     // Az erősítő edzés is számít: a widget azonnal tudjon róla.
                     BlazeWidget.refresh(this);
                     refresh();
-                    Toast.makeText(this, (edit != null ? "Frissítve ✔  (" : "Mentve ✔  (")
-                            + sets.size() + " sorozat)", Toast.LENGTH_SHORT).show();
+                    if (edit != null) {
+                        Toast.makeText(this, "Frissítve ✔  (" + sets.size() + " sorozat)",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Új edzésnél Blaze dicsérete + XP, széria-tudatosan.
+                        int ds = Streaks.current(this, History.loadAll(this));
+                        String praise = ds >= 2
+                                ? ds + " napos széria – ég a láng! 🔥"
+                                : "Blaze büszke rád! 🐺";
+                        Toast.makeText(this, "Mentve ✔  +8 XP  ·  " + praise,
+                                Toast.LENGTH_LONG).show();
+                    }
                 })
                 .addCancel()
                 .show();
