@@ -165,6 +165,14 @@ public class DietActivity extends Activity {
                         }
                     } catch (Exception ignored) {}
                 }
+                sh.addRow("🔁", "Újra most", "Ugyanez az étkezés naplózása mostani időponttal",
+                        false, true, () -> {
+                            MealLog.add(this, new MealLog.Meal(System.currentTimeMillis(),
+                                    m.name, m.items, ""));
+                            refresh();
+                            Toast.makeText(this, "Újra naplózva ✔  "
+                                    + Math.round(m.kcal()) + " kcal", Toast.LENGTH_SHORT).show();
+                        });
                 sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
                 sh.addDestructive("🗑 Törlés", () -> { MealLog.removeAt(this, idx); refresh(); });
