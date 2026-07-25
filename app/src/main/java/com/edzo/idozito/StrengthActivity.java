@@ -38,6 +38,7 @@ public class StrengthActivity extends Activity {
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     LinearLayout recordsBox, listBox, summaryBox;
+    android.widget.FrameLayout rootFl; // konfetti-ünnepléshez (új rekord)
 
     // Pihenő-időzítő a sorozatok között
     final Handler restHandler = new Handler(Looper.getMainLooper());
@@ -94,9 +95,16 @@ public class StrengthActivity extends Activity {
         col.addView(listBox, lp());
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
-        setContentView(Ux.scaffoldNav(this, sv, "bg_workout", 2));
+        rootFl = Ux.scaffoldNav(this, sv, "bg_workout", 2);
+        setContentView(rootFl);
         col.post(() -> Ux.enterChildren(col, 30, 45));
         refresh();
+    }
+
+    /** Súly formázása: egész kg-nál tizedes nélkül. */
+    String kg(double w) {
+        return w == Math.floor(w) ? String.valueOf((long) w)
+                : String.format(java.util.Locale.US, "%.1f", w);
     }
 
     void refresh() {
@@ -322,6 +330,8 @@ public class StrengthActivity extends Activity {
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
+                    // A korábbi rekordok még a mentés ELŐTT (új rekord felismeréséhez).
+                    double[] prevRec = StrengthLog.recordsFor(this, name);
                     // Szerkesztésnél a helyén cseréljük, az eredeti időpontot megtartva.
                     long ts = edit != null ? edit.ts : System.currentTimeMillis();
                     StrengthLog.Entry ne = new StrengthLog.Entry(ts, name, sets);
@@ -334,13 +344,27 @@ public class StrengthActivity extends Activity {
                         Toast.makeText(this, "Frissítve ✔  (" + sets.size() + " sorozat)",
                                 Toast.LENGTH_SHORT).show();
                     } else {
-                        // Új edzésnél Blaze dicsérete + XP, széria-tudatosan.
-                        int ds = Streaks.current(this, History.loadAll(this));
-                        String praise = ds >= 2
-                                ? ds + " napos széria – ég a láng! 🔥"
-                                : "Blaze büszke rád! 🐺";
-                        Toast.makeText(this, "Mentve ✔  +8 XP  ·  " + praise,
-                                Toast.LENGTH_LONG).show();
+                        // Új rekord? (Csak ha volt már korábbi bejegyzés, amihez mérhető.)
+                        String rec = null;
+                        if (prevRec[0] > 0 && ne.topWeight() > prevRec[0])
+                            rec = "max súly " + kg(ne.topWeight()) + " kg";
+                        else if (prevRec[1] > 0 && ne.bestOneRm() > prevRec[1])
+                            rec = "becsült 1RM " + kg(ne.bestOneRm()) + " kg";
+                        else if (prevRec[2] > 0 && ne.volume() > prevRec[2])
+                            rec = "volumen " + Math.round(ne.volume()) + " kg";
+                        if (rec != null) {
+                            if (rootFl != null) Confetti.burst(rootFl);
+                            Toast.makeText(this, "🏆 Új rekord (" + name + "): " + rec
+                                    + "!  🐺🔥  +8 XP", Toast.LENGTH_LONG).show();
+                        } else {
+                            // Új edzésnél Blaze dicsérete + XP, széria-tudatosan.
+                            int ds = Streaks.current(this, History.loadAll(this));
+                            String praise = ds >= 2
+                                    ? ds + " napos széria – ég a láng! 🔥"
+                                    : "Blaze büszke rád! 🐺";
+                            Toast.makeText(this, "Mentve ✔  +8 XP  ·  " + praise,
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 })
                 .addCancel()
