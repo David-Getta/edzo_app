@@ -785,6 +785,13 @@ public class StatsActivity extends Activity {
         cap.setGravity(Gravity.CENTER);
         cap.setPadding(0, dp(8), 0, 0);
         cardC.addView(cap, lp());
+        // Jelmagyarázat, hogy első ránézésre érthető legyen a naptár.
+        boolean hasPlanLegend = !Theme.planDays(this).isEmpty();
+        TextView legend = text("● edzés  ·  □ ma"
+                + (hasPlanLegend ? "  ·  ◌ tervezett edzésnap" : ""), 11, MUTED, false);
+        legend.setGravity(Gravity.CENTER);
+        legend.setPadding(0, dp(3), 0, 0);
+        cardC.addView(legend, lp());
         return cardC;
     }
 
