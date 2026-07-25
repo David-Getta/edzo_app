@@ -109,7 +109,9 @@ public class DietActivity extends Activity {
             LinearLayout top = hbox();
             top.setGravity(Gravity.CENTER_VERTICAL);
             String title = m.name.isEmpty()
-                    ? (m.items.isEmpty() ? "Étkezés" : m.items.get(0).food) : m.name;
+                    ? (m.items.isEmpty() ? mealSlot(m.ts)
+                        : mealSlot(m.ts) + " · " + m.items.get(0).food)
+                    : m.name;
             // Bélyegkép, ha van fotó a bejegyzéshez.
             if (!m.photo.isEmpty()) {
                 try {
@@ -578,6 +580,20 @@ public class DietActivity extends Activity {
     double parse(String s) {
         try { return Double.parseDouble(s.trim().replace(',', '.')); }
         catch (Exception e) { return 0; }
+    }
+
+    /** Napszak szerinti címke a névtelen étkezéseknek (Reggeli/Ebéd/Vacsora…). */
+    static String mealSlot(long ts) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(ts);
+        int h = c.get(Calendar.HOUR_OF_DAY);
+        if (h < 4)  return "Éjszakai nasi";
+        if (h < 10) return "Reggeli";
+        if (h < 12) return "Tízórai";
+        if (h < 15) return "Ebéd";
+        if (h < 18) return "Uzsonna";
+        if (h < 22) return "Vacsora";
+        return "Éjszakai nasi";
     }
 
     long dayStartMs() {

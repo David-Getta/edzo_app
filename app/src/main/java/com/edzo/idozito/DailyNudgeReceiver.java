@@ -67,6 +67,17 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             Object[] cst = Challenges.state(c);
             if ((int) cst[2] < (int) cst[3]) text += "\n🎯 " + cst[0];
         } catch (Exception ignored) {}
+        // Kcal-cél állása annak, aki étrendet vezet: mennyi fér még a mai célba.
+        try {
+            int goal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getInt("kcal_goal", 0);
+            int eaten = (int) Math.round(MealLog.todayKcal(c));
+            if (goal > 0 && eaten > 0) {
+                int left = goal - eaten;
+                text += left > 0
+                        ? "\n🍽 Ma eddig " + eaten + " kcal – még kb. " + left + " kcal fér a célodba."
+                        : "\n🍽 A mai " + goal + " kcal-os cél megvan (" + eaten + " kcal).";
+            }
+        } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
