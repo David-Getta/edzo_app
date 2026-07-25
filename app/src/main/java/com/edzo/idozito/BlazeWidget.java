@@ -98,6 +98,11 @@ public class BlazeWidget extends AppWidgetProvider {
         quick.putExtra("quick_start", true);
         rv.setOnClickPendingIntent(R.id.blaze_start, PendingIntent.getActivity(c, 1, quick, flags));
 
+        // Súlyzós gyorsgomb: egyenesen az Erő naplóba.
+        Intent gym = new Intent(c, StrengthActivity.class);
+        gym.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        rv.setOnClickPendingIntent(R.id.blaze_gym, PendingIntent.getActivity(c, 2, gym, flags));
+
         mgr.updateAppWidget(id, rv);
     }
 
