@@ -593,6 +593,13 @@ public class DietActivity extends Activity {
         refresh();
         String msg = "Mentve ✔  " + Math.round(meal.kcal()) + " kcal";
         if (estimated) msg += "  (ismeretlen ételnél ~becslés)";
+        // Cél-tudatos visszajelzés: mennyi fér még a mai keretbe (csak mai étkezésnél).
+        int kGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        if (kGoal > 0 && ts >= dayStartMs()) {
+            int left = kGoal - (int) Math.round(MealLog.todayKcal(this));
+            msg += left >= 0 ? "  ·  még " + left + " kcal fér ma"
+                    : "  ·  " + (-left) + " kcal-lal a cél felett";
+        }
         Ux.blazeCard(this, "🍽 " + msg);
     }
 
