@@ -1391,16 +1391,21 @@ public class MainActivity extends Activity {
         challengeBox.removeAllViews();
         java.util.Calendar now = java.util.Calendar.getInstance();
         int seed = now.get(java.util.Calendar.YEAR) * 366 + now.get(java.util.Calendar.DAY_OF_YEAR);
-        int type = seed % 3;
         long dayStart = dayStartMs();
 
         JSONArray h = History.load(this);
         int minutes = 0, bestRounds = 0;
+        double distToday = 0;
+        boolean everDist = false;
         for (int i = 0; i < h.length(); i++) {
             JSONObject o = h.optJSONObject(i);
-            if (o == null || o.optLong("ts") < dayStart) continue;
+            if (o == null) continue;
+            if (o.optDouble("dist", -1) > 500) everDist = true;
+            if (o.optLong("ts") < dayStart) continue;
             minutes += o.optInt("dur") / 60;
             bestRounds = Math.max(bestRounds, o.optInt("rounds", 0));
+            double d = o.optDouble("dist", -1);
+            if (d > 0) distToday += d;
         }
         int sessions = 0;
         JSONArray all = History.loadAll(this);
@@ -1408,6 +1413,17 @@ public class MainActivity extends Activity {
             JSONObject o = all.optJSONObject(i);
             if (o != null && o.optLong("ts") >= dayStart) sessions++;
         }
+        java.util.List<StrengthLog.Entry> sLog = StrengthLog.load(this);
+        int repsToday = 0;
+        for (StrengthLog.Entry e : sLog)
+            if (e.ts >= dayStart) repsToday += e.totalReps();
+
+        // A kihívás-típusok a szokásokhoz igazodnak: táv-kihívást csak az kap,
+        // aki mér távot; ismétlés-kihívást csak az, aki vezet súlyzós naplót.
+        java.util.List<Integer> types = new java.util.ArrayList<>(java.util.Arrays.asList(0, 1, 2));
+        if (everDist) types.add(3);
+        if (!sLog.isEmpty()) types.add(4);
+        int type = types.get(seed % types.size());
 
         String title;
         int cur, target;
@@ -1418,9 +1434,15 @@ public class MainActivity extends Activity {
         } else if (type == 1) {
             target = 8 + (seed / 3 % 3) * 2; cur = bestRounds; unit = "kör";
             title = "Csinálj " + target + " kört egyetlen edzésen belül!";
-        } else {
+        } else if (type == 2) {
             target = 2; cur = Math.min(sessions, 2); unit = "edzés";
             title = "Fejezz be ma 2 edzést – a súlyzós is számít!";
+        } else if (type == 3) {
+            target = 2 + (seed / 3 % 3); cur = (int) (distToday / 1000.0); unit = "km";
+            title = "Tegyél meg ma " + target + " km-t!";
+        } else {
+            target = 40 + (seed / 3 % 3) * 20; cur = repsToday; unit = "ismétlés";
+            title = "Nyomj le ma összesen " + target + " ismétlést a súlyzós naplóban!";
         }
         boolean done = cur >= target;
 
