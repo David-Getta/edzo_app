@@ -131,7 +131,9 @@ public class DietActivity extends Activity {
                 } catch (Exception ignored) {}
             }
             top.addView(text(title, 15, TXT, true), new LinearLayout.LayoutParams(0, -2, 1f));
-            top.addView(text(Math.round(m.kcal()) + " kcal", 15, Theme.accent(this), true));
+            String kc = Math.round(m.kcal()) + " kcal"
+                    + (m.protein() > 0 ? " · " + Math.round(m.protein()) + "g P" : "");
+            top.addView(text(kc, 14, Theme.accent(this), true));
             c.addView(top, lp());
             StringBuilder det = new StringBuilder();
             for (MealLog.Item it : m.items) {
@@ -147,7 +149,8 @@ public class DietActivity extends Activity {
             c.setClickable(true);
             c.setOnClickListener(v -> {
                 Sheet sh = new Sheet(this, title,
-                        Math.round(m.kcal()) + " kcal · " + Math.round(m.grams()) + " g");
+                        Math.round(m.kcal()) + " kcal · " + Math.round(m.grams()) + " g"
+                        + (m.protein() > 0 ? " · " + Math.round(m.protein()) + " g fehérje" : ""));
                 // Nagy fotó a részleteknél – segít utólag pontosítani az arányokat.
                 if (!m.photo.isEmpty()) {
                     try {
