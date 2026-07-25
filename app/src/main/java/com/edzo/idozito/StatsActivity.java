@@ -97,6 +97,12 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        if (!MealLog.load(this).isEmpty()) {
+            col.addView(sectionTitle("Étrend – elmúlt 7 nap"));
+            col.addView(dietCard(), lp());
+            col.addView(gap(16));
+        }
+
         col.addView(sectionTitle("Jelvények"));
         col.addView(badgesCard(), lp());
         col.addView(gap(16));
@@ -520,6 +526,48 @@ public class StatsActivity extends Activity {
                 {"🍩 Legtöbb kalória", bestCal > 0 ? Math.round(bestCal) + " kcal" : "—"},
                 {"👟 Legtöbb lépés", bestSteps > 0 ? String.valueOf(bestSteps) : "—"},
         });
+        return grid;
+    }
+
+    /** Étrend-összefoglaló az elmúlt 7 napról: naplózott napok, átlagok, cél-tartás. */
+    LinearLayout dietCard() {
+        long dayMs = 24L * 3600 * 1000;
+        java.util.Calendar c0 = java.util.Calendar.getInstance();
+        c0.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        c0.set(java.util.Calendar.MINUTE, 0);
+        c0.set(java.util.Calendar.SECOND, 0);
+        c0.set(java.util.Calendar.MILLISECOND, 0);
+        long today0 = c0.getTimeInMillis();
+        double[] kcal = new double[7];
+        double[] prot = new double[7];
+        for (MealLog.Meal m : MealLog.load(this)) {
+            java.util.Calendar cm = java.util.Calendar.getInstance();
+            cm.setTimeInMillis(m.ts);
+            cm.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            cm.set(java.util.Calendar.MINUTE, 0);
+            cm.set(java.util.Calendar.SECOND, 0);
+            cm.set(java.util.Calendar.MILLISECOND, 0);
+            int k = (int) ((today0 - cm.getTimeInMillis()) / dayMs);
+            if (k >= 0 && k < 7) { kcal[k] += m.kcal(); prot[k] += m.protein(); }
+        }
+        int days = 0, underGoal = 0;
+        double kSum = 0, pSum = 0;
+        int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        for (int k = 0; k < 7; k++) {
+            if (kcal[k] <= 0) continue;
+            days++; kSum += kcal[k]; pSum += prot[k];
+            if (goal > 0 && kcal[k] <= goal) underGoal++;
+        }
+        LinearLayout grid = card();
+        grid.setPadding(dp(6), dp(6), dp(6), dp(6));
+        java.util.List<String[]> tiles = new java.util.ArrayList<>();
+        tiles.add(new String[]{"🍽 Naplózott napok", days + " / 7"});
+        tiles.add(new String[]{"🔥 Átlag kalória", days > 0 ? Math.round(kSum / days) + " kcal/nap" : "—"});
+        if (pSum > 0)
+            tiles.add(new String[]{"🥩 Átlag fehérje", Math.round(pSum / days) + " g/nap"});
+        if (goal > 0 && days > 0)
+            tiles.add(new String[]{"🎯 Cél alatt", underGoal + " / " + days + " nap"});
+        addTiles(grid, tiles.toArray(new String[0][]));
         return grid;
     }
 
