@@ -105,6 +105,20 @@ public final class Foods {
         new Food("Méz", 320, "mez"),
         new Food("Cukor", 400, "cukor"),
         new Food("Üdítő (cukros)", 42, "udito", "kola", "cola"),
+        new Food("Rántott sajt", 330, "rantott sajt"),
+        new Food("Nokedli / galuska", 170, "nokedli", "galuska"),
+        new Food("Tarhonya", 150, "tarhonya"),
+        new Food("Káposzta", 25, "kaposzta"),
+        new Food("Tükörtojás", 200, "tukortojas"),
+        new Food("Bableves", 90, "bableves"),
+        new Food("Húsleves", 40, "husleves"),
+        new Food("Csirkepaprikás", 160, "paprikas"),
+        new Food("Milánói makaróni", 180, "milanoi", "makaroni"),
+        new Food("Protein turmix", 100, "protein", "turmix", "shake"),
+        new Food("Túró rudi", 380, "turo rudi", "rudi"),
+        new Food("Szendvics", 250, "szendvics"),
+        new Food("Hot-dog", 290, "hot-dog", "hotdog"),
+        new Food("Müzliszelet", 400, "muzliszelet", "szelet"),
     };
 
     /** Ékezet-mentesítés + kisbetű, a rugalmas kereséshez. */
