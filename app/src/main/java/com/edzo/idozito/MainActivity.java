@@ -1476,9 +1476,11 @@ public class MainActivity extends Activity {
         challengeBox.addView(c, new LinearLayout.LayoutParams(-1, -2));
         challengeBox.addView(gap(16));
 
-        // Első teljesítéskor (aznap egyszer) konfetti + Blaze ünneplés.
+        // Első teljesítéskor (aznap egyszer) konfetti + Blaze ünneplés + számláló.
         if (done && prefs.getInt("challenge_done_seed", -1) != seed) {
-            prefs.edit().putInt("challenge_done_seed", seed).apply();
+            prefs.edit().putInt("challenge_done_seed", seed)
+                    .putInt("challenge_done_count", prefs.getInt("challenge_done_count", 0) + 1)
+                    .apply();
             if (root != null) Confetti.burst(root);
             Toast.makeText(this, "🎯 Mai kihívás teljesítve! 🏆 Blaze büszkén vonyít! 🐺🔥",
                     Toast.LENGTH_LONG).show();

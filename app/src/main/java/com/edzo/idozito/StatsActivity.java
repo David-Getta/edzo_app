@@ -497,10 +497,13 @@ public class StatsActivity extends Activity {
         grid.setPadding(dp(6), dp(6), dp(6), dp(6));
         int dayNow = Streaks.current(this, hist);
         int dayBest = Streaks.best(this, hist);
+        int challengesDone = getSharedPreferences("edzo", MODE_PRIVATE)
+                .getInt("challenge_done_count", 0);
         addTiles(grid, new String[][]{
                 {"🔥 Heti sorozat", streak + " hét"},
                 {"⚡ Napi széria", dayNow + " nap"},
                 {"🏅 Leghosszabb széria", dayBest + " nap"},
+                {"🎯 Kihívások", challengesDone + " nap"},
                 {"🏆 Leghosszabb táv", bestDist > 0 ? fmtDist(bestDist) : "—"},
                 {"⏱ Leghosszabb edzés", bestDur > 0 ? fmtDur(bestDur) : "—"},
                 {"⚡ Legjobb átlag", bestAvg > 0 ? fmtSpeed(bestAvg) : "—"},
