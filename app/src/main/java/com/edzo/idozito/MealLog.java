@@ -111,6 +111,13 @@ public final class MealLog {
         save(c, l);
     }
 
+    /** Bejegyzés törlése időbélyeg alapján (rendezés-független). */
+    public static void removeByTs(Context c, long ts) {
+        List<Meal> l = load(c);
+        for (int i = l.size() - 1; i >= 0; i--) if (l.get(i).ts == ts) l.remove(i);
+        save(c, l);
+    }
+
     public static void removeAt(Context c, int idx) {
         List<Meal> l = load(c);
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }

@@ -85,6 +85,8 @@ public class DietActivity extends Activity {
         refreshWeek();
         listBox.removeAllViews();
         List<MealLog.Meal> meals = MealLog.load(this);
+        // Mindig időrendben (szerkesztés után se ugorjon a lista elejére a bejegyzés).
+        java.util.Collections.sort(meals, (a, b2) -> Long.compare(b2.ts, a.ts));
         if (meals.isEmpty()) {
             listBox.addView(text("Még nincs bejegyzés. Add hozzá az első étkezésed fent!",
                     13.5f, MUTED, false));
@@ -168,6 +170,9 @@ public class DietActivity extends Activity {
                         }
                     } catch (Exception ignored) {}
                 }
+                if (m.items.size() >= 2)
+                    sh.addRow("⚖️", "Arányok igazítása", "Csúszkákkal, a fotó alapján – a kcal élőben frissül",
+                            false, true, () -> adjustRatiosSheet(m, idx));
                 sh.addRow("✏️", "Szerkesztés", "Összetevők és grammok módosítása",
                         false, true, () -> addMealDialog(m, idx));
                 sh.addRow("🔁", "Újra most", "Ugyanez az étkezés naplózása mostani időponttal",
@@ -180,7 +185,7 @@ public class DietActivity extends Activity {
                         });
                 sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
-                sh.addDestructive("🗑 Törlés", () -> { MealLog.removeAt(this, idx); refresh(); });
+                sh.addDestructive("🗑 Törlés", () -> { MealLog.removeByTs(this, m.ts); refresh(); });
                 sh.addCancel().show();
             });
             listBox.addView(c, lp());
@@ -442,12 +447,97 @@ public class DietActivity extends Activity {
         long ts = existing != null ? existing.ts : System.currentTimeMillis();
         String photo = existing != null ? existing.photo : "";
         MealLog.Meal meal = new MealLog.Meal(ts, nameEt.getText().toString().trim(), items, photo);
-        if (existing != null) MealLog.removeAt(this, editIdx);
+        if (existing != null) MealLog.removeByTs(this, existing.ts);
         MealLog.add(this, meal);
         refresh();
         String msg = "Mentve ✔  " + Math.round(meal.kcal()) + " kcal";
         if (estimated) msg += "  (ismeretlen ételnél ~becslés)";
         Ux.blazeCard(this, "🍽 " + msg);
+    }
+
+    /** Összetevő-arányok igazítása csúszkákkal; az össz-gramm változatlan marad. */
+    void adjustRatiosSheet(final MealLog.Meal m, final int idx) {
+        final double total = m.grams() > 0 ? m.grams() : 300;
+        final int n = m.items.size();
+        final double[] shares = new double[n];
+        double initSum = 0;
+        for (int i = 0; i < n; i++) { shares[i] = Math.max(1, m.items.get(i).grams); initSum += shares[i]; }
+
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        // A fotó referenciaként (ha van).
+        if (!m.photo.isEmpty()) {
+            try {
+                android.graphics.Bitmap bm = android.graphics.BitmapFactory.decodeFile(
+                        new java.io.File(getFilesDir(), m.photo).getAbsolutePath());
+                if (bm != null) {
+                    android.widget.ImageView iv = new android.widget.ImageView(this);
+                    iv.setImageBitmap(bm);
+                    iv.setAdjustViewBounds(true);
+                    box.addView(iv, lp());
+                    box.addView(gap(8));
+                }
+            } catch (Exception ignored) {}
+        }
+        final TextView totalTv = text("", 13.5f, Theme.accent(this), true);
+        final TextView[] labels = new TextView[n];
+        final Runnable update = () -> {
+            double sum = 0;
+            for (double sv2 : shares) sum += sv2;
+            double kcal = 0;
+            for (int i = 0; i < n; i++) {
+                double g = shares[i] / sum * total;
+                MealLog.Item it = m.items.get(i);
+                double kpg = it.grams > 0 ? it.kcal / it.grams : 1.5;
+                kcal += kpg * g;
+                labels[i].setText(it.food + "  ·  " + Math.round(g) + " g");
+            }
+            totalTv.setText("Összesen: " + Math.round(total) + " g  ·  ~" + Math.round(kcal) + " kcal");
+        };
+        for (int i = 0; i < n; i++) {
+            final int ii = i;
+            labels[i] = text("", 13.5f, TXT, true);
+            LinearLayout.LayoutParams llp = lp();
+            llp.topMargin = dp(i == 0 ? 0 : 6);
+            box.addView(labels[i], llp);
+            android.widget.SeekBar sb = new android.widget.SeekBar(this);
+            sb.setMax(100);
+            sb.setProgress((int) Math.round(shares[i] / initSum * 100));
+            sb.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
+                @Override public void onProgressChanged(android.widget.SeekBar s, int p, boolean u) {
+                    shares[ii] = Math.max(1, p);
+                    update.run();
+                }
+                @Override public void onStartTrackingTouch(android.widget.SeekBar s) {}
+                @Override public void onStopTrackingTouch(android.widget.SeekBar s) {}
+            });
+            box.addView(sb, lp());
+        }
+        LinearLayout.LayoutParams tlp = lp();
+        tlp.topMargin = dp(8);
+        box.addView(totalTv, tlp);
+        update.run();
+
+        new Sheet(this, "Arányok igazítása ⚖️",
+                "Az össz-gramm marad, csak az elosztás változik.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    double sum = 0;
+                    for (double sv2 : shares) sum += sv2;
+                    List<MealLog.Item> ni = new ArrayList<>();
+                    for (int i = 0; i < n; i++) {
+                        MealLog.Item it = m.items.get(i);
+                        double g = shares[i] / sum * total;
+                        double kpg = it.grams > 0 ? it.kcal / it.grams : 1.5;
+                        double ppg = it.grams > 0 ? it.protein / it.grams : 0;
+                        ni.add(new MealLog.Item(it.food, g, kpg * g, ppg * g));
+                    }
+                    MealLog.removeByTs(this, m.ts);
+                    MealLog.add(this, new MealLog.Meal(m.ts, m.name, ni, m.photo));
+                    refresh();
+                })
+                .addCancel()
+                .show();
     }
 
     // ---------- Fotó ----------
