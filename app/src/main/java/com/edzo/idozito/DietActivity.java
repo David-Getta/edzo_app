@@ -31,7 +31,7 @@ public class DietActivity extends Activity {
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     LinearLayout listBox;
-    LinearLayout todayCard;
+    LinearLayout todayCard, weekCard;
     static final int REQ_PHOTO = 61;
     long pendingPhotoTs;
 
@@ -56,6 +56,12 @@ public class DietActivity extends Activity {
         todayCard.setClickable(true);
         todayCard.setOnClickListener(v -> editGoalDialog());
         col.addView(todayCard, lp());
+        col.addView(gap(10));
+
+        // Elmúlt 7 nap kcal-sávjai.
+        weekCard = card();
+        weekCard.setPadding(dp(16), dp(12), dp(16), dp(12));
+        col.addView(weekCard, lp());
         col.addView(gap(14));
 
         Button add = primary("＋  Étkezés hozzáadása");
@@ -76,6 +82,7 @@ public class DietActivity extends Activity {
 
     void refresh() {
         refreshToday();
+        refreshWeek();
         listBox.removeAllViews();
         List<MealLog.Meal> meals = MealLog.load(this);
         if (meals.isEmpty()) {
@@ -204,6 +211,64 @@ public class DietActivity extends Activity {
             hint.setPadding(0, dp(4), 0, 0);
             todayCard.addView(hint);
         }
+    }
+
+    /** Az elmúlt 7 nap napi kcal-összegei vízszintes sávokkal. */
+    void refreshWeek() {
+        weekCard.removeAllViews();
+        long dayMs = 24L * 3600 * 1000;
+        long today0 = dayStartMs();
+        double[] sums = new double[7]; // [0]=ma, [6]=6 napja
+        for (MealLog.Meal m : MealLog.load(this)) {
+            long diff = today0 - dayStartOf(m.ts);
+            int k = (int) (diff / dayMs);
+            if (k >= 0 && k < 7) sums[k] += m.kcal();
+        }
+        double max = 1;
+        for (double s : sums) max = Math.max(max, s);
+        int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        if (goal > 0) max = Math.max(max, goal);
+        weekCard.addView(text("Elmúlt 7 nap", 12.5f, MUTED, true));
+        SimpleDateFormat dnf = new SimpleDateFormat("EEE", new Locale("hu"));
+        for (int k = 6; k >= 0; k--) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            LinearLayout.LayoutParams rl = lp();
+            rl.topMargin = dp(6);
+            String label = k == 0 ? "Ma" : dnf.format(new Date(today0 - k * dayMs));
+            TextView lb = text(label, 11.5f, k == 0 ? TXT : MUTED, k == 0);
+            row.addView(lb, new LinearLayout.LayoutParams(dp(40), -2));
+            LinearLayout barBg = hbox();
+            GradientDrawable bgd = new GradientDrawable();
+            bgd.setColor(0x1AFFFFFF);
+            bgd.setCornerRadius(dp(5));
+            barBg.setBackground(bgd);
+            View fill = new View(this);
+            GradientDrawable fgd = new GradientDrawable();
+            boolean over = goal > 0 && sums[k] > goal;
+            fgd.setColor(sums[k] <= 0 ? 0x00000000 : over ? 0xFFF59E0B : Theme.accent(this));
+            fgd.setCornerRadius(dp(5));
+            fill.setBackground(fgd);
+            float f = (float) Math.max(sums[k] > 0 ? 0.03 : 0.0, Math.min(1.0, sums[k] / max));
+            barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(9), f));
+            barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(9), 1f - f));
+            row.addView(barBg, new LinearLayout.LayoutParams(0, -2, 1f));
+            TextView val = text(sums[k] > 0 ? "  " + Math.round(sums[k]) : "  –",
+                    11.5f, MUTED, false);
+            val.setGravity(Gravity.END);
+            row.addView(val, new LinearLayout.LayoutParams(dp(52), -2));
+            weekCard.addView(row, rl);
+        }
+    }
+
+    long dayStartOf(long ts) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(ts);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
     }
 
     void editGoalDialog() {
