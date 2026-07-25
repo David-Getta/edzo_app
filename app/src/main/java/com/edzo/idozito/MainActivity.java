@@ -822,8 +822,20 @@ public class MainActivity extends Activity {
 
         cardM.setClickable(true);
         cardM.setOnClickListener(v -> {
-            mascotBody.setText(Mascot.pep());
             v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+            int dowNow = (java.util.Calendar.getInstance()
+                    .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+            if (!Theme.isPlanDay(this, dowNow)) {
+                // Pihenőnapon Blaze nyújtást ajánl a pep helyett.
+                new Sheet(this, "Pihenőnap 🌙🐺",
+                        "A regeneráció is edzés – egy kis nyújtás sokat ér.")
+                        .addPrimary("🧘 Mobilitás / nyújtás", () ->
+                                startActivity(new Intent(this, MobilityActivity.class)))
+                        .addCancel()
+                        .show();
+                return;
+            }
+            mascotBody.setText(Mascot.pep());
             // Pár másodperc után visszaáll az állapot szerinti üzenetre.
             mascotBody.postDelayed(this::refreshMascot, 8000);
         });
