@@ -59,10 +59,14 @@ public final class Challenges {
         int mealsToday = 0;
         for (MealLog.Meal m : meals) if (m.ts >= dayStart) mealsToday++;
 
+        int pGoal = ctx.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                .getInt("protein_goal", 0);
+
         List<Integer> types = new ArrayList<>(Arrays.asList(0, 1, 2));
         if (everDist) types.add(3);
         if (!sLog.isEmpty()) types.add(4);
         if (!meals.isEmpty()) types.add(5); // étrend-kihívás csak annak, aki naplóz
+        if (pGoal > 0 && !meals.isEmpty()) types.add(6);
         int type = types.get(seed % types.size());
 
         String title;
@@ -83,9 +87,12 @@ public final class Challenges {
         } else if (type == 4) {
             target = 40 + (seed / 3 % 3) * 20; cur = repsToday; unit = "ismétlés";
             title = "Nyomj le ma összesen " + target + " ismétlést a súlyzós naplóban!";
-        } else {
+        } else if (type == 5) {
             target = 2; cur = Math.min(mealsToday, 2); unit = "étkezés";
             title = "Naplózz ma legalább 2 étkezést az Étrendben!";
+        } else {
+            target = pGoal; cur = (int) Math.round(MealLog.todayProtein(ctx)); unit = "g fehérje";
+            title = "Érd el ma a fehérje-célod: " + pGoal + " g!";
         }
         return new Object[]{title, unit, cur, target, seed};
     }
