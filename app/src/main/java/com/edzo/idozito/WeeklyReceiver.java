@@ -59,7 +59,8 @@ public class WeeklyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context c, Intent intent) {
         long from = weekStart(System.currentTimeMillis());
-        JSONArray h = History.load(c);
+        // Egyesített napló: az erősítő edzések is számítanak a darabszámba és a terv-napokba.
+        JSONArray h = History.loadAll(c);
         int count = 0;
         double dist = 0;
         long dur = 0;
@@ -94,9 +95,11 @@ public class WeeklyReceiver extends BroadcastReceiver {
             if (hasPlan && plannedCount > 0)
                 sb.append("  ·  Terv: ").append(plannedDone).append("/").append(plannedCount).append(" edzésnap");
             sb.append(". ");
-            if (hasPlan && plannedCount > 0 && plannedDone >= plannedCount)
+            if (hasPlan && plannedCount > 0 && plannedDone >= plannedCount) {
                 sb.append("Heti terv teljesítve – büszke a falka! 🏆🔥");
-            else
+                int pw = Streaks.planWeeks(c, h);
+                if (pw >= 2) sb.append(" Ez már a ").append(pw).append(". terv-heted!");
+            } else
                 sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
             text = sb.toString();
         }
