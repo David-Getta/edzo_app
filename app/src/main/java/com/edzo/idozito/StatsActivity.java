@@ -504,6 +504,7 @@ public class StatsActivity extends Activity {
                 {"⚡ Napi széria", dayNow + " nap"},
                 {"🏅 Leghosszabb széria", dayBest + " nap"},
                 {"🎯 Kihívások", challengesDone + " nap"},
+                {"🗓 Terv-hetek", Streaks.planWeeks(this, History.loadAll(this)) + " hét"},
                 {"🏆 Leghosszabb táv", bestDist > 0 ? fmtDist(bestDist) : "—"},
                 {"⏱ Leghosszabb edzés", bestDur > 0 ? fmtDur(bestDur) : "—"},
                 {"⚡ Legjobb átlag", bestAvg > 0 ? fmtSpeed(bestAvg) : "—"},

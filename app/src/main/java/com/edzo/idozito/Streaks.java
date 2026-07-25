@@ -78,6 +78,36 @@ public final class Streaks {
         return best;
     }
 
+    /** Hány héten teljesült a teljes heti edzésterv (max 2 évre visszamenőleg). */
+    public static int planWeeks(Context ctx, JSONArray arr) {
+        if (Theme.planDays(ctx).isEmpty()) return 0;
+        HashSet<Long> days = daySet(arr);
+        Calendar today = Calendar.getInstance();
+        zero(today);
+        Calendar wk = Calendar.getInstance();
+        zero(wk);
+        wk.setFirstDayOfWeek(Calendar.MONDAY);
+        wk.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        int count = 0;
+        for (int w = 0; w < 104; w++) {
+            boolean complete = true, anyPlanned = false;
+            Calendar d = (Calendar) wk.clone();
+            for (int i = 0; i < 7; i++) {
+                int dowIdx = (d.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+                if (Theme.isPlanDay(ctx, dowIdx)) {
+                    anyPlanned = true;
+                    // Jövőbeli terv-nap (folyó hét): a hét még nem zárható le.
+                    if (d.getTimeInMillis() > today.getTimeInMillis()
+                            || !days.contains(d.getTimeInMillis())) complete = false;
+                }
+                d.add(Calendar.DAY_OF_YEAR, 1);
+            }
+            if (anyPlanned && complete) count++;
+            wk.add(Calendar.DAY_OF_YEAR, -7);
+        }
+        return count;
+    }
+
     private static HashSet<Long> daySet(JSONArray arr) {
         HashSet<Long> days = new HashSet<>();
         Calendar c = Calendar.getInstance();
