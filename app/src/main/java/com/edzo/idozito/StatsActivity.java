@@ -47,7 +47,7 @@ public class StatsActivity extends Activity {
         super.onCreate(b);
         MainActivity.applyPalette(this); BG=MainActivity.BG; CARD=MainActivity.CARD; CARD2=MainActivity.CARD2; TXT=MainActivity.TXT; MUTED=MainActivity.MUTED; LINE=MainActivity.LINE;
         hist = History.load(this);
-        lastCount = hist.length();
+        lastCount = hist.length() + StrengthLog.load(this).size();
 
         ScrollView sv = new ScrollView(this);
         sv.setFillViewport(true);
@@ -158,7 +158,9 @@ public class StatsActivity extends Activity {
     protected void onResume() {
         super.onResume();
         // Ha időközben változott az edzésszám (pl. törlés), frissítsük a statisztikát.
-        if (lastCount >= 0 && History.load(this).length() != lastCount) recreate();
+        if (lastCount >= 0
+                && History.load(this).length() + StrengthLog.load(this).size() != lastCount)
+            recreate();
     }
 
     // ---------------- Aggregálás ----------------
@@ -495,8 +497,8 @@ public class StatsActivity extends Activity {
         int streak = weekStreak();
         LinearLayout grid = card();
         grid.setPadding(dp(6), dp(6), dp(6), dp(6));
-        int dayNow = Streaks.current(this, hist);
-        int dayBest = Streaks.best(this, hist);
+        int dayNow = Streaks.current(this, History.loadAll(this));
+        int dayBest = Streaks.best(this, History.loadAll(this));
         int challengesDone = getSharedPreferences("edzo", MODE_PRIVATE)
                 .getInt("challenge_done_count", 0);
         addTiles(grid, new String[][]{
@@ -518,8 +520,9 @@ public class StatsActivity extends Activity {
     /** Hány egymást követő héten volt legalább egy edzés (az aktuális vagy múlt héttől visszafelé). */
     int weekStreak() {
         java.util.HashSet<Long> weeks = new java.util.HashSet<>();
-        for (int i = 0; i < hist.length(); i++) {
-            JSONObject o = hist.optJSONObject(i);
+        JSONArray src = History.loadAll(this); // erősítő napok is számítanak
+        for (int i = 0; i < src.length(); i++) {
+            JSONObject o = src.optJSONObject(i);
             if (o != null) weeks.add(weekStart(o.optLong("ts")));
         }
         long wk = weekStart(System.currentTimeMillis());
@@ -535,8 +538,9 @@ public class StatsActivity extends Activity {
     /** A valaha volt leghosszabb megszakítás nélküli heti sorozat. */
     int bestWeekStreak() {
         java.util.HashSet<Long> weeks = new java.util.HashSet<>();
-        for (int i = 0; i < hist.length(); i++) {
-            JSONObject o = hist.optJSONObject(i);
+        JSONArray src = History.loadAll(this); // erősítő napok is számítanak
+        for (int i = 0; i < src.length(); i++) {
+            JSONObject o = src.optJSONObject(i);
             if (o != null) weeks.add(weekStart(o.optLong("ts")));
         }
         int best = 0;
@@ -586,8 +590,9 @@ public class StatsActivity extends Activity {
     LinearLayout heatmapCard() {
         java.util.HashSet<Long> days = new java.util.HashSet<>();
         Calendar c = Calendar.getInstance();
-        for (int i = 0; i < hist.length(); i++) {
-            JSONObject o = hist.optJSONObject(i);
+        JSONArray src = History.loadAll(this); // erősítő napok is aktívak
+        for (int i = 0; i < src.length(); i++) {
+            JSONObject o = src.optJSONObject(i);
             if (o == null) continue;
             c.setTimeInMillis(o.optLong("ts"));
             c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0);
@@ -708,8 +713,9 @@ public class StatsActivity extends Activity {
         int today = now.get(Calendar.DAY_OF_MONTH);
         java.util.HashSet<Integer> days = new java.util.HashSet<>();
         Calendar c2 = Calendar.getInstance();
-        for (int i = 0; i < hist.length(); i++) {
-            JSONObject o = hist.optJSONObject(i);
+        JSONArray src = History.loadAll(this); // erősítő napok is jelölve
+        for (int i = 0; i < src.length(); i++) {
+            JSONObject o = src.optJSONObject(i);
             if (o == null) continue;
             c2.setTimeInMillis(o.optLong("ts"));
             if (c2.get(Calendar.YEAR) == year && c2.get(Calendar.MONTH) == month)
