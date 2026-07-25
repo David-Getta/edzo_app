@@ -130,6 +130,10 @@ public final class Mascot {
             return "Két hét minden nap, " + u + "! 💎 Ez már nem szokás – ez életmód.";
         if (dayStreak == 30)
             return "30 napos széria, " + u + "! 👑🔥 Gyémánt rutin – a falka legendája vagy!";
+        if (dayStreak == 50)
+            return "50 nap megállás nélkül, " + u + "! 🌋 Ez már nem láng – ez vulkán!";
+        if (dayStreak == 100)
+            return "SZÁZ NAP, " + u + "! 🐺👑🔥 A falka történelmet ír veled!";
         if (dayStreak >= 7)
             return dayStreak + " napja minden nap, " + u + "! 🔥🔥 Te vagy a falka lángja!";
         if (dayStreak >= 3)

@@ -1359,6 +1359,9 @@ public class MainActivity extends Activity {
                 return greet + " ⚠️ Veszélyben a " + wk + " hetes sorozatod – edz még a héten!";
             if (!Theme.isPlanDay(this, dowIdx))
                 return greet + " Ma pihenőnap – a regeneráció is fejlődés! 🌙";
+            Object[] cst = challengeState();
+            if ((int) cst[2] < (int) cst[3])
+                return greet + " Ma még nem edzettél – 🎯 a mai kihívás vár!";
             return greet + " Ma még nem edzettél – hajrá! 🔥";
         }
         int ds = dayStreak(arr);
