@@ -904,6 +904,7 @@ public class MainActivity extends Activity {
         t.add(new TileDef("mobility", "🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
         t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
         t.add(new TileDef("strength", "🏋️", "Erősítő napló", 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
+        t.add(new TileDef("diet", "🍽", "Étrend", 0xFFFFB74D, () -> startActivity(new Intent(this, DietActivity.class))));
         t.add(new TileDef("template", "💾", "Sablon mentése", 0xFF7FE1A6, this::saveTemplateDialog));
         // A Beállítások szándékosan nincs itt: külön füle van az alsó menüsorban.
         return t;
