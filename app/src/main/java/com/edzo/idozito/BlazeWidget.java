@@ -70,6 +70,14 @@ public class BlazeWidget extends AppWidgetProvider {
             } catch (Exception ignored) {}
             msg = ch != null ? ch : Mascot.nudge(userName, false, 0);
         }
+        // A mai kcal-állás egy pillantásra annak, aki étrendet vezet (cél esetén céllal).
+        try {
+            int kGoal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                    .getInt("kcal_goal", 0);
+            int eaten = (int) Math.round(MealLog.todayKcal(c));
+            if (eaten > 0)
+                msg += "\n🍽 " + eaten + (kGoal > 0 ? " / " + kGoal : "") + " kcal ma";
+        } catch (Exception ignored) {}
         rv.setTextViewText(R.id.blaze_msg, msg);
 
         // A címsorban az élő széria is látszik (2 naptól).
