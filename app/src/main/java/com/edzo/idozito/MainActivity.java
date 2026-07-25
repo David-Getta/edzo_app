@@ -98,6 +98,7 @@ public class MainActivity extends Activity {
     LinearLayout gridBox;
     LinearLayout sectionsBox;
     LinearLayout insightBox;
+    LinearLayout challengeBox;
     java.util.LinkedHashMap<String, View> sectionViews;
     LinearLayout progressBox;
     LinearLayout levelBar;
@@ -498,9 +499,11 @@ public class MainActivity extends Activity {
         tipWrap.addView(dailyTipCard());
         tipWrap.addView(gap(16));
         insightBox = vbox();
+        challengeBox = vbox();
         sectionViews = new java.util.LinkedHashMap<>();
         sectionViews.put("mascot", mascotWrap);
         sectionViews.put("week", weekBox);
+        sectionViews.put("challenge", challengeBox);
         sectionViews.put("insight", insightBox);
         sectionViews.put("recent", recentBox);
         sectionViews.put("badges", badgesBox);
@@ -984,8 +987,8 @@ public class MainActivity extends Activity {
 
     // ---- Testreszabható kezdőlap-szakaszok (átrendezés + elrejtés) ----
 
-    static final String[] SECT_IDS = {"mascot", "week", "insight", "recent", "badges", "records", "tip"};
-    static final String[] SECT_NAMES = {"🐺 Blaze", "📅 Heti aktivitás", "📊 Heti összevetés",
+    static final String[] SECT_IDS = {"mascot", "week", "challenge", "insight", "recent", "badges", "records", "tip"};
+    static final String[] SECT_NAMES = {"🐺 Blaze", "📅 Heti aktivitás", "🎯 Mai kihívás", "📊 Heti összevetés",
             "🕘 Legutóbbi edzés", "🎖 Kitüntetések", "🏆 Rekordok", "💡 Napi tipp"};
 
     java.util.List<String> sectOrder() {
@@ -1375,10 +1378,81 @@ public class MainActivity extends Activity {
         refreshRecent();
         refreshBadges();
         refreshWeekDots();
+        refreshChallenge();
         refreshInsight();
         refreshRecords();
         refreshMascot();
         refreshStreakChip();
+    }
+
+    /** Napi kihívás: naponta más, determinisztikus feladat; a mai edzésekből méri a haladást. */
+    void refreshChallenge() {
+        if (challengeBox == null) return;
+        challengeBox.removeAllViews();
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        int seed = now.get(java.util.Calendar.YEAR) * 366 + now.get(java.util.Calendar.DAY_OF_YEAR);
+        int type = seed % 3;
+        long dayStart = dayStartMs();
+
+        JSONArray h = History.load(this);
+        int minutes = 0, bestRounds = 0;
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o == null || o.optLong("ts") < dayStart) continue;
+            minutes += o.optInt("dur") / 60;
+            bestRounds = Math.max(bestRounds, o.optInt("rounds", 0));
+        }
+        int sessions = 0;
+        JSONArray all = History.loadAll(this);
+        for (int i = 0; i < all.length(); i++) {
+            JSONObject o = all.optJSONObject(i);
+            if (o != null && o.optLong("ts") >= dayStart) sessions++;
+        }
+
+        String title;
+        int cur, target;
+        String unit;
+        if (type == 0) {
+            target = 15 + (seed / 3 % 3) * 5; cur = minutes; unit = "perc";
+            title = "Mozogj ma összesen " + target + " percet!";
+        } else if (type == 1) {
+            target = 8 + (seed / 3 % 3) * 2; cur = bestRounds; unit = "kör";
+            title = "Csinálj " + target + " kört egyetlen edzésen belül!";
+        } else {
+            target = 2; cur = Math.min(sessions, 2); unit = "edzés";
+            title = "Fejezz be ma 2 edzést – a súlyzós is számít!";
+        }
+        boolean done = cur >= target;
+
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(14), dp(14), dp(14));
+        TextView head = text(done ? "🎯 Mai kihívás  ·  TELJESÍTVE 🏆" : "🎯 Mai kihívás",
+                13, 0xFF7FE1A6, true);
+        head.setPadding(dp(2), 0, 0, dp(8));
+        c.addView(head);
+        c.addView(text(title, 14.5f, TXT, true));
+        c.addView(gap(10));
+
+        LinearLayout barBg = hbox();
+        GradientDrawable bgd = new GradientDrawable();
+        bgd.setColor(0x22FFFFFF);
+        bgd.setCornerRadius(dp(6));
+        barBg.setBackground(bgd);
+        View fill = new View(this);
+        GradientDrawable fgd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{tAccent, tAccent2});
+        fgd.setCornerRadius(dp(6));
+        fill.setBackground(fgd);
+        float f = Math.max(0.02f, Math.min(1f, cur / (float) target));
+        barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
+        barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
+        c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
+        c.addView(gap(8));
+        c.addView(text(done ? "Blaze büszkén vonyít: ez az, falkatárs! 🐺🔥"
+                : cur + " / " + target + " " + unit + " – hajrá! 💪", 12.5f, MUTED, false));
+
+        challengeBox.addView(c, new LinearLayout.LayoutParams(-1, -2));
+        challengeBox.addView(gap(16));
     }
 
     // ---- Heti összevetés (e hét vs. előző hét) ----
