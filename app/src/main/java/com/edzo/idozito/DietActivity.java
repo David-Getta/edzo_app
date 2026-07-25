@@ -204,10 +204,32 @@ public class DietActivity extends Activity {
                 12.5f, MUTED, true));
         todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
         double prot = MealLog.todayProtein(this);
-        if (prot > 0) {
-            TextView pt = text("🥩 Fehérje ma: " + Math.round(prot) + " g", 12.5f, MUTED, false);
+        int pGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("protein_goal", 0);
+        if (prot > 0 || pGoal > 0) {
+            boolean done = pGoal > 0 && prot >= pGoal;
+            TextView pt = text("🥩 Fehérje ma: " + Math.round(prot) + " g"
+                    + (pGoal > 0 ? " / " + pGoal + " g" + (done ? "  ✔" : "") : ""),
+                    12.5f, done ? Theme.accent(this) : MUTED, done);
             pt.setPadding(0, dp(2), 0, 0);
             todayCard.addView(pt);
+            if (pGoal > 0) {
+                LinearLayout pBg = hbox();
+                GradientDrawable pgd = new GradientDrawable();
+                pgd.setColor(0x22FFFFFF);
+                pgd.setCornerRadius(dp(4));
+                pBg.setBackground(pgd);
+                View pf = new View(this);
+                GradientDrawable pfg = new GradientDrawable();
+                pfg.setColor(done ? 0xFF22C55E : Theme.accent(this));
+                pfg.setCornerRadius(dp(4));
+                pf.setBackground(pfg);
+                float ff = (float) Math.max(prot > 0 ? 0.02 : 0.0, Math.min(1.0, prot / pGoal));
+                pBg.addView(pf, new LinearLayout.LayoutParams(0, dp(6), ff));
+                pBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(6), 1f - ff));
+                LinearLayout.LayoutParams plp = lp();
+                plp.topMargin = dp(4);
+                todayCard.addView(pBg, plp);
+            }
         }
         if (goal > 0) {
             LinearLayout barBg = hbox();
@@ -233,7 +255,8 @@ public class DietActivity extends Activity {
             st.setPadding(0, dp(5), 0, 0);
             todayCard.addView(st);
         } else {
-            TextView hint = text("Koppints ide napi kalória-cél beállításához", 11.5f, MUTED, false);
+            TextView hint = text("Koppints ide a napi kalória- és fehérje-cél beállításához",
+                    11.5f, MUTED, false);
             hint.setPadding(0, dp(4), 0, 0);
             todayCard.addView(hint);
         }
@@ -306,16 +329,25 @@ public class DietActivity extends Activity {
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
         int cur = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
         if (cur > 0) et.setText(String.valueOf(cur));
+        final EditText pEt = input("Napi fehérje-cél (g), 0 = kikapcsolva");
+        pEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        int pCur = getSharedPreferences("edzo", MODE_PRIVATE).getInt("protein_goal", 0);
+        if (pCur > 0) pEt.setText(String.valueOf(pCur));
         LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
         box.addView(et, lp());
-        Sheet sh = new Sheet(this, "Napi kalória-cél 🎯",
+        LinearLayout.LayoutParams pl = lp();
+        pl.topMargin = dp(8);
+        box.addView(pEt, pl);
+        Sheet sh = new Sheet(this, "Napi célok 🎯",
                 "Tipp: a Profil oldalon a BMR-ed jó kiindulási alap.")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
                     int g = (int) parse(et.getText().toString());
+                    int pg = (int) parse(pEt.getText().toString());
                     getSharedPreferences("edzo", MODE_PRIVATE).edit()
-                            .putInt("kcal_goal", Math.max(0, g)).apply();
+                            .putInt("kcal_goal", Math.max(0, g))
+                            .putInt("protein_goal", Math.max(0, pg)).apply();
                     refresh();
                 });
         // Ha a Profil adataiból számolható BMR, egy koppintással betölthető.
@@ -326,6 +358,16 @@ public class DietActivity extends Activity {
             sh.addNeutral("⚡ BMR alapján: ~" + suggested + " kcal", () -> {
                 getSharedPreferences("edzo", MODE_PRIVATE).edit()
                         .putInt("kcal_goal", suggested).apply();
+                refresh();
+            });
+        }
+        // Fehérje-javaslat a testsúlyból: ~1,6 g/kg edzőknek.
+        double w = Profile.lastWeight(this);
+        if (w > 0) {
+            final int pSug = (int) Math.round(w * 1.6);
+            sh.addNeutral("🥩 Testsúly alapján: ~" + pSug + " g fehérje", () -> {
+                getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                        .putInt("protein_goal", pSug).apply();
                 refresh();
             });
         }
