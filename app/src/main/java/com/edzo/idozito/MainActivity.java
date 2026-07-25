@@ -707,6 +707,15 @@ public class MainActivity extends Activity {
         String userName = prefs.getString("user_name", "");
         String msg = Mascot.line(this, userName, arr.length(), today, ds, ws, risk, hour, restDay);
 
+        // Délutántól, ha ma még nem edzettél és a kihívás sincs kész, Blaze konkrét célt ad.
+        if (!today && !restDay && !risk && hour >= 12 && arr.length() > 0) {
+            Object[] cst = challengeState();
+            int cCur = (int) cst[2], cTarget = (int) cst[3];
+            if (cCur < cTarget)
+                msg = "🎯 A mai kihívás vár: " + cst[0] + " (" + cCur + "/" + cTarget
+                        + " " + cst[1] + ") – csapjunk bele! 🐺🔥";
+        }
+
         // Ha van heti terv és ma már edzett, Blaze a terv állásáról beszél.
         if (today && !Theme.planDays(this).isEmpty()) {
             long wsMs = weekStartMs();
@@ -1385,10 +1394,8 @@ public class MainActivity extends Activity {
         refreshStreakChip();
     }
 
-    /** Napi kihívás: naponta más, determinisztikus feladat; a mai edzésekből méri a haladást. */
-    void refreshChallenge() {
-        if (challengeBox == null) return;
-        challengeBox.removeAllViews();
+    /** A mai kihívás állapota: {title, unit, cur, target, seed}. */
+    Object[] challengeState() {
         java.util.Calendar now = java.util.Calendar.getInstance();
         int seed = now.get(java.util.Calendar.YEAR) * 366 + now.get(java.util.Calendar.DAY_OF_YEAR);
         long dayStart = dayStartMs();
@@ -1444,6 +1451,16 @@ public class MainActivity extends Activity {
             target = 40 + (seed / 3 % 3) * 20; cur = repsToday; unit = "ismétlés";
             title = "Nyomj le ma összesen " + target + " ismétlést a súlyzós naplóban!";
         }
+        return new Object[]{title, unit, cur, target, seed};
+    }
+
+    /** Napi kihívás: naponta más, determinisztikus feladat; a mai edzésekből méri a haladást. */
+    void refreshChallenge() {
+        if (challengeBox == null) return;
+        challengeBox.removeAllViews();
+        Object[] st = challengeState();
+        String title = (String) st[0], unit = (String) st[1];
+        int cur = (int) st[2], target = (int) st[3], seed = (int) st[4];
         boolean done = cur >= target;
 
         LinearLayout c = card();
