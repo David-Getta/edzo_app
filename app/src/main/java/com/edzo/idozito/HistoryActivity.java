@@ -36,6 +36,7 @@ public class HistoryActivity extends Activity {
     int filter = 0;
     LinearLayout listBox;
     JSONArray histArr;
+    java.util.List<StrengthLog.Entry> strArr;
     SimpleDateFormat listDf;
     final TextView[] filterChips = new TextView[3];
 
@@ -58,25 +59,30 @@ public class HistoryActivity extends Activity {
         col.setPadding(dp(18), dp(22), dp(18), dp(40));
 
         JSONArray arr = History.load(this);
-        lastCount = arr.length();
+        // A súlyzós napló bejegyzései is ide kerülnek (egyesített idővonal).
+        java.util.List<StrengthLog.Entry> sArr = StrengthLog.load(this);
+        lastCount = arr.length() + sArr.size();
 
         // Fejléc
         LinearLayout head = hbox();
         head.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout htexts = vbox();
         htexts.addView(text("Előzmények", 27, TXT, true));
-        htexts.addView(text(arr.length() + " elmentett edzés", 13.5f, MUTED, false));
+        htexts.addView(text((arr.length() + sArr.size()) + " elmentett edzés", 13.5f, MUTED, false));
         head.addView(htexts, new LinearLayout.LayoutParams(0, -2, 1f));
         if (arr.length() > 0) head.addView(trashButton());
         col.addView(head, lp());
         col.addView(gap(18));
 
-        if (arr.length() == 0) {
+        if (arr.length() == 0 && sArr.isEmpty()) {
             col.addView(emptyState());
         } else {
-            col.addView(heroSummary(arr), lp());
-            col.addView(gap(14));
+            if (arr.length() > 0) {
+                col.addView(heroSummary(arr), lp());
+                col.addView(gap(14));
+            }
             histArr = arr;
+            strArr = sArr;
             listDf = new SimpleDateFormat("yyyy. MMM d. · HH:mm", new Locale("hu"));
             col.addView(filterRow(), lp());
             col.addView(gap(12));
@@ -99,7 +105,9 @@ public class HistoryActivity extends Activity {
     protected void onResume() {
         super.onResume();
         // Ha időközben törölték egy edzést (a részletek nézetből), frissítsük a listát.
-        if (lastCount >= 0 && History.load(this).length() != lastCount) recreate();
+        if (lastCount >= 0
+                && History.load(this).length() + StrengthLog.load(this).size() != lastCount)
+            recreate();
     }
 
     // ---- Szűrő ----
@@ -137,14 +145,27 @@ public class HistoryActivity extends Activity {
     void renderList() {
         if (listBox == null) return;
         listBox.removeAllViews();
-        int shown = 0;
+        // Egyesített, idő szerint csökkenő idővonal: időzítős + súlyzós bejegyzések.
+        java.util.ArrayList<Object[]> items = new java.util.ArrayList<>();
         for (int i = 0; i < histArr.length(); i++) {
             JSONObject o = histArr.optJSONObject(i);
-            if (o == null) continue;
-            boolean isRun = o.optString("name", "").isEmpty();
-            if (filter == 1 && !isRun) continue;
-            if (filter == 2 && isRun) continue;
-            listBox.addView(entryCard(o, listDf), lp());
+            if (o != null) items.add(new Object[]{o.optLong("ts"), o});
+        }
+        if (strArr != null) for (StrengthLog.Entry e : strArr) items.add(new Object[]{e.ts, e});
+        java.util.Collections.sort(items, (a, b) -> Long.compare((long) b[0], (long) a[0]));
+
+        int shown = 0;
+        for (Object[] it : items) {
+            if (it[1] instanceof JSONObject) {
+                JSONObject o = (JSONObject) it[1];
+                boolean isRun = o.optString("name", "").isEmpty();
+                if (filter == 1 && !isRun) continue;
+                if (filter == 2 && isRun) continue;
+                listBox.addView(entryCard(o, listDf), lp());
+            } else {
+                if (filter == 1) continue; // súlyzós bejegyzés nem futás
+                listBox.addView(strengthCard((StrengthLog.Entry) it[1], listDf), lp());
+            }
             listBox.addView(gap(12));
             shown++;
         }
@@ -153,6 +174,45 @@ public class HistoryActivity extends Activity {
             none.setPadding(dp(4), dp(10), 0, 0);
             listBox.addView(none);
         }
+    }
+
+    /** Súlyzós naplóbejegyzés kártyája az egyesített idővonalon. */
+    View strengthCard(StrengthLog.Entry e, SimpleDateFormat df) {
+        LinearLayout outer = hbox();
+        GradientDrawable obg = new GradientDrawable();
+        obg.setColor(GLASS);
+        obg.setCornerRadius(dp(22));
+        obg.setStroke(dp(1), GLASS_LINE);
+        outer.setBackground(obg);
+        outer.setClickable(true);
+        outer.setOnClickListener(v -> startActivity(new Intent(this, StrengthActivity.class)));
+
+        View stripe = new View(this);
+        GradientDrawable sg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{GYM_C, (GYM_C & 0xFFFFFF) | 0x66000000});
+        sg.setCornerRadius(dp(3));
+        LinearLayout.LayoutParams stlp = new LinearLayout.LayoutParams(dp(5), -1);
+        stlp.topMargin = dp(14); stlp.bottomMargin = dp(14); stlp.leftMargin = dp(10); stlp.rightMargin = dp(12);
+        outer.addView(stripe, stlp);
+
+        LinearLayout body = vbox();
+        body.setPadding(0, dp(14), dp(14), dp(14));
+        LinearLayout topRow = hbox();
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
+        topRow.addView(badge("💪 " + e.name, GYM_C), new LinearLayout.LayoutParams(-2, -2));
+        View sp = new View(this);
+        topRow.addView(sp, new LinearLayout.LayoutParams(0, 1, 1f));
+        topRow.addView(text(df.format(new Date(e.ts)), 11.5f, MUTED, false));
+        body.addView(topRow, lp());
+        body.addView(gap(8));
+        String det = e.sets.size() + " sorozat  ·  " + e.totalReps() + " ismétlés"
+                + (e.topWeight() > 0
+                    ? "  ·  max " + (e.topWeight() == Math.floor(e.topWeight())
+                        ? String.valueOf((long) e.topWeight()) : String.valueOf(e.topWeight())) + " kg"
+                    : "");
+        body.addView(text(det, 13, TXT, false));
+        outer.addView(body, new LinearLayout.LayoutParams(0, -2, 1f));
+        return outer;
     }
 
     // ---- Hero összegző ----
