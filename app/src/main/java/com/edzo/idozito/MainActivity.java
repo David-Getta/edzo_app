@@ -811,7 +811,7 @@ public class MainActivity extends Activity {
 
         LinearLayout txtCol = vbox();
         // Blaze neve mellett a saját szinted címe – a kabala „ismeri" a haladásod.
-        long xpNow = Levels.totalXp(History.loadAll(this));
+        long xpNow = Levels.totalXp(this);
         int lvlNow = Levels.levelForXp(xpNow);
         txtCol.addView(text(Mascot.NAME + " 🔥  ·  Szint " + lvlNow + " – " + Levels.title(lvlNow),
                 12.5f, tAccent, true));
@@ -1459,8 +1459,9 @@ public class MainActivity extends Activity {
             prefs.edit().putInt("challenge_done_seed", seed)
                     .putInt("challenge_done_count", prefs.getInt("challenge_done_count", 0) + 1)
                     .apply();
+            Levels.addBonus(this, 10); // kihívás-bónusz a szinthez
             if (root != null) Confetti.burst(root);
-            Toast.makeText(this, "🎯 Mai kihívás teljesítve! 🏆 Blaze büszkén vonyít! 🐺🔥",
+            Toast.makeText(this, "🎯 Mai kihívás teljesítve! 🏆 +10 XP – Blaze büszkén vonyít! 🐺🔥",
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -1524,7 +1525,7 @@ public class MainActivity extends Activity {
         if (progressBox == null) return;
         progressBox.removeAllViews();
         JSONArray arr = History.loadAll(this);
-        long xp = Levels.totalXp(arr);
+        long xp = Levels.totalXp(this);
         int lvl = Levels.levelForXp(xp);
         progressBox.addView(progressChip("⭐", "Szint " + lvl, Levels.title(lvl)), progChipLp());
         int ds = dayStreak(arr);
@@ -2154,7 +2155,7 @@ public class MainActivity extends Activity {
         tp.setTextSize(78);
         cv.drawText("Grit", M, 250, tp);
 
-        long xp = Levels.totalXp(arr);
+        long xp = Levels.totalXp(this);
         int lvl = Levels.levelForXp(xp);
         int streak = weekStreak(arr);
         int count = arr.length();

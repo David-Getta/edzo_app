@@ -23,6 +23,20 @@ public final class Levels {
         return xp + 8;
     }
 
+    /** Teljes XP: egyesített napló + bónuszok (pl. teljesített napi kihívások). */
+    public static long totalXp(android.content.Context c) {
+        long bonus = c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
+                .getLong("bonus_xp", 0);
+        return totalXp(History.loadAll(c)) + bonus;
+    }
+
+    /** Bónusz-XP jóváírása (pl. kihívás-teljesítéskor). */
+    public static void addBonus(android.content.Context c, long xp) {
+        android.content.SharedPreferences p =
+                c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE);
+        p.edit().putLong("bonus_xp", p.getLong("bonus_xp", 0) + xp).apply();
+    }
+
     /** Összes XP a naplóból. */
     public static long totalXp(JSONArray history) {
         long xp = 0;
