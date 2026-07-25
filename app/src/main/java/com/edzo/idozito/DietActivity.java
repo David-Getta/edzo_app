@@ -97,15 +97,27 @@ public class DietActivity extends Activity {
         }
         SimpleDateFormat df = new SimpleDateFormat("MMM d. · HH:mm", new Locale("hu"));
         long dayStart = dayStartMs();
-        boolean wroteEarlier = false;
+        // Napi összegek a nap-fejlécekhez.
+        java.util.HashMap<Long, Double> daySum = new java.util.HashMap<>();
+        for (MealLog.Meal m : meals) {
+            long d0 = dayStartOf(m.ts);
+            Double s = daySum.get(d0);
+            daySum.put(d0, (s == null ? 0 : s) + m.kcal());
+        }
+        SimpleDateFormat hf = new SimpleDateFormat("MMMM d., EEEE", new Locale("hu"));
+        long shownDay = -1;
         for (int i = 0; i < meals.size(); i++) {
             final MealLog.Meal m = meals.get(i);
             final int idx = i;
-            if (!wroteEarlier && m.ts < dayStart) {
-                TextView sep = text("Korábbi napok", 12.5f, MUTED, true);
+            long d0 = dayStartOf(m.ts);
+            if (d0 < dayStart && d0 != shownDay) {
+                Double s = daySum.get(d0);
+                TextView sep = text(hf.format(new Date(m.ts))
+                        + "  ·  " + Math.round(s == null ? 0 : s) + " kcal",
+                        12.5f, MUTED, true);
                 sep.setPadding(dp(2), dp(8), 0, dp(8));
                 listBox.addView(sep);
-                wroteEarlier = true;
+                shownDay = d0;
             }
             LinearLayout c = card();
             c.setPadding(dp(14), dp(12), dp(14), dp(12));
