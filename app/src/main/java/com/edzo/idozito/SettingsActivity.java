@@ -214,6 +214,11 @@ public class SettingsActivity extends Activity {
         col.addView(exportStr);
         col.addView(gap(10));
 
+        Button exportMeals = ghost("🍽  Étrend-napló exportálása (CSV)");
+        exportMeals.setOnClickListener(v -> exportMealsCsv());
+        col.addView(exportMeals);
+        col.addView(gap(10));
+
         col.addView(text("☁️  Automatikus mentés (Google-fiók)", 15.5f, TXT, true));
         col.addView(gap(4));
         col.addView(text("Az adataid (előzmények, erősítő napló, beállítások, programok) "
@@ -323,6 +328,29 @@ public class SettingsActivity extends Activity {
               .append(o.optInt("steps", 0)).append('\n');
         }
         ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_elozmenyek.csv", "text/csv");
+    }
+
+    void exportMealsCsv() {
+        java.util.List<MealLog.Meal> meals = MealLog.load(this);
+        if (meals.isEmpty()) {
+            Toast.makeText(this, "Nincs étrend-bejegyzés.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("datum;etkezes;osszetevo;gramm;kcal\n");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        for (MealLog.Meal m : meals) {
+            String when = df.format(new Date(m.ts));
+            String name = (m.name.isEmpty() ? "-" : m.name).replace(';', ',');
+            for (MealLog.Item it : m.items) {
+                sb.append(when).append(';')
+                  .append(name).append(';')
+                  .append(it.food.replace(';', ',')).append(';')
+                  .append(Math.round(it.grams)).append(';')
+                  .append(Math.round(it.kcal)).append('\n');
+            }
+        }
+        ShareProvider.shareTextFile(this, sb.toString(), "grit_etrend.csv", "text/csv");
     }
 
     void exportStrengthCsv() {
