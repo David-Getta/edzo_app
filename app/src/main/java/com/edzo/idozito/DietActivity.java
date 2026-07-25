@@ -287,7 +287,7 @@ public class DietActivity extends Activity {
         LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
         box.addView(et, lp());
-        new Sheet(this, "Napi kalória-cél 🎯",
+        Sheet sh = new Sheet(this, "Napi kalória-cél 🎯",
                 "Tipp: a Profil oldalon a BMR-ed jó kiindulási alap.")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
@@ -295,9 +295,19 @@ public class DietActivity extends Activity {
                     getSharedPreferences("edzo", MODE_PRIVATE).edit()
                             .putInt("kcal_goal", Math.max(0, g)).apply();
                     refresh();
-                })
-                .addCancel()
-                .show();
+                });
+        // Ha a Profil adataiból számolható BMR, egy koppintással betölthető.
+        double bmr = Profile.bmr(Profile.getSex(this), Profile.lastWeight(this),
+                Profile.getHeight(this), Profile.ageYears(this));
+        if (bmr > 0) {
+            final int suggested = (int) Math.round(bmr * 1.35); // mérsékelt aktivitás
+            sh.addNeutral("⚡ BMR alapján: ~" + suggested + " kcal", () -> {
+                getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                        .putInt("kcal_goal", suggested).apply();
+                refresh();
+            });
+        }
+        sh.addCancel().show();
     }
 
     // ---------- Új étkezés ----------
