@@ -223,59 +223,7 @@ public class MainActivity extends Activity {
 
     /** Blaze belépő köszöntése: felülről beúszó, saját stílusú kártya (nem Toast). */
     void showGreetingCard(String msg) {
-        if (root == null || isFinishing()) return;
-        final LinearLayout g = new LinearLayout(this);
-        g.setOrientation(LinearLayout.HORIZONTAL);
-        g.setGravity(Gravity.CENTER_VERTICAL);
-        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{0xF71E1013, 0xF7140B0D});
-        bg.setCornerRadius(dp(20));
-        bg.setStroke(dp(1), (tAccent & 0x00FFFFFF) | 0x77000000);
-        g.setBackground(bg);
-        g.setElevation(dp(12));
-        g.setPadding(dp(14), dp(12), dp(16), dp(12));
-
-        int bid = drawableId("blaze");
-        if (bid != 0) {
-            ImageView iv = new ImageView(this);
-            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iv.setImageResource(bid);
-            iv.setClipToOutline(true);
-            iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
-                @Override public void getOutline(View v, android.graphics.Outline o) {
-                    o.setOval(0, 0, v.getWidth(), v.getHeight());
-                }
-            });
-            LinearLayout.LayoutParams ivlp = new LinearLayout.LayoutParams(dp(46), dp(46));
-            ivlp.rightMargin = dp(12);
-            g.addView(iv, ivlp);
-        } else {
-            TextView e = text("🐺", 26, TXT, false);
-            e.setPadding(0, 0, dp(12), 0);
-            g.addView(e);
-        }
-        TextView t = text(msg, 13.5f, 0xFFF5ECEE, false);
-        g.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
-
-        FrameLayout.LayoutParams glp = new FrameLayout.LayoutParams(-1, -2);
-        glp.gravity = Gravity.TOP;
-        glp.topMargin = dp(46);
-        glp.leftMargin = dp(14);
-        glp.rightMargin = dp(14);
-        root.addView(g, glp);
-
-        g.setTranslationY(-dp(90));
-        g.setAlpha(0f);
-        g.animate().translationY(0).alpha(1f).setDuration(430)
-                .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
-        final Runnable dismiss = () -> {
-            if (g.getParent() == null) return;
-            g.animate().translationY(-dp(90)).alpha(0f).setDuration(320)
-                    .withEndAction(() -> { if (g.getParent() != null) root.removeView(g); })
-                    .start();
-        };
-        g.postDelayed(dismiss, 4500);
-        g.setOnClickListener(v -> dismiss.run());
+        Ux.blazeCard(this, msg);
     }
 
     // Első indításkor egy barátságos üdvözlő lap bemutatja a fő funkciókat.
@@ -1534,8 +1482,7 @@ public class MainActivity extends Activity {
                     .apply();
             Levels.addBonus(this, 10); // kihívás-bónusz a szinthez
             if (root != null) Confetti.burst(root);
-            Toast.makeText(this, "🎯 Mai kihívás teljesítve! 🏆 +10 XP – Blaze büszkén vonyít! 🐺🔥",
-                    Toast.LENGTH_LONG).show();
+            Ux.blazeCard(this, "🎯 Mai kihívás teljesítve! 🏆 +10 XP – Blaze büszkén vonyít! 🔥");
         }
     }
 

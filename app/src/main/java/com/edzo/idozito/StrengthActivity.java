@@ -363,16 +363,14 @@ public class StrengthActivity extends Activity {
                             rec = "volumen " + Math.round(ne.volume()) + " kg";
                         if (rec != null) {
                             if (rootFl != null) Confetti.burst(rootFl);
-                            Toast.makeText(this, "🏆 Új rekord (" + name + "): " + rec
-                                    + "!  🐺🔥  +8 XP", Toast.LENGTH_LONG).show();
+                            Ux.blazeCard(this, "🏆 Új rekord (" + name + "): " + rec + "!  +8 XP");
                         } else {
                             // Új edzésnél Blaze dicsérete + XP, széria-tudatosan.
                             int ds = Streaks.current(this, History.loadAll(this));
                             String praise = ds >= 2
                                     ? ds + " napos széria – ég a láng! 🔥"
                                     : "Blaze büszke rád! 🐺";
-                            Toast.makeText(this, "Mentve ✔  +8 XP  ·  " + praise,
-                                    Toast.LENGTH_LONG).show();
+                            Ux.blazeCard(this, "Mentve ✔  +8 XP  ·  " + praise);
                         }
                     }
                 })

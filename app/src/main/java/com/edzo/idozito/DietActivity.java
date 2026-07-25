@@ -170,8 +170,8 @@ public class DietActivity extends Activity {
                             MealLog.add(this, new MealLog.Meal(System.currentTimeMillis(),
                                     m.name, m.items, ""));
                             refresh();
-                            Toast.makeText(this, "Újra naplózva ✔  "
-                                    + Math.round(m.kcal()) + " kcal", Toast.LENGTH_SHORT).show();
+                            Ux.blazeCard(this, "🍽 Újra naplózva ✔  "
+                                    + Math.round(m.kcal()) + " kcal");
                         });
                 sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
@@ -398,7 +398,7 @@ public class DietActivity extends Activity {
         refresh();
         String msg = "Mentve ✔  " + Math.round(meal.kcal()) + " kcal";
         if (estimated) msg += "  (ismeretlen ételnél ~becslés)";
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        Ux.blazeCard(this, "🍽 " + msg);
     }
 
     // ---------- Fotó ----------

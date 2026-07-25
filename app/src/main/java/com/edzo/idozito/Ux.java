@@ -30,6 +30,77 @@ public final class Ux {
         catch (Exception e) { return 0; }
     }
 
+    /**
+     * Blaze-stílusú felugró kártya (a rendszer-Toast helyett): felülről beúszó,
+     * bordó, Blaze képével díszített üzenet. ~4,5 mp után magától eltűnik,
+     * koppintásra azonnal bezárható. Bármely képernyőről hívható.
+     */
+    public static void blazeCard(final Activity a, String msg) {
+        final FrameLayout root = a.findViewById(android.R.id.content);
+        if (root == null || a.isFinishing()) return;
+        final float d = a.getResources().getDisplayMetrics().density;
+        int accent = Theme.accent(a);
+
+        final LinearLayout g = new LinearLayout(a);
+        g.setOrientation(LinearLayout.HORIZONTAL);
+        g.setGravity(Gravity.CENTER_VERTICAL);
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{0xF71E1013, 0xF7140B0D});
+        bg.setCornerRadius(20 * d);
+        bg.setStroke((int) d, (accent & 0x00FFFFFF) | 0x77000000);
+        g.setBackground(bg);
+        g.setElevation(12 * d);
+        g.setPadding((int) (14 * d), (int) (12 * d), (int) (16 * d), (int) (12 * d));
+
+        int bid = drawableId(a, "blaze");
+        if (bid != 0) {
+            ImageView iv = new ImageView(a);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageResource(bid);
+            iv.setClipToOutline(true);
+            iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                @Override public void getOutline(View v, android.graphics.Outline o) {
+                    o.setOval(0, 0, v.getWidth(), v.getHeight());
+                }
+            });
+            LinearLayout.LayoutParams ivlp =
+                    new LinearLayout.LayoutParams((int) (46 * d), (int) (46 * d));
+            ivlp.rightMargin = (int) (12 * d);
+            g.addView(iv, ivlp);
+        } else {
+            TextView e = new TextView(a);
+            e.setText("🐺");
+            e.setTextSize(26);
+            e.setPadding(0, 0, (int) (12 * d), 0);
+            g.addView(e);
+        }
+        TextView t = new TextView(a);
+        t.setText(msg);
+        t.setTextSize(13.5f);
+        t.setTextColor(0xFFF5ECEE);
+        g.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        FrameLayout.LayoutParams glp = new FrameLayout.LayoutParams(-1, -2);
+        glp.gravity = Gravity.TOP;
+        glp.topMargin = (int) (46 * d);
+        glp.leftMargin = (int) (14 * d);
+        glp.rightMargin = (int) (14 * d);
+        root.addView(g, glp);
+
+        g.setTranslationY(-90 * d);
+        g.setAlpha(0f);
+        g.animate().translationY(0).alpha(1f).setDuration(430)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
+        final Runnable dismiss = () -> {
+            if (g.getParent() == null) return;
+            g.animate().translationY(-90 * d).alpha(0f).setDuration(320)
+                    .withEndAction(() -> { if (g.getParent() != null) root.removeView(g); })
+                    .start();
+        };
+        g.postDelayed(dismiss, 4500);
+        g.setOnClickListener(v -> dismiss.run());
+    }
+
     /** Lassan „élő" háttér: finom, végtelenített zoom + pásztázás. Kikapcsolható a Beállításokban. */
     public static void kenBurns(final View v) {
         if (!Theme.liveBg(v.getContext())) return; // statikus háttér, ha ki van kapcsolva
