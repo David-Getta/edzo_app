@@ -513,11 +513,18 @@ public class TimerService extends Service {
         String records = computeRecords();     // a mentés ELŐTT, a korábbi edzésekhez képest
         String levelUp = computeLevelUp();
         saveSession(rounds);
+        // Blaze név szerint, széria-tudatosan dicsér (a mentés után, hogy a mai is számítson).
+        String uname = getSharedPreferences("edzo", MODE_PRIVATE)
+                .getString("user_name", "").trim();
+        String who = uname.isEmpty() ? "" : ", " + uname;
+        int dsNow = Streaks.current(this, History.loadAll(this));
         if (!records.isEmpty()) {
-            speak("Edzés kész. Új rekord! Szép munka!");
+            speak("Edzés kész. Új rekord! Szép munka" + who + "!");
             buzz(new long[]{0, 90, 60, 90, 60, 90, 60, 350});
+        } else if (dsNow >= 2) {
+            speak("Edzés kész. Szép munka" + who + "! " + dsNow + " napos széria, ég a láng!");
         } else {
-            speak("Edzés kész. Szép munka!");
+            speak("Edzés kész. Szép munka" + who + "!");
         }
         // Futásnál hangos összefoglaló: táv + átlagtempó (a képernyő nézése nélkül is).
         if (distanceM > 0 && workMs > 0) {
