@@ -31,7 +31,7 @@ public class DietActivity extends Activity {
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     LinearLayout listBox;
-    TextView todayKcalTv;
+    LinearLayout todayCard;
     static final int REQ_PHOTO = 61;
     long pendingPhotoTs;
 
@@ -50,13 +50,12 @@ public class DietActivity extends Activity {
         col.addView(text("Írd be, mit ettél – az app kiszámolja a kalóriát.", 13, MUTED, false));
         col.addView(gap(16));
 
-        // Mai összesítő
-        LinearLayout today = card();
-        today.setPadding(dp(16), dp(14), dp(16), dp(14));
-        today.addView(text("🍽 Ma összesen", 12.5f, MUTED, true));
-        todayKcalTv = text("0 kcal", 26, Theme.accent(this), true);
-        today.addView(todayKcalTv);
-        col.addView(today, lp());
+        // Mai összesítő (koppintásra beállítható a napi kalória-cél).
+        todayCard = card();
+        todayCard.setPadding(dp(16), dp(14), dp(16), dp(14));
+        todayCard.setClickable(true);
+        todayCard.setOnClickListener(v -> editGoalDialog());
+        col.addView(todayCard, lp());
         col.addView(gap(14));
 
         Button add = primary("＋  Étkezés hozzáadása");
@@ -76,7 +75,7 @@ public class DietActivity extends Activity {
     }
 
     void refresh() {
-        todayKcalTv.setText(Math.round(MealLog.todayKcal(this)) + " kcal");
+        refreshToday();
         listBox.removeAllViews();
         List<MealLog.Meal> meals = MealLog.load(this);
         if (meals.isEmpty()) {
@@ -167,6 +166,65 @@ public class DietActivity extends Activity {
             listBox.addView(c, lp());
             listBox.addView(gap(10));
         }
+    }
+
+    /** A mai összesítő kártya: kcal, és cél esetén haladássáv + maradék. */
+    void refreshToday() {
+        todayCard.removeAllViews();
+        double kcal = MealLog.todayKcal(this);
+        int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        todayCard.addView(text("🍽 Ma összesen" + (goal > 0 ? "  ·  cél: " + goal + " kcal" : ""),
+                12.5f, MUTED, true));
+        todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
+        if (goal > 0) {
+            LinearLayout barBg = hbox();
+            GradientDrawable bgd = new GradientDrawable();
+            bgd.setColor(0x22FFFFFF);
+            bgd.setCornerRadius(dp(6));
+            barBg.setBackground(bgd);
+            View fill = new View(this);
+            boolean over = kcal > goal;
+            GradientDrawable fgd = new GradientDrawable();
+            fgd.setColor(over ? 0xFFF59E0B : Theme.accent(this));
+            fgd.setCornerRadius(dp(6));
+            fill.setBackground(fgd);
+            float f = (float) Math.max(0.02, Math.min(1.0, kcal / goal));
+            barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
+            barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
+            LinearLayout.LayoutParams blp = lp();
+            blp.topMargin = dp(8);
+            todayCard.addView(barBg, blp);
+            TextView st = text(over
+                    ? "+" + Math.round(kcal - goal) + " kcal a cél felett"
+                    : "még " + Math.round(goal - kcal) + " kcal fér bele ma", 12, MUTED, false);
+            st.setPadding(0, dp(5), 0, 0);
+            todayCard.addView(st);
+        } else {
+            TextView hint = text("Koppints ide napi kalória-cél beállításához", 11.5f, MUTED, false);
+            hint.setPadding(0, dp(4), 0, 0);
+            todayCard.addView(hint);
+        }
+    }
+
+    void editGoalDialog() {
+        final EditText et = input("Napi cél (kcal), 0 = kikapcsolva");
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        int cur = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        if (cur > 0) et.setText(String.valueOf(cur));
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(et, lp());
+        new Sheet(this, "Napi kalória-cél 🎯",
+                "Tipp: a Profil oldalon a BMR-ed jó kiindulási alap.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    int g = (int) parse(et.getText().toString());
+                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                            .putInt("kcal_goal", Math.max(0, g)).apply();
+                    refresh();
+                })
+                .addCancel()
+                .show();
     }
 
     // ---------- Új étkezés ----------
