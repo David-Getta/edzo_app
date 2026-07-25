@@ -98,6 +98,15 @@ public final class MealLog {
         save(c, l);
     }
 
+    /** Fotó hozzárendelése egy meglévő étkezéshez (időbélyeg alapján). */
+    public static void updatePhoto(Context c, long ts, String photo) {
+        List<Meal> l = load(c);
+        for (int i = 0; i < l.size(); i++)
+            if (l.get(i).ts == ts)
+                l.set(i, new Meal(ts, l.get(i).name, l.get(i).items, photo));
+        save(c, l);
+    }
+
     public static void removeAt(Context c, int idx) {
         List<Meal> l = load(c);
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }

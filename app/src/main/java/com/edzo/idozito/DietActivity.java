@@ -32,6 +32,8 @@ public class DietActivity extends Activity {
 
     LinearLayout listBox;
     TextView todayKcalTv;
+    static final int REQ_PHOTO = 61;
+    long pendingPhotoTs;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -100,6 +102,28 @@ public class DietActivity extends Activity {
             top.setGravity(Gravity.CENTER_VERTICAL);
             String title = m.name.isEmpty()
                     ? (m.items.isEmpty() ? "Étkezés" : m.items.get(0).food) : m.name;
+            // Bélyegkép, ha van fotó a bejegyzéshez.
+            if (!m.photo.isEmpty()) {
+                try {
+                    android.graphics.Bitmap bm = android.graphics.BitmapFactory.decodeFile(
+                            new java.io.File(getFilesDir(), m.photo).getAbsolutePath());
+                    if (bm != null) {
+                        android.widget.ImageView iv = new android.widget.ImageView(this);
+                        iv.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+                        iv.setImageBitmap(bm);
+                        iv.setClipToOutline(true);
+                        iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                            @Override public void getOutline(View v, android.graphics.Outline o) {
+                                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(9));
+                            }
+                        });
+                        LinearLayout.LayoutParams ivlp =
+                                new LinearLayout.LayoutParams(dp(40), dp(40));
+                        ivlp.rightMargin = dp(10);
+                        top.addView(iv, ivlp);
+                    }
+                } catch (Exception ignored) {}
+            }
             top.addView(text(title, 15, TXT, true), new LinearLayout.LayoutParams(0, -2, 1f));
             top.addView(text(Math.round(m.kcal()) + " kcal", 15, Theme.accent(this), true));
             c.addView(top, lp());
@@ -115,10 +139,31 @@ public class DietActivity extends Activity {
             when.setPadding(0, dp(3), 0, 0);
             c.addView(when);
             c.setClickable(true);
-            c.setOnClickListener(v -> new Sheet(this, title,
-                    Math.round(m.kcal()) + " kcal · " + Math.round(m.grams()) + " g")
-                    .addDestructive("🗑 Törlés", () -> { MealLog.removeAt(this, idx); refresh(); })
-                    .addCancel().show());
+            c.setOnClickListener(v -> {
+                Sheet sh = new Sheet(this, title,
+                        Math.round(m.kcal()) + " kcal · " + Math.round(m.grams()) + " g");
+                // Nagy fotó a részleteknél – segít utólag pontosítani az arányokat.
+                if (!m.photo.isEmpty()) {
+                    try {
+                        android.graphics.Bitmap bm = android.graphics.BitmapFactory.decodeFile(
+                                new java.io.File(getFilesDir(), m.photo).getAbsolutePath());
+                        if (bm != null) {
+                            android.widget.ImageView iv = new android.widget.ImageView(this);
+                            iv.setImageBitmap(bm);
+                            iv.setAdjustViewBounds(true);
+                            iv.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
+                            LinearLayout pv = vbox();
+                            pv.setPadding(dp(8), 0, dp(8), dp(8));
+                            pv.addView(iv, lp());
+                            sh.addCustom(pv);
+                        }
+                    } catch (Exception ignored) {}
+                }
+                sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
+                        "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
+                sh.addDestructive("🗑 Törlés", () -> { MealLog.removeAt(this, idx); refresh(); });
+                sh.addCancel().show();
+            });
             listBox.addView(c, lp());
             listBox.addView(gap(10));
         }
@@ -216,6 +261,36 @@ public class DietActivity extends Activity {
         String msg = "Mentve ✔  " + Math.round(meal.kcal()) + " kcal";
         if (estimated) msg += "  (ismeretlen ételnél ~becslés)";
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    // ---------- Fotó ----------
+
+    void capturePhoto(long ts) {
+        pendingPhotoTs = ts;
+        try {
+            startActivityForResult(new android.content.Intent(
+                    android.provider.MediaStore.ACTION_IMAGE_CAPTURE), REQ_PHOTO);
+        } catch (Exception e) {
+            Toast.makeText(this, "Nem található kamera-alkalmazás.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, android.content.Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req != REQ_PHOTO || res != RESULT_OK || data == null || pendingPhotoTs <= 0) return;
+        try {
+            android.graphics.Bitmap bm = (android.graphics.Bitmap) data.getParcelableExtra("data");
+            if (bm == null) return;
+            java.io.File f = new java.io.File(getFilesDir(), "meal_" + pendingPhotoTs + ".jpg");
+            java.io.FileOutputStream fo = new java.io.FileOutputStream(f);
+            bm.compress(android.graphics.Bitmap.CompressFormat.JPEG, 88, fo);
+            fo.close();
+            MealLog.updatePhoto(this, pendingPhotoTs, f.getName());
+            Toast.makeText(this, "Fotó csatolva 📷", Toast.LENGTH_SHORT).show();
+            refresh();
+        } catch (Exception ignored) {}
+        pendingPhotoTs = 0;
     }
 
     double parse(String s) {
