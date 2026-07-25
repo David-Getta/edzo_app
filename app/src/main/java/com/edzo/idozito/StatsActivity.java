@@ -249,6 +249,12 @@ public class StatsActivity extends Activity {
 
         c.addView(text(toNext > 0 ? toNext + " XP a(z) " + (lvl + 1) + ". szintig ("
                 + Levels.title(lvl + 1) + ")" : "Maximális szint elérve! 🏆", 12.5f, 0xE6FFFFFF, false));
+        long bonus = getSharedPreferences("edzo", MODE_PRIVATE).getLong("bonus_xp", 0);
+        if (bonus > 0) {
+            TextView bx = text("🎯 Ebből kihívás-bónusz: " + bonus + " XP", 11.5f, 0xC9FFFFFF, false);
+            bx.setPadding(0, dp(4), 0, 0);
+            c.addView(bx);
+        }
 
         // animációk
         final float target = Math.max(0.0001f, frac);
