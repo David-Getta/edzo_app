@@ -55,9 +55,14 @@ public final class Challenges {
         for (StrengthLog.Entry e : sLog)
             if (e.ts >= dayStart) repsToday += e.totalReps();
 
+        List<MealLog.Meal> meals = MealLog.load(ctx);
+        int mealsToday = 0;
+        for (MealLog.Meal m : meals) if (m.ts >= dayStart) mealsToday++;
+
         List<Integer> types = new ArrayList<>(Arrays.asList(0, 1, 2));
         if (everDist) types.add(3);
         if (!sLog.isEmpty()) types.add(4);
+        if (!meals.isEmpty()) types.add(5); // étrend-kihívás csak annak, aki naplóz
         int type = types.get(seed % types.size());
 
         String title;
@@ -75,9 +80,12 @@ public final class Challenges {
         } else if (type == 3) {
             target = 2 + (seed / 3 % 3); cur = (int) (distToday / 1000.0); unit = "km";
             title = "Tegyél meg ma " + target + " km-t!";
-        } else {
+        } else if (type == 4) {
             target = 40 + (seed / 3 % 3) * 20; cur = repsToday; unit = "ismétlés";
             title = "Nyomj le ma összesen " + target + " ismétlést a súlyzós naplóban!";
+        } else {
+            target = 2; cur = Math.min(mealsToday, 2); unit = "étkezés";
+            title = "Naplózz ma legalább 2 étkezést az Étrendben!";
         }
         return new Object[]{title, unit, cur, target, seed};
     }
