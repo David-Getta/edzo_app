@@ -2834,6 +2834,32 @@ public class MainActivity extends Activity {
         bpBg.setStroke(dp(1), (tAccent & 0x00FFFFFF) | 0x55000000);
         blazePraise.setBackground(bpBg);
         blazePraise.setPadding(dp(14), dp(12), dp(14), dp(12));
+        // Blaze saját képe a dicséret mellett (kör alakban, ha elérhető).
+        int bpImg = drawableId("blaze");
+        if (bpImg != 0) {
+            try {
+                android.graphics.Bitmap raw =
+                        android.graphics.BitmapFactory.decodeResource(getResources(), bpImg);
+                if (raw != null && raw.getWidth() > 1) {
+                    int s = dp(38);
+                    android.graphics.Bitmap out = android.graphics.Bitmap.createBitmap(
+                            s, s, android.graphics.Bitmap.Config.ARGB_8888);
+                    android.graphics.Canvas cv = new android.graphics.Canvas(out);
+                    android.graphics.Paint pp =
+                            new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+                    pp.setShader(new android.graphics.BitmapShader(
+                            android.graphics.Bitmap.createScaledBitmap(raw, s, s, true),
+                            android.graphics.Shader.TileMode.CLAMP,
+                            android.graphics.Shader.TileMode.CLAMP));
+                    cv.drawCircle(s / 2f, s / 2f, s / 2f, pp);
+                    blazePraise.setCompoundDrawablesWithIntrinsicBounds(
+                            new android.graphics.drawable.BitmapDrawable(getResources(), out),
+                            null, null, null);
+                    blazePraise.setCompoundDrawablePadding(dp(10));
+                    blazePraise.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+                }
+            } catch (Exception ignored) {}
+        }
         LinearLayout.LayoutParams bpLp = new LinearLayout.LayoutParams(-1, -2);
         bpLp.topMargin = dp(12);
         runView.addView(blazePraise, bpLp);
@@ -3325,7 +3351,9 @@ public class MainActivity extends Activity {
         if (blazePraise != null) {
             JSONArray actArr = activityLog();
             int dsNow = dayStreak(actArr);
-            blazePraise.setText("🐺 " + Mascot.praiseFinish(
+            // Ha Blaze saját képe ott van a kártyán, nem kell elé az emoji.
+            String pfx = blazePraise.getCompoundDrawables()[0] != null ? "" : "🐺 ";
+            blazePraise.setText(pfx + Mascot.praiseFinish(
                     prefs.getString("user_name", ""), dsNow, actArr.length()));
             blazePraise.setVisibility(View.VISIBLE);
             blazePraise.setAlpha(0f);
