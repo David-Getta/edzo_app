@@ -152,10 +152,12 @@ public final class Ux {
 
         // Saját rajzolású vektor-ikonok az emojik helyett (futásidőben színezve).
         final int[] icons = {R.drawable.ic_nav_home, R.drawable.ic_nav_stats,
-                R.drawable.ic_nav_strength, R.drawable.ic_nav_profile, R.drawable.ic_nav_settings};
-        final String[] lbl = {"Kezdő", "Statok", "Erő", "Profil", "Beáll."};
+                R.drawable.ic_nav_strength, R.drawable.ic_nav_diet,
+                R.drawable.ic_nav_profile, R.drawable.ic_nav_settings};
+        final String[] lbl = {"Kezdő", "Statok", "Erő", "Étrend", "Profil", "Beáll."};
         final Class<?>[] target = {MainActivity.class, StatsActivity.class,
-                StrengthActivity.class, ProfileActivity.class, SettingsActivity.class};
+                StrengthActivity.class, DietActivity.class,
+                ProfileActivity.class, SettingsActivity.class};
         int accent = Theme.accent(a);
 
         for (int i = 0; i < icons.length; i++) {
