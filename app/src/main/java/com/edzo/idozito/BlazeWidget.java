@@ -44,8 +44,21 @@ public class BlazeWidget extends AppWidgetProvider {
         int dowIdx = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
         String msg;
         int liveStreak = streakUntilYesterday(c);
-        if (today) msg = praise(userName, streakDays(c));
-        else if (!Theme.isPlanDay(c, dowIdx)) msg = "Ma pihenőnap – tölts fel! 🌙🐺";
+        if (today) {
+            msg = praise(userName, streakDays(c));
+            // Ha a mai kihívás is megvan, az is kiderül egy pillantásra.
+            try {
+                Object[] cst = Challenges.state(c);
+                if ((int) cst[2] >= (int) cst[3]) msg += "  ·  🎯 Kihívás: pipa!";
+            } catch (Exception ignored) {}
+        } else if (!Theme.isPlanDay(c, dowIdx)) {
+            String[] rest = {
+                    "Ma pihenőnap – tölts fel! 🌙🐺",
+                    "Pihenőnap: egy kis nyújtás jólesne. 🧘🐺",
+                    "Regeneráció ma – holnap újra hajtunk! 🌙🔥",
+            };
+            msg = rest[(int) (System.currentTimeMillis() / 3600000 % rest.length)];
+        }
         else if (liveStreak >= 2)
             msg = liveStreak + " napos széria él – ne hagyd ma megszakadni! 🔥🐺";
         else {
