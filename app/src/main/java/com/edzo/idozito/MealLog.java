@@ -26,8 +26,10 @@ public final class MealLog {
         public final String food;
         public final double grams;
         public final double kcal;
-        public Item(String food, double grams, double kcal) {
-            this.food = food; this.grams = grams; this.kcal = kcal;
+        public final double protein; // gramm (0 = ismeretlen)
+        public Item(String food, double grams, double kcal) { this(food, grams, kcal, 0); }
+        public Item(String food, double grams, double kcal, double protein) {
+            this.food = food; this.grams = grams; this.kcal = kcal; this.protein = protein;
         }
     }
 
@@ -41,6 +43,7 @@ public final class MealLog {
             this.photo = photo == null ? "" : photo;
         }
         public double kcal() { double k = 0; for (Item i : items) k += i.kcal; return k; }
+        public double protein() { double p = 0; for (Item i : items) p += i.protein; return p; }
         public double grams() { double g = 0; for (Item i : items) g += i.grams; return g; }
     }
 
@@ -58,7 +61,7 @@ public final class MealLog {
                     JSONObject io = ia.optJSONObject(j);
                     if (io == null) continue;
                     items.add(new Item(io.optString("f", "Étel"),
-                            io.optDouble("g", 0), io.optDouble("k", 0)));
+                            io.optDouble("g", 0), io.optDouble("k", 0), io.optDouble("p", 0)));
                 }
                 out.add(new Meal(o.optLong("ts"), o.optString("name", ""), items,
                         o.optString("photo", "")));
@@ -81,6 +84,7 @@ public final class MealLog {
                     io.put("f", i.food);
                     io.put("g", i.grams);
                     io.put("k", i.kcal);
+                    if (i.protein > 0) io.put("p", i.protein);
                     ia.put(io);
                 }
                 o.put("items", ia);
@@ -110,6 +114,19 @@ public final class MealLog {
     public static void removeAt(Context c, int idx) {
         List<Meal> l = load(c);
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }
+    }
+
+    /** A mai nap összes fehérjéje (gramm). */
+    public static double todayProtein(Context c) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long start = cal.getTimeInMillis();
+        double p = 0;
+        for (Meal m : load(c)) if (m.ts >= start) p += m.protein();
+        return p;
     }
 
     /** A mai nap összes kalóriája. */

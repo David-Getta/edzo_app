@@ -193,6 +193,12 @@ public class DietActivity extends Activity {
         todayCard.addView(text("🍽 Ma összesen" + (goal > 0 ? "  ·  cél: " + goal + " kcal" : ""),
                 12.5f, MUTED, true));
         todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
+        double prot = MealLog.todayProtein(this);
+        if (prot > 0) {
+            TextView pt = text("🥩 Fehérje ma: " + Math.round(prot) + " g", 12.5f, MUTED, false);
+            pt.setPadding(0, dp(2), 0, 0);
+            todayCard.addView(pt);
+        }
         if (goal > 0) {
             LinearLayout barBg = hbox();
             GradientDrawable bgd = new GradientDrawable();
@@ -413,11 +419,12 @@ public class DietActivity extends Activity {
         for (int i = 0; i < foods.size(); i++) {
             Foods.Food f = Foods.find(foods.get(i));
             int kcal100;
+            double prot100;
             String label;
-            if (f != null) { kcal100 = f.kcal100; label = f.name; }
-            else { kcal100 = 150; label = foods.get(i); estimated = true; } // becslés
+            if (f != null) { kcal100 = f.kcal100; prot100 = f.prot100; label = f.name; }
+            else { kcal100 = 150; prot100 = 0; label = foods.get(i); estimated = true; } // becslés
             double g = grams.get(i);
-            items.add(new MealLog.Item(label, g, kcal100 * g / 100.0));
+            items.add(new MealLog.Item(label, g, kcal100 * g / 100.0, prot100 * g / 100.0));
         }
         // Szerkesztésnél az eredeti időpont és fotó megmarad.
         long ts = existing != null ? existing.ts : System.currentTimeMillis();
