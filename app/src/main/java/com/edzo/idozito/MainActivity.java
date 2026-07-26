@@ -1498,7 +1498,7 @@ public class MainActivity extends Activity {
 
         LinearLayout barBg = hbox();
         GradientDrawable bgd = new GradientDrawable();
-        bgd.setColor(0x22FFFFFF);
+        bgd.setColor(Theme.track(this));
         bgd.setCornerRadius(dp(6));
         barBg.setBackground(bgd);
         View fill = new View(this);
@@ -2904,7 +2904,7 @@ public class MainActivity extends Activity {
         // Teljes edzés-folyamat sáv (legfelül): hol tartunk az egész edzésben.
         FrameLayout obar = new FrameLayout(this);
         GradientDrawable otrack = new GradientDrawable();
-        otrack.setColor(0x22FFFFFF); otrack.setCornerRadius(dp(3));
+        otrack.setColor(Theme.track(this)); otrack.setCornerRadius(dp(3));
         obar.setBackground(otrack);
         overallFill = new View(this);
         GradientDrawable ofill = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,

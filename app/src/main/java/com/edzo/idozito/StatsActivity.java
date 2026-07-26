@@ -321,7 +321,7 @@ public class StatsActivity extends Activity {
 
         LinearLayout barBg = hbox();
         GradientDrawable bgd = new GradientDrawable();
-        bgd.setColor(0x22FFFFFF);
+        bgd.setColor(Theme.track(this));
         bgd.setCornerRadius(dp(6));
         barBg.setBackground(bgd);
         View fill = new View(this);
@@ -759,7 +759,7 @@ public class StatsActivity extends Activity {
                 bg.setCornerRadius(dp(3));
                 if (ms > today0) bg.setColor(0x00000000);
                 else if (days.contains(ms)) { bg.setColor(MainActivity.ACCENT); activeDays++; }
-                else bg.setColor(0x1AFFFFFF);
+                else bg.setColor(Theme.track(this));
                 cell.setBackground(bg);
                 LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(dp(15), dp(15));
                 clp.setMargins(dp(2), dp(2), dp(2), dp(2));
