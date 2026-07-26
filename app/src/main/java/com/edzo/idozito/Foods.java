@@ -245,14 +245,26 @@ public final class Foods {
                 if (ns.length() > bestLen && q.contains(ns)) { best = f; bestLen = ns.length(); }
             }
         if (best != null) return best;
-        // 3) szavankénti előtag-egyezés (pl. "rizzsel" kezdete "riz")
-        for (String tok : q.split("[ ,]+"))
+        // 3) Szavankénti egyezés, ha a 2. fázis nem talált semmit: ragozott alak
+        // (a szó a szótővel kezdődik, pl. "rizzsel" → "riz"), vagy gépelés közbeni
+        // előtag (a szótő kezdődik a szóval). Mindkettőnél a leghosszabb szótő nyer.
+        //
+        // Megjegyzés: ezt szándékosan NEM engedjük a 2. fázis elé. Kipróbáltuk, és
+        // rosszabb lett: a "rizs" a Rizsszeletre, a "burg" a Hamburgerre esett
+        // volna a Rizs, illetve a Burgonya helyett.
+        for (String tok : q.split("[ ,]+")) {
+            if (tok.isEmpty()) continue;
+            Food byTok = null; int tokLen = 0;
             for (Food f : list)
                 for (String st : f.stems) {
                     String ns = norm(st);
-                    if (tok.startsWith(ns) || (tok.length() >= 4 && ns.startsWith(tok)))
-                        return f;
+                    if (ns.isEmpty()) continue;
+                    boolean hit = tok.startsWith(ns)
+                            || (tok.length() >= 4 && ns.startsWith(tok));
+                    if (hit && ns.length() > tokLen) { byTok = f; tokLen = ns.length(); }
                 }
+            if (byTok != null) return byTok;
+        }
         return null;
     }
 
