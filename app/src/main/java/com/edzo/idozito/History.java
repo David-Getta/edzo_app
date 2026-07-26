@@ -44,8 +44,8 @@ public final class History {
             JSONObject o = h.optJSONObject(i);
             if (o != null) merged.put(o);
         }
-        for (StrengthLog.Entry e : StrengthLog.load(ctx)) {
-            try { merged.put(new JSONObject().put("ts", e.ts)); } catch (Exception ignored) {}
+        for (long ts : oneStrengthPerDay(StrengthLog.load(ctx))) {
+            try { merged.put(new JSONObject().put("ts", ts)); } catch (Exception ignored) {}
         }
         cachedAllKey = key;
         cachedAll = merged;
@@ -54,6 +54,34 @@ public final class History {
 
     private static String cachedAllKey;
     private static JSONArray cachedAll;
+
+    /**
+     * Az erősítő bejegyzések időbélyegei, NAPONTA EGY. Egy bejegyzés egy
+     * gyakorlat, nem egy edzés: aki egy teremben hat gyakorlatot rögzít, az egy
+     * edzést végzett. Enélkül az „elvégzett edzések" számláló, a jelvények és az
+     * XP is annyiszorosára nőne, ahány gyakorlatot valaki felír.
+     *
+     * A napon belül a legkorábban talált (a naplóban legfrissebb) időbélyeg
+     * marad meg, hogy a napszakhoz kötött jelvények is működjenek.
+     *
+     * @param newestFirst az erősítő napló, legfrissebb bejegyzéssel elöl
+     */
+    static long[] oneStrengthPerDay(java.util.List<StrengthLog.Entry> newestFirst) {
+        java.util.HashSet<Long> seenDays = new java.util.HashSet<>();
+        java.util.List<Long> out = new java.util.ArrayList<>();
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        for (StrengthLog.Entry e : newestFirst) {
+            c.setTimeInMillis(e.ts);
+            c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            c.set(java.util.Calendar.MINUTE, 0);
+            c.set(java.util.Calendar.SECOND, 0);
+            c.set(java.util.Calendar.MILLISECOND, 0);
+            if (seenDays.add(c.getTimeInMillis())) out.add(e.ts);
+        }
+        long[] arr = new long[out.size()];
+        for (int i = 0; i < arr.length; i++) arr[i] = out.get(i);
+        return arr;
+    }
 
     /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
