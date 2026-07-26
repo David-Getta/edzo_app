@@ -305,7 +305,7 @@ public class SettingsActivity extends Activity {
     void whatsNewSheet() {
         String[][] items = {
             {"🍽", "Étrend-napló", "Írd be, mit ettél – kcal és fehérje magától számolva, fotóval (kamera vagy galéria) és okos elosztással."},
-            {"⚖️", "Grammok a szövegből", "„150 g csirkemell 200 g rizs\" – a mennyiségeket is kiolvassuk a beírt névből."},
+            {"⚖️", "Mennyiség a szövegből", "„150 g csirkemell 200 g rizs\" és „2 tojás\" – a grammot és a darabszámot is kiolvassuk."},
             {"★", "Kedvencek", "Bármely étkezés kedvencnek jelölhető, és mindig elöl lesz a gyors csipek közt."},
             {"🖊", "Saját ételek", "Vedd fel a saját ételeid a kalóriatáblázatba – a felismerés is megtalálja őket."},
             {"📖", "Kalóriatáblázat", "Élőben szűrhető lista, és egy koppintással naplózható bármelyik étel."},

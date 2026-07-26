@@ -300,13 +300,15 @@ public class DietActivity extends Activity {
         c.setPadding(dp(16), dp(14), dp(16), dp(14));
         c.addView(text("Így a leggyorsabb 🐺", 14.5f, TXT, true));
         c.addView(gap(8));
-        c.addView(text("Csak írd le, mit ettél – az app felismeri az ételeket, és "
-                + "kiszámolja a kalóriát:", 13, MUTED, false));
+        c.addView(text("Csak írd le, mit ettél – az app felismeri az ételeket, a "
+                + "grammot és a darabszámot is, és kiszámolja a kalóriát:",
+                13, MUTED, false));
         c.addView(gap(8));
         String[] examples = {
             "rántott hús rizzsel",
             "150 g csirkemell 200 g rizs",
-            "két tojás rántotta kenyérrel",
+            // Számjeggyel, mert a darabszámot így ismeri fel („két" szóként nem).
+            "2 tojás kenyérrel",
         };
         for (final String ex : examples) {
             TextView t = text("„" + ex + "\"", 13, Theme.accent(this), false);
@@ -721,7 +723,7 @@ public class DietActivity extends Activity {
         final LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
 
-        final EditText nameEt = input("Mit ettél? (pl. 150 g csirkemell 200 g rizzsel)");
+        final EditText nameEt = input("Mit ettél? (pl. 150 g csirkemell rizzsel, 2 tojás)");
         box.addView(nameEt, lp());
         // Élő visszajelzés: mit ismer fel az app a beírt névből.
         final TextView reco = text("", 11.5f, MUTED, false);
