@@ -196,7 +196,8 @@ public class MainActivity extends Activity {
         if (!mascotGreeted) {
             mascotGreeted = true;
             final int gh = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
-            final String hello = Mascot.greeting(prefs.getString("user_name", ""), gh);
+            final String hello = Mascot.greeting(prefs.getString("user_name", ""), gh,
+                    greetingContext(gh));
             new Handler(Looper.getMainLooper()).postDelayed(() -> showGreetingCard(hello), 600);
         }
         // Első futáskor a már meglévő kitüntetéseket „látottnak" jelöljük, hogy
@@ -224,6 +225,55 @@ public class MainActivity extends Activity {
     /** Blaze belépő köszöntése: felülről beúszó, saját stílusú kártya (nem Toast). */
     void showGreetingCard(String msg) {
         Ux.blazeCard(this, msg);
+    }
+
+    /**
+     * A köszöntés zárómondata a mai állás alapján, fontossági sorrendben:
+     * veszélyben lévő széria → majdnem kész kihívás → mai eredmény → étrend.
+     * Ha egyik sem áll fenn, null, és marad a szokásos motiváció.
+     */
+    String greetingContext(int hour) {
+        try {
+            JSONArray act = activityLog();
+            boolean trainedToday = false;
+            long dayStart = dayStartMs();
+            for (int i = 0; i < act.length(); i++) {
+                JSONObject o = act.optJSONObject(i);
+                if (o != null && o.optLong("ts") >= dayStart) { trainedToday = true; break; }
+            }
+            int streak = Streaks.untilYesterday(this, act);
+
+            // 1) Élő széria, ami ma még nincs megvédve – délutántól szólunk érte.
+            if (!trainedToday && streak >= 2 && hour >= 15) {
+                int dow = (java.util.Calendar.getInstance()
+                        .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+                if (Theme.isPlanDay(this, dow))
+                    return streak + " napos szériád él – ma még nincs edzés. Ne hagyd kihunyni! 🔥";
+            }
+            // 2) Elkezdett, de még nem teljesített napi kihívás.
+            Object[] cst = Challenges.state(this);
+            int cur = (int) cst[2], target = (int) cst[3];
+            if (cur > 0 && cur < target)
+                return "Már " + cur + "/" + target + " " + cst[1] + " a mai kihívásból – hajrá! 🎯";
+            // 3) Ma már volt edzés: dicséret.
+            if (trainedToday)
+                return "a mai edzés megvan – büszke vagyok rád! 💪";
+            // 4) Étrendes visszajelzés annak, aki naplóz.
+            int pGoal = prefs.getInt("protein_goal", 0);
+            if (pGoal > 0) {
+                int eaten = (int) Math.round(MealLog.todayProtein(this));
+                if (eaten > 0 && eaten < pGoal)
+                    return "mára még " + (pGoal - eaten) + " g fehérje van hátra. 🥩";
+            }
+            int kGoal = prefs.getInt("kcal_goal", 0);
+            if (kGoal > 0) {
+                int kcal = (int) Math.round(MealLog.todayKcal(this));
+                if (kcal > 0 && kcal < kGoal)
+                    return "ma eddig " + kcal + " kcal – még " + (kGoal - kcal)
+                            + " fér a keretedbe. 🍽";
+            }
+        } catch (Exception ignored) {}
+        return null;
     }
 
     // Első indításkor egy barátságos üdvözlő lap bemutatja a fő funkciókat.

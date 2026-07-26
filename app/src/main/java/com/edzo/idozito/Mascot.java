@@ -83,8 +83,19 @@ public final class Mascot {
 
     /** Belépéskori üdvözlés + motiváció Blaze hangján (napszakhoz igazodva). */
     public static String greeting(String userName, int hour) {
+        return greeting(userName, hour, null);
+    }
+
+    /**
+     * Köszöntés belépéskor. Ha a hívó ad egy helyzethez illő zárómondatot
+     * (élő széria, félbehagyott kihívás, mai eredmény), azt használjuk a
+     * véletlen motiváció helyett – így Blaze arról beszél, ami épp aktuális.
+     */
+    public static String greeting(String userName, int hour, String tail) {
         String u = who(userName);
         String hi = hour < 10 ? "Jó reggelt" : hour < 18 ? "Szia" : "Jó estét";
+        if (tail != null && !tail.isEmpty())
+            return hi + ", " + u + "! 🐺🔥 " + tail;
         String[] motiv = {
                 "ma is legyőzzük a tegnapi éned! 💪🔥",
                 "a falka veled van – csináljuk! 🐺",
