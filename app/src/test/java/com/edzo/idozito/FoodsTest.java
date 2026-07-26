@@ -77,6 +77,20 @@ public class FoodsTest {
         assertEquals("Alma", one("alma"));
     }
 
+    /**
+     * Minden étel elsődleges szótöve pontosan önmagát adja vissza – se többet,
+     * se mást. Ez fogja meg új étel felvételekor, ha a szótöve beleütközik egy
+     * másikba (így derült ki például, hogy a „burgonyapüré" a Burgonyát is,
+     * a „gulyásleves" a Levest is felvette volna).
+     */
+    @Test public void everyFoodResolvesToItselfByItsPrimaryStem() {
+        for (Foods.Food f : Foods.ALL) {
+            List<String> got = names(f.stems[0]);
+            assertEquals("ütköző szótő: \"" + f.stems[0] + "\" (" + f.name + ")",
+                    Arrays.asList(f.name), got);
+        }
+    }
+
     @Test public void unknownFoodReturnsNothing() {
         assertEquals(new ArrayList<String>(), names("zzzqqq"));
         assertEquals(null, one("zzzqqq"));
