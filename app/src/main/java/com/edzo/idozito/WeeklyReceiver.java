@@ -121,20 +121,15 @@ public class WeeklyReceiver extends BroadcastReceiver {
         } catch (Exception ignored) {}
         // Víz-átlag a hétből (csak azok a napok, ahol ment a számláló).
         try {
-            android.content.SharedPreferences p =
-                    c.getSharedPreferences("edzo", Context.MODE_PRIVATE);
-            Calendar wc = Calendar.getInstance();
+            long now = System.currentTimeMillis();
             int wDays = 0, wSum = 0;
             for (int k = 0; k < 7; k++) {
-                String key = "water_" + (wc.get(Calendar.YEAR) * 10000
-                        + (wc.get(Calendar.MONTH) + 1) * 100 + wc.get(Calendar.DAY_OF_MONTH));
-                int cl = p.getInt(key, 0);
+                int cl = Water.clOn(c, now - k * 24L * 3600 * 1000);
                 if (cl > 0) { wDays++; wSum += cl; }
-                wc.add(Calendar.DAY_OF_MONTH, -1);
             }
             if (wDays > 0)
                 text += "\n💧 Víz: átlag "
-                        + (Math.round(wSum / (double) wDays / 10.0) / 10.0) + " l/nap.";
+                        + Water.liters((int) Math.round(wSum / (double) wDays)) + "/nap.";
         } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);

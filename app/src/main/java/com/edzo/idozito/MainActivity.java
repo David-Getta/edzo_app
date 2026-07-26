@@ -1600,13 +1600,9 @@ public class MainActivity extends Activity {
             progressBox.addView(progressChip("🍽", kv, "kcal ma"), progChipLp());
         }
         // Mai víz (csak ha ma már ment a számláló – appból vagy widgetről).
-        java.util.Calendar wc = java.util.Calendar.getInstance();
-        int waterCl = getSharedPreferences("edzo", MODE_PRIVATE).getInt(
-                "water_" + (wc.get(java.util.Calendar.YEAR) * 10000
-                        + (wc.get(java.util.Calendar.MONTH) + 1) * 100
-                        + wc.get(java.util.Calendar.DAY_OF_MONTH)), 0);
+        int waterCl = Water.todayCl(this);
         if (waterCl > 0)
-            progressBox.addView(progressChip("💧", (waterCl / 100.0) + " l", "víz ma"),
+            progressBox.addView(progressChip("💧", Water.liters(waterCl), "víz ma"),
                     progChipLp());
         if (bannerSub != null) bannerSub.setText(bannerSubtitle());
         refreshLevelBar(arr, lvl, xp);

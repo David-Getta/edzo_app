@@ -62,10 +62,7 @@ public final class Challenges {
         android.content.SharedPreferences prefs =
                 ctx.getSharedPreferences("edzo", Context.MODE_PRIVATE);
         int pGoal = prefs.getInt("protein_goal", 0);
-        // Vízszámláló-használat: van-e bármilyen napi water_ kulcs.
-        boolean usesWater = false;
-        for (String k : prefs.getAll().keySet())
-            if (k.startsWith("water_") && !k.equals("water_goal_cl")) { usesWater = true; break; }
+        boolean usesWater = Water.isUsed(ctx);
 
         List<Integer> types = new ArrayList<>(Arrays.asList(0, 1, 2));
         if (everDist) types.add(3);
@@ -100,13 +97,12 @@ public final class Challenges {
             target = pGoal; cur = (int) Math.round(MealLog.todayProtein(ctx)); unit = "g fehérje";
             title = "Érd el ma a fehérje-célod: " + pGoal + " g!";
         } else {
-            int goalCl = prefs.getInt("water_goal_cl", 200);
-            String todayKey = "water_" + (now.get(Calendar.YEAR) * 10000
-                    + (now.get(Calendar.MONTH) + 1) * 100 + now.get(Calendar.DAY_OF_MONTH));
-            target = Math.max(1, (goalCl + 24) / 25); // poharakban (1 pohár = 25 cl)
-            cur = Math.min(target, prefs.getInt(todayKey, 0) / 25);
+            int goalCl = Water.goalCl(ctx);
+            // Poharakban mérve, felfelé kerekítve (1 pohár = 25 cl).
+            target = Math.max(1, (goalCl + Water.GLASS_CL - 1) / Water.GLASS_CL);
+            cur = Math.min(target, Water.todayCl(ctx) / Water.GLASS_CL);
             unit = "pohár";
-            title = "Idd meg ma a vízcélod: " + (goalCl / 100.0) + " l (" + target + " pohár)!";
+            title = "Idd meg ma a vízcélod: " + Water.liters(goalCl) + " (" + target + " pohár)!";
         }
         return new Object[]{title, unit, cur, target, seed};
     }

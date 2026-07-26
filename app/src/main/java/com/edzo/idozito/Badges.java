@@ -74,8 +74,7 @@ public final class Badges {
             if (meals.size() >= 10) out.add("meal10");
             if (meals.size() >= 50) out.add("meal50");
             if (mealDays.size() >= 7) out.add("meald7");
-            if (ctx.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
-                    .getInt("water_days_done", 0) >= 7) out.add("water7");
+            if (Water.daysDone(ctx) >= 7) out.add("water7");
         } catch (Exception ignored) {}
         return out;
     }

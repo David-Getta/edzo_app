@@ -77,6 +77,9 @@ public class BlazeWidget extends AppWidgetProvider {
             int eaten = (int) Math.round(MealLog.todayKcal(c));
             if (eaten > 0)
                 msg += "\n🍽 " + eaten + (kGoal > 0 ? " / " + kGoal : "") + " kcal ma";
+            int wCl = Water.todayCl(c);
+            if (wCl > 0)
+                msg += (eaten > 0 ? "   ·   " : "\n") + "💧 " + Water.liters(wCl);
         } catch (Exception ignored) {}
         rv.setTextViewText(R.id.blaze_msg, msg);
 
@@ -124,27 +127,13 @@ public class BlazeWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context c, Intent intent) {
         if (ACTION_WATER.equals(intent.getAction())) {
-            android.content.SharedPreferences p =
-                    c.getSharedPreferences("edzo", Context.MODE_PRIVATE);
-            Calendar cal = Calendar.getInstance();
-            String key = "water_" + (cal.get(Calendar.YEAR) * 10000
-                    + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH));
-            int cl = p.getInt(key, 0) + 25;
-            p.edit().putInt(key, cl).apply();
-            int goalCl = p.getInt("water_goal_cl", 200);
+            // A Water.addCl a jelvény-számlálót is vezeti, ha ezzel lett meg a cél.
+            int cl = Water.addCl(c, Water.GLASS_CL);
+            int goalCl = Water.goalCl(c);
             android.widget.Toast.makeText(c, cl >= goalCl
-                    ? "💧 " + (cl / 100.0) + " l – a napi vízcél megvan! ✔"
-                    : "💧 +1 pohár · ma " + (cl / 100.0) + " l",
+                    ? "💧 " + Water.liters(cl) + " – a napi vízcél megvan! ✔"
+                    : "💧 +1 pohár · ma " + Water.liters(cl),
                     android.widget.Toast.LENGTH_SHORT).show();
-            // A Hidratált jelvény tartós számlálója (naponta legfeljebb egyszer).
-            if (cl >= goalCl && cl - 25 < goalCl) {
-                int today = cal.get(Calendar.YEAR) * 10000
-                        + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH);
-                if (p.getInt("water_last_done", 0) != today)
-                    p.edit().putInt("water_last_done", today)
-                            .putInt("water_days_done", p.getInt("water_days_done", 0) + 1)
-                            .apply();
-            }
             refresh(c);
             return;
         }

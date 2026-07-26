@@ -115,11 +115,7 @@ public class DietActivity extends Activity {
                     + (c.get(Calendar.MONTH) + 1) * 100 + c.get(Calendar.DAY_OF_MONTH);
             android.content.SharedPreferences.Editor e = p.edit();
             for (String k : p.getAll().keySet())
-                if (k.startsWith("water_") && !k.equals("water_goal_cl")) {
-                    try {
-                        if (Integer.parseInt(k.substring(6)) < cutoff) e.remove(k);
-                    } catch (NumberFormatException ignored) {}
-                }
+                if (Water.isDayKey(k) && Water.dayOf(k) < cutoff) e.remove(k);
             e.apply();
         } catch (Exception ignored) {}
     }
@@ -444,23 +440,15 @@ public class DietActivity extends Activity {
         }
     }
 
-    /** A mai nap víz-kulcsa (napváltáskor magától nullázódik). */
-    String waterKey() {
-        Calendar c = Calendar.getInstance();
-        return "water_" + (c.get(Calendar.YEAR) * 10000
-                + (c.get(Calendar.MONTH) + 1) * 100 + c.get(Calendar.DAY_OF_MONTH));
-    }
-
     /** Vízbevitel-kártya: pohár (2,5 dl) hozzáadása/levonása, cél haladássávval. */
     void refreshWater() {
         waterCard.removeAllViews();
-        final android.content.SharedPreferences p = getSharedPreferences("edzo", MODE_PRIVATE);
-        int cl = p.getInt(waterKey(), 0);          // centiliterben (1 pohár = 25 cl)
-        int goalCl = p.getInt("water_goal_cl", 200);
+        int cl = Water.todayCl(this);
+        final int goalCl = Water.goalCl(this);
         boolean done = cl >= goalCl;
         LinearLayout top = hbox();
         top.setGravity(Gravity.CENTER_VERTICAL);
-        TextView label = text("💧 Víz ma: " + (cl / 100.0) + " / " + (goalCl / 100.0) + " l"
+        TextView label = text("💧 Víz ma: " + Water.liters(cl) + " / " + Water.liters(goalCl)
                 + (done ? "  ✔" : ""), 13.5f, done ? Theme.accent(this) : TXT, true);
         label.setClickable(true);
         label.setOnClickListener(v -> waterGoalDialog());
@@ -469,8 +457,7 @@ public class DietActivity extends Activity {
         minus.setPadding(dp(12), dp(2), dp(12), dp(2));
         minus.setClickable(true);
         minus.setOnClickListener(v -> {
-            int cur = p.getInt(waterKey(), 0);
-            p.edit().putInt(waterKey(), Math.max(0, cur - 25)).apply();
+            Water.addCl(this, -Water.GLASS_CL);
             refreshWater();
         });
         top.addView(minus);
@@ -478,20 +465,11 @@ public class DietActivity extends Activity {
         plus.setPadding(dp(12), dp(2), dp(2), dp(2));
         plus.setClickable(true);
         plus.setOnClickListener(v -> {
-            int cur = p.getInt(waterKey(), 0);
-            p.edit().putInt(waterKey(), cur + 25).apply();
+            int before = Water.todayCl(this);
+            int after = Water.addCl(this, Water.GLASS_CL);
             refreshWater();
-            if (cur < goalCl && cur + 25 >= goalCl) {
+            if (before < goalCl && after >= goalCl)
                 Ux.blazeCard(this, "💧 Napi vízcél megvan – szép munka!");
-                // Tartós számláló a Hidratált jelvényhez (naponta legfeljebb egyszer nő).
-                Calendar tc = Calendar.getInstance();
-                int today = tc.get(Calendar.YEAR) * 10000
-                        + (tc.get(Calendar.MONTH) + 1) * 100 + tc.get(Calendar.DAY_OF_MONTH);
-                if (p.getInt("water_last_done", 0) != today)
-                    p.edit().putInt("water_last_done", today)
-                            .putInt("water_days_done", p.getInt("water_days_done", 0) + 1)
-                            .apply();
-            }
         });
         top.addView(plus);
         waterCard.addView(top, lp());
@@ -516,18 +494,15 @@ public class DietActivity extends Activity {
     void waterGoalDialog() {
         final EditText et = input("Napi vízcél (dl, pl. 20)");
         et.setInputType(InputType.TYPE_CLASS_NUMBER);
-        int cur = getSharedPreferences("edzo", MODE_PRIVATE).getInt("water_goal_cl", 200);
-        et.setText(String.valueOf(cur / 10));
+        et.setText(String.valueOf(Water.goalCl(this) / 10));
         LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
         box.addView(et, lp());
         new Sheet(this, "Napi vízcél 💧", "Egy pohár = 2,5 dl")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
-                    int g = (int) parse(et.getText().toString()); // dl-ben kérjük
-                    if (g < 5) g = 5;
-                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
-                            .putInt("water_goal_cl", g * 10).apply();
+                    int dl = (int) parse(et.getText().toString()); // dl-ben kérjük
+                    Water.setGoalCl(this, dl * 10);
                     refreshWater();
                 })
                 .addCancel()
@@ -1007,15 +982,11 @@ public class DietActivity extends Activity {
         final String dayLabel = hf.format(new Date(day0));
         final double kS = kSum, pS = pSum;
         // Az adott nap vize (ha akkor ment a számláló).
-        Calendar wc = Calendar.getInstance();
-        wc.setTimeInMillis(day0);
-        int dayCl = getSharedPreferences("edzo", MODE_PRIVATE).getInt(
-                "water_" + (wc.get(Calendar.YEAR) * 10000
-                        + (wc.get(Calendar.MONTH) + 1) * 100 + wc.get(Calendar.DAY_OF_MONTH)), 0);
+        int dayCl = Water.clOn(this, day0);
         new Sheet(this, dayLabel,
                 Math.round(kSum) + " kcal"
                 + (pSum > 0 ? " · " + Math.round(pSum) + " g fehérje" : "")
-                + (dayCl > 0 ? " · 💧 " + (dayCl / 100.0) + " l" : ""))
+                + (dayCl > 0 ? " · 💧 " + Water.liters(dayCl) : ""))
                 .addCustom(box)
                 .addRow("📤", "Megosztás", "A nap étrendje szövegként",
                         false, true, () -> shareDay(day0, dayLabel, kS, pS))
