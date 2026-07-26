@@ -2,8 +2,6 @@ package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -26,12 +24,9 @@ public class StreaksTest {
         return c.getTimeInMillis();
     }
 
-    private static JSONArray log(int... daysAgoList) {
-        JSONArray a = new JSONArray();
-        for (int d : daysAgoList) {
-            try { a.put(new JSONObject().put("ts", daysAgo(d))); }
-            catch (Exception ignored) {}
-        }
+    private static long[] log(int... daysAgoList) {
+        long[] a = new long[daysAgoList.length];
+        for (int i = 0; i < daysAgoList.length; i++) a[i] = daysAgo(daysAgoList[i]);
         return a;
     }
 

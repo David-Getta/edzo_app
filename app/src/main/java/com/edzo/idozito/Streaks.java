@@ -29,7 +29,7 @@ public final class Streaks {
     }
 
     private static int count(Context ctx, JSONArray arr, boolean includeToday) {
-        return count(planOf(ctx), arr, includeToday);
+        return count(planOf(ctx), stamps(arr), includeToday);
     }
 
     /**
@@ -43,9 +43,13 @@ public final class Streaks {
         return p;
     }
 
-    /** plan == null: nincs edzésnap-terv, ilyenkor bármely kihagyott nap megtöri. */
-    static int count(boolean[] plan, JSONArray arr, boolean includeToday) {
-        HashSet<Long> days = daySet(arr);
+    /**
+     * plan == null: nincs edzésnap-terv, ilyenkor bármely kihagyott nap megtöri.
+     * A bemenet nyers időbélyeg-tömb, nem JSON: így a számítás Android nélkül is
+     * fut (az egységtesztben a JSON-osztályok üres csonkok lennének).
+     */
+    static int count(boolean[] plan, long[] ts, boolean includeToday) {
+        HashSet<Long> days = daySet(ts);
         Calendar cur = Calendar.getInstance();
         zero(cur);
         // Naptári léptetéssel megyünk visszafelé (óraátállás-biztos).
@@ -123,13 +127,30 @@ public final class Streaks {
         return count;
     }
 
-    private static HashSet<Long> daySet(JSONArray arr) {
-        HashSet<Long> days = new HashSet<>();
-        Calendar c = Calendar.getInstance();
+    /** Az előzmény-bejegyzések időbélyegei. */
+    private static long[] stamps(JSONArray arr) {
+        long[] out = new long[arr.length()];
+        int n = 0;
         for (int i = 0; i < arr.length(); i++) {
             JSONObject o = arr.optJSONObject(i);
-            if (o == null) continue;
-            c.setTimeInMillis(o.optLong("ts"));
+            if (o != null) out[n++] = o.optLong("ts");
+        }
+        if (n == out.length) return out;
+        long[] trimmed = new long[n];
+        System.arraycopy(out, 0, trimmed, 0, n);
+        return trimmed;
+    }
+
+    private static HashSet<Long> daySet(JSONArray arr) {
+        return daySet(stamps(arr));
+    }
+
+    /** Az időbélyegek napokra kerekítve (egy napon több edzés = egy nap). */
+    private static HashSet<Long> daySet(long[] ts) {
+        HashSet<Long> days = new HashSet<>();
+        Calendar c = Calendar.getInstance();
+        for (long t : ts) {
+            c.setTimeInMillis(t);
             zero(c);
             days.add(c.getTimeInMillis());
         }
