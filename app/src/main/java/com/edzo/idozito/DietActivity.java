@@ -439,7 +439,7 @@ public class DietActivity extends Activity {
             if (pGoal > 0) {
                 LinearLayout pBg = hbox();
                 GradientDrawable pgd = new GradientDrawable();
-                pgd.setColor(0x22FFFFFF);
+                pgd.setColor(Theme.track(this));
                 pgd.setCornerRadius(dp(4));
                 pBg.setBackground(pgd);
                 View pf = new View(this);
@@ -458,7 +458,7 @@ public class DietActivity extends Activity {
         if (goal > 0) {
             LinearLayout barBg = hbox();
             GradientDrawable bgd = new GradientDrawable();
-            bgd.setColor(0x22FFFFFF);
+            bgd.setColor(Theme.track(this));
             bgd.setCornerRadius(dp(6));
             barBg.setBackground(bgd);
             View fill = new View(this);
@@ -521,7 +521,7 @@ public class DietActivity extends Activity {
         waterCard.addView(top, lp());
         LinearLayout barBg = hbox();
         GradientDrawable bgd = new GradientDrawable();
-        bgd.setColor(0x22FFFFFF);
+        bgd.setColor(Theme.track(this));
         bgd.setCornerRadius(dp(4));
         barBg.setBackground(bgd);
         View fill = new View(this);
@@ -594,7 +594,7 @@ public class DietActivity extends Activity {
             row.addView(lb, new LinearLayout.LayoutParams(dp(40), -2));
             LinearLayout barBg = hbox();
             GradientDrawable bgd = new GradientDrawable();
-            bgd.setColor(0x1AFFFFFF);
+            bgd.setColor(Theme.track(this));
             bgd.setCornerRadius(dp(5));
             barBg.setBackground(bgd);
             View fill = new View(this);

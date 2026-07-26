@@ -624,7 +624,7 @@ public class StatsActivity extends Activity {
             bg.setCornerRadius(dp(2));
             int h;
             if (kcal[i] <= 0) {
-                bg.setColor(0x14FFFFFF);   // nincs adat: halvány alapcsík
+                bg.setColor(Theme.trackFaint(this));   // nincs adat: halvány alapcsík
                 h = dp(3);
             } else {
                 logged++;

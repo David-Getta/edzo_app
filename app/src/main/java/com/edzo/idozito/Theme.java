@@ -100,6 +100,16 @@ public final class Theme {
     /** Világos mód (true) vagy a klasszikus sötét „cyber" mód (false, alapértelmezett). */
     public static boolean light(Context c) { return p(c).getBoolean("lightmode", false); }
 
+    /**
+     * Haladássávok üres részének színe. Sötét módban áttetsző fehér (ugyanaz,
+     * mint eddig), világos módban áttetsző fekete – különben a fehér csík a
+     * világos kártyán láthatatlan lenne.
+     */
+    public static int track(Context c) { return light(c) ? 0x1A000000 : 0x22FFFFFF; }
+
+    /** Halványabb változat (pl. „nincs adat" jelzésére). */
+    public static int trackFaint(Context c) { return light(c) ? 0x12000000 : 0x14FFFFFF; }
+
     /** Minden UI-t érintő változásnál nő; a MainActivity ez alapján épül újra. */
     public static int rev(Context c) { return p(c).getInt("theme_rev", 0); }
     public static void bumpRev(Context c) { p(c).edit().putInt("theme_rev", rev(c) + 1).apply(); }
