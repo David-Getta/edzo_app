@@ -42,6 +42,16 @@ public class FoodsParseTest {
         assertEquals(200.0, hits("rizs 20 dkg").get(0).grams, 0.001);
     }
 
+    @Test public void liquidUnitsBecomeGrams() {
+        // Folyadéknál 1 ml ≈ 1 g.
+        assertEquals(300.0, hits("3 dl tej").get(0).grams, 0.001);
+        assertEquals(200.0, hits("2 deci tej").get(0).grams, 0.001);
+        assertEquals(250.0, hits("250 ml protein turmix").get(0).grams, 0.001);
+        assertEquals(1000.0, hits("1 l üdítő").get(0).grams, 0.001);
+        // A magában álló „l" csak mértékegység lehet: a „2 lecsó" nem 2 liter.
+        assertEquals(0.0, hits("2 lecsó").get(0).grams, 0.001);
+    }
+
     @Test public void withoutANumberGramsStayZero() {
         List<Foods.Hit> h = hits("rántott hús rizzsel");
         assertEquals(2, h.size());

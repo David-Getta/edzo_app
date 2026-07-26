@@ -378,13 +378,20 @@ public final class Foods {
             catch (NumberFormatException e) { continue; }
             int j = i;
             while (j < q.length() && q.charAt(j) == ' ') j++;
-            // dkg előbb, különben a "g" ág nyelné el
+            // A hosszabb mértékegység előbb, különben a rövidebb ág nyelné el.
+            // Folyadéknál 1 ml ≈ 1 g, ezért a dl/ml/l is grammra váltható.
             if (q.startsWith("dkg", j)) { numPos.add(start); numVal.add(val * 10); i = j + 3; }
             else if (q.startsWith("gramm", j)) { numPos.add(start); numVal.add(val); i = j + 5; }
+            else if (q.startsWith("deci", j)) { numPos.add(start); numVal.add(val * 100); i = j + 4; }
+            else if (q.startsWith("dl", j)) { numPos.add(start); numVal.add(val * 100); i = j + 2; }
+            else if (q.startsWith("ml", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
             else if (q.startsWith("gr", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
             else if (q.startsWith("g", j)
                     && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
                 numPos.add(start); numVal.add(val); i = j + 1;
+            } else if (q.startsWith("l", j)
+                    && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
+                numPos.add(start); numVal.add(val * 1000); i = j + 1;
             } else {
                 // Mértékegység nélküli szám: darabszám lehet („2 tojás"). Csak akkor
                 // vesszük annak, ha rögtön utána egy darabra számolható étel áll –
