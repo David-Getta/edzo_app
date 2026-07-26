@@ -15,7 +15,7 @@ android {
         // A CI a VERSION_CODE env-változóból növekvő értéket ad, hogy az
         // automatikus frissítés (Obtainium/Android) minden buildnél működjön.
         versionCode System.getenv('VERSION_CODE') ? System.getenv('VERSION_CODE').toInteger() : 3
-        versionName '24.8'
+        versionName '24.9'
     }
 
     compileOptions {
@@ -44,4 +44,14 @@ android {
             signingConfig signingConfigs.stable
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    // Csak egységteszthez (az APK-ba nem kerül bele). Az ételfelismerés logikáját
+    // fedi le: ott már kétszer csúszott be hiba, amit ránézésre nehéz észrevenni.
+    testImplementation 'junit:junit:4.13.2'
 }
