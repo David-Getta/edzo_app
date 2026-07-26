@@ -67,14 +67,22 @@ public class FoodsTest {
 
     // --- Egyetlen étel keresése: a leghosszabb egyezés nyerjen (v24.7) ---
 
-    @Test public void singleLookupPrefersLongestMatch() {
+    /**
+     * Ragozott alakok feloldása. Szándékosan csak egyértelmű eseteket
+     * ellenőrzünk: egy néhány betűs töredék („burg") több ételre is illik
+     * (burgonya, burgonyapüré, burger), ott nincs egyetlen helyes válasz.
+     */
+    @Test public void inflectedFormsResolveToTheRightFood() {
         assertEquals("Rizs (főtt)", one("rizs"));
         assertEquals("Rizs (főtt)", one("rizzsel"));
-        assertEquals("Burgonya (főtt)", one("burg"));
+        assertEquals("Burgonya (főtt)", one("burgonyával"));
+        assertEquals("Burgonya (főtt)", one("krumplival"));
         assertEquals("Csirkemell (sült/grill)", one("csirkemellből"));
         assertEquals("Kenyér", one("kenyérrel"));
+        assertEquals("Tojás", one("tojással"));
+        assertEquals("Zabpehely", one("zabpehellyel"));
         assertEquals("Tejföl", one("tejföl"));
-        assertEquals("Alma", one("alma"));
+        assertEquals("Alma", one("almát"));
     }
 
     /**
