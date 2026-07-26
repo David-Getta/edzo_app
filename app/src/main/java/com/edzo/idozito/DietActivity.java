@@ -124,7 +124,16 @@ public class DietActivity extends Activity {
         } catch (Exception ignored) {}
     }
 
+    // Egy frissítési menetben csak egyszer olvassuk be a naplót.
+    List<MealLog.Meal> mealsCache;
+
+    List<MealLog.Meal> meals() {
+        if (mealsCache == null) mealsCache = MealLog.load(this);
+        return mealsCache;
+    }
+
     void refresh() {
+        mealsCache = null;
         refreshToday();
         refreshWater();
         refreshWeek();
@@ -134,7 +143,7 @@ public class DietActivity extends Activity {
 
     void refreshList() {
         listBox.removeAllViews();
-        List<MealLog.Meal> meals = MealLog.load(this);
+        List<MealLog.Meal> meals = new ArrayList<>(meals());
         // Szűrés a kereső alapján (név vagy bármely összetevő).
         String q = searchEt == null ? "" : Foods.norm(searchEt.getText().toString().trim());
         if (!q.isEmpty()) {
@@ -277,7 +286,7 @@ public class DietActivity extends Activity {
     /** Gyors-naplózás: a leggyakoribb étkezések csipjei, egy koppintásra újra. */
     void refreshQuick() {
         quickBox.removeAllViews();
-        List<MealLog.Meal> meals = MealLog.load(this);
+        List<MealLog.Meal> meals = meals();
         java.util.LinkedHashMap<String, MealLog.Meal> latest = new java.util.LinkedHashMap<>();
         java.util.HashMap<String, Integer> count = new java.util.HashMap<>();
         for (MealLog.Meal m : meals) {
@@ -332,12 +341,15 @@ public class DietActivity extends Activity {
     /** A mai összesítő kártya: kcal, és cél esetén haladássáv + maradék. */
     void refreshToday() {
         todayCard.removeAllViews();
-        double kcal = MealLog.todayKcal(this);
+        double kcal = 0, protSum = 0;
+        long t0 = dayStartMs();
+        for (MealLog.Meal m : meals())
+            if (m.ts >= t0) { kcal += m.kcal(); protSum += m.protein(); }
         int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
         todayCard.addView(text("🍽 Ma összesen" + (goal > 0 ? "  ·  cél: " + goal + " kcal" : ""),
                 12.5f, MUTED, true));
         todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
-        double prot = MealLog.todayProtein(this);
+        double prot = protSum;
         int pGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("protein_goal", 0);
         if (prot > 0 || pGoal > 0) {
             boolean done = pGoal > 0 && prot >= pGoal;
@@ -492,7 +504,7 @@ public class DietActivity extends Activity {
         long dayMs = 24L * 3600 * 1000;
         long today0 = dayStartMs();
         double[] sums = new double[7]; // [0]=ma, [6]=6 napja
-        for (MealLog.Meal m : MealLog.load(this)) {
+        for (MealLog.Meal m : meals()) {
             long diff = today0 - dayStartOf(m.ts);
             int k = (int) (diff / dayMs);
             if (k >= 0 && k < 7) sums[k] += m.kcal();
@@ -923,7 +935,7 @@ public class DietActivity extends Activity {
     /** Egy nap étkezéseinek gyors áttekintése (a heti sávra koppintva). */
     void daySheet(long day0) {
         long dayMs = 24L * 3600 * 1000;
-        List<MealLog.Meal> meals = MealLog.load(this);
+        List<MealLog.Meal> meals = new ArrayList<>(meals());
         java.util.Collections.sort(meals, (a, b2) -> Long.compare(a.ts, b2.ts));
         double kSum = 0, pSum = 0;
         LinearLayout box = vbox();
@@ -961,7 +973,7 @@ public class DietActivity extends Activity {
     /** Egy nap étrendjének megosztása egyszerű szövegként. */
     void shareDay(long day0, String dayLabel, double kSum, double pSum) {
         long dayMs = 24L * 3600 * 1000;
-        List<MealLog.Meal> meals = MealLog.load(this);
+        List<MealLog.Meal> meals = new ArrayList<>(meals());
         java.util.Collections.sort(meals, (a, b2) -> Long.compare(a.ts, b2.ts));
         SimpleDateFormat tf = new SimpleDateFormat("HH:mm", new Locale("hu"));
         StringBuilder sb = new StringBuilder("🍽 Étrendem – ").append(dayLabel).append("\n");
