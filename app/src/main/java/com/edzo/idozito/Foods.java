@@ -34,7 +34,8 @@ public final class Foods {
         new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes"),
         new Food("Marhahús", 250, 26, 150, "marha"),
         new Food("Fasírt", 290, 15, 150, "fasirt"),
-        new Food("Kolbász", 350, 15, 100, "kolbasz"),
+        // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
+        new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz"),
         new Food("Virsli", 250, 10, 100, "virsli"),
         new Food("Sonka", 120, 18, 50, "sonka"),
         new Food("Szalámi", 400, 22, 30, "szalami"),
@@ -298,6 +299,30 @@ public final class Foods {
         return null;
     }
 
+    /**
+     * Darabsúlyok azokhoz az ételekhez, amiket természetes darabra számolni
+     * („2 tojás", „3 banán"). Csak ezeknél értelmezünk mértékegység nélküli
+     * számot darabszámként – másutt egy puszta szám nem jelent semmit.
+     */
+    private static final String[][] PIECE_GRAMS = {
+            {"Tojás", "55"}, {"Tükörtojás", "55"},
+            {"Banán", "120"}, {"Alma", "150"}, {"Narancs", "150"}, {"Körte", "150"},
+            {"Kivi", "80"}, {"Mandarin", "100"}, {"Őszibarack", "150"},
+            {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
+            {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
+            {"Virsli", "50"}, {"Kakaós csiga", "90"}, {"Fasírt", "60"},
+            {"Szendvics", "150"}, {"Hot-dog", "150"},
+    };
+
+    /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
+    static int pieceGrams(Food f) {
+        for (String[] p : PIECE_GRAMS)
+            if (p[0].equals(f.name)) {
+                try { return Integer.parseInt(p[1]); } catch (NumberFormatException e) { return 0; }
+            }
+        return 0;
+    }
+
     /** Egy felismert étel a szövegben, a hozzá tartozó grammal (0 = nem volt megadva). */
     public static final class Hit {
         public final Food food;
@@ -329,6 +354,8 @@ public final class Foods {
         // Gramm-értékek kigyűjtése: szám + (opcionális szóköz) + "g"/"gr"/"dkg".
         List<Integer> numPos = new ArrayList<>();
         List<Double> numVal = new ArrayList<>();
+        List<Integer> bareNumPos = new ArrayList<>();
+        List<Double> bareNumVal = new ArrayList<>();
         int i = 0;
         while (i < q.length()) {
             if (!Character.isDigit(q.charAt(i))) { i++; continue; }
@@ -346,6 +373,12 @@ public final class Foods {
             else if (q.startsWith("g", j)
                     && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
                 numPos.add(start); numVal.add(val); i = j + 1;
+            } else {
+                // Mértékegység nélküli szám: darabszám lehet („2 tojás"). Csak akkor
+                // vesszük annak, ha rögtön utána egy darabra számolható étel áll –
+                // különben a szám nem jelent semmit, és figyelmen kívül hagyjuk.
+                bareNumPos.add(start);
+                bareNumVal.add(val);
             }
         }
         double[] grams = new double[foods.size()];
@@ -358,6 +391,23 @@ public final class Foods {
                 if (d < bestDist) { bestDist = d; bestIdx = k; }
             }
             if (bestIdx >= 0) grams[bestIdx] = numVal.get(n);
+        }
+        // Darabszámok: „2 tojás" = 2 × egy tojás súlya. Csak akkor számít, ha a
+        // szám közvetlenül egy darabra számolható étel előtt áll, az étel még nem
+        // kapott grammot, és a darabszám életszerű (legfeljebb 20).
+        for (int n = 0; n < bareNumPos.size(); n++) {
+            double count = bareNumVal.get(n);
+            if (count < 1 || count > 20) continue;
+            int numEnd = bareNumPos.get(n) + String.valueOf((long) count).length();
+            for (int k = 0; k < foods.size(); k++) {
+                if (grams[k] > 0 || foodPos.get(k) < 0) continue;
+                int gap = foodPos.get(k) - numEnd;
+                if (gap < 0 || gap > 2) continue;         // közvetlenül utána álljon
+                int piece = pieceGrams(foods.get(k));
+                if (piece <= 0) continue;
+                grams[k] = count * piece;
+                break;
+            }
         }
         for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
         return out;

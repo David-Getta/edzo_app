@@ -48,12 +48,23 @@ public class FoodsParseTest {
         for (Foods.Hit x : h) assertEquals(0.0, x.grams, 0.001);
     }
 
-    @Test public void aBareNumberWithoutUnitIsIgnored() {
-        // A "2" itt darabszám, nem gramm – nem szabad 2 grammnak venni.
+    @Test public void pieceCountsAreConvertedToGrams() {
+        // A "2" itt darabszám, nem gramm: 2 tojás = 2 × 55 g.
         List<Foods.Hit> h = hits("2 tojás");
         assertEquals(1, h.size());
         assertEquals("Tojás", h.get(0).food.name);
-        assertEquals(0.0, h.get(0).grams, 0.001);
+        assertEquals(110.0, h.get(0).grams, 0.001);
+        assertEquals(220.0, hits("4 tojás").get(0).grams, 0.001);
+        assertEquals(360.0, hits("3 banán").get(0).grams, 0.001);
+    }
+
+    @Test public void bareNumbersStayIgnoredWhereTheyMakeNoSense() {
+        // Rizst nem darabra számolunk.
+        assertEquals(0.0, hits("2 rizs").get(0).grams, 0.001);
+        // Életszerűtlen darabszám: inkább ne találgassunk.
+        assertEquals(0.0, hits("50 tojás").get(0).grams, 0.001);
+        // Mértékegység nélküli nagy szám sem gramm.
+        assertEquals(0.0, hits("100 csirkemell").get(0).grams, 0.001);
     }
 
     @Test public void onlyOneAmountPerFood() {
