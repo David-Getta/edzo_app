@@ -304,12 +304,16 @@ public class SettingsActivity extends Activity {
     /** A legutóbbi fejlesztések rövid listája. */
     void whatsNewSheet() {
         String[][] items = {
-            {"🍽", "Étrend-napló", "Írd be, mit ettél – kcal és fehérje magától számolva, fotóval, okos elosztással."},
+            {"🍽", "Étrend-napló", "Írd be, mit ettél – kcal és fehérje magától számolva, fotóval (kamera vagy galéria) és okos elosztással."},
+            {"⚖️", "Grammok a szövegből", "„150 g csirkemell 200 g rizs\" – a mennyiségeket is kiolvassuk a beírt névből."},
+            {"★", "Kedvencek", "Bármely étkezés kedvencnek jelölhető, és mindig elöl lesz a gyors csipek közt."},
             {"🖊", "Saját ételek", "Vedd fel a saját ételeid a kalóriatáblázatba – a felismerés is megtalálja őket."},
+            {"📖", "Kalóriatáblázat", "Élőben szűrhető lista, és egy koppintással naplózható bármelyik étel."},
             {"💧", "Vízszámláló", "Pohár-alapú vízkövetés céllal, widget-gyorsgombbal és Hidratált jelvénnyel."},
             {"🎯", "Új kihívások", "Fehérje-cél, vízcél és étkezés-naplózás típusú napi kihívások."},
-            {"📊", "Étrend-statisztika", "7 napos átlagok, cél-tartás és napi részletek a Statisztika oldalon."},
-            {"🔍", "Keresés & táblázat", "Keresés a naplóban és élőben szűrhető kalóriatáblázat."},
+            {"⭐", "XP az étrendért", "A nap első étkezés-bejegyzése +5 XP-t ad a szintedhez."},
+            {"📊", "Étrend-statisztika", "7 napos átlagok, 30 napos csík, cél-tartás és napi részletek."},
+            {"🔍", "Keresés", "Keresés az étrend- és az erősítő naplóban is."},
             {"📤", "Megosztás", "Napi étrend és heti összefoglaló egy koppintással megosztható."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
