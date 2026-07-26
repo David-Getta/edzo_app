@@ -163,6 +163,20 @@ public class StrengthActivity extends Activity {
         inner.addView(gap(8));
         inner.addView(text("Összesen: " + Math.round(allVol) + " kg · " + allCount + " alkalom",
                 12.5f, MUTED, false));
+        // Mi maradt ki? A rekordlista nem árulja el magától, mert a legutóbb
+        // használt gyakorlat van elöl – a régen kimaradt leghátul, észrevétlenül.
+        final String forgotten = StrengthLog.mostNeglected(
+                StrengthLog.load(this), System.currentTimeMillis(), StrengthLog.NEGLECTED_DAYS);
+        if (forgotten != null) {
+            int d = StrengthLog.daysSince(StrengthLog.load(this), forgotten,
+                    System.currentTimeMillis());
+            inner.addView(gap(8));
+            TextView nudge = text("💤  " + forgotten + " " + StrengthLog.agoLabel(d)
+                    + " maradt ki. Beveszed ma?", 12.5f, Theme.accent(this), true);
+            nudge.setClickable(true);
+            nudge.setOnClickListener(v -> showProgress(forgotten));
+            inner.addView(nudge);
+        }
         card.addView(inner);
         summaryBox.addView(card, lp());
     }
@@ -200,6 +214,11 @@ public class StrengthActivity extends Activity {
             rl.addView(text(n, 15.5f, TXT, true));
             String sub = "Max " + fmtKg(rec[0]) + " kg   ·   becsült 1RM ~" + fmtKg(rec[1]) + " kg";
             rl.addView(text(sub, 12.5f, MUTED, false));
+            // Mikor volt utoljára? A régen kimaradt gyakorlat kiemelve.
+            int since = StrengthLog.daysSince(all, n, System.currentTimeMillis());
+            boolean stale = since >= StrengthLog.NEGLECTED_DAYS;
+            rl.addView(text((stale ? "💤  " : "") + "Utoljára " + StrengthLog.agoLabel(since),
+                    12, stale ? Theme.accent(this) : MUTED, stale));
             row.addView(rl, new LinearLayout.LayoutParams(0, -2, 1f));
             row.addView(text("📈", 15, MUTED, false));
             row.setClickable(true);

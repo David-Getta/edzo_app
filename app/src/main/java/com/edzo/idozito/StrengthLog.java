@@ -164,6 +164,64 @@ public final class StrengthLog {
         return new ArrayList<>(seen.keySet());
     }
 
+    /** Ennyi nap után tekintünk egy gyakorlatot elhanyagoltnak. */
+    public static final int NEGLECTED_DAYS = 14;
+
+    /**
+     * Hány napja volt a gyakorlat utolsó alkalma (naptári napokban), vagy -1,
+     * ha még sosem szerepelt. Naptári nap, nem 24 óra: aki tegnap este és ma
+     * reggel edzett, annak „tegnap" jár, ne „0 napja".
+     */
+    public static int daysSince(List<Entry> log, String name, long now) {
+        long last = -1;
+        for (Entry e : log) if (name.equals(e.name) && e.ts > last) last = e.ts;
+        return last < 0 ? -1 : dayDiff(last, now);
+    }
+
+    /** Naptári napok különbsége; a kerekítés az óraátállást is elnyeli. */
+    static int dayDiff(long from, long to) {
+        java.util.Calendar a = java.util.Calendar.getInstance();
+        java.util.Calendar b = java.util.Calendar.getInstance();
+        a.setTimeInMillis(from); zeroTime(a);
+        b.setTimeInMillis(to);   zeroTime(b);
+        return (int) Math.round((b.getTimeInMillis() - a.getTimeInMillis()) / 86400000.0);
+    }
+
+    private static void zeroTime(java.util.Calendar c) {
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+    }
+
+    /** „ma" / „tegnap" / „5 napja"; ismeretlenre üres szöveg. */
+    public static String agoLabel(int days) {
+        if (days < 0) return "";
+        if (days == 0) return "ma";
+        if (days == 1) return "tegnap";
+        return days + " napja";
+    }
+
+    /**
+     * A legrégebben csinált gyakorlat neve, ha legalább minDays napja kimaradt –
+     * különben null. Erre való a „mit hanyagolsz el" emlékeztető.
+     */
+    public static String mostNeglected(List<Entry> log, long now, int minDays) {
+        LinkedHashMap<String, Long> lastOf = new LinkedHashMap<>();
+        for (Entry e : log) {
+            if (e.name == null || e.name.isEmpty()) continue;
+            Long prev = lastOf.get(e.name);
+            if (prev == null || e.ts > prev) lastOf.put(e.name, e.ts);
+        }
+        String worst = null;
+        long worstTs = Long.MAX_VALUE;
+        for (java.util.Map.Entry<String, Long> en : lastOf.entrySet()) {
+            if (en.getValue() < worstTs) { worstTs = en.getValue(); worst = en.getKey(); }
+        }
+        if (worst == null || dayDiff(worstTs, now) < minDays) return null;
+        return worst;
+    }
+
     /** Egy gyakorlat rekordjai: [max súly, becsült 1RM, legjobb heti... itt: legjobb volumen egy edzésen]. */
     public static double[] recordsFor(Context c, String name) {
         double maxW = 0, maxOrm = 0, maxVol = 0;
