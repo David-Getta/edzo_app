@@ -338,6 +338,18 @@ public final class Foods {
         return findAll(all(c), query);
     }
 
+    /**
+     * Összetett ételek: ha a felsorolt szavak mind szerepelnek a szövegben, akkor
+     * együtt EGY ételt jelentenek, nem külön-külön hozzávalókat. A „csirkemellből
+     * rántott húst" enélkül Csirkemell + Rántott hús (sertés) lenne, vagyis a húst
+     * kétszer számolnánk – holott a Rántott csirkemell pont ezt írja le.
+     *
+     * Az első elem a cél-étel neve, a többi a keresett szó.
+     */
+    private static final String[][] COMBOS = {
+            {"Rántott csirkemell", "rantott", "csirke"},
+    };
+
     /** Egy találat helye a szövegben (a leghosszabb illeszkedő szótő szerint). */
     static final class Match {
         final Food food; final int pos, len;
@@ -379,6 +391,7 @@ public final class Foods {
             }
             if (!covered) out.add(m);
         }
+        applyCombos(list, q, out);
         // Rendezés a szövegbeli előfordulás szerint.
         for (int i = 0; i < out.size(); i++)
             for (int j = i + 1; j < out.size(); j++)
@@ -386,6 +399,31 @@ public final class Foods {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
         return out;
+    }
+
+    /** Az összetett-étel szabályok alkalmazása a már megtalált találatokra. */
+    private static void applyCombos(List<Food> list, String q, List<Match> out) {
+        for (String[] combo : COMBOS) {
+            int from = Integer.MAX_VALUE, to = -1;
+            boolean all = true;
+            for (int i = 1; i < combo.length; i++) {
+                int p = q.indexOf(combo[i]);
+                if (p < 0) { all = false; break; }
+                from = Math.min(from, p);
+                to = Math.max(to, p + combo[i].length());
+            }
+            if (!all) continue;
+            Food target = null;
+            for (Food f : list) if (f.name.equals(combo[0])) { target = f; break; }
+            if (target == null) continue;
+            // A szavak által lefedett szakaszra eső találatok helyébe lép az
+            // összetett étel; a szakaszon kívüli körettel nem csinálunk semmit.
+            for (int i = out.size() - 1; i >= 0; i--) {
+                Match m = out.get(i);
+                if (m.pos < to && m.pos + m.len > from) out.remove(i);
+            }
+            out.add(new Match(target, from, to - from));
+        }
     }
 
     static List<Food> findAll(List<Food> list, String query) {
