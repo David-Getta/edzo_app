@@ -624,9 +624,16 @@ public class DietActivity extends Activity {
             @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
             @Override public void afterTextChanged(android.text.Editable s) {
                 String q = s.toString().trim();
+                reco.setOnClickListener(null);
+                reco.setClickable(false);
                 if (q.length() < 3) { reco.setText(""); return; }
                 List<Foods.Food> g = Foods.findAll(DietActivity.this, q);
-                if (g.isEmpty()) { reco.setText("🔍 Ezt még nem ismerem – írd be lent összetevőnként!"); return; }
+                if (g.isEmpty()) {
+                    reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");
+                    reco.setClickable(true);
+                    reco.setOnClickListener(v -> addCustomFoodSheet(q));
+                    return;
+                }
                 StringBuilder sb = new StringBuilder("✔ Felismerve: ");
                 for (int i = 0; i < g.size(); i++) {
                     if (i > 0) sb.append(" + ");
@@ -1049,10 +1056,13 @@ public class DietActivity extends Activity {
     }
 
     /** Saját étel felvétele: a felismerés és a kalóriatáblázat is használja. */
-    void addCustomFoodSheet() {
+    void addCustomFoodSheet() { addCustomFoodSheet(""); }
+
+    void addCustomFoodSheet(String presetName) {
         final LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
         final EditText nameEt = input("Név (pl. Nagyi rakott zöldsége)");
+        if (presetName != null && !presetName.isEmpty()) nameEt.setText(presetName);
         box.addView(nameEt, lp());
         final EditText kcalEt = input("kcal / 100 g");
         kcalEt.setInputType(InputType.TYPE_CLASS_NUMBER);
