@@ -1,67 +1,79 @@
-# My trainer 🏃⏱️
+# Grit 🐺🔥
 
-Teljes értékű **edzőtárs Androidra** – intervallum (HIIT) időzítő, futáskövetés,
-nyújtás & mobilitás, edzésnapló, játékos motiváció és részletes statisztikák.
-Sötét, „cyber” cián-magenta megjelenés, sok látvánnyal és finom animációkkal.
-Minden képernyőnek saját, generált látványos háttere van, a főképernyő háttere
-pedig **naponta váltakozik**. Tiszta natív Android (Java, programozott felület,
-külső függőségek nélkül).
+Teljes értékű **edzőtárs Androidra**: intervallum (HIIT) időzítő, futáskövetés,
+erősítő napló, **étrend- és vízkövetés**, nyújtás & mobilitás, játékos motiváció
+és részletes statisztikák. Karmazsin/bordó megjelenés, saját gyártású
+kabalafigurával (**Blaze**), generált háttérképekkel és finom animációkkal.
+Tiszta natív Android (Java, programozott felület, külső függőségek nélkül).
 
 ## Funkciók
 
 ### ⏱️ Edzés & időzítő
 - Testre szabható **Bemelegítés / Előkészület / Futás / Pihenő / Körök /
-  Levezetés** – másodpercre pontosan (léptető gyorsulással vagy beírással)
-- **Élő folyamatsáv** (hol tartasz az egész edzésben) + **teljes hátralévő idő**
-- Látványos **világító körgyűrű** vezető ponttal, az utolsó 3 mp-ben lüktető
-  számláló, a végén ünneplő pipa – és **egygombos újraindítás** ugyanarra az edzésre
-- Gyors sablonok (**HIIT / Tempó / Tabata**) az aktív sablon kiemelésével
-- **10 beépített program** (törzs, teljes test, láb, kar, zsírégető HIIT,
-  mag & egyensúly, reggeli mobilitás, **klasszikus 7 perces edzés**,
-  **kezdő teljes test**…) + saját programok, gyakorlat-leírásokkal
-- 🔊 Hangválasztás (külön futás/pihenő), előhallgatás, 3-2-1 csipogás, rezgés
-- 🗣️ Hangos bemondás (TTS), 🎛️ vezérlés az értesítésből, 🌙 fut kikapcsolt
-  képernyővel is (foreground service + wake lock)
+  Levezetés** – másodpercre pontosan
+- **Élő folyamatsáv**, világító körgyűrű, 3-2-1 visszaszámlálás, ünneplő pipa,
+  egygombos újraindítás ugyanarra az edzésre
+- Gyors sablonok (**HIIT / Tempó / Tabata**) és **10 beépített program**
+  (törzs, teljes test, láb, kar, zsírégető HIIT, 7 perces edzés…), saját
+  programokkal és gyakorlat-leírásokkal
+- 🔊 Hangválasztás, 🗣️ hangos bemondás (TTS), 🎛️ vezérlés az értesítésből,
+  🌙 fut kikapcsolt képernyővel is (foreground service + wake lock)
 
 ### 🏃 Futás & mérés
-- **GPS táv, tempó (perc/km vagy km/h), lépések, kalória**, átlag/max sebesség
+- **GPS táv, tempó, lépések, kalória**, átlag/max sebesség
 - Útvonal, kör-splitek és sebesség-diagram az edzés részleteinél
 
-### 🧘 Nyújtás & mobilitás
-- Külön képernyő **Bemelegítés / Nyújtás / Hengerezés** szekciókkal (színkódolt)
-- Izmonként ≥2 nyújtás, deréktáj/gerinc, foam rolling – mind **videós útmutatóval**
-- **Vezetett rutinok** (a telefon időzíti és bemondja a gyakorlatokat)
+### 🍽️ Étrend
+- **Írd le, mit ettél** – az app felismeri az ételeket a mondatból:
+  „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
+- Felismeri a **grammot** (g / gr / gramm / dkg) és a **darabszámot** is
+  (számjeggyel és kiírva: „két tojás")
+- **154 magyar étel** kcal- és fehérje-értékkel, kereshető **kalóriatáblázattal**,
+  amelyből egy koppintással naplózhatsz
+- **Saját ételek** felvétele – a felismerés is megtalálja őket
+- **Napi kcal- és fehérje-cél** haladássávval; javaslat a BMR-ből vagy a
+  Profilban beállított fogyási célból
+- **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
+  alapján utólag pontosítható, miből mennyi volt
+- **Kedvencek** és gyakori étkezések gyors csipjei, keresés a naplóban,
+  napi bontás, napi részletek és megosztás
+
+### 💧 Víz
+- Pohár-alapú (2,5 dl) számláló napi céllal, haladássávval
+- **Gyorsgomb a widgeten** – app megnyitása nélkül
+- Heti átlag a statisztikákban és a heti összefoglalóban
 
 ### 🏋️ Erősítő edzésnapló
-- **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), gyors-választó
-  gyakorlatnevekkel, a legutóbbi alkalom **automatikus előtöltésével**
-- **Szerkesztés & törlés** – utólag javítható bejegyzések
-- **Rekordok**: max súly és **becsült 1RM** (Epley) gyakorlatonként
-- **Súly-fejlődési grafikon**, heti és összesített **volumen**
-- ⏱️ **Pihenő-időzítő** a sorozatok között (sípszó + rezgés)
-- 🧮 **Súlytárcsa-kalkulátor** (mennyi tárcsa oldalanként) és
-  📈 **1RM & százalék kalkulátor** (edzés-súlyok programozáshoz)
-- Az erősítő napok a **napi/heti sorozatba** is beleszámítanak, és **CSV-be**
-  exportálhatók
+- **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), a legutóbbi alkalom
+  automatikus előtöltésével, kereséssel a naplóban
+- **Rekordok**: max súly és becsült **1RM** (Epley), **súly-fejlődési grafikon**,
+  heti és összesített volumen
+- ⏱️ Pihenő-időzítő, 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
 
-### 🏅 Motiváció & napló
-- **Szintek + XP-sáv**, 20 gyűjthető **kitüntetés** (haladás-jelzéssel),
-  személyes **rekordok**, **napi és heti sorozat** (óraátállás-biztos),
-  sorozat-veszély figyelmeztetés, gyengéd pihenő-emlékeztető, **konfetti**
-- **Edzésnapló**: edzés utáni **hangulat** (😣😐🙂💪) és **szöveges jegyzet**,
-  utólag szerkeszthető
-- **Heti cél** (edzésszám / perc / km) folyamatjelzővel
+### 🐺 Blaze, a kabalafigura
+- **Helyzet-tudatos köszöntés** belépéskor (veszélyben lévő széria, félbehagyott
+  kihívás, mai eredmény, hátralévő fehérje)
+- Napi értesítés, ha még nem edzettél; **heti visszatekintő** vasárnap
+- **Mozgó widget** a kezdőképernyőn: állapot, mai kcal és víz, gyorsgombok
+  (edzés indítása, erősítő napló, +1 pohár víz)
+
+### 🏅 Motiváció
+- **Szintek + XP** (edzés-percek, táv, napi kihívás, étrend napi első bejegyzése)
+- **Napi kihívás** 8 típusból, a szokásaidhoz igazodva (perc, kör, két edzés,
+  km, ismétlés, étkezés, fehérje-cél, vízcél)
+- **Gyűjthető jelvények**, napi és heti sorozat (óraátállás-biztos, terv-tudatos:
+  a pihenőnap nem töri meg), konfetti, hangulat-napló
 
 ### 📊 Statisztika & előzmények
-- Heti / havi / összes összesítők, **heti trend**, 8-hetes diagram,
-  havi naptár, **12 hetes aktivitás-hőtérkép**, hangulat-eloszlás
-- **Előzmények** típusszűrővel (futás / erő), egyedi edzés törlése
-- **Profil / BMI** – testadatok, élő BMI + kategória, változás-diagram
+- Heti / havi / összes összesítők, 8-hetes diagram, havi naptár,
+  **12 hetes aktivitás-hőtérkép**, terv-teljesítés
+- **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík
+- **Profil / BMI / BMR**, testadatok és változás-diagram
 
 ### 📤 Megosztás & adatok
-- Edzés / haladás / kitüntetések / statisztika / hőtérkép **megosztása képként**
+- Edzés / haladás / jelvények / statisztika / hőtérkép / napi étrend megosztása
 - **Biztonsági mentés / visszaállítás** fájlba, **CSV export**
-- Testre szabható színek, animáció-kapcsoló, emlékeztetők, heti visszatekintő
+  (előzmények, erősítő napló, étrend a vízzel együtt)
 
 ## Automatikus frissítés (ajánlott) — Obtainium
 
@@ -79,18 +91,20 @@ készül, így az Obtainium és az Android is frissítésként ismeri fel.
 ## Kézi letöltés (telefonra)
 
 1. Nyisd meg a **[legfrissebb Release](../../releases/latest)** oldalt.
-2. Töltsd le a **`My-Trainer.apk`** fájlt.
+2. Töltsd le a **`My-Trainer.apk`** fájlt (a fájlnév a korábbi névből maradt).
 3. Nyisd meg — ha rákérdez, engedélyezd az „ismeretlen forrásból" való
    telepítést, majd telepítsd.
 
-> Az APK egy *debug* aláírással készül, ami saját használatra tökéletes.
+> Az APK fix, saját aláírással készül, hogy a frissítés ütközés nélkül menjen.
 
-## Fejlesztői build (opcionális)
+## Fejlesztői build
 
 ```bash
-./gradlew assembleDebug
-# eredmény: app/build/outputs/apk/debug/app-debug.apk
+./gradlew testDebugUnitTest   # egységtesztek (ételfelismerés, szintek, víz)
+./gradlew assembleDebug       # app/build/outputs/apk/debug/app-debug.apk
 ```
 
+A CI a build előtt lefuttatja a teszteket: ha elhasalnak, nem készül APK.
+
 Tiszta natív Android app (Java, `Activity` + programozott felület), külső
-függőségek nélkül. `minSdk 24`, `targetSdk 33`.
+függőségek nélkül (a JUnit csak teszthez). `minSdk 24`, `targetSdk 33`.
