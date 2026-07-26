@@ -231,7 +231,7 @@ public class SettingsActivity extends Activity {
 
         Button backup = ghost("💾  Kézi mentés fájlba");
         backup.setOnClickListener(v -> ShareProvider.shareTextFile(this,
-                Backup.exportJson(this), "my_trainer_mentes.json", "application/json"));
+                Backup.exportJson(this), "grit_mentes.json", "application/json"));
         col.addView(backup);
         col.addView(gap(10));
 
@@ -353,7 +353,7 @@ public class SettingsActivity extends Activity {
               .append(Math.round(o.optDouble("cal", 0))).append(';')
               .append(o.optInt("steps", 0)).append('\n');
         }
-        ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_elozmenyek.csv", "text/csv");
+        ShareProvider.shareTextFile(this, sb.toString(), "grit_elozmenyek.csv", "text/csv");
     }
 
     void exportMealsCsv() {
@@ -414,7 +414,7 @@ public class SettingsActivity extends Activity {
                   .append(String.format(Locale.US, "%.1f", s.reps * s.weight)).append('\n');
             }
         }
-        ShareProvider.shareTextFile(this, sb.toString(), "my_trainer_erosito.csv", "text/csv");
+        ShareProvider.shareTextFile(this, sb.toString(), "grit_erosito.csv", "text/csv");
     }
 
     // ---------------- Biztonsági mentés / visszaállítás ----------------

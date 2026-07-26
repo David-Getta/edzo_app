@@ -35,6 +35,8 @@ public final class Backup {
                 data.put(e.getKey(), o);
             }
             JSONObject root = new JSONObject();
+            // A formátum-jelölő szándékosan marad a régi néven: az importálás
+            // ezt ellenőrzi, így a Grit előtti mentésfájlok is visszatölthetők.
             root.put("app", "my_trainer");
             root.put("ver", 1);
             root.put("ts", System.currentTimeMillis());
