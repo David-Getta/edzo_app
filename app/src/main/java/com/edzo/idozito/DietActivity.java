@@ -32,7 +32,7 @@ public class DietActivity extends Activity {
 
     LinearLayout listBox;
     LinearLayout todayCard, weekCard, quickBox, waterCard;
-    static final int REQ_PHOTO = 61;
+    static final int REQ_PHOTO = 61, REQ_PICK = 62;
     long pendingPhotoTs;
 
     @Override
@@ -234,6 +234,8 @@ public class DietActivity extends Activity {
                         });
                 sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
+                sh.addRow("🖼", "Fotó a galériából",
+                        "Korábban készült kép hozzárendelése", false, true, () -> pickPhoto(m.ts));
                 sh.addRow("🕒", "Időpont módosítása", "Ha máskor etted, mint amikor beírtad",
                         false, true, () -> editMealTime(m));
                 sh.addDestructive("🗑 Törlés", () -> { MealLog.removeByTs(this, m.ts); refresh(); });
@@ -827,12 +829,45 @@ public class DietActivity extends Activity {
         }
     }
 
+    /** Kép választása a galériából (rendszer-választóval, engedély nem kell). */
+    void pickPhoto(long ts) {
+        pendingPhotoTs = ts;
+        try {
+            android.content.Intent i =
+                    new android.content.Intent(android.content.Intent.ACTION_GET_CONTENT);
+            i.setType("image/*");
+            startActivityForResult(android.content.Intent.createChooser(i,
+                    "Fotó választása"), REQ_PICK);
+        } catch (Exception e) {
+            Toast.makeText(this, "Nem található galéria-alkalmazás.", Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
     protected void onActivityResult(int req, int res, android.content.Intent data) {
         super.onActivityResult(req, res, data);
-        if (req != REQ_PHOTO || res != RESULT_OK || data == null || pendingPhotoTs <= 0) return;
+        if (res != RESULT_OK || data == null || pendingPhotoTs <= 0) return;
         try {
-            android.graphics.Bitmap bm = (android.graphics.Bitmap) data.getParcelableExtra("data");
+            android.graphics.Bitmap bm = null;
+            if (req == REQ_PHOTO) {
+                bm = (android.graphics.Bitmap) data.getParcelableExtra("data");
+            } else if (req == REQ_PICK && data.getData() != null) {
+                // Két menetben: először a méretet olvassuk, majd lekicsinyítve töltjük be.
+                android.graphics.BitmapFactory.Options o =
+                        new android.graphics.BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                java.io.InputStream in = getContentResolver().openInputStream(data.getData());
+                android.graphics.BitmapFactory.decodeStream(in, null, o);
+                if (in != null) in.close();
+                int sample = 1;
+                while (o.outWidth / sample > 1280 || o.outHeight / sample > 1280) sample *= 2;
+                android.graphics.BitmapFactory.Options o2 =
+                        new android.graphics.BitmapFactory.Options();
+                o2.inSampleSize = sample;
+                in = getContentResolver().openInputStream(data.getData());
+                bm = android.graphics.BitmapFactory.decodeStream(in, null, o2);
+                if (in != null) in.close();
+            }
             if (bm == null) return;
             java.io.File f = new java.io.File(getFilesDir(), "meal_" + pendingPhotoTs + ".jpg");
             java.io.FileOutputStream fo = new java.io.FileOutputStream(f);
