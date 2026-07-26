@@ -157,6 +157,14 @@ public final class Programs {
             case "Madár-kutya": return "Négykézláb, nyújtsd ki az ellentétes kart és lábat, tartsd.";
             case "Fellépés székre": return "Lépj fel egy stabil székre/lépcsőre, váltott lábbal, kontrolláltan.";
             case "Forgó fekvőtámasz": return "Fekvőtámasz, majd fordulj oldalra, nyújtsd a felső kart a plafon felé.";
+            // Súlyzós alapgyakorlatok (az Erősítő napló felkínált nevei).
+            case "Fekvenyomás": return "Lapockák hátra és le, rúd a mellkas közepére, könyök kb. 45°-ban. Ne pattintsd meg a mellkasodon.";
+            case "Felhúzás": return "Rúd a lábközépnél, egyenes hát, mellkas fel. Nem húzod: a lábaddal nyomod el magad a talajtól.";
+            case "Vállból nyomás": return "Feszes has és farizom, fej egy kicsit hátra a rúd elől, nyomás egyenesen fel. Ne told előre a bordáidat.";
+            case "Evezés": return "Törzs döntve, hát végig egyenes, húzd a rudat a hasfalhoz, lapockák hátra.";
+            case "Bicepsz": return "Könyök a törzs mellett marad, ne lendíts a derékkal, lefelé lassíts.";
+            case "Tricepsz": return "A felkar rögzítve, csak az alkar mozog. A végén teljes nyújtás, de ne feszítsd túl a könyököd.";
+            case "Lábtolás": return "Talp vállszélesen a lapon, térd a lábfej irányába. Ne told teljesen egyenesig a térded.";
             default: return "";
         }
     }

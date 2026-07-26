@@ -37,54 +37,17 @@ public class LibraryActivity extends Activity {
 
         // Egyedi (nem duplikált) gyakorlatnevek programonként, leírással
         for (Programs.P p : Programs.BUILT_IN) {
-            LinearLayout head = hbox();
-            head.setGravity(Gravity.CENTER_VERTICAL);
-            head.setPadding(dp(2), 0, 0, dp(10));
-            head.addView(text(p.emoji + "  " + p.name, 18, TXT, true), new LinearLayout.LayoutParams(0, -2, 1f));
-            head.addView(text(p.ex.length + " gyakorlat", 12.5f, MUTED, false));
-            col.addView(head, lp());
-
-            LinearLayout card = card();
-            for (int i = 0; i < p.ex.length; i++) {
-                String name = p.ex[i];
-                String desc = Programs.descOf(name);
-                LinearLayout row = hbox();
-                row.setGravity(Gravity.CENTER_VERTICAL);
-                row.setPadding(dp(14), dp(12), dp(14), dp(12));
-
-                TextView num = new TextView(this);
-                num.setText(String.valueOf(i + 1));
-                num.setTextSize(14);
-                num.setTypeface(null, Typeface.BOLD);
-                num.setTextColor(0xFFFFFFFF);
-                num.setGravity(Gravity.CENTER);
-                GradientDrawable nb = new GradientDrawable();
-                nb.setShape(GradientDrawable.OVAL);
-                nb.setColor((accent & 0xFFFFFF) | 0x40000000);
-                nb.setStroke(dp(1), (accent & 0xFFFFFF) | 0x99000000);
-                num.setBackground(nb);
-                LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(dp(30), dp(30));
-                nlp.rightMargin = dp(12);
-                row.addView(num, nlp);
-
-                LinearLayout mid = vbox();
-                mid.addView(text(name, 15.5f, TXT, true));
-                if (!desc.isEmpty()) mid.addView(text(desc, 12.5f, MUTED, false));
-                row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
-
-                card.addView(row);
-                if (i < p.ex.length - 1) {
-                    View dv = new View(this);
-                    LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
-                    dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);
-                    dv.setLayoutParams(dvp);
-                    dv.setBackgroundColor(LINE);
-                    card.addView(dv);
-                }
-            }
-            col.addView(card, lp());
+            col.addView(sectionHead(p.emoji + "  " + p.name, p.ex.length + " gyakorlat"), lp());
+            col.addView(exerciseCard(p.ex, accent), lp());
             col.addView(gap(18));
         }
+
+        // Súlyzós alapok: az Erősítő naplóban felkínált gyakorlatok. Ezeknél a
+        // technika nem csak hatékonyság kérdése, hanem sérülésé is.
+        col.addView(sectionHead("🏋️  Súlyzós alapok",
+                StrengthLog.COMMON.length + " gyakorlat"), lp());
+        col.addView(exerciseCard(StrengthLog.COMMON, accent), lp());
+        col.addView(gap(18));
 
         col.addView(text("Tipp: a saját programjaidhoz is adhatsz gyakorlatokat az „Edzés típusa” választóban.",
                 12.5f, MUTED, false));
@@ -92,6 +55,58 @@ public class LibraryActivity extends Activity {
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffoldNav(this, sv, "bg_library", -1));
         col.post(() -> Ux.enterChildren(col, 30, 40));
+    }
+
+    /** Szakasz-fejléc: cím balra, darabszám jobbra. */
+    LinearLayout sectionHead(String title, String count) {
+        LinearLayout head = hbox();
+        head.setGravity(Gravity.CENTER_VERTICAL);
+        head.setPadding(dp(2), 0, 0, dp(10));
+        head.addView(text(title, 18, TXT, true), new LinearLayout.LayoutParams(0, -2, 1f));
+        head.addView(text(count, 12.5f, MUTED, false));
+        return head;
+    }
+
+    /** Számozott gyakorlat-lista kártyán, mindegyiknél a technikai leírással. */
+    LinearLayout exerciseCard(String[] names, int accent) {
+        LinearLayout card = card();
+        for (int i = 0; i < names.length; i++) {
+            String desc = Programs.descOf(names[i]);
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(14), dp(12), dp(14), dp(12));
+
+            TextView num = new TextView(this);
+            num.setText(String.valueOf(i + 1));
+            num.setTextSize(14);
+            num.setTypeface(null, Typeface.BOLD);
+            num.setTextColor(0xFFFFFFFF);
+            num.setGravity(Gravity.CENTER);
+            GradientDrawable nb = new GradientDrawable();
+            nb.setShape(GradientDrawable.OVAL);
+            nb.setColor((accent & 0xFFFFFF) | 0x40000000);
+            nb.setStroke(dp(1), (accent & 0xFFFFFF) | 0x99000000);
+            num.setBackground(nb);
+            LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(dp(30), dp(30));
+            nlp.rightMargin = dp(12);
+            row.addView(num, nlp);
+
+            LinearLayout mid = vbox();
+            mid.addView(text(names[i], 15.5f, TXT, true));
+            if (!desc.isEmpty()) mid.addView(text(desc, 12.5f, MUTED, false));
+            row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
+
+            card.addView(row);
+            if (i < names.length - 1) {
+                View dv = new View(this);
+                LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+                dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);
+                dv.setLayoutParams(dvp);
+                dv.setBackgroundColor(LINE);
+                card.addView(dv);
+            }
+        }
+        return card;
     }
 
     LinearLayout vbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
