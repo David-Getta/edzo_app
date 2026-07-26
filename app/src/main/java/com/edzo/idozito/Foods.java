@@ -271,21 +271,15 @@ public final class Foods {
      * Ahol nincs szám, a gramm 0 marad, és a hívó dönt (közös adag / tipikus adag).
      */
     public static List<Hit> parse(android.content.Context c, String query) {
-        List<Food> foods = findAll(c, query);
+        List<Match> ms = matches(all(c), query);
         List<Hit> out = new ArrayList<>();
-        if (foods.isEmpty()) return out;
+        if (ms.isEmpty()) return out;
 
         String q = norm(query);
-        // Az ételek szövegbeli helye (a findAll már sorrendben adja őket).
+        // Az ételek szövegbeli helye – ugyanaz, amit a felismerés használt.
+        List<Food> foods = new ArrayList<>();
         List<Integer> foodPos = new ArrayList<>();
-        for (Food f : foods) {
-            int best = -1;
-            for (String st : f.stems) {
-                int p = q.indexOf(norm(st));
-                if (p >= 0 && (best < 0 || p < best)) best = p;
-            }
-            foodPos.add(best);
-        }
+        for (Match m : ms) { foods.add(m.food); foodPos.add(m.pos); }
         // Gramm-értékek kigyűjtése: szám + (opcionális szóköz) + "g"/"gr"/"dkg".
         List<Integer> numPos = new ArrayList<>();
         List<Double> numVal = new ArrayList<>();
@@ -332,25 +326,59 @@ public final class Foods {
         return findAll(all(c), query);
     }
 
-    static List<Food> findAll(List<Food> list, String query) {
+    /** Egy találat helye a szövegben (a leghosszabb illeszkedő szótő szerint). */
+    static final class Match {
+        final Food food; final int pos, len;
+        Match(Food food, int pos, int len) { this.food = food; this.pos = pos; this.len = len; }
+    }
+
+    /**
+     * A szövegben felismerhető ételek, helyükkel együtt.
+     *
+     * Fontos: egy rövid szótő beleeshet egy hosszabb ételnévbe („sajt" a
+     * „rántott sajt"-ban, „tej" a „tejföl"-ben, „riz" a „rizsszelet"-ben).
+     * Ilyenkor csak a hosszabb találat marad, különben ugyanaz a falat kétszer
+     * kerülne be, és dupla kalóriát számolnánk.
+     */
+    static List<Match> matches(List<Food> list, String query) {
         String q = norm(query);
-        List<Food> out = new ArrayList<>();
-        List<Integer> pos = new ArrayList<>();
+        List<Match> found = new ArrayList<>();
         for (Food f : list) {
-            int best = -1;
+            int bestPos = -1, bestLen = 0;
             for (String st : f.stems) {
-                int p = q.indexOf(norm(st));
-                if (p >= 0 && (best < 0 || p < best)) best = p;
+                String ns = norm(st);
+                if (ns.isEmpty()) continue;
+                int p = q.indexOf(ns);
+                // A leghosszabb illeszkedő szótő dönt; azonos hossznál a korábbi.
+                if (p >= 0 && (ns.length() > bestLen || (ns.length() == bestLen && p < bestPos))) {
+                    bestPos = p; bestLen = ns.length();
+                }
             }
-            if (best >= 0) { out.add(f); pos.add(best); }
+            if (bestPos >= 0) found.add(new Match(f, bestPos, bestLen));
         }
-        // Egyszerű rendezés előfordulási hely szerint.
+        // A hosszabb találatba beleeső rövidebbeket eldobjuk.
+        List<Match> out = new ArrayList<>();
+        for (Match m : found) {
+            boolean covered = false;
+            for (Match o : found) {
+                if (o == m) continue;
+                boolean inside = o.pos <= m.pos && o.pos + o.len >= m.pos + m.len;
+                if (inside && o.len > m.len) { covered = true; break; }
+            }
+            if (!covered) out.add(m);
+        }
+        // Rendezés a szövegbeli előfordulás szerint.
         for (int i = 0; i < out.size(); i++)
             for (int j = i + 1; j < out.size(); j++)
-                if (pos.get(j) < pos.get(i)) {
-                    Food tf = out.get(i); out.set(i, out.get(j)); out.set(j, tf);
-                    int tp = pos.get(i); pos.set(i, pos.get(j)); pos.set(j, tp);
+                if (out.get(j).pos < out.get(i).pos) {
+                    Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
+        return out;
+    }
+
+    static List<Food> findAll(List<Food> list, String query) {
+        List<Food> out = new ArrayList<>();
+        for (Match m : matches(list, query)) out.add(m.food);
         return out;
     }
 
