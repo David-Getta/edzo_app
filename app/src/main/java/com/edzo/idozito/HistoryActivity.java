@@ -34,6 +34,10 @@ public class HistoryActivity extends Activity {
     int lastCount = -1; // az onCreate-kori edzésszám (törlés után frissítéshez)
     // Szűrő: 0 = mind, 1 = futás, 2 = erő/gyakorlat
     int filter = 0;
+
+    /** Egyszerre ennyi edzés-kártya épül fel; a gomb továbbiakat tölt be. */
+    static final int PAGE = 60;
+    int shownLimit = PAGE;
     LinearLayout listBox;
     JSONArray histArr;
     java.util.List<StrengthLog.Entry> strArr;
@@ -154,18 +158,23 @@ public class HistoryActivity extends Activity {
         if (strArr != null) for (StrengthLog.Entry e : strArr) items.add(new Object[]{e.ts, e});
         java.util.Collections.sort(items, (a, b) -> Long.compare((long) b[0], (long) a[0]));
 
-        int shown = 0;
+        int shown = 0, matching = 0;
         for (Object[] it : items) {
+            boolean fits;
             if (it[1] instanceof JSONObject) {
-                JSONObject o = (JSONObject) it[1];
-                boolean isRun = o.optString("name", "").isEmpty();
-                if (filter == 1 && !isRun) continue;
-                if (filter == 2 && isRun) continue;
-                listBox.addView(entryCard(o, listDf), lp());
+                boolean isRun = ((JSONObject) it[1]).optString("name", "").isEmpty();
+                fits = !((filter == 1 && !isRun) || (filter == 2 && isRun));
             } else {
-                if (filter == 1) continue; // súlyzós bejegyzés nem futás
-                listBox.addView(strengthCard((StrengthLog.Entry) it[1], listDf), lp());
+                fits = filter != 1;   // súlyzós bejegyzés nem futás
             }
+            if (!fits) continue;
+            matching++;
+            // Sok év edzése esetén ne épüljön fel minden kártya egyszerre.
+            if (shown >= shownLimit) continue;
+            if (it[1] instanceof JSONObject)
+                listBox.addView(entryCard((JSONObject) it[1], listDf), lp());
+            else
+                listBox.addView(strengthCard((StrengthLog.Entry) it[1], listDf), lp());
             listBox.addView(gap(12));
             shown++;
         }
@@ -173,6 +182,20 @@ public class HistoryActivity extends Activity {
             TextView none = text("Nincs ilyen típusú edzés.", 13, MUTED, false);
             none.setPadding(dp(4), dp(10), 0, 0);
             listBox.addView(none);
+        } else if (matching > shown) {
+            final int remaining = matching - shown;
+            TextView more = text("További " + Math.min(remaining, PAGE) + " edzés betöltése  ("
+                    + remaining + " van még)", 13.5f, TXT, true);
+            more.setGravity(Gravity.CENTER);
+            more.setPadding(dp(14), dp(14), dp(14), dp(14));
+            GradientDrawable mb = new GradientDrawable();
+            mb.setColor(GLASS);
+            mb.setCornerRadius(dp(18));
+            mb.setStroke(dp(1), GLASS_LINE);
+            more.setBackground(mb);
+            more.setClickable(true);
+            more.setOnClickListener(v -> { shownLimit += PAGE; renderList(); });
+            listBox.addView(more, lp());
         }
     }
 
