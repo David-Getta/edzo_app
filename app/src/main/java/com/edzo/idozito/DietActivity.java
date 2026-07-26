@@ -123,6 +123,10 @@ public class DietActivity extends Activity {
     // Egy frissítési menetben csak egyszer olvassuk be a naplót.
     List<MealLog.Meal> mealsCache;
 
+    /** Egyszerre ennyi bejegyzés-kártya épül fel; a gomb továbbiakat tölt be. */
+    static final int PAGE = 60;
+    int shownLimit = PAGE;
+
     List<MealLog.Meal> meals() {
         if (mealsCache == null) mealsCache = MealLog.load(this);
         return mealsCache;
@@ -173,7 +177,11 @@ public class DietActivity extends Activity {
         }
         SimpleDateFormat hf = new SimpleDateFormat("MMMM d., EEEE", new Locale("hu"));
         long shownDay = -1;
-        for (int i = 0; i < meals.size(); i++) {
+        // A napló akár ezer bejegyzés is lehet; ennyi kártyát egyszerre kirajzolni
+        // megakasztaná a képernyőt. Csak a legfrissebbeket építjük fel, a többit
+        // igény szerint, egy gombnyomásra.
+        int limit = Math.min(meals.size(), shownLimit);
+        for (int i = 0; i < limit; i++) {
             final MealLog.Meal m = meals.get(i);
             final int idx = i;
             long d0 = dayStartOf(m.ts);
@@ -300,6 +308,14 @@ public class DietActivity extends Activity {
             });
             listBox.addView(c, lp());
             listBox.addView(gap(10));
+        }
+        if (meals.size() > limit) {
+            final int remaining = meals.size() - limit;
+            Button more = ghost("További " + Math.min(remaining, PAGE) + " bejegyzés  ("
+                    + remaining + " van még)");
+            more.setTextSize(13.5f);
+            more.setOnClickListener(v -> { shownLimit += PAGE; refreshList(); });
+            listBox.addView(more);
         }
     }
 
