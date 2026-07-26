@@ -1240,8 +1240,10 @@ public class DietActivity extends Activity {
                 row.setGravity(Gravity.CENTER_VERTICAL);
                 row.addView(text((isCustom ? "🖊 " : "") + f.name, 13.5f, TXT, isCustom),
                         new LinearLayout.LayoutParams(0, -2, 1f));
+                int piece = Foods.pieceGrams(f);
                 row.addView(text(f.kcal100 + " kcal · " + (Math.round(f.prot100 * 10) / 10.0)
-                        + "g P /100g", 12, MUTED, false));
+                        + "g P /100g" + (piece > 0 ? "  ·  1 db ≈ " + piece + " g" : ""),
+                        12, MUTED, false));
                 row.setClickable(true);
                 // Koppintásra rögtön naplózható, a tipikus adaggal előtöltve.
                 row.setOnClickListener(v -> logFoodSheet(food));
