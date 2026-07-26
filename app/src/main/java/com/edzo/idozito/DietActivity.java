@@ -675,6 +675,26 @@ public class DietActivity extends Activity {
 
     void addMealDialog() { addMealDialog(null, -1); }
 
+    /**
+     * A leggyakrabban naplózott összetevők neve (legfeljebb 8), gyakoriság
+     * szerint. Ha még alig van napló, a saját ételek is bekerülnek, hogy a
+     * csipsor ne maradjon üresen azoknál, akik most vették fel őket.
+     */
+    List<String> frequentFoodNames() {
+        java.util.HashMap<String, Integer> count = new java.util.HashMap<>();
+        for (MealLog.Meal m : meals())
+            for (MealLog.Item it : m.items) {
+                if (it.food == null || it.food.isEmpty()) continue;
+                Integer c = count.get(it.food);
+                count.put(it.food, c == null ? 1 : c + 1);
+            }
+        List<String> names = new ArrayList<>(count.keySet());
+        java.util.Collections.sort(names, (a, b) -> count.get(b) - count.get(a));
+        for (Foods.Food cf : Foods.custom(this))
+            if (!names.contains(cf.name)) names.add(cf.name);
+        return names.size() > 8 ? new ArrayList<>(names.subList(0, 8)) : names;
+    }
+
     /** Új étkezés a névmező előtöltésével (a bemutató példáihoz). */
     void addMealDialogPrefilled(String name) {
         prefillName = name;
@@ -741,6 +761,42 @@ public class DietActivity extends Activity {
             addItemRow(itemsBox, rows);
         }
         box.addView(itemsBox, lp());
+
+        // Gyors ételnevek: a leggyakrabban naplózott összetevők csipjei.
+        List<String> often = frequentFoodNames();
+        if (!often.isEmpty()) {
+            LinearLayout chipRow = hbox();
+            for (final String fn : often) {
+                TextView chip = text(fn, 12, TXT, false);
+                GradientDrawable cbg = new GradientDrawable();
+                cbg.setColor(CARD2);
+                cbg.setCornerRadius(dp(16));
+                cbg.setStroke(dp(1), LINE);
+                chip.setBackground(cbg);
+                chip.setPadding(dp(11), dp(6), dp(11), dp(6));
+                chip.setClickable(true);
+                // Az első üres összetevő-sorba írja be; ha nincs, nyit egy újat.
+                chip.setOnClickListener(v -> {
+                    for (EditText[] r : rows)
+                        if (r[0].getText().toString().trim().isEmpty()) {
+                            r[0].setText(fn);
+                            return;
+                        }
+                    addItemRow(itemsBox, rows);
+                    rows.get(rows.size() - 1)[0].setText(fn);
+                });
+                LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
+                clp.rightMargin = dp(6);
+                chipRow.addView(chip, clp);
+            }
+            android.widget.HorizontalScrollView hsv =
+                    new android.widget.HorizontalScrollView(this);
+            hsv.setHorizontalScrollBarEnabled(false);
+            hsv.addView(chipRow, new android.widget.FrameLayout.LayoutParams(-2, -2));
+            LinearLayout.LayoutParams hlp = lp();
+            hlp.topMargin = dp(8);
+            box.addView(hsv, hlp);
+        }
 
         Button more = ghost("＋  Összetevő");
         more.setTextSize(13.5f);
