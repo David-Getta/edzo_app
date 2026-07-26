@@ -1074,22 +1074,23 @@ public class DietActivity extends Activity {
                 }
                 final boolean isCustom = customNames.contains(f.name);
                 final String fn = f.name;
+                final Foods.Food food = f;
                 LinearLayout row = hbox();
                 row.setGravity(Gravity.CENTER_VERTICAL);
                 row.addView(text((isCustom ? "🖊 " : "") + f.name, 13.5f, TXT, isCustom),
                         new LinearLayout.LayoutParams(0, -2, 1f));
                 row.addView(text(f.kcal100 + " kcal · " + (Math.round(f.prot100 * 10) / 10.0)
                         + "g P /100g", 12, MUTED, false));
+                row.setClickable(true);
+                // Koppintásra rögtön naplózható, a tipikus adaggal előtöltve.
+                row.setOnClickListener(v -> logFoodSheet(food));
                 // Saját étel hosszú nyomásra törölhető.
-                if (isCustom) {
-                    row.setClickable(true);
-                    row.setOnLongClickListener(v -> {
-                        Foods.removeCustom(this, fn);
-                        Toast.makeText(this, "Saját étel törölve: " + fn,
-                                Toast.LENGTH_SHORT).show();
-                        return true;
-                    });
-                }
+                if (isCustom) row.setOnLongClickListener(v -> {
+                    Foods.removeCustom(this, fn);
+                    Toast.makeText(this, "Saját étel törölve: " + fn,
+                            Toast.LENGTH_SHORT).show();
+                    return true;
+                });
                 LinearLayout.LayoutParams rl = lp();
                 rl.topMargin = dp(7);
                 listV.addView(row, rl);
@@ -1106,10 +1107,57 @@ public class DietActivity extends Activity {
         });
         render.run();
         new Sheet(this, "Kalóriatáblázat 📖",
-                "kcal és fehérje 100 grammonként · a 🖊 sajátok hosszú nyomásra törölhetők")
+                "Koppints egy ételre a gyors naplózáshoz · a 🖊 sajátok hosszú nyomásra törölhetők")
                 .addCustom(box)
                 .addRow("＋", "Saját étel felvétele", "Név, kcal és fehérje 100 grammonként",
                         false, true, this::addCustomFoodSheet)
+                .addCancel()
+                .show();
+    }
+
+    /** Egy étel gyors naplózása a kalóriatáblázatból, a tipikus adaggal előtöltve. */
+    void logFoodSheet(final Foods.Food f) {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        final EditText gEt = input("Mennyiség (g)");
+        gEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        gEt.setText(String.valueOf(f.portion));
+        box.addView(gEt, lp());
+        final TextView preview = text("", 12.5f, MUTED, false);
+        preview.setPadding(dp(2), dp(8), 0, 0);
+        box.addView(preview);
+        final Runnable calc = () -> {
+            double g = parse(gEt.getText().toString());
+            if (g <= 0) { preview.setText(""); return; }
+            preview.setText("≈ " + Math.round(f.kcal100 * g / 100.0) + " kcal"
+                    + (f.prot100 > 0
+                        ? "  ·  " + Math.round(f.prot100 * g / 100.0) + " g fehérje" : ""));
+        };
+        gEt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) { calc.run(); }
+        });
+        calc.run();
+        new Sheet(this, f.name, f.kcal100 + " kcal / 100 g · tipikus adag " + f.portion + " g")
+                .addCustom(box)
+                .addPrimary("Naplózás most", () -> {
+                    double g = parse(gEt.getText().toString());
+                    if (g <= 0) {
+                        Toast.makeText(this, "Adj meg egy mennyiséget grammban.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    long now = System.currentTimeMillis();
+                    List<MealLog.Item> items = new ArrayList<>();
+                    items.add(new MealLog.Item(f.name, g, f.kcal100 * g / 100.0,
+                            f.prot100 * g / 100.0));
+                    MealLog.Meal meal = new MealLog.Meal(now, "", items, "");
+                    MealLog.add(this, meal);
+                    refresh();
+                    Ux.blazeCard(this, "🍽 Naplózva ✔  " + Math.round(meal.kcal()) + " kcal"
+                            + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
+                })
                 .addCancel()
                 .show();
     }
