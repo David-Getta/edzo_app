@@ -504,6 +504,11 @@ public class DietActivity extends Activity {
                     11.5f, MUTED, false);
             val.setGravity(Gravity.END);
             row.addView(val, new LinearLayout.LayoutParams(dp(52), -2));
+            if (sums[k] > 0) {
+                final long dTs = today0 - k * dayMs;
+                row.setClickable(true);
+                row.setOnClickListener(v -> daySheet(dTs));
+            }
             weekCard.addView(row, rl);
         }
     }
@@ -843,6 +848,40 @@ public class DietActivity extends Activity {
     double parse(String s) {
         try { return Double.parseDouble(s.trim().replace(',', '.')); }
         catch (Exception e) { return 0; }
+    }
+
+    /** Egy nap étkezéseinek gyors áttekintése (a heti sávra koppintva). */
+    void daySheet(long day0) {
+        long dayMs = 24L * 3600 * 1000;
+        List<MealLog.Meal> meals = MealLog.load(this);
+        java.util.Collections.sort(meals, (a, b2) -> Long.compare(a.ts, b2.ts));
+        double kSum = 0, pSum = 0;
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        SimpleDateFormat tf = new SimpleDateFormat("HH:mm", new Locale("hu"));
+        for (MealLog.Meal m : meals) {
+            if (m.ts < day0 || m.ts >= day0 + dayMs) continue;
+            kSum += m.kcal(); pSum += m.protein();
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            String title = m.name.isEmpty()
+                    ? (m.items.isEmpty() ? mealSlot(m.ts)
+                        : mealSlot(m.ts) + " · " + m.items.get(0).food)
+                    : m.name;
+            row.addView(text(tf.format(new Date(m.ts)) + "  " + title, 13.5f, TXT, false),
+                    new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text(Math.round(m.kcal()) + " kcal", 12.5f, MUTED, false));
+            LinearLayout.LayoutParams rl = lp();
+            rl.topMargin = dp(7);
+            box.addView(row, rl);
+        }
+        SimpleDateFormat hf = new SimpleDateFormat("MMMM d., EEEE", new Locale("hu"));
+        new Sheet(this, hf.format(new Date(day0)),
+                Math.round(kSum) + " kcal"
+                + (pSum > 0 ? " · " + Math.round(pSum) + " g fehérje" : ""))
+                .addCustom(box)
+                .addCancel()
+                .show();
     }
 
     /** Kereshető kalóriatáblázat a beépített étel-adatbázisból. */
