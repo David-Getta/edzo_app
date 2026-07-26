@@ -55,7 +55,10 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         // Pihenőnapon (nem tervezett edzésnapon) Blaze nem nyaggat.
         int dowIdx = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
         if (!Theme.isPlanDay(c, dowIdx)) return;
-        if (workedOutToday(c)) return;   // ma már edzett – nem nyaggatjuk
+        if (workedOutToday(c)) {         // ma már edzett – edzésért nem nyaggatjuk,
+            maybeDietReminder(c);        // de az üres étrend-naplóra még szólhatunk
+            return;
+        }
 
         String userName = c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getString("user_name", "");
         // A tegnapig tartó napi széria: ha van, Blaze kifejezetten arra figyelmeztet,
@@ -134,6 +137,61 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         b.addAction(new Notification.Action.Builder((android.graphics.drawable.Icon) null,
                 "▶ Edzés indítása", qpi).build());
         nm.notify(NOTIF_ID, b.build());
+    }
+
+    /**
+     * Ha ma már volt edzés, edzésért nem szólunk – de aki rendszeresen naplóz
+     * étrendet és ma még semmit nem írt be, annak Blaze küld egy halk emlékeztetőt.
+     * Csak akkor, ha az elmúlt héten legalább háromszor naplózott: alkalmi
+     * felhasználót nem nyaggatunk.
+     */
+    private static void maybeDietReminder(Context c) {
+        try {
+            long dayMs = 24L * 3600 * 1000;
+            long today = todayStart();
+            int lastWeek = 0;
+            for (MealLog.Meal m : MealLog.load(c)) {
+                if (m.ts >= today) return;                 // ma már naplózott – kész
+                if (m.ts >= today - 7 * dayMs) lastWeek++;
+            }
+            if (lastWeek < 3) return;                      // nem rendszeres naplózó
+
+            String text = "Ma még nem naplóztál étkezést. 🍽 Két koppintás, és megvan – "
+                    + "a falka figyeli a formádat is! 🐺";
+            NotificationManager nm =
+                    (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return;
+            if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(CHANNEL) == null) {
+                NotificationChannel ch = new NotificationChannel(CHANNEL, "Blaze üzenetei",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                ch.setDescription("A kabalafigura napi motiváló üzenetei");
+                nm.createNotificationChannel(ch);
+            }
+            Intent open = new Intent(c, DietActivity.class);
+            open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
+            PendingIntent pi = PendingIntent.getActivity(c, REQ + 2, open, flags);
+            Notification.Builder b = Build.VERSION.SDK_INT >= 26
+                    ? new Notification.Builder(c, CHANNEL)
+                    : new Notification.Builder(c);
+            b.setContentTitle("Blaze 🐺🍽")
+                    .setContentText(text)
+                    .setStyle(new Notification.BigTextStyle().bigText(text))
+                    .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                    .setAutoCancel(true)
+                    .setContentIntent(pi);
+            try {
+                int bid = c.getResources().getIdentifier("blaze", "drawable", c.getPackageName());
+                android.graphics.Bitmap bm = bid == 0 ? null
+                        : android.graphics.BitmapFactory.decodeResource(c.getResources(), bid);
+                if (bm != null && bm.getWidth() > 1) b.setLargeIcon(bm);
+            } catch (Exception ignored) {}
+            b.addAction(new Notification.Action.Builder((android.graphics.drawable.Icon) null,
+                    "🍽 Étrend megnyitása", pi).build());
+            nm.notify(NOTIF_ID + 1, b.build());
+        } catch (Exception ignored) {}
     }
 
     /** Hány egymást követő napon edzett tegnappal bezárólag (ma nélkül). */
