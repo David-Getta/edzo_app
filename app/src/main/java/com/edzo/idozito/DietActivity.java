@@ -31,7 +31,7 @@ public class DietActivity extends Activity {
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     LinearLayout listBox;
-    LinearLayout todayCard, weekCard, quickBox;
+    LinearLayout todayCard, weekCard, quickBox, waterCard;
     static final int REQ_PHOTO = 61;
     long pendingPhotoTs;
 
@@ -56,6 +56,12 @@ public class DietActivity extends Activity {
         todayCard.setClickable(true);
         todayCard.setOnClickListener(v -> editGoalDialog());
         col.addView(todayCard, lp());
+        col.addView(gap(10));
+
+        // Vízbevitel-számláló (koppintásra beállítható a napi cél).
+        waterCard = card();
+        waterCard.setPadding(dp(16), dp(12), dp(16), dp(12));
+        col.addView(waterCard, lp());
         col.addView(gap(10));
 
         // Elmúlt 7 nap kcal-sávjai.
@@ -89,6 +95,7 @@ public class DietActivity extends Activity {
 
     void refresh() {
         refreshToday();
+        refreshWater();
         refreshWeek();
         refreshQuick();
         listBox.removeAllViews();
@@ -337,6 +344,87 @@ public class DietActivity extends Activity {
             hint.setPadding(0, dp(4), 0, 0);
             todayCard.addView(hint);
         }
+    }
+
+    /** A mai nap víz-kulcsa (napváltáskor magától nullázódik). */
+    String waterKey() {
+        Calendar c = Calendar.getInstance();
+        return "water_" + (c.get(Calendar.YEAR) * 10000
+                + (c.get(Calendar.MONTH) + 1) * 100 + c.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /** Vízbevitel-kártya: pohár (2,5 dl) hozzáadása/levonása, cél haladássávval. */
+    void refreshWater() {
+        waterCard.removeAllViews();
+        final android.content.SharedPreferences p = getSharedPreferences("edzo", MODE_PRIVATE);
+        int cl = p.getInt(waterKey(), 0);          // centiliterben (1 pohár = 25 cl)
+        int goalCl = p.getInt("water_goal_cl", 200);
+        boolean done = cl >= goalCl;
+        LinearLayout top = hbox();
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        TextView label = text("💧 Víz ma: " + (cl / 100.0) + " / " + (goalCl / 100.0) + " l"
+                + (done ? "  ✔" : ""), 13.5f, done ? Theme.accent(this) : TXT, true);
+        label.setClickable(true);
+        label.setOnClickListener(v -> waterGoalDialog());
+        top.addView(label, new LinearLayout.LayoutParams(0, -2, 1f));
+        TextView minus = text("−", 20, MUTED, true);
+        minus.setPadding(dp(12), dp(2), dp(12), dp(2));
+        minus.setClickable(true);
+        minus.setOnClickListener(v -> {
+            int cur = p.getInt(waterKey(), 0);
+            p.edit().putInt(waterKey(), Math.max(0, cur - 25)).apply();
+            refreshWater();
+        });
+        top.addView(minus);
+        TextView plus = text("＋ pohár", 14, Theme.accent(this), true);
+        plus.setPadding(dp(12), dp(2), dp(2), dp(2));
+        plus.setClickable(true);
+        plus.setOnClickListener(v -> {
+            int cur = p.getInt(waterKey(), 0);
+            p.edit().putInt(waterKey(), cur + 25).apply();
+            refreshWater();
+            if (cur < goalCl && cur + 25 >= goalCl)
+                Ux.blazeCard(this, "💧 Napi vízcél megvan – szép munka!");
+        });
+        top.addView(plus);
+        waterCard.addView(top, lp());
+        LinearLayout barBg = hbox();
+        GradientDrawable bgd = new GradientDrawable();
+        bgd.setColor(0x22FFFFFF);
+        bgd.setCornerRadius(dp(4));
+        barBg.setBackground(bgd);
+        View fill = new View(this);
+        GradientDrawable fgd = new GradientDrawable();
+        fgd.setColor(done ? 0xFF22C55E : 0xFF38BDF8);
+        fgd.setCornerRadius(dp(4));
+        fill.setBackground(fgd);
+        float f = (float) Math.max(cl > 0 ? 0.02 : 0.0, Math.min(1.0, cl / (double) goalCl));
+        barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(6), f));
+        barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(6), 1f - f));
+        LinearLayout.LayoutParams blp = lp();
+        blp.topMargin = dp(7);
+        waterCard.addView(barBg, blp);
+    }
+
+    void waterGoalDialog() {
+        final EditText et = input("Napi vízcél (dl, pl. 20)");
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        int cur = getSharedPreferences("edzo", MODE_PRIVATE).getInt("water_goal_cl", 200);
+        et.setText(String.valueOf(cur / 10));
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(et, lp());
+        new Sheet(this, "Napi vízcél 💧", "Egy pohár = 2,5 dl")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    int g = (int) parse(et.getText().toString()); // dl-ben kérjük
+                    if (g < 5) g = 5;
+                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                            .putInt("water_goal_cl", g * 10).apply();
+                    refreshWater();
+                })
+                .addCancel()
+                .show();
     }
 
     /** Az elmúlt 7 nap napi kcal-összegei vízszintes sávokkal. */
