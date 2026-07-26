@@ -277,6 +277,11 @@ public class SettingsActivity extends Activity {
         });
         col.addView(updates);
 
+        col.addView(gap(10));
+        Button news = ghost("🆕  Újdonságok");
+        news.setOnClickListener(v -> whatsNewSheet());
+        col.addView(news);
+
         // App-verzió kijelzése (a telepített csomagból olvasva)
         String ver = "";
         long vc = 0;
@@ -294,6 +299,23 @@ public class SettingsActivity extends Activity {
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffoldNav(this, sv, "bg_settings", 5));
         col.post(() -> Ux.enterChildren(col, 30, 45));
+    }
+
+    /** A legutóbbi fejlesztések rövid listája. */
+    void whatsNewSheet() {
+        String[][] items = {
+            {"🍽", "Étrend-napló", "Írd be, mit ettél – kcal és fehérje magától számolva, fotóval, okos elosztással."},
+            {"🖊", "Saját ételek", "Vedd fel a saját ételeid a kalóriatáblázatba – a felismerés is megtalálja őket."},
+            {"💧", "Vízszámláló", "Pohár-alapú vízkövetés céllal, widget-gyorsgombbal és Hidratált jelvénnyel."},
+            {"🎯", "Új kihívások", "Fehérje-cél, vízcél és étkezés-naplózás típusú napi kihívások."},
+            {"📊", "Étrend-statisztika", "7 napos átlagok, cél-tartás és napi részletek a Statisztika oldalon."},
+            {"🔍", "Keresés & táblázat", "Keresés a naplóban és élőben szűrhető kalóriatáblázat."},
+            {"📤", "Megosztás", "Napi étrend és heti összefoglaló egy koppintással megosztható."},
+        };
+        Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
+        for (String[] it : items)
+            sh.addRow(it[0], it[1], it[2], false, true, () -> {});
+        sh.addCancel().show();
     }
 
     // ---------------- CSV export ----------------
