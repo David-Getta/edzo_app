@@ -960,9 +960,16 @@ public class DietActivity extends Activity {
         SimpleDateFormat hf = new SimpleDateFormat("MMMM d., EEEE", new Locale("hu"));
         final String dayLabel = hf.format(new Date(day0));
         final double kS = kSum, pS = pSum;
+        // Az adott nap vize (ha akkor ment a számláló).
+        Calendar wc = Calendar.getInstance();
+        wc.setTimeInMillis(day0);
+        int dayCl = getSharedPreferences("edzo", MODE_PRIVATE).getInt(
+                "water_" + (wc.get(Calendar.YEAR) * 10000
+                        + (wc.get(Calendar.MONTH) + 1) * 100 + wc.get(Calendar.DAY_OF_MONTH)), 0);
         new Sheet(this, dayLabel,
                 Math.round(kSum) + " kcal"
-                + (pSum > 0 ? " · " + Math.round(pSum) + " g fehérje" : ""))
+                + (pSum > 0 ? " · " + Math.round(pSum) + " g fehérje" : "")
+                + (dayCl > 0 ? " · 💧 " + (dayCl / 100.0) + " l" : ""))
                 .addCustom(box)
                 .addRow("📤", "Megosztás", "A nap étrendje szövegként",
                         false, true, () -> shareDay(day0, dayLabel, kS, pS))
