@@ -358,19 +358,31 @@ public class SettingsActivity extends Activity {
             Toast.makeText(this, "Nincs étrend-bejegyzés.", Toast.LENGTH_SHORT).show();
             return;
         }
+        // Időrendben (legrégebbi elöl), hogy a napi bontás olvasható legyen.
+        java.util.Collections.sort(meals, (a, b) -> Long.compare(a.ts, b.ts));
         StringBuilder sb = new StringBuilder();
-        sb.append("datum;etkezes;osszetevo;gramm;kcal;feherje_g\n");
+        sb.append("datum;etkezes;osszetevo;gramm;kcal;feherje_g;viz_l\n");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        SimpleDateFormat dOnly = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        // A víz napi adat, nem étkezésenkénti: minden nap első sorába írjuk.
+        java.util.HashSet<String> waterWritten = new java.util.HashSet<>();
         for (MealLog.Meal m : meals) {
             String when = df.format(new Date(m.ts));
+            String day = dOnly.format(new Date(m.ts));
             String name = (m.name.isEmpty() ? "-" : m.name).replace(';', ',');
             for (MealLog.Item it : m.items) {
+                String water = "";
+                if (waterWritten.add(day)) {
+                    int cl = Water.clOn(this, m.ts);
+                    if (cl > 0) water = String.format(Locale.US, "%.2f", cl / 100.0);
+                }
                 sb.append(when).append(';')
                   .append(name).append(';')
                   .append(it.food.replace(';', ',')).append(';')
                   .append(Math.round(it.grams)).append(';')
                   .append(Math.round(it.kcal)).append(';')
-                  .append(it.protein > 0 ? String.valueOf(Math.round(it.protein)) : "").append('\n');
+                  .append(it.protein > 0 ? String.valueOf(Math.round(it.protein)) : "").append(';')
+                  .append(water).append('\n');
             }
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_etrend.csv", "text/csv");
