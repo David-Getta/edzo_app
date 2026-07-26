@@ -272,6 +272,15 @@ public class DietActivity extends Activity {
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
                 sh.addRow("🖼", "Fotó a galériából",
                         "Korábban készült kép hozzárendelése", false, true, () -> pickPhoto(m.ts));
+                if (!m.photo.isEmpty())
+                    sh.addRow("🚫", "Fotó eltávolítása", "A bejegyzés megmarad, csak a kép tűnik el",
+                            false, true, () -> {
+                                MealLog.updatePhoto(this, m.ts, "");
+                                MealLog.cleanupOrphanPhotos(this);
+                                refresh();
+                                Toast.makeText(this, "Fotó eltávolítva.",
+                                        Toast.LENGTH_SHORT).show();
+                            });
                 sh.addRow("🕒", "Időpont módosítása", "Ha máskor etted, mint amikor beírtad",
                         false, true, () -> editMealTime(m));
                 boolean fav = MealLog.isFav(this, m);
