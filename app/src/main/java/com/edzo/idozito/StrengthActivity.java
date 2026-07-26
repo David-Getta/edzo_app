@@ -39,6 +39,10 @@ public class StrengthActivity extends Activity {
 
     LinearLayout recordsBox, listBox, summaryBox;
     EditText searchEt;
+
+    /** Egyszerre ennyi bejegyzés-kártya épül fel; a gomb továbbiakat tölt be. */
+    static final int PAGE = 60;
+    int shownLimit = PAGE;
     android.widget.FrameLayout rootFl; // konfetti-ünnepléshez (új rekord)
 
     // Pihenő-időzítő a sorozatok között
@@ -224,7 +228,10 @@ public class StrengthActivity extends Activity {
             }
         }
         SimpleDateFormat fmt = new SimpleDateFormat("MM. dd. HH:mm", new Locale("hu"));
-        for (int i = 0; i < all.size(); i++) {
+        // Az erősítő naplónak nincs felső korlátja, évek alatt sok száz bejegyzés
+        // gyűlhet – ennyi kártyát egyszerre felépíteni megakasztaná a képernyőt.
+        int limit = Math.min(all.size(), shownLimit);
+        for (int i = 0; i < limit; i++) {
             final StrengthLog.Entry e = all.get(i);
             LinearLayout card = card();
             LinearLayout inner = vbox();
@@ -255,6 +262,14 @@ public class StrengthActivity extends Activity {
                     .addCancel().show());
             listBox.addView(card, lp());
             listBox.addView(gap(10));
+        }
+        if (all.size() > limit) {
+            final int remaining = all.size() - limit;
+            Button more = ghost("További " + Math.min(remaining, PAGE) + " bejegyzés  ("
+                    + remaining + " van még)");
+            more.setTextSize(13.5f);
+            more.setOnClickListener(v -> { shownLimit += PAGE; refreshList(); });
+            listBox.addView(more);
         }
     }
 
