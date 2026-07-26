@@ -32,6 +32,7 @@ public class DietActivity extends Activity {
 
     LinearLayout listBox;
     LinearLayout todayCard, weekCard, quickBox, waterCard;
+    EditText searchEt;
     static final int REQ_PHOTO = 61, REQ_PICK = 62;
     long pendingPhotoTs;
 
@@ -83,6 +84,15 @@ public class DietActivity extends Activity {
         col.addView(gap(18));
 
         col.addView(text("Étkezések", 15.5f, TXT, true));
+        col.addView(gap(8));
+        searchEt = input("Keresés a naplóban (pl. csirke)");
+        searchEt.setTextSize(13);
+        searchEt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) { refreshList(); }
+        });
+        col.addView(searchEt, lp());
         col.addView(gap(10));
         listBox = vbox();
         col.addView(listBox, lp());
@@ -119,13 +129,30 @@ public class DietActivity extends Activity {
         refreshWater();
         refreshWeek();
         refreshQuick();
+        refreshList();
+    }
+
+    void refreshList() {
         listBox.removeAllViews();
         List<MealLog.Meal> meals = MealLog.load(this);
+        // Szűrés a kereső alapján (név vagy bármely összetevő).
+        String q = searchEt == null ? "" : Foods.norm(searchEt.getText().toString().trim());
+        if (!q.isEmpty()) {
+            List<MealLog.Meal> flt = new ArrayList<>();
+            for (MealLog.Meal m : meals) {
+                boolean hit = Foods.norm(m.name).contains(q);
+                if (!hit) for (MealLog.Item it : m.items)
+                    if (Foods.norm(it.food).contains(q)) { hit = true; break; }
+                if (hit) flt.add(m);
+            }
+            meals = flt;
+        }
         // Mindig időrendben (szerkesztés után se ugorjon a lista elejére a bejegyzés).
         java.util.Collections.sort(meals, (a, b2) -> Long.compare(b2.ts, a.ts));
         if (meals.isEmpty()) {
-            listBox.addView(text("Még nincs bejegyzés. Add hozzá az első étkezésed fent!",
-                    13.5f, MUTED, false));
+            listBox.addView(text(q.isEmpty()
+                    ? "Még nincs bejegyzés. Add hozzá az első étkezésed fent!"
+                    : "Nincs a keresésre illő bejegyzés.", 13.5f, MUTED, false));
             return;
         }
         SimpleDateFormat df = new SimpleDateFormat("MMM d. · HH:mm", new Locale("hu"));
