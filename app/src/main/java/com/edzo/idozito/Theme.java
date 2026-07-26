@@ -59,10 +59,34 @@ public final class Theme {
     public static String planDays(Context c) { return p(c).getString("plan_days", ""); }
     /** Edzésnap-e az adott nap (0=hétfő .. 6=vasárnap)? Üres terv = minden nap az. */
     public static boolean isPlanDay(Context c, int dowIdx) {
+        if (dowIdx < 0 || dowIdx > 6) return false;
+        return planFlags(c)[dowIdx];
+    }
+
+    // A széria- és terv-számítások naponként hívják ezt (a planWeeks egyetlen
+    // futása 728-szor), ezért a vesszős listát nem bontjuk szét újra és újra:
+    // a nyers szövegre kötve eltesszük a hét hét napjának kész igen/nem tábláját.
+    private static String planRaw;
+    private static boolean[] planCache;
+
+    private static boolean[] planFlags(Context c) {
         String s = planDays(c);
-        if (s.isEmpty()) return true;
-        for (String d : s.split(",")) if (String.valueOf(dowIdx).equals(d)) return true;
-        return false;
+        boolean[] cached = planCache;
+        if (cached != null && s.equals(planRaw)) return cached;
+        boolean[] f = new boolean[7];
+        if (s.isEmpty()) {
+            java.util.Arrays.fill(f, true);   // üres terv = minden nap edzésnap
+        } else {
+            for (String d : s.split(",")) {
+                try {
+                    int i = Integer.parseInt(d.trim());
+                    if (i >= 0 && i <= 6) f[i] = true;
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        planRaw = s;
+        planCache = f;
+        return f;
     }
     public static void setStr(Context c, String key, String v) { p(c).edit().putString(key, v).apply(); bumpRev(c); }
     /** Élő (mozgó) háttér-animáció be/ki. */
