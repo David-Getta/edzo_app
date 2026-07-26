@@ -275,6 +275,18 @@ public class DietActivity extends Activity {
                         "Korábban készült kép hozzárendelése", false, true, () -> pickPhoto(m.ts));
                 sh.addRow("🕒", "Időpont módosítása", "Ha máskor etted, mint amikor beírtad",
                         false, true, () -> editMealTime(m));
+                boolean fav = MealLog.isFav(this, m);
+                sh.addRow(fav ? "★" : "☆",
+                        fav ? "Levétel a kedvencekről" : "Kedvencnek jelöl",
+                        fav ? "Nem marad a gyors csipek közt"
+                            : "Mindig elöl lesz a gyors naplózásban",
+                        false, true, () -> {
+                            if (fav) MealLog.removeFav(this, MealLog.favLabel(m));
+                            else MealLog.addFav(this, m);
+                            refresh();
+                            Ux.blazeCard(this, fav ? "☆ Levéve a kedvencekről"
+                                    : "★ Kedvenc lett: " + MealLog.favLabel(m));
+                        });
                 sh.addDestructive("🗑 Törlés", () -> { MealLog.removeByTs(this, m.ts); refresh(); });
                 sh.addCancel().show();
             });
@@ -283,13 +295,22 @@ public class DietActivity extends Activity {
         }
     }
 
-    /** Gyors-naplózás: a leggyakoribb étkezések csipjei, egy koppintásra újra. */
+    /** Gyors-naplózás: előbb a kedvencek, utána a leggyakoribb étkezések csipjei. */
     void refreshQuick() {
         quickBox.removeAllViews();
-        List<MealLog.Meal> meals = meals();
+        // A kedvencek mindig elöl, kézzel kijelölve.
+        java.util.LinkedHashMap<String, MealLog.Meal> picks = new java.util.LinkedHashMap<>();
+        java.util.HashSet<String> favLabels = new java.util.HashSet<>();
+        for (MealLog.Meal f : MealLog.loadFavs(this)) {
+            if (f.items.isEmpty()) continue;
+            String lbl = MealLog.favLabel(f);
+            picks.put(lbl, f);
+            favLabels.add(lbl);
+        }
+        // Utána a legalább kétszer naplózott, gyakori étkezések (max 5 csip összesen).
         java.util.LinkedHashMap<String, MealLog.Meal> latest = new java.util.LinkedHashMap<>();
         java.util.HashMap<String, Integer> count = new java.util.HashMap<>();
-        for (MealLog.Meal m : meals) {
+        for (MealLog.Meal m : meals()) {
             if (m.items.isEmpty()) continue;
             String key = m.name.isEmpty() ? m.items.get(0).food : m.name;
             Integer c = count.get(key);
@@ -298,30 +319,38 @@ public class DietActivity extends Activity {
         }
         List<String> keys = new ArrayList<>(latest.keySet());
         java.util.Collections.sort(keys, (a, b2) -> count.get(b2) - count.get(a));
-        int shown = 0;
-        LinearLayout row = null;
         for (String key : keys) {
-            if (count.get(key) < 2 || shown >= 3) break; // csak ami tényleg visszatérő
-            final MealLog.Meal src = latest.get(key);
-            if (row == null) {
-                quickBox.addView(gap(10));
-                TextView t = text("Gyakoriak – koppints az újranaplózáshoz", 11.5f, MUTED, false);
-                quickBox.addView(t);
-                row = hbox();
-                android.widget.HorizontalScrollView hsv =
-                        new android.widget.HorizontalScrollView(this);
-                hsv.setHorizontalScrollBarEnabled(false);
-                hsv.addView(row, new android.widget.FrameLayout.LayoutParams(-2, -2));
-                LinearLayout.LayoutParams rl = lp();
-                rl.topMargin = dp(6);
-                quickBox.addView(hsv, rl);
-            }
-            TextView chip = text((key.length() > 16 ? key.substring(0, 15) + "…" : key)
-                    + " · " + Math.round(src.kcal()) + " kcal", 12, TXT, true);
+            if (picks.size() >= 5) break;
+            if (count.get(key) < 2 || picks.containsKey(key)) continue;
+            picks.put(key, latest.get(key));
+        }
+        if (picks.isEmpty()) return;
+
+        quickBox.addView(gap(10));
+        quickBox.addView(text(favLabels.isEmpty()
+                ? "Gyakoriak – koppints az újranaplózáshoz"
+                : "Kedvencek és gyakoriak – koppints az újranaplózáshoz",
+                11.5f, MUTED, false));
+        LinearLayout row = hbox();
+        android.widget.HorizontalScrollView hsv = new android.widget.HorizontalScrollView(this);
+        hsv.setHorizontalScrollBarEnabled(false);
+        hsv.addView(row, new android.widget.FrameLayout.LayoutParams(-2, -2));
+        LinearLayout.LayoutParams rl = lp();
+        rl.topMargin = dp(6);
+        quickBox.addView(hsv, rl);
+
+        for (java.util.Map.Entry<String, MealLog.Meal> e : picks.entrySet()) {
+            final String key = e.getKey();
+            final MealLog.Meal src = e.getValue();
+            final boolean isFav = favLabels.contains(key);
+            TextView chip = text((isFav ? "★ " : "")
+                    + (key.length() > 16 ? key.substring(0, 15) + "…" : key)
+                    + " · " + Math.round(src.kcal()) + " kcal", 12,
+                    isFav ? Theme.accent(this) : TXT, true);
             GradientDrawable cbg = new GradientDrawable();
             cbg.setColor(CARD2);
             cbg.setCornerRadius(dp(18));
-            cbg.setStroke(dp(1), LINE);
+            cbg.setStroke(dp(1), isFav ? Theme.accent(this) : LINE);
             chip.setBackground(cbg);
             chip.setPadding(dp(12), dp(8), dp(12), dp(8));
             chip.setClickable(true);
@@ -331,10 +360,17 @@ public class DietActivity extends Activity {
                 refresh();
                 Ux.blazeCard(this, "🍽 Újra naplózva ✔  " + Math.round(src.kcal()) + " kcal");
             });
+            // Kedvencet hosszú nyomással le lehet venni a listáról.
+            if (isFav) chip.setOnLongClickListener(v -> {
+                MealLog.removeFav(this, key);
+                refresh();
+                Toast.makeText(this, "☆ Levéve a kedvencekről: " + key,
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            });
             LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
             clp.rightMargin = dp(8);
             row.addView(chip, clp);
-            shown++;
         }
     }
 

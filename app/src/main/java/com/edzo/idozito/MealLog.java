@@ -131,6 +131,88 @@ public final class MealLog {
         save(c, l);
     }
 
+    // ---------- Kedvencek ----------
+    // Az étkezés pillanatképe (név + összetevők) külön listában, hogy az eredeti
+    // bejegyzés törlése után is naplózható maradjon egy koppintással.
+
+    static final String FAV_KEY = "fav_meals";
+
+    public static List<Meal> loadFavs(Context c) {
+        List<Meal> out = new ArrayList<>();
+        try {
+            JSONArray a = new JSONArray(c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                    .getString(FAV_KEY, "[]"));
+            for (int i = 0; i < a.length(); i++) {
+                JSONObject o = a.optJSONObject(i);
+                if (o == null) continue;
+                List<Item> items = new ArrayList<>();
+                JSONArray ia = o.optJSONArray("items");
+                if (ia != null) for (int j = 0; j < ia.length(); j++) {
+                    JSONObject io = ia.optJSONObject(j);
+                    if (io == null) continue;
+                    items.add(new Item(io.optString("f", "Étel"),
+                            io.optDouble("g", 0), io.optDouble("k", 0), io.optDouble("p", 0)));
+                }
+                out.add(new Meal(o.optLong("ts"), o.optString("name", ""), items, ""));
+            }
+        } catch (Exception ignored) {}
+        return out;
+    }
+
+    /** A kedvencek címkéje: a név, vagy ha üres, az első összetevő. */
+    public static String favLabel(Meal m) {
+        if (!m.name.isEmpty()) return m.name;
+        return m.items.isEmpty() ? "Étkezés" : m.items.get(0).food;
+    }
+
+    public static boolean isFav(Context c, Meal m) {
+        String lbl = favLabel(m);
+        for (Meal f : loadFavs(c)) if (favLabel(f).equalsIgnoreCase(lbl)) return true;
+        return false;
+    }
+
+    /** Kedvencnek jelölés (azonos címkéjű korábbit cserél). Max 8 fér el. */
+    public static void addFav(Context c, Meal m) {
+        List<Meal> favs = loadFavs(c);
+        String lbl = favLabel(m);
+        for (int i = favs.size() - 1; i >= 0; i--)
+            if (favLabel(favs.get(i)).equalsIgnoreCase(lbl)) favs.remove(i);
+        favs.add(0, new Meal(m.ts, m.name, m.items, ""));
+        while (favs.size() > 8) favs.remove(favs.size() - 1);
+        saveFavs(c, favs);
+    }
+
+    public static void removeFav(Context c, String label) {
+        List<Meal> favs = loadFavs(c);
+        for (int i = favs.size() - 1; i >= 0; i--)
+            if (favLabel(favs.get(i)).equalsIgnoreCase(label)) favs.remove(i);
+        saveFavs(c, favs);
+    }
+
+    static void saveFavs(Context c, List<Meal> favs) {
+        JSONArray a = new JSONArray();
+        for (Meal m : favs) {
+            try {
+                JSONObject o = new JSONObject();
+                o.put("ts", m.ts);
+                o.put("name", m.name);
+                JSONArray ia = new JSONArray();
+                for (Item i : m.items) {
+                    JSONObject io = new JSONObject();
+                    io.put("f", i.food);
+                    io.put("g", i.grams);
+                    io.put("k", i.kcal);
+                    if (i.protein > 0) io.put("p", i.protein);
+                    ia.put(io);
+                }
+                o.put("items", ia);
+                a.put(o);
+            } catch (Exception ignored) {}
+        }
+        c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString(FAV_KEY, a.toString()).apply();
+    }
+
     /** Árván maradt meal_*.jpg fájlok törlése a belső tárból. */
     public static void cleanupOrphanPhotos(Context c) {
         try {
