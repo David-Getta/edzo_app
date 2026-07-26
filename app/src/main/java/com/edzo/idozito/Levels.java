@@ -23,11 +23,45 @@ public final class Levels {
         return xp + 8;
     }
 
-    /** Teljes XP: egyesített napló + bónuszok (pl. teljesített napi kihívások). */
+    /**
+     * Teljes XP: egyesített napló + erősítő munka + bónuszok (pl. teljesített
+     * napi kihívások).
+     */
     public static long totalXp(android.content.Context c) {
         long bonus = c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
                 .getLong("bonus_xp", 0);
-        return totalXp(History.loadAll(c)) + bonus;
+        return totalXp(History.loadAll(c)) + bonus + strengthXp(StrengthLog.load(c));
+    }
+
+    /** Egy sorozat XP-je, és a napi felső határ az erősítő munkára. */
+    static final int XP_PER_SET = 2, MAX_STRENGTH_DAY_XP = 40;
+
+    /**
+     * Az erősítő edzések XP-je a ledolgozott sorozatok alapján. Az egyesített
+     * naplóból egy erősítő nap csak az alap-XP-t hozza (egy edzés = egy nap),
+     * ezért a tényleges munkát itt ismerjük el – különben egy órás termes edzés
+     * kevesebbet érne, mint egy tízperces séta.
+     *
+     * Naponta van felső határ, hogy a sok apró bejegyzés ne legyen farmolható.
+     */
+    public static long strengthXp(java.util.List<StrengthLog.Entry> log) {
+        java.util.HashMap<Long, Integer> setsPerDay = new java.util.HashMap<>();
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        for (StrengthLog.Entry e : log) {
+            if (e.sets == null || e.sets.isEmpty()) continue;
+            c.setTimeInMillis(e.ts);
+            c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            c.set(java.util.Calendar.MINUTE, 0);
+            c.set(java.util.Calendar.SECOND, 0);
+            c.set(java.util.Calendar.MILLISECOND, 0);
+            long day = c.getTimeInMillis();
+            Integer prev = setsPerDay.get(day);
+            setsPerDay.put(day, (prev == null ? 0 : prev) + e.sets.size());
+        }
+        long xp = 0;
+        for (int sets : setsPerDay.values())
+            xp += Math.min(MAX_STRENGTH_DAY_XP, (long) sets * XP_PER_SET);
+        return xp;
     }
 
     /** Bónusz-XP jóváírása (pl. kihívás-teljesítéskor). */

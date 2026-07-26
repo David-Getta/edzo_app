@@ -52,6 +52,47 @@ public class LevelsTest {
                 Levels.xpForSession(1800, 5000) > Levels.xpForSession(1800, -1));
     }
 
+    // --- Erősítő XP ---
+
+    private static StrengthLog.Entry gym(int daysAgo, int sets) {
+        java.util.List<StrengthLog.SetEntry> l = new java.util.ArrayList<>();
+        for (int i = 0; i < sets; i++) l.add(new StrengthLog.SetEntry(10, 50));
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(java.util.Calendar.HOUR_OF_DAY, 12);
+        c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        c.add(java.util.Calendar.DAY_OF_YEAR, -daysAgo);
+        return new StrengthLog.Entry(c.getTimeInMillis(), "Guggolás", l);
+    }
+
+    @Test public void strengthXpFollowsTheWorkDone() {
+        assertEquals(0, Levels.strengthXp(new java.util.ArrayList<StrengthLog.Entry>()));
+        assertEquals(6, Levels.strengthXp(java.util.Arrays.asList(gym(0, 3))));
+        // Több gyakorlat egy napon összeadódik.
+        assertEquals(10, Levels.strengthXp(java.util.Arrays.asList(gym(0, 3), gym(0, 2))));
+    }
+
+    @Test public void aSingleDayCannotBeFarmedForever() {
+        // 100 sorozat egy napon is csak a napi maximumot hozza.
+        assertEquals(Levels.MAX_STRENGTH_DAY_XP, Levels.strengthXp(
+                java.util.Arrays.asList(gym(0, 100))));
+        // A határ NAPONKÉNT él, két nap kétszer annyit hozhat.
+        assertEquals(2L * Levels.MAX_STRENGTH_DAY_XP, Levels.strengthXp(
+                java.util.Arrays.asList(gym(0, 100), gym(1, 100))));
+    }
+
+    @Test public void aGymDayIsWorthAboutAsMuchAsARun() {
+        // 15 sorozat (≈5 gyakorlat) + az egyesített naplóból járó alap-XP
+        // legyen egy nagyságrendben egy félórás edzéssel – különben a
+        // súlyzózás láthatatlan maradna a szintekben.
+        long gymDay = Levels.strengthXp(java.util.Arrays.asList(gym(0, 15)))
+                + Levels.xpForSession(0, -1);
+        long halfHourRun = Levels.xpForSession(1800, -1);
+        assertTrue("a termes nap nem érhet nagyságrenddel kevesebbet",
+                gymDay >= halfHourRun / 2 && gymDay <= halfHourRun * 2);
+    }
+
     @Test public void xpToNextCountsDownToTheThreshold() {
         long need = Levels.xpForLevel(5);
         assertEquals("egy XP hiányzik a szintlépéshez", 1, Levels.xpToNext(need - 1));
