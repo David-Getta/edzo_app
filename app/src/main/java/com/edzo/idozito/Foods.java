@@ -256,6 +256,73 @@ public final class Foods {
         return null;
     }
 
+    /** Egy felismert étel a szövegben, a hozzá tartozó grammal (0 = nem volt megadva). */
+    public static final class Hit {
+        public final Food food;
+        public final double grams;
+        Hit(Food food, double grams) { this.food = food; this.grams = grams; }
+    }
+
+    /**
+     * Ételek felismerése a beírt szövegből úgy, hogy a mellettük álló
+     * gramm-mennyiséget is kiolvassuk: „150 g csirkemell rizzsel",
+     * „csirkemell 150g, rizs 200 g". Egy gramm-érték ahhoz az ételhez tartozik,
+     * amelyik a szövegben a legközelebb áll hozzá (előtte vagy utána).
+     * Ahol nincs szám, a gramm 0 marad, és a hívó dönt (közös adag / tipikus adag).
+     */
+    public static List<Hit> parse(android.content.Context c, String query) {
+        List<Food> foods = findAll(c, query);
+        List<Hit> out = new ArrayList<>();
+        if (foods.isEmpty()) return out;
+
+        String q = norm(query);
+        // Az ételek szövegbeli helye (a findAll már sorrendben adja őket).
+        List<Integer> foodPos = new ArrayList<>();
+        for (Food f : foods) {
+            int best = -1;
+            for (String st : f.stems) {
+                int p = q.indexOf(norm(st));
+                if (p >= 0 && (best < 0 || p < best)) best = p;
+            }
+            foodPos.add(best);
+        }
+        // Gramm-értékek kigyűjtése: szám + (opcionális szóköz) + "g"/"gr"/"dkg".
+        List<Integer> numPos = new ArrayList<>();
+        List<Double> numVal = new ArrayList<>();
+        int i = 0;
+        while (i < q.length()) {
+            if (!Character.isDigit(q.charAt(i))) { i++; continue; }
+            int start = i;
+            while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+            double val;
+            try { val = Double.parseDouble(q.substring(start, i)); }
+            catch (NumberFormatException e) { continue; }
+            int j = i;
+            while (j < q.length() && q.charAt(j) == ' ') j++;
+            // dkg előbb, különben a "g" ág nyelné el
+            if (q.startsWith("dkg", j)) { numPos.add(start); numVal.add(val * 10); i = j + 3; }
+            else if (q.startsWith("gramm", j)) { numPos.add(start); numVal.add(val); i = j + 5; }
+            else if (q.startsWith("gr", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
+            else if (q.startsWith("g", j)
+                    && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
+                numPos.add(start); numVal.add(val); i = j + 1;
+            }
+        }
+        double[] grams = new double[foods.size()];
+        // Minden gramm-érték a hozzá legközelebbi ételhez kerül, amelyiknek még nincs.
+        for (int n = 0; n < numPos.size(); n++) {
+            int bestIdx = -1, bestDist = Integer.MAX_VALUE;
+            for (int k = 0; k < foods.size(); k++) {
+                if (grams[k] > 0 || foodPos.get(k) < 0) continue;
+                int d = Math.abs(foodPos.get(k) - numPos.get(n));
+                if (d < bestDist) { bestDist = d; bestIdx = k; }
+            }
+            if (bestIdx >= 0) grams[bestIdx] = numVal.get(n);
+        }
+        for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
+        return out;
+    }
+
     /** Az összes étel, ami a szövegben felismerhető (a szöveg sorrendjében, ismétlés nélkül). */
     public static List<Food> findAll(String query) {
         return findAll(java.util.Arrays.asList(ALL), query);

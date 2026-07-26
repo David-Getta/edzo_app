@@ -647,7 +647,7 @@ public class DietActivity extends Activity {
         final LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
 
-        final EditText nameEt = input("Étkezés neve (pl. Rántott hús rizzsel)");
+        final EditText nameEt = input("Mit ettél? (pl. 150 g csirkemell 200 g rizzsel)");
         if (existing != null) nameEt.setText(existing.name);
         box.addView(nameEt, lp());
         // Élő visszajelzés: mit ismer fel az app a beírt névből.
@@ -662,7 +662,7 @@ public class DietActivity extends Activity {
                 reco.setOnClickListener(null);
                 reco.setClickable(false);
                 if (q.length() < 3) { reco.setText(""); return; }
-                List<Foods.Food> g = Foods.findAll(DietActivity.this, q);
+                List<Foods.Hit> g = Foods.parse(DietActivity.this, q);
                 if (g.isEmpty()) {
                     reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");
                     reco.setClickable(true);
@@ -672,7 +672,9 @@ public class DietActivity extends Activity {
                 StringBuilder sb = new StringBuilder("✔ Felismerve: ");
                 for (int i = 0; i < g.size(); i++) {
                     if (i > 0) sb.append(" + ");
-                    sb.append(g.get(i).name);
+                    sb.append(g.get(i).food.name);
+                    if (g.get(i).grams > 0)
+                        sb.append(" ").append(Math.round(g.get(i).grams)).append(" g");
                 }
                 reco.setText(sb.toString());
             }
@@ -742,10 +744,13 @@ public class DietActivity extends Activity {
             grams.add(parse(r[1].getText().toString()));
         }
         if (foods.isEmpty()) {
-            // Okos bevitel: ha csak a nevet írtad be ("rántott hús rizzsel"),
-            // az összetevőket a névből ismerjük fel.
-            List<Foods.Food> guessed = Foods.findAll(this, nameEt.getText().toString());
-            for (Foods.Food f : guessed) { foods.add(f.name); grams.add(0.0); }
+            // Okos bevitel: ha csak a nevet írtad be ("rántott hús rizzsel", vagy
+            // „150 g csirkemell 200 g rizzsel"), az összetevőket – és ha ott a
+            // szám, a grammot is – a névből ismerjük fel.
+            for (Foods.Hit h : Foods.parse(this, nameEt.getText().toString())) {
+                foods.add(h.food.name);
+                grams.add(h.grams);
+            }
         }
         if (foods.isEmpty()) {
             Toast.makeText(this, "Adj meg legalább egy összetevőt, vagy írd a névbe, "
