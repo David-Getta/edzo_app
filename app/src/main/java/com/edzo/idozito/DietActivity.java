@@ -498,7 +498,10 @@ public class DietActivity extends Activity {
                 .show();
     }
 
-    /** Az elmúlt 7 nap napi kcal-összegei vízszintes sávokkal. */
+    // Heti nézet mértéke: false = kcal, true = fehérje (fejlécre koppintva vált).
+    boolean weekProtein;
+
+    /** Az elmúlt 7 nap napi kcal- vagy fehérje-összegei vízszintes sávokkal. */
     void refreshWeek() {
         weekCard.removeAllViews();
         long dayMs = 24L * 3600 * 1000;
@@ -507,17 +510,22 @@ public class DietActivity extends Activity {
         for (MealLog.Meal m : meals()) {
             long diff = today0 - dayStartOf(m.ts);
             int k = (int) (diff / dayMs);
-            if (k >= 0 && k < 7) sums[k] += m.kcal();
+            if (k >= 0 && k < 7) sums[k] += weekProtein ? m.protein() : m.kcal();
         }
         double max = 1;
         for (double s : sums) max = Math.max(max, s);
-        int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        int goal = getSharedPreferences("edzo", MODE_PRIVATE)
+                .getInt(weekProtein ? "protein_goal" : "kcal_goal", 0);
         if (goal > 0) max = Math.max(max, goal);
         double weekSum = 0; int daysWith = 0;
         for (double sVal : sums) { weekSum += sVal; if (sVal > 0) daysWith++; }
-        weekCard.addView(text("Elmúlt 7 nap"
-                + (daysWith > 0 ? "  ·  átlag " + Math.round(weekSum / daysWith) + " kcal/nap" : ""),
-                12.5f, MUTED, true));
+        String unit = weekProtein ? " g fehérje/nap" : " kcal/nap";
+        TextView head = text("Elmúlt 7 nap · " + (weekProtein ? "🥩 fehérje" : "🔥 kcal")
+                + (daysWith > 0 ? "  ·  átlag " + Math.round(weekSum / daysWith) + unit : "")
+                + "  ⇄", 12.5f, MUTED, true);
+        head.setClickable(true);
+        head.setOnClickListener(v -> { weekProtein = !weekProtein; refreshWeek(); });
+        weekCard.addView(head);
         SimpleDateFormat dnf = new SimpleDateFormat("EEE", new Locale("hu"));
         for (int k = 6; k >= 0; k--) {
             LinearLayout row = hbox();
@@ -535,7 +543,9 @@ public class DietActivity extends Activity {
             View fill = new View(this);
             GradientDrawable fgd = new GradientDrawable();
             boolean over = goal > 0 && sums[k] > goal;
-            fgd.setColor(sums[k] <= 0 ? 0x00000000 : over ? 0xFFF59E0B : Theme.accent(this));
+            // Fehérjénél a cél túllépése jó (zöld), kalóriánál figyelmeztető (borostyán).
+            fgd.setColor(sums[k] <= 0 ? 0x00000000
+                    : over ? (weekProtein ? 0xFF22C55E : 0xFFF59E0B) : Theme.accent(this));
             fgd.setCornerRadius(dp(5));
             fill.setBackground(fgd);
             float f = (float) Math.max(sums[k] > 0 ? 0.03 : 0.0, Math.min(1.0, sums[k] / max));
