@@ -100,6 +100,8 @@ public class StatsActivity extends Activity {
         if (!MealLog.load(this).isEmpty()) {
             col.addView(sectionTitle("Étrend – elmúlt 7 nap"));
             col.addView(dietCard(), lp());
+            col.addView(gap(10));
+            col.addView(dietMonthCard(), lp());
             col.addView(gap(16));
         }
 
@@ -578,6 +580,76 @@ public class StatsActivity extends Activity {
                     Water.liters((int) Math.round(wSum / (double) wDays)) + "/nap"});
         addTiles(grid, tiles.toArray(new String[0][]));
         return grid;
+    }
+
+    /**
+     * 30 napos étrend-csík: naponta egy oszlop. Kcal-cél nélkül semleges színnel
+     * a naplózott napok, céllal a cél alatti napok zölden, a felettiek borostyánban.
+     */
+    LinearLayout dietMonthCard() {
+        long dayMs = 24L * 3600 * 1000;
+        Calendar c0 = Calendar.getInstance();
+        c0.set(Calendar.HOUR_OF_DAY, 0);
+        c0.set(Calendar.MINUTE, 0);
+        c0.set(Calendar.SECOND, 0);
+        c0.set(Calendar.MILLISECOND, 0);
+        long today0 = c0.getTimeInMillis();
+        double[] kcal = new double[30];   // [0] = 29 napja … [29] = ma
+        for (MealLog.Meal m : MealLog.load(this)) {
+            Calendar cm = Calendar.getInstance();
+            cm.setTimeInMillis(m.ts);
+            cm.set(Calendar.HOUR_OF_DAY, 0);
+            cm.set(Calendar.MINUTE, 0);
+            cm.set(Calendar.SECOND, 0);
+            cm.set(Calendar.MILLISECOND, 0);
+            int back = (int) ((today0 - cm.getTimeInMillis()) / dayMs);
+            if (back >= 0 && back < 30) kcal[29 - back] += m.kcal();
+        }
+        int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        double max = 1;
+        for (double v : kcal) max = Math.max(max, v);
+        if (goal > 0) max = Math.max(max, goal);
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(12), dp(14), dp(12), dp(12));
+        cardV.addView(text("Elmúlt 30 nap · napi kalória", 12.5f, MUTED, true));
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.BOTTOM);
+        int logged = 0, under = 0;
+        for (int i = 0; i < 30; i++) {
+            LinearLayout colD = vbox();
+            colD.setGravity(Gravity.BOTTOM);
+            View bar = new View(this);
+            GradientDrawable bg = new GradientDrawable();
+            bg.setCornerRadius(dp(2));
+            int h;
+            if (kcal[i] <= 0) {
+                bg.setColor(0x14FFFFFF);   // nincs adat: halvány alapcsík
+                h = dp(3);
+            } else {
+                logged++;
+                boolean over = goal > 0 && kcal[i] > goal;
+                if (goal > 0 && !over) under++;
+                bg.setColor(goal <= 0 ? MainActivity.ACCENT
+                        : over ? 0xFFF59E0B : 0xFF22C55E);
+                h = (int) Math.max(dp(4), Math.round(dp(46) * Math.min(1.0, kcal[i] / max)));
+            }
+            bar.setBackground(bg);
+            LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(dp(7), h);
+            blp.setMargins(dp(1), 0, dp(1), 0);
+            colD.addView(bar, blp);
+            row.addView(colD, new LinearLayout.LayoutParams(0, dp(50), 1f));
+        }
+        LinearLayout.LayoutParams rlp = lp();
+        rlp.topMargin = dp(10);
+        cardV.addView(row, rlp);
+        String legend = logged + " naplózott nap";
+        if (goal > 0 && logged > 0) legend += "  ·  " + under + " a cél alatt";
+        TextView lg = text(legend, 11.5f, MUTED, false);
+        lg.setGravity(Gravity.CENTER);
+        lg.setPadding(0, dp(8), 0, 0);
+        cardV.addView(lg);
+        return cardV;
     }
 
     /** Hány egymást követő héten volt legalább egy edzés (az aktuális vagy múlt héttől visszafelé). */
