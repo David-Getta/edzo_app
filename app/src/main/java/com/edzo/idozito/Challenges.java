@@ -70,7 +70,20 @@ public final class Challenges {
         if (!meals.isEmpty()) types.add(5); // étrend-kihívás csak annak, aki naplóz
         if (pGoal > 0 && !meals.isEmpty()) types.add(6);
         if (usesWater) types.add(7);
-        int type = types.get(seed % types.size());
+
+        // A típust a nap folyamán rögzítjük. Enélkül a lista hossza menet közben
+        // változna (pl. a nap első étkezésének naplózásakor bejön az 5-ös típus),
+        // és a seed % méret más feladatot adna – a délelőtt elkezdett kihívás
+        // délután egy másikra cserélődne, elveszítve a haladást.
+        int type;
+        int storedSeed = prefs.getInt("challenge_seed", -1);
+        int storedType = prefs.getInt("challenge_type", -1);
+        if (storedSeed == seed && types.contains(storedType)) {
+            type = storedType;
+        } else {
+            type = types.get(seed % types.size());
+            prefs.edit().putInt("challenge_seed", seed).putInt("challenge_type", type).apply();
+        }
 
         String title;
         int cur, target;
