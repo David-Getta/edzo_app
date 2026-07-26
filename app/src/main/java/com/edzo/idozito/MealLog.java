@@ -232,6 +232,30 @@ public final class MealLog {
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }
     }
 
+    /**
+     * Hány egymást követő napon van étkezés-bejegyzés, mával (vagy ha ma még
+     * nincs, tegnappal) bezárólag. A mai nap hiánya nem töri meg azonnal a
+     * szériát – csak akkor, ha a tegnapi is kimarad.
+     */
+    public static int logStreak(Context c) {
+        java.util.HashSet<Integer> days = new java.util.HashSet<>();
+        Calendar cal = Calendar.getInstance();
+        for (Meal m : load(c)) {
+            cal.setTimeInMillis(m.ts);
+            days.add(Water.dayNumber(cal));
+        }
+        if (days.isEmpty()) return 0;
+        Calendar cur = Calendar.getInstance();
+        // Ha ma még nincs bejegyzés, tegnaptól számolunk visszafelé.
+        if (!days.contains(Water.dayNumber(cur))) cur.add(Calendar.DAY_OF_MONTH, -1);
+        int streak = 0;
+        while (days.contains(Water.dayNumber(cur))) {
+            streak++;
+            cur.add(Calendar.DAY_OF_MONTH, -1);
+        }
+        return streak;
+    }
+
     /** A mai nap összes fehérjéje (gramm). */
     public static double todayProtein(Context c) {
         Calendar cal = Calendar.getInstance();

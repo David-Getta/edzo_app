@@ -411,7 +411,9 @@ public class DietActivity extends Activity {
         for (MealLog.Meal m : meals())
             if (m.ts >= t0) { kcal += m.kcal(); protSum += m.protein(); }
         int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
-        todayCard.addView(text("🍽 Ma összesen" + (goal > 0 ? "  ·  cél: " + goal + " kcal" : ""),
+        int streak = MealLog.logStreak(this);
+        todayCard.addView(text("🍽 Ma összesen" + (goal > 0 ? "  ·  cél: " + goal + " kcal" : "")
+                + (streak >= 2 ? "  ·  🔥 " + streak + " napja naplózol" : ""),
                 12.5f, MUTED, true));
         todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
         double prot = protSum;
