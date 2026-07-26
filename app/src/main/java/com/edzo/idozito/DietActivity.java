@@ -403,8 +403,17 @@ public class DietActivity extends Activity {
             int cur = p.getInt(waterKey(), 0);
             p.edit().putInt(waterKey(), cur + 25).apply();
             refreshWater();
-            if (cur < goalCl && cur + 25 >= goalCl)
+            if (cur < goalCl && cur + 25 >= goalCl) {
                 Ux.blazeCard(this, "💧 Napi vízcél megvan – szép munka!");
+                // Tartós számláló a Hidratált jelvényhez (naponta legfeljebb egyszer nő).
+                Calendar tc = Calendar.getInstance();
+                int today = tc.get(Calendar.YEAR) * 10000
+                        + (tc.get(Calendar.MONTH) + 1) * 100 + tc.get(Calendar.DAY_OF_MONTH);
+                if (p.getInt("water_last_done", 0) != today)
+                    p.edit().putInt("water_last_done", today)
+                            .putInt("water_days_done", p.getInt("water_days_done", 0) + 1)
+                            .apply();
+            }
         });
         top.addView(plus);
         waterCard.addView(top, lp());

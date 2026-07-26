@@ -50,6 +50,7 @@ public final class Badges {
         new Badge("meal10",  "🍽", "Naplózó",      "10 naplózott étkezés az Étrendben"),
         new Badge("meal50",  "🥗", "Tudatos étkező","50 naplózott étkezés az Étrendben"),
         new Badge("meald7",  "🧮", "Kalóriamester","Étkezés-napló 7 különböző napon"),
+        new Badge("water7",  "💧", "Hidratált",    "Napi vízcél elérve 7 különböző napon"),
     };
 
     /** Visszafelé kompatibilis változat (kihívás-számláló nélkül). */
@@ -73,6 +74,8 @@ public final class Badges {
             if (meals.size() >= 10) out.add("meal10");
             if (meals.size() >= 50) out.add("meal50");
             if (mealDays.size() >= 7) out.add("meald7");
+            if (ctx.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
+                    .getInt("water_days_done", 0) >= 7) out.add("water7");
         } catch (Exception ignored) {}
         return out;
     }
