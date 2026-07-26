@@ -657,6 +657,19 @@ public class DietActivity extends Activity {
                         .putInt("kcal_goal", suggested).apply();
                 refresh();
             });
+            // Ha a Profilban van fogyási cél, a hozzá tartozó bevitelt is
+            // felkínáljuk – ugyanazzal a képlettel, amit a Profil is mutat.
+            float loss = Profile.getGoalLoss(this);
+            if (loss > 0) {
+                int ri = Math.max(0, Math.min(3, Profile.getGoalRate(this)));
+                double deficit = Profile.RATES[ri] * 7700.0 / 7.0;   // kcal/nap
+                final int cut = (int) Math.round(bmr * 1.4 - deficit);
+                if (cut > 800) sh.addNeutral("🎯 Fogyási célod alapján: ~" + cut + " kcal", () -> {
+                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                            .putInt("kcal_goal", cut).apply();
+                    refresh();
+                });
+            }
         }
         // Fehérje-javaslat a testsúlyból: ~1,6 g/kg edzőknek.
         double w = Profile.lastWeight(this);
