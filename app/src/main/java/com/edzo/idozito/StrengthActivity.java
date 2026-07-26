@@ -38,6 +38,7 @@ public class StrengthActivity extends Activity {
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
 
     LinearLayout recordsBox, listBox, summaryBox;
+    EditText searchEt;
     android.widget.FrameLayout rootFl; // konfetti-ünnepléshez (új rekord)
 
     // Pihenő-időzítő a sorozatok között
@@ -62,7 +63,7 @@ public class StrengthActivity extends Activity {
         col.addView(gap(20));
 
         Button add = primary("＋  Új bejegyzés");
-        add.setOnClickListener(v -> addEntryDialog(null, -1));
+        add.setOnClickListener(v -> addEntryDialog(null));
         col.addView(add);
         col.addView(gap(16));
 
@@ -90,6 +91,19 @@ public class StrengthActivity extends Activity {
         col.addView(gap(16));
 
         col.addView(text("Bejegyzések", 15.5f, TXT, true));
+        col.addView(gap(8));
+        searchEt = new EditText(this);
+        searchEt.setHint("Keresés a naplóban (pl. guggolás)");
+        searchEt.setHintTextColor(MUTED);
+        searchEt.setTextColor(TXT);
+        searchEt.setTextSize(13);
+        searchEt.setSingleLine(true);
+        searchEt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) { refreshList(); }
+        });
+        col.addView(searchEt, lp());
         col.addView(gap(10));
         listBox = vbox();
         col.addView(listBox, lp());
@@ -197,9 +211,20 @@ public class StrengthActivity extends Activity {
         listBox.removeAllViews();
         List<StrengthLog.Entry> all = StrengthLog.load(this);
         if (all.isEmpty()) return;
+        // Szűrés a kereső alapján (gyakorlatnév, ékezet-érzéketlenül).
+        String q = searchEt == null ? "" : Foods.norm(searchEt.getText().toString().trim());
+        if (!q.isEmpty()) {
+            List<StrengthLog.Entry> flt = new ArrayList<>();
+            for (StrengthLog.Entry e : all)
+                if (e.name != null && Foods.norm(e.name).contains(q)) flt.add(e);
+            all = flt;
+            if (all.isEmpty()) {
+                listBox.addView(text("Nincs a keresésre illő gyakorlat.", 13.5f, MUTED, false));
+                return;
+            }
+        }
         SimpleDateFormat fmt = new SimpleDateFormat("MM. dd. HH:mm", new Locale("hu"));
         for (int i = 0; i < all.size(); i++) {
-            final int idx = i;
             final StrengthLog.Entry e = all.get(i);
             LinearLayout card = card();
             LinearLayout inner = vbox();
@@ -224,8 +249,9 @@ public class StrengthActivity extends Activity {
             card.addView(inner);
             card.setClickable(true);
             card.setOnClickListener(v -> new Sheet(this, e.name, "Szerkesztés vagy törlés?")
-                    .addNeutral("✏️  Szerkesztés", () -> addEntryDialog(e, idx))
-                    .addDestructive("Törlés", () -> { StrengthLog.removeAt(this, idx); refresh(); })
+                    .addNeutral("✏️  Szerkesztés", () -> addEntryDialog(e))
+                    .addDestructive("Törlés",
+                            () -> { StrengthLog.removeByTs(this, e.ts); refresh(); })
                     .addCancel().show());
             listBox.addView(card, lp());
             listBox.addView(gap(10));
@@ -262,7 +288,7 @@ public class StrengthActivity extends Activity {
 
     // ---------- Új bejegyzés ----------
 
-    void addEntryDialog(final StrengthLog.Entry edit, final int editIdx) {
+    void addEntryDialog(final StrengthLog.Entry edit) {
         final LinearLayout box = vbox();
         box.setPadding(dp(10), dp(6), dp(10), 0);
 
@@ -344,7 +370,8 @@ public class StrengthActivity extends Activity {
                     // Szerkesztésnél a helyén cseréljük, az eredeti időpontot megtartva.
                     long ts = edit != null ? edit.ts : System.currentTimeMillis();
                     StrengthLog.Entry ne = new StrengthLog.Entry(ts, name, sets);
-                    if (edit != null) StrengthLog.replaceAt(this, editIdx, ne);
+                    // Időbélyeg alapján cserélünk: a lista szűrve is lehet, az index csalna.
+                    if (edit != null) StrengthLog.replaceByTs(this, edit.ts, ne);
                     else StrengthLog.add(this, ne);
                     // Az erősítő edzés is számít: a widget azonnal tudjon róla.
                     BlazeWidget.refresh(this);

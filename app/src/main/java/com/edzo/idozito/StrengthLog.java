@@ -116,6 +116,20 @@ public final class StrengthLog {
         if (idx >= 0 && idx < l.size()) { l.set(idx, e); save(c, l); }
     }
 
+    /** Törlés időbélyeg alapján – szűrt listából is biztonságos. */
+    public static void removeByTs(Context c, long ts) {
+        List<Entry> l = load(c);
+        for (int i = l.size() - 1; i >= 0; i--) if (l.get(i).ts == ts) l.remove(i);
+        save(c, l);
+    }
+
+    /** Csere időbélyeg alapján – szűrt listából is biztonságos. */
+    public static void replaceByTs(Context c, long ts, Entry e) {
+        List<Entry> l = load(c);
+        for (int i = 0; i < l.size(); i++) if (l.get(i).ts == ts) { l.set(i, e); break; }
+        save(c, l);
+    }
+
     /** Ismert gyakorlatnevek: a korábban használtak (legutóbbi elöl) + a gyakoriak. */
     public static List<String> knownNames(Context c) {
         LinkedHashMap<String, Boolean> seen = new LinkedHashMap<>();
