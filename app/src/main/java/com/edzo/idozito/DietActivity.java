@@ -947,6 +947,15 @@ public class DietActivity extends Activity {
                 }
             } catch (Exception ignored) {}
         }
+        // Az össz-gramm itt is javítható: a fotót nézve gyakran az derül ki, hogy
+        // nemcsak az arány, hanem a becsült teljes adag is mellément.
+        final double[] totalHolder = {total};
+        final EditText totalEt = input("Teljes adag (g)");
+        totalEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        totalEt.setText(String.valueOf(Math.round(total)));
+        box.addView(totalEt, lp());
+        box.addView(gap(8));
+
         final TextView totalTv = text("", 13.5f, Theme.accent(this), true);
         final TextView[] labels = new TextView[n];
         final Runnable update = () -> {
@@ -954,14 +963,24 @@ public class DietActivity extends Activity {
             for (double sv2 : shares) sum += sv2;
             double kcal = 0;
             for (int i = 0; i < n; i++) {
-                double g = shares[i] / sum * total;
+                double g = shares[i] / sum * totalHolder[0];
                 MealLog.Item it = m.items.get(i);
                 double kpg = it.grams > 0 ? it.kcal / it.grams : 1.5;
                 kcal += kpg * g;
                 labels[i].setText(it.food + "  ·  " + Math.round(g) + " g");
             }
-            totalTv.setText("Összesen: " + Math.round(total) + " g  ·  ~" + Math.round(kcal) + " kcal");
+            totalTv.setText("Összesen: " + Math.round(totalHolder[0])
+                    + " g  ·  ~" + Math.round(kcal) + " kcal");
         };
+        totalEt.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                double v = parse(s.toString());
+                totalHolder[0] = v > 0 ? v : total;   // üres mező: marad az eredeti
+                update.run();
+            }
+        });
         for (int i = 0; i < n; i++) {
             final int ii = i;
             labels[i] = text("", 13.5f, TXT, true);
@@ -987,7 +1006,7 @@ public class DietActivity extends Activity {
         update.run();
 
         new Sheet(this, "Arányok igazítása ⚖️",
-                "Az össz-gramm marad, csak az elosztás változik.")
+                "A fotó alapján állítsd az arányokat – és ha kell, a teljes adagot is.")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
                     double sum = 0;
@@ -995,7 +1014,7 @@ public class DietActivity extends Activity {
                     List<MealLog.Item> ni = new ArrayList<>();
                     for (int i = 0; i < n; i++) {
                         MealLog.Item it = m.items.get(i);
-                        double g = shares[i] / sum * total;
+                        double g = shares[i] / sum * totalHolder[0];
                         double kpg = it.grams > 0 ? it.kcal / it.grams : 1.5;
                         double ppg = it.grams > 0 ? it.protein / it.grams : 0;
                         ni.add(new MealLog.Item(it.food, g, kpg * g, ppg * g));
