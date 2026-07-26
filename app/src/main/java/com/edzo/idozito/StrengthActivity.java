@@ -177,8 +177,52 @@ public class StrengthActivity extends Activity {
             nudge.setOnClickListener(v -> showProgress(forgotten));
             inner.addView(nudge);
         }
+        addBalance(inner);
         card.addView(inner);
         summaryBox.addView(card, lp());
+    }
+
+    /**
+     * Izomcsoport-egyensúly az elmúlt 7 napban. Csak azokat a csoportokat
+     * mutatja, amiket a felhasználó valaha edzett – amit sosem csinált, annak
+     * a hiánya nem hiba, hanem döntés.
+     */
+    void addBalance(LinearLayout inner) {
+        java.util.LinkedHashMap<String, Integer> bal = Muscles.weekBalance(
+                StrengthLog.load(this), System.currentTimeMillis(), 7);
+        if (bal.size() < 2) return;         // egy csoportból nincs mit egyensúlyozni
+
+        inner.addView(gap(12));
+        inner.addView(text("Izomcsoportok az elmúlt 7 napban", 12, MUTED, true));
+        inner.addView(gap(6));
+
+        LinearLayout chips = hbox();
+        List<String> missing = new ArrayList<>();
+        for (java.util.Map.Entry<String, Integer> e : bal.entrySet()) {
+            int n = e.getValue();
+            if (n == 0) missing.add(e.getKey());
+            TextView chip = text(e.getKey() + "  " + (n > 0 ? n + "×" : "–"),
+                    12.5f, n > 0 ? TXT : MUTED, n > 0);
+            GradientDrawable bg = new GradientDrawable();
+            bg.setColor(CARD2);
+            bg.setCornerRadius(dp(10));
+            bg.setStroke(dp(1), n > 0 ? Theme.accent(this) : LINE);
+            chip.setBackground(bg);
+            chip.setPadding(dp(10), dp(6), dp(10), dp(6));
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
+            clp.rightMargin = dp(6);
+            chips.addView(chip, clp);
+        }
+        HorizontalScrollView hs = new HorizontalScrollView(this);
+        hs.setHorizontalScrollBarEnabled(false);
+        hs.addView(chips);
+        inner.addView(hs);
+
+        if (!missing.isEmpty() && missing.size() < bal.size()) {
+            inner.addView(gap(6));
+            inner.addView(text(Muscles.andList(missing) + " kimaradt a héten.",
+                    12.5f, MUTED, false));
+        }
     }
 
     // ---------- Rekordok ----------
