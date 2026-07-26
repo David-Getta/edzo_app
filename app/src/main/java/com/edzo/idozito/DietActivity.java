@@ -91,6 +91,7 @@ public class DietActivity extends Activity {
         setContentView(Ux.scaffoldNav(this, sv, "bg_reminders", 3));
         col.post(() -> Ux.enterChildren(col, 30, 45));
         cleanupOldWaterKeys();
+        MealLog.cleanupOrphanPhotos(this);
         refresh();
     }
 

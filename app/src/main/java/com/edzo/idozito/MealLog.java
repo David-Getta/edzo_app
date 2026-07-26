@@ -122,11 +122,26 @@ public final class MealLog {
         save(c, l);
     }
 
-    /** Bejegyzés törlése időbélyeg alapján (rendezés-független). */
+    /** Bejegyzés törlése időbélyeg alapján (rendezés-független). A fotófájlt nem
+     *  itt töröljük (szerkesztéskor ugyanaz a fotó újra hozzáadódik) – az árván
+     *  maradt képeket a cleanupOrphanPhotos szedi össze. */
     public static void removeByTs(Context c, long ts) {
         List<Meal> l = load(c);
         for (int i = l.size() - 1; i >= 0; i--) if (l.get(i).ts == ts) l.remove(i);
         save(c, l);
+    }
+
+    /** Árván maradt meal_*.jpg fájlok törlése a belső tárból. */
+    public static void cleanupOrphanPhotos(Context c) {
+        try {
+            java.util.HashSet<String> used = new java.util.HashSet<>();
+            for (Meal m : load(c)) if (!m.photo.isEmpty()) used.add(m.photo);
+            java.io.File[] files = c.getFilesDir().listFiles();
+            if (files != null) for (java.io.File f : files)
+                if (f.getName().startsWith("meal_") && f.getName().endsWith(".jpg")
+                        && !used.contains(f.getName()))
+                    f.delete();
+        } catch (Exception ignored) {}
     }
 
     public static void removeAt(Context c, int idx) {
