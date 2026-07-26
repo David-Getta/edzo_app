@@ -876,12 +876,43 @@ public class DietActivity extends Activity {
             box.addView(row, rl);
         }
         SimpleDateFormat hf = new SimpleDateFormat("MMMM d., EEEE", new Locale("hu"));
-        new Sheet(this, hf.format(new Date(day0)),
+        final String dayLabel = hf.format(new Date(day0));
+        final double kS = kSum, pS = pSum;
+        new Sheet(this, dayLabel,
                 Math.round(kSum) + " kcal"
                 + (pSum > 0 ? " · " + Math.round(pSum) + " g fehérje" : ""))
                 .addCustom(box)
+                .addRow("📤", "Megosztás", "A nap étrendje szövegként",
+                        false, true, () -> shareDay(day0, dayLabel, kS, pS))
                 .addCancel()
                 .show();
+    }
+
+    /** Egy nap étrendjének megosztása egyszerű szövegként. */
+    void shareDay(long day0, String dayLabel, double kSum, double pSum) {
+        long dayMs = 24L * 3600 * 1000;
+        List<MealLog.Meal> meals = MealLog.load(this);
+        java.util.Collections.sort(meals, (a, b2) -> Long.compare(a.ts, b2.ts));
+        SimpleDateFormat tf = new SimpleDateFormat("HH:mm", new Locale("hu"));
+        StringBuilder sb = new StringBuilder("🍽 Étrendem – ").append(dayLabel).append("\n");
+        for (MealLog.Meal m : meals) {
+            if (m.ts < day0 || m.ts >= day0 + dayMs) continue;
+            String title = m.name.isEmpty()
+                    ? (m.items.isEmpty() ? mealSlot(m.ts)
+                        : mealSlot(m.ts) + " · " + m.items.get(0).food)
+                    : m.name;
+            sb.append(tf.format(new Date(m.ts))).append("  ").append(title)
+              .append(" – ").append(Math.round(m.kcal())).append(" kcal\n");
+        }
+        sb.append("Összesen: ").append(Math.round(kSum)).append(" kcal");
+        if (pSum > 0) sb.append(" · ").append(Math.round(pSum)).append(" g fehérje");
+        sb.append("\n\n🐺 GRIT – a falka veled van!");
+        android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(android.content.Intent.EXTRA_TEXT, sb.toString());
+        try {
+            startActivity(android.content.Intent.createChooser(i, "Étrend megosztása"));
+        } catch (Exception ignored) {}
     }
 
     /** Kereshető kalóriatáblázat a beépített étel-adatbázisból. */
