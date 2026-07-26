@@ -694,8 +694,8 @@ public class StatsActivity extends Activity {
         // A közös Badges definíció alapján (ugyanaz, mint a főképernyőn), hogy a
         // két helyen mindig ugyanazok a kitüntetések és feltételek jelenjenek meg.
         // Egyesített napló (erősítő napokkal), hogy a kezdőlappal egyezzen.
-        JSONArray all = History.loadAll(this);
-        java.util.HashSet<String> got = Badges.earned(this, all, bestWeekStreak(), getSharedPreferences("edzo", MODE_PRIVATE).getInt("challenge_done_count", 0), Streaks.planWeeks(this, all));
+        JSONArray act = History.loadAll(this);
+        java.util.HashSet<String> got = Badges.earned(this, act, bestWeekStreak(), getSharedPreferences("edzo", MODE_PRIVATE).getInt("challenge_done_count", 0), Streaks.planWeeks(this, act));
         Badges.Badge[] all = Badges.ALL;
 
         LinearLayout grid = card();
