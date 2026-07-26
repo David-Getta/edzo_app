@@ -1469,7 +1469,8 @@ public class MainActivity extends Activity {
                 v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
                 if ("ismétlés".equals(unit))
                     startActivity(new Intent(this, StrengthActivity.class));
-                else if ("étkezés".equals(unit) || "g fehérje".equals(unit))
+                else if ("étkezés".equals(unit) || "g fehérje".equals(unit)
+                        || "pohár".equals(unit))
                     startActivity(new Intent(this, DietActivity.class));
                 else if (!TimerService.activeNow)
                     startWorkout();

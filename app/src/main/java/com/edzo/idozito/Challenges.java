@@ -59,14 +59,20 @@ public final class Challenges {
         int mealsToday = 0;
         for (MealLog.Meal m : meals) if (m.ts >= dayStart) mealsToday++;
 
-        int pGoal = ctx.getSharedPreferences("edzo", Context.MODE_PRIVATE)
-                .getInt("protein_goal", 0);
+        android.content.SharedPreferences prefs =
+                ctx.getSharedPreferences("edzo", Context.MODE_PRIVATE);
+        int pGoal = prefs.getInt("protein_goal", 0);
+        // Vízszámláló-használat: van-e bármilyen napi water_ kulcs.
+        boolean usesWater = false;
+        for (String k : prefs.getAll().keySet())
+            if (k.startsWith("water_") && !k.equals("water_goal_cl")) { usesWater = true; break; }
 
         List<Integer> types = new ArrayList<>(Arrays.asList(0, 1, 2));
         if (everDist) types.add(3);
         if (!sLog.isEmpty()) types.add(4);
         if (!meals.isEmpty()) types.add(5); // étrend-kihívás csak annak, aki naplóz
         if (pGoal > 0 && !meals.isEmpty()) types.add(6);
+        if (usesWater) types.add(7);
         int type = types.get(seed % types.size());
 
         String title;
@@ -90,9 +96,17 @@ public final class Challenges {
         } else if (type == 5) {
             target = 2; cur = Math.min(mealsToday, 2); unit = "étkezés";
             title = "Naplózz ma legalább 2 étkezést az Étrendben!";
-        } else {
+        } else if (type == 6) {
             target = pGoal; cur = (int) Math.round(MealLog.todayProtein(ctx)); unit = "g fehérje";
             title = "Érd el ma a fehérje-célod: " + pGoal + " g!";
+        } else {
+            int goalCl = prefs.getInt("water_goal_cl", 200);
+            String todayKey = "water_" + (now.get(Calendar.YEAR) * 10000
+                    + (now.get(Calendar.MONTH) + 1) * 100 + now.get(Calendar.DAY_OF_MONTH));
+            target = Math.max(1, (goalCl + 24) / 25); // poharakban (1 pohár = 25 cl)
+            cur = Math.min(target, prefs.getInt(todayKey, 0) / 25);
+            unit = "pohár";
+            title = "Idd meg ma a vízcélod: " + (goalCl / 100.0) + " l (" + target + " pohár)!";
         }
         return new Object[]{title, unit, cur, target, seed};
     }
