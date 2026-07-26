@@ -162,17 +162,84 @@ public final class Foods {
                 .replace('ű','u');
     }
 
+    // ---------- Saját ételek (felhasználó által felvéve) ----------
+
+    /** A felhasználó saját ételei; a szótő a saját név. */
+    public static List<Food> custom(android.content.Context c) {
+        List<Food> out = new ArrayList<>();
+        try {
+            org.json.JSONArray a = new org.json.JSONArray(
+                    c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
+                            .getString("custom_foods", "[]"));
+            for (int i = 0; i < a.length(); i++) {
+                org.json.JSONObject o = a.optJSONObject(i);
+                if (o == null) continue;
+                String n = o.optString("n", "");
+                if (n.isEmpty()) continue;
+                out.add(new Food(n, o.optInt("k", 100), o.optDouble("p", 0),
+                        Math.max(1, o.optInt("g", 100)), n));
+            }
+        } catch (Exception ignored) {}
+        return out;
+    }
+
+    public static void addCustom(android.content.Context c, String name, int kcal100,
+                                 double prot100, int portion) {
+        try {
+            android.content.SharedPreferences sp =
+                    c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE);
+            org.json.JSONArray a = new org.json.JSONArray(sp.getString("custom_foods", "[]"));
+            // Azonos nevű korábbi bejegyzés cseréje.
+            org.json.JSONArray na = new org.json.JSONArray();
+            for (int i = 0; i < a.length(); i++) {
+                org.json.JSONObject o = a.optJSONObject(i);
+                if (o != null && !o.optString("n", "").equalsIgnoreCase(name)) na.put(o);
+            }
+            org.json.JSONObject o = new org.json.JSONObject();
+            o.put("n", name); o.put("k", kcal100); o.put("p", prot100); o.put("g", portion);
+            na.put(o);
+            sp.edit().putString("custom_foods", na.toString()).apply();
+        } catch (Exception ignored) {}
+    }
+
+    public static void removeCustom(android.content.Context c, String name) {
+        try {
+            android.content.SharedPreferences sp =
+                    c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE);
+            org.json.JSONArray a = new org.json.JSONArray(sp.getString("custom_foods", "[]"));
+            org.json.JSONArray na = new org.json.JSONArray();
+            for (int i = 0; i < a.length(); i++) {
+                org.json.JSONObject o = a.optJSONObject(i);
+                if (o != null && !o.optString("n", "").equalsIgnoreCase(name)) na.put(o);
+            }
+            sp.edit().putString("custom_foods", na.toString()).apply();
+        } catch (Exception ignored) {}
+    }
+
+    /** Saját + beépített ételek együtt (a sajátok elöl, így ők nyernek). */
+    public static List<Food> all(android.content.Context c) {
+        List<Food> out = custom(c);
+        for (Food f : ALL) out.add(f);
+        return out;
+    }
+
     /** A lekérdezéshez legjobban illő étel, vagy null. Ragozott alakokat is talál. */
-    public static Food find(String query) {
+    public static Food find(String query) { return find(java.util.Arrays.asList(ALL), query); }
+
+    public static Food find(android.content.Context c, String query) {
+        return find(all(c), query);
+    }
+
+    static Food find(List<Food> list, String query) {
         String q = norm(query).trim();
         if (q.isEmpty()) return null;
         // 1) teljes kifejezés-egyezés a szótövekkel
-        for (Food f : ALL)
+        for (Food f : list)
             for (String st : f.stems)
                 if (q.equals(norm(st))) return f;
         // 2) a lekérdezés tartalmazza a szótövet (pl. "csirkemellbol" ⊃ "csirkemell")
         Food best = null; int bestLen = 0;
-        for (Food f : ALL)
+        for (Food f : list)
             for (String st : f.stems) {
                 String ns = norm(st);
                 if (ns.length() > bestLen && q.contains(ns)) { best = f; bestLen = ns.length(); }
@@ -180,7 +247,7 @@ public final class Foods {
         if (best != null) return best;
         // 3) szavankénti előtag-egyezés (pl. "rizzsel" kezdete "riz")
         for (String tok : q.split("[ ,]+"))
-            for (Food f : ALL)
+            for (Food f : list)
                 for (String st : f.stems) {
                     String ns = norm(st);
                     if (tok.startsWith(ns) || (tok.length() >= 4 && ns.startsWith(tok)))
@@ -191,10 +258,18 @@ public final class Foods {
 
     /** Az összes étel, ami a szövegben felismerhető (a szöveg sorrendjében, ismétlés nélkül). */
     public static List<Food> findAll(String query) {
+        return findAll(java.util.Arrays.asList(ALL), query);
+    }
+
+    public static List<Food> findAll(android.content.Context c, String query) {
+        return findAll(all(c), query);
+    }
+
+    static List<Food> findAll(List<Food> list, String query) {
         String q = norm(query);
         List<Food> out = new ArrayList<>();
         List<Integer> pos = new ArrayList<>();
-        for (Food f : ALL) {
+        for (Food f : list) {
             int best = -1;
             for (String st : f.stems) {
                 int p = q.indexOf(norm(st));

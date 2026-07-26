@@ -625,7 +625,7 @@ public class DietActivity extends Activity {
             @Override public void afterTextChanged(android.text.Editable s) {
                 String q = s.toString().trim();
                 if (q.length() < 3) { reco.setText(""); return; }
-                List<Foods.Food> g = Foods.findAll(q);
+                List<Foods.Food> g = Foods.findAll(DietActivity.this, q);
                 if (g.isEmpty()) { reco.setText("🔍 Ezt még nem ismerem – írd be lent összetevőnként!"); return; }
                 StringBuilder sb = new StringBuilder("✔ Felismerve: ");
                 for (int i = 0; i < g.size(); i++) {
@@ -702,7 +702,7 @@ public class DietActivity extends Activity {
         if (foods.isEmpty()) {
             // Okos bevitel: ha csak a nevet írtad be ("rántott hús rizzsel"),
             // az összetevőket a névből ismerjük fel.
-            List<Foods.Food> guessed = Foods.findAll(nameEt.getText().toString());
+            List<Foods.Food> guessed = Foods.findAll(this, nameEt.getText().toString());
             for (Foods.Food f : guessed) { foods.add(f.name); grams.add(0.0); }
         }
         if (foods.isEmpty()) {
@@ -712,7 +712,7 @@ public class DietActivity extends Activity {
         }
         // Ételek felismerése előre (a tipikus adagméretekhez is kell).
         List<Foods.Food> resolved = new ArrayList<>();
-        for (String fq : foods) resolved.add(Foods.find(fq));
+        for (String fq : foods) resolved.add(Foods.find(this, fq));
 
         // Közös gramm szétosztása a megadatlan összetevők közt; ha nincs közös
         // gramm sem, az adott étel tipikus adagjával számolunk.
@@ -988,11 +988,14 @@ public class DietActivity extends Activity {
         LinearLayout.LayoutParams llp = lp();
         llp.topMargin = dp(8);
         box.addView(listV, llp);
+        final java.util.HashSet<String> customNames = new java.util.HashSet<>();
         final Runnable render = () -> {
             listV.removeAllViews();
+            customNames.clear();
+            for (Foods.Food cf : Foods.custom(this)) customNames.add(cf.name);
             String q = Foods.norm(search.getText().toString().trim());
             int shown = 0;
-            for (Foods.Food f : Foods.ALL) {
+            for (Foods.Food f : Foods.all(this)) {
                 if (!q.isEmpty() && !Foods.norm(f.name).contains(q)) {
                     boolean stemHit = false;
                     for (String st : f.stems)
@@ -1003,19 +1006,31 @@ public class DietActivity extends Activity {
                     listV.addView(text("… szűkítsd a keresést a többihez", 11.5f, MUTED, false));
                     break;
                 }
+                final boolean isCustom = customNames.contains(f.name);
+                final String fn = f.name;
                 LinearLayout row = hbox();
                 row.setGravity(Gravity.CENTER_VERTICAL);
-                row.addView(text(f.name, 13.5f, TXT, false),
+                row.addView(text((isCustom ? "🖊 " : "") + f.name, 13.5f, TXT, isCustom),
                         new LinearLayout.LayoutParams(0, -2, 1f));
                 row.addView(text(f.kcal100 + " kcal · " + (Math.round(f.prot100 * 10) / 10.0)
                         + "g P /100g", 12, MUTED, false));
+                // Saját étel hosszú nyomásra törölhető.
+                if (isCustom) {
+                    row.setClickable(true);
+                    row.setOnLongClickListener(v -> {
+                        Foods.removeCustom(this, fn);
+                        Toast.makeText(this, "Saját étel törölve: " + fn,
+                                Toast.LENGTH_SHORT).show();
+                        return true;
+                    });
+                }
                 LinearLayout.LayoutParams rl = lp();
                 rl.topMargin = dp(7);
                 listV.addView(row, rl);
                 shown++;
             }
             if (shown == 0)
-                listV.addView(text("Nincs találat – az étkezésnél becsléssel is menthetsz.",
+                listV.addView(text("Nincs találat – vedd fel saját ételként lent!",
                         12, MUTED, false));
         };
         search.addTextChangedListener(new android.text.TextWatcher() {
@@ -1025,8 +1040,49 @@ public class DietActivity extends Activity {
         });
         render.run();
         new Sheet(this, "Kalóriatáblázat 📖",
-                "kcal és fehérje 100 grammonként (közelítő értékek)")
+                "kcal és fehérje 100 grammonként · a 🖊 sajátok hosszú nyomásra törölhetők")
                 .addCustom(box)
+                .addRow("＋", "Saját étel felvétele", "Név, kcal és fehérje 100 grammonként",
+                        false, true, this::addCustomFoodSheet)
+                .addCancel()
+                .show();
+    }
+
+    /** Saját étel felvétele: a felismerés és a kalóriatáblázat is használja. */
+    void addCustomFoodSheet() {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        final EditText nameEt = input("Név (pl. Nagyi rakott zöldsége)");
+        box.addView(nameEt, lp());
+        final EditText kcalEt = input("kcal / 100 g");
+        kcalEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        LinearLayout.LayoutParams l1 = lp(); l1.topMargin = dp(8);
+        box.addView(kcalEt, l1);
+        final EditText protEt = input("fehérje g / 100 g (nem kötelező)");
+        protEt.setInputType(InputType.TYPE_CLASS_NUMBER
+                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        LinearLayout.LayoutParams l2 = lp(); l2.topMargin = dp(8);
+        box.addView(protEt, l2);
+        final EditText portEt = input("tipikus adag g (nem kötelező, alap 100)");
+        portEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        LinearLayout.LayoutParams l3 = lp(); l3.topMargin = dp(8);
+        box.addView(portEt, l3);
+        new Sheet(this, "Saját étel 🖊",
+                "A beírt nevet a felismerés is megtalálja ezután.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    String n = nameEt.getText().toString().trim();
+                    int k = (int) parse(kcalEt.getText().toString());
+                    if (n.isEmpty() || k <= 0) {
+                        Toast.makeText(this, "Név és kcal/100g kötelező.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    double pr = parse(protEt.getText().toString());
+                    int po = (int) parse(portEt.getText().toString());
+                    Foods.addCustom(this, n, k, Math.max(0, pr), po > 0 ? po : 100);
+                    Ux.blazeCard(this, "🖊 Saját étel mentve: " + n);
+                })
                 .addCancel()
                 .show();
     }
