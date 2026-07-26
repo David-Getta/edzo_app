@@ -305,6 +305,9 @@ public class MainActivity extends Activity {
             String[][] feats = {
                 {"⏱️", "Intervallum edzés", "Bemelegítés, munka, pihenő, körök és levezetés – minden testre szabható."},
                 {"🏃", "Futás követése", "GPS-táv, tempó, lépések és kalória automatikus mérése."},
+                {"🏋️", "Erősítő napló", "Sorozatok, rekordok, becsült 1RM és fejlődési grafikon."},
+                {"🍽", "Étrend", "Írd le, mit ettél – „150 g csirkemell rizzsel”, „2 tojás” –, a kcal-t kiszámoljuk."},
+                {"💧", "Vízkövetés", "Pohár-alapú számláló napi céllal, a widgetről is egy koppintás."},
                 {"🐺", "Blaze, az edzőtársad", "Köszönt, emlékeztet és megdicsér – a falka mindig veled van."},
                 {"📅", "Edzésnapok terve", "Beállításokban kijelölheted, mely napokon edzel – pihenőnapon nem nyaggatunk."},
                 {"🏅", "Kitüntetések & szintek", "Gyűjts XP-t, szintet és jelvényeket, tartsd a sorozatod."},
