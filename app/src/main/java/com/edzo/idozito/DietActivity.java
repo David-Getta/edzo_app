@@ -90,7 +90,27 @@ public class DietActivity extends Activity {
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffoldNav(this, sv, "bg_reminders", 3));
         col.post(() -> Ux.enterChildren(col, 30, 45));
+        cleanupOldWaterKeys();
         refresh();
+    }
+
+    /** 30 napnál régebbi napi víz-kulcsok törlése, hogy ne gyűljenek a beállítások közt. */
+    void cleanupOldWaterKeys() {
+        try {
+            android.content.SharedPreferences p = getSharedPreferences("edzo", MODE_PRIVATE);
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.DAY_OF_MONTH, -30);
+            int cutoff = c.get(Calendar.YEAR) * 10000
+                    + (c.get(Calendar.MONTH) + 1) * 100 + c.get(Calendar.DAY_OF_MONTH);
+            android.content.SharedPreferences.Editor e = p.edit();
+            for (String k : p.getAll().keySet())
+                if (k.startsWith("water_") && !k.equals("water_goal_cl")) {
+                    try {
+                        if (Integer.parseInt(k.substring(6)) < cutoff) e.remove(k);
+                    } catch (NumberFormatException ignored) {}
+                }
+            e.apply();
+        } catch (Exception ignored) {}
     }
 
     void refresh() {
