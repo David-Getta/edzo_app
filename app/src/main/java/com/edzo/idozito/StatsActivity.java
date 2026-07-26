@@ -567,6 +567,20 @@ public class StatsActivity extends Activity {
             tiles.add(new String[]{"🥩 Átlag fehérje", Math.round(pSum / days) + " g/nap"});
         if (goal > 0 && days > 0)
             tiles.add(new String[]{"🎯 Cél alatt", underGoal + " / " + days + " nap"});
+        // Víz-átlag az elmúlt 7 napból (csak a naplózott napok számítanak).
+        int wDays = 0, wSum = 0;
+        java.util.Calendar wc = java.util.Calendar.getInstance();
+        for (int k = 0; k < 7; k++) {
+            String key = "water_" + (wc.get(java.util.Calendar.YEAR) * 10000
+                    + (wc.get(java.util.Calendar.MONTH) + 1) * 100
+                    + wc.get(java.util.Calendar.DAY_OF_MONTH));
+            int cl = getSharedPreferences("edzo", MODE_PRIVATE).getInt(key, 0);
+            if (cl > 0) { wDays++; wSum += cl; }
+            wc.add(java.util.Calendar.DAY_OF_MONTH, -1);
+        }
+        if (wDays > 0)
+            tiles.add(new String[]{"💧 Átlag víz",
+                    (Math.round(wSum / (double) wDays / 10.0) / 10.0) + " l/nap"});
         addTiles(grid, tiles.toArray(new String[0][]));
         return grid;
     }

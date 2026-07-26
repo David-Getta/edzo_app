@@ -78,6 +78,20 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                         : "\n🍽 A mai " + goal + " kcal-os cél megvan (" + eaten + " kcal).";
             }
         } catch (Exception ignored) {}
+        // Víz-emlékeztető annak, aki ma már használta a számlálót, de a cél még nincs meg.
+        try {
+            java.util.Calendar wc = java.util.Calendar.getInstance();
+            String key = "water_" + (wc.get(java.util.Calendar.YEAR) * 10000
+                    + (wc.get(java.util.Calendar.MONTH) + 1) * 100
+                    + wc.get(java.util.Calendar.DAY_OF_MONTH));
+            android.content.SharedPreferences p =
+                    c.getSharedPreferences("edzo", Context.MODE_PRIVATE);
+            int cl = p.getInt(key, 0);
+            int goalCl = p.getInt("water_goal_cl", 200);
+            if (cl > 0 && cl < goalCl)
+                text += "\n💧 Vízből " + (cl / 100.0) + " l megvan – igyál még "
+                        + ((goalCl - cl) / 100.0) + " l-t ma!";
+        } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
