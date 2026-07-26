@@ -58,6 +58,19 @@ public class FoodsParseTest {
         assertEquals(360.0, hits("3 banán").get(0).grams, 0.001);
     }
 
+    @Test public void hungarianNumberWordsCountToo() {
+        assertEquals(110.0, hits("két tojás").get(0).grams, 0.001);
+        assertEquals(110.0, hits("kettő tojás").get(0).grams, 0.001);
+        assertEquals(360.0, hits("három banán").get(0).grams, 0.001);
+        assertEquals(55.0, hits("egy zsemle").get(0).grams, 0.001);
+        assertEquals(75.0, hits("fél alma").get(0).grams, 0.001);   // fél darab
+        // Több étel, mindegyik a maga számnevével.
+        List<Foods.Hit> h = hits("egy alma és két körte");
+        assertEquals(2, h.size());
+        assertEquals(150.0, h.get(0).grams, 0.001);
+        assertEquals(300.0, h.get(1).grams, 0.001);
+    }
+
     @Test public void bareNumbersStayIgnoredWhereTheyMakeNoSense() {
         // Rizst nem darabra számolunk.
         assertEquals(0.0, hits("2 rizs").get(0).grams, 0.001);

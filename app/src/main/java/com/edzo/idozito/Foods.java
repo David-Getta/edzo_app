@@ -314,6 +314,17 @@ public final class Foods {
             {"Szendvics", "150"}, {"Hot-dog", "150"},
     };
 
+    /**
+     * Kiírt számnevek ékezet nélkül. Csak egész szóként és csak darabra
+     * számolható étel előtt érvényesek, ezért a többjelentésű alakok („hat",
+     * „het", „fel") sem okoznak félreértést.
+     */
+    private static final String[][] NUMBER_WORDS = {
+            {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},
+            {"ot", "5"}, {"hat", "6"}, {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"},
+            {"tiz", "10"}, {"fel", "0.5"},
+    };
+
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
     static int pieceGrams(Food f) {
         for (String[] p : PIECE_GRAMS)
@@ -356,6 +367,7 @@ public final class Foods {
         List<Double> numVal = new ArrayList<>();
         List<Integer> bareNumPos = new ArrayList<>();
         List<Double> bareNumVal = new ArrayList<>();
+        List<Integer> bareNumLen = new ArrayList<>();
         int i = 0;
         while (i < q.length()) {
             if (!Character.isDigit(q.charAt(i))) { i++; continue; }
@@ -379,6 +391,7 @@ public final class Foods {
                 // különben a szám nem jelent semmit, és figyelmen kívül hagyjuk.
                 bareNumPos.add(start);
                 bareNumVal.add(val);
+                bareNumLen.add(i - start);
             }
         }
         double[] grams = new double[foods.size()];
@@ -392,13 +405,29 @@ public final class Foods {
             }
             if (bestIdx >= 0) grams[bestIdx] = numVal.get(n);
         }
+        // Kiírt számnevek is számítanak („két tojás", „fél alma"), egész szóként.
+        for (String[] w : NUMBER_WORDS) {
+            int at = 0;
+            while (true) {
+                int p = q.indexOf(w[0], at);
+                if (p < 0) break;
+                at = p + w[0].length();
+                boolean leftOk = p == 0 || !Character.isLetter(q.charAt(p - 1));
+                boolean rightOk = at >= q.length() || !Character.isLetter(q.charAt(at));
+                if (leftOk && rightOk) {
+                    bareNumPos.add(p);
+                    bareNumVal.add(Double.parseDouble(w[1]));
+                    bareNumLen.add(w[0].length());
+                }
+            }
+        }
         // Darabszámok: „2 tojás" = 2 × egy tojás súlya. Csak akkor számít, ha a
         // szám közvetlenül egy darabra számolható étel előtt áll, az étel még nem
         // kapott grammot, és a darabszám életszerű (legfeljebb 20).
         for (int n = 0; n < bareNumPos.size(); n++) {
             double count = bareNumVal.get(n);
-            if (count < 1 || count > 20) continue;
-            int numEnd = bareNumPos.get(n) + String.valueOf((long) count).length();
+            if (count < 0.5 || count > 20) continue;
+            int numEnd = bareNumPos.get(n) + bareNumLen.get(n);
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
                 int gap = foodPos.get(k) - numEnd;
