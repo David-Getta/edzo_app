@@ -259,11 +259,12 @@ public class DietActivity extends Activity {
                         false, true, () -> addMealDialog(m, idx));
                 sh.addRow("🔁", "Újra most", "Ugyanez az étkezés naplózása mostani időponttal",
                         false, true, () -> {
-                            MealLog.add(this, new MealLog.Meal(System.currentTimeMillis(),
-                                    m.name, m.items, ""));
+                            long now = System.currentTimeMillis();
+                            MealLog.add(this, new MealLog.Meal(now, m.name, m.items, ""));
                             refresh();
                             Ux.blazeCard(this, "🍽 Újra naplózva ✔  "
-                                    + Math.round(m.kcal()) + " kcal");
+                                    + Math.round(m.kcal()) + " kcal"
+                                    + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
                         });
                 sh.addRow("📷", m.photo.isEmpty() ? "Fotó csatolása" : "Új fotó készítése",
                         "A tányérod képe a bejegyzéshez", false, true, () -> capturePhoto(m.ts));
@@ -351,10 +352,11 @@ public class DietActivity extends Activity {
             chip.setPadding(dp(12), dp(8), dp(12), dp(8));
             chip.setClickable(true);
             chip.setOnClickListener(v -> {
-                MealLog.add(this, new MealLog.Meal(System.currentTimeMillis(),
-                        src.name, src.items, ""));
+                long now = System.currentTimeMillis();
+                MealLog.add(this, new MealLog.Meal(now, src.name, src.items, ""));
                 refresh();
-                Ux.blazeCard(this, "🍽 Újra naplózva ✔  " + Math.round(src.kcal()) + " kcal");
+                Ux.blazeCard(this, "🍽 Újra naplózva ✔  " + Math.round(src.kcal()) + " kcal"
+                        + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
             });
             // Kedvencet hosszú nyomással le lehet venni a listáról.
             if (isFav) chip.setOnLongClickListener(v -> {
@@ -797,7 +799,23 @@ public class DietActivity extends Activity {
             msg += left >= 0 ? "  ·  még " + left + " kcal fér ma"
                     : "  ·  " + (-left) + " kcal-lal a cél felett";
         }
+        if (awardDailyLogXp(ts)) msg += "  ·  +5 XP";
         Ux.blazeCard(this, "🍽 " + msg);
+    }
+
+    /**
+     * A napi első étkezés naplózásáért +5 XP – naponta legfeljebb egyszer, és
+     * csak mai bejegyzésre (visszamenőleges pótlásért nem jár). True, ha most
+     * írtuk jóvá.
+     */
+    boolean awardDailyLogXp(long ts) {
+        if (ts < dayStartMs()) return false;
+        android.content.SharedPreferences p = getSharedPreferences("edzo", MODE_PRIVATE);
+        int today = Water.dayNumber(Calendar.getInstance());
+        if (p.getInt("meal_xp_day", 0) == today) return false;
+        p.edit().putInt("meal_xp_day", today).apply();
+        Levels.addBonus(this, 5);
+        return true;
     }
 
     /** Összetevő-arányok igazítása csúszkákkal; az össz-gramm változatlan marad. */

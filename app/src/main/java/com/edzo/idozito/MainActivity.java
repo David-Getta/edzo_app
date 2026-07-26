@@ -1651,7 +1651,8 @@ public class MainActivity extends Activity {
     }
 
     void showLevelsSheet(int currentLvl) {
-        Sheet s = new Sheet(this, "Szintek ⭐", "XP-t az edzések percei, távja és minden befejezett edzés adnak");
+        Sheet s = new Sheet(this, "Szintek ⭐", "XP-t az edzések percei és távja, a napi kihívás "
+                + "(+10) és az étrend napi első bejegyzése (+5) adnak");
         for (int i = 1; i <= 10; i++) {
             String sub = "Szükséges XP: " + Levels.xpForLevel(i)
                     + (i == currentLvl ? "  ·  itt tartasz" : "");
