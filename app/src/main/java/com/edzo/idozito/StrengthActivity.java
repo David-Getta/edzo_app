@@ -298,6 +298,14 @@ public class StrengthActivity extends Activity {
         } else {
             box.addView(text("Legalább 2 alkalom kell a grafikonhoz. Rögzíts még egyet!", 13, MUTED, false));
         }
+        // Ne csak a múltat mutassuk: mi a következő lépés?
+        Progression.Suggestion sug = Progression.next(all, name);
+        if (sug != null) {
+            box.addView(gap(12));
+            box.addView(text("Következő alkalom:  " + sug.headline(), 14, Theme.accent(this), true));
+            box.addView(gap(3));
+            box.addView(text(sug.why, 12, MUTED, false));
+        }
         new Sheet(this, name, "Fejlődés").addCustom(box).addNeutral("Bezár", () -> {}).show();
     }
 
@@ -320,6 +328,10 @@ public class StrengthActivity extends Activity {
         final List<EditText> repsList = new ArrayList<>();
         final List<EditText> wList = new ArrayList<>();
 
+        // A progresszió-javaslat kártyája (csak új bejegyzésnél; szerkesztésnél
+        // a régi alkalmat nézzük, ott félrevezető lenne a „mai" javaslat).
+        final LinearLayout suggestBox = vbox();
+
         // Gyors nevek vízszintes chip-sávban
         box.addView(gap(8));
         LinearLayout chips = hbox();
@@ -332,6 +344,7 @@ public class StrengthActivity extends Activity {
             chip.setOnClickListener(v -> {
                 nameEt.setText(n);
                 nameEt.setSelection(n.length());
+                // A javaslatot a név figyelője frissíti (a setText kiváltja).
                 prefillFromLast(n, setsBox, repsList, wList);
             });
             chips.addView(chip);
@@ -340,6 +353,18 @@ public class StrengthActivity extends Activity {
         hs.setHorizontalScrollBarEnabled(false);
         hs.addView(chips);
         box.addView(hs);
+
+        box.addView(suggestBox, lp());
+        if (edit == null) {
+            // Kézzel beírt névre is jöjjön a javaslat (nem csak a chipekre).
+            nameEt.addTextChangedListener(new android.text.TextWatcher() {
+                public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+                public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+                public void afterTextChanged(android.text.Editable e) {
+                    showSuggestion(e.toString().trim(), suggestBox, setsBox, repsList, wList);
+                }
+            });
+        }
 
         box.addView(gap(12));
         box.addView(text("Sorozatok (ismétlés × súly kg)", 13, MUTED, true));
@@ -421,6 +446,47 @@ public class StrengthActivity extends Activity {
     }
 
     /** A sorozat-mezők feltöltése az adott gyakorlat legutóbbi bejegyzéséből. */
+    /**
+     * „Mai javaslat" kártya: mit érdemes ma nyomni ebből a gyakorlatból az
+     * eddigiek alapján. Koppintásra be is írja a sorozatokat, hogy ne kelljen
+     * fejben számolni a tárcsákat.
+     */
+    void showSuggestion(String name, LinearLayout suggestBox, final LinearLayout setsBox,
+                        final List<EditText> repsList, final List<EditText> wList) {
+        suggestBox.removeAllViews();
+        final Progression.Suggestion s = Progression.next(StrengthLog.load(this), name);
+        if (s == null) return;              // még sosem naplózta: nincs mihez mérni
+
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(12), dp(14), dp(12));
+        c.addView(text("Mai javaslat:  " + s.headline(), 15, Theme.accent(this), true));
+        c.addView(gap(4));
+        c.addView(text(s.why, 12.5f, MUTED, false));
+        c.addView(gap(8));
+        c.addView(text("Koppints, és beírom a sorozatokat.", 12, MUTED, true));
+        c.setClickable(true);
+        c.setOnClickListener(v -> applySuggestion(s, setsBox, repsList, wList));
+
+        suggestBox.addView(gap(12));
+        suggestBox.addView(c, lp());
+    }
+
+    /** A javasolt sorozatok beírása az űrlapba (a meglévő sorok helyére). */
+    void applySuggestion(Progression.Suggestion s, LinearLayout setsBox,
+                         List<EditText> repsList, List<EditText> wList) {
+        setsBox.removeAllViews();
+        repsList.clear();
+        wList.clear();
+        for (int i = 0; i < s.sets; i++) {
+            addSetRow(setsBox, repsList, wList);
+            repsList.get(i).setText(String.valueOf(s.reps));
+            // Testsúlyosnál a súlymezőt hagyjuk üresen, ne írjunk oda 0-t.
+            // Progression.kg (2 tizedes), hogy az 1,25-ös lépés se kerekedjen el.
+            if (!s.bodyweight) wList.get(i).setText(Progression.kg(s.weight));
+        }
+        Toast.makeText(this, "Beírtam: " + s.headline(), Toast.LENGTH_SHORT).show();
+    }
+
     void prefillFromLast(String name, LinearLayout setsBox, List<EditText> repsList, List<EditText> wList) {
         StrengthLog.Entry last = null;
         for (StrengthLog.Entry e : StrengthLog.load(this)) {   // a lista legújabb elöl
