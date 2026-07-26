@@ -109,5 +109,16 @@
             android:text="🏋️"
             android:textSize="17sp"
             android:background="@drawable/widget_start_bg" />
+
+        <!-- +1 pohár víz egy koppintással (app-megnyitás nélkül). -->
+        <TextView
+            android:id="@+id/blaze_water"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="💧"
+            android:textSize="17sp"
+            android:background="@drawable/widget_start_bg" />
     </LinearLayout>
 </LinearLayout>

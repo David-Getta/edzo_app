@@ -111,7 +111,44 @@ public class BlazeWidget extends AppWidgetProvider {
         gym.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         rv.setOnClickPendingIntent(R.id.blaze_gym, PendingIntent.getActivity(c, 2, gym, flags));
 
+        // 💧 gomb: +1 pohár víz app-megnyitás nélkül (saját broadcast).
+        Intent water = new Intent(c, BlazeWidget.class).setAction(ACTION_WATER);
+        rv.setOnClickPendingIntent(R.id.blaze_water,
+                PendingIntent.getBroadcast(c, 3, water, flags));
+
         mgr.updateAppWidget(id, rv);
+    }
+
+    static final String ACTION_WATER = "com.edzo.idozito.WIDGET_WATER";
+
+    @Override
+    public void onReceive(Context c, Intent intent) {
+        if (ACTION_WATER.equals(intent.getAction())) {
+            android.content.SharedPreferences p =
+                    c.getSharedPreferences("edzo", Context.MODE_PRIVATE);
+            Calendar cal = Calendar.getInstance();
+            String key = "water_" + (cal.get(Calendar.YEAR) * 10000
+                    + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH));
+            int cl = p.getInt(key, 0) + 25;
+            p.edit().putInt(key, cl).apply();
+            int goalCl = p.getInt("water_goal_cl", 200);
+            android.widget.Toast.makeText(c, cl >= goalCl
+                    ? "💧 " + (cl / 100.0) + " l – a napi vízcél megvan! ✔"
+                    : "💧 +1 pohár · ma " + (cl / 100.0) + " l",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            // A Hidratált jelvény tartós számlálója (naponta legfeljebb egyszer).
+            if (cl >= goalCl && cl - 25 < goalCl) {
+                int today = cal.get(Calendar.YEAR) * 10000
+                        + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH);
+                if (p.getInt("water_last_done", 0) != today)
+                    p.edit().putInt("water_last_done", today)
+                            .putInt("water_days_done", p.getInt("water_days_done", 0) + 1)
+                            .apply();
+            }
+            refresh(c);
+            return;
+        }
+        super.onReceive(c, intent);
     }
 
     private static String praise(String userName, int streak) {
