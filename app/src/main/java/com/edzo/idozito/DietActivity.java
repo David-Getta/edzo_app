@@ -155,9 +155,11 @@ public class DietActivity extends Activity {
         // Mindig időrendben (szerkesztés után se ugorjon a lista elejére a bejegyzés).
         java.util.Collections.sort(meals, (a, b2) -> Long.compare(b2.ts, a.ts));
         if (meals.isEmpty()) {
-            listBox.addView(text(q.isEmpty()
-                    ? "Még nincs bejegyzés. Add hozzá az első étkezésed fent!"
-                    : "Nincs a keresésre illő bejegyzés.", 13.5f, MUTED, false));
+            if (!q.isEmpty()) {
+                listBox.addView(text("Nincs a keresésre illő bejegyzés.", 13.5f, MUTED, false));
+            } else {
+                listBox.addView(introCard());
+            }
             return;
         }
         SimpleDateFormat df = new SimpleDateFormat("MMM d. · HH:mm", new Locale("hu"));
@@ -290,6 +292,35 @@ public class DietActivity extends Activity {
             listBox.addView(c, lp());
             listBox.addView(gap(10));
         }
+    }
+
+    /** Első indításkor: rövid bemutató arról, hogyan a legegyszerűbb naplózni. */
+    LinearLayout introCard() {
+        LinearLayout c = card();
+        c.setPadding(dp(16), dp(14), dp(16), dp(14));
+        c.addView(text("Így a leggyorsabb 🐺", 14.5f, TXT, true));
+        c.addView(gap(8));
+        c.addView(text("Csak írd le, mit ettél – az app felismeri az ételeket, és "
+                + "kiszámolja a kalóriát:", 13, MUTED, false));
+        c.addView(gap(8));
+        String[] examples = {
+            "rántott hús rizzsel",
+            "150 g csirkemell 200 g rizs",
+            "két tojás rántotta kenyérrel",
+        };
+        for (final String ex : examples) {
+            TextView t = text("„" + ex + "\"", 13, Theme.accent(this), false);
+            t.setPadding(dp(2), dp(4), 0, dp(4));
+            t.setClickable(true);
+            // Koppintásra rögtön megnyílik az űrlap a példával előtöltve.
+            t.setOnClickListener(v -> addMealDialogPrefilled(ex));
+            c.addView(t);
+        }
+        c.addView(gap(6));
+        c.addView(text("Ha nincs meg a gramm, a tipikus adaggal számolunk – utólag "
+                + "bármikor pontosíthatod. A 📖 Kalóriatáblázatból egy koppintással is "
+                + "naplózhatsz.", 12.5f, MUTED, false));
+        return c;
     }
 
     /** Gyors-naplózás: előbb a kedvencek, utána a leggyakoribb étkezések csipjei. */
@@ -642,13 +673,20 @@ public class DietActivity extends Activity {
 
     void addMealDialog() { addMealDialog(null, -1); }
 
+    /** Új étkezés a névmező előtöltésével (a bemutató példáihoz). */
+    void addMealDialogPrefilled(String name) {
+        prefillName = name;
+        addMealDialog(null, -1);
+    }
+
+    private String prefillName;
+
     /** Új étkezés felvitele, vagy meglévő szerkesztése (existing != null esetén). */
     void addMealDialog(final MealLog.Meal existing, final int editIdx) {
         final LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
 
         final EditText nameEt = input("Mit ettél? (pl. 150 g csirkemell 200 g rizzsel)");
-        if (existing != null) nameEt.setText(existing.name);
         box.addView(nameEt, lp());
         // Élő visszajelzés: mit ismer fel az app a beírt névből.
         final TextView reco = text("", 11.5f, MUTED, false);
@@ -679,6 +717,10 @@ public class DietActivity extends Activity {
                 reco.setText(sb.toString());
             }
         });
+        // A kezdőérték a figyelő felrakása UTÁN kerül be, hogy a felismerés
+        // rögtön látszódjon szerkesztésnél és a bemutató példáinál is.
+        if (existing != null) nameEt.setText(existing.name);
+        else if (prefillName != null) { nameEt.setText(prefillName); prefillName = null; }
         box.addView(gap(10));
 
         box.addView(text("Összetevők (étel + gramm)", 12.5f, MUTED, true));
