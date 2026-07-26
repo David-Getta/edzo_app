@@ -237,10 +237,13 @@ public final class MealLog {
      * nincs, tegnappal) bezárólag. A mai nap hiánya nem töri meg azonnal a
      * szériát – csak akkor, ha a tegnapi is kimarad.
      */
-    public static int logStreak(Context c) {
+    public static int logStreak(Context c) { return logStreak(load(c)); }
+
+    /** Ugyanaz, konkrét listával – így Android nélkül is tesztelhető. */
+    static int logStreak(List<Meal> meals) {
         java.util.HashSet<Integer> days = new java.util.HashSet<>();
         Calendar cal = Calendar.getInstance();
-        for (Meal m : load(c)) {
+        for (Meal m : meals) {
             cal.setTimeInMillis(m.ts);
             days.add(Water.dayNumber(cal));
         }
