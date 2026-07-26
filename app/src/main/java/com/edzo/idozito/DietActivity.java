@@ -852,19 +852,24 @@ public class DietActivity extends Activity {
                   MealLog.Meal existing, int editIdx) {
         List<String> foods = new ArrayList<>();
         List<Double> grams = new ArrayList<>();
+        // Az összetevő-soroknál a beírt szöveget kell feloldani; a névből
+        // felismert ételeket viszont már ismerjük, azokat nem keressük újra.
+        List<Foods.Food> resolved = new ArrayList<>();
         for (EditText[] r : rows) {
             String f = r[0].getText().toString().trim();
             if (f.isEmpty()) continue;
             foods.add(f);
             grams.add(parse(r[1].getText().toString()));
+            resolved.add(Foods.find(this, f));
         }
         if (foods.isEmpty()) {
-            // Okos bevitel: ha csak a nevet írtad be ("rántott hús rizzsel", vagy
-            // „150 g csirkemell 200 g rizzsel"), az összetevőket – és ha ott a
-            // szám, a grammot is – a névből ismerjük fel.
+            // Okos bevitel: ha csak a nevet írtad be („rántott hús rizzsel",
+            // „150 g csirkemell 200 g rizs", „2 tojás"), az összetevőket – és ha
+            // ott a mennyiség, azt is – a névből ismerjük fel.
             for (Foods.Hit h : Foods.parse(this, nameEt.getText().toString())) {
                 foods.add(h.food.name);
                 grams.add(h.grams);
+                resolved.add(h.food);
             }
         }
         if (foods.isEmpty()) {
@@ -872,9 +877,6 @@ public class DietActivity extends Activity {
                     + "mit ettél (pl. rántott hús rizzsel).", Toast.LENGTH_LONG).show();
             return;
         }
-        // Ételek felismerése előre (a tipikus adagméretekhez is kell).
-        List<Foods.Food> resolved = new ArrayList<>();
-        for (String fq : foods) resolved.add(Foods.find(this, fq));
 
         // Közös gramm szétosztása a megadatlan összetevők közt; ha nincs közös
         // gramm sem, az adott étel tipikus adagjával számolunk.
