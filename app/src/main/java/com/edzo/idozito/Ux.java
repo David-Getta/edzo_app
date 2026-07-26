@@ -35,13 +35,45 @@ public final class Ux {
      * bordó, Blaze képével díszített üzenet. ~4,5 mp után magától eltűnik,
      * koppintásra azonnal bezárható. Bármely képernyőről hívható.
      */
+    /** A kártyák azonosítója, hogy egyszerre mindig csak egy legyen kint. */
+    private static final String CARD_TAG = "blaze_card";
+
+    /** Kint van-e épp Blaze-kártya. */
+    public static boolean cardShowing(Activity a) {
+        FrameLayout root = a == null ? null : (FrameLayout) a.findViewById(android.R.id.content);
+        if (root == null) return false;
+        for (int i = 0; i < root.getChildCount(); i++)
+            if (CARD_TAG.equals(root.getChildAt(i).getTag())) return true;
+        return false;
+    }
+
+    /**
+     * Csak akkor mutatja a kártyát, ha nincs kint másik. Kevésbé fontos
+     * üzenetekhez (pl. belépő köszöntés), hogy ne nyomja el az ünneplést.
+     */
+    public static void blazeCardIfFree(Activity a, String msg) {
+        if (!cardShowing(a)) blazeCard(a, msg);
+    }
+
     public static void blazeCard(final Activity a, String msg) {
         final FrameLayout root = a.findViewById(android.R.id.content);
         if (root == null || a.isFinishing()) return;
         final float d = a.getResources().getDisplayMetrics().density;
         int accent = Theme.accent(a);
 
+        // Ha még kint van egy korábbi kártya, azt levesszük: mindkettő ugyanoda
+        // kerülne, és egymásra csúszva olvashatatlanná válnának (pl. a belépő
+        // köszöntés a kihívás-ünneplés tetejére).
+        for (int i = root.getChildCount() - 1; i >= 0; i--) {
+            View old = root.getChildAt(i);
+            if (CARD_TAG.equals(old.getTag())) {
+                old.animate().cancel();
+                root.removeView(old);
+            }
+        }
+
         final LinearLayout g = new LinearLayout(a);
+        g.setTag(CARD_TAG);
         g.setOrientation(LinearLayout.HORIZONTAL);
         g.setGravity(Gravity.CENTER_VERTICAL);
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,

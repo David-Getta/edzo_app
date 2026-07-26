@@ -224,7 +224,9 @@ public class MainActivity extends Activity {
 
     /** Blaze belépő köszöntése: felülről beúszó, saját stílusú kártya (nem Toast). */
     void showGreetingCard(String msg) {
-        Ux.blazeCard(this, msg);
+        // A köszöntés a legkevésbé sürgős üzenet: ha épp egy ünneplés (kihívás,
+        // jelvény, rekord) van kint, azt nem söpörjük félre.
+        Ux.blazeCardIfFree(this, msg);
     }
 
     /**
