@@ -3514,8 +3514,26 @@ public class MainActivity extends Activity {
             int dsNow = dayStreak(actArr);
             // Ha Blaze saját képe ott van a kártyán, nem kell elé az emoji.
             String pfx = blazePraise.getCompoundDrawables()[0] != null ? "" : "🐺 ";
-            blazePraise.setText(pfx + Mascot.praiseFinish(
-                    prefs.getString("user_name", ""), dsNow, actArr.length()));
+            String praise = pfx + Mascot.praiseFinish(
+                    prefs.getString("user_name", ""), dsNow, actArr.length());
+            // Regenerációs tipp annak, aki fehérje-célt vezet: edzés után ez a
+            // leghasznosabb következő lépés, és átvisz az Étrendre egy koppintással.
+            boolean proteinTip = false;
+            try {
+                int pGoal = prefs.getInt("protein_goal", 0);
+                if (pGoal > 0) {
+                    int eaten = (int) Math.round(MealLog.todayProtein(this));
+                    if (eaten < pGoal) {
+                        praise += "\n\n🥩 Mára még " + (pGoal - eaten)
+                                + " g fehérje van hátra – koppints ide a naplózáshoz.";
+                        proteinTip = true;
+                    }
+                }
+            } catch (Exception ignored) {}
+            blazePraise.setClickable(proteinTip);
+            blazePraise.setOnClickListener(proteinTip
+                    ? v -> startActivity(new Intent(this, DietActivity.class)) : null);
+            blazePraise.setText(praise);
             blazePraise.setVisibility(View.VISIBLE);
             blazePraise.setAlpha(0f);
             blazePraise.animate().alpha(1f).setStartDelay(350).setDuration(420).start();
