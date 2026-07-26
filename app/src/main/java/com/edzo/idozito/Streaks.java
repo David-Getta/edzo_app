@@ -29,8 +29,23 @@ public final class Streaks {
     }
 
     private static int count(Context ctx, JSONArray arr, boolean includeToday) {
+        return count(planOf(ctx), arr, includeToday);
+    }
+
+    /**
+     * A tervezett edzésnapok táblája, vagy null, ha nincs terv. Külön kiemelve,
+     * hogy a számítás Context nélkül is meghívható (és tesztelhető) legyen.
+     */
+    private static boolean[] planOf(Context ctx) {
+        if (Theme.planDays(ctx).isEmpty()) return null;
+        boolean[] p = new boolean[7];
+        for (int i = 0; i < 7; i++) p[i] = Theme.isPlanDay(ctx, i);
+        return p;
+    }
+
+    /** plan == null: nincs edzésnap-terv, ilyenkor bármely kihagyott nap megtöri. */
+    static int count(boolean[] plan, JSONArray arr, boolean includeToday) {
         HashSet<Long> days = daySet(arr);
-        boolean hasPlan = !Theme.planDays(ctx).isEmpty();
         Calendar cur = Calendar.getInstance();
         zero(cur);
         // Naptári léptetéssel megyünk visszafelé (óraátállás-biztos).
@@ -42,7 +57,7 @@ public final class Streaks {
                 s++;
             } else {
                 int dowIdx = (cur.get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
-                boolean restDay = hasPlan && !Theme.isPlanDay(ctx, dowIdx);
+                boolean restDay = plan != null && !plan[dowIdx];
                 if (!restDay) break; // kihagyott edzésnap (vagy terv nélkül bármely nap) megtöri
             }
             cur.add(Calendar.DAY_OF_YEAR, -1);
