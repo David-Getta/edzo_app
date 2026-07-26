@@ -20,7 +20,8 @@ public final class MealLog {
 
     static final String PREFS = "edzo";
     static final String KEY = "meal_log";
-    static final int MAX = 300;
+    /** Napi 3 étkezéssel is közel egy év – a régi napok statisztikái így megmaradnak. */
+    static final int MAX = 1000;
 
     public static final class Item {
         public final String food;

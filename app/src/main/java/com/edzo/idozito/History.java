@@ -16,7 +16,13 @@ public final class History {
 
     static final String PREFS = "edzo";
     static final String KEY = "history";
-    static final int MAX = 100;
+    /**
+     * A megőrzött edzések felső korlátja. Bőven kell a fejnek: az XP (és így a
+     * szint), az összes-edzés számláló és a jelvények mind ebből a naplóból
+     * számolódnak, tehát ami itt kiesik, az a felhasználó eredményéből is
+     * eltűnne. 1000 bejegyzés napi edzéssel is közel három év.
+     */
+    static final int MAX = 1000;
 
     /** Egyesített aktivitás-napló: időzítős edzések + erősítő bejegyzések (csak
         „ts" időbélyeggel). A széria- és „ma edzett-e" számításokhoz így az
