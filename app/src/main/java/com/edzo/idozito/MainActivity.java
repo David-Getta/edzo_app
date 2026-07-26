@@ -1523,6 +1523,40 @@ public class MainActivity extends Activity {
             c.addView(insightRow("📍 Táv",
                     String.format(new Locale("hu"), "%.1f km", mThis / 1000.0),
                     (mThis - mPrev) / 1000.0, "km"));
+        // Kcal-átlag összevetés annak, aki étrendet vezet (semleges színnel – a
+        // több vagy kevesebb kalória önmagában se nem jó, se nem rossz).
+        try {
+            long dayMs = 24L * 3600 * 1000;
+            double[] kThis = new double[7], kPrev = new double[7];
+            for (MealLog.Meal m : MealLog.load(this)) {
+                if (m.ts >= ws) {
+                    int k = (int) ((m.ts - ws) / dayMs);
+                    if (k >= 0 && k < 7) kThis[k] += m.kcal();
+                } else if (m.ts >= prevWs) {
+                    int k = (int) ((m.ts - prevWs) / dayMs);
+                    if (k >= 0 && k < 7) kPrev[k] += m.kcal();
+                }
+            }
+            int dThis = 0, dPrev = 0; double sThis = 0, sPrev = 0;
+            for (double v : kThis) if (v > 0) { dThis++; sThis += v; }
+            for (double v : kPrev) if (v > 0) { dPrev++; sPrev += v; }
+            if (dThis > 0) {
+                double avgT = sThis / dThis;
+                LinearLayout row = hbox();
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(dp(2), dp(3), 0, dp(3));
+                row.addView(text("🍽 Kcal-átlag", 13.5f, MUTED, false),
+                        new LinearLayout.LayoutParams(0, -2, 1f));
+                row.addView(text(Math.round(avgT) + " kcal/nap", 14, TXT, true));
+                if (dPrev > 0) {
+                    double diff = avgT - sPrev / dPrev;
+                    String dTxt = Math.abs(diff) < 25 ? "   ="
+                            : (diff > 0 ? "   ↑ " : "   ↓ ") + Math.round(Math.abs(diff));
+                    row.addView(text(dTxt, 13, MUTED, true));
+                }
+                c.addView(row);
+            }
+        } catch (Exception ignored) {}
         insightBox.addView(c);
         insightBox.addView(gap(14));
     }
