@@ -28,6 +28,16 @@ public final class History {
         „ts" időbélyeggel). A széria- és „ma edzett-e" számításokhoz így az
         erősítő nap is beleszámít mindenhol (widget, értesítés, kezdőlap). */
     public static JSONArray loadAll(Context ctx) {
+        // Ez a leggyakrabban hívott olvasás (széria, XP, jelvények, kihívás,
+        // heti összevetés). A két forrás nyers szövege együtt a kulcs: amíg
+        // egyik sem változott, ugyanazt az összefűzött tömböt adjuk vissza.
+        String hRaw = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(KEY, "[]");
+        // A hossz is a kulcs része, hogy a két szöveg határa egyértelmű legyen.
+        String key = hRaw.length() + ":" + hRaw + StrengthLog.rawJson(ctx);
+        JSONArray cached = cachedAll;
+        if (cached != null && key.equals(cachedAllKey)) return cached;
+
         JSONArray merged = new JSONArray();
         JSONArray h = load(ctx);
         for (int i = 0; i < h.length(); i++) {
@@ -37,8 +47,13 @@ public final class History {
         for (StrengthLog.Entry e : StrengthLog.load(ctx)) {
             try { merged.put(new JSONObject().put("ts", e.ts)); } catch (Exception ignored) {}
         }
+        cachedAllKey = key;
+        cachedAll = merged;
         return merged;
     }
+
+    private static String cachedAllKey;
+    private static JSONArray cachedAll;
 
     /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,

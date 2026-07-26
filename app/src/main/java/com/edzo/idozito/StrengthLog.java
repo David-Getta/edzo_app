@@ -57,9 +57,35 @@ public final class StrengthLog {
         public int totalReps() { int r = 0; for (SetEntry s : sets) r += s.reps; return r; }
     }
 
+    // Ugyanaz a gond, mint a History-nál: a kezdőlap és a Statisztika egy
+    // frissítés alatt sokszor kéri el a naplót, ezért a nyers szövegre kötött
+    // gyorsítótárral elkerüljük az ismételt JSON-értelmezést.
+    private static String cachedRaw;
+    private static List<Entry> cachedList;
+
+    /** A napló nyers JSON-szövege (a History gyorsítótárának kulcsához). */
+    static String rawJson(Context c) {
+        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "[]");
+    }
+
+    /** A napló olvasásra. A visszakapott listát NE módosítsd – lásd loadForEdit. */
     public static List<Entry> load(Context c) {
+        String s = rawJson(c);
+        List<Entry> cached = cachedList;
+        if (cached != null && s.equals(cachedRaw)) return cached;
+        List<Entry> parsed = parse(s);
+        cachedRaw = s;
+        cachedList = parsed;
+        return parsed;
+    }
+
+    /** Friss, módosítható példány – a mentő metódusok ezt használják. */
+    private static List<Entry> loadForEdit(Context c) {
+        return parse(rawJson(c));
+    }
+
+    private static List<Entry> parse(String s) {
         List<Entry> out = new ArrayList<>();
-        String s = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "[]");
         try {
             JSONArray a = new JSONArray(s);
             for (int i = 0; i < a.length(); i++) {
@@ -100,32 +126,32 @@ public final class StrengthLog {
     }
 
     public static void add(Context c, Entry e) {
-        List<Entry> l = load(c);
+        List<Entry> l = loadForEdit(c);
         l.add(0, e);           // legújabb elöl
         save(c, l);
     }
 
     public static void removeAt(Context c, int idx) {
-        List<Entry> l = load(c);
+        List<Entry> l = loadForEdit(c);
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }
     }
 
     /** Egy bejegyzés cseréje a helyén (szerkesztéshez – megtartja a sorrendet). */
     public static void replaceAt(Context c, int idx, Entry e) {
-        List<Entry> l = load(c);
+        List<Entry> l = loadForEdit(c);
         if (idx >= 0 && idx < l.size()) { l.set(idx, e); save(c, l); }
     }
 
     /** Törlés időbélyeg alapján – szűrt listából is biztonságos. */
     public static void removeByTs(Context c, long ts) {
-        List<Entry> l = load(c);
+        List<Entry> l = loadForEdit(c);
         for (int i = l.size() - 1; i >= 0; i--) if (l.get(i).ts == ts) l.remove(i);
         save(c, l);
     }
 
     /** Csere időbélyeg alapján – szűrt listából is biztonságos. */
     public static void replaceByTs(Context c, long ts, Entry e) {
-        List<Entry> l = load(c);
+        List<Entry> l = loadForEdit(c);
         for (int i = 0; i < l.size(); i++) if (l.get(i).ts == ts) { l.set(i, e); break; }
         save(c, l);
     }
