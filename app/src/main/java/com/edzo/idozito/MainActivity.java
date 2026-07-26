@@ -1926,7 +1926,10 @@ public class MainActivity extends Activity {
     // ---- Kitüntetések ----
 
     java.util.HashSet<String> currentBadges() {
-        JSONArray arr = History.load(this);
+        // Egyesített napló: az erősítő napok is számítanak, ahogy a kezdőlapon
+        // mutatott sorozat és edzésszám is – különben a felhasználó 7 napos
+        // szériát látna, de nem kapná meg a hozzá tartozó jelvényt.
+        JSONArray arr = History.loadAll(this);
         return Badges.earned(this, arr, bestWeekStreak(arr), prefs.getInt("challenge_done_count", 0), Streaks.planWeeks(this, arr));
     }
 
