@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 /**
  * Befejezett edzések naplója. A SharedPreferences-be mentett JSON-tömb;
- * a legfrissebb elöl. Legfeljebb az utolsó 100 edzést tartja meg.
+ * a legfrissebb elöl. Legfeljebb az utolsó MAX edzést tartja meg.
  */
 public final class History {
 
@@ -46,7 +46,7 @@ public final class History {
                            int steps, int movingSec, double elevGainM, double calories,
                            double avgSpeedKmh, String name) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        JSONArray arr = load(ctx);
+        JSONArray arr = loadForEdit(ctx);
         try {
             JSONObject o = new JSONObject();
             o.put("ts", ts);
@@ -73,7 +73,7 @@ public final class History {
     /** Hangulat/érzés (1–4) mentése a legfrissebb edzéshez. */
     public static void setMoodForLatest(Context ctx, int mood) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        JSONArray arr = load(ctx);
+        JSONArray arr = loadForEdit(ctx);
         if (arr.length() == 0) return;
         try {
             JSONObject o = arr.optJSONObject(0);
@@ -83,7 +83,31 @@ public final class History {
         } catch (Exception ignored) {}
     }
 
+    // A kezdőlap egyetlen frissítése tucatnyiszor kéri el a naplót (szint, széria,
+    // kihívás, jelvények, rekordok…). Mivel a napló akár ezer bejegyzés is lehet,
+    // a JSON-t nem érdemes minden hívásnál újraértelmezni: eltesszük az utoljára
+    // beolvasott nyers szöveget, és amíg az nem változik, ugyanazt adjuk vissza.
+    private static String cachedRaw;
+    private static JSONArray cachedArr;
+
+    /** A napló olvasásra. A visszakapott tömböt NE módosítsd – lásd loadForEdit. */
     public static JSONArray load(Context ctx) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String s = p.getString(KEY, "[]");
+        JSONArray c = cachedArr;
+        if (c != null && s.equals(cachedRaw)) return c;
+        JSONArray parsed;
+        try { parsed = new JSONArray(s); } catch (Exception e) { parsed = new JSONArray(); }
+        cachedRaw = s;
+        cachedArr = parsed;
+        return parsed;
+    }
+
+    /**
+     * Friss, saját példány módosításhoz. A módosító metódusok ezt használják, így
+     * a gyorsítótárban lévő tömb soha nem változik a hátunk mögött.
+     */
+    private static JSONArray loadForEdit(Context ctx) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String s = p.getString(KEY, "[]");
         try { return new JSONArray(s); } catch (Exception e) { return new JSONArray(); }
@@ -92,7 +116,7 @@ public final class History {
     /** Szöveges jegyzet mentése a legfrissebb edzéshez. */
     public static void setNoteForLatest(Context ctx, String note) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        JSONArray arr = load(ctx);
+        JSONArray arr = loadForEdit(ctx);
         if (arr.length() == 0) return;
         try {
             JSONObject o = arr.optJSONObject(0);
@@ -106,7 +130,7 @@ public final class History {
     /** Egy adott (ts szerinti) edzés mezőjének frissítése. */
     public static void updateByTs(Context ctx, long ts, String key, Object value) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        JSONArray arr = load(ctx);
+        JSONArray arr = loadForEdit(ctx);
         try {
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject o = arr.optJSONObject(i);
@@ -122,7 +146,7 @@ public final class History {
     /** Egy adott (ts szerinti) edzés törlése a naplóból. */
     public static void deleteByTs(Context ctx, long ts) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        JSONArray arr = load(ctx);
+        JSONArray arr = loadForEdit(ctx);
         JSONArray out = new JSONArray();
         for (int i = 0; i < arr.length(); i++) {
             JSONObject o = arr.optJSONObject(i);
