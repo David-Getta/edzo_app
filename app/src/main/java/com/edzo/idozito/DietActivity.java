@@ -560,15 +560,24 @@ public class DietActivity extends Activity {
         LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
         box.addView(et, lp());
-        new Sheet(this, "Napi vízcél 💧", "Egy pohár = 2,5 dl")
+        Sheet sh = new Sheet(this, "Napi vízcél 💧", "Egy pohár = 2,5 dl")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
                     int dl = (int) parse(et.getText().toString()); // dl-ben kérjük
                     Water.setGoalCl(this, dl * 10);
                     refreshWater();
-                })
-                .addCancel()
-                .show();
+                });
+        // A kcal-célhoz hasonlóan itt is legyen egy kiindulási pont, ha a
+        // Profilban már van testsúly (kb. 35 ml/testsúlykg).
+        double w = Profile.lastWeight(this);
+        if (w > 0) {
+            final int sug = Water.suggestedGoalCl(w);
+            sh.addNeutral("⚡ Testsúly alapján: " + Water.liters(sug), () -> {
+                Water.setGoalCl(this, sug);
+                refreshWater();
+            });
+        }
+        sh.addCancel().show();
     }
 
     // Heti nézet mértéke: false = kcal, true = fehérje (fejlécre koppintva vált).

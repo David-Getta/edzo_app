@@ -81,8 +81,26 @@ public final class Water {
         return false;
     }
 
-    /** Literben, egy tizedesre – kijelzéshez. */
-    public static String liters(int cl) { return (cl / 100.0) + " l"; }
+    /**
+     * Literben, magyarul: tizedesvessző, és nincs felesleges „,0". A pohár
+     * 2,5 dl, ezért két tizedes is kellhet (negyed liter = 0,25 l).
+     */
+    public static String liters(int cl) {
+        if (cl % 100 == 0) return (cl / 100) + " l";
+        if (cl % 10 == 0) return String.valueOf(cl / 10 / 10.0).replace('.', ',') + " l";
+        return String.valueOf(cl / 100.0).replace('.', ',') + " l";
+    }
+
+    /**
+     * Ajánlott napi vízcél testsúly alapján (kb. 35 ml/testsúlykg), pohárnyi
+     * (2,5 dl) lépésekre kerekítve. Ismeretlen testsúlyra az alapértelmezés.
+     * A tartomány szándékosan szűk: ez kiindulási pont, nem orvosi tanács.
+     */
+    public static int suggestedGoalCl(double weightKg) {
+        if (weightKg <= 0) return DEFAULT_GOAL_CL;
+        int cl = (int) Math.round(weightKg * 3.5 / GLASS_CL) * GLASS_CL;
+        return Math.max(150, Math.min(400, cl));
+    }
 
     /**
      * Hozzáad (vagy levon, negatív értékkel) mennyiséget a mai naphoz.

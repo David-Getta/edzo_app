@@ -43,14 +43,41 @@ public class WaterTest {
         assertTrue(Water.dayNumber(earlier) < Water.dayNumber(c));
     }
 
-    @Test public void litersAreHumanReadable() {
-        assertEquals("2.0 l", Water.liters(200));
-        assertEquals("0.25 l", Water.liters(25));
-        assertEquals("0.0 l", Water.liters(0));
+    @Test public void litersReadInHungarian() {
+        // Tizedesvessző, és semmi felesleges: a kerek érték kerek maradjon.
+        assertEquals("2 l", Water.liters(200));
+        assertEquals("0 l", Water.liters(0));
+        assertEquals("2,5 l", Water.liters(250));
+        assertEquals("1,7 l", Water.liters(170));
+        // A pohár negyed liter, ehhez két tizedes kell.
+        assertEquals("0,25 l", Water.liters(25));
+        assertEquals("0,75 l", Water.liters(75));
+        assertEquals("2,25 l", Water.liters(225));
     }
 
     @Test public void aGlassIsAQuarterLitre() {
         assertEquals(25, Water.GLASS_CL);
         assertEquals(200, Water.DEFAULT_GOAL_CL);   // alapból 2 liter
+    }
+
+    @Test public void theSuggestedGoalFollowsBodyWeight() {
+        // ~35 ml/testsúlykg, pohárnyi lépésekre kerekítve.
+        assertEquals(250, Water.suggestedGoalCl(70));
+        assertEquals(175, Water.suggestedGoalCl(50));
+        assertEquals(350, Water.suggestedGoalCl(100));
+        // Ismeretlen testsúly → az alapértelmezés.
+        assertEquals(Water.DEFAULT_GOAL_CL, Water.suggestedGoalCl(0));
+        assertEquals(Water.DEFAULT_GOAL_CL, Water.suggestedGoalCl(-5));
+    }
+
+    @Test public void theSuggestedGoalStaysInASaneRange() {
+        // Szélsőséges testsúlyra sem adunk irreális célt – ez kiindulási pont.
+        assertEquals(150, Water.suggestedGoalCl(20));
+        assertEquals(400, Water.suggestedGoalCl(200));
+        for (int kg = 30; kg <= 200; kg++) {
+            int cl = Water.suggestedGoalCl(kg);
+            assertTrue("reális tartomány (" + kg + " kg): " + cl, cl >= 150 && cl <= 400);
+            assertEquals("pohárnyi lépés (" + kg + " kg)", 0, cl % Water.GLASS_CL);
+        }
     }
 }
