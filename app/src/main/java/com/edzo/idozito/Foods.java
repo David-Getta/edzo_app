@@ -313,7 +313,11 @@ public final class Foods {
      * Ahol nincs szám, a gramm 0 marad, és a hívó dönt (közös adag / tipikus adag).
      */
     public static List<Hit> parse(android.content.Context c, String query) {
-        List<Match> ms = matches(all(c), query);
+        return parse(all(c), query);
+    }
+
+    static List<Hit> parse(List<Food> list, String query) {
+        List<Match> ms = matches(list, query);
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) return out;
 
