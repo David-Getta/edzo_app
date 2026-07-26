@@ -194,6 +194,19 @@ public final class StrengthLog {
         c.set(java.util.Calendar.MILLISECOND, 0);
     }
 
+    /**
+     * Hány KÜLÖNBÖZŐ napon volt erősítő edzés az elmúlt `days` napban. Napokban
+     * mérünk, nem bejegyzésekben: aki egy nap öt gyakorlatot rögzít, az egy nap.
+     */
+    public static int daysTrainedIn(List<Entry> log, long now, int days) {
+        java.util.HashSet<Integer> seen = new java.util.HashSet<>();
+        for (Entry e : log) {
+            int ago = dayDiff(e.ts, now);
+            if (ago >= 0 && ago < days) seen.add(ago);
+        }
+        return seen.size();
+    }
+
     /** „ma" / „tegnap" / „5 napja"; ismeretlenre üres szöveg. */
     public static String agoLabel(int days) {
         if (days < 0) return "";

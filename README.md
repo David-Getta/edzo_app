@@ -48,6 +48,15 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   automatikus előtöltésével, kereséssel a naplóban
 - **Rekordok**: max súly és becsült **1RM** (Epley), **súly-fejlődési grafikon**,
   heti és összesített volumen
+- **Progresszió-javaslat**: mit nyomj ma? Dupla progresszió szerint előbb az
+  ismétlésszám kúszik fel a sáv tetejéig (8–12), utána lép a súly (20 kg alatt
+  1,25 kg, felette 2,5 kg). A tempót a leggyengébb sorozat szabja meg, a
+  bemelegítő sorozatok nem számítanak bele. Három egyforma alkalom után
+  visszavételt javasol. Egy koppintás, és beírja a sorozatokat
+- **„Mikor csináltad utoljára"** minden gyakorlatnál, és figyelmeztetés arra,
+  ami két hete kimaradt
+- **Izomcsoport-egyensúly**: hány napon volt láb / hát / mell / váll / kar /
+  törzs az elmúlt héten, és mi maradt ki
 - ⏱️ Pihenő-időzítő, 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
 
 ### 🐺 Blaze, a kabalafigura
@@ -100,7 +109,8 @@ készül, így az Obtainium és az Android is frissítésként ismeri fel.
 ## Fejlesztői build
 
 ```bash
-./gradlew testDebugUnitTest   # egységtesztek (ételfelismerés, szintek, víz)
+./gradlew testDebugUnitTest   # egységtesztek (ételfelismerés, szintek, víz,
+                              # szériák, progresszió, izomcsoportok)
 ./gradlew assembleDebug       # app/build/outputs/apk/debug/app-debug.apk
 ```
 

@@ -963,7 +963,13 @@ public class MainActivity extends Activity {
         t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
         t.add(new TileDef("mobility", "🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
         t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
-        t.add(new TileDef("strength", "🏋️", "Erősítő napló", 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
+        // Az Étrend-csempéhez hasonlóan a heti erősítő-aktivitás is látszik,
+        // hogy a kezdőlapról is kiderüljön, ha rég volt súlyzós edzés.
+        java.util.List<StrengthLog.Entry> sLog = StrengthLog.load(this);
+        int sDays = StrengthLog.daysTrainedIn(sLog, System.currentTimeMillis(), 7);
+        String sLabel = sLog.isEmpty() ? "Erősítő napló"
+                : sDays > 0 ? "Erősítő · " + sDays + " nap/hét" : "Erősítő · rég volt";
+        t.add(new TileDef("strength", "🏋️", sLabel, 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
         double kcalT = MealLog.todayKcal(this);
         t.add(new TileDef("diet", "🍽", kcalT > 0 ? "Étrend · " + Math.round(kcalT) + " kcal" : "Étrend", 0xFFFFB74D, () -> startActivity(new Intent(this, DietActivity.class))));
         t.add(new TileDef("template", "💾", "Sablon mentése", 0xFF7FE1A6, this::saveTemplateDialog));

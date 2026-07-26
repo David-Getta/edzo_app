@@ -71,6 +71,25 @@ public class StrengthLogTest {
         assertEquals(2, StrengthLog.daysSince(l, "Guggolás", now()));
     }
 
+    // --- daysTrainedIn ---
+
+    @Test public void trainingDaysCountDaysNotEntries() {
+        List<StrengthLog.Entry> l = log(
+                at("Guggolás", daysAgoAt(0, 9)),
+                at("Kitörés", daysAgoAt(0, 10)),     // ugyanaz a nap
+                at("Evezés", daysAgoAt(3, 12)));
+        assertEquals(2, StrengthLog.daysTrainedIn(l, now(), 7));
+    }
+
+    @Test public void olderSessionsFallOutOfTheWindow() {
+        List<StrengthLog.Entry> l = log(
+                at("Guggolás", daysAgoAt(1, 12)),
+                at("Evezés", daysAgoAt(7, 12)),      // már kívül a 7 napos ablakon
+                at("Bicepsz", daysAgoAt(30, 12)));
+        assertEquals(1, StrengthLog.daysTrainedIn(l, now(), 7));
+        assertEquals(0, StrengthLog.daysTrainedIn(log(), now(), 7));
+    }
+
     // --- agoLabel ---
 
     @Test public void agoLabelReadsNaturally() {
