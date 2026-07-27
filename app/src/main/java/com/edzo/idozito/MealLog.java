@@ -48,9 +48,38 @@ public final class MealLog {
         public double grams() { double g = 0; for (Item i : items) g += i.grams; return g; }
     }
 
+    // Ugyanaz a minta, mint az előzményeknél: a kezdőlap, a Statisztika, a
+    // jelvények, a napi kihívás és az esti értesítés is elkéri a naplót, akár
+    // többször egy frissítés alatt. Ezer étkezés JSON-ját nem érdemes minden
+    // hívásnál újraértelmezni, ezért a nyers szövegre kötve eltesszük.
+    private static String cachedRaw;
+    private static List<Meal> cachedList;
+
+    static String rawJson(Context c) {
+        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "[]");
+    }
+
+    /** A napló olvasásra. A visszakapott listát NE módosítsd – lásd loadForEdit. */
     public static List<Meal> load(Context c) {
+        String s = rawJson(c);
+        List<Meal> cached = cachedList;
+        if (cached != null && s.equals(cachedRaw)) return cached;
+        List<Meal> parsed = parse(s);
+        cachedRaw = s;
+        cachedList = parsed;
+        return parsed;
+    }
+
+    /**
+     * Friss, módosítható példány – a mentő metódusok ezt használják, így a
+     * gyorsítótárban lévő lista soha nem változik a hátunk mögött.
+     */
+    private static List<Meal> loadForEdit(Context c) {
+        return parse(rawJson(c));
+    }
+
+    private static List<Meal> parse(String s) {
         List<Meal> out = new ArrayList<>();
-        String s = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "[]");
         try {
             JSONArray a = new JSONArray(s);
             for (int i = 0; i < a.length(); i++) {
@@ -97,7 +126,7 @@ public final class MealLog {
     }
 
     public static void add(Context c, Meal m) {
-        List<Meal> l = load(c);
+        List<Meal> l = loadForEdit(c);
         l.add(0, m);                       // legújabb elöl
         while (l.size() > MAX) l.remove(l.size() - 1);
         save(c, l);
@@ -105,7 +134,7 @@ public final class MealLog {
 
     /** Fotó hozzárendelése egy meglévő étkezéshez (időbélyeg alapján). */
     public static void updatePhoto(Context c, long ts, String photo) {
-        List<Meal> l = load(c);
+        List<Meal> l = loadForEdit(c);
         for (int i = 0; i < l.size(); i++)
             if (l.get(i).ts == ts)
                 l.set(i, new Meal(ts, l.get(i).name, l.get(i).items, photo));
@@ -114,7 +143,7 @@ public final class MealLog {
 
     /** Bejegyzés időpontjának módosítása (a fotó és minden más adat megmarad). */
     public static void updateTs(Context c, long oldTs, long newTs) {
-        List<Meal> l = load(c);
+        List<Meal> l = loadForEdit(c);
         for (int i = 0; i < l.size(); i++)
             if (l.get(i).ts == oldTs) {
                 Meal m = l.get(i);
@@ -127,7 +156,7 @@ public final class MealLog {
      *  itt töröljük (szerkesztéskor ugyanaz a fotó újra hozzáadódik) – az árván
      *  maradt képeket a cleanupOrphanPhotos szedi össze. */
     public static void removeByTs(Context c, long ts) {
-        List<Meal> l = load(c);
+        List<Meal> l = loadForEdit(c);
         for (int i = l.size() - 1; i >= 0; i--) if (l.get(i).ts == ts) l.remove(i);
         save(c, l);
     }
@@ -138,11 +167,32 @@ public final class MealLog {
 
     static final String FAV_KEY = "fav_meals";
 
+    // A kedvenceket a napló minden sora elkéri (az „isFav" jelöléshez), ezért
+    // ez is a nyers szövegre kötött gyorsítótárat kapja.
+    private static String cachedFavRaw;
+    private static List<Meal> cachedFavs;
+
+    /** A kedvencek olvasásra. A listát NE módosítsd – lásd loadFavsForEdit. */
     public static List<Meal> loadFavs(Context c) {
+        String s = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(FAV_KEY, "[]");
+        List<Meal> cached = cachedFavs;
+        if (cached != null && s.equals(cachedFavRaw)) return cached;
+        List<Meal> parsed = parseFavs(s);
+        cachedFavRaw = s;
+        cachedFavs = parsed;
+        return parsed;
+    }
+
+    /** Friss, módosítható példány a kedvencek szerkesztéséhez. */
+    private static List<Meal> loadFavsForEdit(Context c) {
+        return parseFavs(c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(FAV_KEY, "[]"));
+    }
+
+    private static List<Meal> parseFavs(String raw) {
         List<Meal> out = new ArrayList<>();
         try {
-            JSONArray a = new JSONArray(c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                    .getString(FAV_KEY, "[]"));
+            JSONArray a = new JSONArray(raw);
             for (int i = 0; i < a.length(); i++) {
                 JSONObject o = a.optJSONObject(i);
                 if (o == null) continue;
@@ -174,7 +224,7 @@ public final class MealLog {
 
     /** Kedvencnek jelölés (azonos címkéjű korábbit cserél). Max 8 fér el. */
     public static void addFav(Context c, Meal m) {
-        List<Meal> favs = loadFavs(c);
+        List<Meal> favs = loadFavsForEdit(c);
         String lbl = favLabel(m);
         for (int i = favs.size() - 1; i >= 0; i--)
             if (favLabel(favs.get(i)).equalsIgnoreCase(lbl)) favs.remove(i);
@@ -184,7 +234,7 @@ public final class MealLog {
     }
 
     public static void removeFav(Context c, String label) {
-        List<Meal> favs = loadFavs(c);
+        List<Meal> favs = loadFavsForEdit(c);
         for (int i = favs.size() - 1; i >= 0; i--)
             if (favLabel(favs.get(i)).equalsIgnoreCase(label)) favs.remove(i);
         saveFavs(c, favs);
@@ -228,7 +278,7 @@ public final class MealLog {
     }
 
     public static void removeAt(Context c, int idx) {
-        List<Meal> l = load(c);
+        List<Meal> l = loadForEdit(c);
         if (idx >= 0 && idx < l.size()) { l.remove(idx); save(c, l); }
     }
 

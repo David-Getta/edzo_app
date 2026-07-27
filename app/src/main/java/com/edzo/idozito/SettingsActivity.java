@@ -357,7 +357,9 @@ public class SettingsActivity extends Activity {
     }
 
     void exportMealsCsv() {
-        java.util.List<MealLog.Meal> meals = MealLog.load(this);
+        // Saját másolat: a naplót lentebb sorba rendezzük, a megosztott
+        // (gyorsítótárazott) listát viszont nem szabad átrendezni.
+        java.util.List<MealLog.Meal> meals = new java.util.ArrayList<>(MealLog.load(this));
         if (meals.isEmpty()) {
             Toast.makeText(this, "Nincs étrend-bejegyzés.", Toast.LENGTH_SHORT).show();
             return;
