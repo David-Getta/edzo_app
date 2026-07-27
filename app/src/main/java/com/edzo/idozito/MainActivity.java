@@ -789,7 +789,7 @@ public class MainActivity extends Activity {
                 if (o == null) continue;
                 long ts = o.optLong("ts");
                 if (ts < wsMs) continue;
-                int di = (int) ((ts - wsMs) / (24L * 3600 * 1000));
+                int di = Days.between(wsMs, ts);
                 if (di >= 0 && di < 7) done[di] = true;
             }
             int plannedCount = 0, plannedDone = 0, futureRemaining = 0;
@@ -1591,10 +1591,10 @@ public class MainActivity extends Activity {
             double[] kThis = new double[7], kPrev = new double[7];
             for (MealLog.Meal m : MealLog.load(this)) {
                 if (m.ts >= ws) {
-                    int k = (int) ((m.ts - ws) / dayMs);
+                    int k = Days.between(ws, m.ts);
                     if (k >= 0 && k < 7) kThis[k] += m.kcal();
                 } else if (m.ts >= prevWs) {
-                    int k = (int) ((m.ts - prevWs) / dayMs);
+                    int k = Days.between(prevWs, m.ts);
                     if (k >= 0 && k < 7) kPrev[k] += m.kcal();
                 }
             }
@@ -1801,8 +1801,7 @@ public class MainActivity extends Activity {
             if (o == null) continue;
             long ts = o.optLong("ts");
             if (ts < ws) continue;
-            long diff = ts - ws;
-            int idx = (int) (diff / (24L * 3600 * 1000));
+            int idx = Days.between(ws, ts);
             if (idx >= 0 && idx < 7 && !days[idx]) { days[idx] = true; trained++; }
         }
         java.util.Calendar cal = java.util.Calendar.getInstance();

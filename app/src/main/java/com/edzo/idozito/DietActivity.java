@@ -590,8 +590,8 @@ public class DietActivity extends Activity {
         long today0 = dayStartMs();
         double[] sums = new double[7]; // [0]=ma, [6]=6 napja
         for (MealLog.Meal m : meals()) {
-            long diff = today0 - dayStartOf(m.ts);
-            int k = (int) (diff / dayMs);
+            // Óraátállás-biztos nap-index (lásd Days).
+            int k = Days.between(m.ts, today0);
             if (k >= 0 && k < 7) sums[k] += weekProtein ? m.protein() : m.kcal();
         }
         double max = 1;

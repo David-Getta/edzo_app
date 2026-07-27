@@ -549,7 +549,7 @@ public class StatsActivity extends Activity {
             cm.set(java.util.Calendar.MINUTE, 0);
             cm.set(java.util.Calendar.SECOND, 0);
             cm.set(java.util.Calendar.MILLISECOND, 0);
-            int k = (int) ((today0 - cm.getTimeInMillis()) / dayMs);
+            int k = Days.between(cm.getTimeInMillis(), today0);
             if (k >= 0 && k < 7) { kcal[k] += m.kcal(); prot[k] += m.protein(); }
         }
         int days = 0, underGoal = 0;
@@ -602,7 +602,7 @@ public class StatsActivity extends Activity {
             cm.set(Calendar.MINUTE, 0);
             cm.set(Calendar.SECOND, 0);
             cm.set(Calendar.MILLISECOND, 0);
-            int back = (int) ((today0 - cm.getTimeInMillis()) / dayMs);
+            int back = Days.between(cm.getTimeInMillis(), today0);
             if (back >= 0 && back < 30) kcal[29 - back] += m.kcal();
         }
         int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);

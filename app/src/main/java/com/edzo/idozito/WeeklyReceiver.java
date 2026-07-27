@@ -72,7 +72,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             double d = o.optDouble("dist", -1);
             if (d > 0) dist += d;
             dur += o.optInt("dur");
-            int idx = (int) ((o.optLong("ts") - from) / (24L * 3600 * 1000));
+            int idx = Days.between(from, o.optLong("ts"));
             if (idx >= 0 && idx < 7) trainedDay[idx] = true;
         }
         // Heti terv állása (ha van beállítva edzésnap-terv).
@@ -110,7 +110,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             double kcalWeek = 0;
             for (MealLog.Meal m : MealLog.load(c)) {
                 if (m.ts < from) continue;
-                int idx = (int) ((m.ts - from) / dayMs);
+                int idx = Days.between(from, m.ts);
                 if (idx >= 0 && idx < 7) { loggedDay[idx] = true; kcalWeek += m.kcal(); }
             }
             int loggedDays = 0;

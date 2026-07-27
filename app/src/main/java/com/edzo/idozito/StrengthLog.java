@@ -180,18 +180,7 @@ public final class StrengthLog {
 
     /** Naptári napok különbsége; a kerekítés az óraátállást is elnyeli. */
     static int dayDiff(long from, long to) {
-        java.util.Calendar a = java.util.Calendar.getInstance();
-        java.util.Calendar b = java.util.Calendar.getInstance();
-        a.setTimeInMillis(from); zeroTime(a);
-        b.setTimeInMillis(to);   zeroTime(b);
-        return (int) Math.round((b.getTimeInMillis() - a.getTimeInMillis()) / 86400000.0);
-    }
-
-    private static void zeroTime(java.util.Calendar c) {
-        c.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        c.set(java.util.Calendar.MINUTE, 0);
-        c.set(java.util.Calendar.SECOND, 0);
-        c.set(java.util.Calendar.MILLISECOND, 0);
+        return Days.between(from, to);
     }
 
     /**
