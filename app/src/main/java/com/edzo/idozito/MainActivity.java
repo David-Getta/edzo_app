@@ -2869,9 +2869,10 @@ public class MainActivity extends Activity {
     void updateTotal() {
         Programs.P p = Programs.byName(this, programName);
         int len = p == null ? 1 : p.ex.length;
-        int n = cfg[ROUND_K] * len; // összes munka-szakasz
-        int total = cfg[WARM_K] + cfg[PREP_K] + cfg[WORK_K] * n
-                + cfg[REST_K] * Math.max(0, n - 1) + cfg[COOL_K];
+        // Ugyanabból a menetrendből, amit az időzítő is végigjátszik – így a
+        // kiírt idő nem tud eltérni a valóságtól.
+        int total = TimerService.totalSeconds(cfg[WARM_K], cfg[PREP_K], cfg[WORK_K],
+                cfg[REST_K], cfg[ROUND_K], len, cfg[COOL_K]);
         String s = "Teljes idő: " + fmtLong(total);
         if (len > 1) s += "  ·  " + len + " gyakorlat × " + cfg[ROUND_K] + " kör";
         totalText.setText(s);

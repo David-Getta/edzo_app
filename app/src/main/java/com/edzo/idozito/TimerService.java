@@ -71,7 +71,7 @@ public class TimerService extends Service {
     static final String CHANNEL = "edzo_timer";
     static final int NOTIF_ID = 42;
 
-    private static final class Step {
+    static final class Step {
         int type, dur, round;
         String label; // gyakorlat neve (null = sima futás)
         Step(int t, int d, int r) { type = t; dur = d; round = r; }
@@ -335,22 +335,55 @@ public class TimerService extends Service {
 
     private void buildPlan() {
         plan.clear();
-        if (warm > 0) plan.add(new Step(T_WARMUP, warm, 0));
-        if (prep > 0) plan.add(new Step(T_PREP, prep, 0));
-        int len = exLen();
-        int n = rounds * len; // összes munka-szakasz (gyakorlat vagy futás)
+        plan.addAll(buildPlan(warm, prep, work, rest, rounds, exNames, cool));
+    }
+
+    /**
+     * A menetrend felépítése. Tiszta függvény (nincs se Context, se mezők), hogy
+     * tesztelhető legyen, ÉS hogy a kezdőlapon kiírt „Teljes idő" pontosan ebből
+     * származzon – különben a becslés és a valóság idővel szétcsúszhatna.
+     *
+     * Pihenő csak a munka-szakaszok KÖZÉ kerül, az utolsó után nem.
+     */
+    static java.util.List<Step> buildPlan(int warm, int prep, int work, int rest, int rounds,
+                                          String[] exNames, int cool) {
+        java.util.List<Step> out = new ArrayList<>();
+        if (warm > 0) out.add(new Step(T_WARMUP, warm, 0));
+        if (prep > 0) out.add(new Step(T_PREP, prep, 0));
+        int len = exLen(exNames);
+        int n = Math.max(0, rounds) * len; // összes munka-szakasz (gyakorlat vagy futás)
         for (int k = 0; k < n; k++) {
             int round = k / len + 1;
             String label = exNames != null && exNames.length > 0 ? exNames[k % len] : null;
-            plan.add(new Step(T_WORK, work, round, label));
-            if (rest > 0 && k < n - 1) plan.add(new Step(T_REST, rest, round));
+            out.add(new Step(T_WORK, work, round, label));
+            if (rest > 0 && k < n - 1) out.add(new Step(T_REST, rest, round));
         }
-        if (cool > 0) plan.add(new Step(T_COOLDOWN, cool, 0));
+        if (cool > 0) out.add(new Step(T_COOLDOWN, cool, 0));
+        return out;
+    }
+
+    /**
+     * Egy edzés teljes hossza másodpercben, pontosan a menetrendből összegezve.
+     * A kezdőlap ezt írja ki indítás előtt.
+     *
+     * @param exCount gyakorlatok száma egy körben (0 vagy 1 = sima futás mód)
+     */
+    public static int totalSeconds(int warm, int prep, int work, int rest, int rounds,
+                                   int exCount, int cool) {
+        String[] names = exCount > 1 ? new String[exCount] : null;
+        int sum = 0;
+        for (Step s : buildPlan(warm, prep, work, rest, rounds, names, cool)) sum += s.dur;
+        return sum;
+    }
+
+    /** Gyakorlatok száma egy körben (1 = sima futás mód). */
+    private static int exLen(String[] exNames) {
+        return exNames != null && exNames.length > 0 ? exNames.length : 1;
     }
 
     /** Gyakorlatok száma egy körben (1 = sima futás mód). */
     private int exLen() {
-        return exNames != null && exNames.length > 0 ? exNames.length : 1;
+        return exLen(exNames);
     }
 
     private void beginStep(boolean first) {
