@@ -160,6 +160,31 @@ public final class Mascot {
         return p[(int) (Math.random() * p.length)];
     }
 
+    /**
+     * Egy időzített emlékeztető szövege, a nap ÁLLÁSÁHOZ igazítva. Aki reggel
+     * már edzett, azt este ne nyaggassuk azzal, hogy „a mai edzés még hiányzik" –
+     * az ilyen üzenettől szokás kikapcsolni az emlékeztetőket.
+     *
+     * @param trainedToday volt-e ma bármilyen edzés (időzítős vagy erősítő)
+     * @param streakUntilYesterday a tegnapig tartó, ma még megmenthető széria
+     */
+    public static String reminderText(String userName, boolean trainedToday,
+                                      int streakUntilYesterday) {
+        if (!trainedToday) return nudge(userName, streakUntilYesterday >= 1, streakUntilYesterday);
+        String u = who(userName);
+        // Ma már megvolt: nem noszogatunk, hanem elismerünk – és ha van széria,
+        // azt is megmutatjuk, mert az a legerősebb visszajelzés.
+        int now = streakUntilYesterday + 1;
+        if (now >= 3)
+            return now + " napos széria, " + u + "! 🔥 A mai edzés is megvan – ezt csináld holnap is.";
+        String[] p = {
+                "A mai edzés megvan, " + u + "! 💪 Blaze büszkén vonyít: aúúú! 🐺",
+                "Ma már kipipáltad, " + u + "! 🔥 Pihend ki magad rendesen.",
+                "Kész is, " + u + "! 🐺 A falka veled ünnepel – holnap folytatjuk.",
+        };
+        return p[(int) (System.currentTimeMillis() / 60000 % p.length)];
+    }
+
     /** Értesítés-szöveg Blaze hangján (proaktív emlékeztetőhöz). */
     public static String nudge(String userName, boolean streakRisk, int dayStreak) {
         String u = who(userName);

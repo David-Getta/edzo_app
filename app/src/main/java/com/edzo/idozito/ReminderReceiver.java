@@ -50,10 +50,19 @@ public class ReminderReceiver extends BroadcastReceiver {
         nm.notify(20000 + id, b.build());
     }
 
-    /** Ha az emlékeztetőhöz nincs saját szöveg, Blaze hangján szól a nudge. */
+    /**
+     * Ha az emlékeztetőhöz nincs saját szöveg, Blaze hangján szól – de a nap
+     * tényleges állásához igazítva. Korábban mindig azt mondta, hogy „a mai
+     * edzés még hiányzik", akkor is, ha reggel már megvolt.
+     */
     private static String defaultMessage(Context c) {
         String userName = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
                 .getString("user_name", "");
-        return Mascot.nudge(userName, false, 0);
+        try {
+            return Mascot.reminderText(userName, History.trainedToday(c),
+                    Streaks.untilYesterday(c, History.loadAll(c)));
+        } catch (Exception e) {
+            return Mascot.nudge(userName, false, 0);
+        }
     }
 }

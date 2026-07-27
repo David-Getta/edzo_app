@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.widget.RemoteViews;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -162,18 +160,8 @@ public class BlazeWidget extends AppWidgetProvider {
         return Streaks.current(c, History.loadAll(c));
     }
 
+    /** A közös ellenőrzés (időzítős és erősítő edzés is számít). */
     private static boolean workedOutToday(Context c) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        long start = cal.getTimeInMillis();
-        JSONArray h = History.loadAll(c);
-        for (int i = 0; i < h.length(); i++) {
-            JSONObject o = h.optJSONObject(i);
-            if (o != null && o.optLong("ts") >= start) return true;
-        }
-        return false;
+        return History.trainedToday(c);
     }
 }

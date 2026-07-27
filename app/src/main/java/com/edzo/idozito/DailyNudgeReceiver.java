@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -193,14 +191,9 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         return Streaks.untilYesterday(c, History.loadAll(c));
     }
 
+    /** A közös ellenőrzés (időzítős és erősítő edzés is számít). */
     private static boolean workedOutToday(Context c) {
-        long start = todayStart();
-        JSONArray h = History.loadAll(c);
-        for (int i = 0; i < h.length(); i++) {
-            JSONObject o = h.optJSONObject(i);
-            if (o != null && o.optLong("ts") >= start) return true;
-        }
-        return false;
+        return History.trainedToday(c);
     }
 
     private static long todayStart() {

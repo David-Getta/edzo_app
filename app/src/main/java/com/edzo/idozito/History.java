@@ -83,6 +83,26 @@ public final class History {
         return arr;
     }
 
+    /**
+     * Volt-e ma bármilyen edzés (időzítős VAGY erősítő)? A widget, a napi
+     * emlékeztető és az időzített emlékeztetők is ezt kérdezik – egy helyen,
+     * hogy ne csúszhasson szét a válasz.
+     */
+    public static boolean trainedToday(Context ctx) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        long start = cal.getTimeInMillis();
+        JSONArray h = loadAll(ctx);
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o != null && o.optLong("ts") >= start) return true;
+        }
+        return false;
+    }
+
     /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
                            int rounds, int work, int rest, double maxSpeedKmh,
