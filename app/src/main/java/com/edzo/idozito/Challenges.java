@@ -19,7 +19,25 @@ public final class Challenges {
 
     private Challenges() {}
 
-    /** A mai kihívás állapota: {title(String), unit(String), cur(int), target(int), seed(int)}. */
+    /**
+     * A mai kihívás állapota:
+     * {title(String), unit(String), cur(int), target(int), seed(int), exact(double)}.
+     *
+     * A `cur` a teljesítés eldöntéséhez van (egész, lefelé kerekítve – 2,9 km
+     * még nem 3), az `exact` pedig a kijelzéshez: a haladássáv és a felirat így
+     * nem tünteti el a megtett út utolsó kilométerének nagy részét.
+     */
+    /**
+     * A haladás kiírása: a kerek érték egész marad („2 / 3 km"), a törtnél egy
+     * tizedes jár magyar vesszővel („2,9 / 3 km"). Nem kerekítünk felfelé egészre,
+     * mert az azt sugallná, hogy megvan a feladat.
+     */
+    public static String fmtProgress(double v) {
+        double r = Math.floor(v * 10) / 10.0;      // lefelé: 2,99 → 2,9
+        if (Math.abs(r - Math.round(r)) < 0.001) return String.valueOf((long) Math.round(r));
+        return String.valueOf(r).replace('.', ',');
+    }
+
     public static Object[] state(Context ctx) {
         Calendar now = Calendar.getInstance();
         int seed = now.get(Calendar.YEAR) * 366 + now.get(Calendar.DAY_OF_YEAR);
@@ -31,7 +49,10 @@ public final class Challenges {
         long dayStart = d0.getTimeInMillis();
 
         JSONArray h = History.load(ctx);
-        int minutes = 0, bestRounds = 0;
+        // Másodpercben gyűjtünk, és csak a végén váltunk percre: edzésenként
+        // osztva minden alkalommal elveszne a maradék (két 90 másodperces kör
+        // így 2 percnek látszana 3 helyett).
+        int workSec = 0, bestRounds = 0;
         double distToday = 0;
         boolean everDist = false;
         for (int i = 0; i < h.length(); i++) {
@@ -39,7 +60,7 @@ public final class Challenges {
             if (o == null) continue;
             if (o.optDouble("dist", -1) > 500) everDist = true;
             if (o.optLong("ts") < dayStart) continue;
-            minutes += o.optInt("dur") / 60;
+            workSec += o.optInt("dur");
             bestRounds = Math.max(bestRounds, o.optInt("rounds", 0));
             double d = o.optDouble("dist", -1);
             if (d > 0) distToday += d;
@@ -85,11 +106,16 @@ public final class Challenges {
             prefs.edit().putInt("challenge_seed", seed).putInt("challenge_type", type).apply();
         }
 
+        int minutes = workSec / 60;
         String title;
         int cur, target;
+        // A haladás pontos értéke a sávhoz és a felirathoz. Ahol a mértékegység
+        // eleve egész (kör, edzés, ismétlés, étkezés), ott marad a cur.
+        double exact = -1;
         String unit;
         if (type == 0) {
             target = 15 + (seed / 3 % 3) * 5; cur = minutes; unit = "perc";
+            exact = workSec / 60.0;
             title = "Mozogj ma összesen " + target + " percet!";
         } else if (type == 1) {
             target = 8 + (seed / 3 % 3) * 2; cur = bestRounds; unit = "kör";
@@ -99,6 +125,7 @@ public final class Challenges {
             title = "Fejezz be ma 2 edzést – a súlyzós is számít!";
         } else if (type == 3) {
             target = 2 + (seed / 3 % 3); cur = (int) (distToday / 1000.0); unit = "km";
+            exact = distToday / 1000.0;
             title = "Tegyél meg ma " + target + " km-t!";
         } else if (type == 4) {
             target = 40 + (seed / 3 % 3) * 20; cur = repsToday; unit = "ismétlés";
@@ -114,9 +141,11 @@ public final class Challenges {
             // Poharakban mérve, felfelé kerekítve (1 pohár = 25 cl).
             target = Math.max(1, (goalCl + Water.GLASS_CL - 1) / Water.GLASS_CL);
             cur = Math.min(target, Water.todayCl(ctx) / Water.GLASS_CL);
+            exact = Math.min(target, Water.todayCl(ctx) / (double) Water.GLASS_CL);
             unit = "pohár";
             title = "Idd meg ma a vízcélod: " + Water.liters(goalCl) + " (" + target + " pohár)!";
         }
-        return new Object[]{title, unit, cur, target, seed};
+        if (exact < 0) exact = cur;
+        return new Object[]{title, unit, cur, target, seed, exact};
     }
 }

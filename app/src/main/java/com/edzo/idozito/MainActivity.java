@@ -256,7 +256,8 @@ public class MainActivity extends Activity {
             Object[] cst = Challenges.state(this);
             int cur = (int) cst[2], target = (int) cst[3];
             if (cur > 0 && cur < target)
-                return "Már " + cur + "/" + target + " " + cst[1] + " a mai kihívásból – hajrá! 🎯";
+                return "Már " + Challenges.fmtProgress((double) cst[5]) + "/" + target + " "
+                        + cst[1] + " a mai kihívásból – hajrá! 🎯";
             // 3) Ma már volt edzés: dicséret.
             if (trainedToday)
                 return "a mai edzés megvan – büszke vagyok rád! 💪";
@@ -776,7 +777,8 @@ public class MainActivity extends Activity {
             Object[] cst = challengeState();
             int cCur = (int) cst[2], cTarget = (int) cst[3];
             if (cCur < cTarget)
-                msg = "🎯 A mai kihívás vár: " + cst[0] + " (" + cCur + "/" + cTarget
+                msg = "🎯 A mai kihívás vár: " + cst[0] + " ("
+                        + Challenges.fmtProgress((double) cst[5]) + "/" + cTarget
                         + " " + cst[1] + ") – csapjunk bele! 🐺🔥";
         }
 
@@ -1494,6 +1496,9 @@ public class MainActivity extends Activity {
         Object[] st = challengeState();
         String title = (String) st[0], unit = (String) st[1];
         int cur = (int) st[2], target = (int) st[3], seed = (int) st[4];
+        // A teljesítést az egész érték dönti el, a kijelzést a pontos: 2,9 km
+        // még nem 3 km, de a sáv és a felirat se mutasson 2-t belőle.
+        double exact = st.length > 5 ? (double) st[5] : cur;
         boolean done = cur >= target;
 
         LinearLayout c = card();
@@ -1515,13 +1520,14 @@ public class MainActivity extends Activity {
                 new int[]{tAccent, tAccent2});
         fgd.setCornerRadius(dp(6));
         fill.setBackground(fgd);
-        float f = Math.max(0.02f, Math.min(1f, cur / (float) target));
+        float f = Math.max(0.02f, Math.min(1f, (float) (exact / target)));
         barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
         barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
         c.addView(barBg, new LinearLayout.LayoutParams(-1, -2));
         c.addView(gap(8));
         c.addView(text(done ? "Blaze büszkén vonyít: ez az, falkatárs! 🐺🔥"
-                : cur + " / " + target + " " + unit + " – koppints, és csapj bele! 💪", 12.5f, MUTED, false));
+                : Challenges.fmtProgress(exact) + " / " + target + " " + unit
+                        + " – koppints, és csapj bele! 💪", 12.5f, MUTED, false));
 
         // Koppintásra cselekszik: időzítős kihívásnál indít, súlyzósnál az Erő oldalt nyitja.
         if (!done) {
