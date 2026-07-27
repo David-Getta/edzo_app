@@ -104,16 +104,7 @@ public final class Badges {
                 days.add(dayStart(c, ts));
             }
         }
-        // A valaha volt leghosszabb egymást követő edzésnap-sorozat.
-        // A napléptetés óraátállás-biztos: normalizált éjfélekkel dolgozunk
-        // (±12/36 óra eltolás után újranormalizálva mindig a szomszéd napra esünk).
-        int bestDayStreak = 0;
-        for (Long day : days) {
-            if (days.contains(dayStart(c, day - 12L * 3600 * 1000))) continue; // csak a sorozat elejéről
-            int s = 0; long cur = day;
-            while (days.contains(cur)) { s++; cur = dayStart(c, cur + 36L * 3600 * 1000); }
-            if (s > bestDayStreak) bestDayStreak = s;
-        }
+        int bestDayStreak = bestDayStreak(days);
         if (count >= 1) out.add("first");
         if (count >= 5) out.add("c5");
         if (count >= 10) out.add("c10");
@@ -138,6 +129,35 @@ public final class Badges {
         if (planWeeks >= 4) out.add("pw4");
         if (planWeeks >= 12) out.add("pw12");
         return out;
+    }
+
+    /**
+     * A valaha volt leghosszabb egymást követő edzésnap-sorozat. Erre épül a
+     * „Lendület" (3), „Heti hős" (7) és „Gyémánt rutin" (30) jelvény.
+     *
+     * A napléptetés óraátállás-biztos: normalizált éjfelekből indulunk, és a
+     * ±12/36 órás eltolás újranormalizálva mindig a szomszéd napra esik – a 23
+     * és a 25 órás napon is.
+     */
+    static int bestDayStreak(HashSet<Long> dayStarts) {
+        int best = 0;
+        for (Long day : dayStarts) {
+            // Csak a sorozatok elejéről indulunk, különben minden napot
+            // újraszámolnánk a saját sorozatán belül.
+            if (dayStarts.contains(Days.startOf(day - 12L * 3600 * 1000))) continue;
+            int s = 0;
+            long cur = day;
+            while (dayStarts.contains(cur)) { s++; cur = Days.startOf(cur + 36L * 3600 * 1000); }
+            if (s > best) best = s;
+        }
+        return best;
+    }
+
+    /** Ugyanaz nyers időbélyegekből – így Android nélkül is tesztelhető. */
+    static int bestDayStreak(long[] timestamps) {
+        HashSet<Long> days = new HashSet<>();
+        for (long ts : timestamps) days.add(Days.startOf(ts));
+        return bestDayStreak(days);
     }
 
     /** Az adott időbélyeg helyi napjának éjféli (nap eleji) időbélyege. */
