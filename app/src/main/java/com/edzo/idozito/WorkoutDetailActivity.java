@@ -109,6 +109,9 @@ public class WorkoutDetailActivity extends Activity {
                 "Biztosan törlöd ezt az edzést a naplóból? Nem vonható vissza.")
                 .addDestructive("Törlés", () -> {
                     History.deleteByTs(this, ts);
+                    // A részletfájl (GPS-nyom) is menjen vele – különben örökre
+                    // a tárhelyen maradna, gazdátlanul.
+                    SessionStore.delete(this, ts);
                     Toast.makeText(this, "Edzés törölve", Toast.LENGTH_SHORT).show();
                     finish();
                 })

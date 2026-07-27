@@ -62,6 +62,11 @@ public class HistoryActivity extends Activity {
         LinearLayout col = vbox();
         col.setPadding(dp(18), dp(22), dp(18), dp(40));
 
+        // A gazdátlanul maradt részletfájlok (törölt edzések GPS-nyoma) itt
+        // takarodnak ki – az Előzmények az a képernyő, ahol amúgy is a teljes
+        // naplót beolvassuk, tehát nincs külön költsége.
+        SessionStore.cleanupOrphans(this);
+
         JSONArray arr = History.load(this);
         // A súlyzós napló bejegyzései is ide kerülnek (egyesített idővonal).
         java.util.List<StrengthLog.Entry> sArr = StrengthLog.load(this);
