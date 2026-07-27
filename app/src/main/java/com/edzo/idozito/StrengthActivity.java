@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.InputType;
@@ -721,6 +720,11 @@ public class StrengthActivity extends Activity {
 
     // ---------- Pihenő-időzítő ----------
 
+    /** A pihenő vége fali órán (0 = nem fut). Így képernyő-eldobás után is folytatható. */
+    static final String REST_END_KEY = "rest_end_ms";
+    /** A legutóbb választott pihenőhossz másodpercben. */
+    static final String REST_SECS_KEY = "rest_secs";
+
     LinearLayout restCard() {
         LinearLayout card = card();
         LinearLayout inner = vbox();
@@ -728,6 +732,7 @@ public class StrengthActivity extends Activity {
         inner.addView(text("⏱  Pihenő a sorozatok között", 14, TXT, true));
         inner.addView(gap(10));
 
+        int last = getSharedPreferences("edzo", MODE_PRIVATE).getInt(REST_SECS_KEY, 0);
         LinearLayout row = hbox();
         int[] secs = {60, 90, 120, 180};
         String[] lbl = {"1:00", "1:30", "2:00", "3:00"};
@@ -735,6 +740,15 @@ public class StrengthActivity extends Activity {
             final int s = secs[i];
             Button b = ghost(lbl[i]);
             b.setTextSize(14);
+            // A legutóbb használt hossz kiemelve – a teremben egy koppintás legyen.
+            if (s == last) {
+                GradientDrawable bg = new GradientDrawable();
+                bg.setColor(CARD2);
+                bg.setCornerRadius(dp(13));
+                bg.setStroke(dp(1), Theme.accent(this));
+                b.setBackground(bg);
+                b.setTextColor(Theme.accent(this));
+            }
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
             p.leftMargin = dp(3); p.rightMargin = dp(3);
             b.setLayoutParams(p);
@@ -756,13 +770,30 @@ public class StrengthActivity extends Activity {
     }
 
     void startRest(int secs) {
-        restEnd = SystemClock.elapsedRealtime() + secs * 1000L;
+        getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                .putInt(REST_SECS_KEY, secs)
+                .putLong(REST_END_KEY, System.currentTimeMillis() + secs * 1000L)
+                .apply();
+        resumeRest();
+    }
+
+    /**
+     * A mentett pihenő folytatása. Fali órával számolunk, nem a képernyőn
+     * eltelt idővel: a teremben a telefon lezár, az Android eldobhatja a
+     * képernyőt – visszatéréskor az időzítő ott folytatja, ahol tart.
+     */
+    void resumeRest() {
+        long end = getSharedPreferences("edzo", MODE_PRIVATE).getLong(REST_END_KEY, 0);
+        if (end <= System.currentTimeMillis()) { stopRest(); return; }
+        restEnd = end;
         if (restTick == null) {
             restTick = () -> {
                 if (restText == null) return;
-                long left = restEnd - SystemClock.elapsedRealtime();
+                long left = restEnd - System.currentTimeMillis();
                 if (left <= 0) {
                     restText.setText("Pihenő letelt! 💪  (koppints)");
+                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                            .remove(REST_END_KEY).apply();
                     restEndBeep();
                     return;
                 }
@@ -778,7 +809,8 @@ public class StrengthActivity extends Activity {
     }
 
     void stopRest() {
-        restHandler.removeCallbacks(restTick);
+        if (restTick != null) restHandler.removeCallbacks(restTick);
+        getSharedPreferences("edzo", MODE_PRIVATE).edit().remove(REST_END_KEY).apply();
         if (restText != null) restText.setVisibility(View.GONE);
     }
 
@@ -793,6 +825,14 @@ public class StrengthActivity extends Activity {
                 else vb.vibrate(450);
             }
         } catch (Exception ignored) {}
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ha a képernyő elhagyása (vagy eldobása) közben járt a pihenő, itt
+        // veszi fel újra a fonalat – a fali óra alapján, tehát pontosan.
+        resumeRest();
     }
 
     @Override
