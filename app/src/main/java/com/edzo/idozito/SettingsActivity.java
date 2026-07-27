@@ -438,8 +438,15 @@ public class SettingsActivity extends Activity {
         if (req == REQ_IMPORT && res == RESULT_OK && data != null && data.getData() != null) {
             try {
                 String json = readAll(data.getData());
+                // A visszaállítás FELÜLÍRJA az emlékeztetőket. A régiek riasztásai
+                // viszont a rendszerben maradnának: egy olyan emlékeztető, ami a
+                // mentésben már nincs benne, továbbra is szólna – akár újraindításig.
+                // Ezért a mostaniakat még az importálás előtt eltesszük, és utána
+                // lemondjuk őket.
+                java.util.List<Reminders.Reminder> previous = Reminders.load(this);
                 if (Backup.importJson(this, json)) {
                     Beeper.masterVolume = Theme.volume(this);
+                    for (Reminders.Reminder r : previous) Reminders.cancelOne(this, r);
                     Reminders.scheduleAll(this);
                     WeeklyReceiver.schedule(this);
                     DailyNudgeReceiver.schedule(this);
