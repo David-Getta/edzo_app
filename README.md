@@ -28,7 +28,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
 - Felismeri a **grammot** (g / gr / gramm / dkg) és a **darabszámot** is
   (számjeggyel és kiírva: „két tojás")
-- **154 magyar étel** kcal- és fehérje-értékkel, kereshető **kalóriatáblázattal**,
+- **185 magyar étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+  az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
 - **Napi kcal- és fehérje-cél** haladássávval; javaslat a BMR-ből vagy a

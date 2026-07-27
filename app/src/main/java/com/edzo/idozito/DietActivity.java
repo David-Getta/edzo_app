@@ -1225,12 +1225,18 @@ public class DietActivity extends Activity {
         llp.topMargin = dp(8);
         box.addView(listV, llp);
         final java.util.HashSet<String> customNames = new java.util.HashSet<>();
+        // Az adatbázis több mint 180 ételt tartalmaz; egyszerre 25 sor épül fel,
+        // a többi gombra tölthető. Enélkül a lista vége elérhetetlen lenne
+        // annak, aki nem tudja előre, mit keressen.
+        final int[] limit = {25};
+        final Runnable[] renderRef = new Runnable[1];
         final Runnable render = () -> {
             listV.removeAllViews();
             customNames.clear();
             for (Foods.Food cf : Foods.custom(this)) customNames.add(cf.name);
             String q = Foods.norm(search.getText().toString().trim());
-            int shown = 0;
+            // Előbb a találatok, hogy tudjuk, hány maradt ki.
+            java.util.List<Foods.Food> hits = new ArrayList<>();
             for (Foods.Food f : Foods.all(this)) {
                 if (!q.isEmpty() && !Foods.norm(f.name).contains(q)) {
                     boolean stemHit = false;
@@ -1238,10 +1244,11 @@ public class DietActivity extends Activity {
                         if (Foods.norm(st).contains(q)) { stemHit = true; break; }
                     if (!stemHit) continue;
                 }
-                if (shown >= 25) {
-                    listV.addView(text("… szűkítsd a keresést a többihez", 11.5f, MUTED, false));
-                    break;
-                }
+                hits.add(f);
+            }
+            int shown = 0;
+            for (Foods.Food f : hits) {
+                if (shown >= limit[0]) break;
                 final boolean isCustom = customNames.contains(f.name);
                 final String fn = f.name;
                 final Foods.Food food = f;
@@ -1268,14 +1275,28 @@ public class DietActivity extends Activity {
                 listV.addView(row, rl);
                 shown++;
             }
-            if (shown == 0)
+            if (shown == 0) {
                 listV.addView(text("Nincs találat – vedd fel saját ételként lent!",
                         12, MUTED, false));
+            } else if (hits.size() > shown) {
+                int rest = hits.size() - shown;
+                Button more = ghost("További " + Math.min(rest, 25) + " étel  (" + rest
+                        + " van még)");
+                more.setTextSize(13f);
+                more.setOnClickListener(v -> { limit[0] += 25; renderRef[0].run(); });
+                LinearLayout.LayoutParams mlp = lp();
+                mlp.topMargin = dp(10);
+                listV.addView(more, mlp);
+            }
         };
+        renderRef[0] = render;
         search.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
-            @Override public void afterTextChanged(android.text.Editable s) { render.run(); }
+            @Override public void afterTextChanged(android.text.Editable s) {
+                limit[0] = 25;      // új keresésnél újra az elejéről
+                render.run();
+            }
         });
         render.run();
         new Sheet(this, "Kalóriatáblázat 📖",
