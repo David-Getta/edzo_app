@@ -120,15 +120,25 @@ public final class Profile {
     }
 
     /** A legutóbb mentett testsúly, vagy -1. */
-    public static double lastWeight(Context c) {
-        JSONArray a = measurements(c);
-        if (a.length() == 0) return -1;
-        return a.optJSONObject(0) != null ? a.optJSONObject(0).optDouble("w", -1) : -1;
-    }
-    public static double lastBodyFat(Context c) {
-        JSONArray a = measurements(c);
-        if (a.length() == 0) return -1;
-        return a.optJSONObject(0) != null ? a.optJSONObject(0).optDouble("bf", -1) : -1;
+    public static double lastWeight(Context c) { return lastOf(measurements(c), "w"); }
+
+    public static double lastBodyFat(Context c) { return lastOf(measurements(c), "bf"); }
+
+    /**
+     * A legfrissebb mérés, amiben egyáltalán VAN ilyen adat (a lista legújabb
+     * elöl), vagy -1. Egy mérés menthető csak testsúllyal vagy csak testzsírral,
+     * ezért nem elég a legelső bejegyzést nézni: egy „csak testzsír" mérés
+     * különben eltüntetné a korábban rögzített testsúlyt – és vele a BMI-t, a
+     * BMR-alapú kalóriacél-ajánlást és a testsúly szerinti vízcélt is.
+     */
+    private static double lastOf(JSONArray a, String key) {
+        for (int i = 0; i < a.length(); i++) {
+            JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            double v = o.optDouble(key, -1);
+            if (v > 0) return v;
+        }
+        return -1;
     }
 
     private static SharedPreferences prefs(Context c) {
