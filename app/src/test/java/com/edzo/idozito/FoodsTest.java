@@ -91,12 +91,71 @@ public class FoodsTest {
      * másikba (így derült ki például, hogy a „burgonyapüré" a Burgonyát is,
      * a „gulyásleves" a Levest is felvette volna).
      */
-    @Test public void everyFoodResolvesToItselfByItsPrimaryStem() {
+    @Test public void everyStemResolvesToItsOwnFoodAndNothingElse() {
+        // Nem csak az elsődleges szótő: MINDEGYIK. Egy új étel szótöve könnyen
+        // beleesik egy másik nevébe, és onnantól minden ilyen bejegyzés két
+        // ételként számolódna – ránézésre észrevehetetlenül.
         for (Foods.Food f : Foods.ALL) {
-            List<String> got = names(f.stems[0]);
-            assertEquals("ütköző szótő: \"" + f.stems[0] + "\" (" + f.name + ")",
-                    Arrays.asList(f.name), got);
+            for (String st : f.stems) {
+                assertEquals("ütköző szótő: \"" + st + "\" (" + f.name + ")",
+                        Arrays.asList(f.name), names(st));
+            }
         }
+    }
+
+    @Test public void noTwoFoodsShareAStem() {
+        // Azonos szótő két ételnél döntetlen: egyik sem esik a másikba, tehát
+        // mindkettő megmaradna – dupla kalória ugyanarra a falatra.
+        java.util.HashMap<String, String> seen = new java.util.HashMap<>();
+        for (Foods.Food f : Foods.ALL) {
+            for (String st : f.stems) {
+                String norm = Foods.norm(st);
+                String prev = seen.put(norm, f.name);
+                assertEquals("\"" + st + "\" két ételnél is szerepel (" + prev + " / "
+                        + f.name + ")", null, prev);
+            }
+        }
+    }
+
+    // --- Az összetett nevű fogások egy tételként számítanak ---
+
+    @Test public void multiWordDishesAreNotSplitInTwo() {
+        // A „leves" és az „öntet" külön is étel, ezért az összetett nevüknek át
+        // kell fognia mindkét szót – különben kétszer számolnánk ugyanazt.
+        assertEquals(Arrays.asList("Frankfurti leves"), names("frankfurti leves"));
+        assertEquals(Arrays.asList("Gulyásleves"), names("gulyás leves"));
+        assertEquals(Arrays.asList("Gulyásleves"), names("gulyásleves"));
+        assertEquals(Arrays.asList("Kefires / joghurtos öntet"), names("kefires öntet"));
+        // A puszta „leves" viszont maradjon az átlagos leves.
+        assertEquals(Arrays.asList("Leves (átlag)"), names("leves"));
+    }
+
+    // --- Italok és a friss bővítés ---
+
+    @Test public void drinksAreRecognised() {
+        assertEquals(Arrays.asList("Kávé (fekete)"), names("kávé"));
+        assertEquals(Arrays.asList("Tejeskávé / cappuccino"), names("tejeskávé"));
+        assertEquals(Arrays.asList("Tea (cukor nélkül)"), names("tea"));
+        // A „bor" benne van az „uborka" és a „borsó" szóban is – ott nem szabad
+        // külön italként megjelennie.
+        assertEquals(Arrays.asList("Bor (vörös/fehér)"), names("ittam egy pohár bort"));
+        assertEquals(Arrays.asList("Uborka"), names("uborka"));
+        assertEquals(Arrays.asList("Borsó"), names("borsó"));
+    }
+
+    @Test public void newHungarianDishesAreFound() {
+        assertEquals(Arrays.asList("Bundás kenyér"), names("bundás kenyér"));
+        assertEquals(Arrays.asList("Zsíros kenyér", "Hagyma"), names("zsíros kenyér hagymával"));
+        assertEquals(Arrays.asList("Pogácsa"), names("pogácsa"));
+        // A kürtőskalács ne essen szét kaláccsá.
+        assertEquals(Arrays.asList("Kürtőskalács"), names("kürtőskalács"));
+        assertEquals(Arrays.asList("Kalács / bejgli"), names("kalács"));
+        // Az almás pite ne számítson almának is.
+        assertEquals(Arrays.asList("Almás pite"), names("almás pite"));
+        assertEquals(Arrays.asList("Alma"), names("alma"));
+        // A növényi tej ne legyen tej + mandula.
+        assertEquals(Arrays.asList("Növényi tej (mandula/zab)", "Müzli"),
+                names("mandulatej müzlivel"));
     }
 
     @Test public void unknownFoodReturnsNothing() {
