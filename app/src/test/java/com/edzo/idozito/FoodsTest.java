@@ -104,15 +104,17 @@ public class FoodsTest {
     }
 
     @Test public void noTwoFoodsShareAStem() {
-        // Azonos szótő két ételnél döntetlen: egyik sem esik a másikba, tehát
-        // mindkettő megmaradna – dupla kalória ugyanarra a falatra.
-        java.util.HashMap<String, String> seen = new java.util.HashMap<>();
+        // Azonos szótő KÉT KÜLÖNBÖZŐ ételnél döntetlen: egyik sem esik a másikba,
+        // tehát mindkettő megmaradna – dupla kalória ugyanarra a falatra.
+        //
+        // Egy ételen BELÜL viszont rendben van két azonosra normalizálódó alak
+        // (pl. „bécsi" és „becsi"), az csak felesleges, nem káros.
+        java.util.HashMap<String, String> owner = new java.util.HashMap<>();
         for (Foods.Food f : Foods.ALL) {
             for (String st : f.stems) {
-                String norm = Foods.norm(st);
-                String prev = seen.put(norm, f.name);
-                assertEquals("\"" + st + "\" két ételnél is szerepel (" + prev + " / "
-                        + f.name + ")", null, prev);
+                String prev = owner.put(Foods.norm(st), f.name);
+                if (prev != null)
+                    assertEquals("\"" + st + "\" két ételnél is szerepel", prev, f.name);
             }
         }
     }
