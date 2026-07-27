@@ -62,8 +62,27 @@ public class ShareProvider extends ContentProvider {
         } catch (Exception ignored) {}
     }
 
+    /**
+     * Elfogadható-e a kért fájlnév? Az URI utolsó szakasza a hívótól jön, és a
+     * dekódolás után könyvtár-elválasztót is tartalmazhat (a „%2F" egyetlen
+     * szakaszon belül is „/" lesz). Ellenőrzés nélkül egy „../../shared_prefs/
+     * edzo.xml" kérés a megosztó mappán kívülre mutatna – vagyis a felhasználó
+     * teljes adatára. A megosztás csak konkrét, engedélyezett URI-kat ad ki,
+     * tehát ez nem kihasználható út, de egy fájlt kiszolgáló szolgáltatónak
+     * nem szabad megbíznia a kapott névben.
+     *
+     * Csak sima fájlnevet engedünk: nincs elválasztó, nincs „..", nem üres.
+     */
+    static boolean isSafeName(String name) {
+        if (name == null || name.isEmpty()) return false;
+        if (name.equals(".") || name.equals("..")) return false;
+        return name.indexOf('/') < 0 && name.indexOf('\\') < 0 && name.indexOf('\0') < 0;
+    }
+
+    /** A megosztó mappán belüli fájl, vagy null, ha a név nem fogadható el. */
     private File fileFor(Uri uri) {
         String name = uri.getLastPathSegment();
+        if (!isSafeName(name)) return null;
         return new File(dir(getContext()), name);
     }
 
@@ -71,12 +90,15 @@ public class ShareProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws java.io.FileNotFoundException {
-        return ParcelFileDescriptor.open(fileFor(uri), ParcelFileDescriptor.MODE_READ_ONLY);
+        File f = fileFor(uri);
+        if (f == null) throw new java.io.FileNotFoundException("Érvénytelen név: " + uri);
+        return ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         File f = fileFor(uri);
+        if (f == null || !f.exists()) return null;
         MatrixCursor c = new MatrixCursor(new String[]{OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
         c.addRow(new Object[]{f.getName(), f.length()});
         return c;
