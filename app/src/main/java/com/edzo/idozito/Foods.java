@@ -347,6 +347,11 @@ public final class Foods {
             {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
             {"Virsli", "50"}, {"Kakaós csiga", "90"}, {"Fasírt", "60"},
             {"Szendvics", "150"}, {"Hot-dog", "150"},
+            // A v28.2-ben érkezett ételek közül azok, amiket természetes darabra
+            // mondani („2 pogácsa", „három szilva").
+            {"Pogácsa", "30"}, {"Túrós batyu", "100"}, {"Bundás kenyér", "60"},
+            {"Datolya", "8"}, {"Szilva", "50"}, {"Sárgarépa", "80"},
+            {"Hurka", "120"},
     };
 
     /**

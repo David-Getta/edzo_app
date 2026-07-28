@@ -68,6 +68,35 @@ public class FoodsParseTest {
         assertEquals(360.0, hits("3 banán").get(0).grams, 0.001);
     }
 
+    @Test public void theNewFoodsCanBeCountedInPiecesToo() {
+        // A v28.2-ben érkezett ételek közül azok, amiket természetes darabra
+        // mondani. Enélkül a „2 pogácsa" a számot egyszerűen eldobta volna.
+        assertEquals(60.0, hits("2 pogácsa").get(0).grams, 0.001);
+        assertEquals(100.0, hits("egy túrós batyu").get(0).grams, 0.001);
+        assertEquals(120.0, hits("két bundás kenyér").get(0).grams, 0.001);
+        assertEquals(80.0, hits("10 datolya").get(0).grams, 0.001);
+        assertEquals(150.0, hits("három szilva").get(0).grams, 0.001);
+        assertEquals(160.0, hits("2 sárgarépa").get(0).grams, 0.001);
+    }
+
+    @Test public void everyPieceWeightPointsAtARealFood() {
+        // Elgépelt névnél a darabsúly csendben nem érvényesülne: a szám
+        // eltűnne, és a felhasználó a tipikus adagot kapná helyette.
+        for (Foods.Food f : Foods.ALL) {
+            int g = Foods.pieceGrams(f);
+            assertTrue("értelmetlen darabsúly: " + f.name + " = " + g, g >= 0);
+        }
+        // A darabra számolható ételek szótöve önmagában is megtalálja őket,
+        // különben a „2 <étel>" alak sem működne.
+        for (String name : new String[]{"Pogácsa", "Túrós batyu", "Bundás kenyér",
+                "Datolya", "Szilva", "Sárgarépa", "Hurka"}) {
+            Foods.Food f = null;
+            for (Foods.Food c : Foods.ALL) if (c.name.equals(name)) f = c;
+            assertTrue("nincs ilyen étel: " + name, f != null);
+            assertTrue("nincs darabsúlya: " + name, Foods.pieceGrams(f) > 0);
+        }
+    }
+
     @Test public void hungarianNumberWordsCountToo() {
         assertEquals(110.0, hits("két tojás").get(0).grams, 0.001);
         assertEquals(110.0, hits("kettő tojás").get(0).grams, 0.001);
