@@ -199,7 +199,7 @@ public class SettingsActivity extends Activity {
         notif.addView(divider());
         Switch anim = new Switch(this);
         anim.setChecked(Theme.animEnabled(this));
-        notif.addView(switchRow("Díszítő animációk (lüktetés, konfetti)", anim));
+        notif.addView(switchRow("Díszítő animációk (beúszás, lüktetés, konfetti)", anim));
         anim.setOnCheckedChangeListener((btn, c) -> { Theme.setBool(this, "anim", c); recreate(); });
         col.addView(notif, lp());
         col.addView(gap(14));

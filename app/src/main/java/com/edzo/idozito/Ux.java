@@ -154,6 +154,10 @@ public final class Ux {
 
     /** Beúszás: alulról felfelé + halványból. */
     public static void enter(View v, long delayMs) {
+        // A Beállítások „díszítő animációk" kapcsolója ezt is némítsa: aki
+        // kikapcsolja, annak a képernyők beúszása a legfeltűnőbb mozgás.
+        // Itt még nem tettük átlátszóvá a nézetet, tehát egyszerűen kilépünk.
+        if (!Theme.animEnabled(v.getContext())) return;
         float dy = 26f * v.getResources().getDisplayMetrics().density;
         v.setAlpha(0f);
         v.setTranslationY(dy);
@@ -162,14 +166,17 @@ public final class Ux {
                 .setInterpolator(new DecelerateInterpolator(1.3f)).start();
     }
 
-    /** Egymás utáni (staggered) beúszás egy konténer látható gyerekeire. */
+    /** Egymás utáni (staggered) beúszás egy konténer LÁTHATÓ gyerekeire. */
     public static void enterChildren(ViewGroup g, long startDelay, long step) {
+        if (!Theme.animEnabled(g.getContext())) return;
         int shown = 0;
         for (int i = 0; i < g.getChildCount(); i++) {
             View c = g.getChildAt(i);
-            if (c.getVisibility() != View.VISIBLE || c.getHeight() == 0 && c.getWidth() == 0) {
-                // láthatatlan térközök: átugorjuk, hogy ne csússzon szét az időzítés
-            }
+            // A rejtett elemeket és a nulla méretű térközöket tényleg ki kell
+            // hagyni: enélkül ők is „lépnek" egyet az időzítésben, és a látható
+            // kártyák beúszása egyre később indul, mint kellene.
+            if (c.getVisibility() != View.VISIBLE
+                    || (c.getHeight() == 0 && c.getWidth() == 0)) continue;
             enter(c, startDelay + (long) shown * step);
             shown++;
         }
@@ -177,6 +184,10 @@ public final class Ux {
 
     /** Felpörgő számláló egy szöveges mezőre. */
     public static void countUp(final TextView tv, float target, final Fmt f) {
+        if (!Theme.animEnabled(tv.getContext())) {
+            tv.setText(f.fmt(target));    // animáció nélkül rögtön a végérték
+            return;
+        }
         ValueAnimator a = ValueAnimator.ofFloat(0f, target);
         a.setDuration(950);
         a.setInterpolator(new DecelerateInterpolator());

@@ -264,19 +264,25 @@ public class StatsActivity extends Activity {
             c.addView(bx);
         }
 
-        // animációk
+        // animációk (a Beállítások „díszítő animációk" kapcsolója némítja)
         final float target = Math.max(0.0001f, frac);
-        android.animation.ValueAnimator a = android.animation.ValueAnimator.ofFloat(0f, target);
-        a.setDuration(900);
-        a.setStartDelay(150);
-        a.setInterpolator(new android.view.animation.DecelerateInterpolator());
-        a.addUpdateListener(an -> {
-            float v = (float) an.getAnimatedValue();
-            fillLp.weight = v;
-            spLp.weight = 1f - v;
+        if (!Theme.animEnabled(this)) {
+            fillLp.weight = target;
+            spLp.weight = 1f - target;
             barBg.requestLayout();
-        });
-        a.start();
+        } else {
+            android.animation.ValueAnimator a = android.animation.ValueAnimator.ofFloat(0f, target);
+            a.setDuration(900);
+            a.setStartDelay(150);
+            a.setInterpolator(new android.view.animation.DecelerateInterpolator());
+            a.addUpdateListener(an -> {
+                float v = (float) an.getAnimatedValue();
+                fillLp.weight = v;
+                spLp.weight = 1f - v;
+                barBg.requestLayout();
+            });
+            a.start();
+        }
         Ux.countUp(xpVal, xp, v -> Math.round(v) + " XP");
         return c;
     }
