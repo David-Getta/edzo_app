@@ -409,6 +409,48 @@ public final class Foods {
         return 0;
     }
 
+    /**
+     * Tagmondat-sorszám minden karakterre. A mennyiség csak a SAJÁT tagmondatán
+     * belüli ételhez tartozhat: az „1 l víz és 30 g mandula" mondatban a vízhez
+     * írt 1000 g különben a mandulára szállt volna át (majd' hatezer kalória).
+     *
+     * Határok: vessző, pontosvessző, pont, „+", illetve az „és" és a „meg"
+     * önálló szóként.
+     */
+    static int[] clauses(String q) {
+        int[] c = new int[q.length()];
+        int idx = 0;
+        for (int i = 0; i < q.length(); i++) {
+            char ch = q.charAt(i);
+            if (ch == ',' || ch == ';' || ch == '.' || ch == '+') {
+                // Két számjegy KÖZÖTT a vessző/pont tizedeselválasztó („2,5 dl"),
+                // nem tagmondat-határ – különben a szám és az étele elválna.
+                boolean decimal = i > 0 && i + 1 < q.length()
+                        && Character.isDigit(q.charAt(i - 1)) && Character.isDigit(q.charAt(i + 1));
+                if (!decimal) idx++;
+                c[i] = idx;
+                continue;
+            }
+            if ((ch == 'e' || ch == 'm') && isWordAt(q, i, ch == 'e' ? "es" : "meg")) {
+                idx++;
+                int len = ch == 'e' ? 2 : 3;
+                for (int k = i; k < i + len && k < q.length(); k++) c[k] = idx;
+                i += len - 1;
+                continue;
+            }
+            c[i] = idx;
+        }
+        return c;
+    }
+
+    /** A szó pontosan itt kezdődik és itt is ér véget (nem része hosszabb szónak). */
+    private static boolean isWordAt(String q, int at, String w) {
+        if (!q.startsWith(w, at)) return false;
+        if (at > 0 && Character.isLetter(q.charAt(at - 1))) return false;
+        int end = at + w.length();
+        return end >= q.length() || !Character.isLetter(q.charAt(end));
+    }
+
     /** Egy felismert étel a szövegben, a hozzá tartozó grammal (0 = nem volt megadva). */
     public static final class Hit {
         public final Food food;
@@ -436,7 +478,8 @@ public final class Foods {
         // Az ételek szövegbeli helye – ugyanaz, amit a felismerés használt.
         List<Food> foods = new ArrayList<>();
         List<Integer> foodPos = new ArrayList<>();
-        for (Match m : ms) { foods.add(m.food); foodPos.add(m.pos); }
+        List<Integer> foodLen = new ArrayList<>();
+        for (Match m : ms) { foods.add(m.food); foodPos.add(m.pos); foodLen.add(m.len); }
         // Gramm-értékek kigyűjtése: szám + (opcionális szóköz) + "g"/"gr"/"dkg".
         List<Integer> numPos = new ArrayList<>();
         List<Double> numVal = new ArrayList<>();
@@ -448,8 +491,15 @@ public final class Foods {
             if (!Character.isDigit(q.charAt(i))) { i++; continue; }
             int start = i;
             while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+            // Tizedes rész is lehet, magyarul vesszővel („2,5 dl"). Enélkül a
+            // „2,5" két külön számnak látszott, és a „2" elveszett.
+            if (i + 1 < q.length() && (q.charAt(i) == ',' || q.charAt(i) == '.')
+                    && Character.isDigit(q.charAt(i + 1))) {
+                i++;
+                while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+            }
             double val;
-            try { val = Double.parseDouble(q.substring(start, i)); }
+            try { val = Double.parseDouble(q.substring(start, i).replace(',', '.')); }
             catch (NumberFormatException e) { continue; }
             int j = i;
             while (j < q.length() && q.charAt(j) == ' ') j++;
@@ -478,11 +528,20 @@ public final class Foods {
         }
         double[] grams = new double[foods.size()];
         // Minden gramm-érték a hozzá legközelebbi ételhez kerül, amelyiknek még nincs.
+        //
+        // A távolságot az étel MINDKÉT végétől mérjük. Korábban csak a kezdetétől:
+        // a „csirkemell 150g, rizs 200 g" alakban a 150 közelebb volt a „rizs"
+        // szó elejéhez, mint a tíz betűs „csirkemell" elejéhez – vagyis a két
+        // mennyiség felcserélődött. Épp ez a formátum szerepel példaként.
+        int[] clause = clauses(q);
         for (int n = 0; n < numPos.size(); n++) {
             int bestIdx = -1, bestDist = Integer.MAX_VALUE;
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
-                int d = Math.abs(foodPos.get(k) - numPos.get(n));
+                // Csak a szám saját tagmondatán belül keresünk ételt.
+                if (clause[foodPos.get(k)] != clause[numPos.get(n)]) continue;
+                int from = foodPos.get(k), to = from + foodLen.get(k);
+                int d = Math.min(Math.abs(from - numPos.get(n)), Math.abs(to - numPos.get(n)));
                 if (d < bestDist) { bestDist = d; bestIdx = k; }
             }
             if (bestIdx >= 0) grams[bestIdx] = numVal.get(n);

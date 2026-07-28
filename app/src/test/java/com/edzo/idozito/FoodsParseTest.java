@@ -97,6 +97,42 @@ public class FoodsParseTest {
         }
     }
 
+    @Test public void aQuantityAfterTheFoodBelongsToThatFood() {
+        // Ez a súgóban példaként szereplő alak, és pont ez cserélődött fel: a
+        // 150 közelebb volt a „rizs" szó ELEJÉHEZ, mint a tíz betűs
+        // „csirkemell" elejéhez, így a két mennyiség helyet cserélt.
+        List<Foods.Hit> h = hits("csirkemell 150g, rizs 200 g");
+        assertEquals(2, h.size());
+        assertEquals("Csirkemell (sült/grill)", h.get(0).food.name);
+        assertEquals(150.0, h.get(0).grams, 0.001);
+        assertEquals("Rizs (főtt)", h.get(1).food.name);
+        assertEquals(200.0, h.get(1).grams, 0.001);
+    }
+
+    @Test public void decimalsAreUnderstoodWithAComma() {
+        assertEquals(250.0, hits("2,5 dl joghurt").get(0).grams, 0.001);
+        assertEquals(500.0, hits("0,5 l tej").get(0).grams, 0.001);
+        // Ponttal is, hátha úgy írja be valaki.
+        assertEquals(250.0, hits("2.5 dl joghurt").get(0).grams, 0.001);
+    }
+
+    @Test public void aQuantityDoesNotJumpToAnotherClause() {
+        // A vízhez írt 1 liter korábban a mandulára szállt át: 1000 g mandula
+        // közel hatezer kalória lett volna egyetlen elgépelés nélküli mondatból.
+        List<Foods.Hit> h = hits("1 l víz és 30 g mandula");
+        assertEquals(1, h.size());
+        assertEquals("Mandula", h.get(0).food.name);
+        assertEquals(30.0, h.get(0).grams, 0.001);
+    }
+
+    @Test public void severalClausesEachKeepTheirOwnAmount() {
+        List<Foods.Hit> h = hits("200 g csirkemell, 150 g rizs, 50 g saláta");
+        assertEquals(3, h.size());
+        assertEquals(200.0, h.get(0).grams, 0.001);
+        assertEquals(150.0, h.get(1).grams, 0.001);
+        assertEquals(50.0, h.get(2).grams, 0.001);
+    }
+
     @Test public void hungarianNumberWordsCountToo() {
         assertEquals(110.0, hits("két tojás").get(0).grams, 0.001);
         assertEquals(110.0, hits("kettő tojás").get(0).grams, 0.001);
