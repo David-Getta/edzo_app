@@ -112,6 +112,8 @@ public class WorkoutDetailActivity extends Activity {
                     // A részletfájl (GPS-nyom) is menjen vele – különben örökre
                     // a tárhelyen maradna, gazdátlanul.
                     SessionStore.delete(this, ts);
+                    // A széria és a „ma már edzettél" a widgeten is változhat.
+                    BlazeWidget.refresh(this);
                     Toast.makeText(this, "Edzés törölve", Toast.LENGTH_SHORT).show();
                     finish();
                 })

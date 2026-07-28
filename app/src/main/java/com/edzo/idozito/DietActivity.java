@@ -135,7 +135,7 @@ public class DietActivity extends Activity {
     void refresh() {
         mealsCache = null;
         refreshToday();
-        refreshWater();
+        refreshWater();   // ez frissíti a widgetet is – lásd ott
         refreshWeek();
         refreshQuick();
         refreshList();
@@ -504,6 +504,12 @@ public class DietActivity extends Activity {
 
     /** Vízbevitel-kártya: pohár (2,5 dl) hozzáadása/levonása, cél haladássávval. */
     void refreshWater() {
+        // A widget a mai kcal-t és vizet is kiírja, de eddig nem tudott róla, ha
+        // az appban naplóztunk – csak a saját, félóránkénti frissítésekor jött rá.
+        // Ez a metódus a közös pont: minden étkezés- és víz-változás átmegy rajta
+        // (a refresh() is ezt hívja), így egy hívással minden út le van fedve.
+        BlazeWidget.refresh(this);
+
         waterCard.removeAllViews();
         int cl = Water.todayCl(this);
         final int goalCl = Water.goalCl(this);

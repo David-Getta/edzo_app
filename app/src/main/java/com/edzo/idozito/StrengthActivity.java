@@ -320,7 +320,13 @@ public class StrengthActivity extends Activity {
             card.setOnClickListener(v -> new Sheet(this, e.name, "Szerkesztés vagy törlés?")
                     .addNeutral("✏️  Szerkesztés", () -> addEntryDialog(e))
                     .addDestructive("Törlés",
-                            () -> { StrengthLog.removeByTs(this, e.ts); refresh(); })
+                            () -> {
+                                StrengthLog.removeByTs(this, e.ts);
+                                // A mai nap egyetlen bejegyzésének törlésével a
+                                // széria is megváltozhat – a widget is kövesse.
+                                BlazeWidget.refresh(this);
+                                refresh();
+                            })
                     .addCancel().show());
             listBox.addView(card, lp());
             listBox.addView(gap(10));
