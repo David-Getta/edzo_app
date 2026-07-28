@@ -160,6 +160,40 @@ public class FoodsTest {
                 names("mandulatej müzlivel"));
     }
 
+    // --- Az étkezés-megnevezések nem ételek ---
+
+    @Test public void mealTimeWordsDoNotSmuggleInFood() {
+        // A „vacsora" tartalmazza a „sör" szótövet: enélkül minden vacsora-
+        // bejegyzéshez hozzászámolódott egy fél liter sör.
+        assertEquals(Arrays.asList("Csirkemell (sült/grill)", "Saláta (zöld)"),
+                names("vacsora sült csirkemell salátával"));
+        assertEquals(Arrays.asList("Alma"), names("tízórai: alma"));
+        assertEquals(Arrays.asList("Túró rudi"), names("uzsonnára túró rudi"));
+        assertEquals(Arrays.asList("Zabpehely", "Tej"), names("reggelire zabpehely tejjel"));
+        // A mérőszavak sem: a „kávéskanál" nem kávé.
+        assertEquals(Arrays.asList("Méz"), names("egy kávéskanál méz"));
+    }
+
+    @Test public void theRealFoodStillCountsNextToTheMealTimeWord() {
+        // A kimaszkolás csak magát a szót éri – ami mellette áll, az megmarad.
+        assertEquals(Arrays.asList("Sör"), names("vacsorára sört ittam"));
+        assertEquals(Arrays.asList("Sör"), names("sör"));
+        assertEquals(Arrays.asList("Kávé (fekete)"), names("kávé"));
+    }
+
+    // --- Összetett ételnevek ne számítsanak kétszer ---
+
+    @Test public void compoundDishesCountOnce() {
+        // „krumplipüré" = krumpli + püré két külön tételként jött ki.
+        assertEquals(Arrays.asList("Burgonyapüré"), names("krumplipüré"));
+        assertEquals(Arrays.asList("Burgonyapüré"), names("püré"));
+        assertEquals(Arrays.asList("Burgonya (főtt)"), names("krumpli"));
+        // A spagetti bolognai mindkét szórendben egy tétel.
+        assertEquals(Arrays.asList("Bolognai spagetti"), names("bolognai spagetti"));
+        assertEquals(Arrays.asList("Bolognai spagetti"), names("spagetti bolognai szósszal"));
+        assertEquals(Arrays.asList("Tészta (főtt)"), names("spagetti"));
+    }
+
     @Test public void unknownFoodReturnsNothing() {
         assertEquals(new ArrayList<String>(), names("zzzqqq"));
         assertEquals(null, one("zzzqqq"));

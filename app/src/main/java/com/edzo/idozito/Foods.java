@@ -49,7 +49,7 @@ public final class Foods {
         new Food("Tészta (főtt)", 150, 5, 250, "teszta", "spagetti", "penne"),
         new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli"),
         new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "hasabburgonya", "hasáb"),
-        new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "pure", "püré"),
+        new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure", "püré"),
         new Food("Édesburgonya", 90, 1.6, 200, "edesburgonya"),
         new Food("Bulgur (főtt)", 120, 4, 200, "bulgur"),
         new Food("Quinoa (főtt)", 120, 4.4, 200, "quinoa"),
@@ -158,7 +158,7 @@ public final class Foods {
         new Food("Halászlé", 60, 8, 400, "halaszle"),
         new Food("Paprikás krumpli", 120, 4, 350, "paprikas krumpli"),
         new Food("Rizses hús", 160, 8, 350, "rizses hus"),
-        new Food("Bolognai spagetti", 170, 8, 350, "bolognai spagetti", "bolognai"),
+        new Food("Bolognai spagetti", 170, 8, 350, "bolognai spagetti", "spagetti bolognai", "bolognai"),
         new Food("Sajtos tészta", 220, 8, 300, "sajtos teszta"),
         new Food("Tojásos nokedli", 190, 7, 300, "tojasos nokedli"),
         new Food("Rizottó", 150, 5, 300, "rizotto"),
@@ -218,6 +218,41 @@ public final class Foods {
                 "zabtej", "rizstej", "szojatej"),
         new Food("Szójakocka", 340, 50, 60, "szojakocka", "szoja"),
     };
+
+    /**
+     * Szavak, amik SOHA nem ételek, viszont rövid szótövek bújnak meg bennük.
+     * A klasszikus eset: a „vacsora" tartalmazza a „sör" szótövet, így minden
+     * „vacsora …" kezdetű bejegyzéshez hozzászámolódott egy fél liter sör.
+     *
+     * Előtagként illesztünk, hogy a ragozott alakok is menjenek („vacsorára",
+     * „reggelizni"). A találatot azonos hosszúságú szóközre cseréljük, hogy a
+     * szövegbeli pozíciók – amikre a gramm- és darabszám-hozzárendelés épül –
+     * ne csússzanak el.
+     */
+    private static final String[] NOT_FOOD = {
+            "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
+            "kaveskanal", "evokanal",
+    };
+
+    /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
+    static String mask(String q) {
+        StringBuilder sb = new StringBuilder(q);
+        int i = 0;
+        while (i < sb.length()) {
+            if (!Character.isLetter(sb.charAt(i))) { i++; continue; }
+            int j = i;
+            while (j < sb.length() && Character.isLetter(sb.charAt(j))) j++;
+            String tok = sb.substring(i, j);
+            for (String bad : NOT_FOOD) {
+                if (tok.startsWith(bad)) {
+                    for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
+                    break;
+                }
+            }
+            i = j;
+        }
+        return sb.toString();
+    }
 
     /** Ékezet-mentesítés + kisbetű, a rugalmas kereséshez. */
     static String norm(String s) {
@@ -297,7 +332,7 @@ public final class Foods {
     }
 
     static Food find(List<Food> list, String query) {
-        String q = norm(query).trim();
+        String q = mask(norm(query)).trim();
         if (q.isEmpty()) return null;
         // 1) teljes kifejezés-egyezés a szótövekkel
         for (Food f : list)
@@ -525,7 +560,7 @@ public final class Foods {
      * kerülne be, és dupla kalóriát számolnánk.
      */
     static List<Match> matches(List<Food> list, String query) {
-        String q = norm(query);
+        String q = mask(norm(query));
         List<Match> found = new ArrayList<>();
         for (Food f : list) {
             int bestPos = -1, bestLen = 0;
