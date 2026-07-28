@@ -313,7 +313,7 @@ public class WorkoutDetailActivity extends Activity {
         int cardH = 200;
         int startY = 380;
         Paint cardBg = new Paint(Paint.ANTI_ALIAS_FLAG);
-        cardBg.setColor(0x14FFFFFF);
+        cardBg.setColor(0x14FFFFFF);   // megosztott kép: fix design, nem téma-függő
         Paint val = new Paint(Paint.ANTI_ALIAS_FLAG);
         val.setColor(0xFFFFFFFF);
         val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -570,7 +570,7 @@ public class WorkoutDetailActivity extends Activity {
                 | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x14FFFFFF); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), MainActivity.GLASS_LINE);
+        bg.setColor(Theme.veil(this)); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), MainActivity.GLASS_LINE);
         et.setBackground(bg);
         et.setPadding(dp(14), dp(12), dp(14), dp(12));
         LinearLayout.LayoutParams etLp = new LinearLayout.LayoutParams(-1, -2);

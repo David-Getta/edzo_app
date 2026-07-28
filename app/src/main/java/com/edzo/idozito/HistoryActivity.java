@@ -410,7 +410,7 @@ public class HistoryActivity extends Activity {
         t.setTextColor(0xFFD6DEF5);
         t.setPadding(dp(9), dp(6), dp(9), dp(6));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x14FFFFFF);
+        bg.setColor(Theme.veil(this));
         bg.setCornerRadius(dp(12));
         t.setBackground(bg);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);

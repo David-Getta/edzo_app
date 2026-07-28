@@ -110,6 +110,21 @@ public final class Theme {
     /** Halványabb változat (pl. „nincs adat" jelzésére). */
     public static int trackFaint(Context c) { return light(c) ? 0x12000000 : 0x14FFFFFF; }
 
+    /**
+     * Finom fátyol a háttérkép fölé, kártyák kitöltéséhez.
+     *
+     * Sötét módban ez világosít (áttetsző fehér), világosban sötétít – ugyanaz
+     * a 8%-os erősség, ellenkező irányban. Fix fehérrel a világos módban a
+     * kártya gyakorlatilag eltűnt a világos háttéren: fehér a fehéren.
+     */
+    public static int veil(Context c) { return light(c) ? 0x14000000 : 0x14FFFFFF; }
+
+    /** Erősebb fátyol (kiemelt kártyákhoz, naptár-cellákhoz). */
+    public static int veilStrong(Context c) { return light(c) ? 0x1A000000 : 0x1AFFFFFF; }
+
+    /** Leghalványabb fátyol (pl. jövőbeli, még üres naptár-nap). */
+    public static int veilFaint(Context c) { return light(c) ? 0x0D000000 : 0x11FFFFFF; }
+
     /** Minden UI-t érintő változásnál nő; a MainActivity ez alapján épül újra. */
     public static int rev(Context c) { return p(c).getInt("theme_rev", 0); }
     public static void bumpRev(Context c) { p(c).edit().putInt("theme_rev", rev(c) + 1).apply(); }

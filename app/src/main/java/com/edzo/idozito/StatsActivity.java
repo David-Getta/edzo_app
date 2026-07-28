@@ -434,7 +434,7 @@ public class StatsActivity extends Activity {
         big.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         big.setTextSize(44);
         Paint bgp = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bgp.setColor(0x14FFFFFF);
+        bgp.setColor(0x14FFFFFF);   // megosztott kép: fix design, nem téma-függő
         for (String[] r : rows) {
             cv.drawRoundRect(new RectF(M, y, W - M, y + rowH - 30), 28, 28, bgp);
             cv.drawText(r[0], M + 34, y + 66, sec);

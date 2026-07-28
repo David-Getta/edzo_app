@@ -1852,7 +1852,7 @@ public class MainActivity extends Activity {
             bg.setShape(GradientDrawable.OVAL);
             if (days[i]) bg.setColor(tAccent);
             else {
-                bg.setColor(0x14FFFFFF);
+                bg.setColor(Theme.veil(this));
                 if (i == todayIdx) bg.setStroke(dp(1), tAccent);
                 else if (hasPlan && plan[i])
                     // Tervezett (még nem teljesített) nap: szaggatott akcent-gyűrű.
@@ -1981,7 +1981,7 @@ public class MainActivity extends Activity {
         c.setGravity(Gravity.CENTER);
         c.setPadding(dp(6), dp(10), dp(6), dp(10));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x14FFFFFF); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), GLASS_LINE);
+        bg.setColor(Theme.veil(this)); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), GLASS_LINE);
         c.setBackground(bg);
         TextView v = text(emoji + " " + value, 15, TXT, true); v.setGravity(Gravity.CENTER);
         TextView l = text(label, 10.5f, MUTED, false); l.setGravity(Gravity.CENTER);
@@ -2108,7 +2108,7 @@ public class MainActivity extends Activity {
         t.setGravity(Gravity.CENTER);
         GradientDrawable bg = new GradientDrawable();
         bg.setShape(GradientDrawable.OVAL);
-        bg.setColor(earned ? ((tAccent & 0xFFFFFF) | 0x33000000) : 0x14FFFFFF);
+        bg.setColor(earned ? ((tAccent & 0xFFFFFF) | 0x33000000) : Theme.veil(this));
         bg.setStroke(dp(1), earned ? tAccent : GLASS_LINE);
         t.setBackground(bg);
         t.setWidth(dp(44)); t.setHeight(dp(44));
@@ -2251,7 +2251,7 @@ public class MainActivity extends Activity {
         int cardH = 200;
         int startY = 400;
         Paint cardBg = new Paint(Paint.ANTI_ALIAS_FLAG);
-        cardBg.setColor(0x14FFFFFF);
+        cardBg.setColor(0x14FFFFFF);   // megosztott kép: fix design, nem téma-függő
         Paint val = new Paint(Paint.ANTI_ALIAS_FLAG);
         val.setColor(0xFFFFFFFF);
         val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -2330,7 +2330,7 @@ public class MainActivity extends Activity {
         int cardH = 200;
         int startY = 400;
         Paint cardBg = new Paint(Paint.ANTI_ALIAS_FLAG);
-        cardBg.setColor(0x14FFFFFF);
+        cardBg.setColor(0x14FFFFFF);   // megosztott kép: fix design, nem téma-függő
         Paint val = new Paint(Paint.ANTI_ALIAS_FLAG);
         val.setColor(0xFFFFFFFF);
         val.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -2577,7 +2577,7 @@ public class MainActivity extends Activity {
         et.setInputType(type);
         et.setPadding(dp(14), dp(12), dp(14), dp(12));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x1AFFFFFF);
+        bg.setColor(Theme.veilStrong(this));
         bg.setCornerRadius(dp(14));
         bg.setStroke(dp(1), GLASS_LINE);
         et.setBackground(bg);
@@ -3179,7 +3179,7 @@ public class MainActivity extends Activity {
                 | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x14FFFFFF); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), GLASS_LINE);
+        bg.setColor(Theme.veil(this)); bg.setCornerRadius(dp(14)); bg.setStroke(dp(1), GLASS_LINE);
         et.setBackground(bg);
         et.setPadding(dp(14), dp(12), dp(14), dp(12));
         new Sheet(this, "Edzés jegyzet 📝", "Mentődik ehhez az edzéshez")

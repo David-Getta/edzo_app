@@ -1459,7 +1459,7 @@ public class DietActivity extends Activity {
         et.setTextSize(14.5f);
         et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0x14FFFFFF);
+        bg.setColor(Theme.veil(this));
         bg.setCornerRadius(dp(12));
         bg.setStroke(dp(1), MainActivity.GLASS_LINE);
         et.setBackground(bg);
