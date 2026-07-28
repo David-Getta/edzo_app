@@ -945,7 +945,7 @@ public class StatsActivity extends Activity {
             if (s == 60) { m++; s = 0; }
             return String.format(Locale.US, "%d:%02d /km", m, s);
         }
-        return String.format(Locale.US, "%.1f km/h", kmh);
+        return String.format(Hu.LOCALE, "%.1f km/h", kmh);
     }
 
     void refreshChart() {
@@ -1007,7 +1007,7 @@ public class StatsActivity extends Activity {
     String fmtDist(double m) {
         if (m < 0) return "—";
         if (m < 1000) return Math.round(m) + " m";
-        return String.format(Locale.US, "%.1f km", m / 1000.0);
+        return String.format(Hu.LOCALE, "%.1f km", m / 1000.0);
     }
     String fmtDur(int sec) {
         if (sec < 0) sec = 0;
@@ -1017,7 +1017,7 @@ public class StatsActivity extends Activity {
     }
     String fmtNum(double v) {
         if (Math.abs(v - Math.round(v)) < 0.05) return String.valueOf(Math.round(v));
-        return String.format(Locale.US, "%.1f", v);
+        return String.format(Hu.LOCALE, "%.1f", v);
     }
 
     // ---------------- UI segéd ----------------
@@ -1152,7 +1152,7 @@ public class StatsActivity extends Activity {
 
         private String fmt(double v) {
             if (Math.abs(v - Math.round(v)) < 0.05) return String.valueOf(Math.round(v));
-            return String.format(Locale.US, "%.1f", v);
+            return String.format(Hu.LOCALE, "%.1f", v);
         }
     }
 }

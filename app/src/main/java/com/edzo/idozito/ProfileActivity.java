@@ -279,7 +279,7 @@ public class ProfileActivity extends Activity {
             bmiValue.setText("—");
             bmiCat.setText("add meg a magasságot és a testsúlyt");
         } else {
-            bmiValue.setText(String.format(Locale.US, "%.1f", bmi));
+            bmiValue.setText(String.format(Hu.LOCALE, "%.1f", bmi));
             bmiCat.setText(Profile.bmiCategory(bmi));
         }
 
@@ -307,7 +307,7 @@ public class ProfileActivity extends Activity {
             String date = new java.text.SimpleDateFormat("yyyy.MM.dd", new Locale("hu")).format(end.getTime());
 
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format(Locale.US, "Heti %.2f kg  ·  ~%d hét", rate, (int) Math.ceil(weeks)));
+            sb.append(String.format(Hu.LOCALE, "Heti %.2f kg  ·  ~%d hét", rate, (int) Math.ceil(weeks)));
             sb.append("\nCéldátum: ").append(date);
             sb.append(String.format(Locale.US, "\nNapi kalória-deficit: ~%d kcal", Math.round(deficit)));
             if (bmr > 0) {
@@ -426,7 +426,7 @@ public class ProfileActivity extends Activity {
         for (int i = 0; i < ys.length; i++) ys[i] = vals.get(i);
         chart.setData(ys, color, unit);
         double first = ys[0], last = ys[ys.length - 1], diff = last - first;
-        chartInfo.setText(String.format(Locale.US, "Első: %s%s  ·  Utolsó: %s%s  ·  Változás: %+.1f%s",
+        chartInfo.setText(String.format(Hu.LOCALE, "Első: %s%s  ·  Utolsó: %s%s  ·  Változás: %+.1f%s",
                 trim(first), unit, trim(last), unit, diff, unit.isEmpty() ? "" : " " + unit));
     }
 
@@ -513,7 +513,7 @@ public class ProfileActivity extends Activity {
     }
     String trim(double v) {
         if (v == Math.floor(v)) return String.valueOf((long) v);
-        return String.format(Locale.US, "%.1f", v);
+        return String.format(Hu.LOCALE, "%.1f", v);
     }
 
     int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }
@@ -590,7 +590,7 @@ public class ProfileActivity extends Activity {
 
         private String fmt(double v) {
             if (Math.abs(v - Math.round(v)) < 0.05) return String.valueOf(Math.round(v));
-            return String.format(Locale.US, "%.1f", v);
+            return String.format(Hu.LOCALE, "%.1f", v);
         }
     }
 }

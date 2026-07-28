@@ -496,11 +496,11 @@ public class WorkoutDetailActivity extends Activity {
     String fmtDist(double m) {
         if (m < 0) return "—";
         if (m < 1000) return Math.round(m) + " m";
-        return String.format(Locale.US, "%.2f km", m / 1000.0);
+        return String.format(Hu.LOCALE, "%.2f km", m / 1000.0);
     }
     String fmtSpeed(double kmh) {
         if (Theme.paceMode(this)) return paceStr(kmh > 0 ? 3600.0 / kmh : 0);
-        return String.format(Locale.US, "%.1f km/h", kmh);
+        return String.format(Hu.LOCALE, "%.1f km/h", kmh);
     }
 
     // ---------------- UI segéd ----------------

@@ -1291,7 +1291,7 @@ public class MainActivity extends Activity {
             LinearLayout top = hbox();
             top.setGravity(Gravity.CENTER_VERTICAL);
             top.addView(text("🎯 Heti cél", 15.5f, TXT, true), new LinearLayout.LayoutParams(0, -2, 1f));
-            String doneS = mode == 2 ? String.format(Locale.US, "%.1f", done) : String.valueOf((int) done);
+            String doneS = mode == 2 ? String.format(Hu.LOCALE, "%.1f", done) : String.valueOf((int) done);
             top.addView(text(doneS + " / " + target + " " + GOAL_UNITS[mode], 14, tAccent, true));
             inner.addView(top);
             inner.addView(gap(10));
@@ -1316,7 +1316,7 @@ public class MainActivity extends Activity {
             if (reached) sub = "Kész! Teljesítetted a heti célod 🎉";
             else {
                 double left2 = target - done;
-                String leftS = mode == 2 ? String.format(Locale.US, "%.1f", left2) : String.valueOf((int) Math.ceil(left2));
+                String leftS = mode == 2 ? String.format(Hu.LOCALE, "%.1f", left2) : String.valueOf((int) Math.ceil(left2));
                 sub = Math.round(frac * 100) + "% · még " + leftS + " " + GOAL_UNITS[mode] + " a célig";
             }
             inner.addView(text(sub, reached ? 12.5f : 12, reached ? 0xFFFFC107 : MUTED, reached));
@@ -3809,7 +3809,7 @@ public class MainActivity extends Activity {
     String fmtDist(double m) {
         if (m < 0) return "—";
         if (m < 1000) return Math.round(m) + " m";
-        return String.format(Locale.US, "%.2f km", m / 1000.0);
+        return String.format(Hu.LOCALE, "%.2f km", m / 1000.0);
     }
 
     /** Sebesség km/h-ban vagy tempóként (perc/km), a beállítás szerint. */
@@ -3822,7 +3822,7 @@ public class MainActivity extends Activity {
             if (s == 60) { m++; s = 0; }
             return String.format(Locale.US, "%d:%02d /km", m, s);
         }
-        return String.format(Locale.US, "%.1f km/h", kmh);
+        return String.format(Hu.LOCALE, "%.1f km/h", kmh);
     }
 
     void vibrateShort() {

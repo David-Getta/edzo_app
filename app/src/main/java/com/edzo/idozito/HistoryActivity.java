@@ -272,7 +272,7 @@ public class HistoryActivity extends Activity {
         LinearLayout r1 = hbox();
         r1.addView(heroStatNum("🔁", count, "edzés", v -> String.valueOf((int) v)), heroLp());
         r1.addView(heroStatNum("📍", (float) distKm, "össztáv",
-                v -> v <= 0 ? "0" : String.format(Locale.US, "%.1f km", v)), heroLp());
+                v -> v <= 0 ? "0" : String.format(Hu.LOCALE, "%.1f km", v)), heroLp());
         inner.addView(r1, lp());
         inner.addView(gap(10));
         LinearLayout r2 = hbox();
@@ -509,11 +509,11 @@ public class HistoryActivity extends Activity {
     String fmtDist(double m) {
         if (m < 0) return "—";
         if (m < 1000) return Math.round(m) + " m";
-        return String.format(Locale.US, "%.2f km", m / 1000.0);
+        return String.format(Hu.LOCALE, "%.2f km", m / 1000.0);
     }
     String fmtKm(double m) {
         if (m <= 0) return "0";
-        return String.format(Locale.US, "%.1f km", m / 1000.0);
+        return String.format(Hu.LOCALE, "%.1f km", m / 1000.0);
     }
     String fmtSpeed(double kmh) {
         if (pace && kmh > 0) {
@@ -522,7 +522,7 @@ public class HistoryActivity extends Activity {
             if (s == 60) { m++; s = 0; }
             return String.format(Locale.US, "%d:%02d/km", m, s);
         }
-        return String.format(Locale.US, "%.1f", kmh) + (pace ? "" : " km/h");
+        return String.format(Hu.LOCALE, "%.1f", kmh) + (pace ? "" : " km/h");
     }
 
     long weekStart() {

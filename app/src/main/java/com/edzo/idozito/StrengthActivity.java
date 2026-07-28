@@ -121,7 +121,7 @@ public class StrengthActivity extends Activity {
     /** Súly formázása: egész kg-nál tizedes nélkül. */
     String kg(double w) {
         return w == Math.floor(w) ? String.valueOf((long) w)
-                : String.format(java.util.Locale.US, "%.1f", w);
+                : String.format(Hu.LOCALE, "%.1f", w);
     }
 
     void refresh() {

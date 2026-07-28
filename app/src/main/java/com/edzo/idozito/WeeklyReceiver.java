@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Heti visszatekintő: vasárnap este egy értesítés összegzi a hét edzéseit
@@ -90,7 +89,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             title = "Blaze heti összefoglalója 🐺🔥";
             StringBuilder sb = new StringBuilder();
             sb.append(count).append(count == 1 ? " edzés" : " edzés");
-            if (dist > 0) sb.append("  ·  ").append(String.format(Locale.US, "%.1f km", dist / 1000.0));
+            if (dist > 0) sb.append("  ·  ").append(String.format(Hu.LOCALE, "%.1f km", dist / 1000.0));
             sb.append("  ·  ").append(dur / 60).append(" perc mozgás");
             if (hasPlan && plannedCount > 0)
                 sb.append("  ·  Terv: ").append(plannedDone).append("/").append(plannedCount).append(" edzésnap");
