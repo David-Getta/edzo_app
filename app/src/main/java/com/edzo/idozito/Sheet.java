@@ -56,7 +56,11 @@ public final class Sheet {
         panel = new LinearLayout(act);
         panel.setOrientation(LinearLayout.VERTICAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(lm ? 0xFFFFFFFF : 0xF3161C2E);
+        // A felület tónusa a palettából jön (kártya-szín, áttetszőn). Korábban
+        // egy fix, KÉK árnyalat volt itt (0xF3161C2E) – a karmazsin/bordó témára
+        // váltás előtti maradvány –, így minden alsó lap kékesen ütött el a
+        // többi felülettől. Így viszont egy jövőbeli paletta-váltás is átjön ide.
+        bg.setColor((MainActivity.CARD & 0x00FFFFFF) | (lm ? 0xFF000000 : 0xF3000000));
         float r = dp(30);
         bg.setCornerRadii(new float[]{r, r, r, r, 0, 0, 0, 0});
         bg.setStroke(dp(1), lm ? 0x14000000 : 0x24FFFFFF);
@@ -193,7 +197,9 @@ public final class Sheet {
             tr.setTypeface(null, Typeface.BOLD);
         } else {
             tr.setText("›");
-            tr.setTextColor(0x66FFFFFF);
+            // Világos módban a panel fehér: az áttetsző FEHÉR nyíl gyakorlatilag
+            // láthatatlan volt rajta. A tompított szövegszín mindkét módban látszik.
+            tr.setTextColor(lm ? 0x66000000 : 0x66FFFFFF);
             tr.setTypeface(null, Typeface.NORMAL);
         }
     }
