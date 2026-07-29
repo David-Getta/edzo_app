@@ -400,8 +400,25 @@ public final class Foods {
     private static final String[][] NUMBER_WORDS = {
             {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},
             {"ot", "5"}, {"hat", "6"}, {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"},
-            {"tiz", "10"}, {"fel", "0.5"},
+            {"tiz", "10"}, {"fel", "0.5"}, {"masfel", "1.5"},
     };
+
+    /** Ha itt egész szóként kiírt számnév kezdődik, a hossza; különben 0. */
+    private static int numberWordAt(String q, int at) {
+        if (at > 0 && Character.isLetter(q.charAt(at - 1))) return 0;
+        for (String[] w : NUMBER_WORDS) {
+            int end = at + w[0].length();
+            if (q.startsWith(w[0], at) && (end >= q.length() || !Character.isLetter(q.charAt(end))))
+                return w[0].length();
+        }
+        return 0;
+    }
+
+    private static double numberWordVal(String q, int at, int len) {
+        for (String[] w : NUMBER_WORDS)
+            if (w[0].length() == len && q.startsWith(w[0], at)) return Double.parseDouble(w[1]);
+        return 0;
+    }
 
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
     static int pieceGrams(Food f) {
@@ -443,7 +460,64 @@ public final class Foods {
             }
             c[i] = idx;
         }
+        return mergeQuantityOnly(q, c, idx);
+    }
+
+    /** Mértékegységek és töltelékszavak – ezek magukban nem jelentenek ételt. */
+    private static final String[] QTY_WORDS = {
+            "g", "gr", "gramm", "dkg", "kg", "kilo", "kilogramm",
+            "dl", "deci", "deciliter", "ml", "l", "liter", "db", "darab",
+            "kb", "korulbelul", "nagyjabol", "cca", "osszesen",
+    };
+
+    /**
+     * A csak mennyiséget tartalmazó tagmondat a szomszédjához tartozik.
+     *
+     * A „mandula, 30 g” két tagmondat, de egy étel – a 30 g enélkül nem talált
+     * volna vissza a mandulához. A „mandula: 30 g” és a „mandula 30 g” viszont
+     * működött, vagyis a felhasználó azon múlt, melyik írásjelet választja.
+     * Ha a tagmondatban a szám és a mértékegység mellett bármi más szó áll
+     * („1 l víz és mandula”), akkor marad a határ: az a mennyiség nem a
+     * szomszéd ételé.
+     */
+    private static int[] mergeQuantityOnly(String q, int[] c, int last) {
+        if (last <= 0) return c;
+        StringBuilder[] txt = new StringBuilder[last + 1];
+        for (int i = 0; i <= last; i++) txt[i] = new StringBuilder();
+        for (int i = 0; i < q.length(); i++) txt[c[i]].append(q.charAt(i));
+        boolean[] qty = new boolean[last + 1];
+        for (int i = 0; i <= last; i++) qty[i] = onlyQuantity(txt[i].toString());
+
+        int[] map = new int[last + 1];
+        int next = 0;
+        map[0] = 0;
+        for (int i = 1; i <= last; i++) map[i] = qty[i] ? map[i - 1] : ++next;
+        // Ha a mennyiség áll elöl („30 g, mandula"), előre olvad be.
+        if (qty[0] && last >= 1) map[0] = map[1];
+        for (int i = 0; i < q.length(); i++) c[i] = map[c[i]];
         return c;
+    }
+
+    /** Szám + mértékegység (+ töltelékszó), étel nélkül. */
+    private static boolean onlyQuantity(String s) {
+        boolean sawNumber = false;
+        int i = 0;
+        while (i < s.length()) {
+            char ch = s.charAt(i);
+            if (Character.isDigit(ch)) { sawNumber = true; i++; continue; }
+            if (Character.isLetter(ch)) {
+                int st = i;
+                while (i < s.length() && Character.isLetter(s.charAt(i))) i++;
+                String w = s.substring(st, i);
+                boolean known = false;
+                for (String k : QTY_WORDS) if (k.equals(w)) { known = true; break; }
+                for (String[] k : NUMBER_WORDS) if (k[0].equals(w)) { known = true; sawNumber = true; }
+                if (!known) return false;
+                continue;
+            }
+            i++;                                  // szóköz, írásjel
+        }
+        return sawNumber;
     }
 
     /** A szó pontosan itt kezdődik és itt is ér véget (nem része hosszabb szónak). */
@@ -491,19 +565,31 @@ public final class Foods {
         List<Integer> bareNumLen = new ArrayList<>();
         int i = 0;
         while (i < q.length()) {
-            if (!Character.isDigit(q.charAt(i))) { i++; continue; }
             int start = i;
-            while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
-            // Tizedes rész is lehet, magyarul vesszővel („2,5 dl"). Enélkül a
-            // „2,5" két külön számnak látszott, és a „2" elveszett.
-            if (i + 1 < q.length() && (q.charAt(i) == ',' || q.charAt(i) == '.')
-                    && Character.isDigit(q.charAt(i + 1))) {
-                i++;
-                while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
-            }
             double val;
-            try { val = Double.parseDouble(q.substring(start, i).replace(',', '.')); }
-            catch (NumberFormatException e) { continue; }
+            // Kiírt számnév is állhat mértékegység előtt: „fél liter tej”,
+            // „két deci tej”, „egy kiló alma”. Csak akkor számoljuk mennyiségnek,
+            // ha tényleg mértékegység követi – a puszta „fél alma” a darabszámos
+            // ághoz tartozik, és nem szabad kétszer beszámítani.
+            int wordLen = numberWordAt(q, i);
+            if (wordLen > 0) {
+                val = numberWordVal(q, i, wordLen);
+                i += wordLen;
+            } else if (Character.isDigit(q.charAt(i))) {
+                while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+                // Tizedes rész is lehet, magyarul vesszővel („2,5 dl"). Enélkül a
+                // „2,5" két külön számnak látszott, és a „2" elveszett.
+                if (i + 1 < q.length() && (q.charAt(i) == ',' || q.charAt(i) == '.')
+                        && Character.isDigit(q.charAt(i + 1))) {
+                    i++;
+                    while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+                }
+                try { val = Double.parseDouble(q.substring(start, i).replace(',', '.')); }
+                catch (NumberFormatException e) { continue; }
+            } else {
+                i++;
+                continue;
+            }
             int j = i;
             while (j < q.length() && q.charAt(j) == ' ') j++;
             // A hosszabb mértékegység előbb, különben a rövidebb ág nyelné el.
@@ -515,6 +601,8 @@ public final class Foods {
             else if (q.startsWith("deci", j)) { numPos.add(start); numVal.add(val * 100); i = j + 4; }
             else if (q.startsWith("dl", j)) { numPos.add(start); numVal.add(val * 100); i = j + 2; }
             else if (q.startsWith("ml", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
+            // Kiírva is: a puszta „l" ág megköveteli, hogy ne betű kövesse.
+            else if (q.startsWith("liter", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 5; }
             else if (q.startsWith("gr", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
             else if (q.startsWith("g", j)
                     && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
@@ -522,6 +610,10 @@ public final class Foods {
             } else if (q.startsWith("l", j)
                     && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
                 numPos.add(start); numVal.add(val * 1000); i = j + 1;
+            } else if (wordLen > 0) {
+                // Kiírt számnév mértékegység nélkül: a darabszámos ág veszi fel
+                // lentebb, itt nem szabad hozzányúlni (különben kétszer számítana).
+                i = start + 1;
             } else {
                 // Mértékegység nélküli szám: darabszám lehet („2 tojás"). Csak akkor
                 // vesszük annak, ha rögtön utána egy darabra számolható étel áll –

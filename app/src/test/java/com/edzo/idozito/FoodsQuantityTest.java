@@ -1,0 +1,83 @@
+package com.edzo.idozito;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Mennyiség-megadási formák.
+ *
+ * A mennyiség nem hagyhatja el a tagmondatát – különben az „1 l víz és mandula”
+ * egy kiló mandulát jelentene. Egy tagmondat viszont, amiben a szám és a
+ * mértékegység mellett SEMMI más nincs, nyilván a szomszédjához tartozik:
+ * a „mandula, 30 g” egy étel. Eddig azon múlt, hogy a felhasználó melyik
+ * írásjelet választja: kettősponttal működött, vesszővel nem.
+ */
+public class FoodsQuantityTest {
+
+    private static double grams(String q) {
+        List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), q);
+        assertEquals("pontosan egy ételt vártam ebben: " + q, 1, hs.size());
+        return hs.get(0).grams;
+    }
+
+    @Test public void aQuantityOnlyClauseBelongsToTheFoodNextToIt() {
+        assertEquals(30, grams("mandula, 30 g"), 0.01);
+        assertEquals(30, grams("egy marék mandula, kb 30 g"), 0.01);
+        assertEquals(30, grams("mandula kb. 30 g"), 0.01);
+        assertEquals(30, grams("30 g, mandula"), 0.01);
+        // Ezek eddig is működtek – nem romolhattak el.
+        assertEquals(30, grams("mandula 30 g"), 0.01);
+        assertEquals(30, grams("mandula: 30 g"), 0.01);
+        assertEquals(30, grams("mandula (30 g)"), 0.01);
+    }
+
+    @Test public void aClauseWithItsOwnWordsKeepsItsQuantity() {
+        // A „víz" nincs az adatbázisban, de attól még szó: az 1 liter az övé,
+        // nem a mandulánál landol.
+        assertEquals(0, grams("1 l víz és mandula"), 0.01);
+        List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), "1 l víz és 30 g mandula");
+        assertEquals(1, hs.size());
+        assertEquals(30, hs.get(0).grams, 0.01);
+    }
+
+    @Test public void spelledOutNumbersWorkBeforeAUnit() {
+        // „fél liter tej” eddig a tipikus adagra esett vissza.
+        assertEquals(500, grams("fél liter tej"), 0.01);
+        assertEquals(500, grams("fél kiló alma"), 0.01);
+        assertEquals(200, grams("két deci tej"), 0.01);
+        assertEquals(150, grams("másfél dl tej"), 0.01);
+        assertEquals(1000, grams("egy kiló csirkemell"), 0.01);
+    }
+
+    @Test public void spelledOutNumbersStillCountPiecesWithoutAUnit() {
+        // Mértékegység nélkül a számnév darabszám marad – és pontosan egyszer
+        // számít, nem kétszer.
+        assertEquals(2 * 55, grams("két tojás"), 0.01);
+        assertEquals(6 * 55, grams("hat tojás"), 0.01);
+        assertEquals(0.5 * 150, grams("fél alma"), 0.01);
+        assertEquals(3 * 55, grams("3 tojás"), 0.01);
+    }
+
+    @Test public void aWordThatMerelyStartsWithANumberWordIsNotANumber() {
+        // A „felvágott” nem fél valamiből.
+        assertEquals(0, Foods.parse(Arrays.asList(Foods.ALL), "felvágott").size());
+    }
+
+    @Test public void severalFoodsKeepTheirOwnQuantities() {
+        List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL),
+                "csirkemell 200 g, rizs 150 g");
+        assertEquals(2, hs.size());
+        assertEquals(200, hs.get(0).grams, 0.01);
+        assertEquals(150, hs.get(1).grams, 0.01);
+
+        // A lezáró mennyiség az előtte állóhoz tartozik, nem az elsőhöz.
+        List<Foods.Hit> two = Foods.parse(Arrays.asList(Foods.ALL), "alma, banán, 30 g");
+        assertEquals(2, two.size());
+        assertEquals(0, two.get(0).grams, 0.01);
+        assertEquals(30, two.get(1).grams, 0.01);
+    }
+}
