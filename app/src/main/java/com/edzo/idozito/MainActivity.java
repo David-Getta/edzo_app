@@ -82,6 +82,8 @@ public class MainActivity extends Activity {
     final int[] DEF = {10, 10, 30, 8, 0, 0};
     int workSoundIdx = 2, restSoundIdx = 1;
     boolean trackDistance = false, precount = true, voice = false;
+    /** A táv-mérés be volt kapcsolva, de a helyhozzáférés időközben elveszett. */
+    boolean locationRevoked = false;
     String programName = ""; // üres = sima futás (intervallum)
 
     static final int REQ_LOCATION = 1001, REQ_NOTIF = 1002;
@@ -167,6 +169,15 @@ public class MainActivity extends Activity {
         workSoundIdx = prefs.getInt("ws", 2);
         restSoundIdx = prefs.getInt("rs", 1);
         trackDistance = prefs.getBoolean("track", false);
+        // A helyhozzáférés a rendszerbeállításokban bármikor visszavonható. A
+        // beállítás ilyenkor bekapcsolva maradt, a mérés viszont némán elmaradt:
+        // az edzés 0 km-rel került a naplóba, magyarázat nélkül. Ezért a tárolt
+        // értéket a valósághoz igazítjuk, és a kapcsoló alatt meg is mondjuk.
+        locationRevoked = trackDistance && !hasLocationPermission();
+        if (locationRevoked) {
+            trackDistance = false;
+            prefs.edit().putBoolean("track", false).apply();
+        }
         precount = prefs.getBoolean("pre", true);
         voice = prefs.getBoolean("voice", false);
         programName = prefs.getString("progname", "");
@@ -488,7 +499,9 @@ public class MainActivity extends Activity {
         card2.addView(divider());
         distanceSwitch = new Switch(this);
         distanceSwitch.setChecked(trackDistance);
-        card2.addView(switchRow("Táv mérése (GPS)", "Lefutott távolság mérése", distanceSwitch));
+        card2.addView(switchRow("Táv mérése (GPS)", locationRevoked
+                ? "A helyhozzáférés vissza lett vonva – kapcsold vissza a méréshez."
+                : "Lefutott távolság mérése", distanceSwitch));
         distanceSwitch.setOnCheckedChangeListener((btn, checked) -> {
             if (checked && !hasLocationPermission()) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQ_LOCATION);
