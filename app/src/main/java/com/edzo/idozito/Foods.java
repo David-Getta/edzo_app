@@ -26,12 +26,13 @@ public final class Foods {
     }
 
     public static final Food[] ALL = {
-        new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "bécsi", "becsi"),
+        new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "bécsi", "becsi",
+                "rantott szelet", "rantottszelet"),
         new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke"),
         new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell", "grillcsirke"),
         new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb"),
         new Food("Pulykamell", 105, 23, 150, "pulyka"),
-        new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes"),
+        new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes", "naturszelet", "natur szelet"),
         new Food("Marhahús", 250, 26, 150, "marha"),
         new Food("Fasírt", 290, 15, 150, "fasirt"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
@@ -122,7 +123,9 @@ public final class Foods {
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
         new Food("Szendvics", 250, 10, 150, "szendvics"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog"),
-        new Food("Müzliszelet", 400, 6, 30, "muzliszelet", "szelet"),
+        // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
+        // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
+        new Food("Müzliszelet", 400, 6, 30, "muzliszelet"),
         new Food("Párizsi", 230, 12, 50, "parizsi"),
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
@@ -506,6 +509,8 @@ public final class Foods {
             // A hosszabb mértékegység előbb, különben a rövidebb ág nyelné el.
             // Folyadéknál 1 ml ≈ 1 g, ezért a dl/ml/l is grammra váltható.
             if (q.startsWith("dkg", j)) { numPos.add(start); numVal.add(val * 10); i = j + 3; }
+            else if (q.startsWith("kilo", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 4; }
+            else if (q.startsWith("kg", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 2; }
             else if (q.startsWith("gramm", j)) { numPos.add(start); numVal.add(val); i = j + 5; }
             else if (q.startsWith("deci", j)) { numPos.add(start); numVal.add(val * 100); i = j + 4; }
             else if (q.startsWith("dl", j)) { numPos.add(start); numVal.add(val * 100); i = j + 2; }
@@ -645,6 +650,7 @@ public final class Foods {
             }
             if (!covered) out.add(m);
         }
+        out = oneFoodPerWord(q, out);
         applyCombos(list, q, out);
         // Rendezés a szövegbeli előfordulás szerint.
         for (int i = 0; i < out.size(); i++)
@@ -653,6 +659,60 @@ public final class Foods {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
         return out;
+    }
+
+    /**
+     * Egy SZÓ mindig egy étel.
+     *
+     * A magyar összetett ételnevekben két szótő is illeszkedik, egymás mellé:
+     * „lencsefőzelék” = lencse + főzelék, „sajtosszendvics” = sajt + szendvics,
+     * „csokitorta” = csoki + sütemény, „babgulyás” = bab + gulyásleves. Eddig
+     * mindkét fele bekerült, vagyis ugyanazt az EGY fogást kétszer számoltuk el
+     * – egy tányér lencsefőzelék így közel dupla kalóriának látszott. A hiba
+     * nem néhány szót érint: életszerű szavak harmadánál előjött.
+     *
+     * A szó melyik fele maradjon? Az, amelyik egy adagban több kalóriát ad:
+     * az áll közelebb magához a fogáshoz. A „csokitorta” inkább sütemény, mint
+     * csokoládé, a „csirkemellsaláta” inkább csirkemell, mint zöldsaláta.
+     */
+    private static List<Match> oneFoodPerWord(String q, List<Match> in) {
+        List<Match> out = new ArrayList<>();
+        for (int i = 0; i < in.size(); i++) {
+            boolean beaten = false;
+            for (int j = 0; j < in.size() && !beaten; j++) {
+                if (i == j || !sameWord(q, in.get(i), in.get(j))) continue;
+                beaten = beats(in.get(j), j, in.get(i), i);
+            }
+            if (!beaten) out.add(in.get(i));
+        }
+        return out;
+    }
+
+    /**
+     * Szigorú sorrend, hogy egy szóból pontosan egy találat maradjon: adagnyi
+     * kalória, majd a hosszabb szótő, végül a sorrend dönt.
+     */
+    private static boolean beats(Match a, int ai, Match b, int bi) {
+        int wa = a.food.portion * a.food.kcal100, wb = b.food.portion * b.food.kcal100;
+        if (wa != wb) return wa > wb;
+        if (a.len != b.len) return a.len > b.len;
+        return ai < bi;
+    }
+
+    /**
+     * Egy szón belül van-e a két találat? Akkor igen, ha köztük (és bennük)
+     * nincs szóköz vagy írásjel – így a „csirkemell rizzsel” két külön étel
+     * marad, a „csirkemellsaláta” viszont egy.
+     */
+    private static boolean sameWord(String q, Match a, Match b) {
+        int from = Math.min(a.pos, b.pos);
+        int to = Math.max(a.pos + a.len, b.pos + b.len);
+        if (from < 0 || to > q.length()) return false;
+        for (int i = from; i < to; i++) {
+            char ch = q.charAt(i);
+            if (!Character.isLetterOrDigit(ch) && ch != '-') return false;
+        }
+        return true;
     }
 
     /** Az összetett-étel szabályok alkalmazása a már megtalált találatokra. */
