@@ -158,6 +158,17 @@ public class SettingsActivity extends Activity {
 
         // --- Értesítések és adatok ---
         LinearLayout notif = card();
+        // Ha a rendszerben le vannak tiltva az értesítések, az alábbi kapcsolók
+        // egyike sem ér semmit – mondjuk meg, mielőtt bárki állítgatni kezdi.
+        if (!Notifs.enabled(this)) {
+            TextView warn = text("🔕  Az értesítések ki vannak kapcsolva a rendszerben – "
+                    + "koppints a bekapcsolásukhoz.", 12.5f, 0xFFE23B3B, true);
+            warn.setPadding(dp(14), dp(12), dp(14), dp(12));
+            warn.setClickable(true);
+            warn.setOnClickListener(v -> Notifs.openSettings(this));
+            notif.addView(warn);
+            notif.addView(divider());
+        }
         Switch recap = new Switch(this);
         recap.setChecked(Theme.recapEnabled(this));
         notif.addView(switchRow("Heti visszatekintő értesítés", recap));

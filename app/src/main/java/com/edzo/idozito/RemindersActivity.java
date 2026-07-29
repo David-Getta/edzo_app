@@ -40,6 +40,7 @@ public class RemindersActivity extends Activity {
     };
 
     LinearLayout listBox;
+    LinearLayout notifWarnBox;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -55,6 +56,12 @@ public class RemindersActivity extends Activity {
         col.addView(gap(4));
         col.addView(text("Napi értesítések – szabd testre az időt és a szöveget.", 13, MUTED, false));
         col.addView(gap(20));
+
+        // Ha az értesítések ki vannak kapcsolva, minden alábbi beállítás
+        // hatástalan – ezt jobb rögtön a lap tetején megmondani, mint hagyni,
+        // hogy a felhasználó soha meg nem szólaló emlékeztetőket állítson be.
+        notifWarnBox = vbox();
+        col.addView(notifWarnBox, lp());
 
         // Blaze automatikus napi biztatása – itt is látszik, hogy mikor szól
         // (kikapcsolva is megjelenik, hogy könnyű legyen megtalálni).
@@ -251,4 +258,32 @@ public class RemindersActivity extends Activity {
     }
 
     int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // A rendszerbeállításokból visszatérve azonnal frissüljön az állapot.
+        refreshNotifWarning();
+    }
+
+    /** Figyelmeztető kártya, ha az értesítések le vannak tiltva. */
+    void refreshNotifWarning() {
+        if (notifWarnBox == null) return;
+        notifWarnBox.removeAllViews();
+        if (Notifs.enabled(this)) return;
+
+        LinearLayout c = card();
+        c.setPadding(dp(14), dp(12), dp(14), dp(12));
+        c.addView(text("🔕  Az értesítések ki vannak kapcsolva", 14.5f, 0xFFE23B3B, true));
+        TextView sub = text("Amíg így marad, egyetlen emlékeztető sem fog megszólalni – "
+                + "sem a napi biztatás, sem a heti visszatekintő.", 12.5f, MUTED, false);
+        sub.setPadding(0, dp(4), 0, dp(10));
+        c.addView(sub);
+        Button open = ghost("Bekapcsolom a beállításokban");
+        open.setTextSize(13.5f);
+        open.setOnClickListener(v -> Notifs.openSettings(this));
+        c.addView(open);
+        notifWarnBox.addView(c, lp());
+        notifWarnBox.addView(gap(14));
+    }
 }
