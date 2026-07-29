@@ -1191,7 +1191,10 @@ public class MainActivity extends Activity {
             row.addView(tbar);
             LinearLayout left = vbox();
             left.addView(text(w.name, 15.5f, tc, true));
-            left.addView(text(w.work + "/" + w.rest + " mp · " + w.rounds + "× · előkész. " + w.prep + " mp", 12, MUTED, false));
+            String sub = w.work + "/" + w.rest + " mp · " + w.rounds + "× · előkész. " + w.prep + " mp";
+            if (w.warm > 0) sub += " · bem. " + w.warm + " mp";
+            if (w.cool > 0) sub += " · lev. " + w.cool + " mp";
+            left.addView(text(sub, 12, MUTED, false));
             row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
             Button del = new Button(this);
             del.setText("🗑"); del.setAllCaps(false); del.setTextSize(16);
@@ -1209,6 +1212,10 @@ public class MainActivity extends Activity {
 
     void loadTemplate(Workouts.W w) {
         cfg[PREP_K] = w.prep; cfg[WORK_K] = w.work; cfg[REST_K] = w.rest; cfg[ROUND_K] = w.rounds;
+        // A bemelegítést és a levezetést csak akkor állítjuk, ha a sablon tudja
+        // őket: a régi, még nélkülük mentett sablonok ne töröljék a beállítást.
+        if (w.warm != Workouts.UNSET) cfg[WARM_K] = w.warm;
+        if (w.cool != Workouts.UNSET) cfg[COOL_K] = w.cool;
         saveAll(); refreshValues(); updateTotal(); vibrateShort();
     }
 
@@ -1219,13 +1226,17 @@ public class MainActivity extends Activity {
         LinearLayout box = vbox();
         box.setPadding(dp(6), dp(2), dp(6), dp(4));
         box.addView(et);
-        String summary = "⏱ " + cfg[WORK_K] + "/" + cfg[REST_K] + " mp · " + cfg[ROUND_K] + " kör · előkész. " + cfg[PREP_K] + " mp";
+        String summary = "⏱ " + cfg[WORK_K] + "/" + cfg[REST_K] + " mp · " + cfg[ROUND_K]
+                + " kör · előkész. " + cfg[PREP_K] + " mp";
+        if (cfg[WARM_K] > 0) summary += " · bem. " + cfg[WARM_K] + " mp";
+        if (cfg[COOL_K] > 0) summary += " · lev. " + cfg[COOL_K] + " mp";
         new Sheet(this, "Sablon mentése", summary)
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
                     String name = et.getText().toString().trim();
                     if (name.isEmpty()) name = "Saját edzés";
-                    Workouts.add(this, new Workouts.W(name, cfg[PREP_K], cfg[WORK_K], cfg[REST_K], cfg[ROUND_K]));
+                    Workouts.add(this, new Workouts.W(name, cfg[PREP_K], cfg[WORK_K],
+                            cfg[REST_K], cfg[ROUND_K], cfg[WARM_K], cfg[COOL_K]));
                     refreshTemplates();
                 })
                 .addCancel()
