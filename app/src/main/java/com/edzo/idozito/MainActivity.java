@@ -1128,7 +1128,9 @@ public class MainActivity extends Activity {
                 final int idx = i;
                 final String id = order.get(i);
                 int nameIdx = java.util.Arrays.asList(SECT_IDS).indexOf(id);
-                if (nameIdx < 0) continue;
+                // A két tömb párban áll; ha valaha elcsúsznának, itt inkább
+                // kihagyjuk a sort, mint hogy a képernyő összeomoljon.
+                if (nameIdx < 0 || nameIdx >= SECT_NAMES.length) continue;
                 final boolean hid = hidden.contains(id);
                 LinearLayout row = hbox();
                 row.setGravity(Gravity.CENTER_VERTICAL);
@@ -1274,10 +1276,18 @@ public class MainActivity extends Activity {
 
     static final String[] GOAL_UNITS = {"edzés", "perc", "km"};
 
+    /** A heti cél mértékegység-indexe biztonságos tartományban. */
+    static int clampMode(int mode) {
+        return Math.max(0, Math.min(GOAL_UNITS.length - 1, mode));
+    }
+
     void refreshGoal() {
         if (goalBox == null) return;
         goalBox.removeAllViews();
-        int mode = prefs.getInt("wg_mode", 0);
+        // Tárolt érték tömb-indexként: egy visszaállított (vagy kézzel szerkesztett)
+        // mentésből érkező tartományon kívüli szám itt kivételt dobna – méghozzá a
+        // kezdőlapon, vagyis az app indulásakor, újra és újra. Ezért szorítjuk be.
+        int mode = clampMode(prefs.getInt("wg_mode", 0));
         int target = prefs.getInt("wg_target", 0);
         LinearLayout cardG = card();
         cardG.setClickable(true);
@@ -2417,7 +2427,7 @@ public class MainActivity extends Activity {
     }
 
     void goalDialog() {
-        final int[] mode = {prefs.getInt("wg_mode", 0)};
+        final int[] mode = {clampMode(prefs.getInt("wg_mode", 0))};
         int target = prefs.getInt("wg_target", 0);
 
         LinearLayout box = vbox();
