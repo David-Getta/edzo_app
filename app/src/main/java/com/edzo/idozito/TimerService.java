@@ -386,9 +386,26 @@ public class TimerService extends Service {
         return exLen(exNames);
     }
 
+    /**
+     * Honnan mérjük a most kezdődő szakasz végét.
+     *
+     * Természetes átlépésnél az ELŐZŐ szakasz tervezett végétől, nem a mostani
+     * ébredéstől: különben minden szakasz annyival tolódna, amennyit az ébredés
+     * késett, és a késés körről körre gyűlne. Csak akkor, ha az ébredés tényleg
+     * a szakasz vége UTÁN, egy másodpercen belül történt – kihagyásnál
+     * (a szakasz vége még odébb van) és hosszabb kihagyott idő után a mostani
+     * pillanat a helyes kiindulás.
+     */
+    static long stepBase(long now, long prevEnd, boolean first) {
+        if (first || prevEnd <= 0) return now;
+        long late = now - prevEnd;
+        return (late >= 0 && late < 1000) ? prevEnd : now;
+    }
+
     private void beginStep(boolean first) {
         Step s = plan.get(idx);
-        stepEndElapsed = SystemClock.elapsedRealtime() + (long) s.dur * 1000L;
+        stepEndElapsed = stepBase(SystemClock.elapsedRealtime(), stepEndElapsed, first)
+                + (long) s.dur * 1000L;
         lastShownSec = -1;
         inWorkPhase = (s.type == T_WORK);
         if (inWorkPhase) { lastLoc = null; lastFixElapsed = 0; } // GPS-alap nullázása a futás elején
@@ -467,7 +484,26 @@ public class TimerService extends Service {
             postNotification();
         }
         broadcastTick();
-        handler.postDelayed(ticker, 200);
+        handler.postDelayed(ticker, nextTickDelay(stepEndElapsed - SystemClock.elapsedRealtime()));
+    }
+
+    /** A kijelző frissítési üteme – ennél ritkábban sosem ébredünk. */
+    private static final long TICK_MS = 200;
+
+    /**
+     * Mennyit várjunk a következő ébresztésig.
+     *
+     * Fix 200 ms-onként ébredve a másodperc váltását – és vele a visszaszámláló
+     * sípját – akár 200 ms-mal később vettük észre, ütemenként mást: a „3–2–1”
+     * egyenetlenül szólt, a sípok közti szünet 0,8 és 1,2 másodperc között
+     * ingadozott. Ezért pontosan a következő másodperc-váltásra ébredünk, de
+     * legfeljebb TICK_MS-ot várunk, hogy a kijelző közben is mozogjon.
+     */
+    static long nextTickDelay(long remainMs) {
+        if (remainMs <= 0) return 0;
+        long toBoundary = remainMs % 1000;
+        if (toBoundary == 0) toBoundary = 1000;   // épp a határon állunk
+        return Math.max(1, Math.min(TICK_MS, toBoundary));
     }
 
     /** Az aktuális szakasz átugrása (a lejárt munka-szakasz teljesítettnek számít). */
