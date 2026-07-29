@@ -675,11 +675,33 @@ public class TimerService extends Service {
         stopSelf();
     }
 
+    /**
+     * Elégetett kalória becslése.
+     *
+     * Két közelítés van: futásnál a megtett út a jó alap (a munka nagyjából
+     * testsúly × út), egyébként az eltöltött idő. A kettő közül a NAGYOBBAT
+     * vesszük.
+     *
+     * Korábban a táv-ág győzött, amint egyáltalán volt mért méter. Aki
+     * bekapcsolta a távmérést egy köredzéshez – amit egy helyben végez –, annak
+     * 40 perc kemény munka 50 méter kavargásból négy kalóriának látszott, és
+     * ez a szám bement a naplóba, a napi összesítőbe és a rekordok közé is.
+     *
+     * A két ág kb. 6 km/h-nál vált: e fölött – tehát minden futásnál, a leglassabb
+     * kocogásnál is – a táv dönt, alatta az idő ad reális alsó korlátot. Lassú
+     * séta közben ez a korlát felül becsül, de pontosan ez az app eddigi
+     * feltevése minden táv nélküli edzésre, és sokkal közelebb van a valósághoz,
+     * mint a négy kalória.
+     */
+    static double calories(double weightKg, double distanceM, int durationSec) {
+        double w = weightKg > 0 ? weightKg : 70;
+        double byDist = distanceM > 0 ? w * (distanceM / 1000.0) * 1.036 : 0;
+        double byTime = 6.0 * 3.5 * w / 200.0 * (Math.max(0, durationSec) / 60.0); // MET~6
+        return Math.max(byDist, byTime);
+    }
+
     private double estimateCalories() {
-        double km = distanceM > 0 ? distanceM / 1000.0 : 0;
-        if (km > 0) return weightKg * km * 1.036; // futás közelítés
-        double min = currentDurationSec() / 60.0;
-        return 6.0 * 3.5 * weightKg / 200.0 * min; // MET~6 mozgás
+        return calories(weightKg, distanceM, currentDurationSec());
     }
 
     // ---------------- Lépésérzékelő ----------------
