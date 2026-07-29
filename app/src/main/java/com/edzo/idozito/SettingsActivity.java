@@ -598,15 +598,33 @@ public class SettingsActivity extends Activity {
                 testTriedGoogle = false;
                 releaseTestTts();
                 try { testTts = new TextToSpeech(this, this::onTestTtsInit); } catch (Exception ignored) {}
+                return;
             }
+            // Itt már a rendszer motorja sem indult el: egy néma gomb csak
+            // találgatásra késztet (hangerő? elromlott? nincs magyar hang?).
+            say("Nem találtam felolvasó motort a készüléken. A bemondás így nem fog működni.");
             return;
         }
         try {
-            testTts.setLanguage(new Locale("hu", "HU"));
+            int r = testTts.setLanguage(new Locale("hu", "HU"));
             testTts.setSpeechRate(Theme.speechRate(this));
             testTts.speak("Szia! Így fogok beszélni edzés közben. Hajrá, csináljuk!",
                     TextToSpeech.QUEUE_FLUSH, null, "grit_test");
-        } catch (Exception ignored) {}
+            // A setLanguage visszatérési értékét eddig eldobtuk. Pont ez a gomb
+            // hivatott kideríteni, hogy megvan-e a magyar hang – ha nincs, azt
+            // meg is kell mondani, különben a felhasználó idegen akcentust hall,
+            // és nem tudja, mit kezdjen vele.
+            if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED)
+                say("A felolvasó nem tud magyarul – töltsd le a magyar hangot "
+                        + "(Beszéd → Nyelv → Magyar).");
+        } catch (Exception e) {
+            say("A bemondás nem indult el ezen a készüléken.");
+        }
+    }
+
+    /** Üzenet a felolvasó teszthez – a visszahívás nem feltétlenül a fő szálon fut. */
+    private void say(final String msg) {
+        runOnUiThread(() -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show());
     }
 
     private void releaseTestTts() {
