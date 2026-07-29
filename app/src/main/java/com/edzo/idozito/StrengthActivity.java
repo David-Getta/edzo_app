@@ -620,9 +620,9 @@ public class StrengthActivity extends Activity {
     }
 
     /** Súly kiírása: egész, ha kerek (40), egyébként 1 tizedes vesszővel (42,5). */
-    String fmtKg(double w) {
+    static String fmtKg(double w) {
         if (Math.abs(w - Math.round(w)) < 0.05) return String.valueOf(Math.round(w));
-        return String.format(new Locale("hu"), "%.1f", w);
+        return Hu.d1(w);
     }
 
     // ---------- Súlytárcsa-kalkulátor ----------
@@ -659,8 +659,14 @@ public class StrengthActivity extends Activity {
                 .addCustom(box).addNeutral("Bezár", () -> {}).show();
     }
 
-    /** Standard tárcsákból (25…1,25 kg) kiszámolja az oldalankénti terhelést. */
-    String platePlan(double target, double bar) {
+    /**
+     * Standard tárcsákból (25…1,25 kg) kiszámolja az oldalankénti terhelést.
+     *
+     * A tárcsák súlyát NEGYED kilós pontossággal írjuk ki: az egy tizedesre
+     * kerekítő formázó az 1,25 kg-os tárcsát „1,3 kg"-nak mondta, olyan
+     * súlynak, ami nem is létezik.
+     */
+    static String platePlan(double target, double bar) {
         if (target <= 0) return "Adj meg egy cél súlyt.";
         if (bar < 0) bar = 0;
         if (target < bar) return "A rúd nehezebb a célnál.";
@@ -672,13 +678,13 @@ public class StrengthActivity extends Activity {
             int n = (int) Math.floor(rem / p + 1e-6);
             if (n > 0) {
                 if (sb.length() > 0) sb.append("  +  ");
-                sb.append(n).append("×").append(fmtKg(p));
+                sb.append(n).append("×").append(Progression.kg(p));
                 rem -= n * p;
             }
         }
         String plan = sb.length() == 0 ? "(nincs tárcsa – csak a rúd)" : sb.toString();
         String res = "Oldalanként:\n" + plan;
-        if (rem > 0.01) res += "\n(≈ nem jön ki pontosan, marad " + fmtKg(rem) + " kg/oldal)";
+        if (rem > 0.01) res += "\n(≈ nem jön ki pontosan, marad " + Progression.kg(rem) + " kg/oldal)";
         return res;
     }
 
@@ -714,7 +720,7 @@ public class StrengthActivity extends Activity {
     }
 
     /** Epley-becslés + a leggyakoribb edzés-százalékok táblázata. */
-    String oneRmPlan(double w, int reps) {
+    static String oneRmPlan(double w, int reps) {
         if (w <= 0 || reps <= 0) return "Adj meg súlyt és ismétlést.";
         double orm = w * (1 + reps / 30.0);
         StringBuilder sb = new StringBuilder();
