@@ -24,7 +24,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
     static final String CHANNEL = "edzo_recap";
     static final int REQ = 77, NOTIF_ID = 9100;
 
-    /** Következő vasárnap 19:00-ra ütemez, majd hetente ismétel. Ha ki van kapcsolva, törli. */
+    /** A következő vasárnap 19:00-ra ütemez. Ha ki van kapcsolva, törli a riasztást. */
     public static void schedule(Context c) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
@@ -36,27 +36,13 @@ public class WeeklyReceiver extends BroadcastReceiver {
             try { am.cancel(basePi); } catch (Exception ignored) {}
             return;
         }
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 19);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        if (cal.getTimeInMillis() <= System.currentTimeMillis()) {
-            cal.add(Calendar.DAY_OF_YEAR, 7);
-        }
-        Intent i = new Intent(c, WeeklyReceiver.class).setAction("com.edzo.idozito.WEEKLY");
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent pi = PendingIntent.getBroadcast(c, REQ, i, flags);
-        try {
-            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY * 7, pi);
-        } catch (Exception ignored) {}
+        Alarms.oneShot(am, Alarms.nextWeekly(Calendar.SUNDAY, 19, 0), basePi);
     }
 
     @Override
     public void onReceive(Context c, Intent intent) {
+        // Egyszeri riasztás: a jövő vasárnapit rögtön betesszük.
+        try { schedule(c); } catch (Exception ignored) {}
         long from = weekStart(System.currentTimeMillis());
         // Egyesített napló: az erősítő edzések is számítanak a darabszámba és a terv-napokba.
         JSONArray h = History.loadAll(c);

@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -80,26 +79,21 @@ public final class Reminders {
         return PendingIntent.getBroadcast(c, r.id, i, flags);
     }
 
-    private static long nextTrigger(int h, int m) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, h);
-        cal.set(Calendar.MINUTE, m);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        if (cal.getTimeInMillis() <= System.currentTimeMillis()) cal.add(Calendar.DAY_OF_MONTH, 1);
-        return cal.getTimeInMillis();
-    }
-
+    /**
+     * Mindig csak a KÖVETKEZŐ alkalomra ütemez (lásd {@link Alarms}). A soron
+     * következőt a {@link ReminderReceiver} teszi be, amikor ez lefutott.
+     */
     public static void scheduleOne(Context c, Reminder r) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
         PendingIntent p = pi(c, r);
-        if (r.on) {
-            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, nextTrigger(r.h, r.m),
-                    AlarmManager.INTERVAL_DAY, p);
-        } else {
-            am.cancel(p);
-        }
+        if (r.on) Alarms.oneShot(am, Alarms.nextDaily(r.h, r.m), p);
+        else am.cancel(p);
+    }
+
+    /** Egy lefutott emlékeztető újraütemezése a másnapi időpontra. */
+    public static void rescheduleAfterFire(Context c, int id) {
+        for (Reminder r : load(c)) if (r.id == id) { scheduleOne(c, r); return; }
     }
 
     public static void cancelOne(Context c, Reminder r) {

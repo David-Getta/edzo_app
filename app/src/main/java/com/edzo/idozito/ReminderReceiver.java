@@ -20,6 +20,11 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent intent) {
         String text = intent.getStringExtra("text");
         int id = intent.getIntExtra("id", 1);
+
+        // A riasztás egyszeri: a holnapit rögtön az elején ütemezzük be, hogy az
+        // értesítés összeállításánál esetleg fellépő hiba se szakítsa meg a láncot.
+        try { Reminders.rescheduleAfterFire(c, id); } catch (Exception ignored) {}
+
         if (text == null || text.trim().isEmpty()) text = defaultMessage(c);
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);

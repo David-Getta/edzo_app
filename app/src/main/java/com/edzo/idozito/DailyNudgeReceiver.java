@@ -23,7 +23,7 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
     static final String CHANNEL = "edzo_blaze";
     static final int REQ = 88, NOTIF_ID = 9200;
 
-    /** A beállított napi időpontra ütemez, majd naponta ismétel. Ha ki van kapcsolva, törli. */
+    /** A beállított napi időpont következő előfordulására ütemez. Ha ki van kapcsolva, törli. */
     public static void schedule(Context c) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
@@ -35,20 +35,14 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             try { am.cancel(pi); } catch (Exception ignored) {}
             return;
         }
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, Theme.nudgeHour(c));
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        if (cal.getTimeInMillis() <= System.currentTimeMillis()) cal.add(Calendar.DAY_OF_MONTH, 1);
-        try {
-            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY, pi);
-        } catch (Exception ignored) {}
+        Alarms.oneShot(am, Alarms.nextDaily(Theme.nudgeHour(c), 0), pi);
     }
 
     @Override
     public void onReceive(Context c, Intent intent) {
+        // Egyszeri riasztás: a másnapit itt tesszük be (ez a hívás kapcsolja ki
+        // magát is, ha a biztatás közben ki lett kapcsolva).
+        try { schedule(c); } catch (Exception ignored) {}
         if (!Theme.blazeNudge(c)) return;
         // Pihenőnapon (nem tervezett edzésnapon) Blaze nem nyaggat.
         int dowIdx = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7; // H=0..V=6
