@@ -20,6 +20,16 @@ public final class Progression {
     /** Ennyi egyforma alkalom után javaslunk visszavételt. */
     static final int STALL_SESSIONS = 3;
 
+    /**
+     * Testsúlyos gyakorlatnál efölött már inkább állóképességet edzünk, nem
+     * erőt. Súlyzónál a sáv tetejéről a tárcsa visz tovább – testsúlynál nincs
+     * tárcsa, ezért ott a sorozatszám lép.
+     */
+    static final int BW_MAX_REPS = 20;
+
+    /** Ennél több sorozatot nem javasolunk: onnan a gyakorlat nehezítése visz előre. */
+    static final int BW_MAX_SETS = 6;
+
     public static final class Suggestion {
         public final int sets;
         public final int reps;
@@ -71,12 +81,9 @@ public final class Progression {
         int setCount = last.sets.size();
         boolean bw = lastW <= 0;
 
+        if (bw) return bodyweight(setCount, lastHard, sameCount);
+
         if (sameCount >= STALL_SESSIONS) {
-            if (bw) {
-                return new Suggestion(setCount + 1, lastHard, 0, true,
-                        sameCount + " alkalom óta ugyanannyi. Adj hozzá még egy sorozatot – "
-                                + "testsúlynál a volumen visz előre.");
-            }
             double down = deload(lastW);
             if (down > 0) {
                 return new Suggestion(setCount, MIN_REPS, down, false,
@@ -85,10 +92,6 @@ public final class Progression {
             }
         }
 
-        if (bw) {
-            return new Suggestion(setCount, lastHard + 1, 0, true,
-                    "Testsúlyos gyakorlat: a leggyengébb sorozatodnál lépj egy ismétlést.");
-        }
         if (lastHard >= MAX_REPS) {
             return new Suggestion(setCount, MIN_REPS, lastW + step(lastW), false,
                     "Múltkor minden sorozat elment " + MAX_REPS + " ismétlésig. Emeld a súlyt, "
@@ -97,6 +100,35 @@ public final class Progression {
         return new Suggestion(setCount, lastHard + 1, lastW, false,
                 "Maradj ezen a súlyon, és told meg egy ismétléssel. " + MAX_REPS
                         + "-nél jön a következő tárcsa.");
+    }
+
+    /**
+     * Testsúlyos gyakorlat javaslata.
+     *
+     * Itt nincs tárcsa, amivel a sáv tetejéről tovább lehetne lépni, ezért
+     * korábban egyszerűen minden alkalommal egy ismétléssel többet javasoltunk –
+     * megállás nélkül. Aki követte a tanácsot, az néhány hónap alatt 3 × 40
+     * fekvőtámaszig jutott: onnantól már nem erőt edz, hanem állóképességet, és
+     * a javaslat sosem mondta meg, hogy ideje továbblépni.
+     *
+     * A haladás sorrendje most: ismétlés a sáv tetejéig, aztán sorozat, végül
+     * a gyakorlat nehezítése – ezt már csak elmondani tudjuk, megtenni nem.
+     */
+    private static Suggestion bodyweight(int setCount, int reps, int sameCount) {
+        if (reps < BW_MAX_REPS && sameCount < STALL_SESSIONS)
+            return new Suggestion(setCount, reps + 1, 0, true,
+                    "Testsúlyos gyakorlat: a leggyengébb sorozatodnál lépj egy ismétlést.");
+        if (setCount < BW_MAX_SETS)
+            return new Suggestion(setCount + 1, reps, 0, true,
+                    reps >= BW_MAX_REPS
+                            ? reps + " ismétlésnél már inkább az állóképesség fejlődik. Maradj "
+                                    + "ennyinél, és tegyél hozzá még egy sorozatot."
+                            : sameCount + " alkalom óta ugyanannyi. Adj hozzá még egy sorozatot – "
+                                    + "testsúlynál a volumen visz előre.");
+        return new Suggestion(setCount, reps, 0, true,
+                "Ebből a gyakorlatból elérted a hasznos ismétlés- és sorozatszámot. Innen a "
+                        + "nehezebb változat visz előre: lassabb levitel, megemelt láb, "
+                        + "egy karral vagy lábbal.");
     }
 
     /** A munkasúly: az alkalom legnehezebb sorozata. */
