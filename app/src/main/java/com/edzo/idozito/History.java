@@ -104,6 +104,57 @@ public final class History {
     }
 
     /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
+    /**
+     * Kézzel felvett edzés: olyan mozgás, amit nem az app mért (kézilabda,
+     * úszás, kondi…). A bejegyzés mindenben ugyanolyan, mint egy mért edzés,
+     * hogy a széria, az XP, a jelvények, a heti visszatekintő és a statisztika
+     * is számoljon vele.
+     *
+     * Az időpont lehet MÚLTBELI, ezért nem a lista elejére tesszük, hanem a
+     * helyére: a napló legfrissebb-elöl sorrendjére sok minden épül (a legutóbbi
+     * edzés jegyzete, a hangulat, a listakártyák sorrendje).
+     */
+    public static void addManual(Context ctx, long ts, int durationSec, double distanceM,
+                                 double calories, double avgSpeedKmh, String name, String kind) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        JSONArray arr = loadForEdit(ctx);
+        try {
+            JSONObject o = new JSONObject();
+            o.put("ts", ts);
+            if (name != null && !name.isEmpty()) o.put("name", name);
+            if (kind != null && !kind.isEmpty()) o.put("kind", kind);
+            o.put("dur", durationSec);
+            o.put("dist", distanceM);
+            o.put("rounds", 0);
+            o.put("work", 0);
+            o.put("rest", 0);
+            o.put("maxspeed", -1);
+            o.put("steps", 0);
+            o.put("moving", 0);
+            o.put("elev", 0);
+            o.put("cal", calories);
+            o.put("avgspeed", avgSpeedKmh);
+            o.put("manual", true);
+
+            JSONArray out = new JSONArray();
+            boolean placed = false;
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject e = arr.optJSONObject(i);
+                if (e == null) continue;
+                if (!placed && e.optLong("ts") <= ts) { out.put(o); placed = true; }
+                out.put(e);
+            }
+            if (!placed) out.put(o);
+            if (out.length() > MAX) {
+                JSONArray capped = new JSONArray();
+                for (int i = 0; i < MAX; i++) capped.put(out.get(i));
+                out = capped;
+            }
+            p.edit().putString(KEY, out.toString()).apply();
+        } catch (Exception ignored) {
+        }
+    }
+
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
                            int rounds, int work, int rest, double maxSpeedKmh,
                            int steps, int movingSec, double elevGainM, double calories,

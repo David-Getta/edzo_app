@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -79,6 +80,7 @@ public class HistoryActivity extends Activity {
         htexts.addView(text("Előzmények", 27, TXT, true));
         htexts.addView(text((arr.length() + sArr.size()) + " elmentett edzés", 13.5f, MUTED, false));
         head.addView(htexts, new LinearLayout.LayoutParams(0, -2, 1f));
+        head.addView(addButton());
         if (arr.length() > 0) head.addView(trashButton());
         col.addView(head, lp());
         col.addView(gap(18));
@@ -167,7 +169,9 @@ public class HistoryActivity extends Activity {
         for (Object[] it : items) {
             boolean fits;
             if (it[1] instanceof JSONObject) {
-                boolean isRun = ((JSONObject) it[1]).optString("name", "").isEmpty();
+                JSONObject jo = (JSONObject) it[1];
+                boolean isRun = jo.optString("name", "").isEmpty()
+                        || Activities.isCardio(jo.optString("kind", ""));
                 fits = !((filter == 1 && !isRun) || (filter == 2 && isRun));
             } else {
                 fits = filter != 1;   // súlyzós bejegyzés nem futás
@@ -320,7 +324,9 @@ public class HistoryActivity extends Activity {
     View entryCard(JSONObject o, SimpleDateFormat df) {
         final long ts = o.optLong("ts");
         String name = o.optString("name", "");
-        boolean isRun = name.isEmpty();
+        // Kézi bejegyzésnél a mozgásforma dönt (futás/úszás/kerékpár = kardió).
+        // Régi naplóban nincs „kind", ott marad a korábbi szabály.
+        boolean isRun = name.isEmpty() || Activities.isCardio(o.optString("kind", ""));
         int typeColor = isRun ? RUN_C : GYM_C;
 
         // Külső: akcentcsík + tartalom
@@ -349,7 +355,11 @@ public class HistoryActivity extends Activity {
         // Fejsor: típusjelvény + dátum
         LinearLayout topRow = hbox();
         topRow.setGravity(Gravity.CENTER_VERTICAL);
-        topRow.addView(badge(isRun ? "🏃 Futás" : "🏋️ " + name, typeColor), new LinearLayout.LayoutParams(-2, -2));
+        // A kézi bejegyzés neve már tartalmazza a mozgásforma emojiját
+        // („🤾 Kézilabda"), ezért nem teszünk elé még egyet.
+        String badgeText = !o.optString("kind", "").isEmpty() ? name
+                : (isRun ? "🏃 Futás" : "🏋️ " + name);
+        topRow.addView(badge(badgeText, typeColor), new LinearLayout.LayoutParams(-2, -2));
         View sp = new View(this);
         topRow.addView(sp, new LinearLayout.LayoutParams(0, 1, 1f));
         String moodE = History.moodEmoji(o.optInt("mood", 0));
@@ -372,7 +382,8 @@ public class HistoryActivity extends Activity {
 
         // Mini-statok
         LinearLayout pills = hbox();
-        addPill(pills, "🔁", o.optInt("rounds") + (isRun ? " kör" : "×"));
+        int rnds = o.optInt("rounds");
+        if (rnds > 0) addPill(pills, "🔁", rnds + (isRun ? " kör" : "×"));
         int cal = (int) Math.round(o.optDouble("cal", 0));
         if (cal > 0) addPill(pills, "🔥", cal + "");
         if (dist >= 0) {
@@ -431,7 +442,138 @@ public class HistoryActivity extends Activity {
         TextView s = text("Fejezz be egy edzést, és itt megjelenik – minden mérőszámmal és térképpel együtt.", 13.5f, MUTED, false);
         s.setGravity(Gravity.CENTER);
         c.addView(s);
+        c.addView(gap(6));
+        // A kézi felvétel máshol nem derül ki: itt van a legnagyobb szükség rá.
+        TextView s2 = text("A fenti „+” gombbal olyan edzést is felvehetsz, amit nem az app mért:\n"
+                + "kézilabda, úszás, kondi, foci…", 13.5f, MUTED, false);
+        s2.setGravity(Gravity.CENTER);
+        c.addView(s2);
         return c;
+    }
+
+    // ---- Kézi edzés-bejegyzés ----
+
+    /**
+     * „+" a fejlécben: olyan edzés felvétele, amit nem az app mért.
+     *
+     * Akkor is ott van, ha a napló üres – épp az az egyik eset, amikor a
+     * legtöbbet ér: a korábbi edzéseket is fel lehet vinni.
+     */
+    View addButton() {
+        TextView t = new TextView(this);
+        t.setText("+");
+        t.setTextSize(23);
+        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t.setTextColor(TXT);
+        t.setGravity(Gravity.CENTER);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setShape(GradientDrawable.OVAL);
+        bg.setColor(GLASS);
+        bg.setStroke(dp(1), GLASS_LINE);
+        t.setBackground(bg);
+        t.setClickable(true);
+        int s = dp(44);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(s, s);
+        lp.rightMargin = dp(8);
+        t.setLayoutParams(lp);
+        t.setOnClickListener(v -> manualPickSheet());
+        return t;
+    }
+
+    /** Első lépés: melyik mozgásforma volt? */
+    void manualPickSheet() {
+        Sheet sh = new Sheet(this, "Edzés hozzáadása 📝",
+                "Amit nem az app mért. Ugyanúgy számít a szériába, az XP-be és a statisztikába.");
+        for (Activities.Kind k : Activities.ALL) {
+            final Activities.Kind kind = k;
+            sh.addRow(k.emoji, k.name, null, false, true, () -> manualDetailSheet(kind));
+        }
+        sh.addCancel().show();
+    }
+
+    /** Második lépés: mennyi ideig tartott, és mikor volt? */
+    void manualDetailSheet(final Activities.Kind k) {
+        final EditText minEt = numInput("Hány percig tartott?");
+        final EditText kmEt = k.distance ? numInput("Táv km-ben (elhagyható)") : null;
+        final EditText agoEt = numInput("Hány napja? (0 = ma)");
+        agoEt.setText("0");
+
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(minEt, lp());
+        if (kmEt != null) {
+            LinearLayout.LayoutParams l = lp();
+            l.topMargin = dp(8);
+            box.addView(kmEt, l);
+        }
+        LinearLayout.LayoutParams l2 = lp();
+        l2.topMargin = dp(8);
+        box.addView(agoEt, l2);
+
+        new Sheet(this, k.title(),
+                "A kalóriát a mozgásforma és a testsúlyod alapján becsüljük.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> saveManual(k, minEt, kmEt, agoEt))
+                .addCancel()
+                .show();
+    }
+
+    void saveManual(Activities.Kind k, EditText minEt, EditText kmEt, EditText agoEt) {
+        int min = (int) numOf(minEt);
+        if (min <= 0) {
+            android.widget.Toast.makeText(this, "Add meg, hány percig tartott.",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (min > 24 * 60) min = 24 * 60;                 // egy napnál hosszabb edzés nincs
+        double km = kmEt == null ? 0 : numOf(kmEt);
+        if (km < 0) km = 0;
+        if (km > 500) km = 500;
+        int ago = (int) numOf(agoEt);
+        if (ago < 0) ago = 0;
+        if (ago > 365) ago = 365;                          // egy évnél régebbit ne vigyünk fel
+
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.add(java.util.Calendar.DAY_OF_YEAR, -ago);
+        long ts = cal.getTimeInMillis();
+
+        int durSec = min * 60;
+        double distM = km > 0 ? km * 1000 : -1;
+        // Átlagsebesség csak ott, ahol értelme van: ugyanaz a határ, mint a
+        // mért edzéseknél, hogy egy pár méteres bejegyzés ne adjon tempót.
+        double avg = (TimerService.isRun(distM) && durSec > 0) ? distM / durSec * 3.6 : -1;
+        double kcal = Activities.calories(k, Profile.lastWeight(this), min);
+
+        History.addManual(this, ts, durSec, distM, kcal, avg, k.title(), k.id);
+        android.widget.Toast.makeText(this, k.name + " elmentve.",
+                android.widget.Toast.LENGTH_SHORT).show();
+        recreate();
+    }
+
+    /** Szám-beviteli mező a lap stílusában (tizedesvesszőt is elfogad). */
+    EditText numInput(String hint) {
+        EditText et = new EditText(this);
+        et.setHint(hint);
+        et.setHintTextColor(MUTED);
+        et.setTextColor(TXT);
+        et.setTextSize(14.5f);
+        et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER
+                | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(Theme.veil(this));
+        bg.setCornerRadius(dp(12));
+        bg.setStroke(dp(1), GLASS_LINE);
+        et.setBackground(bg);
+        et.setPadding(dp(12), dp(10), dp(12), dp(10));
+        return et;
+    }
+
+    double numOf(EditText et) {
+        try {
+            return Double.parseDouble(et.getText().toString().trim().replace(',', '.'));
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     View trashButton() {

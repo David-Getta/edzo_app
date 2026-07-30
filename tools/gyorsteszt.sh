@@ -39,7 +39,7 @@ if [ -z "${JUNIT_JARS:-}" ] || [ ! -e "${JUNIT_JARS%%:*}" ]; then
 fi
 
 # 1) Teljesen tiszta osztályok: mehetnek egy az egyben.
-for f in Days Hu Progression Muscles Mobility Alarms; do
+for f in Days Hu Progression Muscles Mobility Alarms Activities; do
   [ -f "$SRC/$f.java" ] && cp "$SRC/$f.java" "$PKG/"
 done
 # Az Alarms Android-része (egyszeri riasztás beállítása) nem kell a teszthez.
@@ -122,7 +122,7 @@ open(dst + 'StrengthLog.java', 'w').write(
 PY
 
 # 4) Azok a tesztek, amiknek a fentiek elegendők.
-TESTS="FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest
+TESTS="ActivitiesTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
        DaysTest HuTest AlarmsTest MobilityTest"

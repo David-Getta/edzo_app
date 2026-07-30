@@ -1787,14 +1787,16 @@ public class MainActivity extends Activity {
         final long ts = o.optLong("ts");
         String name = o.optString("name", "");
         boolean isRun = name.isEmpty();
-        String title = isRun ? "🏃 Futás" : "🏋️ " + name;
+        // Kézzel felvett edzésnél a név már emojival kezdődik.
+        String kind = o.optString("kind", "");
+        String title = !kind.isEmpty() ? name : (isRun ? "🏃 Futás" : "🏋️ " + name);
         String moodE = History.moodEmoji(o.optInt("mood", 0));
         if (!moodE.isEmpty()) title = title + "  " + moodE;
         int dur = o.optInt("dur");
         double dist = o.optDouble("dist", -1);
         int rounds = o.optInt("rounds", 0);
         String stat = "⏱ " + fmtLong(dur);
-        if (isRun && dist >= 0) stat += "   ·   📍 " + fmtDist(dist);
+        if (dist >= 0 && (isRun || Activities.isCardio(kind))) stat += "   ·   📍 " + fmtDist(dist);
         else if (rounds > 0) stat += "   ·   🔁 " + rounds + " kör";
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("MM.dd  HH:mm", new java.util.Locale("hu"));
 
