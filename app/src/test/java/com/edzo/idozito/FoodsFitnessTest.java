@@ -101,6 +101,20 @@ public class FoodsFitnessTest {
         assertEquals("Kukorica", names("kukorica"));
     }
 
+    @Test public void aDishAndItsOwnIngredientCountOnce() {
+        // A rántotta tojásból van: a „3 tojásból rántotta” eddig a tojást ÉS a
+        // rántottát is elszámolta – 526 kcal egy háromtojásos reggelire.
+        assertEquals("Rántotta", names("3 tojásból rántotta"));
+        assertEquals("Rántotta", names("tojásos rántotta"));
+        assertEquals("Rántotta", names("omlett"));
+        assertTrue("a háromtojásos rántotta irreális: " + kcal("3 tojásból rántotta"),
+                kcal("3 tojásból rántotta") > 250 && kcal("3 tojásból rántotta") < 350);
+        // A köret viszont nem tűnhet el mellőle.
+        assertEquals("Rántotta + Kenyér", names("rántotta és egy szelet kenyér"));
+        // A sima tojás továbbra is tojás.
+        assertEquals("Tojás", names("2 tojás"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.

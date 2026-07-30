@@ -48,7 +48,7 @@ public final class Foods {
         // A „tojásfehérje" eddig egész tojás volt: 33 g helyett 55 g, és 17 kcal
         // helyett 78 – négy és félszeres túlszámolás egy sportolós alapdarabon.
         new Food("Tojásfehérje", 52, 11, 33, "tojasfeherje", "tojas feherje", "feherje tojas"),
-        new Food("Rántotta", 180, 12, 150, "rantotta"),
+        new Food("Rántotta", 180, 12, 150, "rantotta", "omlett"),
         new Food("Rizs (főtt)", 130, 2.7, 200, "riz"),
         new Food("Tészta (főtt)", 150, 5, 250, "teszta", "spagetti", "penne"),
         new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli"),
@@ -416,6 +416,8 @@ public final class Foods {
      */
     private static final String[][] PIECE_GRAMS = {
             {"Tojás", "55"}, {"Tükörtojás", "55"},
+            // Rántottánál a „darab" a felhasznált tojás: „3 tojásból rántotta".
+            {"Rántotta", "55"},
             {"Banán", "120"}, {"Alma", "150"}, {"Narancs", "150"}, {"Körte", "150"},
             {"Kivi", "80"}, {"Mandarin", "100"}, {"Őszibarack", "150"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
@@ -760,6 +762,11 @@ public final class Foods {
      */
     private static final String[][] COMBOS = {
             {"Rántott csirkemell", "rantott", "csirke"},
+            // A rántotta tojásból van: a „3 tojásból rántotta" eddig a tojást ÉS a
+            // rántottát is elszámolta, egy háromtojásos reggeli így 526 kcal lett
+            // 270 helyett. (A „rántotta és 2 tojás" alak – ami ugyanannak a
+            // fogásnak a kétszeri említése volna – szintén egy tételre olvad.)
+            {"Rántotta", "tojas", "rantotta"},
     };
 
     /** Egy találat helye a szövegben (a leghosszabb illeszkedő szótő szerint). */
