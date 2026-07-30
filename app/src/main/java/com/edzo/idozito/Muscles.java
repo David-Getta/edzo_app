@@ -30,13 +30,17 @@ public final class Muscles {
             {LAB, "guggol", "kitores", "labtolas", "labnyujt", "labhajlit", "labgep",
                     "vadli", "comb", "farizom", "medencelok", "hipthrust", "lepcsozes"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
-                    "hatizom", "hatgep"},
+                    "hatizom", "hatgep", "gerincnyujt", "hiperextenzio"},
             {MELL, "fekvenyom", "fekve nyom", "tarogat", "pillango", "fekvotamasz",
-                    "tolodzkod", "mell"},
-            {VALL, "vallbol", "vallnyom", "vallgep", "oldalemel", "arnold"},
+                    "tolodzkod", "mell", "ferde pad", "ferde nyom"},
+            // A „fordított tárogatás" hátsó vállra megy, nem mellre. A rövidebb
+            // „tarogat" különben mellizomnak vette – rossz címke, ami félrevisz.
+            {VALL, "vallbol", "vallnyom", "vallgep", "oldalemel", "arnold",
+                    "forditott tarogat", "forditott pillango", "hatso vall", "hatso deltoid",
+                    "vallemel", "eloreemel"},
             {KAR, "bicepsz", "tricepsz", "kalapacs", "francia", "alkar"},
             {TORZS, "hasizom", "haspres", "plank", "deszka", "crunch", "felules",
-                    "oroszcsav", "oldaltamasz", "torzs"},
+                    "oroszcsav", "orosz csav", "oldaltamasz", "torzs", "labemel"},
     };
 
     /**
