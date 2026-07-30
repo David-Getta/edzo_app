@@ -1,5 +1,8 @@
 package com.edzo.idozito;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Kézzel felvehető mozgásformák: amit nem az app mért.
  *
@@ -23,10 +26,16 @@ public final class Activities {
         public final double met;
         /** Van-e értelme távot kérni hozzá (futás igen, kézilabda nem). */
         public final boolean distance;
+        /** Egy szokásos alkalom hossza percben – ennyit ajánlunk fel előre. */
+        public final int defaultMin;
+        /** Szótövek a szöveges felismeréshez (ékezet nélkül, kisbetűvel). */
+        final String[] words;
 
-        Kind(String id, String emoji, String name, double met, boolean distance) {
+        Kind(String id, String emoji, String name, double met, boolean distance,
+             int defaultMin, String... words) {
             this.id = id; this.emoji = emoji; this.name = name;
             this.met = met; this.distance = distance;
+            this.defaultMin = defaultMin; this.words = words;
         }
 
         public String title() { return emoji + " " + name; }
@@ -34,28 +43,48 @@ public final class Activities {
 
     /**
      * A MET-értékek a mozgásformák szokásos, közepes intenzitású átlagai
-     * (Compendium of Physical Activities nagyságrendjei).
+     * (Compendium of Physical Activities nagyságrendjei). A szótövek között
+     * ott vannak a hétköznapi rövidítések is: „kézi", „bringa", „kondi".
      */
     public static final Kind[] ALL = {
-            new Kind("futas", "🏃", "Futás", 9.8, true),
-            new Kind("uszas", "🏊", "Úszás", 7.0, true),
-            new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true),
-            new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true),
-            new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true),
-            new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false),
-            new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false),
-            new Kind("foci", "⚽", "Foci", 7.0, false),
-            new Kind("kosarlabda", "🏀", "Kosárlabda", 6.5, false),
-            new Kind("roplabda", "🏐", "Röplabda", 4.0, false),
-            new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false),
-            new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false),
-            new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false),
-            new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false),
-            new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false),
-            new Kind("si", "🎿", "Sí / snowboard", 6.0, false),
-            new Kind("fal", "🧗", "Falmászás", 8.0, false),
-            new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false),
-            new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false),
+            new Kind("futas", "🏃", "Futás", 9.8, true, 45,
+                    "futas", "futo edzes", "futoedzes", "futni", "futott", "kocogas", "futok"),
+            new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
+                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz"),
+            new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
+                    "kerekpar", "bringa", "bicikli", "tekeres"),
+            new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
+                    "tura", "gyaloglas", "seta", "setalas", "kirandulas"),
+            new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
+                    "evezes", "evezo", "kajak"),
+            new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
+                    "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem"),
+            new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
+                    "kezilabda", "kezi edzes", "keziedzes", "kezi"),
+            new Kind("foci", "⚽", "Foci", 7.0, false, 90,
+                    "foci", "focizas", "labdarugas", "focizt"),
+            new Kind("kosarlabda", "🏀", "Kosárlabda", 6.5, false, 60,
+                    "kosarlabda", "kosarazas", "kosar edzes", "kosar"),
+            new Kind("roplabda", "🏐", "Röplabda", 4.0, false, 60,
+                    "roplabda", "roplab", "roplabdaz"),
+            new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
+                    "tenisz", "squash", "fallabda", "tollaslabda", "tollas"),
+            new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
+                    "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma", "aikido"),
+            new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
+                    "tanc", "aerobik", "zumba", "spinning"),
+            new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
+                    "joga", "yoga", "pilates", "nyujtas", "stretch"),
+            new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
+                    "korcsolya", "gorkorcsolya", "jegkorong", "hoki"),
+            new Kind("si", "🎿", "Sí / snowboard", 6.0, false, 120,
+                    "sieles", "sizes", "snowboard", "sielt"),
+            new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
+                    "falmaszas", "maszas", "boulder", "maszofal"),
+            new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
+                    "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas"),
+            new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
+                    "egyeb mozgas", "egyeb edzes", "egyeb"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */
@@ -87,5 +116,297 @@ public final class Activities {
         double w = weightKg > 0 ? weightKg : 70;
         double met = k == null ? 6.0 : k.met;
         return met * 3.5 * w / 200.0 * Math.max(0, minutes);
+    }
+
+    // ---------------- Szöveges felvétel ----------------
+
+    /** Egy tétel a szövegből: hány alkalom, melyik mozgásból, mennyi ideig. */
+    public static final class Plan {
+        public final Kind kind;
+        public final int count;
+        public final int minutes;
+        Plan(Kind kind, int count, int minutes) {
+            this.kind = kind; this.count = count; this.minutes = minutes;
+        }
+        /** Emberi összefoglaló: „3 × 🏃 Futás · 45 perc”. */
+        public String label() {
+            return count + " × " + kind.title() + " · " + minutes + " perc";
+        }
+    }
+
+    /** A szövegből kiolvasott terv: mely mozgások, és hány napra elosztva. */
+    public static final class Parsed {
+        public final List<Plan> plans;
+        /** Hány napra osztjuk szét (1 = egyetlen nap). */
+        public final int days;
+        /** Hány nappal ezelőtt kezdődik az időszak (0 = ma, 1 = tegnap). */
+        public final int offset;
+        Parsed(List<Plan> plans, int days, int offset) {
+            this.plans = plans; this.days = days; this.offset = offset;
+        }
+        public boolean isEmpty() { return plans.isEmpty(); }
+        public int total() {
+            int n = 0;
+            for (Plan p : plans) n += p.count;
+            return n;
+        }
+    }
+
+    private static final String[][] NUM_WORDS = {
+            {"tizenket", "12"}, {"tizenegy", "11"}, {"tizenkett", "12"},
+            {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},
+            {"ot", "5"}, {"hat", "6"}, {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"},
+            {"tiz", "10"}, {"husz", "20"}, {"harminc", "30"},
+    };
+
+    /**
+     * Ezek a szavak a „nap"/„hét" szótövet tartalmazzák, de nem időszakot
+     * jelentenek. Nélkülük a „hétfőn futottam" egy hetes időszaknak látszana.
+     */
+    private static final String[] NOT_SPAN = {
+            "napi", "naplo", "naploban", "naplot", "naptar", "napozas", "napsutes",
+            "hetfo", "hetfon", "hetfoi", "hetvege", "hetvegen", "hetkoznap", "hetkoznapon",
+    };
+
+    /** Meddig keressük visszafelé a darabszámot a mozgás neve előtt. */
+    private static final int NUM_REACH = 26;
+
+    /**
+     * Több edzés felvétele egyetlen mondatból, pl.:
+     * „az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés”.
+     *
+     * Amit kiolvas: hány napra osztjuk szét, melyik mozgásból hány alkalom, és
+     * ha meg van adva, mennyi ideig tartott egy-egy alkalom („60 perc”).
+     * Ami nincs benne, arra a mozgásforma szokásos hossza jön (kézilabda 90,
+     * futás 45 perc) – a felhasználó a mentés előtt látja és javíthatja.
+     *
+     * A felismerés szándékosan óvatos: amit nem ért, azt kihagyja, nem talál ki
+     * edzést. Egy kitalált bejegyzés rosszabb, mint a hiányzó, mert a naplóba
+     * kerül, és onnan a szériába, az XP-be és a statisztikába is.
+     */
+    public static Parsed parse(String text) {
+        List<Plan> out = new ArrayList<>();
+        if (text == null) return new Parsed(out, 1, 0);
+        char[] q = Foods.norm(text).toCharArray();
+
+        // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
+        //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
+        int days = 1, offset = 0;
+        int[] span = findSpan(q);
+        if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
+        else {
+            // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
+            int[] one = findSingleDay(q);
+            if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+        }
+
+        // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
+        //    de a helyüket megjegyezzük, hogy a hozzájuk tartozó mozgáshoz
+        //    rendelhessük.
+        List<int[]> mins = findMinutes(q);          // {pos, perc}
+        for (int[] m : mins) blank(q, m[0], m[2]);
+
+        // 3) Mozgásformák a maradék szövegben.
+        String s = new String(q);
+        List<int[]> hits = new ArrayList<>();       // {pos, len, kindIndex}
+        for (int ki = 0; ki < ALL.length; ki++) {
+            for (String w : ALL[ki].words) {
+                int from = 0;
+                while (true) {
+                    int p = s.indexOf(w, from);
+                    if (p < 0) break;
+                    hits.add(new int[]{p, w.length(), ki});
+                    from = p + 1;
+                }
+            }
+        }
+        // A hosszabb találatba eső rövidebbet eldobjuk („kézi” a „kézilabda”-ban).
+        List<int[]> keep = new ArrayList<>();
+        for (int[] h : hits) {
+            boolean covered = false;
+            for (int[] o : hits) {
+                if (o == h) continue;
+                if (o[0] <= h[0] && o[0] + o[1] >= h[0] + h[1] && o[1] > h[1]) { covered = true; break; }
+            }
+            if (!covered) keep.add(h);
+        }
+        sortByPos(keep);
+
+        // 4) Minden találathoz darabszám (előtte) és időtartam (utána).
+        boolean[] used = new boolean[ALL.length];
+        for (int i = 0; i < keep.size(); i++) {
+            int[] h = keep.get(i);
+            if (used[h[2]]) continue;               // egy mozgásforma egyszer szerepel
+            used[h[2]] = true;
+            int count = countBefore(s, h[0]);
+            int next = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
+            int minutes = minutesFor(mins, h[0], next, ALL[h[2]].defaultMin);
+            out.add(new Plan(ALL[h[2]], count, minutes));
+        }
+
+        // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még
+        // menthető: egyéb mozgásként. Csak tartalékként, mert a „3 futó edzés"
+        // szóban is benne van az „edzés" – ott a futás a helyes válasz.
+        if (out.isEmpty()) {
+            for (String w : new String[]{"edzes", "alkalom", "mozgas"}) {
+                int p = s.indexOf(w);
+                if (p < 0) continue;
+                Kind other = byId("egyeb");
+                if (other != null) out.add(new Plan(other, countBefore(s, p), other.defaultMin));
+                break;
+            }
+        }
+        return new Parsed(out, days, offset);
+    }
+
+    /** „elmúlt 3 nap”, „3 nap alatt”, „a héten”, „2 hét alatt” → {kezdet, vég, napok}. */
+    private static int[] findSpan(char[] q) {
+        String s = new String(q);
+        // Hetek: egy hét = 7 nap.
+        int[] w = spanAt(s, "het", 7);
+        int[] d = spanAt(s, "nap", 1);
+        if (d != null && w != null) return d[0] <= w[0] ? d : w;
+        return d != null ? d : w;
+    }
+
+    private static int[] spanAt(String s, String unit, int mult) {
+        int from = 0;
+        while (true) {
+            int p = s.indexOf(unit, from);
+            if (p < 0) return null;
+            from = p + 1;
+            // A ragozott alak jó (napban, héten), a hasonló hangzású
+            // szavak viszont nem (hétfőn, naplóban).
+            int end = p + unit.length();
+            while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+            if (isNotSpan(wordAt(s, p))) continue;
+            int[] n = numberBefore(s, p, NUM_REACH);
+            if (n == null) {
+                // Szám nélkül csak a „héten” alak jelent időszakot („a héten”).
+                if (mult == 7) return new int[]{p, end, 7};
+                continue;
+            }
+            int val = Math.max(1, Math.min(365, n[2] * mult));
+            return new int[]{n[0], end, val};
+        }
+    }
+
+    /** „45 perc”, „másfél óra” helyett egyszerűen: szám + perc/óra. */
+    /** A teljes szó a megadott pozíció körül. */
+    private static String wordAt(String s, int p) {
+        int a = p, b = p;
+        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+        while (b < s.length() && Character.isLetter(s.charAt(b))) b++;
+        return s.substring(a, b);
+    }
+
+    private static boolean isNotSpan(String word) {
+        for (String w : NOT_SPAN) if (w.equals(word)) return true;
+        return false;
+    }
+
+    /** Konkrét nap megnevezve (tegnap, tegnapelőtt) → {kezdet, vég, hány napja}. */
+    private static int[] findSingleDay(char[] q) {
+        String s = new String(q);
+        String[][] words = {{"tegnapelott", "2"}, {"tegnapi", "1"}, {"tegnap", "1"}};
+        for (String[] w : words) {
+            int p = s.indexOf(w[0]);
+            if (p < 0) continue;
+            return new int[]{p, p + w[0].length(), Integer.parseInt(w[1])};
+        }
+        return null;
+    }
+
+    private static List<int[]> findMinutes(char[] q) {
+        String s = new String(q);
+        List<int[]> out = new ArrayList<>();
+        for (String unit : new String[]{"perc", "ora"}) {
+            int from = 0;
+            while (true) {
+                int p = s.indexOf(unit, from);
+                if (p < 0) break;
+                from = p + 1;
+                int[] n = numberBefore(s, p, 8);
+                if (n == null) continue;
+                int val = unit.equals("ora") ? n[2] * 60 : n[2];
+                if (val < 1 || val > 24 * 60) continue;
+                out.add(new int[]{n[0], val, p + unit.length()});
+            }
+        }
+        return out;
+    }
+
+    /** A megadott mozgáshoz tartozó időtartam, vagy az alapértelmezett. */
+    private static int minutesFor(List<int[]> mins, int at, int nextAt, int fallback) {
+        for (int[] m : mins) if (m[0] > at && m[0] < nextAt) return m[1];
+        // Ha az egész mondatban EGY időtartam van, az mindenkire vonatkozik
+        // („az elmúlt héten 3 futás és 2 úszás, 40 perc”).
+        if (mins.size() == 1) return mins.get(0)[1];
+        return fallback;
+    }
+
+    /** Darabszám a mozgás neve előtt; ha nincs, egy alkalom. */
+    private static int countBefore(String s, int at) {
+        int[] n = numberBefore(s, at, NUM_REACH);
+        if (n == null) return 1;
+        return Math.max(1, Math.min(50, n[2]));
+    }
+
+    /**
+     * A megadott pozíció ELŐTT álló legközelebbi szám (számjegy vagy kiírt
+     * számnév), a {pos, vég, érték} hármassal. Csak akkor fogadjuk el, ha a
+     * szám és a szó között nincs más betű – vagyis tényleg ahhoz tartozik.
+     */
+    private static int[] numberBefore(String s, int at, int reach) {
+        int start = Math.max(0, at - reach);
+        int best = -1, bestEnd = -1, bestVal = 0;
+        for (int i = start; i < at; i++) {
+            if (Character.isDigit(s.charAt(i)) && (i == 0 || !Character.isDigit(s.charAt(i - 1)))) {
+                int j = i;
+                while (j < at && Character.isDigit(s.charAt(j))) j++;
+                if (!onlyFiller(s, j, at)) continue;
+                try { bestVal = Integer.parseInt(s.substring(i, j)); } catch (Exception e) { continue; }
+                best = i; bestEnd = j;
+            }
+        }
+        if (best >= 0) return new int[]{best, bestEnd, bestVal};
+        for (String[] w : NUM_WORDS) {
+            int p = s.lastIndexOf(w[0], at - 1);
+            if (p < start) continue;
+            int end = p + w[0].length();
+            if (end > at) continue;
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            if (end < s.length() && Character.isLetter(s.charAt(end))) continue;
+            if (!onlyFiller(s, end, at)) continue;
+            return new int[]{p, end, Integer.parseInt(w[1])};
+        }
+        return null;
+    }
+
+    /**
+     * A szám és a szó között csak szóköz, írásjel vagy jelentéktelen töltelék
+     * áll? Ha valódi szó van közte, a szám nem ehhez tartozik.
+     */
+    private static boolean onlyFiller(String s, int from, int to) {
+        String mid = s.substring(from, to).trim();
+        if (mid.isEmpty()) return true;
+        for (String f : new String[]{"db", "darab", "alkalom", "alkalommal", "x", "-"})
+            if (mid.equals(f)) return true;
+        // Csak írásjelek?
+        for (int i = 0; i < mid.length(); i++)
+            if (Character.isLetterOrDigit(mid.charAt(i))) return false;
+        return true;
+    }
+
+    private static void blank(char[] q, int from, int to) {
+        for (int i = Math.max(0, from); i < Math.min(q.length, to); i++) q[i] = ' ';
+    }
+
+    private static void sortByPos(List<int[]> list) {
+        for (int i = 0; i < list.size(); i++)
+            for (int j = i + 1; j < list.size(); j++)
+                if (list.get(j)[0] < list.get(i)[0]) {
+                    int[] t = list.get(i); list.set(i, list.get(j)); list.set(j, t);
+                }
     }
 }

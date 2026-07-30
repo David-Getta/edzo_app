@@ -484,6 +484,8 @@ public class HistoryActivity extends Activity {
     void manualPickSheet() {
         Sheet sh = new Sheet(this, "Edzés hozzáadása 📝",
                 "Amit nem az app mért. Ugyanúgy számít a szériába, az XP-be és a statisztikába.");
+        sh.addRow("✍️", "Több edzés egyszerre", "Írd le egy mondatban", false, true,
+                () -> bulkSheet(""));
         for (Activities.Kind k : Activities.ALL) {
             final Activities.Kind kind = k;
             sh.addRow(k.emoji, k.name, null, false, true, () -> manualDetailSheet(kind));
@@ -550,15 +552,88 @@ public class HistoryActivity extends Activity {
         recreate();
     }
 
+    // ---- Több edzés egyszerre, szövegből ----
+
+    /** Egy mondat, amiből több bejegyzés lesz. */
+    void bulkSheet(String prefill) {
+        final EditText et = inputField(
+                "pl. az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés", false);
+        if (prefill != null && !prefill.isEmpty()) et.setText(prefill);
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(et, lp());
+        new Sheet(this, "Több edzés egyszerre ✍️",
+                "Írd le egy mondatban, mi volt. Mentés előtt megmutatom, mit értettem belőle.")
+                .addCustom(box)
+                .addPrimary("Tovább", () -> bulkPreview(et.getText().toString()))
+                .addCancel()
+                .show();
+    }
+
+    /**
+     * Előnézet mentés előtt. A felismerés sosem tökéletes, ezért a felhasználó
+     * lássa, mi kerül a naplóba – egy kitalált bejegyzés a szériába, az XP-be
+     * és a statisztikába is bekerülne.
+     */
+    void bulkPreview(String text) {
+        final Activities.Parsed p = Activities.parse(text);
+        if (p.isEmpty()) {
+            new Sheet(this, "Ebből nem lettem okos 🤔",
+                    "Próbáld így: „az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés”.")
+                    .addPrimary("Újra", () -> bulkSheet(text))
+                    .addCancel()
+                    .show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Activities.Plan pl : p.plans) sb.append("• ").append(pl.label()).append('\n');
+        sb.append(p.days > 1
+                ? "\nAz elmúlt " + p.days + " napra elosztva."
+                : (p.offset == 0 ? "\nMai dátummal." : "\n" + p.offset + " nappal ezelőttre."));
+        new Sheet(this, p.total() + " edzés mentése", sb.toString())
+                .addPrimary("Mentés", () -> saveBulk(p))
+                .addNeutral("Átírom", () -> bulkSheet(text))
+                .addCancel()
+                .show();
+    }
+
+    void saveBulk(Activities.Parsed p) {
+        int i = 0;
+        for (Activities.Plan pl : p.plans) {
+            for (int n = 0; n < pl.count; n++) {
+                // Az alkalmakat egyenletesen osztjuk szét az időszakon.
+                int dayBack = p.offset + (p.days > 1 ? (n * p.days) / pl.count : 0);
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.add(java.util.Calendar.DAY_OF_YEAR, -dayBack);
+                // Minden bejegyzésnek külön időpont: az időbélyeg azonosítja őket
+                // (megnyitás, törlés), két azonos időbélyeget nem lehetne szétválasztani.
+                cal.add(java.util.Calendar.MINUTE, -i);
+                double kcal = Activities.calories(pl.kind, Profile.lastWeight(this), pl.minutes);
+                History.addManual(this, cal.getTimeInMillis(), pl.minutes * 60, -1,
+                        kcal, -1, pl.kind.title(), pl.kind.id);
+                i++;
+            }
+        }
+        BlazeWidget.refresh(this);
+        android.widget.Toast.makeText(this, i + " edzés elmentve.",
+                android.widget.Toast.LENGTH_SHORT).show();
+        recreate();
+    }
+
     /** Szám-beviteli mező a lap stílusában (tizedesvesszőt is elfogad). */
-    EditText numInput(String hint) {
+    EditText numInput(String hint) { return inputField(hint, true); }
+
+    EditText inputField(String hint, boolean numeric) {
         EditText et = new EditText(this);
         et.setHint(hint);
         et.setHintTextColor(MUTED);
         et.setTextColor(TXT);
         et.setTextSize(14.5f);
-        et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER
-                | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        et.setInputType(numeric
+                ? android.text.InputType.TYPE_CLASS_NUMBER
+                        | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+                : android.text.InputType.TYPE_CLASS_TEXT
+                        | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(Theme.veil(this));
         bg.setCornerRadius(dp(12));
