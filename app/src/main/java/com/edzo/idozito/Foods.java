@@ -126,7 +126,10 @@ public final class Foods {
         new Food("Cukormentes / light", 0, 0, 330,
                 "cukormentes kola", "cukormentes udito", "cukormentes ital",
                 "cukormentes", "cukorment", "kola zero", "zero kola", "cola zero",
-                "diet kola", "light kola", "light udito"),
+                "diet kola", "light kola", "light udito",
+                // A leggyakoribb magyar alak: „kávé cukor nélkül". Enélkül a
+                // „cukor" szótő beleesett, és 40 kcal cukrot adott hozzá.
+                "cukor nelkul", "cukor nelkuli", "cukrozatlan", "edesitovel", "edesito"),
         new Food("Rántott sajt", 330, 18, 120, "rantott sajt"),
         new Food("Nokedli / galuska", 170, 5, 200, "nokedli", "galuska"),
         new Food("Tarhonya", 150, 5, 200, "tarhonya"),
@@ -229,7 +232,7 @@ public final class Foods {
         new Food("Kebab", 250, 13, 350, "kebab"),
         new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkusz", "couscous"),
         new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska"),
-        new Food("Darált hús (sertés/marha)", 250, 18, 150, "daralt hus", "daralthus"),
+        new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
         new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias", "izotoniás"),
@@ -251,7 +254,7 @@ public final class Foods {
         // --- Italok ---
         new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo"),
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte"),
-        new Food("Tea (cukor nélkül)", 1, 0, 250, "tea"),
+        new Food("Tea (cukrozatlan)", 1, 0, 250, "tea"),
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor"),
         new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomeny", "vodka", "whisky"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",

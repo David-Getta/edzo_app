@@ -137,7 +137,7 @@ public class FoodsTest {
     @Test public void drinksAreRecognised() {
         assertEquals(Arrays.asList("Kávé (fekete)"), names("kávé"));
         assertEquals(Arrays.asList("Tejeskávé / cappuccino"), names("tejeskávé"));
-        assertEquals(Arrays.asList("Tea (cukor nélkül)"), names("tea"));
+        assertEquals(Arrays.asList("Tea (cukrozatlan)"), names("tea"));
         // A „bor" benne van az „uborka" és a „borsó" szóban is – ott nem szabad
         // külön italként megjelennie.
         assertEquals(Arrays.asList("Bor (vörös/fehér)"), names("ittam egy pohár bort"));
