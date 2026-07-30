@@ -62,9 +62,38 @@ public final class Profile {
         return sex == 1 ? base - 161 : base + 5;
     }
 
+    /**
+     * Aktivitási szorzó a napi szükséglethez (enyhén aktív becslés).
+     *
+     * Egy helyen, mert korábban három helyen szerepelt, KÉT különböző értékkel:
+     * az Étrend képernyő 1,35-tel, a Profil 1,4-gyel számolt. Ugyanaz a
+     * felhasználó tehát két különböző napi kalóriaszükségletet látott a két
+     * képernyőn, és ami rosszabb: az Étrend ugyanabban a párbeszédablakban
+     * kínálta a fenntartó (1,35) és a fogyós (1,4 − hiány) értéket, így a kettő
+     * különbsége nem is a beállított kalóriahiány volt. Aki utánaszámolt, annak
+     * nem jött ki.
+     */
+    public static final double ACTIVITY = 1.4;
+
+    /** Napi kalóriaszükséglet a BMR-ből, vagy -1 ha a BMR sem számolható. */
+    public static double tdee(double bmr) {
+        return bmr > 0 ? bmr * ACTIVITY : -1;
+    }
+
     // ---- Fogyási cél ----
 
     public static final double[] RATES = {0.25, 0.5, 0.75, 1.0}; // kg/hét: lassú, normál, gyors, extrém
+
+    /** Napi kalóriahiány a választott tempóhoz (1 kg zsír ≈ 7700 kcal). */
+    public static double dailyDeficit(int rateIdx) {
+        return RATES[Math.max(0, Math.min(RATES.length - 1, rateIdx))] * 7700.0 / 7.0;
+    }
+
+    /** Fogyáshoz javasolt napi bevitel: a szükségletből levont hiány. */
+    public static double intakeForLoss(double bmr, int rateIdx) {
+        double t = tdee(bmr);
+        return t < 0 ? -1 : t - dailyDeficit(rateIdx);
+    }
 
     public static float getGoalLoss(Context c) { return prefs(c).getFloat("g_loss", 0f); }
     public static void setGoalLoss(Context c, float kg) { prefs(c).edit().putFloat("g_loss", kg).apply(); }

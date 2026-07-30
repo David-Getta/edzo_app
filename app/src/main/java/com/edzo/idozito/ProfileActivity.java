@@ -301,7 +301,7 @@ public class ProfileActivity extends Activity {
             double rate = Profile.RATES[Math.max(0, Math.min(3, ri))]; // kg/hét
             double weeks = loss / rate;
             int days = (int) Math.ceil(weeks * 7);
-            double deficit = rate * 7700.0 / 7.0; // kcal/nap
+            double deficit = Profile.dailyDeficit(ri);
             java.util.Calendar end = java.util.Calendar.getInstance();
             end.add(java.util.Calendar.DAY_OF_MONTH, days);
             String date = new java.text.SimpleDateFormat("yyyy.MM.dd", new Locale("hu")).format(end.getTime());
@@ -311,8 +311,8 @@ public class ProfileActivity extends Activity {
             sb.append("\nCéldátum: ").append(date);
             sb.append(String.format(Locale.US, "\nNapi kalória-deficit: ~%d kcal", Math.round(deficit)));
             if (bmr > 0) {
-                double tdee = bmr * 1.4; // enyhén aktív becslés
-                int target = (int) Math.round(tdee - deficit);
+                // Közös képlet az Étrend képernyővel, hogy ne két külön számot lásson.
+                int target = (int) Math.round(Profile.intakeForLoss(bmr, ri));
                 sb.append(String.format(Locale.US, "\nJavasolt napi bevitel: ~%d kcal", target));
             }
             goalInfo.setText(sb.toString());

@@ -693,7 +693,7 @@ public class DietActivity extends Activity {
         double bmr = Profile.bmr(Profile.getSex(this), Profile.lastWeight(this),
                 Profile.getHeight(this), Profile.ageYears(this));
         if (bmr > 0) {
-            final int suggested = (int) Math.round(bmr * 1.35); // mérsékelt aktivitás
+            final int suggested = (int) Math.round(Profile.tdee(bmr));
             sh.addNeutral("⚡ BMR alapján: ~" + suggested + " kcal", () -> {
                 getSharedPreferences("edzo", MODE_PRIVATE).edit()
                         .putInt("kcal_goal", suggested).apply();
@@ -703,9 +703,8 @@ public class DietActivity extends Activity {
             // felkínáljuk – ugyanazzal a képlettel, amit a Profil is mutat.
             float loss = Profile.getGoalLoss(this);
             if (loss > 0) {
-                int ri = Math.max(0, Math.min(3, Profile.getGoalRate(this)));
-                double deficit = Profile.RATES[ri] * 7700.0 / 7.0;   // kcal/nap
-                final int cut = (int) Math.round(bmr * 1.4 - deficit);
+                final int cut = (int) Math.round(
+                        Profile.intakeForLoss(bmr, Profile.getGoalRate(this)));
                 if (cut > 800) sh.addNeutral("🎯 Fogyási célod alapján: ~" + cut + " kcal", () -> {
                     getSharedPreferences("edzo", MODE_PRIVATE).edit()
                             .putInt("kcal_goal", cut).apply();
