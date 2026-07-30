@@ -487,6 +487,26 @@ public class TimerService extends Service {
         handler.postDelayed(ticker, nextTickDelay(stepEndElapsed - SystemClock.elapsedRealtime()));
     }
 
+    /**
+     * Ennyi méter alatt nem tekintjük futásnak az edzést.
+     *
+     * A távmérés bekapcsolható köredzéshez is, és a GPS akkor is gyűjt pár száz
+     * métert, ha a felhasználó egy helyben dolgozik. Ilyenkor viszont a futásra
+     * szánt kimenetek értelmetlenné váltak: az átlagtempó a mentett edzésben
+     * (50 m negyven perc alatt = 0,08 km/h), a „leghosszabb táv" rekord, és
+     * Blaze hangos összefoglalója, ami így „800 perc per kilométer" tempót
+     * mondott be az edzés végén.
+     *
+     * A megtett távot továbbra is eltesszük – az adat –, csak nem számolunk
+     * belőle tempót és rekordot.
+     */
+    static final double MIN_RUN_M = 300;
+
+    /** Futásnak számít-e ez a táv? */
+    static boolean isRun(double distanceM) {
+        return distanceM >= MIN_RUN_M;
+    }
+
     /** A kijelző frissítési üteme – ennél ritkábban sosem ébredünk. */
     private static final long TICK_MS = 200;
 
@@ -567,7 +587,7 @@ public class TimerService extends Service {
     private void saveSession(int roundsDone) {
         double maxKmh = distanceM >= 0 ? maxSpeedMps * 3.6 : -1;
         // Átlagsebesség CSAK a futással töltött időből.
-        double avgKmh = (distanceM > 0 && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
+        double avgKmh = (isRun(distanceM) && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
         long ts = System.currentTimeMillis();
         History.add(this, ts, currentDurationSec(), distanceM, roundsDone, work, rest, maxKmh,
                 steps, (int) (movingMs / 1000), elevGainM, estimateCalories(), avgKmh, programName);
@@ -598,7 +618,7 @@ public class TimerService extends Service {
             speak("Edzés kész. Szép munka" + who + "!");
         }
         // Futásnál hangos összefoglaló: táv + átlagtempó (a képernyő nézése nélkül is).
-        if (distanceM > 0 && workMs > 0) {
+        if (isRun(distanceM) && workMs > 0) {
             String km = String.format(new Locale("hu"), "%.1f", distanceM / 1000.0);
             int ps = (int) Math.round((workMs / 1000.0) / (distanceM / 1000.0)); // mp/km
             String pace = (ps / 60) + " perc " + (ps % 60) + " másodperc";
@@ -611,7 +631,7 @@ public class TimerService extends Service {
         done.putExtra(EX_ROUND, rounds);
         done.putExtra(EX_CAL, (int) Math.round(estimateCalories()));
         done.putExtra(EX_STEPS, steps);
-        done.putExtra(EX_SPEED, (float) ((distanceM > 0 && workMs > 0)
+        done.putExtra(EX_SPEED, (float) ((isRun(distanceM) && workMs > 0)
                 ? distanceM / (workMs / 1000.0) * 3.6 : -1));
         done.putExtra(EX_RECORDS, records);
         done.putExtra(EX_LEVELUP, levelUp);
@@ -637,10 +657,10 @@ public class TimerService extends Service {
             bestCal = Math.max(bestCal, o.optDouble("cal", 0));
         }
         int newDur = currentDurationSec();
-        double newSpeed = (distanceM > 0 && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
+        double newSpeed = (isRun(distanceM) && workMs > 0) ? distanceM / (workMs / 1000.0) * 3.6 : -1;
         double newCal = estimateCalories();
         StringBuilder r = new StringBuilder();
-        if (distanceM > 0 && distanceM > bestDist + 1) append(r, "leghosszabb táv");
+        if (isRun(distanceM) && distanceM > bestDist + 1) append(r, "leghosszabb táv");
         if (bestDur > 0 && newDur > bestDur) append(r, "leghosszabb idő");
         if (newSpeed > 0 && newSpeed > bestSpeed + 0.05) append(r, "leggyorsabb átlag");
         if (bestCal > 0 && newCal > bestCal + 1) append(r, "legtöbb kalória");
@@ -755,7 +775,7 @@ public class TimerService extends Service {
         i.putExtra(EX_SPEED, (float) (paused ? 0 : curSpeedMps * 3.6));
         // Élő átlagsebesség (a futással töltött idő alapján), hogy menet közben is
         // látszódjon az összteljesítmény, ne csak a végén.
-        i.putExtra(EX_AVGSPEED, (float) ((distanceM > 0 && workMs > 0)
+        i.putExtra(EX_AVGSPEED, (float) ((isRun(distanceM) && workMs > 0)
                 ? distanceM / (workMs / 1000.0) * 3.6 : -1));
         i.putExtra(EX_ELAPSED, (int) ((SystemClock.elapsedRealtime() - sessionStart - pausedAccum) / 1000));
         i.putExtra(EX_STEPS, steps);
