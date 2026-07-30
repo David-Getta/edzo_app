@@ -92,15 +92,37 @@ public class WorkoutDetailActivity extends Activity {
         editJournal.setClickable(true);
         editJournal.setOnClickListener(v -> editJournalSheet(ts, curMoodVal, curNoteVal));
         col.addView(editJournal);
-        TextView repeat = text("🔁  Edzés megismétlése (beállítások betöltése)", 13, Theme.accent(this), true);
+        // Kézzel felvett edzést nincs értelme „betölteni" az időzítőbe – egy
+        // kézilabda-edzést nem a telefon vezényel. Helyette azt kínáljuk, ami
+        // ott tényleg kell: ugyanez a mozgás, ugyanennyi ideig, mára.
+        final String kindId = e.optString("kind", "");
+        final Activities.Kind kind = Activities.byId(kindId);
+        TextView repeat;
+        if (kind != null) {
+            final int durSec = e.optInt("dur");
+            final double distM = e.optDouble("dist", -1);
+            repeat = text("🔁  Ugyanilyen edzés felvétele mára", 13, Theme.accent(this), true);
+            repeat.setOnClickListener(v -> {
+                int min = Math.max(1, durSec / 60);
+                double avg = (TimerService.isRun(distM) && durSec > 0) ? distM / durSec * 3.6 : -1;
+                History.addManual(this, System.currentTimeMillis(), durSec, distM,
+                        Activities.calories(kind, Profile.lastWeight(this), min), avg,
+                        kind.title(), kind.id);
+                BlazeWidget.refresh(this);
+                Toast.makeText(this, kind.name + " felvéve mára.", Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        } else {
+            repeat = text("🔁  Edzés megismétlése (beállítások betöltése)", 13, Theme.accent(this), true);
+            repeat.setOnClickListener(v -> {
+                startActivity(new Intent(this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        .putExtra("repeat_ts", ts));
+                finish();
+            });
+        }
         repeat.setPadding(0, dp(8), 0, 0);
         repeat.setClickable(true);
-        repeat.setOnClickListener(v -> {
-            startActivity(new Intent(this, MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra("repeat_ts", ts));
-            finish();
-        });
         col.addView(repeat);
         TextView del = text("🗑️  Edzés törlése a naplóból", 13, 0xFFFF6B6B, true);
         del.setPadding(0, dp(8), 0, 0);
@@ -132,7 +154,9 @@ public class WorkoutDetailActivity extends Activity {
         int rounds = e.optInt("rounds", 0);
 
         double avgKmh = e.optDouble("avgspeed", -1);
-        if (avgKmh < 0 && dist > 0 && dur > 0) avgKmh = dist / dur * 3.6;
+        // Ugyanaz a határ, mint mindenhol: pár méterből nem számolunk tempót.
+        // (Ez a hely a v32.3-ban kimaradt, mert más néven hívtam a változót.)
+        if (avgKmh < 0 && TimerService.isRun(dist) && dur > 0) avgKmh = dist / dur * 3.6;
         double cadence = (steps > 0 && moving > 0) ? steps / (moving / 60.0) : -1;
 
         LinearLayout grid = card();
@@ -146,8 +170,8 @@ public class WorkoutDetailActivity extends Activity {
                 {"🚀 Max", maxKmh >= 0 ? fmtSpeed(maxKmh) : "—"},
                 {"👟 Lépések", steps > 0 ? String.valueOf(steps) : "—"},
                 {"🎵 Kadencia", cadence >= 0 ? Math.round(cadence) + " /min" : "—"},
-                {"⛰ Emelkedő", dist >= 0 ? Math.round(elev) + " m" : "—"},
-                {"🔁 Körök", String.valueOf(rounds)},
+                {"⛰ Emelkedő", elev > 0 ? Math.round(elev) + " m" : "—"},
+                {"🔁 Körök", rounds > 0 ? String.valueOf(rounds) : "—"},
         });
         col.addView(grid, lp());
         col.addView(gap(12));
