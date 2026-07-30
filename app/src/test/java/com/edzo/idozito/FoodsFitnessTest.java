@@ -83,6 +83,24 @@ public class FoodsFitnessTest {
         assertTrue("nem ismeri fel:" + missing, missing.length() == 0);
     }
 
+    @Test public void twoWordDishesAreOneItem() {
+        // Két szóból álló, de EGY ételt jelentő nevek. A szón belüli szabály itt
+        // nem segít, ezért a teljes alaknak kell szótőnek lennie.
+        assertEquals("Rizsszelet / puffasztott rizs", names("puffasztott rizs"));
+        assertEquals("Pogácsa", names("sajtos pogácsa"));
+    }
+
+    @Test public void flakesAndFlourAreNotTheCookedGrain() {
+        // A pehely és a liszt szárazon négyszer annyi, mint a főtt gabona.
+        assertEquals("Rizspehely", names("rizspehely"));
+        assertEquals("Kukoricapehely", names("kukoricapehely"));
+        assertEquals("Kukoricapehely", names("cornflakes"));
+        assertEquals("Liszt", names("rizsliszt"));
+        // A főtt változat marad, ami volt.
+        assertEquals("Rizs (főtt)", names("rizs"));
+        assertEquals("Kukorica", names("kukorica"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.

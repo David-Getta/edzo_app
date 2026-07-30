@@ -80,6 +80,10 @@ public final class Foods {
         // A „csicseriborsó” eddig sima borsó volt: fele annyi kalória.
         new Food("Csicseriborsó (főtt)", 160, 9, 150, "csicseriborso", "csicseri", "humusz"),
         new Food("Kukorica", 90, 3, 100, "kukorica"),
+        // Reggeli pehely, nem főzelék-kukorica: négyszeres a különbség.
+        new Food("Kukoricapehely", 380, 7, 40, "kukoricapehely", "cornflakes", "corn flakes"),
+        new Food("Rizspehely", 380, 6, 40, "rizspehely"),
+        new Food("Liszt", 350, 10, 30, "liszt", "rizsliszt", "zabliszt", "buzaliszt"),
         new Food("Brokkoli", 35, 2.8, 150, "brokkoli"),
         new Food("Karfiol", 25, 2, 150, "karfiol"),
         new Food("Paradicsom", 18, 0.9, 100, "paradicsom"),
@@ -168,7 +172,10 @@ public final class Foods {
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
         new Food("Sör", 43, 0.5, 500, "sor", "sör"),
         new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsusz"),
-        new Food("Rizsszelet / puffasztott rizs", 380, 8, 10, "puffasztott", "rizsszelet"),
+        // A „puffasztott rizs" két ételre esett szét (puffasztott + rizs), vagyis
+        // duplán számolt. A teljes alak hosszabb szótő, így elnyeli mindkettőt.
+        new Food("Rizsszelet / puffasztott rizs", 380, 8, 10,
+                "puffasztott rizs", "puffasztott", "rizsszelet"),
         new Food("Cottage cheese", 100, 11, 150, "cottage"),
         new Food("Skyr", 65, 11, 150, "skyr"),
         new Food("Tofu", 120, 12, 150, "tofu"),
@@ -228,7 +235,8 @@ public final class Foods {
         new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias", "izotoniás"),
         // --- Magyar klasszikusok ---
         new Food("Bundás kenyér", 260, 9, 120, "bundas kenyer", "bundaskenyer"),
-        new Food("Pogácsa", 400, 8, 60, "pogacsa"),
+        // A „sajtos pogácsa" sajtra és pogácsára esett szét: két tétel egy sütiből.
+        new Food("Pogácsa", 400, 8, 60, "sajtos pogacsa", "pogacsa"),
         new Food("Zsíros kenyér", 330, 6, 100, "zsiros kenyer", "zsiroskenyer"),
         new Food("Hurka", 300, 12, 120, "hurka"),
         new Food("Csirkenugget", 300, 15, 150, "nugget"),
