@@ -3,6 +3,7 @@ package com.edzo.idozito;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -17,6 +18,18 @@ public final class Backup {
     private Backup() {}
 
     static final String PREFS = "edzo";
+
+    /**
+     * A GPS-útvonalak nem a beállítások között vannak, hanem külön fájlokban.
+     * A mentés eddig csak a beállításokat vitte, így telefonváltás vagy
+     * újratelepítés után MINDEN futás útvonala, splitje és sebesség-görbéje
+     * eltűnt – pedig pont erre az esetre való a mentés, és a felhasználó ezt
+     * csak akkor vette volna észre, amikor már nincs miből visszaállítani.
+     *
+     * Az útvonalak nagyok (egy órás futás több száz kilobájt), ezért van rajtuk
+     * felső korlát: a legfrissebb futásoké kerül be, amíg belefér.
+     */
+    static final int MAX_TRACK_CHARS = 4 * 1024 * 1024;
 
     /** Az összes beállítás JSON-szövegként (típusjelöléssel). */
     public static String exportJson(Context c) {
@@ -41,10 +54,28 @@ public final class Backup {
             root.put("ver", 1);
             root.put("ts", System.currentTimeMillis());
             root.put("data", data);
+            root.put("tracks", tracks(c));
             return root.toString();
         } catch (Exception ex) {
             return "{}";
         }
+    }
+
+    /** A belefért GPS-útvonalak, időbélyeg szerint. */
+    private static JSONObject tracks(Context c) {
+        JSONObject out = new JSONObject();
+        int used = 0;
+        try {
+            for (long ts : SessionStore.storedTimestamps(c)) {
+                JSONArray tr = SessionStore.loadTrack(c, ts);
+                if (tr.length() == 0) continue;
+                int size = tr.toString().length();
+                if (used + size > MAX_TRACK_CHARS) break;
+                used += size;
+                out.put(String.valueOf(ts), tr);
+            }
+        } catch (Exception ignored) {}
+        return out;
     }
 
     /** Visszaállítás; true, ha érvényes Grit (my_trainer) mentésfájl volt. */
@@ -69,6 +100,19 @@ public final class Backup {
                 }
             }
             ed.apply();
+            // Az útvonalak fájlokba mennek vissza. Régi mentésfájlban nincs
+            // „tracks" – az sem hiba, csak nem lesz mit visszaállítani.
+            JSONObject tr = root.optJSONObject("tracks");
+            if (tr != null) {
+                java.util.Iterator<String> ti = tr.keys();
+                while (ti.hasNext()) {
+                    String k = ti.next();
+                    JSONArray one = tr.optJSONArray(k);
+                    if (one == null || one.length() == 0) continue;
+                    try { SessionStore.save(c, Long.parseLong(k), one); }
+                    catch (NumberFormatException ignored) {}
+                }
+            }
             return true;
         } catch (Exception ex) {
             return false;

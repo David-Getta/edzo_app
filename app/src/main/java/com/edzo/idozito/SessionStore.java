@@ -88,6 +88,37 @@ public final class SessionStore {
     }
 
     /**
+     * A fájlnevekből az edzés-időbélyegek, LEGÚJABB ELÖL. A nem részletfájlok
+     * kimaradnak. A sorrend a mentésnél számít: ha az útvonalak nem férnek bele
+     * mind, a legfrissebb futásoké maradjon meg.
+     */
+    static long[] timestampsOf(String[] names) {
+        if (names == null) return new long[0];
+        java.util.ArrayList<Long> ts = new java.util.ArrayList<>();
+        for (String n : names) {
+            long t = tsOfFile(n);
+            if (t > 0) ts.add(t);
+        }
+        java.util.Collections.sort(ts, java.util.Collections.<Long>reverseOrder());
+        long[] out = new long[ts.size()];
+        for (int i = 0; i < out.length; i++) out[i] = ts.get(i);
+        return out;
+    }
+
+    /** A tárolt útvonalak időbélyegei, legújabb elöl. */
+    public static long[] storedTimestamps(Context c) {
+        try {
+            File[] files = new File(c.getFilesDir(), "sessions").listFiles();
+            if (files == null) return new long[0];
+            String[] names = new String[files.length];
+            for (int i = 0; i < files.length; i++) names[i] = files[i].getName();
+            return timestampsOf(names);
+        } catch (Exception e) {
+            return new long[0];
+        }
+    }
+
+    /**
      * Gazdátlan részletfájlok törlése: amelyikhez már nincs edzés az
      * előzményekben. A naplóból törölt futások GPS-nyoma eddig örökre a
      * tárhelyen maradt, pedig egy hosszabb útvonal több száz kilobájt.
