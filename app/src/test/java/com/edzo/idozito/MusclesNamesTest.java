@@ -45,6 +45,29 @@ public class MusclesNamesTest {
         assertEquals(Muscles.TORZS, Muscles.groupOf("Plank"));
     }
 
+    @Test public void theAppsOwnBuiltInExercisesAreRecognised() {
+        // Ezek a nevek a beépített programokból jönnek – itt nincs kétértelműség,
+        // az app tudja, mit javasolt. A 33 beépített gyakorlatból 14 maradt
+        // besorolatlan, vagyis a heti kimutatás vak volt a saját programjaira.
+        assertEquals(Muscles.LAB, Muscles.groupOf("Csípőemelés (híd)"));
+        assertEquals(Muscles.LAB, Muscles.groupOf("Fal-ülés"));
+        assertEquals(Muscles.LAB, Muscles.groupOf("Fellépés székre"));
+        assertEquals(Muscles.TORZS, Muscles.groupOf("Hegymászó"));
+        assertEquals(Muscles.TORZS, Muscles.groupOf("Madár-kutya"));
+        assertEquals(Muscles.HAT, Muscles.groupOf("Szuperman"));
+    }
+
+    @Test public void stretchesAndCardioStayOutOfTheMuscleBalance() {
+        // Szándékos: a nyújtás és a kardió nem erősítő munka, a kimutatásba
+        // beszámítva azt hazudná, hogy az adott izomcsoport megvolt.
+        assertNull(Muscles.groupOf("Nyakkörzés"));
+        assertNull(Muscles.groupOf("Vállnyújtás"));
+        assertNull(Muscles.groupOf("Csípőnyújtás"));
+        assertNull(Muscles.groupOf("Jumping jack"));
+        assertNull(Muscles.groupOf("Burpee"));
+        assertNull(Muscles.groupOf("Magas térd"));
+    }
+
     @Test public void whatIsNotCertainStaysUnlabelled() {
         // Kardió és általános nevek: itt a hiányzó címke a helyes válasz.
         assertNull(Muscles.groupOf("Futás"));

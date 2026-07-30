@@ -27,10 +27,15 @@ public final class Muscles {
      * A leghosszabb találat nyer, hogy az összetett nevek jól dőljenek el.
      */
     private static final String[][] LONG = {
+            // A beépített programok gyakorlatai is ide tartoznak: nélkülük a heti
+            // kimutatás vak arra a munkára, amit maga az app javasolt.
             {LAB, "guggol", "kitores", "labtolas", "labnyujt", "labhajlit", "labgep",
-                    "vadli", "comb", "farizom", "medencelok", "hipthrust", "lepcsozes"},
+                    "vadli", "comb", "farizom", "medencelok", "hipthrust", "lepcsozes",
+                    "csipoemel", "csipo emel", "falules", "fal-ules", "wall sit",
+                    "fellepes", "fellepo"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
-                    "hatizom", "hatgep", "gerincnyujt", "hiperextenzio"},
+                    "hatizom", "hatgep", "gerincnyujt", "hiperextenzio",
+                    "szuperman", "superman"},
             {MELL, "fekvenyom", "fekve nyom", "tarogat", "pillango", "fekvotamasz",
                     "tolodzkod", "mell", "ferde pad", "ferde nyom"},
             // A „fordított tárogatás" hátsó vállra megy, nem mellre. A rövidebb
@@ -40,7 +45,8 @@ public final class Muscles {
                     "vallemel", "eloreemel"},
             {KAR, "bicepsz", "tricepsz", "kalapacs", "francia", "alkar"},
             {TORZS, "hasizom", "haspres", "plank", "deszka", "crunch", "felules",
-                    "oroszcsav", "orosz csav", "oldaltamasz", "torzs", "labemel"},
+                    "oroszcsav", "orosz csav", "oldaltamasz", "torzs", "labemel",
+                    "hegymaszo", "madar-kutya", "madarkutya", "madar kutya"},
     };
 
     /**
