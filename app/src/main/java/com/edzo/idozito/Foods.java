@@ -74,6 +74,8 @@ public final class Foods {
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
         new Food("Lencse (főtt)", 115, 9, 200, "lencse"),
         new Food("Borsó", 80, 5, 150, "borso"),
+        // A „csicseriborsó” eddig sima borsó volt: fele annyi kalória.
+        new Food("Csicseriborsó (főtt)", 160, 9, 150, "csicseriborso", "csicseri", "humusz"),
         new Food("Kukorica", 90, 3, 100, "kukorica"),
         new Food("Brokkoli", 35, 2.8, 150, "brokkoli"),
         new Food("Karfiol", 25, 2, 150, "karfiol"),
@@ -110,6 +112,14 @@ public final class Foods {
         new Food("Méz", 320, 0.3, 20, "mez"),
         new Food("Cukor", 400, 0, 10, "cukor"),
         new Food("Üdítő (cukros)", 42, 0, 330, "udito", "kola", "cola"),
+        // A „cukormentes” szó eddig CUKROT jelentett: a „cukor” szótő beleesett,
+        // és 40 kcal-t adott hozzá – pont az ellenkezőjét annak, amit a felhasználó
+        // írt. A hosszabb szótő elnyeli a rövidebbet, így ez a nulla kalóriás
+        // tétel lép a helyére; a „cukormentes kóla” alak a cukros üdítőt is kiváltja.
+        new Food("Cukormentes / light", 0, 0, 330,
+                "cukormentes kola", "cukormentes udito", "cukormentes ital",
+                "cukormentes", "cukorment", "kola zero", "zero kola", "cola zero",
+                "diet kola", "light kola", "light udito"),
         new Food("Rántott sajt", 330, 18, 120, "rantott sajt"),
         new Food("Nokedli / galuska", 170, 5, 200, "nokedli", "galuska"),
         new Food("Tarhonya", 150, 5, 200, "tarhonya"),
@@ -120,6 +130,12 @@ public final class Foods {
         new Food("Csirkepaprikás", 160, 14, 300, "paprikas"),
         new Food("Milánói makaróni", 180, 7, 350, "milanoi", "makaroni"),
         new Food("Protein turmix", 100, 10, 300, "protein", "turmix", "shake"),
+        // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
+        // talált, vagy a 100 kcal/100 g-os kész italra esett – harmadannyi kalória.
+        new Food("Fehérjepor", 380, 75, 30, "feherjepor", "feherje por", "protein por",
+                "proteinpor", "tejsavofeherje", "tejsavo", "whey", "kazein"),
+        new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
+                "feherjeszelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
         new Food("Szendvics", 250, 10, 150, "szendvics"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog"),
@@ -197,6 +213,16 @@ public final class Foods {
         new Food("Cseresznye / meggy", 60, 1, 150, "cseresznye", "meggy"),
         new Food("Datolya", 280, 2.5, 30, "datolya"),
         new Food("Tökmag / napraforgómag", 570, 22, 30, "tokmag", "napraforgomag", "napraforgo"),
+        new Food("Chia / lenmag", 490, 17, 15, "chia", "lenmag", "lenmagliszt"),
+        new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
+        // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
+        new Food("Kebab", 250, 13, 350, "kebab"),
+        new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkusz", "couscous"),
+        new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska"),
+        new Food("Darált hús (sertés/marha)", 250, 18, 150, "daralt hus", "daralthus"),
+        new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
+        new Food("Margarin", 600, 0, 10, "margarin"),
+        new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias", "izotoniás"),
         // --- Magyar klasszikusok ---
         new Food("Bundás kenyér", 260, 9, 120, "bundas kenyer", "bundaskenyer"),
         new Food("Pogácsa", 400, 8, 60, "pogacsa"),
