@@ -45,6 +45,9 @@ public final class Foods {
         new Food("Tonhal", 130, 24, 100, "tonhal"),
         new Food("Lazac", 210, 20, 150, "lazac"),
         new Food("Tojás", 155, 13, 110, "tojas"),
+        // A „tojásfehérje" eddig egész tojás volt: 33 g helyett 55 g, és 17 kcal
+        // helyett 78 – négy és félszeres túlszámolás egy sportolós alapdarabon.
+        new Food("Tojásfehérje", 52, 11, 33, "tojasfeherje", "tojas feherje", "feherje tojas"),
         new Food("Rántotta", 180, 12, 150, "rantotta"),
         new Food("Rizs (főtt)", 130, 2.7, 200, "riz"),
         new Food("Tészta (főtt)", 150, 5, 250, "teszta", "spagetti", "penne"),
@@ -150,7 +153,7 @@ public final class Foods {
         new Food("Körte", 57, 0.4, 150, "korte"),
         new Food("Őszibarack", 39, 0.9, 150, "oszibarack", "barack"),
         new Food("Görögdinnye", 30, 0.6, 300, "dinnye"),
-        new Food("Kivi", 60, 1.1, 80, "kivi"),
+        new Food("Kivi", 60, 1.1, 80, "kivi", "kiwi"),
         new Food("Mandarin", 53, 0.8, 100, "mandarin"),
         new Food("Paradicsomleves", 60, 1.5, 400, "paradicsomleves"),
         new Food("Tökfőzelék", 70, 2, 350, "tokfozelek"),
@@ -416,6 +419,11 @@ public final class Foods {
             {"Pogácsa", "30"}, {"Túrós batyu", "100"}, {"Bundás kenyér", "60"},
             {"Datolya", "8"}, {"Szilva", "50"}, {"Sárgarépa", "80"},
             {"Hurka", "120"},
+            // Amit a próbafuttatás szerint természetes darabra mondani, de eddig
+            // a tipikus adaggal számolt („3 keksz", „2 tortilla", „2 paradicsom").
+            {"Keksz", "12"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
+            {"Paprika", "120"}, {"Fagylalt", "50"}, {"Proteinszelet", "60"},
+            {"Péksütemény", "60"}, {"Tojásfehérje", "33"},
     };
 
     /**
@@ -444,6 +452,26 @@ public final class Foods {
         for (String[] w : NUMBER_WORDS)
             if (w[0].length() == len && q.startsWith(w[0], at)) return Double.parseDouble(w[1]);
         return 0;
+    }
+
+    /**
+     * Számlálószavak: a szám és az étel közé beékelődhetnek, de nem változtatnak
+     * a jelentésen. A „3 szelet kenyér” három kenyérszelet – eddig viszont a
+     * szám és az étel közé beékelődött „szelet” miatt az egész nem darabszámnak
+     * látszott, és a tipikus adaggal (egy szeletnyivel) számolt tovább.
+     */
+    private static final String[] COUNT_WORDS = {"db", "darab", "szelet", "gombóc", "gomboc"};
+
+    /**
+     * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
+     * közte? Ha bármi más van ott, a szám nem ehhez az ételhez tartozik.
+     */
+    private static boolean countableAt(String q, int numEnd, int foodPos) {
+        if (foodPos < numEnd) return false;
+        String between = q.substring(numEnd, foodPos).trim();
+        if (between.isEmpty()) return true;
+        for (String w : COUNT_WORDS) if (w.equals(between)) return true;
+        return false;
     }
 
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
@@ -694,8 +722,7 @@ public final class Foods {
             int numEnd = bareNumPos.get(n) + bareNumLen.get(n);
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
-                int gap = foodPos.get(k) - numEnd;
-                if (gap < 0 || gap > 2) continue;         // közvetlenül utána álljon
+                if (!countableAt(q, numEnd, foodPos.get(k))) continue;
                 int piece = pieceGrams(foods.get(k));
                 if (piece <= 0) continue;
                 grams[k] = count * piece;
