@@ -293,7 +293,7 @@ public class WorkoutDetailActivity extends Activity {
         int dur = e.optInt("dur");
         double dist = e.optDouble("dist", -1);
         double avg = e.optDouble("avgspeed", -1);
-        if (avg < 0 && dist > 0 && dur > 0) avg = dist / dur * 3.6;
+        if (avg < 0 && TimerService.isRun(dist) && dur > 0) avg = dist / dur * 3.6;
         double mx = e.optDouble("maxspeed", -1);
         int steps = e.optInt("steps", 0);
         double cal = e.optDouble("cal", 0);
@@ -345,7 +345,7 @@ public class WorkoutDetailActivity extends Activity {
         int dur = e.optInt("dur");
         double dist = e.optDouble("dist", -1);
         double avg = e.optDouble("avgspeed", -1);
-        if (avg < 0 && dist > 0 && dur > 0) avg = dist / dur * 3.6;
+        if (avg < 0 && TimerService.isRun(dist) && dur > 0) avg = dist / dur * 3.6;
         double mx = e.optDouble("maxspeed", -1);
         int steps = e.optInt("steps", 0);
         double cal = e.optDouble("cal", 0);

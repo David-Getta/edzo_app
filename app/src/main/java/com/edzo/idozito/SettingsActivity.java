@@ -352,7 +352,7 @@ public class SettingsActivity extends Activity {
             double dist = o.optDouble("dist", -1);
             int dur = o.optInt("dur");
             double avg = o.optDouble("avgspeed", -1);
-            if (avg < 0 && dist > 0 && dur > 0) avg = dist / dur * 3.6;
+            if (avg < 0 && TimerService.isRun(dist) && dur > 0) avg = dist / dur * 3.6;
             double mx = o.optDouble("maxspeed", -1);
             sb.append(df.format(new Date(o.optLong("ts")))).append(';')
               .append(type).append(';')

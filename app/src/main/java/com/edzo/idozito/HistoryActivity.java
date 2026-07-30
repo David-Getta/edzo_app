@@ -377,7 +377,7 @@ public class HistoryActivity extends Activity {
         if (cal > 0) addPill(pills, "🔥", cal + "");
         if (dist >= 0) {
             double avg = o.optDouble("avgspeed", -1);
-            if (avg < 0 && durS > 0) avg = dist / durS * 3.6;
+            if (avg < 0 && TimerService.isRun(dist) && durS > 0) avg = dist / durS * 3.6;
             if (avg > 0) addPill(pills, "⚡", fmtSpeed(avg));
         }
         int steps = o.optInt("steps", 0);

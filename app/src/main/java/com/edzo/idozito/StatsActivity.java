@@ -505,7 +505,7 @@ public class StatsActivity extends Activity {
             int dur = o.optInt("dur");
             if (dur > bestDur) bestDur = dur;
             double avg = o.optDouble("avgspeed", -1);
-            if (avg < 0 && d > 0 && dur > 0) avg = d / dur * 3.6;
+            if (avg < 0 && TimerService.isRun(d) && dur > 0) avg = d / dur * 3.6;
             if (avg > bestAvg) bestAvg = avg;
             double mx = o.optDouble("maxspeed", -1);
             if (mx > bestMax) bestMax = mx;
