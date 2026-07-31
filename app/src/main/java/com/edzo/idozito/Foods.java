@@ -501,6 +501,7 @@ public final class Foods {
             {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},
             {"ot", "5"}, {"hat", "6"}, {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"},
             {"tiz", "10"}, {"fel", "0.5"}, {"masfel", "1.5"},
+            {"negyed", "0.25"}, {"haromnegyed", "0.75"},
     };
 
     /** Ha itt egész szóként kiírt számnév kezdődik, a hossza; különben 0. */
@@ -587,7 +588,7 @@ public final class Foods {
 
     /** Mértékegységek és töltelékszavak – ezek magukban nem jelentenek ételt. */
     private static final String[] QTY_WORDS = {
-            "g", "gr", "gramm", "dkg", "kg", "kilo", "kilogramm",
+            "g", "gr", "gramm", "dkg", "deka", "kg", "kilo", "kilogramm",
             "dl", "deci", "deciliter", "ml", "l", "liter", "db", "darab",
             "kb", "korulbelul", "nagyjabol", "cca", "osszesen",
     };
@@ -717,6 +718,8 @@ public final class Foods {
             // A hosszabb mértékegység előbb, különben a rövidebb ág nyelné el.
             // Folyadéknál 1 ml ≈ 1 g, ezért a dl/ml/l is grammra váltható.
             if (q.startsWith("dkg", j)) { numPos.add(start); numVal.add(val * 10); i = j + 3; }
+            // Kiírva is: „10 deka párizsi" (a maradék „gramm" ártalmatlan).
+            else if (q.startsWith("deka", j)) { numPos.add(start); numVal.add(val * 10); i = j + 4; }
             else if (q.startsWith("kilo", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 4; }
             else if (q.startsWith("kg", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 2; }
             else if (q.startsWith("gramm", j)) { numPos.add(start); numVal.add(val); i = j + 5; }

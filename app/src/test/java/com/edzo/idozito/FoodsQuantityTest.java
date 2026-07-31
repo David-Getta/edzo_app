@@ -24,6 +24,20 @@ public class FoodsQuantityTest {
         return hs.get(0).grams;
     }
 
+    @Test public void quarterAndWrittenOutDekaWork() {
+        // A „negyed kiló sajt" 30 grammos adag lett: a „negyed" nem volt
+        // számnév. A kiírt „deka" pedig nem volt mértékegység (a „dkg" igen).
+        assertEquals(250, grams("negyed kiló sajt"), 0.01);
+        assertEquals(250, grams("negyed liter tejföl"), 0.01);
+        assertEquals(750, grams("háromnegyed liter tej"), 0.01);
+        assertEquals(100, grams("10 deka párizsi"), 0.01);
+        assertEquals(50, grams("5 deka sajt"), 0.01);
+        // A szomszédok nem sérülnek: a „négy" és a „fél" marad, ami volt.
+        assertEquals(4 * 55, grams("négy tojás"), 0.01);
+        assertEquals(500, grams("fél kiló kenyér"), 0.01);
+        assertEquals(200, grams("20 dkg sajt"), 0.01);
+    }
+
     @Test public void aQuantityOnlyClauseBelongsToTheFoodNextToIt() {
         assertEquals(30, grams("mandula, 30 g"), 0.01);
         assertEquals(30, grams("egy marék mandula, kb 30 g"), 0.01);
