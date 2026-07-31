@@ -484,6 +484,12 @@ public final class Foods {
             {"Cordon bleu", "180"}, {"Falafel", "25"}, {"Sushi", "30"},
             {"Fröccs", "300"}, {"Limonádé", "300"}, {"Kombucha", "330"},
             {"Ayran", "250"},
+            // Italok a szokásos kiszereléssel: korsó sör, pohár bor, feles.
+            // A mért mennyiség („2 dl", „fél liter") erősebb a darabnál.
+            {"Sör", "500"}, {"Bor (vörös/fehér)", "150"}, {"Pálinka / tömény", "40"},
+            {"Tej", "200"}, {"Üdítő (cukros)", "330"}, {"Energiaital", "250"},
+            {"Kávé (fekete)", "200"}, {"Tejeskávé / cappuccino", "250"},
+            {"Tea (cukrozatlan)", "250"},
     };
 
     /**
@@ -521,7 +527,8 @@ public final class Foods {
      * látszott, és a tipikus adaggal (egy szeletnyivel) számolt tovább.
      */
     private static final String[] COUNT_WORDS =
-            {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár", "korso", "korsó"};
+            {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár",
+             "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg"};
 
     /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval

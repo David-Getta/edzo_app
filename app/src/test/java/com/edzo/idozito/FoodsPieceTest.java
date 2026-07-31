@@ -78,6 +78,22 @@ public class FoodsPieceTest {
         assertEquals(200, one("2 dl fröccs").grams, 0.01);
     }
 
+    @Test public void drinksCountByTheGlass() {
+        // A „2 korsó sör" fele eddig némán elveszett: a sörnek nem volt
+        // darabsúlya. Az italok darabja a szokásos kiszerelés.
+        assertEquals(2 * 500, one("2 korsó sör").grams, 0.01);
+        assertEquals(2 * 500, one("2 sör").grams, 0.01);
+        assertEquals(2 * 150, one("két pohár bor").grams, 0.01);
+        assertEquals(2 * 40, one("2 feles pálinka").grams, 0.01);
+        assertEquals(3 * 200, one("3 kávé").grams, 0.01);
+        assertEquals(2 * 250, one("2 cappuccino").grams, 0.01);
+        // A mért mennyiség erősebb a darabnál.
+        assertEquals(300, one("3 dl sör").grams, 0.01);
+        assertEquals(500, one("fél liter tej").grams, 0.01);
+        // Szám nélkül marad az adag.
+        assertEquals(0, one("sör").grams, 0.01);
+    }
+
     @Test public void anUnrealisticCountIsIgnored() {
         // A darabszám csak életszerű tartományban számít; fölötte marad az adag.
         assertEquals(0, one("100 alma").grams, 0.01);
