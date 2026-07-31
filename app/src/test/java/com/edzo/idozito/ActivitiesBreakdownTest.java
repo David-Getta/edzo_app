@@ -49,6 +49,20 @@ public class ActivitiesBreakdownTest {
         assertEquals(2, rows.values().iterator().next()[0]);
     }
 
+    @Test public void aRecognizableProgramNameMergesIntoItsSport() {
+        // A „Kézilabda edzés" nevű időzítős edzés a kézilabda sorába olvad a
+        // kézzel felvett kézilabdákkal – egy sport egy sor.
+        java.util.LinkedHashMap<String, long[]> rows = Activities.breakdown(
+                new String[]{"", "kezilabda"},
+                new String[]{"Kézilabda edzés", ""},
+                new int[]{3600, 5400});
+        assertEquals(1, rows.size());
+        String label = rows.keySet().iterator().next();
+        assertTrue("nem a kézilabda sora: " + label, label.contains("Kézilabda"));
+        assertEquals(2, rows.get(label)[0]);
+        assertEquals(9000, rows.get(label)[1]);
+    }
+
     @Test public void unknownKindFallsBackToTheName() {
         // Jövőbeli vagy sérült „kind" nem törhet össze semmit: a név dönt.
         LinkedHashMap<String, long[]> rows = Activities.breakdown(

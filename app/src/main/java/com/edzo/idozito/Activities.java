@@ -145,7 +145,12 @@ public final class Activities {
             String label;
             if (k != null) label = k.title();
             else if (names[i] == null || names[i].isEmpty()) label = byId("futas").title();
-            else label = "⏱ " + names[i];
+            else {
+                // Ha a program neve elárulja a sportot („Kézilabda edzés"),
+                // az a sorba olvad – egy sport egy sor, akárhogy rögzítették.
+                Kind byName = kindByText(names[i]);
+                label = byName != null ? byName.title() : "⏱ " + names[i];
+            }
             long[] row = sum.get(label);
             if (row == null) sum.put(label, row = new long[2]);
             row[0]++;
@@ -207,7 +212,12 @@ public final class Activities {
             String id;
             if (k != null) id = k.id;
             else if (names[i] == null || names[i].isEmpty()) id = "futas";
-            else continue;                          // programos időzítős edzés: nem sportág
+            else {
+                // A program nevéből felismert sport is szokásnak számít.
+                Kind byName = kindByText(names[i]);
+                if (byName == null) continue;       // besorolhatatlan: kimarad
+                id = byName.id;
+            }
             long age = now - ts[i];
             if (age < 0 || age > 60 * day) continue;
             long[] row = per.get(id);

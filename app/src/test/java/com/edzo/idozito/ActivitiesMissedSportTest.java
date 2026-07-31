@@ -70,6 +70,17 @@ public class ActivitiesMissedSportTest {
         }));
     }
 
+    @Test public void aRecognizableProgramNameCountsAsTheSport() {
+        // A „Kézilabda edzés" nevű időzítős edzés kézilabda-szokás, akkor is,
+        // ha nincs kind mezője – a név elárulja.
+        String line = call(new Object[][]{
+                {"", "Kézilabda edzés", 8}, {"", "Kézilabda edzés", 14},
+                {"", "Kézilabda edzés", 20},
+        });
+        assertTrue("a névből felismert sport nem számít: " + line,
+                line != null && line.contains("Kézilabda"));
+    }
+
     @Test public void theMostFrequentHabitWins() {
         String line = call(new Object[][]{
                 {"kezilabda", "x", 8}, {"kezilabda", "x", 12}, {"kezilabda", "x", 16},
