@@ -104,6 +104,20 @@ public class ActivitiesParseTest {
         assertTrue(p.plans.get(0).label().contains("45 perc"));
     }
 
+    @Test public void everydaySpokenFormsWork() {
+        // Ahogy az ember tényleg beszél – igék, töltelékszavak, fél óra.
+        assertEquals("1d+0: 1×kondi/60", summary("gyúrtam 1 órát"));
+        assertEquals("1d+0: 1×egyeb/60", summary("sportoltam egy órát"));
+        assertEquals("1d+0: 1×egyeb/30", summary("mozogtam 30 percet"));
+        assertEquals("1d+0: 1×tenisz/60", summary("pingpongoztam"));
+        assertEquals("1d+0: 1×joga/30", summary("jógáztam fél órát"));
+        assertEquals("1d+0: 1×tura/90", summary("másfél óra túra"));
+        // A „meccs” és a „kb” beékelődhet a szám és a sport közé.
+        assertEquals("1d+0: 2×kezilabda/90", summary("2 meccs kézilabda"));
+        assertEquals("1d+0: 2×foci/90", summary("két meccs foci"));
+        assertEquals(5, Activities.parse("kb 5 futás").plans.get(0).count);
+    }
+
     @Test public void distancesAreUnderstoodAndNotMistakenForCounts() {
         // A „10 km futás” EGY tíz kilométeres futás – nem tíz darab futás.
         Activities.Plan p = Activities.parse("10 km futás").plans.get(0);

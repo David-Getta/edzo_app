@@ -58,7 +58,7 @@ public final class Activities {
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "kajak"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
-                    "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem"),
+                    "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
@@ -68,7 +68,7 @@ public final class Activities {
             new Kind("roplabda", "🏐", "Röplabda", 4.0, false, 60,
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
-                    "tenisz", "squash", "fallabda", "tollaslabda", "tollas"),
+                    "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong", "asztalitenisz"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
                     "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma", "aikido"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
@@ -84,7 +84,7 @@ public final class Activities {
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
                     "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
-                    "egyeb mozgas", "egyeb edzes", "egyeb"),
+                    "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */
@@ -498,6 +498,19 @@ public final class Activities {
                 int p = s.indexOf(unit, from);
                 if (p < 0) break;
                 from = p + 1;
+                // A „fél óra" és a „másfél óra" nem egész számnév – külön ág.
+                if (unit.equals("ora")) {
+                    int we = p;
+                    while (we > 0 && s.charAt(we - 1) == ' ') we--;
+                    int wsPos = we;
+                    while (wsPos > 0 && Character.isLetter(s.charAt(wsPos - 1))) wsPos--;
+                    String prev = s.substring(wsPos, we);
+                    if (prev.equals("fel") || prev.equals("masfel")) {
+                        out.add(new int[]{wsPos, prev.equals("fel") ? 30 : 90,
+                                p + unit.length()});
+                        continue;
+                    }
+                }
                 int[] n = numberBefore(s, p, 8);
                 if (n == null) continue;
                 int val = unit.equals("ora") ? n[2] * 60 : n[2];
@@ -562,7 +575,7 @@ public final class Activities {
     private static boolean onlyFiller(String s, int from, int to) {
         String mid = s.substring(from, to).trim();
         if (mid.isEmpty()) return true;
-        for (String f : new String[]{"db", "darab", "alkalom", "alkalommal", "x", "-"})
+        for (String f : new String[]{"db", "darab", "alkalom", "alkalommal", "meccs", "kb", "x", "-"})
             if (mid.equals(f)) return true;
         // Csak írásjelek?
         for (int i = 0; i < mid.length(); i++)
