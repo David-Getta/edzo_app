@@ -89,6 +89,15 @@ public class StatsActivity extends Activity {
         col.addView(recordsCard(), lp());
         col.addView(gap(16));
 
+        // Sportágankénti bontás (30 nap): mióta kézzel is felvehető edzés, több
+        // sportág él egymás mellett – itt derül ki, mire ment el az idő.
+        View sports = sportsCard();
+        if (sports != null) {
+            col.addView(sectionTitle("Sportágak · elmúlt 30 nap"));
+            col.addView(sports, lp());
+            col.addView(gap(16));
+        }
+
         int[] moodCounts = moodCounts();
         int moodTotal = moodCounts[1] + moodCounts[2] + moodCounts[3] + moodCounts[4];
         if (moodTotal > 0) {
@@ -461,6 +470,76 @@ public class StatsActivity extends Activity {
             if (m >= 1 && m <= 4) c[m]++;
         }
         return c;
+    }
+
+    /**
+     * Sportágankénti bontás az elmúlt 30 napból, vagy null, ha nincs mit
+     * mutatni (egyetlen sportág önmagában nem bontás).
+     */
+    View sportsCard() {
+        JSONArray h = History.load(this);
+        long from = System.currentTimeMillis() - 30L * 24 * 3600 * 1000;
+        java.util.ArrayList<String> kinds = new java.util.ArrayList<>();
+        java.util.ArrayList<String> names = new java.util.ArrayList<>();
+        java.util.ArrayList<Integer> durs = new java.util.ArrayList<>();
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o == null || o.optLong("ts") < from) continue;
+            kinds.add(o.optString("kind", ""));
+            names.add(o.optString("name", ""));
+            durs.add(o.optInt("dur"));
+        }
+        // A súlyzós napló napjai is sportág: kondi. Naponta egyszer, ahogy az
+        // egyesített napló is számolja.
+        int gymDays = 0;
+        long gymSec = 0;
+        for (long ts : History.oneStrengthPerDay(StrengthLog.load(this)))
+            if (ts >= from) gymDays++;
+        java.util.LinkedHashMap<String, long[]> rows = Activities.breakdown(
+                kinds.toArray(new String[0]), names.toArray(new String[0]),
+                toInts(durs));
+        if (gymDays > 0) {
+            String gymLabel = "🏋 Súlyzós napló";
+            long[] row = rows.get(gymLabel);
+            if (row == null) rows.put(gymLabel, row = new long[2]);
+            row[0] += gymDays;
+            row[1] += gymSec;
+        }
+        if (rows.size() < 2) return null;
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(14), dp(10), dp(14), dp(10));
+        long maxCount = 1;
+        for (long[] r : rows.values()) maxCount = Math.max(maxCount, r[0]);
+        for (java.util.Map.Entry<String, long[]> e : rows.entrySet()) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(7), 0, dp(7));
+            row.addView(text(e.getKey(), 14, TXT, false),
+                    new LinearLayout.LayoutParams(0, -2, 1f));
+            String amount = e.getValue()[0] + "×"
+                    + (e.getValue()[1] > 0 ? "  ·  " + fmtDur((int) e.getValue()[1]) : "");
+            row.addView(text(amount, 13.5f, MUTED, true),
+                    new LinearLayout.LayoutParams(-2, -2));
+            cardV.addView(row);
+            // Arány-sáv az alkalmak számából.
+            View bar = new View(this);
+            GradientDrawable bg = new GradientDrawable();
+            bg.setCornerRadius(dp(2));
+            bg.setColor(MainActivity.ACCENT);
+            bar.setBackground(bg);
+            int w = (int) (dp(200) * (e.getValue()[0] / (double) maxCount));
+            LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(Math.max(dp(8), w), dp(3));
+            blp.bottomMargin = dp(4);
+            cardV.addView(bar, blp);
+        }
+        return cardV;
+    }
+
+    int[] toInts(java.util.List<Integer> list) {
+        int[] out = new int[list.size()];
+        for (int i = 0; i < out.length; i++) out[i] = list.get(i);
+        return out;
     }
 
     LinearLayout moodCard(int[] c, int total) {

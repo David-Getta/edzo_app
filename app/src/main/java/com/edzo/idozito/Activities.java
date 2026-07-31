@@ -118,6 +118,44 @@ public final class Activities {
         return met * 3.5 * w / 200.0 * Math.max(0, minutes);
     }
 
+    /**
+     * Sportágankénti összesítés a Statisztikához: cím → {alkalom, össz-mp},
+     * alkalom szerint csökkenő sorrendben.
+     *
+     * A besorolás a bejegyzés „kind" mezőjéből jön (kézi felvétel), annak
+     * híján a névből: a névtelen időzítős edzés mért futás – az a Futás
+     * sorba olvad, mert a felhasználót az érdekli, mennyit futott, nem az,
+     * hogy melyik gombbal rögzítette. A programmal futtatott időzítős edzés
+     * a program nevén jelenik meg.
+     */
+    public static java.util.LinkedHashMap<String, long[]> breakdown(
+            String[] kinds, String[] names, int[] durSec) {
+        java.util.LinkedHashMap<String, long[]> sum = new java.util.LinkedHashMap<>();
+        int n = Math.min(kinds.length, Math.min(names.length, durSec.length));
+        for (int i = 0; i < n; i++) {
+            Kind k = byId(kinds[i]);
+            String label;
+            if (k != null) label = k.title();
+            else if (names[i] == null || names[i].isEmpty()) label = byId("futas").title();
+            else label = "⏱ " + names[i];
+            long[] row = sum.get(label);
+            if (row == null) sum.put(label, row = new long[2]);
+            row[0]++;
+            row[1] += Math.max(0, durSec[i]);
+        }
+        // Rendezés alkalom szerint, azonos számnál idő szerint.
+        java.util.ArrayList<java.util.Map.Entry<String, long[]>> rows =
+                new java.util.ArrayList<>(sum.entrySet());
+        java.util.Collections.sort(rows, (a, b) -> {
+            if (a.getValue()[0] != b.getValue()[0])
+                return Long.compare(b.getValue()[0], a.getValue()[0]);
+            return Long.compare(b.getValue()[1], a.getValue()[1]);
+        });
+        java.util.LinkedHashMap<String, long[]> out = new java.util.LinkedHashMap<>();
+        for (java.util.Map.Entry<String, long[]> e : rows) out.put(e.getKey(), e.getValue());
+        return out;
+    }
+
     // ---------------- Szöveges felvétel ----------------
 
     /** Egy tétel a szövegből: hány alkalom, melyik mozgásból, mennyi ideig. */
