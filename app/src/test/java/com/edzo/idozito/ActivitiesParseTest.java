@@ -104,6 +104,43 @@ public class ActivitiesParseTest {
         assertTrue(p.plans.get(0).label().contains("45 perc"));
     }
 
+    @Test public void distancesAreUnderstoodAndNotMistakenForCounts() {
+        // A „10 km futás” EGY tíz kilométeres futás – nem tíz darab futás.
+        Activities.Plan p = Activities.parse("10 km futás").plans.get(0);
+        assertEquals(1, p.count);
+        assertEquals(10, p.km, 0.001);
+        // Időtartam híján a tipikus tempóból jön a hossz (6 perc/km).
+        assertEquals(60, p.minutes);
+        // Mindkét magyar szórend, ragozva is.
+        assertEquals(10, Activities.parse("futottam 10 km-t").plans.get(0).km, 0.001);
+        assertEquals(10, Activities.parse("10 kilométert futottam").plans.get(0).km, 0.001);
+        // Tizedes táv.
+        assertEquals(2.5, Activities.parse("2,5 km úszás").plans.get(0).km, 0.001);
+    }
+
+    @Test public void aDistanceAttachesToTheRightSport() {
+        Activities.Parsed p = Activities.parse("10 km futás és 20 km bringa");
+        assertEquals(10, p.plans.get(0).km, 0.001);
+        assertEquals(20, p.plans.get(1).km, 0.001);
+        // Kézilabdához nincs útvonal: a táv ott nem jelent semmit.
+        assertEquals(0, Activities.parse("5 km kézilabda").plans.get(0).km, 0.001);
+        assertEquals(1, Activities.parse("5 km kézilabda").plans.get(0).count);
+    }
+
+    @Test public void anExplicitDurationBeatsThePaceEstimate() {
+        Activities.Plan p = Activities.parse("futás 10 km 50 perc").plans.get(0);
+        assertEquals(10, p.km, 0.001);
+        assertEquals(50, p.minutes);
+        // Darabszám és táv együtt: három ötkilométeres futás.
+        Activities.Plan q = Activities.parse("3 futás 5 km").plans.get(0);
+        assertEquals(3, q.count);
+        assertEquals(5, q.km, 0.001);
+    }
+
+    @Test public void anAbsurdDistanceIsDropped() {
+        assertEquals(0, Activities.parse("1000 km bringa").plans.get(0).km, 0.001);
+    }
+
     @Test public void aNumberFarFromTheActivityIsNotItsCount() {
         // A szám és a mozgás közé nem eshet másik szó: különben a „3 nap múlva
         // futás” három futássá válna.

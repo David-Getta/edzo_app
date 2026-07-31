@@ -609,10 +609,15 @@ public class HistoryActivity extends Activity {
         long[] ts = Activities.timestamps(p, System.currentTimeMillis());
         int i = 0;
         for (Activities.Plan pl : p.plans) {
+            // A mondatban megadott táv is bekerül – az átlagtempó ugyanazzal a
+            // határral, mint a mért edzéseknél.
+            double distM = pl.km > 0 ? pl.km * 1000 : -1;
+            double avg = (TimerService.isRun(distM) && pl.minutes > 0)
+                    ? distM / (pl.minutes * 60.0) * 3.6 : -1;
             for (int n = 0; n < pl.count; n++) {
                 double kcal = Activities.calories(pl.kind, Profile.lastWeight(this), pl.minutes);
-                History.addManual(this, ts[i++], pl.minutes * 60, -1,
-                        kcal, -1, pl.kind.title(), pl.kind.id);
+                History.addManual(this, ts[i++], pl.minutes * 60, distM,
+                        kcal, avg, pl.kind.title(), pl.kind.id);
             }
         }
         BlazeWidget.refresh(this);

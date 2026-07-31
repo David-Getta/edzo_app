@@ -125,12 +125,34 @@ public final class Activities {
         public final Kind kind;
         public final int count;
         public final int minutes;
-        Plan(Kind kind, int count, int minutes) {
-            this.kind = kind; this.count = count; this.minutes = minutes;
+        /** Egy alkalom távja km-ben (0 = nincs megadva). */
+        public final double km;
+        Plan(Kind kind, int count, int minutes, double km) {
+            this.kind = kind; this.count = count; this.minutes = minutes; this.km = km;
         }
-        /** Emberi összefoglaló: „3 × 🏃 Futás · 45 perc”. */
+        /** Emberi összefoglaló: „1 × 🏃 Futás · 10 km · 60 perc”. */
         public String label() {
-            return count + " × " + kind.title() + " · " + minutes + " perc";
+            String k = km <= 0 ? ""
+                    : " · " + (km == Math.floor(km) ? String.valueOf((long) km)
+                            : String.valueOf(km).replace('.', ',')) + " km";
+            return count + " × " + kind.title() + k + " · " + minutes + " perc";
+        }
+    }
+
+    /**
+     * Tipikus tempó (perc/km) a táv-alapú mozgásokhoz. Ha a mondatban táv van,
+     * de időtartam nincs, ebből becsüljük a hosszt – a 45 perces alapértelmezés
+     * egy 10 km-es futásra 4:30/km-t jelentene, ami versenytempó.
+     */
+    static int minPerKm(Kind k) {
+        if (k == null || !k.distance) return 0;
+        switch (k.id) {
+            case "futas": return 6;
+            case "uszas": return 25;
+            case "kerekpar": return 3;
+            case "tura": return 12;
+            case "evezes": return 5;
+            default: return 8;
         }
     }
 
@@ -243,6 +265,11 @@ public final class Activities {
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
         //    de a helyüket megjegyezzük, hogy a hozzájuk tartozó mozgáshoz
         //    rendelhessük.
+        // Távok („10 km”, „2,5 km”): a mozgás-alapú sportokhoz tartoznak.
+        // Kitakarjuk őket, hogy a bennük lévő szám ne legyen darabszám –
+        // különben a „10 km futás” tíz külön futássá válna.
+        List<double[]> kms = findKms(q);            // {pos, km, vég}
+        for (double[] t : kms) blank(q, (int) t[0], (int) t[2]);
         List<int[]> mins = findMinutes(q);          // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
 
@@ -272,16 +299,39 @@ public final class Activities {
         }
         sortByPos(keep);
 
-        // 4) Minden találathoz darabszám (előtte) és időtartam (utána).
+        // 4) Távok hozzárendelése: a legközelebbi táv-alapú mozgáshoz. A magyar
+        //    mindkét szórendet használja („10 km futás”, „futottam 10 km-t”),
+        //    ezért nem irány, hanem távolság dönt. Kézilabdához nem rendelünk
+        //    távot – ott a szám nem jelent útvonalat.
+        double[] kmOf = new double[keep.size()];
+        for (double[] t : kms) {
+            int best = -1;
+            double bestD = Double.MAX_VALUE;
+            for (int i = 0; i < keep.size(); i++) {
+                if (!ALL[keep.get(i)[2]].distance) continue;
+                double d = Math.abs(keep.get(i)[0] - t[0]);
+                if (d < bestD) { bestD = d; best = i; }
+            }
+            if (best >= 0 && kmOf[best] == 0) kmOf[best] = t[1];
+        }
+
+        // 5) Minden találathoz darabszám (előtte) és időtartam (utána).
         boolean[] used = new boolean[ALL.length];
         for (int i = 0; i < keep.size(); i++) {
             int[] h = keep.get(i);
             if (used[h[2]]) continue;               // egy mozgásforma egyszer szerepel
             used[h[2]] = true;
+            Kind kind = ALL[h[2]];
             int count = countBefore(s, h[0]);
             int next = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
-            int minutes = minutesFor(mins, h[0], next, ALL[h[2]].defaultMin);
-            out.add(new Plan(ALL[h[2]], count, minutes));
+            int minutes = minutesFor(mins, h[0], next, 0);
+            if (minutes <= 0)
+                // Nincs kimondott időtartam: távból becsülünk (tipikus tempóval),
+                // anélkül a mozgásforma szokásos hossza jön.
+                minutes = kmOf[i] > 0
+                        ? Math.max(1, (int) Math.round(kmOf[i] * minPerKm(kind)))
+                        : kind.defaultMin;
+            out.add(new Plan(kind, count, minutes, kmOf[i]));
         }
 
         // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még
@@ -292,7 +342,7 @@ public final class Activities {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 Kind other = byId("egyeb");
-                if (other != null) out.add(new Plan(other, countBefore(s, p), other.defaultMin));
+                if (other != null) out.add(new Plan(other, countBefore(s, p), other.defaultMin, 0));
                 break;
             }
         }
@@ -355,6 +405,50 @@ public final class Activities {
             return new int[]{p, p + w[0].length(), Integer.parseInt(w[1])};
         }
         return null;
+    }
+
+    /**
+     * Távok a szövegben: szám (tizedesvesszővel is) + „km” vagy „kilométer”.
+     * {kezdet, km, vég} hármasok – a kezdet/vég a kitakaráshoz kell.
+     */
+    private static List<double[]> findKms(char[] q) {
+        String s = new String(q);
+        List<double[]> out = new ArrayList<>();
+        for (String unit : new String[]{"kilometer", "km"}) {
+            int from = 0;
+            while (true) {
+                int p = s.indexOf(unit, from);
+                if (p < 0) break;
+                from = p + 1;
+                // A „km” ne egy szó belsejéből jöjjön.
+                if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+                int numEnd = p;
+                while (numEnd > 0 && s.charAt(numEnd - 1) == ' ') numEnd--;
+                int numStart = numEnd;
+                boolean dot = false;
+                while (numStart > 0) {
+                    char c = s.charAt(numStart - 1);
+                    if (Character.isDigit(c)) { numStart--; continue; }
+                    if ((c == ',' || c == '.') && !dot && numStart - 1 > 0
+                            && Character.isDigit(s.charAt(numStart - 2))) {
+                        dot = true; numStart--; continue;
+                    }
+                    break;
+                }
+                if (numStart == numEnd) continue;      // nincs előtte szám
+                double val;
+                try {
+                    val = Double.parseDouble(s.substring(numStart, numEnd).replace(',', '.'));
+                } catch (NumberFormatException e) { continue; }
+                if (val <= 0 || val > 500) continue;
+                // A ragozott vég („km-t”, „kilométert”) is a kitakart részhez tartozik.
+                int end = p + unit.length();
+                while (end < s.length()
+                        && (Character.isLetter(s.charAt(end)) || s.charAt(end) == '-')) end++;
+                out.add(new double[]{numStart, val, end});
+            }
+        }
+        return out;
     }
 
     private static List<int[]> findMinutes(char[] q) {
