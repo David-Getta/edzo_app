@@ -53,31 +53,37 @@ public final class Activities {
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
-                    "kerekpar", "bringa", "bicikli", "tekeres"),
+                    "kerekpar", "bringa", "bicikli", "teker", "bmx"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandulas"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "kajak"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
-                    "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur"),
+                    "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
+                    // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
+                    // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
+                    "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
-                    "foci", "focizas", "labdarugas", "focizt"),
+                    "foci", "focizas", "labdarugas", "focizt", "futball"),
             new Kind("kosarlabda", "🏀", "Kosárlabda", 6.5, false, 60,
                     "kosarlabda", "kosarazas", "kosar edzes", "kosar"),
             new Kind("roplabda", "🏐", "Röplabda", 4.0, false, 60,
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
-                    "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong", "asztalitenisz"),
+                    "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong",
+                    "ping pong", "asztalitenisz"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
                     "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma", "aikido"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
-                    "tanc", "aerobik", "zumba", "spinning"),
+                    "tanc", "aerobik", "zumba", "spinning", "kangoo", "alakformalo"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
-                    "joga", "yoga", "pilates", "nyujtas", "stretch"),
+                    // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
+                    "joga", "yoga", "pilates", "nyujtas", "stretch", "torna"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
-                    "korcsolya", "gorkorcsolya", "jegkorong", "hoki"),
+                    "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
+                    "jegkorong", "hoki"),
             new Kind("si", "🎿", "Sí / snowboard", 6.0, false, 120,
                     "sieles", "sizes", "snowboard", "sielt", "sifutas"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
@@ -85,7 +91,8 @@ public final class Activities {
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
                     "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
-                    "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog"),
+                    "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
+                    "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */
@@ -459,7 +466,7 @@ public final class Activities {
         // menthető: egyéb mozgásként. Csak tartalékként, mert a „3 futó edzés"
         // szóban is benne van az „edzés" – ott a futás a helyes válasz.
         if (out.isEmpty()) {
-            for (String w : new String[]{"edzes", "alkalom", "mozgas"}) {
+            for (String w : new String[]{"edzes", "edzett", "edzeni", "alkalom", "mozgas"}) {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 Kind other = byId("egyeb");

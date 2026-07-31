@@ -204,6 +204,42 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("1000 km bringa").plans.get(0).km, 0.001);
     }
 
+    @Test public void justSayingITrainedIsEnough() {
+        // A „ma edzettem" a leggyakoribb magyar edzésmondat – és semmit sem
+        // adott: a tartalék csak az „edzés" főnevet ismerte, az igét nem.
+        assertEquals("1d+0: 1×egyeb/45", summary("ma edzettem"));
+        assertEquals(1, Activities.parse("tegnap edzettem 1 órát").offset);
+        assertEquals(60, Activities.parse("tegnap edzettem 1 órát").plans.get(0).minutes);
+    }
+
+    @Test public void gymAndFitnessSynonymsMapToTheRightSport() {
+        assertEquals("kondi", Activities.parse("crossfit").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("trx edzés").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("erősítő edzés").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("fekvőtámaszok").plans.get(0).kind.id);
+        assertEquals("foci", Activities.parse("futballoztam").plans.get(0).kind.id);
+        assertEquals("tenisz", Activities.parse("ping pong").plans.get(0).kind.id);
+        assertEquals("korcsolya", Activities.parse("görkoriztam").plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("tekertem egy órát").plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("bmx").plans.get(0).kind.id);
+        assertEquals("tanc", Activities.parse("kangoo").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("lovagoltam").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("vitorlázás").plans.get(0).kind.id);
+    }
+
+    @Test public void allKindsOfTornaAreMobility() {
+        // A „torna" tő fedi a gerinctornát, a gyógytornát és a tornázást is.
+        assertEquals("joga", Activities.parse("gerinctorna").plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("gyógytorna").plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("tornáztam fél órát").plans.get(0).kind.id);
+        // A „tornaterem" viszont kondi, és NEM esik szét torna + terem párra.
+        Activities.Parsed p = Activities.parse("tornateremben gyúrtam");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        // A „csupán sétáltam" nem szörf (a rövid tövek nem eshetnek szavakba).
+        assertEquals("tura", Activities.parse("csupán sétáltam").plans.get(0).kind.id);
+    }
+
     @Test public void hoursAndMinutesTogetherAreOneDuration() {
         // A „futás 1 óra 15 perc" korábban 15 perc lett: a perc külön
         // időtartamnak számított, és a közelebbi nyert.
