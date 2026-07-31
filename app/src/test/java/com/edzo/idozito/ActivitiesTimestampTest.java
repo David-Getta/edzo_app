@@ -100,6 +100,24 @@ public class ActivitiesTimestampTest {
         assertEquals(12, hourOf(ts[0]));
     }
 
+    @Test public void aSpokenTimeOfDayBeatsTheNoonDefault() {
+        // A „tegnap este kondi" nem délben volt – a felhasználó megmondta.
+        long now = lateEvening();
+        long[] ts = Activities.timestamps(Activities.parse("tegnap este kondi"), now);
+        assertEquals(19, hourOf(ts[0]));
+        assertEquals(dayOf(now) - 24L * 3600 * 1000, dayOf(ts[0]));
+        assertEquals(8, hourOf(Activities.timestamps(
+                Activities.parse("tegnap reggel futottam"), now)[0]));
+        assertEquals(16, hourOf(Activities.timestamps(
+                Activities.parse("tegnapelőtt délután úszás"), now)[0]));
+        // Napszak nélkül marad a semleges dél.
+        assertEquals(12, Activities.parse("tegnap kondi").hour);
+        assertEquals(19, Activities.parse("tegnap este kondi").hour);
+        // A MAI bejegyzés a mostani pillanatot kapja akkor is, ha van napszak.
+        long[] today = Activities.timestamps(Activities.parse("ma este 1 jóga"), now);
+        assertTrue(now - today[0] < 30L * 60 * 1000);
+    }
+
     @Test public void everyEntryGetsADistinctTimestamp() {
         // Az időbélyeg azonosítja a bejegyzést (megnyitás, törlés): két azonos
         // időbélyegű edzést nem lehetne szétválasztani.

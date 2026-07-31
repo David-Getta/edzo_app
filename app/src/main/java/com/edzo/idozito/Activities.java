@@ -275,8 +275,13 @@ public final class Activities {
         public final int days;
         /** Hány nappal ezelőtt kezdődik az időszak (0 = ma, 1 = tegnap). */
         public final int offset;
+        /** A múltbeli bejegyzések órája („tegnap este" → 19); alap a dél. */
+        public final int hour;
         Parsed(List<Plan> plans, int days, int offset) {
-            this.plans = plans; this.days = days; this.offset = offset;
+            this(plans, days, offset, 12);
+        }
+        Parsed(List<Plan> plans, int days, int offset, int hour) {
+            this.plans = plans; this.days = days; this.offset = offset; this.hour = hour;
         }
         public boolean isEmpty() { return plans.isEmpty(); }
         public int total() {
@@ -294,8 +299,9 @@ public final class Activities {
      *
      * – A MAI bejegyzés a mostani pillanatot kapja: ettől lesz igaz a
      *   „ma edzett", és nem kerül a jövőbe.
-     * – A MÚLTBELI nap délidőt kap. A rögzítés óra-perce ott hazugság lenne:
-     *   a tegnapelőtti kézilabda nem este 11-kor volt, csak akkor lett beírva.
+     * – A MÚLTBELI nap délidőt kap – vagy a kimondott napszakot („tegnap
+     *   este" → 19 óra). A rögzítés óra-perce ott hazugság lenne: a
+     *   tegnapelőtti kézilabda nem este 11-kor volt, csak akkor lett beírva.
      * – Több alkalom egyenletesen oszlik el az időszakon (6 kézi 3 napra =
      *   naponta kettő), és minden bejegyzés KÜLÖNBÖZŐ időbélyeget kap – az
      *   időbélyeg azonosítja őket megnyitáskor és törléskor.
@@ -312,7 +318,7 @@ public final class Activities {
                 cal.setTimeInMillis(now);
                 cal.add(java.util.Calendar.DAY_OF_YEAR, -dayBack);
                 if (dayBack > 0) {
-                    cal.set(java.util.Calendar.HOUR_OF_DAY, 12);
+                    cal.set(java.util.Calendar.HOUR_OF_DAY, p.hour);
                     cal.set(java.util.Calendar.MINUTE, 0);
                     cal.set(java.util.Calendar.SECOND, 0);
                     cal.set(java.util.Calendar.MILLISECOND, 0);
@@ -365,7 +371,7 @@ public final class Activities {
     /** Tesztelhető változat: a „most" kívülről jön (a hétköznapnevekhez kell). */
     static Parsed parse(String text, long now) {
         List<Plan> out = new ArrayList<>();
-        if (text == null) return new Parsed(out, 1, 0);
+        if (text == null) return new Parsed(out, 1, 0, 12);
         char[] q = Foods.norm(text).toCharArray();
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
         stripMultiplicative(q);
@@ -481,7 +487,24 @@ public final class Activities {
                 break;
             }
         }
-        return new Parsed(out, days, offset);
+        return new Parsed(out, days, offset, findHour(s));
+    }
+
+    /**
+     * Kimondott napszak → óra. A múltbeli bejegyzés így nem a semleges délre
+     * kerül, ha a felhasználó megmondta, mikor volt („tegnap este kondi").
+     */
+    private static int findHour(String s) {
+        String[][] tod = {{"reggel", "8"}, {"delelott", "10"}, {"delutan", "16"},
+                {"este", "19"}, {"esti", "19"}, {"ejszaka", "22"}, {"ejjel", "22"}};
+        for (String[] w : tod) {
+            int p = s.indexOf(w[0]);
+            if (p < 0) continue;
+            // Szó eleje legyen („napeste" nincs, de a „testes" ne találjon).
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            return Integer.parseInt(w[1]);
+        }
+        return 12;
     }
 
     /** „elmúlt 3 nap”, „3 nap alatt”, „a héten”, „egy hónap alatt” → {kezdet, vég, napok}. */
