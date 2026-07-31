@@ -152,7 +152,8 @@ public final class Foods {
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
         new Food("Müzliszelet", 400, 6, 30, "muzliszelet"),
-        new Food("Párizsi", 230, 12, 50, "parizsi"),
+        // A „felvágott" gyűjtőnév is ide fut be: kalóriában a párizsi az átlag.
+        new Food("Párizsi / felvágott", 230, 12, 50, "parizsi", "felvagott", "mortadella"),
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
         new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao"),

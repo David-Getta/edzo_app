@@ -63,8 +63,11 @@ public class FoodsQuantityTest {
     }
 
     @Test public void aWordThatMerelyStartsWithANumberWordIsNotANumber() {
-        // A „felvágott” nem fél valamiből.
-        assertEquals(0, Foods.parse(Arrays.asList(Foods.ALL), "felvágott").size());
+        // A „felvágott” nem fél valamiből: egy étel, mennyiség nélkül.
+        List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), "felvágott");
+        assertEquals(1, hs.size());
+        assertEquals("Párizsi / felvágott", hs.get(0).food.name);
+        assertEquals(0, hs.get(0).grams, 0.01);
     }
 
     @Test public void severalFoodsKeepTheirOwnQuantities() {
