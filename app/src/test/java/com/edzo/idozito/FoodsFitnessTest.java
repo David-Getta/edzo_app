@@ -78,6 +78,14 @@ public class FoodsFitnessTest {
         assertEquals("Kalács / bejgli", names("kaláccsal"));
         assertEquals("Narancs", names("naranccsal"));
         assertEquals("Palacsinta + Kalács / bejgli", names("palacsintával kaláccsal"));
+        // A teljes cs/sz/ny-végű kör: mindegyik hasonult alak a saját ételét adja.
+        assertEquals("Kürtőskalács", names("kürtőskaláccsal"));
+        assertEquals("Szendvics", names("szendviccsel"));
+        assertEquals("Ananász", names("ananásszal"));
+        assertEquals("Keksz", names("keksszel"));
+        assertEquals("Kuszkusz (főtt)", names("kuszkusszal"));
+        assertEquals("Sütemény", names("süteménnyel"));
+        assertEquals("Péksütemény", names("péksüteménnyel"));
         // A már működő hasonulások sem romolhatnak el.
         assertEquals("Kolbász", names("kolbásszal"));
         assertEquals("Rizs (főtt)", names("rizzsel"));

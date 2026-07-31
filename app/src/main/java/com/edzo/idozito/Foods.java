@@ -60,7 +60,7 @@ public final class Foods {
         new Food("Kenyér", 250, 8, 70, "kenyer"),
         new Food("Zsemle", 280, 9, 55, "zsemle"),
         new Food("Kifli", 290, 8, 55, "kifli"),
-        new Food("Péksütemény", 350, 7, 80, "peksutemeny", "croissant"),
+        new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant"),
         new Food("Zabpehely", 370, 13, 50, "zab"),
         new Food("Müzli", 380, 9, 60, "muzli", "müzli", "granola"),
         new Food("Palacsinta", 220, 6, 150, "palacsinta"),
@@ -110,8 +110,8 @@ public final class Foods {
         new Food("Mandula", 580, 21, 30, "mandula"),
         new Food("Mogyoró", 570, 25, 30, "mogyoro"),
         new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade"),
-        new Food("Keksz", 450, 6, 40, "keksz"),
-        new Food("Sütemény", 400, 5, 100, "sutemeny", "torta"),
+        new Food("Keksz", 450, 6, 40, "kekssz", "keksz"),
+        new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta"),
         new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt"),
         new Food("Chips", 540, 6, 50, "chips"),
         new Food("Nutella", 540, 6, 30, "nutella"),
@@ -147,7 +147,7 @@ public final class Foods {
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
                 "feherjeszelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
-        new Food("Szendvics", 250, 10, 150, "szendvics"),
+        new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog"),
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
@@ -178,7 +178,7 @@ public final class Foods {
         new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
         new Food("Sör", 43, 0.5, 500, "sor", "sör"),
-        new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsusz"),
+        new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsussz", "dzsusz"),
         // A „puffasztott rizs" két ételre esett szét (puffasztott + rizs), vagyis
         // duplán számolt. A teljes alak hosszabb szótő, így elnyeli mindkettőt.
         new Food("Rizsszelet / puffasztott rizs", 380, 8, 10,
@@ -211,7 +211,7 @@ public final class Foods {
         new Food("Tiramisu", 290, 5, 120, "tiramisu"),
         new Food("Krémes", 260, 5, 150, "kremes"),
         new Food("Fánk / churros", 400, 5, 60, "fank", "churros"),
-        new Food("Kürtőskalács", 380, 6, 120, "kurtoskalacs"),
+        new Food("Kürtőskalács", 380, 6, 120, "kurtoskalaccs", "kurtoskalacs"),
         new Food("Rántott gomba", 220, 5, 150, "rantott gomba"),
         new Food("Gomba", 22, 3, 100, "gomba"),
         new Food("Csirkemáj", 130, 20, 120, "csirkemaj", "maj"),
@@ -232,7 +232,7 @@ public final class Foods {
         new Food("Cukkini", 17, 1.2, 200, "cukkini"),
         new Food("Padlizsán", 25, 1, 200, "padlizsan"),
         new Food("Hagyma", 40, 1.1, 50, "hagyma"),
-        new Food("Ananász", 50, 0.5, 150, "ananasz"),
+        new Food("Ananász", 50, 0.5, 150, "ananassz", "ananasz"),
         new Food("Málna", 52, 1.2, 100, "malna"),
         new Food("Áfonya", 57, 0.7, 100, "afonya"),
         new Food("Szilva", 46, 0.7, 100, "szilva"),
@@ -243,7 +243,7 @@ public final class Foods {
         new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
         new Food("Kebab", 250, 13, 350, "kebab"),
-        new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkusz", "couscous"),
+        new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkussz", "kuszkusz", "couscous"),
         new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska"),
         new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
@@ -274,7 +274,7 @@ public final class Foods {
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
         // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.
         new Food("Bors (fűszer)", 0, 0, 5, "borsoz", "bors"),
-        new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomeny", "vodka", "whisky"),
+        new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomenny", "tomeny", "vodka", "whisky"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",
                 "zabtej", "rizstej", "szojatej"),
         new Food("Szójakocka", 340, 50, 60, "szojakocka", "szoja"),
