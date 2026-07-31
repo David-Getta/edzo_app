@@ -127,6 +127,25 @@ public class FoodsFitnessTest {
         assertEquals("Tojás", names("2 tojás"));
     }
 
+    @Test public void dessertsAndSundayDishesResolveToOneItem() {
+        // Vendéglős kör: a „gesztenyepüré" burgonyapüré volt (köret, édesség
+        // helyett), a „rakott kelkáposzta" rakott krumpli + káposzta, a
+        // „meggyes rétes" pedig gyümölcs + rétes duplán.
+        assertEquals("Gesztenyepüré", names("gesztenyepüré"));
+        assertEquals("Rakott kelkáposzta", names("rakott kelkáposzta"));
+        assertEquals("Rétes", names("meggyes rétes"));
+        assertEquals("Rétes", names("túrós rétes"));
+        // A szomszédok maradnak: a burgonyapüré és a rakott krumpli él.
+        assertEquals("Burgonyapüré", names("krumplipüré"));
+        assertEquals("Rakott krumpli", names("rakott krumpli"));
+        // Új tételek megtalálják magukat.
+        assertEquals("Tiramisu", names("tiramisu"));
+        assertEquals("Krémes", names("krémes"));
+        assertEquals("Fánk / churros", names("fánk"));
+        assertEquals("Fánk / churros", names("churros"));
+        assertEquals("Hekk (sült) + Sült krumpli", names("hekk sült krumplival"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.

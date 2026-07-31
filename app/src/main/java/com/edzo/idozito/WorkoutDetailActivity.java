@@ -378,7 +378,9 @@ public class WorkoutDetailActivity extends Activity {
         StringBuilder sb = new StringBuilder();
         sb.append("🏃 Grit – edzés · ").append(df.format(new Date(e.optLong("ts")))).append("\n");
         String nm = e.optString("name", "");
-        if (!nm.isEmpty()) sb.append("🏋️ ").append(nm).append("\n");
+        // Kézi bejegyzésnél a név már emojival kezdődik – nem kell elé még egy.
+        if (!nm.isEmpty())
+            sb.append(e.optString("kind", "").isEmpty() ? "🏋️ " : "").append(nm).append("\n");
         sb.append("⏱ Idő: ").append(fmtDur(dur));
         if (dist >= 0) sb.append("  ·  📍 Táv: ").append(fmtDist(dist));
         sb.append("\n");

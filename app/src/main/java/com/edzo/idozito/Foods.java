@@ -169,7 +169,10 @@ public final class Foods {
         new Food("Túrós csusza", 210, 10, 300, "turos csusza", "csusza"),
         new Food("Grízes tészta", 200, 6, 300, "grizes teszta", "griz"),
         new Food("Kakaós csiga", 380, 7, 90, "kakaos csiga", "csiga"),
-        new Food("Rétes", 300, 5, 100, "retes"),
+        // A „meggyes rétes" két szó, egy sütemény: a teljes alak szótő, hogy a
+        // gyümölcs ne számolódjon külön tételként mellé.
+        new Food("Rétes", 300, 5, 100, "almas retes", "meggyes retes", "turos retes",
+                "makos retes", "kapros retes", "retes"),
         new Food("Piskóta / kevert süti", 350, 6, 80, "piskota", "kevert"),
         new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
@@ -188,6 +191,9 @@ public final class Foods {
         new Food("Töltött paprika", 130, 8, 350, "toltott paprika"),
         new Food("Székelykáposzta", 150, 9, 350, "szekelykaposzta", "szekely kaposzta"),
         new Food("Halászlé", 60, 8, 400, "halaszle"),
+        new Food("Hekk (sült)", 190, 16, 200, "hekk"),
+        // A „rakott kelkáposzta" nem rakott krumpli + káposzta: saját fogás.
+        new Food("Rakott kelkáposzta", 120, 7, 400, "rakott kelkaposzta", "rakott kaposzta"),
         new Food("Paprikás krumpli", 120, 4, 350, "paprikas krumpli"),
         new Food("Rizses hús", 160, 8, 350, "rizses hus"),
         new Food("Bolognai spagetti", 170, 8, 350, "bolognai spagetti", "spagetti bolognai", "bolognai"),
@@ -198,6 +204,12 @@ public final class Foods {
         new Food("Mákos guba", 300, 7, 200, "makos guba"),
         // A teljes kifejezés is szótő, különben a „galuska" külön a nokedlire ülne.
         new Food("Somlói galuska", 260, 5, 150, "somloi galuska", "somloi"),
+        // A „gesztenyepüré" eddig burgonyapürének számított (a „pure" szótő
+        // beleesett) – édesség létére köretnek.
+        new Food("Gesztenyepüré", 230, 3, 150, "gesztenyepure", "gesztenye pure", "gesztenye"),
+        new Food("Tiramisu", 290, 5, 120, "tiramisu"),
+        new Food("Krémes", 260, 5, 150, "kremes"),
+        new Food("Fánk / churros", 400, 5, 60, "fank", "churros"),
         new Food("Kürtőskalács", 380, 6, 120, "kurtoskalacs"),
         new Food("Rántott gomba", 220, 5, 150, "rantott gomba"),
         new Food("Gomba", 22, 3, 100, "gomba"),
