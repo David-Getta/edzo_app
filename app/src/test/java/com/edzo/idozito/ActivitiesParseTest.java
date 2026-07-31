@@ -189,6 +189,63 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("1000 km bringa").plans.get(0).km, 0.001);
     }
 
+    @Test public void hoursAndMinutesTogetherAreOneDuration() {
+        // A „futás 1 óra 15 perc" korábban 15 perc lett: a perc külön
+        // időtartamnak számított, és a közelebbi nyert.
+        assertEquals("1d+0: 1×futas/75", summary("futás 1 óra 15 perc"));
+        assertEquals("1d+0: 1×kerekpar/90", summary("1 óra 30 perc bringa"));
+        assertEquals("1d+0: 1×tura/150", summary("2 óra és 30 perc túra"));
+        // Két KÜLÖN időtartam két sporthoz nem olvad össze.
+        assertEquals("1d+0: 1×kondi/60, 1×futas/40", summary("kondi 1 óra futás 40 perc"));
+    }
+
+    @Test public void multiplicativeNumeralsAreCounts() {
+        // A „kétszer úsztam" EGY úszás volt: a számnév-kereső szóhatárt vár,
+        // a rag miatt nem találta meg a „két"-et.
+        assertEquals(2, Activities.parse("kétszer úsztam").plans.get(0).count);
+        assertEquals(3, Activities.parse("háromszor futottam").plans.get(0).count);
+        assertEquals(3, Activities.parse("3-szor futottam a héten").plans.get(0).count);
+        assertEquals(7, Activities.parse("a héten hétszer gyúrtam").plans.get(0).count);
+        // Az „egyszerűen" nem darabszám-hiba: marad egy alkalom.
+        assertEquals(1, Activities.parse("egyszerűen jó futás volt").plans.get(0).count);
+    }
+
+    @Test public void metersWorkForSwimming() {
+        // Úszásnál a méter a természetes egység, nem a kilométer.
+        Activities.Plan p = Activities.parse("leúsztam 2000 métert").plans.get(0);
+        assertEquals(2.0, p.km, 0.001);
+        assertEquals(1, p.count);
+        assertEquals(1.5, Activities.parse("1500 m úszás").plans.get(0).km, 0.001);
+        // A „3 meccs kézilabda" nem 3 méter: a szókezdő „m" nem egység.
+        assertEquals(3, Activities.parse("3 meccs kézilabda").plans.get(0).count);
+        // Az 5 méter nem edzéstáv – elgépelésként eldobjuk.
+        assertEquals(0, Activities.parse("5 m futás").plans.get(0).km, 0.001);
+    }
+
+    @Test public void aMonthIsAThirtyDaySpan() {
+        assertEquals(30, Activities.parse("egy hónap alatt 10 edzés").days);
+        assertEquals(30, Activities.parse("ebben a hónapban 4 kondi").days);
+        assertEquals(60, Activities.parse("2 hónap alatt 20 futás").days);
+        assertEquals(10, Activities.parse("egy hónap alatt 10 edzés").plans.get(0).count);
+    }
+
+    @Test public void theFallbackWorkoutKeepsItsDuration() {
+        // Az „otthoni edzés 40 perc" 45 perc lett: az egyéb-mozgás tartalék
+        // nem nézte meg a kimondott időtartamot.
+        assertEquals("1d+0: 1×egyeb/40", summary("otthoni edzés 40 perc"));
+        assertEquals("7d+0: 4×egyeb/45", summary("a héten 4 edzés"));
+    }
+
+    @Test public void crossCountrySkiingIsNotRunning() {
+        assertEquals("si", Activities.parse("sífutás 2 óra").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("futás 1 óra").plans.get(0).kind.id);
+    }
+
+    @Test public void suffixedFillerWordsDoNotHideTheCount() {
+        assertEquals(2, Activities.parse("2 meccsen kézilabdáztam").plans.get(0).count);
+        assertEquals(3, Activities.parse("3 darabot futottam").plans.get(0).count);
+    }
+
     @Test public void aNumberFarFromTheActivityIsNotItsCount() {
         // A szám és a mozgás közé nem eshet másik szó: különben a „3 nap múlva
         // futás” három futássá válna.

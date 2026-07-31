@@ -78,7 +78,7 @@ public final class Activities {
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "jegkorong", "hoki"),
             new Kind("si", "🎿", "Sí / snowboard", 6.0, false, 120,
-                    "sieles", "sizes", "snowboard", "sielt"),
+                    "sieles", "sizes", "snowboard", "sielt", "sifutas"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "maszas", "boulder", "maszofal"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
@@ -359,6 +359,8 @@ public final class Activities {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0);
         char[] q = Foods.norm(text).toCharArray();
+        // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
+        stripMultiplicative(q);
 
         // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
@@ -454,21 +456,53 @@ public final class Activities {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 Kind other = byId("egyeb");
-                if (other != null) out.add(new Plan(other, countBefore(s, p), other.defaultMin, 0));
+                // A kimondott időtartam itt is számít („otthoni edzés 40 perc").
+                if (other != null) out.add(new Plan(other, countBefore(s, p),
+                        minutesFor(mins, p, Integer.MAX_VALUE, other.defaultMin), 0));
                 break;
             }
         }
         return new Parsed(out, days, offset);
     }
 
-    /** „elmúlt 3 nap”, „3 nap alatt”, „a héten”, „2 hét alatt” → {kezdet, vég, napok}. */
+    /** „elmúlt 3 nap”, „3 nap alatt”, „a héten”, „egy hónap alatt” → {kezdet, vég, napok}. */
     private static int[] findSpan(char[] q) {
         String s = new String(q);
-        // Hetek: egy hét = 7 nap.
-        int[] w = spanAt(s, "het", 7);
-        int[] d = spanAt(s, "nap", 1);
-        if (d != null && w != null) return d[0] <= w[0] ? d : w;
-        return d != null ? d : w;
+        // Egy hét = 7 nap, egy hónap = 30. A legkorábbi találat dönt.
+        int[] best = null;
+        for (int[] c : new int[][]{spanAt(s, "nap", 1), spanAt(s, "het", 7), spanAt(s, "honap", 30)})
+            if (c != null && (best == null || c[0] < best[0])) best = c;
+        return best;
+    }
+
+    /**
+     * A „kétszer", „háromszor", „3-szor" alak darabszám, de a számnév-kereső
+     * szóhatárt vár, így a rag miatt nem találta meg: a „kétszer úsztam" EGY
+     * úszás lett. A ragot kitakarjuk, a szám ott marad.
+     */
+    private static void stripMultiplicative(char[] q) {
+        String s = new String(q);
+        for (String suf : new String[]{"szor", "szer"}) {
+            int from = 0;
+            while (true) {
+                int p = s.indexOf(suf, from);
+                if (p < 0) break;
+                from = p + 1;
+                int wordEnd = p + suf.length();
+                while (wordEnd < s.length() && Character.isLetter(s.charAt(wordEnd))) wordEnd++;
+                if (p > 1 && s.charAt(p - 1) == '-' && Character.isDigit(s.charAt(p - 2)))
+                    blank(q, p - 1, wordEnd);          // „3-szor"
+                else if (p > 0 && Character.isDigit(s.charAt(p - 1)))
+                    blank(q, p, wordEnd);              // „3szor"
+                else {
+                    int a = p;
+                    while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+                    String prefix = s.substring(a, p); // „ketszer" → „ket"
+                    for (String[] w : NUM_WORDS)
+                        if (w[0].equals(prefix)) { blank(q, p, wordEnd); break; }
+                }
+            }
+        }
     }
 
     private static int[] spanAt(String s, String unit, int mult) {
@@ -484,8 +518,9 @@ public final class Activities {
             if (isNotSpan(wordAt(s, p))) continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {
-                // Szám nélkül csak a „héten” alak jelent időszakot („a héten”).
-                if (mult == 7) return new int[]{p, end, 7};
+                // Szám nélkül csak a hét és a hónap időszak („a héten",
+                // „a hónapban") – a puszta „nap" nem.
+                if (mult == 7 || mult == 30) return new int[]{p, end, mult};
                 continue;
             }
             int val = Math.max(1, Math.min(365, n[2] * mult));
@@ -548,7 +583,9 @@ public final class Activities {
     private static List<double[]> findKms(char[] q) {
         String s = new String(q);
         List<double[]> out = new ArrayList<>();
-        for (String unit : new String[]{"kilometer", "km"}) {
+        // Méter is: úszásnál az a természetes egység („leúsztam 2000 métert").
+        for (String unit : new String[]{"kilometer", "km", "meter", "m"}) {
+            boolean meters = unit.equals("meter") || unit.equals("m");
             int from = 0;
             while (true) {
                 int p = s.indexOf(unit, from);
@@ -556,6 +593,9 @@ public final class Activities {
                 from = p + 1;
                 // A „km” ne egy szó belsejéből jöjjön.
                 if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+                // A puszta „m" ne egy szó ELEJE legyen („3 meccs” nem 3 méter).
+                if (unit.equals("m") && p + 1 < s.length()
+                        && Character.isLetter(s.charAt(p + 1))) continue;
                 int numEnd = p;
                 while (numEnd > 0 && s.charAt(numEnd - 1) == ' ') numEnd--;
                 int numStart = numEnd;
@@ -574,6 +614,11 @@ public final class Activities {
                 try {
                     val = Double.parseDouble(s.substring(numStart, numEnd).replace(',', '.'));
                 } catch (NumberFormatException e) { continue; }
+                if (meters) {
+                    // 25 méter alatt nem edzés, 100 km felett elgépelés.
+                    if (val < 25 || val > 100000) continue;
+                    val /= 1000.0;
+                }
                 if (val <= 0 || val > 500) continue;
                 // A ragozott vég („km-t”, „kilométert”) is a kitakart részhez tartozik.
                 int end = p + unit.length();
@@ -606,7 +651,7 @@ public final class Activities {
                             : prev.equals("negyed") ? 15
                             : prev.equals("haromnegyed") ? 45 : 0;
                     if (frac > 0) {
-                        out.add(new int[]{wsPos, frac, p + unit.length()});
+                        out.add(new int[]{wsPos, frac, p + unit.length(), 1});
                         continue;
                     }
                 }
@@ -643,8 +688,19 @@ public final class Activities {
                     numPos = n[0];
                 }
                 if (val < 1 || val > 24 * 60) continue;
-                out.add(new int[]{numPos, val, p + unit.length()});
+                out.add(new int[]{numPos, val, p + unit.length(), unit.equals("ora") ? 1 : 0});
             }
+        }
+        // Az „1 óra 15 perc" EGY időtartam: az óra utáni percet hozzáadjuk,
+        // különben a perc külön (rövidebb) időtartamnak számítana.
+        sortByPos(out);
+        for (int i = 0; i + 1 < out.size(); i++) {
+            int[] a = out.get(i), b = out.get(i + 1);
+            if (a[3] != 1 || b[3] != 0 || a[2] > b[0]) continue;
+            String gap = s.substring(a[2], b[0]).trim();
+            if (!gap.isEmpty() && !gap.equals("es")) continue;
+            out.set(i, new int[]{a[0], a[1] + b[1], b[2], 0});
+            out.remove(i + 1);
         }
         return out;
     }
@@ -700,14 +756,24 @@ public final class Activities {
      * A szám és a szó között csak szóköz, írásjel vagy jelentéktelen töltelék
      * áll? Ha valódi szó van közte, a szám nem ehhez tartozik.
      */
+    private static final String[] FILLER = {"db", "darab", "alkalom", "meccs", "kb", "x"};
+
     private static boolean onlyFiller(String s, int from, int to) {
-        String mid = s.substring(from, to).trim();
-        if (mid.isEmpty()) return true;
-        for (String f : new String[]{"db", "darab", "alkalom", "alkalommal", "meccs", "kb", "x", "-"})
-            if (mid.equals(f)) return true;
-        // Csak írásjelek?
-        for (int i = 0; i < mid.length(); i++)
-            if (Character.isLetterOrDigit(mid.charAt(i))) return false;
+        String mid = s.substring(from, to);
+        int i = 0;
+        while (i < mid.length()) {
+            if (!Character.isLetterOrDigit(mid.charAt(i))) { i++; continue; }
+            int j = i;
+            while (j < mid.length() && Character.isLetterOrDigit(mid.charAt(j))) j++;
+            String tok = mid.substring(i, j);
+            boolean ok = false;
+            // A töltelékszó ragozva is az („2 meccsen kézi", „3 darabot") –
+            // a rövidekre (db, x) viszont csak a pontos alak biztonságos.
+            for (String f : FILLER)
+                if (tok.equals(f) || (f.length() >= 3 && tok.startsWith(f))) { ok = true; break; }
+            if (!ok) return false;
+            i = j;
+        }
         return true;
     }
 
