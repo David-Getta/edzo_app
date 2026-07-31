@@ -23,12 +23,24 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **GPS táv, tempó, lépések, kalória**, átlag/max sebesség
 - Útvonal, kör-splitek és sebesség-diagram az edzés részleteinél
 
+### 📝 Kézi edzés-felvétel
+- **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
+  kondi, foci, tenisz, jóga… – 19 mozgásforma, sportág szerinti
+  kalóriabecsléssel (MET × testsúly × idő)
+- **Egy mondatból akár többet is**: „az elmúlt 3 nap alatt 3 futó edzés és
+  6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa" – mentés előtt
+  megmutatja, mit értett
+- A kézi bejegyzés **mindenben egyenrangú a mérttel**: számít a szériába, az
+  XP-be, a jelvényekbe, a heti visszatekintőbe és a statisztikába
+- Elérhető a kezdőlap **„Edzés pótlása"** csempéjéről és az Előzmények
+  „+" gombjáról; utólagos (múltbeli) felvételnél is a helyére kerül
+
 ### 🍽️ Étrend
 - **Írd le, mit ettél** – az app felismeri az ételeket a mondatból:
   „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
 - Felismeri a **grammot** (g / gr / gramm / dkg) és a **darabszámot** is
   (számjeggyel és kiírva: „két tojás")
-- **185 magyar étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **211 magyar étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -77,13 +89,15 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 📊 Statisztika & előzmények
 - Heti / havi / összes összesítők, 8-hetes diagram, havi naptár,
   **12 hetes aktivitás-hőtérkép**, terv-teljesítés
+- **Sportágankénti bontás** (elmúlt 30 nap): alkalmak és össz-idő
+  sportáganként, arány-sávval – a mért és a kézzel felvett edzés egy sorban
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík
 - **Profil / BMI / BMR**, testadatok és változás-diagram
 
 ### 📤 Megosztás & adatok
 - Edzés / haladás / jelvények / statisztika / hőtérkép / napi étrend megosztása
-- **Biztonsági mentés / visszaállítás** fájlba, **CSV export**
-  (előzmények, erősítő napló, étrend a vízzel együtt)
+- **Biztonsági mentés / visszaállítás** fájlba – a GPS-útvonalakkal együtt –,
+  **CSV export** (előzmények, erősítő napló, étrend a vízzel együtt)
 
 ## Automatikus frissítés (ajánlott) — Obtainium
 
@@ -116,6 +130,14 @@ készül, így az Obtainium és az Android is frissítésként ismeri fel.
 ```
 
 A CI a build előtt lefuttatja a teszteket: ha elhasalnak, nem készül APK.
+
+Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
+is futtathatók, másodpercek alatt:
+
+```bash
+bash tools/gyorsteszt.sh      # ~190 teszt: ételfelismerés, időzítő-számítások,
+                              # mondat-alapú edzésfelvétel, progresszió…
+```
 
 Tiszta natív Android app (Java, `Activity` + programozott felület), külső
 függőségek nélkül (a JUnit csak teszthez). `minSdk 24`, `targetSdk 33`.
