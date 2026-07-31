@@ -522,15 +522,21 @@ public class HistoryActivity extends Activity {
 
     void saveManual(Activities.Kind k, EditText minEt, EditText kmEt, EditText agoEt) {
         int min = (int) numOf(minEt);
+        double km = kmEt == null ? 0 : numOf(kmEt);
+        if (km < 0) km = 0;
+        if (km > 500) km = 500;
+        // Táv-alapú sportnál elég a táv is: a hosszt a tipikus tempóból
+        // becsüljük, ugyanúgy, mint a mondatból felvett edzésnél.
+        if (min <= 0 && km > 0)
+            min = Math.max(1, (int) Math.round(km * Activities.minPerKm(k)));
         if (min <= 0) {
-            android.widget.Toast.makeText(this, "Add meg, hány percig tartott.",
+            android.widget.Toast.makeText(this,
+                    k.distance ? "Add meg, hány percig tartott (vagy a távot)."
+                               : "Add meg, hány percig tartott.",
                     android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
         if (min > 24 * 60) min = 24 * 60;                 // egy napnál hosszabb edzés nincs
-        double km = kmEt == null ? 0 : numOf(kmEt);
-        if (km < 0) km = 0;
-        if (km > 500) km = 500;
         int ago = (int) numOf(agoEt);
         if (ago < 0) ago = 0;
         if (ago > 365) ago = 365;                          // egy évnél régebbit ne vigyünk fel
