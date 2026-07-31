@@ -243,6 +243,38 @@ public class FoodsFitnessTest {
         assertEquals("Rakott kelkáposzta", names("rakott kelkáposzta"));
     }
 
+    @Test public void breakfastDrinksAndFruitsResolveCorrectly() {
+        // Reggeli-kör: a „turmix" fehérjeturmixnak számított, az „aszalt
+        // szilva" friss szilvának (négyszeres különbség), a „gyümölcspüré"
+        // burgonyapürének, a „gránátalma" almának.
+        assertEquals("Gyümölcsturmix / smoothie", names("turmix"));
+        assertEquals("Gyümölcsturmix / smoothie", names("smoothie"));
+        assertEquals("Protein turmix", names("protein turmix"));
+        assertEquals("Aszalt gyümölcs", names("aszalt szilva"));
+        assertEquals("Aszalt gyümölcs", names("mazsola"));
+        assertTrue("az aszalt szilva nem friss szilva",
+                kcal("aszalt szilva") > 2 * kcal("szilva"));
+        assertEquals("Gyümölcspüré / bébiétel", names("gyümölcspüré"));
+        assertEquals("Gránátalma", names("gránátalma"));
+        assertEquals("Kakaó (tejes)", names("forró csoki"));
+        assertEquals("Tejberizs", names("tejberizs"));
+        assertEquals("Tejbegríz", names("tejbedara"));
+        assertEquals("Zabpehely", names("kása"));
+        // Bogyósok és déligyümölcsök.
+        assertEquals("Bogyós gyümölcs", names("szeder"));
+        assertEquals("Bogyós gyümölcs", names("ribizli"));
+        assertEquals("Őszibarack", names("nektarin"));
+        assertEquals("Füge", names("füge"));
+        assertEquals("Befőtt / kompót", names("kompót"));
+        assertEquals("Tea (cukrozatlan)", names("matcha"));
+        // A szomszédok élnek: szilva, alma, rizs, csoki, burgonyapüré.
+        assertEquals("Szilva", names("szilva"));
+        assertEquals("Alma", names("alma"));
+        assertEquals("Rizs (főtt)", names("rizs"));
+        assertEquals("Csokoládé", names("csoki"));
+        assertEquals("Burgonyapüré", names("krumplipüré"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.

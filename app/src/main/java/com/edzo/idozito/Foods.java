@@ -61,7 +61,7 @@ public final class Foods {
         new Food("Zsemle", 280, 9, 55, "zsemle"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant"),
-        new Food("Zabpehely", 370, 13, 50, "zab"),
+        new Food("Zabpehely", 370, 13, 50, "zab", "kasa"),
         new Food("Müzli", 380, 9, 60, "muzli", "müzli", "granola"),
         new Food("Palacsinta", 220, 6, 150, "palacsinta"),
         new Food("Pizza", 260, 11, 300, "pizza"),
@@ -141,7 +141,10 @@ public final class Foods {
         new Food("Húsleves", 40, 3, 400, "husleves"),
         new Food("Csirkepaprikás", 160, 14, 300, "paprikas"),
         new Food("Milánói makaróni", 180, 7, 350, "milanoi", "makaroni"),
-        new Food("Protein turmix", 100, 10, 300, "protein", "turmix", "shake"),
+        // A puszta „turmix" magyarul gyümölcsös: nem fehérjeturmix. A teljes
+        // „protein turmix" alak szótő, így az egyben marad.
+        new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake"),
+        new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "turmix", "smoothie"),
         // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
         // talált, vagy a 100 kcal/100 g-os kész italra esett – harmadannyi kalória.
         new Food("Fehérjepor", 380, 75, 30, "feherjepor", "feherje por", "protein por",
@@ -158,10 +161,10 @@ public final class Foods {
         new Food("Párizsi / felvágott", 230, 12, 50, "parizsi", "felvagott", "mortadella"),
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
-        new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao"),
+        new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao", "forro csoki", "forrocsoki"),
         new Food("Tükörponty / halrudak", 220, 12, 150, "halrud", "halrudak"),
         new Food("Körte", 57, 0.4, 150, "korte"),
-        new Food("Őszibarack", 39, 0.9, 150, "oszibarack", "barack"),
+        new Food("Őszibarack", 39, 0.9, 150, "oszibarack", "barack", "nektarin"),
         new Food("Görögdinnye", 30, 0.6, 300, "dinnye"),
         new Food("Kivi", 60, 1.1, 80, "kivi", "kiwi"),
         new Food("Mandarin", 53, 0.8, 100, "mandarin"),
@@ -288,7 +291,17 @@ public final class Foods {
         new Food("Zsíros kenyér", 330, 6, 100, "zsiros kenyer", "zsiroskenyer"),
         new Food("Hurka", 300, 12, 120, "hurka"),
         new Food("Csirkenugget", 300, 15, 150, "nugget"),
-        new Food("Tejbegríz", 110, 4, 250, "tejbegriz"),
+        new Food("Tejbegríz", 110, 4, 250, "tejbegriz", "tejbedara"),
+        new Food("Tejberizs", 120, 3.5, 250, "tejberizs"),
+        // Aszalva négy-ötszörös a kalória – a „szilva" tő 46 kcal-t adott volna.
+        new Food("Aszalt gyümölcs", 280, 2.5, 40,
+                "aszalt szilva", "aszalt barack", "aszalt gyumolcs", "aszalt", "mazsola"),
+        new Food("Gyümölcspüré / bébiétel", 65, 0.5, 100,
+                "gyumolcspure", "almapure", "almaszosz", "bebietel"),
+        new Food("Gránátalma", 83, 1, 150, "granatalma"),
+        new Food("Bogyós gyümölcs", 50, 1, 100, "szeder", "ribizli", "egres"),
+        new Food("Füge", 74, 0.8, 100, "fuge"),
+        new Food("Befőtt / kompót", 70, 0.4, 150, "befott", "kompot"),
         new Food("Túrós batyu", 300, 7, 100, "turos batyu", "batyu"),
         // A -val/-vel hasonul: „kaláccsal". A cs+cs alakot külön tő fogja meg.
         new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli"),
@@ -300,7 +313,7 @@ public final class Foods {
         // --- Italok ---
         new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo"),
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte"),
-        new Food("Tea (cukrozatlan)", 1, 0, 250, "tea"),
+        new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor"),
         // A „borssal" nem egy pohár bor: a „bor" szótő beleesett, és minden
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
