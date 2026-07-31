@@ -86,6 +86,26 @@ public class ActivitiesParseTest {
         assertEquals("2d+0: 4×uszas/45", summary("tegnap és ma 2-2 úszás"));
     }
 
+    @Test public void aDateWithAMonthNameIsUnderstood() {
+        // 2026. július 31. péntek dél (Budapest).
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.JULY, 31, 12, 0, 0);
+        long friday = c.getTimeInMillis();
+        assertEquals(3, Activities.parse("július 28-án futottam", friday).offset);
+        assertEquals(1, Activities.parse("július 30-án 2 kondi", friday).offset);
+        assertEquals(0, Activities.parse("július 31-én 2 kondi", friday).offset);
+        // A nap száma nem darabszám: a „3 futás" marad három.
+        Activities.Parsed p = Activities.parse("3 futás július 30-án", friday);
+        assertEquals(3, p.plans.get(0).count);
+        assertEquals(1, p.offset);
+        // Ha az idei dátum még nem volt meg, a tavalyi: dec. 24. 219 napja.
+        assertEquals(219, Activities.parse("december 24-én síeltem", friday).offset);
+        // A puszta hónapnév (nap nélkül) és a lehetetlen nap nem dátum.
+        assertEquals(0, Activities.parse("júliusban 10 edzés", friday).offset);
+        assertEquals(0, Activities.parse("február 30-án futottam", friday).offset);
+    }
+
     @Test public void everyDayMeansOnePerDay() {
         // A „minden nap" és a „naponta" gyakoriság: a darabszám naponta értendő.
         assertEquals("7d+0: 7×futas/45", summary("a héten minden nap futottam"));

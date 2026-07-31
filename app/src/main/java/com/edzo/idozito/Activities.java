@@ -407,6 +407,10 @@ public final class Activities {
         int[] span = findSpan(q);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
+            // Konkrét dátum hónapnévvel: „július 28-án".
+            int[] md = findMonthDay(q, now);
+            if (md != null) { offset = md[2]; blank(q, md[0], md[1]); }
+            else {
             // A „tegnap és ma" két nap: mától visszafelé oszlik el.
             int[] tm = findYesterdayAndToday(q);
             if (tm != null) {
@@ -422,6 +426,7 @@ public final class Activities {
                     int[] one = findSingleDay(q, now);
                     if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
                 }
+            }
             }
         }
         // Az „1-1" osztó számnév és a „minden nap": naponta ennyi. A jelentésük
@@ -534,6 +539,48 @@ public final class Activities {
             out.set(0, new Plan(p0.kind, Math.min(50, p0.count * days), p0.minutes, p0.km));
         }
         return new Parsed(out, days, offset, findHour(s));
+    }
+
+    private static final String[] MONTHS = {"januar", "februar", "marcius", "aprilis",
+            "majus", "junius", "julius", "augusztus", "szeptember", "oktober",
+            "november", "december"};
+
+    /**
+     * Konkrét dátum hónapnévvel: „július 28-án" → {kezdet, vég, hány napja}.
+     * A legutóbbi ilyen dátum: ha az idei még nem volt meg, a tavalyi. A rag
+     * és a nap száma is a kitakart részhez tartozik, hogy a szám ne váljon
+     * darabszámmá. A puszta „júliusban" (nap nélkül) nem dátum.
+     */
+    private static int[] findMonthDay(char[] q, long now) {
+        String s = new String(q);
+        for (int mi = 0; mi < MONTHS.length; mi++) {
+            int p = s.indexOf(MONTHS[mi]);
+            if (p < 0) continue;
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            int i = p + MONTHS[mi].length();
+            if (i < s.length() && Character.isLetter(s.charAt(i))) continue; // „júliusban"
+            int j = i;
+            while (j < s.length() && s.charAt(j) == ' ') j++;
+            int d = 0, k = j;
+            while (k < s.length() && Character.isDigit(s.charAt(k))) {
+                d = d * 10 + (s.charAt(k) - '0');
+                k++;
+            }
+            if (k == j || d < 1 || d > 31) continue;
+            while (k < s.length() && (s.charAt(k) == '-' || s.charAt(k) == '.'
+                    || Character.isLetter(s.charAt(k)))) k++;
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTimeInMillis(now);
+            cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+            cal.set(java.util.Calendar.MONTH, mi);
+            if (d > cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) continue;
+            cal.set(java.util.Calendar.DAY_OF_MONTH, d);
+            if (cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
+            int back = Days.between(cal.getTimeInMillis(), now);
+            if (back < 0 || back > 365) continue;
+            return new int[]{p, k, back};
+        }
+        return null;
     }
 
     /**
