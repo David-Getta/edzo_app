@@ -424,9 +424,11 @@ public final class Activities {
                 }
             }
         }
-        // Az „1-1" osztó számnév: naponta egy. A jelentése a napok számától
-        // függ, ezért csak a mozgásformák megtalálása UTÁN válik darabszámmá.
+        // Az „1-1" osztó számnév és a „minden nap": naponta ennyi. A jelentésük
+        // a napok számától függ, ezért csak a mozgásformák megtalálása UTÁN
+        // válnak darabszámmá.
         int dist = stripDistributive(q);
+        boolean daily = stripDaily(q);
 
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
         //    de a helyüket megjegyezzük, hogy a hozzájuk tartozó mozgáshoz
@@ -523,12 +525,13 @@ public final class Activities {
                 break;
             }
         }
-        // Az „1-1" kibontása: EGY mozgásnál naponta egyet jelent („tegnap és
-        // ma 1-1 futás" = két futás). Több mozgásnál fejenként egyet („1-1
-        // kézi és foci"), ott a darabszám már jó.
-        if (dist > 0 && days > 1 && out.size() == 1) {
+        // A naponkénti alakok kibontása: EGY mozgásnál a darabszám naponta
+        // értendő („tegnap és ma 1-1 futás" = két futás, „a héten minden nap
+        // futottam" = hét futás, „naponta kétszer" = 2 × napok). Több mozgásnál
+        // fejenként egyet jelent („1-1 kézi és foci"), ott a darabszám már jó.
+        if ((dist > 0 || daily) && days > 1 && out.size() == 1) {
             Plan p0 = out.get(0);
-            out.set(0, new Plan(p0.kind, Math.min(50, dist * days), p0.minutes, p0.km));
+            out.set(0, new Plan(p0.kind, Math.min(50, p0.count * days), p0.minutes, p0.km));
         }
         return new Parsed(out, days, offset, findHour(s));
     }
@@ -574,6 +577,16 @@ public final class Activities {
         int p = s.indexOf("egy-egy");
         if (p >= 0) { blank(q, p + 3, p + 7); return 1; }
         return 0;
+    }
+
+    /** „Minden nap", „naponta": a darabszám naponta értendő. */
+    private static boolean stripDaily(char[] q) {
+        String s = new String(q);
+        for (String w : new String[]{"minden nap", "mindennap", "naponta"}) {
+            int p = s.indexOf(w);
+            if (p >= 0) { blank(q, p, p + w.length()); return true; }
+        }
+        return false;
     }
 
     /**

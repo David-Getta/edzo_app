@@ -86,6 +86,20 @@ public class ActivitiesParseTest {
         assertEquals("2d+0: 4×uszas/45", summary("tegnap és ma 2-2 úszás"));
     }
 
+    @Test public void everyDayMeansOnePerDay() {
+        // A „minden nap" és a „naponta" gyakoriság: a darabszám naponta értendő.
+        assertEquals("7d+0: 7×futas/45", summary("a héten minden nap futottam"));
+        assertEquals("7d+0: 7×egyeb/45", summary("minden nap edzettem a héten"));
+        assertEquals("14d+0: 14×kondi/60", summary("2 hét alatt mindennap kondiztam"));
+        // A „naponta kétszer" szorzódik: 2 × 7 nap.
+        assertEquals(14, Activities.parse("naponta kétszer úsztam a héten")
+                .plans.get(0).count);
+        // Időszak nélkül nincs mivel szorozni: marad egy alkalom.
+        assertEquals(1, Activities.parse("minden nap futottam").plans.get(0).count);
+        // A „heti 3 kondi" heti összesen három, NEM naponta három.
+        assertEquals("7d+0: 3×kondi/60", summary("heti 3 kondi"));
+    }
+
     @Test public void yesterdayAndTodaySpreadOverTwoDays() {
         Activities.Parsed p = Activities.parse("tegnap és ma 1-1 futás");
         assertEquals(2, p.days);
