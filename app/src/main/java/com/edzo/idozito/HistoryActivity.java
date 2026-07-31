@@ -110,6 +110,14 @@ public class HistoryActivity extends Activity {
         navStack.addView(Ux.bottomNav(this, -1), new LinearLayout.LayoutParams(-1, -2));
         setContentView(navStack);
         col.post(() -> Ux.enterChildren(col, 30, 55)); // beúszó kártyák
+
+        // A kezdőlap „Edzés pótlása" csempéje ide érkezik: rögtön a felvételi
+        // lapot nyitjuk. A jelölőt levesszük, hogy a mentés utáni recreate()
+        // (ami ugyanezt az Intentet kapja) ne dobja fel újra.
+        if (getIntent().getBooleanExtra("add_manual", false)) {
+            getIntent().removeExtra("add_manual");
+            col.post(this::manualPickSheet);
+        }
     }
 
     @Override

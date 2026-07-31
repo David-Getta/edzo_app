@@ -973,6 +973,11 @@ public class MainActivity extends Activity {
     java.util.List<TileDef> allTileDefs() {
         java.util.List<TileDef> t = new java.util.ArrayList<>();
         t.add(new TileDef("history", "📜", "Előzmények", 0xFF8B9DFF, () -> startActivity(new Intent(this, HistoryActivity.class))));
+        // Kézi edzés-felvétel egy koppintásra: az Előzmények nyílik, és rögtön
+        // a mozgásforma-választó lap – kézilabda, úszás, kondi, vagy egy mondat.
+        t.add(new TileDef("manual", "📝", "Edzés pótlása", 0xFFF4A261,
+                () -> startActivity(new Intent(this, HistoryActivity.class)
+                        .putExtra("add_manual", true))));
         t.add(new TileDef("stats", "📈", "Statisztika", 0xFF5FD0FF, () -> startActivity(new Intent(this, StatsActivity.class))));
         t.add(new TileDef("profile", "📊", "Profil / BMI", 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
         t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
