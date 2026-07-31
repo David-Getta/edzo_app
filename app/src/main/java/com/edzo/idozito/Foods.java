@@ -57,7 +57,7 @@ public final class Foods {
         new Food("Édesburgonya", 90, 1.6, 200, "edesburgonya"),
         new Food("Bulgur (főtt)", 120, 4, 200, "bulgur"),
         new Food("Quinoa (főtt)", 120, 4.4, 200, "quinoa"),
-        new Food("Kenyér", 250, 8, 70, "kenyer"),
+        new Food("Kenyér", 250, 8, 70, "kenyer", "piritos", "bagett"),
         new Food("Zsemle", 280, 9, 55, "zsemle"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant"),
@@ -109,7 +109,7 @@ public final class Foods {
         new Food("Dió", 650, 15, 30, "dio"),
         new Food("Mandula", 580, 21, 30, "mandula"),
         new Food("Mogyoró", 570, 25, 30, "mogyoro"),
-        new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade"),
+        new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade", "kinder", "milka", "twix"),
         new Food("Keksz", 450, 6, 40, "kekssz", "keksz"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta"),
         new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt"),
@@ -148,7 +148,7 @@ public final class Foods {
                 "feherjeszelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
         new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics"),
-        new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog"),
+        new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog", "hot dog"),
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
         new Food("Müzliszelet", 400, 6, 30, "muzliszelet"),
@@ -186,8 +186,30 @@ public final class Foods {
         new Food("Cottage cheese", 100, 11, 150, "cottage"),
         new Food("Skyr", 65, 11, 150, "skyr"),
         new Food("Tofu", 120, 12, 150, "tofu"),
-        new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "cezar", "caesar"),
+        new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "cezar salata", "cezar", "caesar"),
         new Food("Sushi", 150, 6, 250, "sushi"),
+        // Éttermi kör: egy 57 neves próbából 18-at egyáltalán nem ismert az
+        // adatbázis, a görög saláta pedig 8 kcal-os zöldsalátának számított.
+        new Food("Cordon bleu", 250, 20, 180, "cordon"),
+        new Food("Brassói aprópecsenye", 180, 12, 400, "brassoi"),
+        new Food("Cigánypecsenye", 220, 18, 300, "ciganypecsenye", "cigany pecsenye"),
+        // A teljes alak is szótő, különben a „palacsinta" külön édességnek ülne rá.
+        new Food("Hortobágyi palacsinta", 160, 10, 250,
+                "hortobagyi palacsinta", "hortobagyi"),
+        new Food("Görög saláta", 90, 4, 250, "gorog salata"),
+        new Food("Tonhalsaláta", 150, 14, 250, "tonhalsalata", "tonhal salata"),
+        new Food("Curry", 150, 10, 300, "curry"),
+        new Food("Ramen", 120, 6, 500, "ramen"),
+        new Food("Pad thai", 170, 8, 350, "pad thai", "padthai"),
+        new Food("Burrito", 190, 10, 300, "burrito"),
+        new Food("Quesadilla", 250, 11, 200, "quesadilla"),
+        new Food("Falafel", 300, 13, 150, "falafel"),
+        new Food("Hummusz", 180, 8, 60, "hummus"),
+        new Food("Limonádé", 45, 0, 300, "limonade"),
+        new Food("Fröccs", 40, 0, 300, "froccs"),
+        new Food("Kombucha", 20, 0, 330, "kombucha"),
+        new Food("Ayran", 30, 1.7, 250, "ayran"),
+        new Food("Jégkása", 60, 0, 300, "jegkasa"),
         new Food("Lecsó", 70, 2, 300, "lecso"),
         new Food("Töltött paprika", 130, 8, 350, "toltott paprika"),
         new Food("Székelykáposzta", 150, 9, 350, "szekelykaposzta", "szekely kaposzta"),
@@ -274,7 +296,7 @@ public final class Foods {
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
         // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.
         new Food("Bors (fűszer)", 0, 0, 5, "borsoz", "bors"),
-        new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomenny", "tomeny", "vodka", "whisky"),
+        new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomenny", "tomeny", "vodka", "whisky", "jager"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",
                 "zabtej", "rizstej", "szojatej"),
         new Food("Szójakocka", 340, 50, 60, "szojakocka", "szoja"),
@@ -319,9 +341,10 @@ public final class Foods {
     static String norm(String s) {
         if (s == null) return "";
         s = s.toLowerCase(new Locale("hu"));
+        // Az ä nem magyar ékezet, de márkanevekben előfordul (Jägermeister).
         return s.replace('á','a').replace('é','e').replace('í','i').replace('ó','o')
                 .replace('ö','o').replace('ő','o').replace('ú','u').replace('ü','u')
-                .replace('ű','u');
+                .replace('ű','u').replace('ä','a');
     }
 
     // ---------- Saját ételek (felhasználó által felvéve) ----------

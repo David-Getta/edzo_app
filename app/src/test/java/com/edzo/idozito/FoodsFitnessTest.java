@@ -180,6 +180,47 @@ public class FoodsFitnessTest {
         assertEquals("Hekk (sült) + Sült krumpli", names("hekk sült krumplival"));
     }
 
+    @Test public void restaurantAndStreetFoodIsKnown() {
+        // Egy 57 neves éttermi próbából 18 hiányzott – a leggyakoribbak pótolva.
+        String[] known = {"cordon bleu", "brassói aprópecsenye", "cigánypecsenye",
+                "hot dog", "hot-dog", "ramen", "pad thai", "burrito", "quesadilla", "falafel",
+                "hummusz", "limonádé", "fröccs", "kombucha", "ayran"};
+        StringBuilder missing = new StringBuilder();
+        for (String w : known)
+            if (Foods.parse(Arrays.asList(Foods.ALL), w).isEmpty())
+                missing.append("\n  ").append(w);
+        assertTrue("nem ismeri fel:" + missing, missing.length() == 0);
+        // Márkás csokik és a vadász: a márkanév is szótő.
+        assertEquals("Csokoládé", names("kinder"));
+        assertEquals("Csokoládé", names("milka"));
+        assertEquals("Pálinka / tömény", names("jägermeister"));
+    }
+
+    @Test public void saladsAreNotEightCalories() {
+        // A görög saláta feta és olaj: nem 8 kcal-os zöldsaláta. A cézár pedig
+        // duplán számolt (csirkés saláta + zöldsaláta).
+        assertEquals("Görög saláta", names("görög saláta"));
+        assertTrue(kcal("görög saláta") > 150);
+        assertEquals("Csirkés saláta", names("cézár saláta"));
+        assertEquals("Tonhalsaláta", names("tonhalsaláta"));
+        // A sima saláta és a görög joghurt marad, ami volt.
+        assertEquals("Saláta (zöld)", names("saláta"));
+        assertEquals("Görög joghurt", names("görög joghurt"));
+        assertEquals("Tonhal", names("tonhal"));
+    }
+
+    @Test public void toastAndPancakeDishesKeepTheirParts() {
+        // Az „avokádós pirítós" fele eltűnt: a pirítós nem volt szótő.
+        assertEquals("Avokádó + Kenyér", names("avokádós pirítós"));
+        assertEquals("Kenyér", names("bagett"));
+        // A hortobágyi palacsinta húsos főfogás, nem édes palacsinta – és
+        // nem is kettő (Hortobágyi + Palacsinta).
+        assertEquals("Hortobágyi palacsinta", names("hortobágyi palacsinta"));
+        assertEquals("Palacsinta", names("palacsinta"));
+        // A curry a rizs mellett külön étel.
+        assertEquals("Curry + Rizs (főtt)", names("curry rizzsel"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.
