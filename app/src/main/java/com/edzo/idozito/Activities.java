@@ -50,7 +50,7 @@ public final class Activities {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocogas", "futok"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
-                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz"),
+                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "tekeres"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
@@ -511,11 +511,40 @@ public final class Activities {
                         continue;
                     }
                 }
-                int[] n = numberBefore(s, p, 8);
-                if (n == null) continue;
-                int val = unit.equals("ora") ? n[2] * 60 : n[2];
+                // Tizedes is lehet („1,5 óra"): az egész-számnév-kereső a vessző
+                // utáni 5-öt látta volna, és 5 órának értette – ami elé ráadásul
+                // az „1" darabszámként csúszott be.
+                int numEnd2 = p;
+                while (numEnd2 > 0 && s.charAt(numEnd2 - 1) == ' ') numEnd2--;
+                int numStart2 = numEnd2;
+                boolean dot2 = false;
+                while (numStart2 > 0) {
+                    char c2 = s.charAt(numStart2 - 1);
+                    if (Character.isDigit(c2)) { numStart2--; continue; }
+                    if ((c2 == ',' || c2 == '.') && !dot2 && numStart2 - 1 > 0
+                            && Character.isDigit(s.charAt(numStart2 - 2))) {
+                        dot2 = true; numStart2--; continue;
+                    }
+                    break;
+                }
+                int val;
+                int numPos;
+                if (numStart2 < numEnd2) {
+                    double d2;
+                    try {
+                        d2 = Double.parseDouble(
+                                s.substring(numStart2, numEnd2).replace(',', '.'));
+                    } catch (NumberFormatException e2) { continue; }
+                    val = (int) Math.round(d2 * (unit.equals("ora") ? 60 : 1));
+                    numPos = numStart2;
+                } else {
+                    int[] n = numberBefore(s, p, 8);
+                    if (n == null) continue;
+                    val = unit.equals("ora") ? n[2] * 60 : n[2];
+                    numPos = n[0];
+                }
                 if (val < 1 || val > 24 * 60) continue;
-                out.add(new int[]{n[0], val, p + unit.length()});
+                out.add(new int[]{numPos, val, p + unit.length()});
             }
         }
         return out;

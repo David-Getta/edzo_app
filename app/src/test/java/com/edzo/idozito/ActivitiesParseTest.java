@@ -118,6 +118,19 @@ public class ActivitiesParseTest {
         assertEquals(5, Activities.parse("kb 5 futás").plans.get(0).count);
     }
 
+    @Test public void decimalHoursAreNotFiveHours() {
+        // Az „1,5 óra" korábban 5 órának számított (a vessző utáni 5-öt látta),
+        // az elé csúszott „1" pedig darabszám lett: a „2,5 óra túra" KÉT túrát
+        // adott 300 perccel. Most egy túra 150 perccel.
+        assertEquals("1d+0: 1×kerekpar/90", summary("1,5 óra bringa"));
+        assertEquals("1d+0: 1×tura/150", summary("2,5 óra túra"));
+        assertEquals("1d+0: 1×futas/30", summary("0,5 óra futás"));
+        assertEquals("1d+0: 1×uszas/90", summary("1,5 órát úsztam"));
+        // Az egész órák nem romolhattak el.
+        assertEquals("1d+0: 1×joga/60", summary("egy óra jóga"));
+        assertEquals("1d+0: 2×tenisz/60", summary("2 tenisz 1 óra"));
+    }
+
     @Test public void distancesAreUnderstoodAndNotMistakenForCounts() {
         // A „10 km futás” EGY tíz kilométeres futás – nem tíz darab futás.
         Activities.Plan p = Activities.parse("10 km futás").plans.get(0);
