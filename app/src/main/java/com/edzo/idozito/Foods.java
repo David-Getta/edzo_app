@@ -703,6 +703,15 @@ public final class Foods {
                 bareNumLen.add(i - start);
             }
         }
+        // Mennyiség-plafon: 50 kg fölött a szám elgépelés, nem adag. Egy
+        // „9999999999 g" alakú elütés különben milliárd-kalóriás étkezésként
+        // mérgezné meg a napi összesítőt, a statisztikát és a diagramokat –
+        // némán. Ilyenkor inkább mennyiség nélkül hagyjuk, mint a képtelen
+        // darabszámnál: ott 20 a határ.
+        for (int k2 = numVal.size() - 1; k2 >= 0; k2--) {
+            double v = numVal.get(k2);
+            if (v <= 0 || v > 50_000) { numVal.remove(k2); numPos.remove(k2); }
+        }
         double[] grams = new double[foods.size()];
         // Minden gramm-érték a hozzá legközelebbi ételhez kerül, amelyiknek még nincs.
         //

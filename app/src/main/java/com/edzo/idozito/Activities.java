@@ -374,6 +374,9 @@ public final class Activities {
                 minutes = kmOf[i] > 0
                         ? Math.max(1, (int) Math.round(kmOf[i] * minPerKm(kind)))
                         : kind.defaultMin;
+            // A távból becsült hossz is maradjon egy napon belül (100 km úszás
+            // tempóból számolva 41 óra lenne).
+            minutes = Math.min(minutes, 24 * 60);
             out.add(new Plan(kind, count, minutes, kmOf[i]));
         }
 
