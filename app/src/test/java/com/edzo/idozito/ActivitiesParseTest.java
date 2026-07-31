@@ -86,6 +86,24 @@ public class ActivitiesParseTest {
         assertEquals("2d+0: 4×uszas/45", summary("tegnap és ma 2-2 úszás"));
     }
 
+    @Test public void aHundredPushupsIsOneWorkoutNotFifty() {
+        // A „100 fekvőtámasz" száz ISMÉTLÉS – korábban 50 külön kondi-edzésként
+        // került volna a naplóba (a darabszám-korlátig felszorozva).
+        Activities.Parsed p = Activities.parse("100 fekvőtámasz");
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        // Az idő az ismétlésszámból jön, nem az egyórás alapból.
+        assertEquals(20, Activities.parse("megcsináltam 100 fekvőtámaszt")
+                .plans.get(0).minutes);
+        assertEquals(1, Activities.parse("50 guggolás").plans.get(0).count);
+        assertEquals(1, Activities.parse("30 felülés").plans.get(0).count);
+        // A kis szám viszont alkalom marad: két fekvőtámasz-edzés az kettő.
+        assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
+        // Kimondott idő erősebb a becslésnél.
+        assertEquals(15, Activities.parse("100 fekvőtámasz 15 perc")
+                .plans.get(0).minutes);
+    }
+
     @Test public void aDateWithAMonthNameIsUnderstood() {
         // 2026. július 31. péntek dél (Budapest).
         java.util.Calendar c = java.util.Calendar.getInstance();

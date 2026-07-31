@@ -275,6 +275,27 @@ public class FoodsFitnessTest {
         assertEquals("Burgonyapüré", names("krumplipüré"));
     }
 
+    @Test public void saucesAreNotTheirMainIngredient() {
+        // A „szójaszósz" szójakockának számított: 204 kcal egy löttyintésnyi
+        // ~6 helyett. Az összetett nevek nem esnek két ételre.
+        assertEquals("Szójaszósz", names("szójaszósz"));
+        assertTrue(kcal("szójaszósz") < 20);
+        assertEquals("Szósz / mártás", names("sajtszósz"));
+        assertEquals("Szósz / mártás", names("fokhagymaszósz"));
+        assertEquals("Szósz / mártás", names("csípős szósz"));
+        assertEquals("Tartármártás", names("tartármártás"));
+        assertEquals("Pesto", names("pesto"));
+        assertEquals("Guacamole", names("guacamole"));
+        assertEquals("Tzatziki", names("tzatziki"));
+        assertEquals("Balzsamecet", names("balzsamecet"));
+        // A szomszédok élnek: szójakocka, sajt, hagyma, öntet.
+        assertEquals("Szójakocka", names("szójakocka"));
+        assertEquals("Sajt (trappista)", names("sajt"));
+        assertEquals("Hagyma", names("hagyma"));
+        assertEquals("Kefires / joghurtos öntet", names("salátaöntet"));
+        assertEquals("Sült krumpli + Majonéz", names("sült krumpli majonézzel"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.

@@ -102,6 +102,18 @@ public final class Foods {
         new Food("Olaj", 900, 0, 10, "olaj"),
         new Food("Majonéz", 680, 1, 20, "majonez"),
         new Food("Ketchup", 110, 1.7, 20, "ketchup"),
+        // Szósz-kör: a „szójaszósz" szójakockának számított (204 kcal egy
+        // löttyintésnyi ~6 helyett), a mártások fele pedig ismeretlen volt.
+        // Az összetett alakok („sajtszósz") teljes szótövek, hogy ne essenek
+        // sajt + szósz kettőre.
+        new Food("Szósz / mártás", 120, 2, 30, "szosz", "martas",
+                "sajtszosz", "fokhagymaszosz", "gombamartas"),
+        new Food("Szójaszósz", 60, 6, 10, "szojaszosz", "szoja szosz"),
+        new Food("Tartármártás", 520, 1, 30, "tartarmartas", "tartar"),
+        new Food("Pesto", 450, 5, 30, "pesto"),
+        new Food("Guacamole", 150, 2, 50, "guacamole", "guakamole"),
+        new Food("Tzatziki", 90, 3, 50, "tzatziki", "cacik"),
+        new Food("Balzsamecet", 90, 0.5, 10, "balzsamecet", "balzsam"),
         new Food("Alma", 52, 0.3, 150, "alma"),
         new Food("Banán", 89, 1.1, 120, "banan"),
         new Food("Narancs", 47, 0.9, 150, "narancs", "naranccs"),

@@ -62,7 +62,8 @@ public final class Activities {
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
-                    "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod"),
+                    "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    "guggolas", "felules", "huzodzkodas", "plank"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
@@ -502,12 +503,26 @@ public final class Activities {
             used[h[2]] = true;
             Kind kind = ALL[h[2]];
             int count = countBefore(s, h[0]);
+            // A „100 fekvőtámasz" száz ISMÉTLÉS, nem száz edzés – az
+            // ismétlés-szavaknál a nagy szám egyetlen alkalom, és az időt is
+            // az ismétlésszámból becsüljük.
+            int reps = 0;
+            if (isRepWord(s.substring(h[0], Math.min(s.length(), h[0] + h[1])))
+                    && count > 3) {
+                // A nyers szám kell: a darabszám-korlát (50) az ismétlésekre
+                // nem vonatkozik – száz fekvőtámasz létezik.
+                int[] raw = numberBefore(s, h[0], NUM_REACH);
+                reps = raw != null ? Math.max(count, Math.min(1000, raw[2])) : count;
+                count = 1;
+            }
             int next = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
             int minutes = minutesFor(mins, h[0], next, 0);
             if (minutes <= 0)
-                // Nincs kimondott időtartam: távból becsülünk (tipikus tempóval),
+                // Nincs kimondott időtartam: távból vagy ismétlésből becsülünk,
                 // anélkül a mozgásforma szokásos hossza jön.
-                minutes = kmOf[i] > 0
+                minutes = reps > 0
+                        ? Math.max(5, Math.min(60, reps / 5))
+                        : kmOf[i] > 0
                         ? Math.max(1, (int) Math.round(kmOf[i] * minPerKm(kind)))
                         : kind.defaultMin;
             // A távból becsült hossz is maradjon egy napon belül (100 km úszás
@@ -624,6 +639,14 @@ public final class Activities {
         int p = s.indexOf("egy-egy");
         if (p >= 0) { blank(q, p + 3, p + 7); return 1; }
         return 0;
+    }
+
+    /** Ismétlés-alapú gyakorlatszavak: előttük a nagy szám ismétlés, nem alkalom. */
+    private static boolean isRepWord(String w) {
+        for (String r : new String[]{"fekvotamasz", "guggolas", "felules",
+                "huzodzkodas", "plank"})
+            if (w.startsWith(r)) return true;
+        return false;
     }
 
     /** „Minden nap", „naponta": a darabszám naponta értendő. */
