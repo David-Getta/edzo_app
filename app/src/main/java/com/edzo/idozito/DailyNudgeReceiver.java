@@ -81,6 +81,22 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 text += "\n💧 Vízből " + Water.liters(cl) + " megvan – igyál még "
                         + Water.liters(goalCl - cl) + "-t ma!";
         } catch (Exception ignored) {}
+        // Sport-tudatos sor: ha a szokásos sportág (pl. heti kézilabda) régóta
+        // kimaradt, azt név szerint mondjuk – az személyesebb a általánosnál.
+        try {
+            org.json.JSONArray hist = History.load(c);
+            String[] ks = new String[hist.length()];
+            String[] ns = new String[hist.length()];
+            long[] tss = new long[hist.length()];
+            for (int i = 0; i < hist.length(); i++) {
+                org.json.JSONObject o = hist.optJSONObject(i);
+                ks[i] = o == null ? "" : o.optString("kind", "");
+                ns[i] = o == null ? "x" : o.optString("name", "");
+                tss[i] = o == null ? 0 : o.optLong("ts");
+            }
+            String miss = Activities.missedSport(ks, ns, tss, System.currentTimeMillis());
+            if (miss != null) text += "\n" + miss;
+        } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;

@@ -156,6 +156,50 @@ public final class Activities {
         return out;
     }
 
+    /**
+     * „Rég volt kézilabda" – a napi biztatás sport-tudatos sora, vagy null.
+     *
+     * Azt a sportot keressük, ami a felhasználónak láthatóan szokása (legalább
+     * három alkalom az elmúlt 30 napban), de legalább egy hete kimaradt. Az
+     * általános „ideje edzeni" bárkinek szólhat; az, hogy „9 napja nem volt
+     * kézilabda", csak neki – és pont ettől hat.
+     *
+     * A mért (névtelen) futás a futás sporthoz számít, ahogy a bontásban is.
+     * Ami nem sorolható be, az kimarad – ebből a sorból tévedni rosszabb,
+     * mint hallgatni.
+     */
+    public static String missedSport(String[] kinds, String[] names, long[] ts, long now) {
+        long day = 24L * 3600 * 1000;
+        java.util.HashMap<String, long[]> per = new java.util.HashMap<>(); // id → {30 napi darab, utolsó ts}
+        int n = Math.min(kinds.length, Math.min(names.length, ts.length));
+        for (int i = 0; i < n; i++) {
+            Kind k = byId(kinds[i]);
+            String id;
+            if (k != null) id = k.id;
+            else if (names[i] == null || names[i].isEmpty()) id = "futas";
+            else continue;                          // programos időzítős edzés: nem sportág
+            long age = now - ts[i];
+            if (age < 0 || age > 60 * day) continue;
+            long[] row = per.get(id);
+            if (row == null) per.put(id, row = new long[2]);
+            if (age <= 30 * day) row[0]++;
+            row[1] = Math.max(row[1], ts[i]);
+        }
+        String bestId = null;
+        long bestCount = 0;
+        for (java.util.Map.Entry<String, long[]> e : per.entrySet()) {
+            if (e.getValue()[0] >= 3 && e.getValue()[0] > bestCount) {
+                bestCount = e.getValue()[0];
+                bestId = e.getKey();
+            }
+        }
+        if (bestId == null) return null;
+        int daysSince = Days.between(per.get(bestId)[1], now);
+        if (daysSince < 7) return null;
+        Kind k = byId(bestId);
+        return k.title() + ": " + daysSince + " napja kimaradt – ideje újra!";
+    }
+
     // ---------------- Szöveges felvétel ----------------
 
     /** Egy tétel a szövegből: hány alkalom, melyik mozgásból, mennyi ideig. */
