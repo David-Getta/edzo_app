@@ -382,15 +382,26 @@ public final class Activities {
         int[] span = findSpan(q);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
-            // A „hétvégén" a legutóbbi szombat–vasárnap, nem a mai nap.
-            int[] we = findWeekend(q, now);
-            if (we != null) { offset = we[2]; days = we[3]; blank(q, we[0], we[1]); }
-            else {
-                // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
-                int[] one = findSingleDay(q, now);
-                if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+            // A „tegnap és ma" két nap: mától visszafelé oszlik el.
+            int[] tm = findYesterdayAndToday(q);
+            if (tm != null) {
+                days = 2;
+                blank(q, tm[0], tm[0] + 6);
+                blank(q, tm[1], tm[1] + 2);
+            } else {
+                // A „hétvégén" a legutóbbi szombat–vasárnap, nem a mai nap.
+                int[] we = findWeekend(q, now);
+                if (we != null) { offset = we[2]; days = we[3]; blank(q, we[0], we[1]); }
+                else {
+                    // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
+                    int[] one = findSingleDay(q, now);
+                    if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+                }
             }
         }
+        // Az „1-1" osztó számnév: naponta egy. A jelentése a napok számától
+        // függ, ezért csak a mozgásformák megtalálása UTÁN válik darabszámmá.
+        int dist = stripDistributive(q);
 
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
         //    de a helyüket megjegyezzük, hogy a hozzájuk tartozó mozgáshoz
@@ -487,7 +498,57 @@ public final class Activities {
                 break;
             }
         }
+        // Az „1-1" kibontása: EGY mozgásnál naponta egyet jelent („tegnap és
+        // ma 1-1 futás" = két futás). Több mozgásnál fejenként egyet („1-1
+        // kézi és foci"), ott a darabszám már jó.
+        if (dist > 0 && days > 1 && out.size() == 1) {
+            Plan p0 = out.get(0);
+            out.set(0, new Plan(p0.kind, Math.min(50, dist * days), p0.minutes, p0.km));
+        }
         return new Parsed(out, days, offset, findHour(s));
+    }
+
+    /**
+     * „Tegnap és ma" → {tegnap kezdete, ma kezdete}. Mindkét szónak külön kell
+     * szerepelnie – a „tegnapelőtt" nem ez az eset.
+     */
+    private static int[] findYesterdayAndToday(char[] q) {
+        String s = new String(q);
+        int t = s.indexOf("tegnap");
+        if (t < 0 || s.startsWith("tegnapelott", t)) return null;
+        // Önálló „ma" szó (nem szórészlet, és nem a „tegnap" belseje).
+        int from = 0;
+        while (true) {
+            int m = s.indexOf("ma", from);
+            if (m < 0) return null;
+            from = m + 1;
+            if (m >= t && m < t + 6) continue;
+            if (m > 0 && Character.isLetter(s.charAt(m - 1))) continue;
+            if (m + 2 < s.length() && Character.isLetter(s.charAt(m + 2))) continue;
+            return new int[]{t, m};
+        }
+    }
+
+    /**
+     * Az „1-1" (és az „egy-egy") osztó számnév: a kötőjeles részt kitakarjuk,
+     * az értékét visszaadjuk – a kibontás a mozgások ismeretében történik.
+     * A „10-15 perc" tartomány nem ez: ott a két szám különbözik.
+     */
+    private static int stripDistributive(char[] q) {
+        String s = new String(q);
+        for (int i = 0; i + 2 < s.length(); i++) {
+            if (Character.isDigit(s.charAt(i)) && s.charAt(i + 1) == '-'
+                    && s.charAt(i + 2) == s.charAt(i)
+                    && (i == 0 || !Character.isDigit(s.charAt(i - 1)))
+                    && (i + 3 >= s.length() || !Character.isDigit(s.charAt(i + 3)))) {
+                q[i + 1] = ' ';
+                q[i + 2] = ' ';
+                return s.charAt(i) - '0';
+            }
+        }
+        int p = s.indexOf("egy-egy");
+        if (p >= 0) { blank(q, p + 3, p + 7); return 1; }
+        return 0;
     }
 
     /**

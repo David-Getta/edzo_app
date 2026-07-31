@@ -73,6 +73,36 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("hétvégén 2 túra").days <= 2);
     }
 
+    @Test public void oneEachPerDayIsUnderstood() {
+        // A „tegnap és ma 1-1 futás" tipikus magyar forma: naponta egy.
+        assertEquals("2d+0: 2×futas/45", summary("tegnap és ma 1-1 futás"));
+        assertEquals("2d+0: 2×futas/45", summary("tegnap és ma egy-egy futás"));
+        assertEquals("3d+0: 3×kondi/60", summary("az elmúlt 3 napban 1-1 kondi"));
+        // Két mozgásnál az „1-1" fejenként egyet jelent, nem naponta egyet.
+        assertEquals("1d+0: 1×kezilabda/90, 1×foci/90", summary("1-1 kézi és foci"));
+        // A „10-15 perc" tartomány nem osztó számnév.
+        assertEquals(1, Activities.parse("futás 10-15 perc").plans.get(0).count);
+        // A „2-2" is működik: naponta kettő.
+        assertEquals("2d+0: 4×uszas/45", summary("tegnap és ma 2-2 úszás"));
+    }
+
+    @Test public void yesterdayAndTodaySpreadOverTwoDays() {
+        Activities.Parsed p = Activities.parse("tegnap és ma 1-1 futás");
+        assertEquals(2, p.days);
+        assertEquals(0, p.offset);
+        // Az egyik bejegyzés ma, a másik tegnap – nem mindkettő tegnap.
+        long now = System.currentTimeMillis();
+        long[] ts = Activities.timestamps(p, now);
+        assertEquals(2, ts.length);
+        assertTrue("az első a mai mostani pillanat", now - ts[0] < 60_000);
+        assertTrue("a második a tegnapi napra esik",
+                ts[1] < now - 11L * 3600 * 1000 && ts[1] > now - 48L * 3600 * 1000);
+        // A sima „tegnap"/„ma" nem sérül.
+        assertEquals(1, Activities.parse("tegnap 1 kondi").offset);
+        assertEquals(0, Activities.parse("ma 2 futás").offset);
+        assertEquals(2, Activities.parse("tegnapelőtt 2 kondi").offset);
+    }
+
     @Test public void theWeekendMeansLastSaturdayAndSunday() {
         // 2026. július 31. péntek dél (Budapest).
         java.util.Calendar c = java.util.Calendar.getInstance();
