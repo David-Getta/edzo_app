@@ -152,6 +152,46 @@ public final class Activities {
         }
     }
 
+    /**
+     * A terv bejegyzéseinek időbélyegei, a mentés sorrendjében (tervenként,
+     * azon belül alkalmanként).
+     *
+     * A szabályok, amiken jelvény és megjelenítés múlik:
+     *
+     * – A MAI bejegyzés a mostani pillanatot kapja: ettől lesz igaz a
+     *   „ma edzett", és nem kerül a jövőbe.
+     * – A MÚLTBELI nap délidőt kap. A rögzítés óra-perce ott hazugság lenne:
+     *   a tegnapelőtti kézilabda nem este 11-kor volt, csak akkor lett beírva.
+     * – Több alkalom egyenletesen oszlik el az időszakon (6 kézi 3 napra =
+     *   naponta kettő), és minden bejegyzés KÜLÖNBÖZŐ időbélyeget kap – az
+     *   időbélyeg azonosítja őket megnyitáskor és törléskor.
+     */
+    public static long[] timestamps(Parsed p, long now) {
+        int n = 0;
+        for (Plan pl : p.plans) n += pl.count;
+        long[] out = new long[n];
+        int i = 0;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        for (Plan pl : p.plans) {
+            for (int k = 0; k < pl.count; k++) {
+                int dayBack = p.offset + (p.days > 1 ? (k * p.days) / pl.count : 0);
+                cal.setTimeInMillis(now);
+                cal.add(java.util.Calendar.DAY_OF_YEAR, -dayBack);
+                if (dayBack > 0) {
+                    cal.set(java.util.Calendar.HOUR_OF_DAY, 12);
+                    cal.set(java.util.Calendar.MINUTE, 0);
+                    cal.set(java.util.Calendar.SECOND, 0);
+                    cal.set(java.util.Calendar.MILLISECOND, 0);
+                }
+                // Másodperc-eltolás: elég az egyediséghez, de éjfél körül sem
+                // csúsztatja át a bejegyzést az előző napra.
+                cal.add(java.util.Calendar.SECOND, -i);
+                out[i++] = cal.getTimeInMillis();
+            }
+        }
+        return out;
+    }
+
     private static final String[][] NUM_WORDS = {
             {"tizenket", "12"}, {"tizenegy", "11"}, {"tizenkett", "12"},
             {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},

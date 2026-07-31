@@ -98,9 +98,15 @@ public final class Badges {
             long ts = o.optLong("ts", 0);
             if (ts > 0) {
                 c.setTimeInMillis(ts);
-                int h = c.get(java.util.Calendar.HOUR_OF_DAY);
-                if (h < 7) early = true;
-                if (h >= 22) night = true;
+                // Kézzel felvett edzésnél az időbélyeg a RÖGZÍTÉS pillanata, nem
+                // az edzésé: aki este viszi fel a délutáni kézilabdát, nem lett
+                // tőle éjjeli bagoly. A napszak-jelvényekbe ezért csak a mért
+                // edzés számít – ott az óra valódi.
+                if (!o.optBoolean("manual", false)) {
+                    int h = c.get(java.util.Calendar.HOUR_OF_DAY);
+                    if (h < 7) early = true;
+                    if (h >= 22) night = true;
+                }
                 days.add(dayStart(c, ts));
             }
         }

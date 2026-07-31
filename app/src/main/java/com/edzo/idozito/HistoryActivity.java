@@ -537,6 +537,14 @@ public class HistoryActivity extends Activity {
 
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.add(java.util.Calendar.DAY_OF_YEAR, -ago);
+        if (ago > 0) {
+            // Múltbeli napra a rögzítés óra-perce hazugság lenne (a jelvények és
+            // a lista is az időbélyeget mutatja) – délidő a becsületes semleges.
+            cal.set(java.util.Calendar.HOUR_OF_DAY, 12);
+            cal.set(java.util.Calendar.MINUTE, 0);
+            cal.set(java.util.Calendar.SECOND, 0);
+            cal.set(java.util.Calendar.MILLISECOND, 0);
+        }
         long ts = cal.getTimeInMillis();
 
         int durSec = min * 60;
@@ -598,20 +606,13 @@ public class HistoryActivity extends Activity {
     }
 
     void saveBulk(Activities.Parsed p) {
+        long[] ts = Activities.timestamps(p, System.currentTimeMillis());
         int i = 0;
         for (Activities.Plan pl : p.plans) {
             for (int n = 0; n < pl.count; n++) {
-                // Az alkalmakat egyenletesen osztjuk szét az időszakon.
-                int dayBack = p.offset + (p.days > 1 ? (n * p.days) / pl.count : 0);
-                java.util.Calendar cal = java.util.Calendar.getInstance();
-                cal.add(java.util.Calendar.DAY_OF_YEAR, -dayBack);
-                // Minden bejegyzésnek külön időpont: az időbélyeg azonosítja őket
-                // (megnyitás, törlés), két azonos időbélyeget nem lehetne szétválasztani.
-                cal.add(java.util.Calendar.MINUTE, -i);
                 double kcal = Activities.calories(pl.kind, Profile.lastWeight(this), pl.minutes);
-                History.addManual(this, cal.getTimeInMillis(), pl.minutes * 60, -1,
+                History.addManual(this, ts[i++], pl.minutes * 60, -1,
                         kcal, -1, pl.kind.title(), pl.kind.id);
-                i++;
             }
         }
         BlazeWidget.refresh(this);
