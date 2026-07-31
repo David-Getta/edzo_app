@@ -28,12 +28,12 @@ import java.util.Locale;
 public class HistoryActivity extends Activity {
 
     static int BG, TXT, MUTED, LINE, GLASS, GLASS_LINE;
-    static final int RUN_C = 0xFFE11D2E, GYM_C = 0xFFFF4757; // futás = cián / erő = magenta
+    static final int RUN_C = 0xFFE11D2E, GYM_C = 0xFFFF4757; // kardió mély, erő világosabb vörös
 
     int accent, accent2;
     boolean pace;
     int lastCount = -1; // az onCreate-kori edzésszám (törlés után frissítéshez)
-    // Szűrő: 0 = mind, 1 = futás, 2 = erő/gyakorlat
+    // Szűrő: 0 = mind, 1 = kardió (futás/úszás/bringa…), 2 = erő/gyakorlat
     int filter = 0;
 
     /** Egyszerre ennyi edzés-kártya épül fel; a gomb továbbiakat tölt be. */
@@ -133,7 +133,8 @@ public class HistoryActivity extends Activity {
 
     View filterRow() {
         LinearLayout row = hbox();
-        String[] labels = {"Mind", "🏃 Futás", "🏋️ Erő"};
+        // A Kardió a mért futás mellett a kézzel felvett úszást/bringát/túrát is fogja.
+        String[] labels = {"Mind", "🏃 Kardió", "🏋️ Erő"};
         for (int i = 0; i < 3; i++) {
             final int idx = i;
             TextView c = text(labels[i], 13, TXT, true);
