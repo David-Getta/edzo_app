@@ -221,6 +221,28 @@ public class FoodsFitnessTest {
         assertEquals("Curry + Rizs (főtt)", names("curry rizzsel"));
     }
 
+    @Test public void theCanteenClassicsResolveCorrectly() {
+        // Menza-kör: a sóska semmi volt, a kelkáposzta főzelék kettőnek
+        // számolt, a mákos tészta mákja eltűnt, a rántott karfiol pedig
+        // 38 kcal-os NYERS karfiol lett.
+        assertEquals("Főzelék", names("sóska"));
+        assertEquals("Főzelék", names("sóskafőzelék"));
+        assertEquals("Főzelék", names("kelkáposzta főzelék"));
+        assertEquals("Mákos tészta", names("mákos tészta"));
+        assertEquals("Tarhonyás hús", names("tarhonyás hús"));
+        assertEquals("Grenadírmars (krumplis tészta)", names("grenadírmars"));
+        assertEquals("Grenadírmars (krumplis tészta)", names("krumplis tészta"));
+        assertEquals("Rántott zöldség", names("rántott karfiol"));
+        assertTrue("a rántott karfiol nem nyers karfiol",
+                kcal("rántott karfiol") > 200);
+        // A szomszédok élnek: tökfőzelék, sima tészta, nyers karfiol, guba.
+        assertEquals("Tökfőzelék", names("tökfőzelék"));
+        assertEquals("Tészta (főtt)", names("tészta"));
+        assertEquals("Karfiol", names("karfiol"));
+        assertEquals("Mákos guba", names("mákos guba"));
+        assertEquals("Rakott kelkáposzta", names("rakott kelkáposzta"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.

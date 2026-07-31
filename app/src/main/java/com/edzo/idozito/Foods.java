@@ -70,7 +70,9 @@ public final class Foods {
         new Food("Lángos", 320, 7, 200, "langos"),
         new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves", "gulyas"),
         new Food("Pörkölt", 180, 15, 300, "porkolt"),
-        new Food("Főzelék", 80, 3, 350, "fozelek"),
+        // A „sóska" magában is a főzeléket jelenti; a „kelkáposzta főzelék"
+        // teljes alakja szótő, különben káposzta + főzelék kettőnek számolna.
+        new Food("Főzelék", 80, 3, 350, "fozelek", "soska", "kelkaposzta fozelek"),
         new Food("Leves (átlag)", 50, 3, 400, "leves"),
         new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott"),
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta"),
@@ -169,6 +171,14 @@ public final class Foods {
         new Food("Tortilla / wrap", 250, 8, 200, "tortilla", "wrap"),
         new Food("Túrós csusza", 210, 10, 300, "turos csusza", "csusza"),
         new Food("Grízes tészta", 200, 6, 300, "grizes teszta", "griz"),
+        // Menza-kör: a mákos tészta mákja eddig eltűnt (csak főtt tészta lett),
+        // a grenadírmars és a rántott zöldség pedig ismeretlen volt.
+        new Food("Mákos tészta", 250, 7, 300, "makos teszta"),
+        new Food("Tarhonyás hús", 160, 10, 400, "tarhonyas hus"),
+        new Food("Grenadírmars (krumplis tészta)", 150, 4, 400,
+                "grenadir", "krumplis teszta"),
+        new Food("Rántott zöldség", 180, 5, 200, "rantott karfiol",
+                "rantott zoldseg", "rantott brokkoli", "rantott cukkini"),
         new Food("Kakaós csiga", 380, 7, 90, "kakaos csiga", "csiga"),
         // A „meggyes rétes" két szó, egy sütemény: a teljes alak szótő, hogy a
         // gyümölcs ne számolódjon külön tételként mellé.
