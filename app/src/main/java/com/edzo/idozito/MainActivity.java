@@ -2598,6 +2598,13 @@ public class MainActivity extends Activity {
                     }
                     if (n.isEmpty()) n = "Saját program";
                     if (existing != null) Programs.removeCustom(this, existing.name);
+                    // Név-ütközés: a byName mindig az ELSŐ találatot adja, tehát
+                    // egy másodszor is elmentett név némán árnyékolódna – a
+                    // beépített programok neve mögött pedig a saját program
+                    // elérhetetlenné válna. Ütközésnél sorszámot kap.
+                    String base = n;
+                    int k = 2;
+                    while (Programs.byName(this, n) != null) n = base + " (" + (k++) + ")";
                     Programs.addCustom(this, n, list.toArray(new String[0]));
                     programName = n;
                     saveProgram();
