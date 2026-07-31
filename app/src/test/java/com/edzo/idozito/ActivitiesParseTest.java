@@ -246,6 +246,27 @@ public class ActivitiesParseTest {
         assertEquals(3, Activities.parse("3 darabot futottam").plans.get(0).count);
     }
 
+    @Test public void theExampleSentencesShownToTheUserAllParse() {
+        // Ugyanezek a minták váltakoznak a beviteli mezőben – ha egy példa
+        // nem működne, pont a mintamondat járatná le a felismerést.
+        String[] examples = {
+                "az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés",
+                "kétszer úsztam a héten",
+                "tegnap 10 km futás 50 perc alatt",
+                "hétfőn 1 óra 15 perc kondi",
+                "leúsztam 1500 métert",
+                "egy hónap alatt 10 edzés",
+        };
+        for (String e : examples)
+            assertTrue("a mintamondat nem érthető: " + e, !Activities.parse(e).isEmpty());
+        // Egy-egy jellemző részlet is stimmel.
+        assertEquals(2, Activities.parse(examples[1]).plans.get(0).count);
+        assertEquals(50, Activities.parse(examples[2]).plans.get(0).minutes);
+        assertEquals(75, Activities.parse(examples[3]).plans.get(0).minutes);
+        assertEquals(1.5, Activities.parse(examples[4]).plans.get(0).km, 0.001);
+        assertEquals(30, Activities.parse(examples[5]).days);
+    }
+
     @Test public void aNumberFarFromTheActivityIsNotItsCount() {
         // A szám és a mozgás közé nem eshet másik szó: különben a „3 nap múlva
         // futás” három futássá válna.
