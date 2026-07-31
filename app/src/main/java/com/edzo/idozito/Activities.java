@@ -285,6 +285,11 @@ public final class Activities {
      * kerül, és onnan a szériába, az XP-be és a statisztikába is.
      */
     public static Parsed parse(String text) {
+        return parse(text, System.currentTimeMillis());
+    }
+
+    /** Tesztelhető változat: a „most" kívülről jön (a hétköznapnevekhez kell). */
+    static Parsed parse(String text, long now) {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0);
         char[] q = Foods.norm(text).toCharArray();
@@ -296,7 +301,7 @@ public final class Activities {
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
             // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
-            int[] one = findSingleDay(q);
+            int[] one = findSingleDay(q, now);
             if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
         }
 
@@ -433,14 +438,36 @@ public final class Activities {
         return false;
     }
 
-    /** Konkrét nap megnevezve (tegnap, tegnapelőtt) → {kezdet, vég, hány napja}. */
-    private static int[] findSingleDay(char[] q) {
+    /**
+     * Konkrét nap megnevezve → {kezdet, vég, hány napja}.
+     *
+     * A „tegnap"/„tegnapelőtt" mellett a hétköznapnevek is: a „hétfőn
+     * futottam" a legutóbbi hétfőre kerül, nem a mai napra. Ha ma van az a
+     * nap, akkor a mai (0) – aki pénteken írja, hogy „pénteken úsztam", az a
+     * mairól beszél.
+     */
+    private static int[] findSingleDay(char[] q, long now) {
         String s = new String(q);
         String[][] words = {{"tegnapelott", "2"}, {"tegnapi", "1"}, {"tegnap", "1"}};
         for (String[] w : words) {
             int p = s.indexOf(w[0]);
             if (p < 0) continue;
             return new int[]{p, p + w[0].length(), Integer.parseInt(w[1])};
+        }
+        // Hétköznapnevek (Calendar.DAY_OF_WEEK: vasárnap=1 … szombat=7).
+        String[][] dows = {{"hetfo", "2"}, {"kedd", "3"}, {"szerda", "4"},
+                {"csutortok", "5"}, {"pentek", "6"}, {"szombat", "7"}, {"vasarnap", "1"}};
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        int today = cal.get(java.util.Calendar.DAY_OF_WEEK);
+        for (String[] w : dows) {
+            int p = s.indexOf(w[0]);
+            if (p < 0) continue;
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            int end = p + w[0].length();
+            while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+            int back = (today - Integer.parseInt(w[1]) + 7) % 7;
+            return new int[]{p, end, back};
         }
         return null;
     }

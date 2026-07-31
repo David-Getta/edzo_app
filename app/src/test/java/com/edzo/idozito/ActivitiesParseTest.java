@@ -46,6 +46,24 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("ma 2 futás").offset);
     }
 
+    @Test public void weekdayNamesBecomeTheRightOffset() {
+        // 2026. július 31. péntek dél (Budapest).
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.JULY, 31, 12, 0, 0);
+        long friday = c.getTimeInMillis();
+        assertEquals(4, Activities.parse("hétfőn futottam", friday).offset);
+        assertEquals(3, Activities.parse("kedden 2 kondi", friday).offset);
+        // Ha ma van az a nap, a mairól van szó.
+        assertEquals(0, Activities.parse("pénteken úsztam", friday).offset);
+        // A legutóbbi szombat: hat napja.
+        assertEquals(6, Activities.parse("szombaton 1 túra", friday).offset);
+        // A darabszám nem sérül, és egy napról van szó, nem időszakról.
+        Activities.Parsed p = Activities.parse("kedden 2 kondi", friday);
+        assertEquals(1, p.days);
+        assertEquals(2, p.plans.get(0).count);
+    }
+
     @Test public void similarWordsAreNotTimeSpans() {
         // A „hétfőn” és a „naplóban” tartalmazza a hét/nap szótövet, de nem
         // időszak. Enélkül a „hétfőn futottam” egy hetes szórásba került volna.
