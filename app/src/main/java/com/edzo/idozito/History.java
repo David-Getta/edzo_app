@@ -56,6 +56,28 @@ public final class History {
     private static JSONArray cachedAll;
 
     /**
+     * A „rég kimaradt sport" sora az értesítésekhez és a widgethez, vagy null.
+     * A JSON-ból tömböt csinál, a döntést a tesztelt Activities.missedSport hozza.
+     */
+    public static String missedSportLine(Context ctx) {
+        try {
+            JSONArray hist = load(ctx);
+            String[] ks = new String[hist.length()];
+            String[] ns = new String[hist.length()];
+            long[] tss = new long[hist.length()];
+            for (int i = 0; i < hist.length(); i++) {
+                JSONObject o = hist.optJSONObject(i);
+                ks[i] = o == null ? "" : o.optString("kind", "");
+                ns[i] = o == null ? "x" : o.optString("name", "");
+                tss[i] = o == null ? 0 : o.optLong("ts");
+            }
+            return Activities.missedSport(ks, ns, tss, System.currentTimeMillis());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Az erősítő bejegyzések időbélyegei, NAPONTA EGY. Egy bejegyzés egy
      * gyakorlat, nem egy edzés: aki egy teremben hat gyakorlatot rögzít, az egy
      * edzést végzett. Enélkül az „elvégzett edzések" számláló, a jelvények és az

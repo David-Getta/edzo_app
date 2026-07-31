@@ -68,6 +68,12 @@ public class BlazeWidget extends AppWidgetProvider {
             } catch (Exception ignored) {}
             msg = ch != null ? ch : Mascot.nudge(userName, false, 0);
         }
+        // Ha ma még nem edzett, és a szokásos sportja régóta kimaradt, az is
+        // látszik – ugyanaz a sor, mint a napi értesítésben.
+        if (!today) {
+            String miss = History.missedSportLine(c);
+            if (miss != null) msg += "\n" + miss;
+        }
         // A mai kcal-állás egy pillantásra annak, aki étrendet vezet (cél esetén céllal).
         try {
             int kGoal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
