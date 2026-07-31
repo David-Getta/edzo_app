@@ -28,8 +28,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kondi, foci, tenisz, jóga… – 19 mozgásforma, sportág szerinti
   kalóriabecsléssel (MET × testsúly × idő)
 - **Egy mondatból akár többet is**: „az elmúlt 3 nap alatt 3 futó edzés és
-  6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa" – mentés előtt
-  megmutatja, mit értett
+  6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
+  nap futottam", „hétvégén 1-1 túra", „kétszer úsztam", „leúsztam 1500
+  métert", „tegnap este kondi" – mentés előtt megmutatja, mit értett
 - A kézi bejegyzés **mindenben egyenrangú a mérttel**: számít a szériába, az
   XP-be, a jelvényekbe, a heti visszatekintőbe és a statisztikába
 - Elérhető a kezdőlap **„Edzés pótlása"** csempéjéről és az Előzmények

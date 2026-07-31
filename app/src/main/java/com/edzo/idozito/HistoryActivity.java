@@ -599,6 +599,9 @@ public class HistoryActivity extends Activity {
             "pl. hétfőn 1 óra 15 perc kondi",
             "pl. leúsztam 1500 métert",
             "pl. egy hónap alatt 10 edzés",
+            "pl. a héten minden nap futottam",
+            "pl. hétvégén 1-1 túra",
+            "pl. tegnap este kondi",
     };
 
     /** Egy mondat, amiből több bejegyzés lesz. */

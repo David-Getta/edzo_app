@@ -379,6 +379,9 @@ public class ActivitiesParseTest {
                 "hétfőn 1 óra 15 perc kondi",
                 "leúsztam 1500 métert",
                 "egy hónap alatt 10 edzés",
+                "a héten minden nap futottam",
+                "hétvégén 1-1 túra",
+                "tegnap este kondi",
         };
         for (String e : examples)
             assertTrue("a mintamondat nem érthető: " + e, !Activities.parse(e).isEmpty());
