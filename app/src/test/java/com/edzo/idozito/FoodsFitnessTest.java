@@ -58,6 +58,32 @@ public class FoodsFitnessTest {
         assertEquals("Kávé (fekete) + Cukor", names("kávé cukorral"));
     }
 
+    @Test public void pepperIsNotWine() {
+        // A „borssal" egy pohár bort naplózott: a „bor" szótő beleesett, és
+        // minden borsozott étel mellé 120 kcal ital került. A bors saját,
+        // nulla kalóriás tétel lett – a hosszabb tő nyer.
+        assertEquals("Bors (fűszer)", names("borssal"));
+        assertEquals("Marhahús + Bors (fűszer)", names("marhahús borssal"));
+        assertEquals("Bors (fűszer)", names("sózva borsozva"));
+        assertEquals(0, kcal("borssal"), 0.01);
+        // A bor, a borsó és az uborka nem sérülhet.
+        assertEquals("Bor (vörös/fehér)", names("ittam egy pohár bort"));
+        assertEquals("Borsó", names("borsó"));
+        assertEquals("Uborka", names("uborka"));
+    }
+
+    @Test public void assimilatedInstrumentalsAreFound() {
+        // A -val/-vel hasonul: a szóvégi mássalhangzó megkettőződik. A cs-végű
+        // szavaknál a „kalacs" tő nem található meg a „kalaccsal" alakban.
+        assertEquals("Kalács / bejgli", names("kaláccsal"));
+        assertEquals("Narancs", names("naranccsal"));
+        assertEquals("Palacsinta + Kalács / bejgli", names("palacsintával kaláccsal"));
+        // A már működő hasonulások sem romolhatnak el.
+        assertEquals("Kolbász", names("kolbásszal"));
+        assertEquals("Rizs (főtt)", names("rizzsel"));
+        assertEquals("Méz", names("mézzel"));
+    }
+
     @Test public void kebabIsNotBeans() {
         // A „kebab” szóban benne van a „bab”: eddig főtt bab lett belőle.
         assertEquals("Kebab", names("kebab"));

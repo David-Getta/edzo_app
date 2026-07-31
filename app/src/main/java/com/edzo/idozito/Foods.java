@@ -102,7 +102,7 @@ public final class Foods {
         new Food("Ketchup", 110, 1.7, 20, "ketchup"),
         new Food("Alma", 52, 0.3, 150, "alma"),
         new Food("Banán", 89, 1.1, 120, "banan"),
-        new Food("Narancs", 47, 0.9, 150, "narancs"),
+        new Food("Narancs", 47, 0.9, 150, "narancs", "naranccs"),
         new Food("Szőlő", 70, 0.7, 100, "szolo"),
         new Food("Eper", 33, 0.7, 100, "eper"),
         new Food("Avokádó", 160, 2, 70, "avokado"),
@@ -258,7 +258,8 @@ public final class Foods {
         new Food("Csirkenugget", 300, 15, 150, "nugget"),
         new Food("Tejbegríz", 110, 4, 250, "tejbegriz"),
         new Food("Túrós batyu", 300, 7, 100, "turos batyu", "batyu"),
-        new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "bejgli"),
+        // A -val/-vel hasonul: „kaláccsal". A cs+cs alakot külön tő fogja meg.
+        new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli"),
         new Food("Almás pite", 240, 3, 120, "almas pite", "almaspite"),
         new Food("Krumplisaláta", 150, 2.5, 200, "krumplisalata"),
         new Food("Frankfurti leves", 90, 4, 350, "frankfurti leves", "frankfurti"),
@@ -269,6 +270,10 @@ public final class Foods {
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea"),
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor"),
+        // A „borssal" nem egy pohár bor: a „bor" szótő beleesett, és minden
+        // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
+        // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.
+        new Food("Bors (fűszer)", 0, 0, 5, "borsoz", "bors"),
         new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomeny", "vodka", "whisky"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",
                 "zabtej", "rizstej", "szojatej"),
