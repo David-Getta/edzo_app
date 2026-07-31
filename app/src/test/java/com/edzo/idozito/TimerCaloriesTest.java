@@ -71,6 +71,27 @@ public class TimerCaloriesTest {
         }
     }
 
+    @Test public void aNamedProgramUsesItsOwnSportsIntensity() {
+        // Egy óra „Kézilabda edzés" nem ugyanannyi, mint egy óra „Jóga" – a
+        // név elárulja a mozgásformát, az idő-ág annak a MET-jével számol.
+        double plain = TimerService.calories(W, 0, 3600);
+        double kezi = TimerService.calories(W, 0, 3600, "Kézilabda edzés");
+        double joga = TimerService.calories(W, 0, 3600, "Esti jóga");
+        assertEquals(8.0 * 3.5 * W / 200.0 * 60, kezi, 0.01);
+        assertEquals(3.0 * 3.5 * W / 200.0 * 60, joga, 0.01);
+        assertTrue("a kézilabda intenzívebb az átlagnál", kezi > plain);
+        assertTrue("a jóga nyugodtabb az átlagnál", joga < plain);
+        // Ismeretlen név vagy név nélkül: marad az egyen-hatos MET.
+        assertEquals(plain, TimerService.calories(W, 0, 3600, "20-10 Tabata"), 0.01);
+        assertEquals(plain, TimerService.calories(W, 0, 3600, null), 0.01);
+        // Futásnál a táv-ág továbbra is erősebb a névnél.
+        assertEquals(W * 10 * 1.036,
+                TimerService.calories(W, 10_000, 50 * 60, "Reggeli futás"), 0.01);
+        // A leghosszabb szótő nyer: a „sífutás" sí (MET 6), nem futás (9,8).
+        assertEquals(6.0 * 3.5 * W / 200.0 * 60,
+                TimerService.calories(W, 0, 3600, "Sífutás"), 0.01);
+    }
+
     @Test public void aMissingBodyWeightDoesNotZeroTheResult() {
         // A testsúly a profilból jön; ha még nincs megadva, 70 kg-mal számolunk.
         assertEquals(TimerService.calories(70, 5000, 1800),

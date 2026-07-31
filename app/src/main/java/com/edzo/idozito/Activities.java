@@ -348,6 +348,21 @@ public final class Activities {
             "hetfo", "hetfon", "hetfoi", "hetvege", "hetvegen", "hetkoznap", "hetkoznapon",
     };
 
+    /**
+     * A szövegben (pl. egy időzítős program nevében) felismert mozgásforma,
+     * vagy null. A leghosszabb illeszkedő szótő nyer („sífutás" → sí, nem futás).
+     */
+    public static Kind kindByText(String text) {
+        if (text == null || text.isEmpty()) return null;
+        String s = Foods.norm(text);
+        Kind best = null;
+        int bestLen = 0;
+        for (Kind k : ALL)
+            for (String w : k.words)
+                if (w.length() > bestLen && s.contains(w)) { best = k; bestLen = w.length(); }
+        return best;
+    }
+
     /** Meddig keressük visszafelé a darabszámot a mozgás neve előtt. */
     private static final int NUM_REACH = 26;
 

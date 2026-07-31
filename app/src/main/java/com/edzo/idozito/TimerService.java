@@ -714,14 +714,25 @@ public class TimerService extends Service {
      * mint a négy kalória.
      */
     static double calories(double weightKg, double distanceM, int durationSec) {
+        return calories(weightKg, distanceM, durationSec, null);
+    }
+
+    /**
+     * Ha a program neve elárulja a mozgásformát („Kézilabda edzés"), az idő-ág
+     * annak a MET-jével számol az egyen-hatos helyett: egy óra kézilabda nem
+     * ugyanannyi, mint egy óra jóga.
+     */
+    static double calories(double weightKg, double distanceM, int durationSec, String name) {
         double w = weightKg > 0 ? weightKg : 70;
         double byDist = distanceM > 0 ? w * (distanceM / 1000.0) * 1.036 : 0;
-        double byTime = 6.0 * 3.5 * w / 200.0 * (Math.max(0, durationSec) / 60.0); // MET~6
+        Activities.Kind k = Activities.kindByText(name);
+        double met = k != null ? k.met : 6.0;
+        double byTime = met * 3.5 * w / 200.0 * (Math.max(0, durationSec) / 60.0);
         return Math.max(byDist, byTime);
     }
 
     private double estimateCalories() {
-        return calories(weightKg, distanceM, currentDurationSec());
+        return calories(weightKg, distanceM, currentDurationSec(), programName);
     }
 
     // ---------------- Lépésérzékelő ----------------

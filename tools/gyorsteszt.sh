@@ -91,7 +91,9 @@ open(dst + 'TimerService.java', 'w').write(
     "package com.edzo.idozito;\npublic class TimerService {\n"
     "    private static final long TICK_MS = 200;\n    static final double MIN_RUN_M = 300;\n    "
     + grab(ts, 'static long nextTickDelay(') + "\n    " + grab(ts, 'static long stepBase(')
-    + "\n    " + grab(ts, 'static double calories(') + "\n    " + grab(ts, 'static boolean isRun(') + "\n}\n")
+    + "\n    " + grab(ts, 'static double calories(double weightKg, double distanceM, int durationSec)')
+    + "\n    " + grab(ts, 'static double calories(double weightKg, double distanceM, int durationSec, String name)')
+    + "\n    " + grab(ts, 'static boolean isRun(') + "\n}\n")
 
 pr = open(src_dir + 'Profile.java').read()
 open(dst + 'Profile.java', 'w').write(
