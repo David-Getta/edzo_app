@@ -124,6 +124,16 @@ public class WorkoutDetailActivity extends Activity {
         repeat.setPadding(0, dp(8), 0, 0);
         repeat.setClickable(true);
         col.addView(repeat);
+        if (kind != null) {
+            // Kézi bejegyzésnél az időtartam és a táv utólag is javítható –
+            // eddig csak törölni és újra felvenni lehetett.
+            TextView editM = text("✏️  Időtartam / táv módosítása", 13, Theme.accent(this), true);
+            editM.setPadding(0, dp(8), 0, 0);
+            editM.setClickable(true);
+            final JSONObject entry0 = e;
+            editM.setOnClickListener(v -> editManualSheet(ts, kind, entry0));
+            col.addView(editM);
+        }
         TextView del = text("🗑️  Edzés törlése a naplóból", 13, 0xFFFF6B6B, true);
         del.setPadding(0, dp(8), 0, 0);
         del.setClickable(true);
@@ -559,6 +569,83 @@ public class WorkoutDetailActivity extends Activity {
     }
 
     // Hangulat + jegyzet utólagos szerkesztése egy adott edzéshez.
+    /** Kézi bejegyzés időtartamának/távjának javítása; a kalóriát újraszámoljuk. */
+    void editManualSheet(final long ts, final Activities.Kind k, JSONObject e) {
+        final EditText minEt = manualNum("Hány percig tartott?");
+        minEt.setText(String.valueOf(Math.max(1, e.optInt("dur") / 60)));
+        final EditText kmEt = k.distance ? manualNum("Táv km-ben (elhagyható)") : null;
+        if (kmEt != null) {
+            double d = e.optDouble("dist", -1);
+            if (d > 0) {
+                double kmv = d / 1000.0;
+                kmEt.setText(kmv == Math.floor(kmv) ? String.valueOf((long) kmv)
+                        : String.valueOf(kmv).replace('.', ','));
+            }
+        }
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(minEt, lp());
+        if (kmEt != null) {
+            LinearLayout.LayoutParams l = lp();
+            l.topMargin = dp(8);
+            box.addView(kmEt, l);
+        }
+        new Sheet(this, k.title(), "A kalória a módosítás után újraszámolódik.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    int min = (int) manualNumOf(minEt);
+                    double km = kmEt == null ? 0 : manualNumOf(kmEt);
+                    if (km < 0) km = 0;
+                    if (km > 500) km = 500;
+                    if (min <= 0 && km > 0)
+                        min = Math.max(1, (int) Math.round(km * Activities.minPerKm(k)));
+                    if (min <= 0) {
+                        Toast.makeText(this, "Add meg, hány percig tartott.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (min > 24 * 60) min = 24 * 60;
+                    double distM = km > 0 ? km * 1000 : -1;
+                    History.updateByTs(this, ts, "dur", min * 60);
+                    History.updateByTs(this, ts, "dist", distM);
+                    History.updateByTs(this, ts, "cal",
+                            Activities.calories(k, Profile.lastWeight(this), min));
+                    History.updateByTs(this, ts, "avgspeed",
+                            (TimerService.isRun(distM) && min > 0)
+                                    ? distM / (min * 60.0) * 3.6 : -1.0);
+                    BlazeWidget.refresh(this);
+                    Toast.makeText(this, "Módosítva ✏️", Toast.LENGTH_SHORT).show();
+                    recreate();
+                })
+                .addCancel()
+                .show();
+    }
+
+    EditText manualNum(String hint) {
+        EditText et = new EditText(this);
+        et.setHint(hint);
+        et.setHintTextColor(MainActivity.MUTED);
+        et.setTextColor(MainActivity.TXT);
+        et.setTextSize(14.5f);
+        et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER
+                | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(Theme.veil(this));
+        bg.setCornerRadius(dp(12));
+        bg.setStroke(dp(1), MainActivity.GLASS_LINE);
+        et.setBackground(bg);
+        et.setPadding(dp(12), dp(10), dp(12), dp(10));
+        return et;
+    }
+
+    double manualNumOf(EditText et) {
+        try {
+            return Double.parseDouble(et.getText().toString().trim().replace(',', '.'));
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
     void editJournalSheet(long ts, int curMood, String curNote) {
         final int[] sel = { curMood };
         LinearLayout box = vbox();
