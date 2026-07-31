@@ -157,6 +157,28 @@ public final class Activities {
     }
 
     /**
+     * A mozgásformák a felhasználó szokásai szerint rendezve: amit gyakran
+     * vesz fel, az kerül a lista elejére. A kézilabdás ember kézilabdát
+     * naplóz – ne kelljen minden alkalommal a lista közepére görgetnie.
+     * A nem használt fajták az eredeti sorrendben maradnak (stabil rendezés).
+     */
+    public static Kind[] orderedByHabit(String[] recentKindIds) {
+        final java.util.HashMap<String, Integer> cnt = new java.util.HashMap<>();
+        if (recentKindIds != null)
+            for (String id : recentKindIds)
+                if (byId(id) != null) {
+                    Integer c = cnt.get(id);
+                    cnt.put(id, c == null ? 1 : c + 1);
+                }
+        Kind[] out = ALL.clone();
+        java.util.Arrays.sort(out, (a, b) -> {
+            Integer ca = cnt.get(a.id), cb = cnt.get(b.id);
+            return (cb == null ? 0 : cb) - (ca == null ? 0 : ca);
+        });
+        return out;
+    }
+
+    /**
      * „Rég volt kézilabda" – a napi biztatás sport-tudatos sora, vagy null.
      *
      * Azt a sportot keressük, ami a felhasználónak láthatóan szokása (legalább

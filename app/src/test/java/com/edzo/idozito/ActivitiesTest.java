@@ -35,6 +35,24 @@ public class ActivitiesTest {
         assertTrue("kevés a választható mozgásforma", Activities.ALL.length >= 12);
     }
 
+    @Test public void thePickerLearnsTheUsersHabits() {
+        // Négy kézilabda és két úszás után a lista élén a kézilabda áll,
+        // másodikon az úszás; a többi az eredeti sorrendben marad.
+        Activities.Kind[] ordered = Activities.orderedByHabit(new String[]{
+                "kezilabda", "uszas", "kezilabda", "kezilabda", "uszas", "kezilabda"});
+        assertEquals("kezilabda", ordered[0].id);
+        assertEquals("uszas", ordered[1].id);
+        assertEquals("futas", ordered[2].id);          // az eredeti első
+        assertEquals(Activities.ALL.length, ordered.length);
+        // Szokások nélkül az eredeti sorrend (és nem dob el senkit).
+        Activities.Kind[] plain = Activities.orderedByHabit(new String[0]);
+        for (int i = 0; i < plain.length; i++)
+            assertEquals(Activities.ALL[i].id, plain[i].id);
+        // Ismeretlen/üres azonosítók nem zavarnak be.
+        Activities.Kind[] noisy = Activities.orderedByHabit(new String[]{"", "nincs", null});
+        assertEquals(Activities.ALL[0].id, noisy[0].id);
+    }
+
     @Test public void theEverydaySportsAreThere() {
         for (String id : new String[]{"futas", "uszas", "kondi", "kezilabda", "foci", "kerekpar"})
             assertNotNull("hiányzik: " + id, Activities.byId(id));

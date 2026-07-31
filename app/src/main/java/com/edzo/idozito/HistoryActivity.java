@@ -495,7 +495,15 @@ public class HistoryActivity extends Activity {
                 "Amit nem az app mért. Ugyanúgy számít a szériába, az XP-be és a statisztikába.");
         sh.addRow("✍️", "Több edzés egyszerre", "Írd le egy mondatban", false, true,
                 () -> bulkSheet(""));
-        for (Activities.Kind k : Activities.ALL) {
+        // A lista a szokások szerint rendeződik: amit gyakran veszel fel, elöl van.
+        java.util.ArrayList<String> recent = new java.util.ArrayList<>();
+        JSONArray h = History.load(this);
+        long from = System.currentTimeMillis() - 60L * 24 * 3600 * 1000;
+        for (int i = 0; i < h.length(); i++) {
+            JSONObject o = h.optJSONObject(i);
+            if (o != null && o.optLong("ts") >= from) recent.add(o.optString("kind", ""));
+        }
+        for (Activities.Kind k : Activities.orderedByHabit(recent.toArray(new String[0]))) {
             final Activities.Kind kind = k;
             sh.addRow(k.emoji, k.name, null, false, true, () -> manualDetailSheet(kind));
         }
