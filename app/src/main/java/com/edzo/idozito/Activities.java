@@ -579,9 +579,12 @@ public final class Activities {
                     int wsPos = we;
                     while (wsPos > 0 && Character.isLetter(s.charAt(wsPos - 1))) wsPos--;
                     String prev = s.substring(wsPos, we);
-                    if (prev.equals("fel") || prev.equals("masfel")) {
-                        out.add(new int[]{wsPos, prev.equals("fel") ? 30 : 90,
-                                p + unit.length()});
+                    int frac = prev.equals("fel") ? 30
+                            : prev.equals("masfel") ? 90
+                            : prev.equals("negyed") ? 15
+                            : prev.equals("haromnegyed") ? 45 : 0;
+                    if (frac > 0) {
+                        out.add(new int[]{wsPos, frac, p + unit.length()});
                         continue;
                     }
                 }

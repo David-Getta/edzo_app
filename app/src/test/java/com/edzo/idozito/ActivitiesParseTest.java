@@ -144,6 +144,9 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×tura/150", summary("2,5 óra túra"));
         assertEquals("1d+0: 1×futas/30", summary("0,5 óra futás"));
         assertEquals("1d+0: 1×uszas/90", summary("1,5 órát úsztam"));
+        // A tört órák kiírva is: negyed, fél, háromnegyed, másfél.
+        assertEquals("1d+0: 1×joga/15", summary("negyed óra jóga"));
+        assertEquals("1d+0: 1×joga/45", summary("háromnegyed óra jóga"));
         // Az egész órák nem romolhattak el.
         assertEquals("1d+0: 1×joga/60", summary("egy óra jóga"));
         assertEquals("1d+0: 2×tenisz/60", summary("2 tenisz 1 óra"));
