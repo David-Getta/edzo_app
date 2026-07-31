@@ -48,7 +48,8 @@ public final class Activities {
      */
     public static final Kind[] ALL = {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
-                    "futas", "futo edzes", "futoedzes", "futni", "futott", "kocogas", "futok"),
+                    "futas", "futo edzes", "futoedzes", "futni", "futott", "kocogas", "futok",
+                    "maraton"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
@@ -425,6 +426,12 @@ public final class Activities {
             }
             if (best >= 0 && kmOf[best] == 0) kmOf[best] = t[1];
         }
+        // Ha ugyanaz a mozgás kétszer szerepel („leFUTOTTAM a MARATONT"), a táv
+        // a második találathoz is tapadhat – a terv viszont az elsőből készül.
+        for (int i = 0; i < keep.size(); i++)
+            for (int j = i + 1; j < keep.size(); j++)
+                if (keep.get(i)[2] == keep.get(j)[2] && kmOf[i] == 0 && kmOf[j] > 0)
+                    kmOf[i] = kmOf[j];
 
         // 5) Minden találathoz darabszám (előtte) és időtartam (utána).
         boolean[] used = new boolean[ALL.length];
@@ -626,6 +633,20 @@ public final class Activities {
                         && (Character.isLetter(s.charAt(end)) || s.charAt(end) == '-')) end++;
                 out.add(new double[]{numStart, val, end});
             }
+        }
+        // A maraton neve maga a táv: 42,2 km, a félmaraton 21,1. A szót nem
+        // takarjuk ki (kezdet = vég), mert egyben a futás szótöve is – ha
+        // kimondott km is áll mellette, az nyer, mert előrébb áll a listában.
+        int mp = s.indexOf("maraton");
+        if (mp >= 0) {
+            boolean half = mp >= 3 && s.startsWith("fel", mp - 3);
+            if (!half) {
+                int we = mp;
+                while (we > 0 && s.charAt(we - 1) == ' ') we--;
+                half = we >= 3 && s.startsWith("fel", we - 3)
+                        && (we < 4 || !Character.isLetter(s.charAt(we - 4)));
+            }
+            out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
         }
         return out;
     }

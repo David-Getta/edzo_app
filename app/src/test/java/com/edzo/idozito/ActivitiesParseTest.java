@@ -185,6 +185,21 @@ public class ActivitiesParseTest {
         assertEquals(5, q.km, 0.001);
     }
 
+    @Test public void aMarathonIsItsOwnDistance() {
+        // A „maraton" neve maga a táv – nem kell mellé kilométer.
+        Activities.Plan p = Activities.parse("lefutottam a maratont").plans.get(0);
+        assertEquals("futas", p.kind.id);
+        assertEquals(42.2, p.km, 0.001);
+        assertEquals(1, p.count);
+        // Félmaraton egybe- és különírva.
+        assertEquals(21.1, Activities.parse("félmaraton").plans.get(0).km, 0.001);
+        assertEquals(21.1, Activities.parse("fél maraton").plans.get(0).km, 0.001);
+        // A kimondott idő erősebb a tempóbecslésnél.
+        assertEquals(240, Activities.parse("maraton 4 óra alatt").plans.get(0).minutes);
+        // A kimondott táv erősebb a névnél (terep-félmaraton, rövidített kör).
+        assertEquals(19.5, Activities.parse("félmaraton 19,5 km").plans.get(0).km, 0.001);
+    }
+
     @Test public void anAbsurdDistanceIsDropped() {
         assertEquals(0, Activities.parse("1000 km bringa").plans.get(0).km, 0.001);
     }
