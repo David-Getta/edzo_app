@@ -69,7 +69,35 @@ public class ActivitiesParseTest {
         // időszak. Enélkül a „hétfőn futottam” egy hetes szórásba került volna.
         assertEquals(1, Activities.parse("hétfőn futottam").days);
         assertEquals(1, Activities.parse("a naplóban 3 futás").days);
-        assertEquals(1, Activities.parse("hétvégén 2 túra").days);
+        // A „hétvégén" sem hetes szórás – az a saját, kétnapos szabályát követi.
+        assertTrue(Activities.parse("hétvégén 2 túra").days <= 2);
+    }
+
+    @Test public void theWeekendMeansLastSaturdayAndSunday() {
+        // 2026. július 31. péntek dél (Budapest).
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.JULY, 31, 12, 0, 0);
+        long friday = c.getTimeInMillis();
+        // Pénteken írva a múlt hétvége: vasárnap 5, szombat 6 napja volt.
+        Activities.Parsed p = Activities.parse("a hétvégén 2 túra", friday);
+        assertEquals(2, p.days);
+        assertEquals(5, p.offset);
+        assertEquals(2, p.plans.get(0).count);
+        // Szombaton írva a mai nap; vasárnap írva a tegnap-ma kettő.
+        c.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        long saturday = c.getTimeInMillis();
+        assertEquals(0, Activities.parse("hétvégén túráztunk", saturday).offset);
+        assertEquals(1, Activities.parse("hétvégén túráztunk", saturday).days);
+        c.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        long sunday = c.getTimeInMillis();
+        assertEquals(0, Activities.parse("hétvégén túráztunk", sunday).offset);
+        assertEquals(2, Activities.parse("hétvégén túráztunk", sunday).days);
+        // Hétfőn írva: vasárnap tegnap volt.
+        c.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        assertEquals(1, Activities.parse("hétvégén 1 túra", c.getTimeInMillis()).offset);
+        // A darabszám és a mozgás nem sérül.
+        assertEquals("tura", p.plans.get(0).kind.id);
     }
 
     @Test public void theDurationCanBeGivenPerActivity() {

@@ -376,9 +376,14 @@ public final class Activities {
         int[] span = findSpan(q);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
-            // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
-            int[] one = findSingleDay(q, now);
-            if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+            // A „hétvégén" a legutóbbi szombat–vasárnap, nem a mai nap.
+            int[] we = findWeekend(q, now);
+            if (we != null) { offset = we[2]; days = we[3]; blank(q, we[0], we[1]); }
+            else {
+                // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
+                int[] one = findSingleDay(q, now);
+                if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+            }
         }
 
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
@@ -554,6 +559,29 @@ public final class Activities {
     private static boolean isNotSpan(String word) {
         for (String w : NOT_SPAN) if (w.equals(word)) return true;
         return false;
+    }
+
+    /**
+     * „Hétvégén" → {kezdet, vég, eltolás, napok}: a legutóbbi szombat–vasárnap.
+     *
+     * Hétköznap írva a múlt hétvége két napja (vasárnap az eltolás, előtte a
+     * szombat). Szombaton írva a ma (egy nap), vasárnap írva a tegnap-ma kettő.
+     */
+    private static int[] findWeekend(char[] q, long now) {
+        String s = new String(q);
+        int p = s.indexOf("hetveg");
+        if (p < 0) return null;
+        if (p > 0 && Character.isLetter(s.charAt(p - 1))) return null;
+        int end = p + 6;
+        while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        int dow = cal.get(java.util.Calendar.DAY_OF_WEEK);   // vasárnap=1 … szombat=7
+        int offset, days;
+        if (dow == java.util.Calendar.SATURDAY) { offset = 0; days = 1; }
+        else if (dow == java.util.Calendar.SUNDAY) { offset = 0; days = 2; }
+        else { offset = dow - 1; days = 2; }                 // hétfő→1 … péntek→5
+        return new int[]{p, end, offset, days};
     }
 
     /**

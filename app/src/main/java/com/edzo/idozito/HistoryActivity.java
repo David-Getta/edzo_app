@@ -635,9 +635,14 @@ public class HistoryActivity extends Activity {
         }
         StringBuilder sb = new StringBuilder();
         for (Activities.Plan pl : p.plans) sb.append("• ").append(pl.label()).append('\n');
-        sb.append(p.days > 1
-                ? "\nAz elmúlt " + p.days + " napra elosztva."
-                : (p.offset == 0 ? "\nMai dátummal." : "\n" + p.offset + " nappal ezelőttre."));
+        // Az eltolt szórás („hétvégén") nem „az elmúlt N nap" – mondjuk ki,
+        // pontosan mely napokra kerül.
+        sb.append(p.days > 1 && p.offset > 0
+                ? "\n" + p.days + " napra elosztva (" + (p.offset + p.days - 1)
+                        + "–" + p.offset + " napja)."
+                : p.days > 1 ? "\nAz elmúlt " + p.days + " napra elosztva."
+                : p.offset == 0 ? "\nMai dátummal."
+                : "\n" + p.offset + " nappal ezelőttre.");
         new Sheet(this, p.total() + " edzés mentése", sb.toString())
                 .addPrimary("Mentés", () -> saveBulk(p))
                 .addNeutral("Átírom", () -> bulkSheet(text))
