@@ -478,6 +478,12 @@ public final class Foods {
             {"Keksz", "12"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
             {"Paprika", "120"}, {"Fagylalt", "50"}, {"Proteinszelet", "60"},
             {"Péksütemény", "60"}, {"Tojásfehérje", "33"},
+            // Egészben fogyasztott fogások és poharas italok: a „2 burrito"
+            // vagy a „két fröccs" darabja egy teljes adag.
+            {"Hamburger", "250"}, {"Burrito", "300"}, {"Quesadilla", "200"},
+            {"Cordon bleu", "180"}, {"Falafel", "25"}, {"Sushi", "30"},
+            {"Fröccs", "300"}, {"Limonádé", "300"}, {"Kombucha", "330"},
+            {"Ayran", "250"},
     };
 
     /**
@@ -514,7 +520,8 @@ public final class Foods {
      * szám és az étel közé beékelődött „szelet” miatt az egész nem darabszámnak
      * látszott, és a tipikus adaggal (egy szeletnyivel) számolt tovább.
      */
-    private static final String[] COUNT_WORDS = {"db", "darab", "szelet", "gombóc", "gomboc"};
+    private static final String[] COUNT_WORDS =
+            {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár", "korso", "korsó"};
 
     /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval

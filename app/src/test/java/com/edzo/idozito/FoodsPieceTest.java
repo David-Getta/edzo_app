@@ -60,6 +60,24 @@ public class FoodsPieceTest {
         assertEquals(2 * 80, one("2 kiwi").grams, 0.01);
     }
 
+    @Test public void wholeDishesAndGlassesCountAsPortions() {
+        // A „2 burrito" eddig EGY adag volt: a darabszám némán elveszett.
+        // Az egészben fogyasztott fogásoknál a darab egy teljes adag.
+        assertEquals(2 * 300, one("2 burrito").grams, 0.01);
+        assertEquals(2 * 250, one("2 hamburger").grams, 0.01);
+        assertEquals(2 * 180, one("2 cordon bleu").grams, 0.01);
+        assertEquals(2 * 300, one("két fröccs").grams, 0.01);
+        assertEquals(2 * 300, one("2 pohár limonádé").grams, 0.01);
+        // A falafel és a sushi darabja golyó/falat, nem tányér.
+        assertEquals(3 * 25, one("3 db falafel").grams, 0.01);
+        assertEquals(8 * 30, one("8 sushi").grams, 0.01);
+        // Szám nélkül marad a szokásos adag.
+        assertEquals(0, one("falafel").grams, 0.01);
+        assertEquals(0, one("burrito").grams, 0.01);
+        // A decis mérés erősebb a darabnál.
+        assertEquals(200, one("2 dl fröccs").grams, 0.01);
+    }
+
     @Test public void anUnrealisticCountIsIgnored() {
         // A darabszám csak életszerű tartományban számít; fölötte marad az adag.
         assertEquals(0, one("100 alma").grams, 0.01);
