@@ -555,6 +555,8 @@ public class HistoryActivity extends Activity {
         double kcal = Activities.calories(k, Profile.lastWeight(this), min);
 
         History.addManual(this, ts, durSec, distM, kcal, avg, k.title(), k.id);
+        // A széria és a „ma edzett" a widgeten is változhat.
+        BlazeWidget.refresh(this);
         android.widget.Toast.makeText(this, k.name + " elmentve.",
                 android.widget.Toast.LENGTH_SHORT).show();
         recreate();

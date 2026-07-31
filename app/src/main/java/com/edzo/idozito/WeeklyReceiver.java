@@ -88,6 +88,36 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
             text = sb.toString();
         }
+        // Sportág-sor, ha a héten többféle mozgás volt („3× kézilabda, 2× futás").
+        // Csak a valódi napló-bejegyzésekből: az egyesített lista súlyzós elemei
+        // név nélküliek, és tévesen futásnak látszanának.
+        try {
+            JSONArray hist = History.load(c);
+            java.util.ArrayList<String> kinds = new java.util.ArrayList<>();
+            java.util.ArrayList<String> names = new java.util.ArrayList<>();
+            java.util.ArrayList<Integer> durs = new java.util.ArrayList<>();
+            for (int k2 = 0; k2 < hist.length(); k2++) {
+                JSONObject o = hist.optJSONObject(k2);
+                if (o == null || o.optLong("ts") < from) continue;
+                kinds.add(o.optString("kind", ""));
+                names.add(o.optString("name", ""));
+                durs.add(o.optInt("dur"));
+            }
+            int[] di = new int[durs.size()];
+            for (int k2 = 0; k2 < di.length; k2++) di[k2] = durs.get(k2);
+            java.util.LinkedHashMap<String, long[]> rows = Activities.breakdown(
+                    kinds.toArray(new String[0]), names.toArray(new String[0]), di);
+            if (rows.size() >= 2) {
+                StringBuilder sp = new StringBuilder();
+                int shown = 0;
+                for (java.util.Map.Entry<String, long[]> e : rows.entrySet()) {
+                    if (shown++ >= 3) break;
+                    if (sp.length() > 0) sp.append(", ");
+                    sp.append(e.getValue()[0]).append("× ").append(e.getKey());
+                }
+                text += "\n🏅 " + sp;
+            }
+        } catch (Exception ignored) {}
         // Étrend-sor annak, aki a héten naplózott: naplózott napok + kcal-átlag.
         try {
             long dayMs = 24L * 3600 * 1000;
