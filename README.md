@@ -30,7 +30,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Egy mondatból akár többet is**: „az elmúlt 3 nap alatt 3 futó edzés és
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
   nap futottam", „hétvégén 1-1 túra", „kétszer úsztam", „leúsztam 1500
-  métert", „tegnap este kondi" – mentés előtt megmutatja, mit értett
+  métert", „tegnap este kondi", „ma 10000 lépés", „július 28-án
+  futottam", „100 fekvőtámasz" – mentés előtt megmutatja, mit értett;
+  a tervekre („jövő héten…") pedig őszintén szól, hogy a napló a
+  megtörtént edzéseké
 - A kézi bejegyzés **mindenben egyenrangú a mérttel**: számít a szériába, az
   XP-be, a jelvényekbe, a heti visszatekintőbe és a statisztikába
 - Elérhető a kezdőlap **„Edzés pótlása"** csempéjéről és az Előzmények
@@ -39,9 +42,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 🍽️ Étrend
 - **Írd le, mit ettél** – az app felismeri az ételeket a mondatból:
   „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
-- Felismeri a **grammot** (g / gr / gramm / dkg) és a **darabszámot** is
-  (számjeggyel és kiírva: „két tojás")
-- **261 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- Felismeri a **grammot** (g / gr / gramm / dkg / deka), a **darabszámot**
+  (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „két és fél deci"),
+  a poharas/korsós italokat és az **adagot** („fél adag gyros")
+- **260 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -136,7 +140,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~236 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~249 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
