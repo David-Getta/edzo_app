@@ -313,7 +313,7 @@ public class FoodsFitnessTest {
         assertEquals("Szójakocka", names("szójakocka"));
         assertEquals("Sajt (trappista)", names("sajt"));
         assertEquals("Hagyma", names("hagyma"));
-        assertEquals("Kefires / joghurtos öntet", names("salátaöntet"));
+        assertEquals("Joghurtos öntet", names("salátaöntet"));
         assertEquals("Sült krumpli + Majonéz", names("sült krumpli majonézzel"));
     }
 
@@ -426,8 +426,6 @@ public class FoodsFitnessTest {
             String q = f.name.replaceAll("\\(.*\\)", "").split("/")[0].trim();
             List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), q);
             if (hs.size() == 1 && hs.get(0).food.name.equals(f.name)) continue;
-            // Egyetlen ismert név-darabolási műtermék megengedett.
-            if (q.equals("Kefires")) continue;
             bad.append("\n  ").append(q);
         }
         assertTrue("nem önmagára esik:" + bad, bad.length() == 0);

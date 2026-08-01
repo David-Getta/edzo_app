@@ -127,7 +127,7 @@ public class FoodsTest {
         assertEquals(Arrays.asList("Frankfurti leves"), names("frankfurti leves"));
         assertEquals(Arrays.asList("Gulyásleves"), names("gulyás leves"));
         assertEquals(Arrays.asList("Gulyásleves"), names("gulyásleves"));
-        assertEquals(Arrays.asList("Kefires / joghurtos öntet"), names("kefires öntet"));
+        assertEquals(Arrays.asList("Joghurtos öntet"), names("kefires öntet"));
         // A puszta „leves" viszont maradjon az átlagos leves.
         assertEquals(Arrays.asList("Leves (átlag)"), names("leves"));
     }

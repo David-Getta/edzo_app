@@ -36,7 +36,7 @@ public final class Foods {
                 "naturszelet", "natur szelet"),
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
-        new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek"),
+        new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek", "rostelyos"),
         new Food("Fasírt", 290, 15, 150, "fasirt", "vagdalt", "stefania"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
         new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz"),
@@ -207,7 +207,9 @@ public final class Foods {
         new Food("Káposzta", 25, 1.3, 150, "kaposzta"),
         new Food("Tükörtojás", 200, 13, 110, "tukortojas"),
         new Food("Bableves", 90, 5, 400, "bableves"),
-        new Food("Húsleves", 40, 3, 400, "husleves"),
+        new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta"),
+        new Food("Kocsonya", 90, 12, 300, "kocsonya", "aszpik"),
+        new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
         // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
         // paprikás kettőnek számolna.
         new Food("Csirkepaprikás", 160, 14, 300, "paprikas", "harcsapaprikas"),
@@ -360,7 +362,7 @@ public final class Foods {
         new Food("Zöldbab", 35, 1.8, 150, "zoldbab"),
         new Food("Spenót / paraj", 25, 2.9, 200, "spenot", "paraj"),
         new Food("Krémleves (zöldség)", 60, 2, 350, "kremleves"),
-        new Food("Kefires / joghurtos öntet", 60, 3, 40, "kefires ontet", "joghurtos ontet", "ontet"),
+        new Food("Joghurtos öntet", 60, 3, 40, "kefires ontet", "joghurtos ontet", "ontet"),
         new Food("Rántott hal", 230, 16, 180, "rantott hal"),
         new Food("Csirkés wrap", 200, 12, 250, "csirkes wrap"),
         // --- Zöldségek, gyümölcsök, magvak ---
