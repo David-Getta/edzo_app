@@ -53,6 +53,28 @@ public class ActivitiesTest {
         assertEquals(Activities.ALL[0].id, noisy[0].id);
     }
 
+    @Test public void everySportsOwnNameResolvesToItself() {
+        // Önellenőrzés: minden mozgásforma neve és minden szótöve a SAJÁT
+        // sportjára essen a mondatos felismerésben – ha nem, a felhasználó
+        // mást kapna, mint amit beírt. Két ismert kivétel: a puszta „sí" és
+        // „kerti" szótőként túl sok szóba beleesne (a ragozott alak működik).
+        StringBuilder bad = new StringBuilder();
+        for (Activities.Kind k : Activities.ALL) {
+            String q = k.name.split("/")[0].trim();
+            if (!q.equals("Sí") && !q.equals("Kerti")) {
+                Activities.Parsed p = Activities.parse(q);
+                if (p.plans.size() != 1 || !p.plans.get(0).kind.id.equals(k.id))
+                    bad.append("\n  név: ").append(q);
+            }
+            for (String w : k.words) {
+                Activities.Parsed pw = Activities.parse(w);
+                if (pw.plans.size() != 1 || !pw.plans.get(0).kind.id.equals(k.id))
+                    bad.append("\n  tő: ").append(w);
+            }
+        }
+        assertTrue("nem önmagára esik:" + bad, bad.length() == 0);
+    }
+
     @Test public void theEverydaySportsAreThere() {
         for (String id : new String[]{"futas", "uszas", "kondi", "kezilabda", "foci", "kerekpar"})
             assertNotNull("hiányzik: " + id, Activities.byId(id));
