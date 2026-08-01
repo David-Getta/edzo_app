@@ -94,6 +94,28 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 sb.append(count >= 4 ? "Fantasztikus hét – büszke a falka! 🔥" : "Szép munka – jövő héten még többet! 💪");
             text = sb.toString();
         }
+        // A hét csúcsa: a leghosszabb edzés, sportággal és nappal. Egy hosszú
+        // hétvégi túra vagy egy kemény meccs megérdemli a külön említést.
+        try {
+            JSONArray hist = History.load(c);
+            JSONObject best = null;
+            for (int k2 = 0; k2 < hist.length(); k2++) {
+                JSONObject o = hist.optJSONObject(k2);
+                if (o == null || o.optLong("ts") < from) continue;
+                if (best == null || o.optInt("dur") > best.optInt("dur")) best = o;
+            }
+            if (best != null && best.optInt("dur") >= 30 * 60 && count >= 2) {
+                Activities.Kind bk = Activities.byId(best.optString("kind", ""));
+                if (bk == null) bk = Activities.kindByText(best.optString("name", ""));
+                String what = bk != null ? bk.name
+                        : best.optString("name", "").isEmpty() ? "futás"
+                        : best.optString("name", "");
+                String day = new java.text.SimpleDateFormat("EEEE", Hu.LOCALE)
+                        .format(new java.util.Date(best.optLong("ts")));
+                text += "\n🏆 A hét csúcsa: " + (best.optInt("dur") / 60) + " perc "
+                        + what + " (" + day + ")";
+            }
+        } catch (Exception ignored) {}
         // Sportág-sor, ha a héten többféle mozgás volt („3× kézilabda, 2× futás").
         // Csak a valódi napló-bejegyzésekből: az egyesített lista súlyzós elemei
         // név nélküliek, és tévesen futásnak látszanának.
