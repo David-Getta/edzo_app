@@ -351,6 +351,31 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void theMealExampleSentencesAllParse() {
+        // Ugyanezek a minták váltakoznak az étel-beviteli mezőben – ha egy
+        // példa nem működne, pont a mintamondat járatná le a felismerést.
+        String[] examples = {
+                "150 g csirkemell rizzsel",
+                "2 tojás és egy pirítós vajjal",
+                "fél adag gyros",
+                "tegnap este pizzát ettem",
+                "két korsó sör és egy hamburger",
+                "negyvenöt gramm sajt",
+                "ittam fél liter vizet",
+                "két és fél deci tej müzlivel",
+        };
+        StringBuilder bad = new StringBuilder();
+        for (String e : examples)
+            if (Foods.parse(Arrays.asList(Foods.ALL), e).isEmpty())
+                bad.append("\n  ").append(e);
+        assertTrue("a mintamondat nem érthető:" + bad, bad.length() == 0);
+        // Egy-egy jellemző részlet is stimmel.
+        assertEquals(150, Foods.parse(Arrays.asList(Foods.ALL),
+                examples[0]).get(0).grams, 0.01);
+        assertEquals(45, Foods.parse(Arrays.asList(Foods.ALL),
+                examples[5]).get(0).grams, 0.01);
+    }
+
     @Test public void spreadsOilsAndOlivesResolveCorrectly() {
         // A „humusz" (egy m-mel) egy tányér főtt csicseriborsónak számított,
         // az „olajbogyó" tiszta olajnak, a „szendvicskrém" egész szendvicsnek.
