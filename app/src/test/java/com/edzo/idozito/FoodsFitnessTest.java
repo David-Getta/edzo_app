@@ -296,6 +296,40 @@ public class FoodsFitnessTest {
         assertEquals("Sült krumpli + Majonéz", names("sült krumpli majonézzel"));
     }
 
+    @Test public void snacksFastFoodAndPastaResolveCorrectly() {
+        // Nassolás-kör: a hagymakarika 20 kcal-os nyers hagymának, a
+        // szaloncukor kanál cukornak, a mézeskalács sima kalácsnak számított.
+        assertEquals("Hagymakarika (rántott)", names("hagymakarika"));
+        assertTrue(kcal("hagymakarika") > 200);
+        assertEquals("Szaloncukor", names("szaloncukor"));
+        assertEquals("Mézeskalács", names("mézeskalács"));
+        assertEquals("Aszalt gyümölcs", names("aszalt vörösáfonya"));
+        // Gyorskaja és márkák.
+        assertEquals("Hamburger", names("big mac"));
+        assertEquals("Gyorséttermi menü", names("mcmenü"));
+        assertEquals("Csirkenugget", names("csirkefalatok"));
+        assertEquals("Chips", names("nachos"));
+        assertEquals("Csokoládé", names("snickers"));
+        assertEquals("Keksz", names("oreo"));
+        // Új nassok, halak, tészták.
+        assertEquals("Perec", names("sós perec"));
+        assertEquals("Ropi / kréker", names("ropi"));
+        assertEquals("Ropi / kréker", names("sajtos tallér"));
+        assertEquals("Pisztácia", names("pisztácia"));
+        assertEquals("Makréla / szardínia", names("szardínia"));
+        assertEquals("Lasagne", names("lasagne"));
+        assertEquals("Tészta carbonara", names("carbonara"));
+        assertEquals("Töltött tészta (tortellini)", names("ravioli"));
+        assertEquals("Péksütemény", names("briós"));
+        // Darabra is: az „5 szaloncukor" öt szemet jelent.
+        // A szomszédok élnek.
+        assertEquals("Hagyma", names("hagyma"));
+        assertEquals("Cukor", names("két kanál cukor"));
+        assertEquals("Kalács / bejgli", names("mákos bejgli"));
+        assertEquals("Áfonya", names("áfonya"));
+        assertEquals("Tészta (főtt)", names("tészta"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.
