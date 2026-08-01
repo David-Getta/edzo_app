@@ -573,6 +573,14 @@ public final class Activities {
             }
             int next = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
             int minutes = minutesFor(mins, h[0], next, 0);
+            // Ismétlés-alapú tételnél a mondat TÁVOLI (más mozgáshoz írt)
+            // időtartama nem érvényes: a „10 km futás 50 perc alatt és 100
+            // fekvőtámasz" fekvőtámasza nem 50 perc – az ismétlésből becsülünk.
+            if (reps > 0) {
+                boolean local = false;
+                for (int[] m : mins) if (m[0] > h[0] && m[0] < next) local = true;
+                if (!local) minutes = 0;
+            }
             if (minutes <= 0)
                 // Nincs kimondott időtartam: távból vagy ismétlésből becsülünk,
                 // anélkül a mozgásforma szokásos hossza jön.
