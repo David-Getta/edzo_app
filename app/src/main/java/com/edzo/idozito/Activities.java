@@ -1004,7 +1004,39 @@ public final class Activities {
                             : prev.equals("negyed") ? 15
                             : prev.equals("haromnegyed") ? 45 : 0;
                     if (frac > 0) {
-                        out.add(new int[]{wsPos, frac, p + unit.length(), 1});
+                        // „Két és fél óra": az egész órák a tört elé kerülnek,
+                        // „és"-sel kötve – nélkülük a kettő elveszett, és fél
+                        // óra maradt.
+                        int start = wsPos;
+                        int b = wsPos;
+                        while (b > 0 && s.charAt(b - 1) == ' ') b--;
+                        if (b >= 2 && s.startsWith("es", b - 2)
+                                && (b - 2 == 0 || !Character.isLetter(s.charAt(b - 3)))) {
+                            int c = b - 2;
+                            while (c > 0 && s.charAt(c - 1) == ' ') c--;
+                            int numStart = c, whole = 0;
+                            while (numStart > 0 && Character.isDigit(s.charAt(numStart - 1)))
+                                numStart--;
+                            if (numStart < c) {
+                                try { whole = Integer.parseInt(s.substring(numStart, c)); }
+                                catch (NumberFormatException ignore) { }
+                            } else {
+                                int a2 = c;
+                                while (a2 > 0 && Character.isLetter(s.charAt(a2 - 1))) a2--;
+                                String w2 = s.substring(a2, c);
+                                for (String[] nw : NUM_WORDS)
+                                    if (nw[0].equals(w2)) {
+                                        whole = Integer.parseInt(nw[1]);
+                                        numStart = a2;
+                                        break;
+                                    }
+                            }
+                            if (whole > 0 && whole <= 24) {
+                                frac += whole * 60;
+                                start = numStart;
+                            }
+                        }
+                        out.add(new int[]{start, frac, p + unit.length(), 1});
                         continue;
                     }
                 }

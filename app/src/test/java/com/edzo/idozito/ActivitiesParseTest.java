@@ -328,6 +328,18 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 2×tenisz/60", summary("2 tenisz 1 óra"));
     }
 
+    @Test public void wholeHoursAndSpelledFractionsCombine() {
+        // A „két és fél óra" kettője elveszett: fél óra maradt belőle, a
+        // kettes pedig darabszámmá válhatott volna.
+        assertEquals("1d+0: 1×tura/150", summary("két és fél óra túra"));
+        assertEquals("1d+0: 1×kerekpar/150", summary("2 és fél óra bringa"));
+        assertEquals("1d+0: 1×futas/75", summary("egy és negyed óra futás"));
+        assertEquals("1d+0: 1×tura/210", summary("három és fél órát túráztunk"));
+        // A sima tört és a másfél nem romolhatott el.
+        assertEquals("1d+0: 1×futas/30", summary("fél óra futás"));
+        assertEquals("1d+0: 1×uszas/90", summary("másfél óra úszás"));
+    }
+
     @Test public void distancesAreUnderstoodAndNotMistakenForCounts() {
         // A „10 km futás” EGY tíz kilométeres futás – nem tíz darab futás.
         Activities.Plan p = Activities.parse("10 km futás").plans.get(0);
