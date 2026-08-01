@@ -669,8 +669,12 @@ public class HistoryActivity extends Activity {
                     ? distM / (pl.minutes * 60.0) * 3.6 : -1;
             for (int n = 0; n < pl.count; n++) {
                 double kcal = Activities.calories(pl.kind, Profile.lastWeight(this), pl.minutes);
-                History.addManual(this, ts[i++], pl.minutes * 60, distM,
+                long t = ts[i++];
+                History.addManual(this, t, pl.minutes * 60, distM,
                         kcal, avg, pl.kind.title(), pl.kind.id);
+                // A kimondott lépésszám is a bejegyzésé: a lépés-kihívás és a
+                // részletek így ugyanazt látják, mint a mért edzéseknél.
+                if (pl.steps > 0) History.updateByTs(this, t, "steps", pl.steps);
             }
         }
         BlazeWidget.refresh(this);

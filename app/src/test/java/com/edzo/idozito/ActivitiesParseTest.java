@@ -157,6 +157,10 @@ public class ActivitiesParseTest {
         Activities.Parsed q = Activities.parse("sétáltam 10000 lépést");
         assertEquals(1, q.plans.size());
         assertEquals(7.5, q.plans.get(0).km, 0.001);
+        // A lépésszám a tervben is megmarad – a mentés a bejegyzésbe írja.
+        assertEquals(10000, q.plans.get(0).steps);
+        assertEquals(10000, Activities.parse("ma 10000 lépés").plans.get(0).steps);
+        assertEquals(0, Activities.parse("5 km futás").plans.get(0).steps);
         // A kimondott idő erősebb a lépés-becslésnél.
         assertEquals(120, Activities.parse("sétáltam 2 órát, 10000 lépés")
                 .plans.get(0).minutes);

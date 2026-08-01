@@ -255,8 +255,14 @@ public final class Activities {
         public final int minutes;
         /** Egy alkalom távja km-ben (0 = nincs megadva). */
         public final double km;
+        /** Kimondott lépésszám („ma 10000 lépés"; 0 = nincs). */
+        public final int steps;
         Plan(Kind kind, int count, int minutes, double km) {
-            this.kind = kind; this.count = count; this.minutes = minutes; this.km = km;
+            this(kind, count, minutes, km, 0);
+        }
+        Plan(Kind kind, int count, int minutes, double km, int steps) {
+            this.kind = kind; this.count = count; this.minutes = minutes;
+            this.km = km; this.steps = steps;
         }
         /** Emberi összefoglaló: „1 × 🏃 Futás · 10 km · 60 perc”. */
         public String label() {
@@ -629,12 +635,13 @@ public final class Activities {
             int ti = -1;
             for (int i = 0; i < out.size(); i++)
                 if (out.get(i).kind.id.equals("tura")) ti = i;
-            if (ti < 0) out.add(new Plan(byId("tura"), 1, smin, skm));
+            if (ti < 0) out.add(new Plan(byId("tura"), 1, smin, skm, (int) steps));
             else {
                 Plan t = out.get(ti);
                 // A kimondott idő (ami eltér az alapértelmezettől) erősebb.
                 int m = t.minutes == t.kind.defaultMin ? smin : t.minutes;
-                out.set(ti, new Plan(t.kind, t.count, m, t.km > 0 ? t.km : skm));
+                out.set(ti, new Plan(t.kind, t.count, m,
+                        t.km > 0 ? t.km : skm, (int) steps));
             }
         }
 
