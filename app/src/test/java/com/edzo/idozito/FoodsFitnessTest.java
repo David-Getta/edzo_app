@@ -351,6 +351,28 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void saladsAndVegetablesResolveCorrectly() {
+        // A franciasaláta majonézes (~270 kcal), nem 8 kcal-os zöldsaláta.
+        assertEquals("Franciasaláta / coleslaw", names("franciasaláta"));
+        assertTrue(kcal("franciasaláta") > 200);
+        assertEquals("Franciasaláta / coleslaw", names("coleslaw"));
+        // A „cékla saláta" külön írva sem esik kettőre.
+        assertEquals("Céklasaláta", names("cékla saláta"));
+        assertEquals("Savanyúság", names("savanyúság"));
+        assertEquals("Savanyúság", names("savanyú káposzta"));
+        // Alap zöldségek, amik eddig hiányoztak.
+        assertEquals("Spárga", names("spárga"));
+        assertEquals("Karalábé", names("karalábé"));
+        assertEquals("Retek", names("retek"));
+        assertEquals("Zeller", names("zeller"));
+        assertEquals("Édesburgonya", names("sült batáta"));
+        assertEquals("Zöldség (vegyes / párolt)", names("vitaminsaláta"));
+        // A szomszédok élnek.
+        assertEquals("Saláta (zöld)", names("saláta"));
+        assertEquals("Káposzta", names("káposzta"));
+        assertEquals("Uborka", names("kovászos uborka"));
+    }
+
     @Test public void porkDelicaciesAreNotFruitOrCheese() {
         // A „tepertő" 33 kcal-os EPERNEK számított (az „eper" tő beleesett),
         // a disznósajt trappistának, a májkrém nyers csirkemájnak.
