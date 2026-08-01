@@ -273,6 +273,19 @@ public class ActivitiesParseTest {
         assertEquals("7d+0: 4×egyeb/45", summary("a héten 4 edzés"));
     }
 
+    @Test public void plansForTheFutureAreNotLogged() {
+        // A „jövő héten 3 futás" terv, nem megtörtént edzés – eddig hét napra
+        // visszaosztva, múltként került volna a naplóba.
+        assertTrue(Activities.parse("jövő héten 3 futás").isEmpty());
+        assertTrue(Activities.parse("holnap futok").isEmpty());
+        assertTrue(Activities.parse("holnapután úszni fogok").isEmpty());
+        assertTrue(Activities.parse("jövő hónapban elkezdem a kondit").isEmpty());
+        assertTrue(Activities.parse("szeretnék futni").isEmpty());
+        assertTrue(Activities.parse("3 futást tervezek").isEmpty());
+        // A múlt viszont marad: a „tegnap futottam" él.
+        assertEquals(1, Activities.parse("tegnap futottam").plans.size());
+    }
+
     @Test public void nonsenseProducesNothing() {
         assertTrue(Activities.parse("semmi értelmes szöveg").isEmpty());
         assertTrue(Activities.parse("").isEmpty());

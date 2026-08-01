@@ -426,6 +426,13 @@ public final class Activities {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0, 12);
         char[] q = Foods.norm(text).toCharArray();
+        // A jövő nem napló: a „jövő héten 3 futás" vagy a „holnap futok"
+        // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
+        // a szándék máris bekerülne a szériába és az XP-be.
+        String s0 = new String(q);
+        for (String w : new String[]{"holnap", "jovo het", "jovo hon", "fogok",
+                "tervez", "szeretne"})
+            if (s0.contains(w)) return new Parsed(out, 1, 0, 12);
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
         stripMultiplicative(q);
 
