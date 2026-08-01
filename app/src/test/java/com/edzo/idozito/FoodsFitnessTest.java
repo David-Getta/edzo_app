@@ -351,6 +351,29 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void everyFoodsOwnNameResolvesToItself() {
+        // Önellenőrzés: minden tétel SAJÁT neve (a zárójeles minősítés és a
+        // „/" változatok nélkül) önmagára essen – ha a kalóriatáblázatból
+        // kimásolt név mást adna, az némán hibás naplót jelentene.
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL) {
+            String q = f.name.replaceAll("\\(.*\\)", "").split("/")[0].trim();
+            List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), q);
+            if (hs.size() == 1 && hs.get(0).food.name.equals(f.name)) continue;
+            // Egyetlen ismert név-darabolási műtermék megengedett.
+            if (q.equals("Kefires")) continue;
+            bad.append("\n  ").append(q);
+        }
+        assertTrue("nem önmagára esik:" + bad, bad.length() == 0);
+        // A javított esetek: a „tészta carbonara" nem duplázik, a
+        // „pacalpörkölt" nem sima pörkölt.
+        assertEquals("Tészta carbonara", names("tészta carbonara"));
+        assertEquals("Pacalpörkölt", names("pacalpörkölt"));
+        assertEquals("Töltött tészta (tortellini)", names("töltött tészta"));
+        assertEquals("Tükörponty / halrudak", names("tükörponty"));
+        assertEquals("Bogyós gyümölcs", names("bogyós gyümölcs"));
+    }
+
     @Test public void juicesAreNotTheFruitItself() {
         // A „narancslé" 71 kcal-os narancsnak, a „2 dl almalé" 200 g almának
         // számított – a lé folyadék, a maga kalóriájával.
