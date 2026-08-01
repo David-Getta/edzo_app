@@ -104,6 +104,37 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    @Test public void slangAndCasualFormsAreUnderstood() {
+        // Ahogy az emberek tényleg beszélnek a mozgásról.
+        assertEquals("kerekpar", Activities.parse("bicajoztam").plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("cangáztam egy órát").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("kocogtam").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("futkároztam fél órát").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("sprinteltem").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("eveztem 20 percet").plans.get(0).kind.id);
+        assertEquals(20, Activities.parse("eveztem 20 percet").plans.get(0).minutes);
+        assertEquals("joga", Activities.parse("meditáltam fél órát").plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("nordic walking").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("vízilabda").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("aquafitness").plans.get(0).kind.id);
+        // A „beneveztem a versenyre" nem evezés (a „nevez" vége az „evez") –
+        // az igekötős „kieveztem" viszont az.
+        assertTrue(Activities.parse("beneveztem a versenyre").isEmpty());
+        assertEquals("evezes", Activities.parse("kieveztem a tóra").plans.get(0).kind.id);
+    }
+
+    @Test public void aBareDistanceMeansARun() {
+        // A „nyomtam egy 5 km-t" magyarul futást jelent – sport szó nélkül is.
+        Activities.Plan p = Activities.parse("nyomtam egy 5 km-t").plans.get(0);
+        assertEquals("futas", p.kind.id);
+        assertEquals(5, p.km, 0.001);
+        assertEquals(30, p.minutes);
+        // Ha van megnevezett sport, a táv oda tartozik, nem lesz külön futás.
+        Activities.Parsed q = Activities.parse("20 km bringa");
+        assertEquals(1, q.plans.size());
+        assertEquals("kerekpar", q.plans.get(0).kind.id);
+    }
+
     @Test public void stepCountsBecomeAWalk() {
         // A „10000 lépés" túra/gyaloglás: ~130 lépés/perc, ~75 cm/lépés.
         Activities.Plan p = Activities.parse("ma 10000 lépés").plans.get(0);

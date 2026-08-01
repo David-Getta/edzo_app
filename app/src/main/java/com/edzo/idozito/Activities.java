@@ -48,16 +48,19 @@ public final class Activities {
      */
     public static final Kind[] ALL = {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
-                    "futas", "futo edzes", "futoedzes", "futni", "futott", "kocogas", "futok",
-                    "maraton"),
+                    "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
+                    "maraton", "futkaroz", "sprint"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
-                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt"),
+                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt",
+                    // A vizes sportok is ide: a vízilabda és a vizitorna a
+                    // medencés mozgások közül az úszáshoz áll a legközelebb.
+                    "vizilabda", "aquafit", "vizitorna"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
-                    "kerekpar", "bringa", "bicikli", "teker", "bmx"),
+                    "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
-                    "tura", "gyaloglas", "seta", "setalas", "kirandulas"),
+                    "tura", "gyaloglas", "seta", "setalas", "kirandulas", "nordic"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
-                    "evezes", "evezo", "kajak"),
+                    "evezes", "evezo", "evezt", "kajak", "sup deszka"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
@@ -81,7 +84,8 @@ public final class Activities {
                     "tanc", "aerobik", "zumba", "spinning", "kangoo", "alakformalo"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
-                    "joga", "yoga", "pilates", "nyujtas", "stretch", "torna"),
+                    "joga", "yoga", "pilates", "nyujtas", "stretch", "torna", "medital",
+                    "meditac"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki"),
@@ -461,8 +465,17 @@ public final class Activities {
                 while (true) {
                     int p = s.indexOf(w, from);
                     if (p < 0) break;
-                    hits.add(new int[]{p, w.length(), ki});
                     from = p + 1;
+                    // Az „evez" tő a „nevez" végződése is (beNEVEZTem): az
+                    // ilyen érzékeny tövek szó belsejében csak igekötő után
+                    // érvényesek (kieveztem). Az összetett sportszavak
+                    // (strandröplabda, gerincjóga) másik tövekkel mennek.
+                    if (p > 0 && Character.isLetter(s.charAt(p - 1)) && w.startsWith("evez")) {
+                        int a = p;
+                        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+                        if (!isVerbPrefix(s.substring(a, p))) continue;
+                    }
+                    hits.add(new int[]{p, w.length(), ki});
                 }
             }
         }
@@ -545,6 +558,16 @@ public final class Activities {
             // tempóból számolva 41 óra lenne).
             minutes = Math.min(minutes, 24 * 60);
             out.add(new Plan(kind, count, minutes, kmOf[i]));
+        }
+
+        // Ha nincs felismert mozgás, de van táv, az futás: a „nyomtam egy
+        // 5 km-t" magyarul futást jelent.
+        if (out.isEmpty() && !kms.isEmpty()) {
+            Kind run = byId("futas");
+            double km0 = kms.get(0)[1];
+            out.add(new Plan(run, 1,
+                    Math.min(24 * 60, Math.max(1, (int) Math.round(km0 * minPerKm(run)))),
+                    km0));
         }
 
         // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még
@@ -713,6 +736,14 @@ public final class Activities {
         double steps = val * mult;
         if (steps < 500 || steps > 100000) return null;
         return new double[]{numStart, end, steps};
+    }
+
+    /** Magyar igekötők: ami utánuk áll, az az ige töve (ki-eveztem). */
+    private static boolean isVerbPrefix(String pre) {
+        for (String v : new String[]{"le", "be", "meg", "el", "ki", "fel", "at",
+                "ra", "oda", "vissza", "ossze", "szet", "vegig", "korbe"})
+            if (v.equals(pre)) return true;
+        return false;
     }
 
     /** Ismétlés-alapú gyakorlatszavak: előttük a nagy szám ismétlés, nem alkalom. */
