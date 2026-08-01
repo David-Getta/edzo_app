@@ -351,6 +351,28 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void steakIsNotTeaAndFishAreKnown() {
+        // A „steak" szóban benne van a „tea": a „tofu steak" egy csésze teát
+        // is naplózott. A hosszabb tő elnyeli.
+        assertEquals("Tofu + Marhahús", names("tofu steak"));
+        assertEquals("Marhahús", names("steak"));
+        assertEquals("Tea (cukrozatlan)", names("tea"));
+        // Hazai halak és tenger gyümölcsei.
+        assertEquals("Hal (fehér)", names("pisztráng"));
+        assertEquals("Hal (fehér)", names("sült ponty"));
+        assertEquals("Hal (fehér)", names("harcsa"));
+        assertEquals("Tenger gyümölcsei", names("garnéla"));
+        assertEquals("Tenger gyümölcsei", names("kagyló"));
+        // A harcsapaprikás EGY fogás, nem hal + paprikás.
+        assertEquals("Csirkepaprikás", names("harcsapaprikás"));
+        // Növényi kör.
+        assertEquals("Edamame", names("edamame"));
+        assertEquals("Seitan", names("seitan"));
+        assertEquals("Tempeh", names("tempeh"));
+        assertEquals("Kókusztej", names("kókusztej"));
+        assertEquals("Növényi tej (mandula/zab)", names("zabtej"));
+    }
+
     @Test public void saladsAndVegetablesResolveCorrectly() {
         // A franciasaláta majonézes (~270 kcal), nem 8 kcal-os zöldsaláta.
         assertEquals("Franciasaláta / coleslaw", names("franciasaláta"));

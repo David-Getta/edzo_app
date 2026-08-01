@@ -34,7 +34,9 @@ public final class Foods {
         new Food("Pulykamell", 105, 23, 150, "pulyka"),
         new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes", "tarja",
                 "naturszelet", "natur szelet"),
-        new Food("Marhahús", 250, 26, 150, "marha", "belszin"),
+        // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
+        // „tofu steak" nem naplóz egy csésze teát is.
+        new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek"),
         new Food("Fasírt", 290, 15, 150, "fasirt", "vagdalt", "stefania"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
         new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz"),
@@ -42,7 +44,10 @@ public final class Foods {
         new Food("Sonka", 120, 18, 50, "sonka"),
         new Food("Szalámi", 400, 22, 30, "szalami"),
         new Food("Bacon", 500, 13, 30, "bacon", "szalonna"),
-        new Food("Hal (fehér)", 120, 22, 150, "hal"),
+        new Food("Hal (fehér)", 120, 22, 150, "hal", "pisztrang", "ponty", "harcsa",
+                "keszeg", "fogas"),
+        new Food("Tenger gyümölcsei", 90, 18, 150, "garnela", "kagylo", "polip",
+                "tenger gyumolcsei"),
         new Food("Tonhal", 130, 24, 100, "tonhal"),
         new Food("Lazac", 210, 20, 150, "lazac"),
         new Food("Makréla / szardínia", 220, 20, 100, "makrela", "szardinia"),
@@ -169,7 +174,9 @@ public final class Foods {
         new Food("Tükörtojás", 200, 13, 110, "tukortojas"),
         new Food("Bableves", 90, 5, 400, "bableves"),
         new Food("Húsleves", 40, 3, 400, "husleves"),
-        new Food("Csirkepaprikás", 160, 14, 300, "paprikas"),
+        // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
+        // paprikás kettőnek számolna.
+        new Food("Csirkepaprikás", 160, 14, 300, "paprikas", "harcsapaprikas"),
         new Food("Milánói makaróni", 180, 7, 350, "milanoi", "makaroni"),
         new Food("Lasagne", 160, 9, 350, "lasagne", "lazanya"),
         new Food("Tészta carbonara", 180, 8, 350, "carbonara"),
@@ -232,6 +239,10 @@ public final class Foods {
         new Food("Cottage cheese", 100, 11, 150, "cottage"),
         new Food("Skyr", 65, 11, 150, "skyr"),
         new Food("Tofu", 120, 12, 150, "tofu"),
+        new Food("Edamame", 120, 11, 100, "edamame"),
+        new Food("Seitan", 140, 25, 100, "seitan", "szejtan"),
+        new Food("Tempeh", 190, 19, 100, "tempeh"),
+        new Food("Kókusztej", 190, 2, 100, "kokusztej"),
         new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "cezar salata", "cezar", "caesar"),
         new Food("Sushi", 150, 6, 250, "sushi"),
         // Éttermi kör: egy 57 neves próbából 18-at egyáltalán nem ismert az
