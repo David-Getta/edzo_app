@@ -950,8 +950,19 @@ public class DietActivity extends Activity {
         MealLog.Meal meal = new MealLog.Meal(ts, nameEt.getText().toString().trim(), items, photo);
         if (existing != null) MealLog.removeByTs(this, existing.ts);
         MealLog.add(this, meal);
+        // Ha a mondatban víz volt („ittam fél liter vizet"), a vízcélba is
+        // beszámítjuk – ne kelljen külön a pohár-gombot nyomogatni. Csak mai
+        // bejegyzésnél: a tegnapi víz nem a mai poharakat tölti. Szerkesztésnél
+        // nem duplázunk: csak az új mentés számít.
+        int waterCl = 0;
+        if (existing == null && ts >= dayStartMs()) {
+            for (MealLog.Item it : items)
+                if (it.food.startsWith("Víz")) waterCl += (int) Math.round(it.grams / 10.0);
+            if (waterCl > 0) Water.addCl(this, waterCl);
+        }
         refresh();
         String msg = "Mentve ✔  " + Math.round(meal.kcal()) + " kcal";
+        if (waterCl > 0) msg += "  ·  +" + Water.liters(waterCl) + " víz 💧";
         if (estimated) msg += "  (ismeretlen ételnél ~becslés)";
         // Cél-tudatos visszajelzés: mennyi fér még a mai keretbe (csak mai étkezésnél).
         int kGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);

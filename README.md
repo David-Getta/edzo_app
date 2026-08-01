@@ -59,6 +59,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 💧 Víz
 - Pohár-alapú (2,5 dl) számláló napi céllal, haladássávval
 - **Gyorsgomb a widgeten** – app megnyitása nélkül
+- **A mondatból is**: ha az étrendbe azt írod, „ittam fél liter vizet",
+  az a vízcélba is beszámít
 - Heti átlag a statisztikákban és a heti összefoglalóban
 
 ### 🏋️ Erősítő edzésnapló
