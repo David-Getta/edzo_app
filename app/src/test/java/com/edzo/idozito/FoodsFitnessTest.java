@@ -351,6 +351,30 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void dairyDessertsAndCheesesResolveCorrectly() {
+        // A „parmezán" MÉZNEK számított (a „mez" tő beleesett), a tejszelet
+        // és a madártej sima tejnek, a milkshake fehérjeturmixnak.
+        assertEquals("Parmezán", names("parmezán"));
+        assertEquals("Tejszelet", names("tejszelet"));
+        assertEquals("Madártej", names("madártej"));
+        assertEquals("Tejszínhab", names("tejszínhab"));
+        assertEquals("Milkshake", names("milkshake"));
+        assertEquals("Milkshake", names("tejturmix"));
+        assertEquals("Puding", names("vaníliapuding"));
+        assertEquals("Puding", names("csokipuding"));
+        assertEquals("Krémtúró / túródesszert", names("krémtúró"));
+        assertEquals("Ivójoghurt", names("actimel"));
+        assertEquals("Camembert / brie", names("camembert"));
+        assertEquals("Feta", names("feta"));
+        assertEquals("Mascarpone", names("mascarpone"));
+        // A szomszédok élnek: méz, tej, túró, joghurt, csoki.
+        assertEquals("Méz", names("méz"));
+        assertEquals("Tej", names("tej"));
+        assertEquals("Túró", names("túró"));
+        assertEquals("Joghurt", names("joghurt"));
+        assertEquals("Csokoládé", names("csoki"));
+    }
+
     @Test public void everyFoodsOwnNameResolvesToItself() {
         // Önellenőrzés: minden tétel SAJÁT neve (a zárójeles minősítés és a
         // „/" változatok nélkül) önmagára essen – ha a kalóriatáblázatból
