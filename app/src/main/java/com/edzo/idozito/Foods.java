@@ -163,7 +163,9 @@ public final class Foods {
         new Food("Lekvár", 250, 0.4, 25, "lekvar"),
         new Food("Méz", 320, 0.3, 20, "mez"),
         new Food("Cukor", 400, 0, 10, "cukor"),
-        new Food("Üdítő (cukros)", 42, 0, 330, "udito", "kola", "cola"),
+        // A bolti jeges tea cukros – nem a cukrozatlan tea 3 kalóriája.
+        new Food("Üdítő (cukros)", 42, 0, 330, "udito", "kola", "cola", "tonik",
+                "jeges tea", "ice tea", "gyombersor"),
         // A „cukormentes” szó eddig CUKROT jelentett: a „cukor” szótő beleesett,
         // és 40 kcal-t adott hozzá – pont az ellenkezőjét annak, amit a felhasználó
         // írt. A hosszabb szótő elnyeli a rövidebbet, így ez a nulla kalóriás
@@ -238,7 +240,7 @@ public final class Foods {
         new Food("Piskóta / kevert süti", 350, 6, 80, "piskota", "kevert"),
         new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
-        new Food("Sör", 43, 0.5, 500, "sor", "sör"),
+        new Food("Sör", 43, 0.5, 500, "sor", "sör", "radler"),
         new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsussz", "dzsusz"),
         // A „puffasztott rizs" két ételre esett szét (puffasztott + rizs), vagyis
         // duplán számolt. A teljes alak hosszabb szótő, így elnyeli mindkettőt.
@@ -390,7 +392,14 @@ public final class Foods {
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
         // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.
         new Food("Bors (fűszer)", 0, 0, 5, "borsoz", "bors"),
-        new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomenny", "tomeny", "vodka", "whisky", "jager"),
+        // A „vilmoskörte" pálinka, nem gyümölcs – a hosszabb tő elnyeli a körtét.
+        new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomenny", "tomeny", "vodka",
+                "whisky", "whiskey", "jager", "rum", "gin", "tequila", "unicum",
+                "baileys", "martini", "likor", "vilmoskorte", "vilmos"),
+        new Food("Koktél / long drink", 90, 0, 250, "koktel", "gin tonik", "gintonik",
+                "mojito", "aperol", "cuba libre", "long drink", "spritz"),
+        new Food("Pezsgő", 76, 0, 150, "pezsgo", "prosecco", "champagne"),
+        new Food("Cider", 45, 0, 330, "cider", "almabor"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",
                 "zabtej", "rizstej", "szojatej"),
         new Food("Szójakocka", 340, 50, 60, "szojakocka", "szoja"),

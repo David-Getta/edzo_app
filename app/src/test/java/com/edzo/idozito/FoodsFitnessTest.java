@@ -351,6 +351,28 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void cocktailsAndSpiritsAreKnown() {
+        // A „vilmoskörte" pálinka volt gyümölcs helyett – illetve fordítva:
+        // 86 kcal-os körtének számított.
+        assertEquals("Pálinka / tömény", names("vilmoskörte"));
+        assertEquals("Pálinka / tömény", names("rum"));
+        assertEquals("Pálinka / tömény", names("unicum"));
+        assertEquals("Koktél / long drink", names("gin tonik"));
+        assertEquals("Koktél / long drink", names("mojito"));
+        assertEquals("Koktél / long drink", names("aperol spritz"));
+        assertEquals("Pezsgő", names("prosecco"));
+        assertEquals("Cider", names("cider"));
+        assertEquals("Sör", names("radler"));
+        // A bolti jeges tea cukros, nem 3 kcal-os tea.
+        assertEquals("Üdítő (cukros)", names("jeges tea"));
+        assertTrue(kcal("jeges tea") > 100);
+        // A szomszédok élnek: körte, krumpli, tea – és a „rum" nem esik a
+        // krumpliba (a hosszabb tő elnyeli).
+        assertEquals("Körte", names("körte"));
+        assertEquals("Burgonya (főtt)", names("krumpli"));
+        assertEquals("Tea (cukrozatlan)", names("tea"));
+    }
+
     @Test public void pastriesResolveCorrectly() {
         // A „kakaós palacsinta" egy bögre tejes kakaót is számolt a kanálnyi
         // töltelék helyett; a klasszikus cukrászsütik fele hiányzott.
