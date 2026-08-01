@@ -49,6 +49,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
         int count = 0;
         double dist = 0;
         long dur = 0;
+        int weekSteps = 0;
         boolean[] trainedDay = new boolean[7];
         for (int k = 0; k < h.length(); k++) {
             JSONObject o = h.optJSONObject(k);
@@ -57,6 +58,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
             double d = o.optDouble("dist", -1);
             if (d > 0) dist += d;
             dur += o.optInt("dur");
+            weekSteps += o.optInt("steps", 0);
             int idx = Days.between(from, o.optLong("ts"));
             if (idx >= 0 && idx < 7) trainedDay[idx] = true;
         }
@@ -77,6 +79,10 @@ public class WeeklyReceiver extends BroadcastReceiver {
             sb.append(count).append(count == 1 ? " edzés" : " edzés");
             if (dist > 0) sb.append("  ·  ").append(String.format(Hu.LOCALE, "%.1f km", dist / 1000.0));
             sb.append("  ·  ").append(dur / 60).append(" perc mozgás");
+            // Lépések, ha voltak – ezres tagolással olvashatóbb.
+            if (weekSteps > 0)
+                sb.append("  ·  ").append(String.format(Hu.LOCALE, "%,d", weekSteps)
+                        .replace(',', ' ')).append(" lépés");
             if (hasPlan && plannedCount > 0)
                 sb.append("  ·  Terv: ").append(plannedDone).append("/").append(plannedCount).append(" edzésnap");
             sb.append(". ");
