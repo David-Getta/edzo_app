@@ -557,12 +557,38 @@ public final class Foods {
      * számolható étel előtt érvényesek, ezért a többjelentésű alakok („hat",
      * „het", „fel") sem okoznak félreértést.
      */
-    private static final String[][] NUMBER_WORDS = {
-            {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},
-            {"ot", "5"}, {"hat", "6"}, {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"},
-            {"tiz", "10"}, {"fel", "0.5"}, {"masfel", "1.5"},
-            {"negyed", "0.25"}, {"haromnegyed", "0.75"},
-    };
+    private static final String[][] NUMBER_WORDS = buildNumberWords();
+
+    /**
+     * Az alap számnevek mellett a tízesek és az összetett alakok is
+     * („negyvenöt gramm", „huszonöt dkg") – kézzel felsorolni mind a
+     * nyolcvanat hibalehetőség lenne, ezért generáljuk őket.
+     */
+    private static String[][] buildNumberWords() {
+        java.util.List<String[]> out = new java.util.ArrayList<>(java.util.Arrays.asList(
+                new String[][]{
+                        {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"},
+                        {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
+                        {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"},
+                        {"husz", "20"}, {"fel", "0.5"}, {"masfel", "1.5"},
+                        {"negyed", "0.25"}, {"haromnegyed", "0.75"},
+                }));
+        String[][] tens = {{"tizen", "10"}, {"huszon", "20"}, {"harminc", "30"},
+                {"negyven", "40"}, {"otven", "50"}, {"hatvan", "60"},
+                {"hetven", "70"}, {"nyolcvan", "80"}, {"kilencven", "90"}};
+        String[][] units = {{"egy", "1"}, {"ketto", "2"}, {"ket", "2"}, {"harom", "3"},
+                {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
+                {"nyolc", "8"}, {"kilenc", "9"}};
+        for (String[] t : tens) {
+            // A „tizen"/„huszon" csak összetételben szám, a többi magában is.
+            if (!t[0].equals("tizen") && !t[0].equals("huszon"))
+                out.add(new String[]{t[0], t[1]});
+            for (String[] u : units)
+                out.add(new String[]{t[0] + u[0],
+                        String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
+        }
+        return out.toArray(new String[0][]);
+    }
 
     /** Ha itt egész szóként kiírt számnév kezdődik, a hossza; különben 0. */
     private static int numberWordAt(String q, int at) {
@@ -775,6 +801,24 @@ public final class Foods {
             } else {
                 i++;
                 continue;
+            }
+            // „Két és fél deci", „2 és fél dl": az egész és a tört összeadódik
+            // – enélkül a kettő elveszett, és fél deci maradt.
+            int e1 = i;
+            while (e1 < q.length() && q.charAt(e1) == ' ') e1++;
+            if (q.startsWith("es", e1)
+                    && (e1 + 2 >= q.length() || !Character.isLetter(q.charAt(e1 + 2)))) {
+                int e2 = e1 + 2;
+                while (e2 < q.length() && q.charAt(e2) == ' ') e2++;
+                for (String[] f : new String[][]{{"haromnegyed", "0.75"},
+                        {"negyed", "0.25"}, {"fel", "0.5"}})
+                    if (q.startsWith(f[0], e2)
+                            && (e2 + f[0].length() >= q.length()
+                            || !Character.isLetter(q.charAt(e2 + f[0].length())))) {
+                        val += Double.parseDouble(f[1]);
+                        i = e2 + f[0].length();
+                        break;
+                    }
             }
             int j = i;
             while (j < q.length() && q.charAt(j) == ' ') j++;

@@ -24,6 +24,27 @@ public class FoodsQuantityTest {
         return hs.get(0).grams;
     }
 
+    @Test public void wholeAndFractionCombineInQuantities() {
+        // A „két és fél deci tej" kettője elveszett: fél deci maradt.
+        assertEquals(250, grams("két és fél deci tej"), 0.01);
+        assertEquals(250, grams("2 és fél dl olaj"), 0.01);
+        assertEquals(1500, grams("egy és fél liter víz"), 0.01);
+        assertEquals(750, grams("háromnegyed liter tej"), 0.01);
+        // A sima tört és a másfél nem romolhatott el.
+        assertEquals(150, grams("másfél deci tej"), 0.01);
+        assertEquals(500, grams("fél kiló kenyér"), 0.01);
+    }
+
+    @Test public void compoundSpelledNumbersWork() {
+        // A „negyvenöt gramm", „huszonöt dkg", „ötven gramm" eddig ismeretlen
+        // számnév volt, és a tipikus adagra esett vissza.
+        assertEquals(45, grams("negyvenöt gramm sajt"), 0.01);
+        assertEquals(250, grams("huszonöt dkg liszt"), 0.01);
+        assertEquals(50, grams("ötven gramm rizs"), 0.01);
+        assertEquals(80, grams("nyolcvan gramm zab"), 0.01);
+        assertEquals(320, grams("harminckét dkg sajt"), 0.01);
+    }
+
     @Test public void quarterAndWrittenOutDekaWork() {
         // A „negyed kiló sajt" 30 grammos adag lett: a „negyed" nem volt
         // számnév. A kiírt „deka" pedig nem volt mértékegység (a „dkg" igen).
