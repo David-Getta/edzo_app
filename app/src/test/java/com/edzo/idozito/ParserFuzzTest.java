@@ -37,36 +37,43 @@ public class ParserFuzzTest {
     };
 
     @Test public void randomSentencesNeverCrashTheParsers() {
-        Random rnd = new Random(20260731);
-        for (int i = 0; i < 4000; i++) {
-            StringBuilder sb = new StringBuilder();
-            int words = rnd.nextInt(12);
-            for (int w = 0; w < words; w++) {
-                sb.append(TOKENS[rnd.nextInt(TOKENS.length)]);
-                if (rnd.nextInt(4) > 0) sb.append(' ');
-            }
-            String q = sb.toString();
+        // Több mag: egy 42 000 mondatos külön futtatás nulla hibát talált, és
+        // a magok váltogatása így is beépült – más mag más kombinációkat üt.
+        for (long seed : new long[]{20260731, 987654, 42}) {
+            Random rnd = new Random(seed);
+            for (int i = 0; i < 4000; i++) {
+                StringBuilder sb = new StringBuilder();
+                int words = rnd.nextInt(12);
+                for (int w = 0; w < words; w++) {
+                    sb.append(TOKENS[rnd.nextInt(TOKENS.length)]);
+                    if (rnd.nextInt(4) > 0) sb.append(' ');
+                }
+                String q = sb.toString();
 
-            // Étel-értelmező: nincs kivétel, a gramm sosem képtelen.
-            for (Foods.Hit h : Foods.parse(Arrays.asList(Foods.ALL), q)) {
-                assertTrue("negatív gramm erre: " + q, h.grams >= 0);
-                assertTrue("képtelen gramm (" + h.grams + ") erre: " + q,
-                        h.grams <= 50_000);
-            }
+                // Étel-értelmező: nincs kivétel, a gramm sosem képtelen.
+                for (Foods.Hit h : Foods.parse(Arrays.asList(Foods.ALL), q)) {
+                    assertTrue("negatív gramm erre: " + q, h.grams >= 0);
+                    assertTrue("képtelen gramm (" + h.grams + ") erre: " + q,
+                            h.grams <= 50_000);
+                }
 
-            // Edzés-értelmező: nincs kivétel, a terv korlátos.
-            Activities.Parsed p = Activities.parse(q, 1_753_900_000_000L);
-            assertTrue("napok tartományon kívül: " + q, p.days >= 1 && p.days <= 365);
-            assertTrue("eltolás tartományon kívül: " + q, p.offset >= 0 && p.offset <= 366);
-            for (Activities.Plan pl : p.plans) {
-                assertTrue("darabszám elszaladt erre: " + q, pl.count >= 1 && pl.count <= 50);
-                assertTrue("időtartam elszaladt erre: " + q,
-                        pl.minutes >= 1 && pl.minutes <= 24 * 60);
-                assertTrue("táv elszaladt erre: " + q, pl.km >= 0 && pl.km <= 500);
+                // Edzés-értelmező: nincs kivétel, a terv korlátos.
+                Activities.Parsed p = Activities.parse(q, 1_753_900_000_000L);
+                assertTrue("napok tartományon kívül: " + q, p.days >= 1 && p.days <= 365);
+                assertTrue("eltolás tartományon kívül: " + q, p.offset >= 0 && p.offset <= 366);
+                assertTrue("óra tartományon kívül: " + q, p.hour >= 0 && p.hour <= 23);
+                for (Activities.Plan pl : p.plans) {
+                    assertTrue("darabszám elszaladt erre: " + q, pl.count >= 1 && pl.count <= 50);
+                    assertTrue("időtartam elszaladt erre: " + q,
+                            pl.minutes >= 1 && pl.minutes <= 24 * 60);
+                    assertTrue("táv elszaladt erre: " + q, pl.km >= 0 && pl.km <= 500);
+                    assertTrue("lépésszám elszaladt erre: " + q,
+                            pl.steps >= 0 && pl.steps <= 100_000);
+                }
+                // Az időbélyeg-tervezés is korlátos: semmi a jövőben, semmi kivétel.
+                for (long t : Activities.timestamps(p, 1_753_900_000_000L))
+                    assertTrue("jövőbeli időbélyeg erre: " + q, t <= 1_753_900_000_000L);
             }
-            // Az időbélyeg-tervezés is korlátos: semmi a jövőben, semmi kivétel.
-            for (long t : Activities.timestamps(p, 1_753_900_000_000L))
-                assertTrue("jövőbeli időbélyeg erre: " + q, t <= 1_753_900_000_000L);
         }
     }
 
