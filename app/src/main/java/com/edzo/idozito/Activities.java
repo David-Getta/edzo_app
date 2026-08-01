@@ -435,6 +435,11 @@ public final class Activities {
         // válnak darabszámmá.
         int dist = stripDistributive(q);
         boolean daily = stripDaily(q);
+        // Lépésszám: „10000 lépés", „tízezer lépést sétáltam". Kitakarjuk,
+        // hogy a szám ne váljon darabszámmá; a terv a mozgások után épül rá.
+        double steps = 0;
+        double[] st = findSteps(q);
+        if (st != null) { steps = st[2]; blank(q, (int) st[0], (int) st[1]); }
 
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
         //    de a helyüket megjegyezzük, hogy a hozzájuk tartozó mozgáshoz
@@ -556,6 +561,24 @@ public final class Activities {
                 break;
             }
         }
+        // A lépésszám túra/gyaloglás: időt (~130 lépés/perc) és távot
+        // (~75 cm/lépés) is jelent. Ha séta/túra már szerepel a mondatban,
+        // azt egészíti ki – nem lesz belőle második bejegyzés.
+        if (steps > 0) {
+            int smin = Math.max(10, Math.min(24 * 60, (int) Math.round(steps / 130.0)));
+            double skm = Math.round(steps * 0.00075 * 10) / 10.0;
+            int ti = -1;
+            for (int i = 0; i < out.size(); i++)
+                if (out.get(i).kind.id.equals("tura")) ti = i;
+            if (ti < 0) out.add(new Plan(byId("tura"), 1, smin, skm));
+            else {
+                Plan t = out.get(ti);
+                // A kimondott idő (ami eltér az alapértelmezettől) erősebb.
+                int m = t.minutes == t.kind.defaultMin ? smin : t.minutes;
+                out.set(ti, new Plan(t.kind, t.count, m, t.km > 0 ? t.km : skm));
+            }
+        }
+
         // A naponkénti alakok kibontása: EGY mozgásnál a darabszám naponta
         // értendő („tegnap és ma 1-1 futás" = két futás, „a héten minden nap
         // futottam" = hét futás, „naponta kétszer" = 2 × napok). Több mozgásnál
@@ -650,6 +673,46 @@ public final class Activities {
         int p = s.indexOf("egy-egy");
         if (p >= 0) { blank(q, p + 3, p + 7); return 1; }
         return 0;
+    }
+
+    /**
+     * Lépésszám a szövegben: „10000 lépés", „10 ezer lépés", „tízezer lépés"
+     * → {kezdet, vég, lépések}. 500 alatt és 100 000 felett nem hisszük el.
+     */
+    private static double[] findSteps(char[] q) {
+        String s = new String(q);
+        int p = s.indexOf("lepes");
+        if (p < 0) return null;
+        if (p > 0 && Character.isLetter(s.charAt(p - 1))) return null;
+        int end = p + 5;
+        while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+        int we = p;
+        while (we > 0 && s.charAt(we - 1) == ' ') we--;
+        double mult = 1;
+        int numEnd = we;
+        if (we >= 4 && s.startsWith("ezer", we - 4)) {
+            mult = 1000;
+            numEnd = we - 4;
+            while (numEnd > 0 && s.charAt(numEnd - 1) == ' ') numEnd--;
+        }
+        int numStart = numEnd;
+        while (numStart > 0 && Character.isDigit(s.charAt(numStart - 1))) numStart--;
+        double val;
+        if (numStart < numEnd) {
+            try { val = Double.parseDouble(s.substring(numStart, numEnd)); }
+            catch (NumberFormatException e) { return null; }
+        } else if (mult == 1000) {
+            // Kiírt számnév egyben: „tízezer" (a norm után: tizezer).
+            int a = numEnd;
+            while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+            String w = s.substring(a, numEnd);
+            val = 1;                                   // puszta „ezer lépés"
+            for (String[] nw : NUM_WORDS)
+                if (nw[0].equals(w)) { val = Integer.parseInt(nw[1]); numStart = a; break; }
+        } else return null;
+        double steps = val * mult;
+        if (steps < 500 || steps > 100000) return null;
+        return new double[]{numStart, end, steps};
     }
 
     /** Ismétlés-alapú gyakorlatszavak: előttük a nagy szám ismétlés, nem alkalom. */

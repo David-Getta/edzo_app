@@ -28,7 +28,7 @@ public class ParserFuzzTest {
             // Az új értelmezési utak is kapjanak véletlen kombinációkat.
             "kétszer", "3-szor", "hónap", "méter", "m", "pohár", "burrito",
             "fröccs", "hétszer", "1500", "július", "december", "28-án", "31",
-            "minden", "naponta", "1-1", "hétvégén",
+            "minden", "naponta", "1-1", "hétvégén", "lépés", "ezer", "10000",
             "10", "100", "1000", "2,5", "1,5", "999999999", "0,0001", ",", ".",
             ";", "-", "(", ")", "!", "?", "…", "„", "”", "×", "🏃", "🤾",
             "", " ", "  ", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "ő", "ű",

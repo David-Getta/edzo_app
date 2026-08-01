@@ -104,6 +104,28 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    @Test public void stepCountsBecomeAWalk() {
+        // A „10000 lépés" túra/gyaloglás: ~130 lépés/perc, ~75 cm/lépés.
+        Activities.Plan p = Activities.parse("ma 10000 lépés").plans.get(0);
+        assertEquals("tura", p.kind.id);
+        assertEquals(1, p.count);
+        assertEquals(77, p.minutes);
+        assertEquals(7.5, p.km, 0.001);
+        // Kiírva is: „tízezer", „10 ezer", „háromezer".
+        assertEquals(7.5, Activities.parse("tízezer lépés").plans.get(0).km, 0.001);
+        assertEquals(7.5, Activities.parse("10 ezer lépés").plans.get(0).km, 0.001);
+        assertEquals(2.3, Activities.parse("háromezer lépést mentem").plans.get(0).km, 0.001);
+        // Ha a séta már szerepel, kiegészíti, nem duplázza.
+        Activities.Parsed q = Activities.parse("sétáltam 10000 lépést");
+        assertEquals(1, q.plans.size());
+        assertEquals(7.5, q.plans.get(0).km, 0.001);
+        // A kimondott idő erősebb a lépés-becslésnél.
+        assertEquals(120, Activities.parse("sétáltam 2 órát, 10000 lépés")
+                .plans.get(0).minutes);
+        // A pici szám nem lépésszám-edzés (és nem is darabszám).
+        assertTrue(Activities.parse("100 lépés").isEmpty());
+    }
+
     @Test public void setsTimesRepsIsTheProduct() {
         // A súlyzós jelölés: „3x10" három sorozat tíz ismétlés, azaz harminc.
         Activities.Parsed p = Activities.parse("3x10 fekvőtámasz");
