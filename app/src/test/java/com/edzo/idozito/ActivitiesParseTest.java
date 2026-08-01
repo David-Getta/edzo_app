@@ -328,6 +328,18 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 2×tenisz/60", summary("2 tenisz 1 óra"));
     }
 
+    @Test public void compoundSpelledNumbersWorkInWorkouts() {
+        // A „negyvenöt perc" eddig ismeretlen számnév volt.
+        assertEquals(45, Activities.parse("negyvenöt perc kondi").plans.get(0).minutes);
+        assertEquals(32, Activities.parse("harminckét perc futás").plans.get(0).minutes);
+        assertEquals(25, Activities.parse("huszonöt perces jóga").plans.get(0).minutes);
+        // Ismétlésként is: a huszonöt fekvőtámasz egy alkalom.
+        assertEquals(1, Activities.parse("huszonöt fekvőtámasz").plans.get(0).count);
+        // A régi alakok nem romolhattak el.
+        assertEquals(30, Activities.parse("harminc futás").plans.get(0).count);
+        assertEquals(12, Activities.parse("tizenkét perc futás").plans.get(0).minutes);
+    }
+
     @Test public void wholeHoursAndSpelledFractionsCombine() {
         // A „két és fél óra" kettője elveszett: fél óra maradt belőle, a
         // kettes pedig darabszámmá válhatott volna.

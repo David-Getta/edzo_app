@@ -347,12 +347,35 @@ public final class Activities {
         return out;
     }
 
-    private static final String[][] NUM_WORDS = {
-            {"tizenket", "12"}, {"tizenegy", "11"}, {"tizenkett", "12"},
-            {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"}, {"negy", "4"},
-            {"ot", "5"}, {"hat", "6"}, {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"},
-            {"tiz", "10"}, {"husz", "20"}, {"harminc", "30"},
-    };
+    private static final String[][] NUM_WORDS = buildNumWords();
+
+    /**
+     * Az alap számnevek mellett a tízesek és az összetett alakok is
+     * („negyvenöt perc", „huszonöt fekvőtámasz") – generálva, mert a ~90
+     * alakot kézzel felsorolni hibalehetőség lenne.
+     */
+    private static String[][] buildNumWords() {
+        java.util.List<String[]> out = new java.util.ArrayList<>(java.util.Arrays.asList(
+                new String[][]{
+                        {"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"},
+                        {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
+                        {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"}, {"husz", "20"},
+                }));
+        String[][] tens = {{"tizen", "10"}, {"huszon", "20"}, {"harminc", "30"},
+                {"negyven", "40"}, {"otven", "50"}, {"hatvan", "60"},
+                {"hetven", "70"}, {"nyolcvan", "80"}, {"kilencven", "90"}};
+        String[][] units = {{"egy", "1"}, {"ketto", "2"}, {"ket", "2"}, {"harom", "3"},
+                {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
+                {"nyolc", "8"}, {"kilenc", "9"}};
+        for (String[] t : tens) {
+            if (!t[0].equals("tizen") && !t[0].equals("huszon"))
+                out.add(new String[]{t[0], t[1]});
+            for (String[] u : units)
+                out.add(new String[]{t[0] + u[0],
+                        String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
+        }
+        return out.toArray(new String[0][]);
+    }
 
     /**
      * Ezek a szavak a „nap"/„hét" szótövet tartalmazzák, de nem időszakot
@@ -1067,7 +1090,9 @@ public final class Activities {
                     val = (int) Math.round(d2 * (unit.equals("ora") ? 60 : 1));
                     numPos = numStart2;
                 } else {
-                    int[] n = numberBefore(s, p, 8);
+                    // A leghosszabb összetett számnév („kilencvenkilenc") is
+                    // beleférjen a visszanézésbe.
+                    int[] n = numberBefore(s, p, 18);
                     if (n == null) continue;
                     val = unit.equals("ora") ? n[2] * 60 : n[2];
                     numPos = n[0];
