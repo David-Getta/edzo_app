@@ -77,7 +77,11 @@ public final class Foods {
         // A „sóska" magában is a főzeléket jelenti; a „kelkáposzta főzelék"
         // teljes alakja szótő, különben káposzta + főzelék kettőnek számolna.
         new Food("Főzelék", 80, 3, 350, "fozelek", "soska", "kelkaposzta fozelek"),
-        new Food("Leves (átlag)", 50, 3, 400, "leves"),
+        // A „zöldségleves" teljes alakja szótő, különben zöldség + leves
+        // kettőnek számolna.
+        new Food("Leves (átlag)", 50, 3, 400, "leves", "zoldsegleves"),
+        // A „vacsorára túró és zöldség" zöldsége eddig eltűnt: vegyes köret.
+        new Food("Zöldség (vegyes / párolt)", 40, 2, 200, "zoldseg"),
         new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott"),
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),

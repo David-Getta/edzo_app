@@ -275,6 +275,15 @@ public class FoodsFitnessTest {
         assertEquals("Burgonyapüré", names("krumplipüré"));
     }
 
+    @Test public void plainVegetablesAreAKnownSide() {
+        // A „vacsorára túró és zöldség" zöldsége eddig eltűnt a naplóból.
+        assertEquals("Túró + Zöldség (vegyes / párolt)", names("vacsorára túró és zöldség"));
+        assertEquals("Zöldség (vegyes / párolt)", names("párolt zöldség"));
+        // A zöldségleves EGY leves, a rántott zöldség EGY rántott étel.
+        assertEquals("Leves (átlag)", names("zöldségleves"));
+        assertEquals("Rántott zöldség", names("rántott zöldség"));
+    }
+
     @Test public void waterIsUnderstoodAsZeroCalories() {
         // Az „ittam 1,5 liter vizet" ne legyen „nem értem" – nulla kalória,
         // de a napló teljesebb tőle.
