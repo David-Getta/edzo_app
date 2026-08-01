@@ -429,10 +429,7 @@ public final class Activities {
         // A jövő nem napló: a „jövő héten 3 futás" vagy a „holnap futok"
         // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
         // a szándék máris bekerülne a szériába és az XP-be.
-        String s0 = new String(q);
-        for (String w : new String[]{"holnap", "jovo het", "jovo hon", "fogok",
-                "tervez", "szeretne"})
-            if (s0.contains(w)) return new Parsed(out, 1, 0, 12);
+        if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
         stripMultiplicative(q);
 
@@ -766,6 +763,19 @@ public final class Activities {
         double steps = val * mult;
         if (steps < 500 || steps > 100000) return null;
         return new double[]{numStart, end, steps};
+    }
+
+    /**
+     * Jövőre utaló mondat? Az ilyet nem mentjük – de a hibaüzenet meg tudja
+     * mondani, hogy nem értetlenség az oka, hanem az, hogy a terv nem napló.
+     */
+    public static boolean looksLikeFuture(String text) {
+        if (text == null) return false;
+        String s = Foods.norm(text);
+        for (String w : new String[]{"holnap", "jovo het", "jovo hon", "fogok",
+                "tervez", "szeretne"})
+            if (s.contains(w)) return true;
+        return false;
     }
 
     /** Magyar igekötők: ami utánuk áll, az az ige töve (ki-eveztem). */

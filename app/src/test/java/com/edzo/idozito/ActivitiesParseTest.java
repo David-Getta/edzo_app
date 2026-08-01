@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -284,6 +285,12 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("3 futást tervezek").isEmpty());
         // A múlt viszont marad: a „tegnap futottam" él.
         assertEquals(1, Activities.parse("tegnap futottam").plans.size());
+        // A hibaüzenet meg tudja különböztetni a tervet az értetlenségtől.
+        assertTrue(Activities.looksLikeFuture("jövő héten 3 futás"));
+        assertTrue(Activities.looksLikeFuture("holnap futok"));
+        assertFalse(Activities.looksLikeFuture("tegnap futottam"));
+        assertFalse(Activities.looksLikeFuture("semmi értelmes szöveg"));
+        assertFalse(Activities.looksLikeFuture(null));
     }
 
     @Test public void nonsenseProducesNothing() {
