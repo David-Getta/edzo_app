@@ -94,6 +94,13 @@ public class FoodsPieceTest {
         assertEquals(0, one("sör").grams, 0.01);
     }
 
+    @Test public void aCountBeforeALaterMentionStillCounts() {
+        // A „sörözés: 3 korsó sör" söre az első említésnél („sörözés")
+        // rögzült, ezért a 3 korsó némán elveszett – egy korsónyi lett.
+        assertEquals(3 * 500, one("sörözés: 3 korsó sör").grams, 0.01);
+        assertEquals(2 * 55, one("tojásos reggeli: 2 tojás").grams, 0.01);
+    }
+
     @Test public void aPortionWordWorksForAnyFood() {
         // Az „adag" bármely ételre megy: egy adag a tipikus adag – eddig a
         // „fél adag gyros" is teljes adagnak számított.

@@ -910,6 +910,19 @@ public final class Foods {
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
                 String between = countWordAt(q, numEnd, foodPos.get(k));
+                // A darabszám egy KÉSŐBBI előfordulás előtt is állhat
+                // („sörözés: 3 korsó sör" – az étel tárolt pozíciója az első
+                // említésé, a szám mégis a másodikhoz tartozik).
+                if (between == null) {
+                    for (String st : foods.get(k).stems) {
+                        String ns = norm(st);
+                        if (ns.isEmpty()) continue;
+                        int p2 = q.indexOf(ns, numEnd);
+                        if (p2 < 0) continue;
+                        between = countWordAt(q, numEnd, p2);
+                        if (between != null) break;
+                    }
+                }
                 if (between == null) continue;
                 // Az „adag" bármely ételre megy: egy adag a tipikus adag.
                 // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
