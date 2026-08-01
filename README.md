@@ -45,7 +45,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - Felismeri a **grammot** (g / gr / gramm / dkg / deka), a **darabszámot**
   (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „két és fél deci"),
   a poharas/korsós italokat és az **adagot** („fél adag gyros")
-- **298 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **302 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -142,7 +142,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~259 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~262 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

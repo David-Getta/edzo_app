@@ -50,7 +50,7 @@ public final class Foods {
                 "tenger gyumolcsei"),
         new Food("Tonhal", 130, 24, 100, "tonhal"),
         new Food("Lazac", 210, 20, 150, "lazac"),
-        new Food("Makréla / szardínia", 220, 20, 100, "makrela", "szardinia"),
+        new Food("Makréla / szardínia", 220, 20, 100, "makrela", "szardinia", "sprotni"),
         new Food("Tojás", 155, 13, 110, "tojas"),
         // A „tojásfehérje" eddig egész tojás volt: 33 g helyett 55 g, és 17 kcal
         // helyett 78 – négy és félszeres túlszámolás egy sportolós alapdarabon.
@@ -97,7 +97,7 @@ public final class Foods {
         new Food("Lencse (főtt)", 115, 9, 200, "lencse"),
         new Food("Borsó", 80, 5, 150, "borso"),
         // A „csicseriborsó” eddig sima borsó volt: fele annyi kalória.
-        new Food("Csicseriborsó (főtt)", 160, 9, 150, "csicseriborso", "csicseri", "humusz"),
+        new Food("Csicseriborsó (főtt)", 160, 9, 150, "csicseriborso", "csicseri"),
         new Food("Kukorica", 90, 3, 100, "kukorica"),
         // Reggeli pehely, nem főzelék-kukorica: négyszeres a különbség.
         new Food("Kukoricapehely", 380, 7, 40, "kukoricapehely", "cornflakes", "corn flakes"),
@@ -131,7 +131,14 @@ public final class Foods {
         new Food("Tej", 60, 3.3, 200, "tej"),
         new Food("Zsírszegény tej", 38, 3.4, 200, "zsirszegeny tej", "sovany tej"),
         new Food("Vaj", 720, 0.9, 10, "vaj"),
-        new Food("Olaj", 900, 0, 10, "olaj"),
+        new Food("Olaj", 900, 0, 10, "olaj", "napraforgo olaj"),
+        new Food("Olajbogyó / olívabogyó", 145, 1, 30,
+                "olajbogyo", "olivabogyo", "kapribogyo"),
+        new Food("Magvaj (mandula/kesu/tahini)", 600, 20, 20,
+                "mogyorovaj", "mandulavaj", "kesuvaj", "tahini", "magvaj"),
+        new Food("Szendvicskrém / kence", 250, 4, 30,
+                "szendvicskrem", "tojaskrem", "vajkrem", "padlizsankrem"),
+        new Food("Szirup (juhar/agavé)", 270, 0, 20, "szirup"),
         new Food("Majonéz", 680, 1, 20, "majonez"),
         new Food("Light majonéz", 240, 1, 20, "light majonez"),
         new Food("Ketchup", 110, 1.7, 20, "ketchup"),
@@ -176,7 +183,7 @@ public final class Foods {
         new Food("Pisztácia", 580, 20, 30, "pisztaci"),
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
         new Food("Szaloncukor", 450, 3, 15, "szaloncukor"),
-        new Food("Nutella", 540, 6, 30, "nutella"),
+        new Food("Nutella", 540, 6, 30, "nutella", "mogyorokrem"),
         new Food("Lekvár", 250, 0.4, 25, "lekvar"),
         new Food("Méz", 320, 0.3, 20, "mez"),
         new Food("Cukor", 400, 0, 10, "cukor"),
@@ -225,7 +232,8 @@ public final class Foods {
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
         new Food("Müzliszelet", 400, 6, 30, "muzliszelet"),
         // A „felvágott" gyűjtőnév is ide fut be: kalóriában a párizsi az átlag.
-        new Food("Párizsi / felvágott", 230, 12, 50, "parizsi", "felvagott", "mortadella"),
+        new Food("Párizsi / felvágott", 230, 12, 50, "parizsi", "felvagott", "mortadella",
+                "loncshus"),
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
         new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao", "forro csoki", "forrocsoki"),
@@ -295,7 +303,7 @@ public final class Foods {
         new Food("Burrito", 190, 10, 300, "burrito"),
         new Food("Quesadilla", 250, 11, 200, "quesadilla"),
         new Food("Falafel", 300, 13, 150, "falafel"),
-        new Food("Hummusz", 180, 8, 60, "hummus"),
+        new Food("Hummusz", 180, 8, 60, "hummus", "humusz"),
         new Food("Limonádé", 45, 0, 300, "limonade"),
         new Food("Fröccs", 40, 0, 300, "froccs"),
         new Food("Kombucha", 20, 0, 330, "kombucha"),

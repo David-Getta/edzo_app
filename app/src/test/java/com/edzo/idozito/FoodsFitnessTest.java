@@ -351,6 +351,29 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void spreadsOilsAndOlivesResolveCorrectly() {
+        // A „humusz" (egy m-mel) egy tányér főtt csicseriborsónak számított,
+        // az „olajbogyó" tiszta olajnak, a „szendvicskrém" egész szendvicsnek.
+        assertEquals("Hummusz", names("humusz"));
+        assertEquals("Olajbogyó / olívabogyó", names("olajbogyó"));
+        assertEquals("Olajbogyó / olívabogyó", names("olívabogyó"));
+        assertEquals("Szendvicskrém / kence", names("szendvicskrém"));
+        assertEquals("Szendvicskrém / kence", names("tojáskrém"));
+        assertEquals("Magvaj (mandula/kesu/tahini)", names("mandulavaj"));
+        assertEquals("Magvaj (mandula/kesu/tahini)", names("tahini"));
+        assertEquals("Nutella", names("mogyorókrém"));
+        assertEquals("Szirup (juhar/agavé)", names("juharszirup"));
+        assertEquals("Makréla / szardínia", names("sprotni"));
+        assertEquals("Párizsi / felvágott", names("löncshús"));
+        // A „napraforgó olaj" nem mag + olaj kettő.
+        assertEquals("Olaj", names("napraforgó olaj"));
+        // A szomszédok élnek.
+        assertEquals("Olaj", names("olívaolaj"));
+        assertEquals("Csicseriborsó (főtt)", names("csicseriborsó"));
+        assertEquals("Mogyoró", names("mogyoró"));
+        assertEquals("Vaj", names("vaj"));
+    }
+
     @Test public void lightAndWholegrainVariantsResolveCorrectly() {
         // A „durum tészta" PÁLINKÁT is számolt (a „durum"-ban benne a „rum").
         assertEquals("Tészta (főtt)", names("durum tészta"));
