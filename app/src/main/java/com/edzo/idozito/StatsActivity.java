@@ -85,6 +85,16 @@ public class StatsActivity extends Activity {
         col.addView(totalsCard(totals(0, now + 1)), lp());
         col.addView(gap(16));
 
+        // Az idei év madártávlatból: aktív napok, top sport, csúcsok. A heti
+        // és havi számok a jelenről szólnak – ez arról, mivé áll össze az év.
+        View year = yearCard(now);
+        if (year != null) {
+            col.addView(sectionTitle("Az idei éved · "
+                    + java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)));
+            col.addView(year, lp());
+            col.addView(gap(16));
+        }
+
         col.addView(sectionTitle("Rekordok"));
         col.addView(recordsCard(), lp());
         col.addView(gap(16));
@@ -533,6 +543,92 @@ public class StatsActivity extends Activity {
             blp.bottomMargin = dp(4);
             cardV.addView(bar, blp);
         }
+        return cardV;
+    }
+
+    /**
+     * „Az idei éved": az év madártávlatból. A heti/havi kártyák a jelenről
+     * szólnak – ez arról, mivé áll össze az év: aktív napok, heti átlag,
+     * a leghosszabb edzés, a legaktívabb hónap és az év sportja.
+     */
+    View yearCard(long now) {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(now);
+        c.set(java.util.Calendar.DAY_OF_YEAR, 1);
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long yearStart = c.getTimeInMillis();
+
+        Totals t = totals(yearStart, now + 1);
+        if (t.count == 0) return null;
+
+        // Aktív napok, havi eloszlás, leghosszabb edzés – egy menetben.
+        java.util.HashSet<Integer> activeDays = new java.util.HashSet<>();
+        int[] perMonth = new int[12];
+        JSONObject longest = null;
+        java.util.ArrayList<String> kinds = new java.util.ArrayList<>();
+        java.util.ArrayList<String> names = new java.util.ArrayList<>();
+        java.util.ArrayList<Integer> durs = new java.util.ArrayList<>();
+        java.util.Calendar cc = java.util.Calendar.getInstance();
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null || o.optLong("ts") < yearStart) continue;
+            cc.setTimeInMillis(o.optLong("ts"));
+            activeDays.add(cc.get(java.util.Calendar.DAY_OF_YEAR));
+            perMonth[cc.get(java.util.Calendar.MONTH)]++;
+            if (longest == null || o.optInt("dur") > longest.optInt("dur")) longest = o;
+            kinds.add(o.optString("kind", ""));
+            names.add(o.optString("name", ""));
+            durs.add(o.optInt("dur"));
+        }
+        // A súlyzós napok is aktív napok.
+        for (long ts : History.oneStrengthPerDay(StrengthLog.load(this)))
+            if (ts >= yearStart) {
+                cc.setTimeInMillis(ts);
+                activeDays.add(cc.get(java.util.Calendar.DAY_OF_YEAR));
+            }
+
+        int weeks = Math.max(1, (int) ((now - yearStart) / (7L * 24 * 3600 * 1000)) + 1);
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(6), dp(6), dp(6), dp(6));
+        addTiles(cardV, new String[][]{
+                {"🔁 Edzések", String.valueOf(t.count)},
+                {"📅 Aktív napok", String.valueOf(activeDays.size())},
+                {"⏱ Össz idő", fmtDur((int) t.durSec)},
+                {"📍 Táv", t.distM > 0 ? fmtDist(t.distM) : "—"},
+                {"👟 Lépések", t.steps > 0 ? String.valueOf((long) t.steps) : "—"},
+                {"📈 Heti átlag", String.format(Hu.LOCALE, "%.1f edzés",
+                        t.count / (double) weeks)},
+        });
+
+        // Szöveges csúcsok a csempék alatt.
+        LinearLayout notes = vbox();
+        notes.setPadding(dp(10), dp(4), dp(10), dp(8));
+        java.util.LinkedHashMap<String, long[]> rows = Activities.breakdown(
+                kinds.toArray(new String[0]), names.toArray(new String[0]), toInts(durs));
+        if (!rows.isEmpty()) {
+            java.util.Map.Entry<String, long[]> top = rows.entrySet().iterator().next();
+            notes.addView(text("🏅 Az év sportja: " + top.getKey()
+                    + " (" + top.getValue()[0] + " alkalom)", 13, TXT, false));
+        }
+        if (longest != null && longest.optInt("dur") >= 60) {
+            String day = new java.text.SimpleDateFormat("MMMM d.", Hu.LOCALE)
+                    .format(new java.util.Date(longest.optLong("ts")));
+            notes.addView(text("🏆 Leghosszabb edzés: "
+                    + (longest.optInt("dur") / 60) + " perc · " + day, 13, TXT, false));
+        }
+        int bestM = 0;
+        for (int m = 1; m < 12; m++) if (perMonth[m] > perMonth[bestM]) bestM = m;
+        if (perMonth[bestM] >= 3) {
+            cc.set(java.util.Calendar.MONTH, bestM);
+            String mn = new java.text.SimpleDateFormat("MMMM", Hu.LOCALE)
+                    .format(cc.getTime());
+            notes.addView(text("🔥 Legaktívabb hónap: " + mn
+                    + " (" + perMonth[bestM] + " edzés)", 13, TXT, false));
+        }
+        if (notes.getChildCount() > 0) cardV.addView(notes, lp());
         return cardV;
     }
 

@@ -98,6 +98,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 📊 Statisztika & előzmények
 - Heti / havi / összes összesítők, 8-hetes diagram, havi naptár,
   **12 hetes aktivitás-hőtérkép**, terv-teljesítés
+- **Az idei éved**: éves madártávlat – aktív napok, heti átlag, össz idő
+  és táv, az év sportja, a leghosszabb edzés és a legaktívabb hónap
 - **Sportágankénti bontás** (elmúlt 30 nap): alkalmak és össz-idő
   sportáganként, arány-sávval – a mért és a kézzel felvett edzés egy sorban
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík
