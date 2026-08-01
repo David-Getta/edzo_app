@@ -342,7 +342,7 @@ public class SettingsActivity extends Activity {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("datum;tipus;ido_mp;tav_m;korok;atlag_kmh;max_kmh;kaloria;lepesek\n");
+        sb.append("datum;tipus;sportag;kezi;ido_mp;tav_m;korok;atlag_kmh;max_kmh;kaloria;lepesek\n");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
         for (int i = 0; i < h.length(); i++) {
             JSONObject o = h.optJSONObject(i);
@@ -356,6 +356,8 @@ public class SettingsActivity extends Activity {
             double mx = o.optDouble("maxspeed", -1);
             sb.append(df.format(new Date(o.optLong("ts")))).append(';')
               .append(type).append(';')
+              .append(o.optString("kind", "")).append(';')
+              .append(o.optBoolean("manual", false) ? "1" : "0").append(';')
               .append(dur).append(';')
               .append(dist >= 0 ? String.valueOf(Math.round(dist)) : "").append(';')
               .append(o.optInt("rounds")).append(';')

@@ -275,6 +275,18 @@ public class FoodsFitnessTest {
         assertEquals("Burgonyapüré", names("krumplipüré"));
     }
 
+    @Test public void waterIsUnderstoodAsZeroCalories() {
+        // Az „ittam 1,5 liter vizet" ne legyen „nem értem" – nulla kalória,
+        // de a napló teljesebb tőle.
+        assertEquals("Víz / ásványvíz", names("víz"));
+        assertEquals("Víz / ásványvíz", names("ittam másfél liter vizet"));
+        assertEquals("Víz / ásványvíz", names("szódavíz"));
+        assertEquals("Víz / ásványvíz", names("ásványvíz"));
+        assertEquals(0, kcal("2 liter víz"), 0.01);
+        // A cukros ital nem lett víz.
+        assertTrue(kcal("kóla") > 100);
+    }
+
     @Test public void saucesAreNotTheirMainIngredient() {
         // A „szójaszósz" szójakockának számított: 204 kcal egy löttyintésnyi
         // ~6 helyett. Az összetett nevek nem esnek két ételre.

@@ -50,10 +50,11 @@ public class FoodsQuantityTest {
     }
 
     @Test public void aClauseWithItsOwnWordsKeepsItsQuantity() {
-        // A „víz" nincs az adatbázisban, de attól még szó: az 1 liter az övé,
-        // nem a mandulánál landol.
-        assertEquals(0, grams("1 l víz és mandula"), 0.01);
-        List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), "1 l víz és 30 g mandula");
+        // Az ismeretlen szóhoz írt mennyiség az övé: az 1 liter nem a
+        // mandulánál landol. (A víz ma már ismert tétel, ezért itt egy
+        // tényleg ismeretlen szó áll.)
+        assertEquals(0, grams("1 l akármi és mandula"), 0.01);
+        List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), "1 l akármi és 30 g mandula");
         assertEquals(1, hs.size());
         assertEquals(30, hs.get(0).grams, 0.01);
     }

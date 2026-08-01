@@ -118,11 +118,14 @@ public class FoodsParseTest {
 
     @Test public void aQuantityDoesNotJumpToAnotherClause() {
         // A vízhez írt 1 liter korábban a mandulára szállt át: 1000 g mandula
-        // közel hatezer kalória lett volna egyetlen elgépelés nélküli mondatból.
+        // közel hatezer kalória lett volna. A víz ma már saját (0 kcal-os)
+        // tétel, a liter az övé – a mandula a maga 30 grammját kapja.
         List<Foods.Hit> h = hits("1 l víz és 30 g mandula");
-        assertEquals(1, h.size());
-        assertEquals("Mandula", h.get(0).food.name);
-        assertEquals(30.0, h.get(0).grams, 0.001);
+        assertEquals(2, h.size());
+        assertEquals("Víz / ásványvíz", h.get(0).food.name);
+        assertEquals(1000.0, h.get(0).grams, 0.001);
+        assertEquals("Mandula", h.get(1).food.name);
+        assertEquals(30.0, h.get(1).grams, 0.001);
     }
 
     @Test public void severalClausesEachKeepTheirOwnAmount() {

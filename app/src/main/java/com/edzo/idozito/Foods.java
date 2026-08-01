@@ -343,6 +343,9 @@ public final class Foods {
         new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo"),
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
+        // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
+        // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.
+        new Food("Víz / ásványvíz", 0, 0, 250, "viz", "asvanyviz", "szoda"),
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor"),
         // A „borssal" nem egy pohár bor: a „bor" szótő beleesett, és minden
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
