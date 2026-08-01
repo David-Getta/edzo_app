@@ -351,6 +351,27 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void porkDelicaciesAreNotFruitOrCheese() {
+        // A „tepertő" 33 kcal-os EPERNEK számított (az „eper" tő beleesett),
+        // a disznósajt trappistának, a májkrém nyers csirkemájnak.
+        assertEquals("Tepertő", names("tepertő"));
+        assertTrue("a tepertő nem eper", kcal("tepertő") > 300);
+        assertEquals("Disznósajt", names("disznósajt"));
+        assertEquals("Májkrém / kenőmájas", names("májkrém"));
+        assertEquals("Májkrém / kenőmájas", names("kenőmájas"));
+        assertEquals("Májkrém / kenőmájas", names("pástétom"));
+        assertEquals("Pacalpörkölt", names("pacal"));
+        assertEquals("Fasírt", names("stefánia vagdalt"));
+        assertEquals("Sertéskaraj", names("tarja"));
+        assertEquals("Marhahús", names("bélszín"));
+        assertEquals("Csirkecomb", names("csirkeszárny"));
+        // A szomszédok élnek: az eper eper, a sajt sajt, a máj máj.
+        assertEquals("Eper", names("eper"));
+        assertEquals("Sajt (trappista)", names("sajt"));
+        assertEquals("Csirkemáj", names("csirkemáj"));
+        assertEquals("Bacon", names("szalonna"));
+    }
+
     @Test public void theNewEntriesDidNotBreakTheirNeighbours() {
         // A hosszabb szótő elnyeli a rövidebbet – ellenőrizzük, hogy tényleg
         // egy tétel lesz belőlük, nem kettő.
