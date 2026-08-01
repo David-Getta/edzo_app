@@ -53,6 +53,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   Profilban beállított fogyási célból
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
+- **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi
+  napra kerül, a napszaknak megfelelő órával
 - **Kedvencek** és gyakori étkezések gyors csipjei, keresés a naplóban,
   napi bontás, napi részletek és megosztás
 
