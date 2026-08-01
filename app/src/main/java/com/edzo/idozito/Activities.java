@@ -513,6 +513,17 @@ public final class Activities {
                 // nem vonatkozik – száz fekvőtámasz létezik.
                 int[] raw = numberBefore(s, h[0], NUM_REACH);
                 reps = raw != null ? Math.max(count, Math.min(1000, raw[2])) : count;
+                // A súlyzós jelölés: „3x10" = három sorozat tíz ismétlés, azaz
+                // harminc – a szorzat számít, nem csak az utolsó szám.
+                if (raw != null && raw[0] >= 2 && s.charAt(raw[0] - 1) == 'x'
+                        && Character.isDigit(s.charAt(raw[0] - 2))) {
+                    int e = raw[0] - 1, b = e;
+                    while (b > 0 && Character.isDigit(s.charAt(b - 1))) b--;
+                    try {
+                        reps = Math.min(1000,
+                                Integer.parseInt(s.substring(b, e)) * raw[2]);
+                    } catch (NumberFormatException ignore) { }
+                }
                 count = 1;
             }
             int next = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;

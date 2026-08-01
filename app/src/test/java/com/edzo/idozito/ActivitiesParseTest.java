@@ -104,6 +104,19 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    @Test public void setsTimesRepsIsTheProduct() {
+        // A súlyzós jelölés: „3x10" három sorozat tíz ismétlés, azaz harminc.
+        Activities.Parsed p = Activities.parse("3x10 fekvőtámasz");
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(6, p.plans.get(0).minutes);       // 30 ismétlés / 5
+        assertEquals(20, Activities.parse("5x20 felülés").plans.get(0).minutes);
+        assertEquals(20, Activities.parse("10x10 fekvőtámasz").plans.get(0).minutes);
+        // A „2x45 perc foci" viszont két meccs marad, nem kilencven ismétlés.
+        Activities.Parsed foci = Activities.parse("2x45 perc foci");
+        assertEquals(2, foci.plans.get(0).count);
+        assertEquals(45, foci.plans.get(0).minutes);
+    }
+
     @Test public void aDateWithAMonthNameIsUnderstood() {
         // 2026. július 31. péntek dél (Budapest).
         java.util.Calendar c = java.util.Calendar.getInstance();
