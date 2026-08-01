@@ -49,7 +49,7 @@ public final class Activities {
     public static final Kind[] ALL = {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
-                    "maraton", "futkaroz", "sprint"),
+                    "maraton", "futkaroz", "sprint", "futopad", "futogep"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
@@ -97,7 +97,8 @@ public final class Activities {
                     "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
-                    "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf"),
+                    "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
+                    "ellipszis", "lepcsozo"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */

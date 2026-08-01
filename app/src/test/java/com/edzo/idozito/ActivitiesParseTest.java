@@ -118,6 +118,12 @@ public class ActivitiesParseTest {
         assertEquals("tura", Activities.parse("nordic walking").plans.get(0).kind.id);
         assertEquals("uszas", Activities.parse("vízilabda").plans.get(0).kind.id);
         assertEquals("uszas", Activities.parse("aquafitness").plans.get(0).kind.id);
+        // A terem-gépek is a maguk sportját jelentik.
+        assertEquals("futas", Activities.parse("futópad 30 perc").plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("szobabicikli 45 perc").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("evezőpad 15 perc").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("ellipszis tréner 20 perc").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("lépcsőzőgép 10 perc").plans.get(0).kind.id);
         // A „beneveztem a versenyre" nem evezés (a „nevez" vége az „evez") –
         // az igekötős „kieveztem" viszont az.
         assertTrue(Activities.parse("beneveztem a versenyre").isEmpty());
