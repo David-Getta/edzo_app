@@ -94,6 +94,21 @@ public class FoodsPieceTest {
         assertEquals(0, one("sör").grams, 0.01);
     }
 
+    @Test public void aPortionWordWorksForAnyFood() {
+        // Az „adag" bármely ételre megy: egy adag a tipikus adag – eddig a
+        // „fél adag gyros" is teljes adagnak számított.
+        Foods.Hit gy = one("fél adag gyros");
+        assertEquals(gy.food.portion * 0.5, gy.grams, 0.01);
+        Foods.Hit gu = one("2 adag rántott hús");
+        assertEquals(gu.food.portion * 2.0, gu.grams, 0.01);
+        Foods.Hit ri = one("másfél adag rizs");
+        assertEquals(ri.food.portion * 1.5, ri.grams, 0.01);
+        // Adag-szó nélkül marad minden a régiben.
+        assertEquals(0, one("gyros").grams, 0.01);
+        // A gramm erősebb: a kimondott mennyiség nem adag-szorzó.
+        assertEquals(200, one("200 g gyros").grams, 0.01);
+    }
+
     @Test public void anUnrealisticCountIsIgnored() {
         // A darabszám csak életszerű tartományban számít; fölötte marad az adag.
         assertEquals(0, one("100 alma").grams, 0.01);

@@ -589,14 +589,17 @@ public final class Foods {
 
     /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
-     * közte? Ha bármi más van ott, a szám nem ehhez az ételhez tartozik.
+     * közte? A visszatérés a közbeékelt szó ("" ha nincs), vagy null, ha ott
+     * valami más áll – akkor a szám nem ehhez az ételhez tartozik.
      */
-    private static boolean countableAt(String q, int numEnd, int foodPos) {
-        if (foodPos < numEnd) return false;
+    private static String countWordAt(String q, int numEnd, int foodPos) {
+        if (foodPos < numEnd) return null;
         String between = q.substring(numEnd, foodPos).trim();
-        if (between.isEmpty()) return true;
-        for (String w : COUNT_WORDS) if (w.equals(between)) return true;
-        return false;
+        if (between.isEmpty()) return between;
+        for (String w : COUNT_WORDS) if (w.equals(between)) return between;
+        for (String w : new String[]{"adag", "adagot", "adagnyi", "porcio"})
+            if (w.equals(between)) return between;
+        return null;
     }
 
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
@@ -858,8 +861,12 @@ public final class Foods {
             int numEnd = bareNumPos.get(n) + bareNumLen.get(n);
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
-                if (!countableAt(q, numEnd, foodPos.get(k))) continue;
-                int piece = pieceGrams(foods.get(k));
+                String between = countWordAt(q, numEnd, foodPos.get(k));
+                if (between == null) continue;
+                // Az „adag" bármely ételre megy: egy adag a tipikus adag.
+                // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
+                double piece = between.startsWith("adag") || between.equals("porcio")
+                        ? foods.get(k).portion : pieceGrams(foods.get(k));
                 if (piece <= 0) continue;
                 grams[k] = count * piece;
                 break;
