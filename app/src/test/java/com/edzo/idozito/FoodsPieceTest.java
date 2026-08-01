@@ -116,6 +116,22 @@ public class FoodsPieceTest {
         assertEquals(200, one("200 g gyros").grams, 0.01);
     }
 
+    @Test public void everyPieceFoodDoublesCorrectly() {
+        // Önellenőrzés: minden darabsúlyos tételnél a „2 X" pontosan két
+        // darabnyi grammot adjon – ha egy jövőbeli tétel darabsúlya rosszul
+        // lenne bekötve, itt derüljön ki, ne a naplóban.
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL) {
+            int piece = Foods.pieceGrams(f);
+            if (piece <= 0) continue;
+            List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), "2 " + f.stems[0]);
+            boolean ok = hs.size() == 1 && hs.get(0).food.name.equals(f.name)
+                    && Math.abs(hs.get(0).grams - 2.0 * piece) < 0.01;
+            if (!ok) bad.append("\n  ").append(f.name);
+        }
+        assertEquals("rossz darab-bekötés:" + bad, 0, bad.length());
+    }
+
     @Test public void anUnrealisticCountIsIgnored() {
         // A darabszám csak életszerű tartományban számít; fölötte marad az adag.
         assertEquals(0, one("100 alma").grams, 0.01);
