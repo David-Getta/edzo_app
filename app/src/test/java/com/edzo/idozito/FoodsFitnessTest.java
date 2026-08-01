@@ -351,6 +351,25 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void lightAndWholegrainVariantsResolveCorrectly() {
+        // A „durum tészta" PÁLINKÁT is számolt (a „durum"-ban benne a „rum").
+        assertEquals("Tészta (főtt)", names("durum tészta"));
+        // Zsírszegény és light: a fele-harmada kalória, nem a teljes.
+        assertEquals("Zsírszegény tej", names("zsírszegény tej"));
+        assertEquals("Zsírszegény tej", names("sovány tej"));
+        assertEquals("Light majonéz", names("light majonéz"));
+        // A zöldségtészták nem búzatészták.
+        assertEquals("Cukkini", names("cukkini spagetti"));
+        assertEquals("Konjac / shirataki tészta", names("konjac tészta"));
+        assertTrue(kcal("konjac tészta") < 30);
+        // A sima tej, majonéz és tészta marad, ami volt.
+        assertEquals("Tej", names("tej"));
+        assertEquals("Majonéz", names("majonéz"));
+        assertEquals("Tészta (főtt)", names("tészta"));
+        // A laktózmentes tej kalóriája a rendesé – az jó, hogy Tej marad.
+        assertEquals("Tej", names("laktózmentes tej"));
+    }
+
     @Test public void dairyDessertsAndCheesesResolveCorrectly() {
         // A „parmezán" MÉZNEK számított (a „mez" tő beleesett), a tejszelet
         // és a madártej sima tejnek, a milkshake fehérjeturmixnak.

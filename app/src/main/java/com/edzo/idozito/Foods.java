@@ -57,7 +57,8 @@ public final class Foods {
         new Food("Tojásfehérje", 52, 11, 33, "tojasfeherje", "tojas feherje", "feherje tojas"),
         new Food("Rántotta", 180, 12, 150, "rantotta", "omlett"),
         new Food("Rizs (főtt)", 130, 2.7, 200, "riz"),
-        new Food("Tészta (főtt)", 150, 5, 250, "teszta", "spagetti", "penne"),
+        // A „durum" hosszabb tő, különben a benne lévő „rum" tömény italt adna.
+        new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta", "teszta", "spagetti", "penne", "durum"),
         new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli"),
         new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "hasabburgonya", "hasáb"),
         new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure", "püré"),
@@ -128,9 +129,11 @@ public final class Foods {
         new Food("Milkshake", 110, 3, 300, "milkshake", "tejturmix"),
         new Food("Görög joghurt", 120, 9, 150, "gorog joghurt"),
         new Food("Tej", 60, 3.3, 200, "tej"),
+        new Food("Zsírszegény tej", 38, 3.4, 200, "zsirszegeny tej", "sovany tej"),
         new Food("Vaj", 720, 0.9, 10, "vaj"),
         new Food("Olaj", 900, 0, 10, "olaj"),
         new Food("Majonéz", 680, 1, 20, "majonez"),
+        new Food("Light majonéz", 240, 1, 20, "light majonez"),
         new Food("Ketchup", 110, 1.7, 20, "ketchup"),
         // Szósz-kör: a „szójaszósz" szójakockának számított (204 kcal egy
         // löttyintésnyi ~6 helyett), a mártások fele pedig ismeretlen volt.
@@ -354,7 +357,10 @@ public final class Foods {
         new Food("Csirkés wrap", 200, 12, 250, "csirkes wrap"),
         // --- Zöldségek, gyümölcsök, magvak ---
         new Food("Sárgarépa", 41, 0.9, 100, "sargarepa", "repa"),
-        new Food("Cukkini", 17, 1.2, 200, "cukkini"),
+        // A „cukkini spagetti" zöldségtészta: nem cukkini + főtt tészta.
+        new Food("Cukkini", 17, 1.2, 200, "cukkini", "cukkini spagetti"),
+        new Food("Konjac / shirataki tészta", 10, 0, 200,
+                "konjac teszta", "shirataki teszta", "konjac", "shirataki"),
         new Food("Padlizsán", 25, 1, 200, "padlizsan"),
         new Food("Hagyma", 40, 1.1, 50, "hagyma"),
         new Food("Ananász", 50, 0.5, 150, "ananassz", "ananasz"),
