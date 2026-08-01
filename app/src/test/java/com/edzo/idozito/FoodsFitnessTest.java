@@ -351,6 +351,27 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void pastriesResolveCorrectly() {
+        // A „kakaós palacsinta" egy bögre tejes kakaót is számolt a kanálnyi
+        // töltelék helyett; a klasszikus cukrászsütik fele hiányzott.
+        assertEquals("Palacsinta", names("kakaós palacsinta"));
+        assertEquals("Sütemény", names("zserbó"));
+        assertEquals("Sütemény", names("rigó jancsi"));
+        assertEquals("Sütemény", names("mignon"));
+        assertEquals("Keksz", names("linzer"));
+        assertEquals("Muffin / brownie", names("muffin"));
+        assertEquals("Muffin / brownie", names("brownie"));
+        assertEquals("Gofri", names("gofri"));
+        assertEquals("Kürtőskalács", names("trdelník"));
+        assertEquals("Energiagolyó", names("kókuszgolyó"));
+        assertEquals("Energiagolyó", names("zabgolyó"));
+        // A szomszédok élnek: a kakaó ital, a zab zab, a torta sütemény.
+        assertEquals("Kakaó (tejes)", names("kakaó"));
+        assertEquals("Zabpehely", names("zab"));
+        assertEquals("Sütemény", names("egy szelet torta"));
+        assertEquals("Fánk / churros", names("képviselőfánk"));
+    }
+
     @Test public void steakIsNotTeaAndFishAreKnown() {
         // A „steak" szóban benne van a „tea": a „tofu steak" egy csésze teát
         // is naplózott. A hosszabb tő elnyeli.
