@@ -241,7 +241,14 @@ public final class Foods {
         new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
         new Food("Sör", 43, 0.5, 500, "sor", "sör", "radler"),
-        new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsussz", "dzsusz"),
+        // A „narancslé" 71 kcal-os narancsnak számított (és a „2 dl almalé"
+        // 200 g almának): a gyümölcs-összetételek teljes alakja szótő.
+        new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsussz", "dzsusz",
+                "narancsle", "almale", "paradicsomle", "oszibarackle", "barackle",
+                "repale", "rostos le", "rostos udito", "cappy", "hohes c"),
+        new Food("Szörp (hígítva)", 45, 0, 300, "szorp", "malnaszorp", "barackszorp",
+                "eperszorp"),
+        new Food("Citromlé", 25, 0, 30, "citromle"),
         // A „puffasztott rizs" két ételre esett szét (puffasztott + rizs), vagyis
         // duplán számolt. A teljes alak hosszabb szótő, így elnyeli mindkettőt.
         new Food("Rizsszelet / puffasztott rizs", 380, 8, 10,

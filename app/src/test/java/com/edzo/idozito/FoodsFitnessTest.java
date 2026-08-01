@@ -351,6 +351,24 @@ public class FoodsFitnessTest {
         assertEquals("Tészta (főtt)", names("tészta"));
     }
 
+    @Test public void juicesAreNotTheFruitItself() {
+        // A „narancslé" 71 kcal-os narancsnak, a „2 dl almalé" 200 g almának
+        // számított – a lé folyadék, a maga kalóriájával.
+        assertEquals("Gyümölcslé", names("narancslé"));
+        assertEquals("Gyümölcslé", names("almalé"));
+        assertEquals("Gyümölcslé", names("friss facsart narancslé"));
+        assertEquals("Gyümölcslé", names("cappy"));
+        assertEquals("Szörp (hígítva)", names("málnaszörp"));
+        assertEquals("Szörp (hígítva)", names("bodzaszörp"));
+        assertEquals("Citromlé", names("citromlé"));
+        assertTrue(kcal("citromlé") < 15);
+        // A gyümölcsök maradnak gyümölcsök.
+        assertEquals("Narancs", names("narancs"));
+        assertEquals("Alma", names("alma"));
+        assertEquals("Málna", names("málna"));
+        assertEquals("Sárgarépa", names("répa"));
+    }
+
     @Test public void cocktailsAndSpiritsAreKnown() {
         // A „vilmoskörte" pálinka volt gyümölcs helyett – illetve fordítva:
         // 86 kcal-os körtének számított.
