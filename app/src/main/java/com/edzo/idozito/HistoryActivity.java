@@ -514,6 +514,10 @@ public class HistoryActivity extends Activity {
     void manualDetailSheet(final Activities.Kind k) {
         final EditText minEt = numInput("Hány percig tartott?");
         final EditText kmEt = k.distance ? numInput("Táv km-ben (elhagyható)") : null;
+        // Lépésszám csak a gyalogos sportoknál kérdés – az órák/telefonok
+        // lépést mérnek, azt írja be az ember, amit a kijelzőn lát.
+        final EditText stepsEt = k.id.equals("tura") || k.id.equals("futas")
+                ? numInput("Lépések (elhagyható)") : null;
         final EditText agoEt = numInput("Hány napja? (0 = ma)");
         agoEt.setText("0");
 
@@ -525,6 +529,11 @@ public class HistoryActivity extends Activity {
             l.topMargin = dp(8);
             box.addView(kmEt, l);
         }
+        if (stepsEt != null) {
+            LinearLayout.LayoutParams l = lp();
+            l.topMargin = dp(8);
+            box.addView(stepsEt, l);
+        }
         LinearLayout.LayoutParams l2 = lp();
         l2.topMargin = dp(8);
         box.addView(agoEt, l2);
@@ -532,12 +541,13 @@ public class HistoryActivity extends Activity {
         new Sheet(this, k.title(),
                 "A kalóriát a mozgásforma és a testsúlyod alapján becsüljük.")
                 .addCustom(box)
-                .addPrimary("Mentés", () -> saveManual(k, minEt, kmEt, agoEt))
+                .addPrimary("Mentés", () -> saveManual(k, minEt, kmEt, stepsEt, agoEt))
                 .addCancel()
                 .show();
     }
 
-    void saveManual(Activities.Kind k, EditText minEt, EditText kmEt, EditText agoEt) {
+    void saveManual(Activities.Kind k, EditText minEt, EditText kmEt, EditText stepsEt,
+                    EditText agoEt) {
         int min = (int) numOf(minEt);
         double km = kmEt == null ? 0 : numOf(kmEt);
         if (km < 0) km = 0;
@@ -578,6 +588,10 @@ public class HistoryActivity extends Activity {
         double kcal = Activities.calories(k, Profile.lastWeight(this), min);
 
         History.addManual(this, ts, durSec, distM, kcal, avg, k.title(), k.id);
+        // A megadott lépésszám a bejegyzésé – a lépés-kihívás és a részletek
+        // ugyanúgy látja, mint a mértnél. Percből nem találgatunk.
+        int steps = stepsEt == null ? 0 : (int) numOf(stepsEt);
+        if (steps > 0) History.updateByTs(this, ts, "steps", Math.min(steps, 100_000));
         // A széria és a „ma edzett" a widgeten is változhat.
         BlazeWidget.refresh(this);
         android.widget.Toast.makeText(this, k.name + " elmentve.",
