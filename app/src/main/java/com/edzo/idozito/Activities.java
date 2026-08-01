@@ -49,9 +49,9 @@ public final class Activities {
     public static final Kind[] ALL = {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
-                    "maraton", "futkaroz", "sprint", "futopad", "futogep"),
+                    "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
-                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt",
+                    "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
                     "vizilabda", "aquafit", "vizitorna"),
@@ -616,7 +616,7 @@ public final class Activities {
         // menthető: egyéb mozgásként. Csak tartalékként, mert a „3 futó edzés"
         // szóban is benne van az „edzés" – ott a futás a helyes válasz.
         if (out.isEmpty()) {
-            for (String w : new String[]{"edzes", "edzett", "edzeni", "alkalom", "mozgas"}) {
+            for (String w : new String[]{"edzes", "edzett", "edzeget", "edzeni", "alkalom", "mozgas"}) {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 Kind other = byId("egyeb");

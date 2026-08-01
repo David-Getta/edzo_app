@@ -118,6 +118,11 @@ public class ActivitiesParseTest {
         assertEquals("tura", Activities.parse("nordic walking").plans.get(0).kind.id);
         assertEquals("uszas", Activities.parse("vízilabda").plans.get(0).kind.id);
         assertEquals("uszas", Activities.parse("aquafitness").plans.get(0).kind.id);
+        // A gyakorító igealakok is („úszkáltam", „futkostam", „edzegettem").
+        assertEquals("uszas", Activities.parse("úszkáltam egy órát").plans.get(0).kind.id);
+        assertEquals(60, Activities.parse("úszkáltam egy órát").plans.get(0).minutes);
+        assertEquals("futas", Activities.parse("futkostam").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("edzegettem").plans.get(0).kind.id);
         // A terem-gépek is a maguk sportját jelentik.
         assertEquals("futas", Activities.parse("futópad 30 perc").plans.get(0).kind.id);
         assertEquals("kerekpar", Activities.parse("szobabicikli 45 perc").plans.get(0).kind.id);
