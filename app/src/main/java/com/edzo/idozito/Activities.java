@@ -986,8 +986,8 @@ public final class Activities {
     /** Tagadó / pihenőnapos mondat: az üres eredmény oka nem értetlenség. */
     public static boolean looksLikeRest(String text) {
         String s = Foods.norm(text == null ? "" : text);
-        for (String w : new String[]{"nem ", "kihagytam", "elmaradt", "lemondtam",
-                "pihenonap", "pihenes", "pihentem", "rest day"}) {
+        for (String w : new String[]{"nem ", "kihagytam", "kimaradt", "elmarad",
+                "lemondtam", "pihenonap", "pihenes", "pihentem", "rest day"}) {
             int p = s.indexOf(w);
             if (p >= 0 && (p == 0 || !Character.isLetter(s.charAt(p - 1)))) return true;
         }
@@ -1010,8 +1010,8 @@ public final class Activities {
             h = s.indexOf("helyett", h + 1);
         }
         s = new String(q);
-        for (String w : new String[]{"nem ", "kihagytam", "elmaradt", "lemondtam",
-                "neztem", "neztuk", "rendeltem", "vettem", "berlet"}) {
+        for (String w : new String[]{"nem ", "kihagytam", "kimaradt", "elmarad",
+                "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));

@@ -587,7 +587,8 @@ public class ActivitiesParseTest {
         for (String s : new String[]{"az étteremben vacsoráztunk",
                 "foci vb-t néztem a tévében", "boxzsákot rendeltem",
                 "jógabérletet vettem", "a foci elmaradt",
-                "spinning osztály elmaradt"}) {
+                "spinning osztály elmaradt", "kimaradt az edzés",
+                "elmarad a foci"}) {
             Activities.Parsed p = Activities.parse(s);
             assertTrue("edzés lett belőle: " + s, p == null || p.plans.isEmpty());
         }
