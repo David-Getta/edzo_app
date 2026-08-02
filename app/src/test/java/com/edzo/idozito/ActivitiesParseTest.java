@@ -492,6 +492,18 @@ public class ActivitiesParseTest {
         }
     }
 
+    @Test public void dailyAmountsAndIntervalDistancesAreUnderstood() {
+        // A „napi 20 perc" naponta értendő – a héten ez hét alkalom.
+        assertEquals("7d+0: 7×joga/20", summary("napi 20 perc jóga egész héten"));
+        // Az intervall-jelölés össztáv, EGY edzésként: 6x1 km = 6 km.
+        assertEquals("1d+0: 1×futas/36", summary("6x1 km iramfutás"));
+        assertEquals("1d+0: 1×futas/19", summary("intervall: 8x400 méter"));
+        // Nem hat-tíz külön alkalom!
+        assertEquals(1, Activities.parse("10x100 méter úszás").plans.get(0).count);
+        // A súlyzós „3x10" viszont marad sorozat×ismétlés.
+        assertEquals(1, Activities.parse("3x10 guggolás").plans.get(0).count);
+    }
+
     @Test public void hoursAndMinutesTogetherAreOneDuration() {
         // A „futás 1 óra 15 perc" korábban 15 perc lett: a perc külön
         // időtartamnak számított, és a közelebbi nyert.

@@ -442,6 +442,8 @@ public final class Activities {
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
         stripMultiplicative(q);
+        // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
+        mergeIntervalDistances(q);
 
         // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
@@ -813,14 +815,56 @@ public final class Activities {
         return false;
     }
 
-    /** „Minden nap", „naponta": a darabszám naponta értendő. */
+    /** „Minden nap", „naponta", „napi 20 perc": a darabszám naponta értendő. */
     private static boolean stripDaily(char[] q) {
         String s = new String(q);
         for (String w : new String[]{"minden nap", "mindennap", "naponta"}) {
             int p = s.indexOf(w);
             if (p >= 0) { blank(q, p, p + w.length()); return true; }
         }
+        // A „napi" csak önálló szóként (a „3 napig" nem az).
+        int p = s.indexOf("napi ");
+        while (p >= 0) {
+            if (p == 0 || !Character.isLetter(s.charAt(p - 1))) {
+                blank(q, p, p + 4);
+                return true;
+            }
+            p = s.indexOf("napi ", p + 1);
+        }
         return false;
+    }
+
+    /**
+     * Intervall-táv összevonása: a „6x1 km" vagy „8x400 méter" EGY edzés
+     * össztávja, nem hat-nyolc külön alkalom. A szorzatot írjuk vissza a
+     * szövegbe, mielőtt a táv- és darabszám-olvasók meglátnák.
+     */
+    private static void mergeIntervalDistances(char[] q) {
+        String s = new String(q);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{1,2})\\s?x\\s?(\\d{1,4}(?:[.,]\\d+)?)\\s?(km|meter|m)(?![a-z])")
+                .matcher(s);
+        while (m.find()) {
+            int n;
+            double d;
+            try {
+                n = Integer.parseInt(m.group(1));
+                d = Double.parseDouble(m.group(2).replace(',', '.'));
+            } catch (NumberFormatException e) { continue; }
+            if (n < 2 || d <= 0) continue;
+            double total = n * d;
+            String rep;
+            if (m.group(3).equals("km")) {
+                rep = (total == Math.rint(total) ? String.valueOf((long) total)
+                        : String.valueOf(total).replace('.', ',')) + " km";
+            } else {
+                rep = Math.round(total) + " m";
+            }
+            if (rep.length() <= m.end() - m.start()) {
+                blank(q, m.start(), m.end());
+                for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
+            }
+        }
     }
 
     /**
