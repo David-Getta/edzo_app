@@ -37,7 +37,7 @@ public final class Foods {
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
         new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek", "rostelyos"),
-        new Food("Fasírt", 290, 15, 150, "fasirt", "vagdalt", "stefania"),
+        new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt", "stefania"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
         new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz"),
         new Food("Virsli", 250, 10, 100, "virsli"),
@@ -85,7 +85,10 @@ public final class Foods {
         new Food("Pörkölt", 180, 15, 300, "porkolt"),
         // A „sóska" magában is a főzeléket jelenti; a „kelkáposzta főzelék"
         // teljes alakja szótő, különben káposzta + főzelék kettőnek számolna.
-        new Food("Főzelék", 80, 3, 350, "fozelek", "soska", "kelkaposzta fozelek"),
+        new Food("Főzelék", 80, 3, 350, "fozelek", "soska", "kelkaposzta fozelek",
+                "spenot fozelek", "spenotfozelek", "zoldborso fozelek", "borsofozelek",
+                "borso fozelek", "lencse fozelek", "lencsefozelek", "bab fozelek",
+                "babfozelek", "krumpli fozelek", "krumplifozelek", "burgonyafozelek"),
         // A „zöldségleves" teljes alakja szótő, különben zöldség + leves
         // kettőnek számolna.
         new Food("Leves (átlag)", 50, 3, 400, "leves", "zoldsegleves"),
@@ -207,6 +210,10 @@ public final class Foods {
         new Food("Káposzta", 25, 1.3, 150, "kaposzta"),
         new Food("Tükörtojás", 200, 13, 110, "tukortojas"),
         new Food("Bableves", 90, 5, 400, "bableves"),
+        new Food("Palócleves", 80, 5, 400, "palocleves", "paloc leves"),
+        new Food("Gyümölcsleves", 60, 1, 350, "gyumolcsleves", "meggyleves", "meggy leves"),
+        new Food("Paradicsomos káposzta", 55, 2, 400,
+                "paradicsomos kaposzta", "paradicsomoskaposzta"),
         new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta"),
         new Food("Kocsonya", 90, 12, 300, "kocsonya", "aszpik"),
         new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
@@ -361,7 +368,8 @@ public final class Foods {
         new Food("Zeller", 18, 0.7, 100, "zeller"),
         new Food("Zöldbab", 35, 1.8, 150, "zoldbab"),
         new Food("Spenót / paraj", 25, 2.9, 200, "spenot", "paraj"),
-        new Food("Krémleves (zöldség)", 60, 2, 350, "kremleves"),
+        new Food("Krémleves (zöldség)", 60, 2, 350, "kremleves",
+                "brokkoli kremleves", "sutotok kremleves", "gomba kremleves"),
         new Food("Joghurtos öntet", 60, 3, 40, "kefires ontet", "joghurtos ontet", "ontet"),
         new Food("Rántott hal", 230, 16, 180, "rantott hal"),
         new Food("Csirkés wrap", 200, 12, 250, "csirkes wrap"),

@@ -54,6 +54,18 @@ public class FoodsIntegrationTest {
                 summary("vacsira rántotta 3 tojásból, paradicsommal"));
     }
 
+    @Test public void canteenClassicsAreOneDishNotTwo() {
+        // A „spenót főzelék" egy étel – nem spenót MEG főzelék.
+        assertEquals("Főzelék 350g", summary("spenót főzelék"));
+        assertEquals("Főzelék 350g", summary("zöldborsó főzelék"));
+        assertEquals("Főzelék 350g + Kolbász 100g", summary("lencse főzelék kolbásszal"));
+        assertEquals("Tökfőzelék 350g + Fasírt 150g", summary("tökfőzelék fasírozottal"));
+        assertEquals("Paradicsomos káposzta 400g", summary("paradicsomos káposzta"));
+        assertEquals("Krémleves (zöldség) 350g", summary("brokkoli krémleves"));
+        assertEquals("Palócleves 400g", summary("palócleves"));
+        assertEquals("Gyümölcsleves 350g", summary("hideg meggyleves"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
