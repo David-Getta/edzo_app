@@ -108,6 +108,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View strength = strengthCard();
+        if (strength != null) {
+            col.addView(sectionTitle("Súlyzós · elmúlt 30 nap"));
+            col.addView(strength, lp());
+            col.addView(gap(16));
+        }
+
         int[] moodCounts = moodCounts();
         int moodTotal = moodCounts[1] + moodCounts[2] + moodCounts[3] + moodCounts[4];
         if (moodTotal > 0) {
@@ -495,6 +502,68 @@ public class StatsActivity extends Activity {
      * Sportágankénti bontás az elmúlt 30 napból, vagy null, ha nincs mit
      * mutatni (egyetlen sportág önmagában nem bontás).
      */
+    /**
+     * Súlyzós összegzés 30 napra: a volumen (ismétlés × súly) az a szám, amiből
+     * a fejlődés látszik – az alkalmak darabszáma erről semmit nem mond. A
+     * legtöbbet mozgatott gyakorlat és izomcsoport is kiderül.
+     */
+    View strengthCard() {
+        java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
+        long from = System.currentTimeMillis() - 30L * 24 * 3600 * 1000;
+        int lifts = 0, setCount = 0, reps = 0;
+        double volume = 0;
+        java.util.HashSet<Integer> days = new java.util.HashSet<>();
+        java.util.LinkedHashMap<String, Double> byMove = new java.util.LinkedHashMap<>();
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        for (StrengthLog.Entry e : log) {
+            if (e.ts < from) continue;
+            lifts++;
+            setCount += e.sets.size();
+            reps += e.totalReps();
+            volume += e.volume();
+            c.setTimeInMillis(e.ts);
+            days.add(c.get(java.util.Calendar.YEAR) * 400 + c.get(java.util.Calendar.DAY_OF_YEAR));
+            Double v = byMove.get(e.name);
+            byMove.put(e.name, (v == null ? 0 : v) + e.volume());
+        }
+        if (lifts == 0) return null;
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(6), dp(6), dp(6), dp(6));
+        addTiles(cardV, new String[][]{
+                {"📅 Edzésnapok", String.valueOf(days.size())},
+                {"🏋 Gyakorlatok", String.valueOf(lifts)},
+                {"🔁 Sorozatok", String.valueOf(setCount)},
+                {"💪 Ismétlések", String.valueOf(reps)},
+                {"⚖️ Volumen", volume >= 1000
+                        ? String.format(Hu.LOCALE, "%,d", Math.round(volume)).replace(',', ' ') + " kg"
+                        : Math.round(volume) + " kg"},
+                {"📈 Napi átlag", Math.round(volume / Math.max(1, days.size())) + " kg"},
+        });
+
+        LinearLayout notes = vbox();
+        notes.setPadding(dp(10), dp(4), dp(10), dp(8));
+        String topMove = null;
+        double topVol = 0;
+        for (java.util.Map.Entry<String, Double> e : byMove.entrySet())
+            if (e.getValue() > topVol) { topVol = e.getValue(); topMove = e.getKey(); }
+        if (topMove != null && topVol > 0)
+            notes.addView(text("🥇 Legtöbb munka: " + topMove
+                    + " (" + Math.round(topVol) + " kg)", 13, TXT, false));
+        // A legtöbbet edzett izomcsoport – az egyensúly a Naplóban részletesen.
+        java.util.LinkedHashMap<String, Integer> bal =
+                Muscles.weekBalance(log, System.currentTimeMillis(), 30);
+        String topG = null;
+        int topD = 0;
+        for (java.util.Map.Entry<String, Integer> e : bal.entrySet())
+            if (e.getValue() > topD) { topD = e.getValue(); topG = e.getKey(); }
+        if (topG != null && topD > 0)
+            notes.addView(text("🎯 Legtöbbet edzett: " + topG + " (" + topD + " nap)",
+                    13, TXT, false));
+        if (notes.getChildCount() > 0) cardV.addView(notes, lp());
+        return cardV;
+    }
+
     View sportsCard() {
         JSONArray h = History.load(this);
         long from = System.currentTimeMillis() - 30L * 24 * 3600 * 1000;

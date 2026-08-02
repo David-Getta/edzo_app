@@ -116,6 +116,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   és táv, az év sportja, a leghosszabb edzés és a legaktívabb hónap
 - **Sportágankénti bontás** (elmúlt 30 nap): alkalmak és össz-idő
   sportáganként, arány-sávval – a mért és a kézzel felvett edzés egy sorban
+- **Súlyzós szekció** (elmúlt 30 nap): edzésnapok, gyakorlatok, sorozatok,
+  ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
+  és izomcsoporttal
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík
 - **Profil / BMI / BMR**, testadatok és változás-diagram
 
