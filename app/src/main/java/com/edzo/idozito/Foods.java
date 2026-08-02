@@ -1030,6 +1030,24 @@ public final class Foods {
                 break;
             }
         }
+        // Az adag a név UTÁN is állhat: „grillcsirke fél adag". A számot a
+        // legközelebbi megelőző, még mennyiség nélküli étel kapja – de csak a
+        // saját tagmondatán belül.
+        for (int n = 0; n < bareNumPos.size(); n++) {
+            double count = bareNumVal.get(n);
+            if (count < 0.5 || count > 20) continue;
+            int numStart = bareNumPos.get(n);
+            int numEnd = numStart + bareNumLen.get(n);
+            String after = numEnd < q.length() ? q.substring(numEnd).trim() : "";
+            if (!(after.startsWith("adag") || after.startsWith("porcio"))) continue;
+            int best = -1;
+            for (int k = 0; k < foods.size(); k++) {
+                if (grams[k] > 0 || foodPos.get(k) < 0 || foodPos.get(k) >= numStart) continue;
+                if (clause[foodPos.get(k)] != clause[numStart]) continue;
+                if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
+            }
+            if (best >= 0) grams[best] = count * foods.get(best).portion;
+        }
         for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
         return out;
     }

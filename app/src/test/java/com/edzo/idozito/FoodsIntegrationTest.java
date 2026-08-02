@@ -83,6 +83,16 @@ public class FoodsIntegrationTest {
         assertEquals("Rizottó 350g + Gomba 100g", summary("risotto gombával"));
     }
 
+    @Test public void thePortionWordWorksAfterTheFoodNameToo() {
+        // A „fél adag gyros" mellett a „grillcsirke fél adag" sorrend is él.
+        assertEquals("Csirkemell (sült/grill) 75g", summary("grillcsirke fél adag"));
+        assertEquals("Gulyásleves 800g", summary("gulyásleves 2 adag"));
+        assertEquals("Rántott hús (sertés) 270g + Burgonyapüré 300g",
+                summary("rántott hús másfél adag krumplipürével"));
+        // A régi sorrend változatlan.
+        assertEquals("Gyros 175g", summary("fél adag gyros"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
