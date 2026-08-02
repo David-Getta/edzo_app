@@ -167,7 +167,11 @@ public final class Foods {
         new Food("Mandula", 580, 21, 30, "mandula"),
         new Food("Mogyoró", 570, 25, 30, "mogyoro"),
         new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade", "kinder", "milka", "twix",
-                "bounty", "snickers", "kitkat", "mars szelet"),
+                "bounty", "snickers", "kitkat", "mars szelet", "sport szelet",
+                "balaton szelet", "3bit", "milky way"),
+        // A „mentos" tő szándékosan hiányzik: a „mentős"-be esne bele.
+        new Food("Gumicukor / cukorka", 340, 0, 30, "gumicukor", "cukorka",
+                "haribo", "skittles", "tic tac"),
         new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
@@ -195,7 +199,9 @@ public final class Foods {
         new Food("Sült gesztenye", 210, 2.4, 100, "sult gesztenye"),
         // A bolti jeges tea cukros – nem a cukrozatlan tea 3 kalóriája.
         new Food("Üdítő (cukros)", 42, 0, 330, "udito", "kola", "cola", "tonik",
-                "jeges tea", "ice tea", "gyombersor"),
+                // A puszta „fanta" tő a „fantasztikus"-ba is beleesne – csak
+                // ragozva vesszük („fantát", „fantával").
+                "jeges tea", "ice tea", "gyombersor", "fantat", "fantaval", "sprite"),
         // A „cukormentes” szó eddig CUKROT jelentett: a „cukor” szótő beleesett,
         // és 40 kcal-t adott hozzá – pont az ellenkezőjét annak, amit a felhasználó
         // írt. A hosszabb szótő elnyeli a rövidebbet, így ez a nulla kalóriás
@@ -249,7 +255,8 @@ public final class Foods {
                 "loncshus"),
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
-        new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao", "forro csoki", "forrocsoki"),
+        new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao", "forro csoki", "forrocsoki",
+                "nesquik"),
         new Food("Tükörponty / halrudak", 220, 12, 150, "tukorponty", "halrud", "halrudak"),
         new Food("Körte", 57, 0.4, 150, "korte"),
         new Food("Őszibarack", 39, 0.9, 150, "oszibarack", "barack", "nektarin"),
@@ -278,7 +285,8 @@ public final class Foods {
         new Food("Piskóta / kevert süti", 350, 6, 80, "piskota", "kevert"),
         new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott",
                 "pattogatott kukorica"),
-        new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
+        new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital",
+                "red bull", "redbull", "monster"),
         new Food("Sör", 43, 0.5, 500, "sor", "sör", "radler"),
         // A „narancslé" 71 kcal-os narancsnak számított (és a „2 dl almalé"
         // 200 g almának): a gyümölcs-összetételek teljes alakja szótő.

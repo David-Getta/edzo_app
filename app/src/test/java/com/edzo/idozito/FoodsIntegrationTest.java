@@ -102,6 +102,14 @@ public class FoodsIntegrationTest {
         assertEquals("Chips 50g", summary("proteinchips"));
         assertEquals("Jégkása 300g", summary("slush"));
         assertEquals("Rizsszelet / puffasztott rizs 10g", summary("abonett"));
+        // Márkanevek.
+        assertEquals("Gumicukor / cukorka 30g", summary("haribo gumicukor"));
+        assertEquals("Energiaital 250g", summary("red bull"));
+        assertEquals("Csokoládé 25g", summary("sport szelet"));
+        assertEquals("Üdítő (cukros) 330g", summary("fantát ittam"));
+        // A „fantasztikus" és a „mentős" viszont nem étel.
+        assertEquals("Gulyásleves 400g", summary("fantasztikus vacsora volt: gulyás"));
+        assertEquals("Gulyásleves 400g", summary("mentős barátommal ettem egy gulyást"));
     }
 
     @Test public void measureWordsMultiplyThePortion() {
