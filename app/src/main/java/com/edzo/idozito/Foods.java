@@ -520,6 +520,13 @@ public final class Foods {
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",
             "sorozat", "sorol", "sorren", "paradicsomi", "narancssarga",
             "kolbaszol", "rumli",
+            // Átvitt értelmű és összetett álca-szavak: a „narancsbőr" nem bor,
+            // a „sörhas" nem sör, a „kávészünet" nem kávé.
+            "borsos", "gombamod", "tejszinu", "vajszinu", "uborkaszezon",
+            "lencseveg", "banankoz", "narancsbor", "kenyerkeres", "tortaform",
+            "kaveszunet", "teadelutan", "olajfolt", "halaszf", "borvidek",
+            "sorhas", "kolbaszujj", "almafa", "kortefa", "diofa",
+            "cseresznyefa", "szilvafa", "barackfa", "eperfa", "meggyfa",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */

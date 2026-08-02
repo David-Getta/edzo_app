@@ -210,6 +210,18 @@ public class FoodsIntegrationTest {
             List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), q);
             assertEquals("étel lett belőle: " + q, 0, hs.size());
         }
+        // Az átvitt értelmű összetételek sem ételek.
+        for (String q : new String[]{"borsos ár volt", "narancsbőr ellen edzek",
+                "sörhas ellen gyúrok", "kávészünet", "uborkaszezon van",
+                "tejszínű ég", "almafa virágzik", "diófa asztal",
+                "tortaformát vettem", "banánköztársaság"}) {
+            List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), q);
+            assertEquals("étel lett belőle: " + q, 0, hs.size());
+        }
+        assertEquals("Tokány", Foods.parse(Arrays.asList(Foods.ALL),
+                "borsos tokány").get(0).food.name);
+        assertEquals("Tejszínhab", Foods.parse(Arrays.asList(Foods.ALL),
+                "tejszínhab a kakaóra").get(0).food.name);
         // A ragozott IGAZI ételek viszont élnek.
         assertEquals("Sör", Foods.parse(Arrays.asList(Foods.ALL),
                 "sört ittam").get(0).food.name);
