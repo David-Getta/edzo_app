@@ -93,6 +93,17 @@ public class FoodsIntegrationTest {
         assertEquals("Gyros 175g", summary("fél adag gyros"));
     }
 
+    @Test public void snacksAndStreetFoodDoNotDoubleCount() {
+        assertEquals("Aszalt gyümölcs 40g", summary("aszalt sárgabarack"));
+        assertEquals("Popcorn 40g", summary("pattogatott kukorica"));
+        assertEquals("Vattacukor 30g", summary("vattacukor"));
+        assertEquals("Sült gesztenye 100g", summary("sült gesztenye"));
+        assertEquals("Keksz 40g", summary("zabkeksz"));
+        assertEquals("Chips 50g", summary("proteinchips"));
+        assertEquals("Jégkása 300g", summary("slush"));
+        assertEquals("Rizsszelet / puffasztott rizs 10g", summary("abonett"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {

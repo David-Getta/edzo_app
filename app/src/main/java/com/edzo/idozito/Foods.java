@@ -168,7 +168,7 @@ public final class Foods {
         new Food("Mogyoró", 570, 25, 30, "mogyoro"),
         new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade", "kinder", "milka", "twix",
                 "bounty", "snickers", "kitkat", "mars szelet"),
-        new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer"),
+        new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
                 "flodni", "macaron"),
@@ -177,11 +177,12 @@ public final class Foods {
         new Food("Energiagolyó", 420, 8, 25,
                 "energiagolyo", "kokuszgolyo", "zabgolyo", "proteingolyo"),
         new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt"),
-        new Food("Chips", 540, 6, 50, "chips", "nachos"),
+        new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
+                "protein chips"),
         // Nassolás-kör: a hagymakarika hagymának (20 kcal!), a szaloncukor
         // kanál cukornak, a mézeskalács kalácsnak számított.
         new Food("Hagymakarika (rántott)", 280, 4, 100, "hagymakarika"),
-        new Food("Perec", 380, 9, 50, "perec"),
+        new Food("Perec", 380, 9, 50, "perec", "pretzel"),
         new Food("Ropi / kréker", 400, 9, 30, "ropi", "kreker", "sajtos taller", "taller"),
         new Food("Pisztácia", 580, 20, 30, "pisztaci"),
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
@@ -190,6 +191,8 @@ public final class Foods {
         new Food("Lekvár", 250, 0.4, 25, "lekvar"),
         new Food("Méz", 320, 0.3, 20, "mez"),
         new Food("Cukor", 400, 0, 10, "cukor"),
+        new Food("Vattacukor", 400, 0, 30, "vattacukor"),
+        new Food("Sült gesztenye", 210, 2.4, 100, "sult gesztenye"),
         // A bolti jeges tea cukros – nem a cukrozatlan tea 3 kalóriája.
         new Food("Üdítő (cukros)", 42, 0, 330, "udito", "kola", "cola", "tonik",
                 "jeges tea", "ice tea", "gyombersor"),
@@ -273,7 +276,8 @@ public final class Foods {
         new Food("Rétes", 300, 5, 100, "almas retes", "meggyes retes", "turos retes",
                 "makos retes", "kapros retes", "retes"),
         new Food("Piskóta / kevert süti", 350, 6, 80, "piskota", "kevert"),
-        new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott"),
+        new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott",
+                "pattogatott kukorica"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital"),
         new Food("Sör", 43, 0.5, 500, "sor", "sör", "radler"),
         // A „narancslé" 71 kcal-os narancsnak számított (és a „2 dl almalé"
@@ -287,7 +291,7 @@ public final class Foods {
         // A „puffasztott rizs" két ételre esett szét (puffasztott + rizs), vagyis
         // duplán számolt. A teljes alak hosszabb szótő, így elnyeli mindkettőt.
         new Food("Rizsszelet / puffasztott rizs", 380, 8, 10,
-                "puffasztott rizs", "puffasztott", "rizsszelet"),
+                "puffasztott rizs", "puffasztott", "rizsszelet", "abonett"),
         new Food("Cottage cheese", 100, 11, 150, "cottage"),
         new Food("Skyr", 65, 11, 150, "skyr"),
         new Food("Tofu", 120, 12, 150, "tofu"),
@@ -318,7 +322,7 @@ public final class Foods {
         new Food("Fröccs", 40, 0, 300, "froccs"),
         new Food("Kombucha", 20, 0, 330, "kombucha"),
         new Food("Ayran", 30, 1.7, 250, "ayran"),
-        new Food("Jégkása", 60, 0, 300, "jegkasa"),
+        new Food("Jégkása", 60, 0, 300, "jegkasa", "slush"),
         new Food("Lecsó", 70, 2, 300, "lecso"),
         new Food("Töltött paprika", 130, 8, 350, "toltott paprika"),
         new Food("Székelykáposzta", 150, 9, 350, "szekelykaposzta", "szekely kaposzta"),
@@ -395,7 +399,8 @@ public final class Foods {
         new Food("Szilva", 46, 0.7, 100, "szilva"),
         new Food("Cseresznye / meggy", 60, 1, 150, "cseresznye", "meggy"),
         new Food("Datolya", 280, 2.5, 30, "datolya"),
-        new Food("Tökmag / napraforgómag", 570, 22, 30, "tokmag", "napraforgomag", "napraforgo"),
+        new Food("Tökmag / napraforgómag", 570, 22, 30, "tokmag", "napraforgomag",
+                "napraforgo", "fenyomag"),
         new Food("Chia / lenmag", 490, 17, 15, "chia", "lenmag", "lenmagliszt"),
         new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
@@ -417,8 +422,9 @@ public final class Foods {
         new Food("Tejberizs", 120, 3.5, 250, "tejberizs"),
         // Aszalva négy-ötszörös a kalória – a „szilva" tő 46 kcal-t adott volna.
         new Food("Aszalt gyümölcs", 280, 2.5, 40,
-                "aszalt szilva", "aszalt barack", "aszalt vorosafonya",
-                "aszalt gyumolcs", "aszalt", "mazsola"),
+                "aszalt szilva", "aszalt barack", "aszalt sargabarack",
+                "aszalt vorosafonya", "aszalt gyumolcs", "aszalt", "mazsola",
+                "goji", "kandirozott"),
         new Food("Gyümölcspüré / bébiétel", 65, 0.5, 100,
                 "gyumolcspure", "almapure", "almaszosz", "bebietel"),
         new Food("Gránátalma", 83, 1, 150, "granatalma"),
