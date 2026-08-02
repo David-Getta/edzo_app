@@ -83,6 +83,33 @@ public final class Alarms {
         return now + 7L * 24 * 60 * 60 * 1000;
     }
 
+    /**
+     * A következő adott hónapnap {@code h:m} – a havi visszatekintőhöz (minden
+     * hónap 1-je). Ugyanaz a lépegetős, óraátállás-biztos módszer, mint a
+     * többinél: a jelölt csak akkor jó, ha a feloldott naptár tényleg a kért
+     * napot és időt adja vissza.
+     */
+    public static long nextMonthly(int dayOfMonth, int h, int m, long now, TimeZone tz) {
+        Calendar cal = Calendar.getInstance(tz);
+        for (int i = 0; i <= 62; i++) {
+            cal.setTimeInMillis(now);
+            cal.add(Calendar.DAY_OF_MONTH, i);
+            cal.set(Calendar.HOUR_OF_DAY, h);
+            cal.set(Calendar.MINUTE, m);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            long t = cal.getTimeInMillis();
+            if (t > now && cal.get(Calendar.DAY_OF_MONTH) == dayOfMonth
+                    && cal.get(Calendar.HOUR_OF_DAY) == h && cal.get(Calendar.MINUTE) == m)
+                return t;
+        }
+        return now + 31L * 24 * 60 * 60 * 1000;
+    }
+
+    public static long nextMonthly(int dayOfMonth, int h, int m) {
+        return nextMonthly(dayOfMonth, h, m, System.currentTimeMillis(), TimeZone.getDefault());
+    }
+
     public static long nextDaily(int h, int m) {
         return nextDaily(h, m, System.currentTimeMillis(), TimeZone.getDefault());
     }

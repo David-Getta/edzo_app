@@ -84,7 +84,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 🐺 Blaze, a kabalafigura
 - **Helyzet-tudatos köszöntés** belépéskor (veszélyben lévő széria, félbehagyott
   kihívás, mai eredmény, hátralévő fehérje)
-- Napi értesítés, ha még nem edzettél; **heti visszatekintő** vasárnap
+- Napi értesítés, ha még nem edzettél; **heti visszatekintő** vasárnap,
+  **havi visszatekintő** minden hónap 1-jén
 - **Mozgó widget** a kezdőképernyőn: állapot, mai kcal és víz, gyorsgombok
   (edzés indítása, erősítő napló, +1 pohár víz)
 

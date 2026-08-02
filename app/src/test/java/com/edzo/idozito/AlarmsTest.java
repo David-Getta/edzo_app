@@ -103,6 +103,23 @@ public class AlarmsTest {
         assertEquals("2026-07-30 00:00", show(Alarms.nextDaily(0, 0, now, BP)));
     }
 
+    @Test public void theMonthlyRecapAlwaysLandsOnTheFirstAtTen() {
+        // Két éven át láncolva: minden riasztás elsején, 10:00-kor, és a lánc
+        // sosem áll meg – az óraátállásos hónapokban sem.
+        long now = stamp(2026, Calendar.JANUARY, 15, 12, 0);
+        for (int i = 0; i < 24; i++) {
+            long t = Alarms.nextMonthly(1, 10, 0, now, BP);
+            assertTrue("megállt a havi lánc: " + show(t), t > now);
+            assertEquals("nem elseje: " + show(t), 1, at(t).get(Calendar.DAY_OF_MONTH));
+            assertEquals("nem 10:00: " + show(t), 10, at(t).get(Calendar.HOUR_OF_DAY));
+            now = t;
+        }
+        // Pontosan elsején 10:00-kor kérve a KÖVETKEZŐ hónap jön, nem a mai.
+        long first = stamp(2026, Calendar.MARCH, 1, 10, 0);
+        long next = Alarms.nextMonthly(1, 10, 0, first, BP);
+        assertEquals(Calendar.APRIL, at(next).get(Calendar.MONTH));
+    }
+
     @Test public void theWeeklyRecapAlwaysLandsOnSundayEvening() {
         long now = stamp(2026, Calendar.JANUARY, 1, 12, 0);
         long prev = 0;

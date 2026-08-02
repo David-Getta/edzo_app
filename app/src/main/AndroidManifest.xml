@@ -109,6 +109,10 @@
             android:exported="false" />
 
         <receiver
+            android:name=".MonthlyReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".DailyNudgeReceiver"
             android:exported="false" />
 

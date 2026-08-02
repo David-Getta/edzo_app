@@ -226,6 +226,7 @@ public class MainActivity extends Activity {
         if (!perms.isEmpty()) requestPermissions(perms.toArray(new String[0]), REQ_NOTIF);
         Reminders.scheduleAll(this);
         WeeklyReceiver.schedule(this);
+        MonthlyReceiver.schedule(this);
         DailyNudgeReceiver.schedule(this);
         handleRoutineIntent(getIntent());
         handleRepeatIntent(getIntent());

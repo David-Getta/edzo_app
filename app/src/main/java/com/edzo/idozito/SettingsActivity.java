@@ -171,10 +171,11 @@ public class SettingsActivity extends Activity {
         }
         Switch recap = new Switch(this);
         recap.setChecked(Theme.recapEnabled(this));
-        notif.addView(switchRow("Heti visszatekintő értesítés", recap));
+        notif.addView(switchRow("Heti és havi visszatekintő", recap));
         recap.setOnCheckedChangeListener((btn, c) -> {
             Theme.setBool(this, "recap", c);
             WeeklyReceiver.schedule(this);
+            MonthlyReceiver.schedule(this);
         });
         notif.addView(divider());
         Switch blaze = new Switch(this);
@@ -462,6 +463,7 @@ public class SettingsActivity extends Activity {
                     for (Reminders.Reminder r : previous) Reminders.cancelOne(this, r);
                     Reminders.scheduleAll(this);
                     WeeklyReceiver.schedule(this);
+                    MonthlyReceiver.schedule(this);
                     DailyNudgeReceiver.schedule(this);
                     BlazeWidget.refresh(this);
                     Theme.bumpRev(this); // hogy a főképernyő is újraépüljön
