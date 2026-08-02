@@ -648,6 +648,43 @@ public class HistoryActivity extends Activity {
      */
     void bulkPreview(String text) {
         final Activities.Parsed p = Activities.parse(text);
+        // Sorozatos mondat („3x10 fekvenyomás 60 kg”): ott a részletek – az
+        // ismétlés és a súly – az erősítő naplóban őrződnek meg, egy általános
+        // „kondi” bejegyzésben elvesznének. Felajánljuk a jobbik helyet.
+        final java.util.List<StrengthParse.Item> lifts = StrengthParse.parse(text);
+        if (!lifts.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (StrengthParse.Item it : lifts) sb.append("•  ").append(it.label()).append('\n');
+            Sheet sh = new Sheet(this, "Ez erősítő sorozatnak tűnik 🏋️",
+                    sb + "\nAz erősítő naplóban a súly és az ismétlés is megmarad "
+                            + "– a rekordjaidhoz és a progresszió-javaslathoz.")
+                    .addPrimary("Erősítő naplóba", () -> saveLifts(lifts));
+            if (!p.isEmpty()) sh.addNeutral("Sima edzésként", () -> bulkPreviewPlain(p, text));
+            sh.addCancel().show();
+            return;
+        }
+        bulkPreviewPlain(p, text);
+    }
+
+    /** A felismert sorozatok mentése az erősítő naplóba. */
+    void saveLifts(java.util.List<StrengthParse.Item> lifts) {
+        long now = System.currentTimeMillis();
+        int i = 0;
+        for (StrengthParse.Item it : lifts) {
+            java.util.List<StrengthLog.SetEntry> sets = new java.util.ArrayList<>();
+            for (StrengthParse.Set s : it.sets)
+                sets.add(new StrengthLog.SetEntry(s.reps, s.weight));
+            // Külön időbélyeg mindegyiknek: az azonosítja őket a naplóban.
+            StrengthLog.add(this, new StrengthLog.Entry(now - i++, it.name, sets));
+        }
+        BlazeWidget.refresh(this);
+        android.widget.Toast.makeText(this,
+                "Erősítő naplóba mentve ✔  (" + lifts.size() + " gyakorlat)",
+                android.widget.Toast.LENGTH_LONG).show();
+        recreate();
+    }
+
+    void bulkPreviewPlain(final Activities.Parsed p, String text) {
         if (p.isEmpty()) {
             // Ha terv vagy pihenőnap volt, mondjuk is meg: nem értetlenség az oka.
             boolean future = Activities.looksLikeFuture(text);

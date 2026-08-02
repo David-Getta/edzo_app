@@ -36,6 +36,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
   is érti („ma nem futottam", „kondi helyett futás"), és a pihenőnapot
   is elfogadja
+- **Sorozatos mondat esetén** („3x10 fekvenyomás 60 kg") felajánlja az
+  Erősítő naplót, ahol a súly és az ismétlés is megmarad
 - A kézi bejegyzés **mindenben egyenrangú a mérttel**: számít a szériába, az
   XP-be, a jelvényekbe, a heti visszatekintőbe és a statisztikába
 - Elérhető a kezdőlap **„Edzés pótlása"** csempéjéről és az Előzmények
