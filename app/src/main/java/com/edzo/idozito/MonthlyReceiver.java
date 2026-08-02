@@ -61,7 +61,7 @@ public class MonthlyReceiver extends BroadcastReceiver {
         // Egyesített napló: az erősítő napok is számítanak.
         JSONArray h = History.loadAll(c);
         int count = 0, steps = 0;
-        double dist = 0, cal = 0;
+        double dist = 0, burned = 0;
         long dur = 0;
         java.util.HashSet<Integer> activeDays = new java.util.HashSet<>();
         Calendar dc = Calendar.getInstance();
@@ -75,7 +75,7 @@ public class MonthlyReceiver extends BroadcastReceiver {
             if (d > 0) dist += d;
             dur += o.optInt("dur");
             steps += o.optInt("steps", 0);
-            cal += o.optDouble("cal", 0);
+            burned += o.optDouble("cal", 0);
             dc.setTimeInMillis(ts);
             activeDays.add(dc.get(Calendar.DAY_OF_YEAR));
         }
@@ -88,8 +88,8 @@ public class MonthlyReceiver extends BroadcastReceiver {
         if (steps > 0)
             sb.append("  ·  ").append(String.format(Hu.LOCALE, "%,d", steps)
                     .replace(',', ' ')).append(" lépés");
-        if (cal >= 100)
-            sb.append("  ·  ").append(Math.round(cal)).append(" kcal elégetve");
+        if (burned >= 100)
+            sb.append("  ·  ").append(Math.round(burned)).append(" kcal elégetve");
         String text = sb.toString();
 
         // A hónap sportja (csak a valódi napló-bejegyzésekből, mint a hetinél).
