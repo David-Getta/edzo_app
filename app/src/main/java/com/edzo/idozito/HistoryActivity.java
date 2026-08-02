@@ -616,6 +616,10 @@ public class HistoryActivity extends Activity {
             "pl. a héten minden nap futottam",
             "pl. hétvégén 1-1 túra",
             "pl. tegnap este kondi",
+            "pl. 100 fekvőtámasz",
+            "pl. ma 10000 lépés",
+            "pl. lábnap volt, 1 óra",
+            "pl. padel 90 perc",
     };
 
     /** Egy mondat, amiből több bejegyzés lesz. */
