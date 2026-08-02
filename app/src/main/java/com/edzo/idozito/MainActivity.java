@@ -270,9 +270,26 @@ public class MainActivity extends Activity {
             if (cur > 0 && cur < target)
                 return "Már " + Challenges.fmtProgress((double) cst[5]) + "/" + target + " "
                         + cst[1] + " a mai kihívásból – hajrá! 🎯";
-            // 3) Ma már volt edzés: dicséret.
-            if (trainedToday)
+            // 3) Kerek idei mérföldkő a mai edzéssel: külön ünneplés.
+            if (trainedToday) {
+                java.util.Calendar yc = java.util.Calendar.getInstance();
+                yc.set(java.util.Calendar.DAY_OF_YEAR, 1);
+                yc.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                yc.set(java.util.Calendar.MINUTE, 0);
+                yc.set(java.util.Calendar.SECOND, 0);
+                yc.set(java.util.Calendar.MILLISECOND, 0);
+                long yearStart = yc.getTimeInMillis();
+                int yearCount = 0;
+                for (int i = 0; i < act.length(); i++) {
+                    JSONObject o = act.optJSONObject(i);
+                    if (o != null && o.optLong("ts") >= yearStart) yearCount++;
+                }
+                if (yearCount >= 50 && yearCount % 50 == 0)
+                    return "ez volt az idei " + yearCount
+                            + ". edzésed – micsoda mérföldkő! 🏅";
+                // 4) Ma már volt edzés: dicséret.
                 return "a mai edzés megvan – büszke vagyok rád! 💪";
+            }
             // 4) Étrendes visszajelzés annak, aki naplóz.
             int pGoal = prefs.getInt("protein_goal", 0);
             if (pGoal > 0) {
