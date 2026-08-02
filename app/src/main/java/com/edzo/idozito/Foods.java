@@ -59,7 +59,7 @@ public final class Foods {
         new Food("Rizs (főtt)", 130, 2.7, 200, "riz"),
         // A „durum" hosszabb tő, különben a benne lévő „rum" tömény italt adna.
         new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta", "teszta", "spagetti", "penne", "durum"),
-        new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli"),
+        new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli", "krumpi"),
         new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "hasabburgonya", "hasáb"),
         new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure", "püré"),
         new Food("Édesburgonya", 90, 1.6, 200, "edesburgonya", "batata"),
@@ -108,10 +108,10 @@ public final class Foods {
         new Food("Liszt", 350, 10, 30, "liszt", "rizsliszt", "zabliszt", "buzaliszt"),
         new Food("Brokkoli", 35, 2.8, 150, "brokkoli"),
         new Food("Karfiol", 25, 2, 150, "karfiol"),
-        new Food("Paradicsom", 18, 0.9, 100, "paradicsom"),
-        new Food("Uborka", 15, 0.7, 100, "uborka"),
+        new Food("Paradicsom", 18, 0.9, 100, "paradicsom", "pari"),
+        new Food("Uborka", 15, 0.7, 100, "uborka", "ubi"),
         new Food("Paprika", 25, 1, 100, "paprika"),
-        new Food("Saláta (zöld)", 15, 1.4, 50, "salata"),
+        new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali"),
         new Food("Sajt (trappista)", 360, 25, 30, "sajt", "trappista", "parenyica"),
         new Food("Mozzarella", 280, 22, 50, "mozzarella"),
         // A „parmezán" MÉZNEK számított (a „mez" tő beleesett a szóba).
@@ -214,7 +214,8 @@ public final class Foods {
         new Food("Gyümölcsleves", 60, 1, 350, "gyumolcsleves", "meggyleves", "meggy leves"),
         new Food("Paradicsomos káposzta", 55, 2, 400,
                 "paradicsomos kaposzta", "paradicsomoskaposzta"),
-        new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta"),
+        new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta",
+                "grizgaluska leves", "grizgaluskaleves", "grizgaluska"),
         new Food("Kocsonya", 90, 12, 300, "kocsonya", "aszpik"),
         new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
         // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
@@ -227,7 +228,7 @@ public final class Foods {
         // A puszta „turmix" magyarul gyümölcsös: nem fehérjeturmix. A teljes
         // „protein turmix" alak szótő, így az egyben marad.
         new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake"),
-        new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "turmix", "smoothie"),
+        new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "turmix", "smoothie", "acai"),
         // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
         // talált, vagy a 100 kcal/100 g-os kész italra esett – harmadannyi kalória.
         new Food("Fehérjepor", 380, 75, 30, "feherjepor", "feherje por", "protein por",
@@ -235,7 +236,7 @@ public final class Foods {
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
                 "feherjeszelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
-        new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics"),
+        new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog", "hot dog"),
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
@@ -307,7 +308,7 @@ public final class Foods {
         new Food("Görög saláta", 90, 4, 250, "gorog salata"),
         new Food("Tonhalsaláta", 150, 14, 250, "tonhalsalata", "tonhal salata"),
         new Food("Curry", 150, 10, 300, "curry"),
-        new Food("Ramen", 120, 6, 500, "ramen"),
+        new Food("Ramen", 120, 6, 500, "ramen", "ramen leves", "pho leves"),
         new Food("Pad thai", 170, 8, 350, "pad thai", "padthai"),
         new Food("Burrito", 190, 10, 300, "burrito"),
         new Food("Quesadilla", 250, 11, 200, "quesadilla"),
@@ -332,6 +333,13 @@ public final class Foods {
         new Food("Tojásos nokedli", 190, 7, 300, "tojasos nokedli"),
         new Food("Rizottó", 150, 5, 300, "rizotto"),
         new Food("Túrógombóc", 210, 9, 200, "turogomboc"),
+        new Food("Szilvás gombóc", 190, 3, 250, "szilvas gomboc", "szilvasgomboc"),
+        new Food("Káposztás tészta", 150, 4, 330, "kaposztas teszta", "kaposztasteszta",
+                "cvekedli", "kaposztas cvekedli"),
+        new Food("Rizottó", 130, 3.5, 350, "rizotto", "risotto", "rizsotto"),
+        new Food("Quiche", 300, 9, 200, "quiche"),
+        new Food("Poke bowl", 120, 8, 400, "poke"),
+        new Food("Caprese saláta", 130, 7, 250, "caprese salata", "caprese"),
         new Food("Mákos guba", 300, 7, 200, "makos guba"),
         // A teljes kifejezés is szótő, különben a „galuska" külön a nokedlire ülne.
         new Food("Somlói galuska", 260, 5, 150, "somloi galuska", "somloi"),

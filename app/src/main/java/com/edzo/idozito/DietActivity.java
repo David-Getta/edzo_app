@@ -1295,7 +1295,7 @@ public class DietActivity extends Activity {
         llp.topMargin = dp(8);
         box.addView(listV, llp);
         final java.util.HashSet<String> customNames = new java.util.HashSet<>();
-        // Az adatbázis közel 250 ételt tartalmaz; egyszerre 25 sor épül fel,
+        // Az adatbázis több mint 300 ételt tartalmaz; egyszerre 25 sor épül fel,
         // a többi gombra tölthető. Enélkül a lista vége elérhetetlen lenne
         // annak, aki nem tudja előre, mit keressen.
         final int[] limit = {25};

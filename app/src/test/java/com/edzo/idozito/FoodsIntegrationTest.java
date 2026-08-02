@@ -66,6 +66,23 @@ public class FoodsIntegrationTest {
         assertEquals("Gyümölcsleves 350g", summary("hideg meggyleves"));
     }
 
+    @Test public void slangNamesAndWorldDishesAreUnderstood() {
+        // A „krumpi" nem pálinka (pedig benne van a „rum")!
+        assertEquals("Burgonya (főtt) 250g", summary("krumpi hússal"));
+        assertEquals("Saláta (zöld) 50g", summary("sali csirkével"));
+        assertEquals("Paradicsom 100g + Uborka 100g + Saláta (zöld) 50g",
+                summary("pari ubi saláta"));
+        assertEquals("Szendvics 150g + Sonka 50g", summary("egy szendó sonkával"));
+        assertEquals("Szilvás gombóc 250g", summary("szilvás gombóc"));
+        assertEquals("Káposztás tészta 330g", summary("káposztás cvekedli"));
+        assertEquals("Húsleves 400g", summary("grízgaluska leves"));
+        assertEquals("Ramen 500g", summary("ramen leves"));
+        assertEquals("Ramen 500g", summary("pho leves"));
+        assertEquals("Poke bowl 400g", summary("poke bowl"));
+        assertEquals("Caprese saláta 250g", summary("caprese saláta"));
+        assertEquals("Rizottó 350g + Gomba 100g", summary("risotto gombával"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
