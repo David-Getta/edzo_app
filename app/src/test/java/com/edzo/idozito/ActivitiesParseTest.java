@@ -508,6 +508,10 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("1.5 km futás", friday).offset);
         // A „majd" nem május: rag/ szóhatár nélkül a rövidítés nem él.
         assertEquals(0, Activities.parse("majd 30 perc futás", friday).offset);
+        // A „március óta" a hónap 1-jétől máig tartó időszak.
+        assertEquals(153, Activities.parse("március óta 40 edzés", friday).days);
+        // Az „amióta" nem időszak.
+        assertEquals(1, Activities.parse("amióta futok, jobb a kedvem", friday).days);
     }
 
     @Test public void dailyAmountsAndIntervalDistancesAreUnderstood() {

@@ -448,7 +448,7 @@ public final class Activities {
         // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
         int days = 1, offset = 0;
-        int[] span = findSpan(q);
+        int[] span = findSpan(q, now);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
             // Konkrét dátum hónapnévvel: „július 28-án".
@@ -926,13 +926,43 @@ public final class Activities {
     }
 
     /** „elmúlt 3 nap”, „3 nap alatt”, „a héten”, „egy hónap alatt” → {kezdet, vég, napok}. */
-    private static int[] findSpan(char[] q) {
+    private static int[] findSpan(char[] q, long now) {
         String s = new String(q);
+        // „Január óta": a megnevezett hónap 1-jétől máig tartó időszak.
+        int o = s.indexOf("ota");
+        while (o >= 0) {
+            boolean standalone = (o == 0 || !Character.isLetter(s.charAt(o - 1)))
+                    && (o + 3 >= s.length() || !Character.isLetter(s.charAt(o + 3)));
+            if (standalone) {
+                int e = o;
+                while (e > 0 && s.charAt(e - 1) == ' ') e--;
+                int a = e;
+                while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+                int mi = monthIndexOf(s.substring(a, e));
+                if (mi >= 0) {
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTimeInMillis(now);
+                    cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+                    cal.set(java.util.Calendar.MONTH, mi);
+                    if (cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
+                    int back = Days.between(cal.getTimeInMillis(), now);
+                    if (back >= 1 && back <= 365) return new int[]{a, o + 3, back + 1};
+                }
+            }
+            o = s.indexOf("ota", o + 1);
+        }
         // Egy hét = 7 nap, egy hónap = 30. A legkorábbi találat dönt.
         int[] best = null;
         for (int[] c : new int[][]{spanAt(s, "nap", 1), spanAt(s, "het", 7), spanAt(s, "honap", 30)})
             if (c != null && (best == null || c[0] < best[0])) best = c;
         return best;
+    }
+
+    private static int monthIndexOf(String w) {
+        for (int i = 0; i < MONTHS.length; i++) if (MONTHS[i].equals(w)) return i;
+        for (int i = 0; i < MONTH_ABBR.length; i++)
+            if (MONTH_ABBR[i].equals(w)) return MONTH_ABBR_IDX[i];
+        return -1;
     }
 
     /**
