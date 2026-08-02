@@ -619,6 +619,10 @@ public class StatsActivity extends Activity {
             notes.addView(text("🏆 Leghosszabb edzés: "
                     + (longest.optInt("dur") / 60) + " perc · " + day, 13, TXT, false));
         }
+        if (t.cal >= 500)
+            notes.addView(text("⚡ Elégetett kalória: "
+                    + String.format(Hu.LOCALE, "%,d", Math.round(t.cal))
+                            .replace(',', ' ') + " kcal", 13, TXT, false));
         int bestM = 0;
         for (int m = 1; m < 12; m++) if (perMonth[m] > perMonth[bestM]) bestM = m;
         if (perMonth[bestM] >= 3) {
