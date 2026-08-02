@@ -104,6 +104,17 @@ public class FoodsIntegrationTest {
         assertEquals("Rizsszelet / puffasztott rizs 10g", summary("abonett"));
     }
 
+    @Test public void measureWordsMultiplyThePortion() {
+        assertEquals("Gulyásleves 800g", summary("két tányér gulyás"));
+        assertEquals("Méz 40g", summary("két kanál méz"));
+        assertEquals("Csokoládé 100g", summary("egy tábla csoki"));
+        assertEquals("Csokoládé 50g", summary("fél tábla csokoládé"));
+        assertEquals("Chips 25g", summary("fél zacskó chips"));
+        assertEquals("Kesudió 15g", summary("fél marék kesudió"));
+        assertEquals("Pálinka / tömény 80g", summary("két kupica pálinka"));
+        assertEquals("Rizs (főtt) 100g", summary("fél bögre rizs"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {

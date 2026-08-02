@@ -718,7 +718,18 @@ public final class Foods {
      */
     private static final String[] COUNT_WORDS =
             {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár",
-             "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg"};
+             "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg",
+             "kupica", "stampedli"};
+
+    /**
+     * Adag-szorzó mérőszavak: a tipikus adagot sokszorozzák. A „két tányér
+     * gulyás" két teljes adag, az „egy kanál méz" pont egy adagnyi (a kencék
+     * adagja eleve egy kanálnyi), az „egy marék dió" egy maréknyi (30 g).
+     */
+    private static final String[] PORTION_WORDS =
+            {"tanyer", "tanyernyi", "bogre", "bogrenyi", "talka", "talkanyi",
+             "kanal", "kanalnyi", "evokanal", "evokanalnyi", "teaskanal",
+             "teaskanalnyi", "marek", "mareknyi", "csomag", "zacsko", "tal"};
 
     /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
@@ -730,9 +741,15 @@ public final class Foods {
         String between = q.substring(numEnd, foodPos).trim();
         if (between.isEmpty()) return between;
         for (String w : COUNT_WORDS) if (w.equals(between)) return between;
-        for (String w : new String[]{"adag", "adagot", "adagnyi", "porcio"})
+        for (String w : PORTION_WORDS) if (w.equals(between)) return between;
+        for (String w : new String[]{"adag", "adagot", "adagnyi", "porcio", "tabla"})
             if (w.equals(between)) return between;
         return null;
+    }
+
+    private static boolean isPortionWord(String w) {
+        for (String p : PORTION_WORDS) if (p.equals(w)) return true;
+        return false;
     }
 
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
@@ -1029,7 +1046,9 @@ public final class Foods {
                 if (between == null) continue;
                 // Az „adag" bármely ételre megy: egy adag a tipikus adag.
                 // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
-                double piece = between.startsWith("adag") || between.equals("porcio")
+                double piece = between.equals("tabla") ? 100      // egy tábla csoki
+                        : between.startsWith("adag") || between.equals("porcio")
+                                || isPortionWord(between)
                         ? foods.get(k).portion : pieceGrams(foods.get(k));
                 if (piece <= 0) continue;
                 grams[k] = count * piece;
