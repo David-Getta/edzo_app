@@ -649,6 +649,7 @@ public final class Foods {
             // Italok a szokásos kiszereléssel: korsó sör, pohár bor, feles.
             // A mért mennyiség („2 dl", „fél liter") erősebb a darabnál.
             {"Szaloncukor", "15"}, {"Mézeskalács", "25"},
+            {"Víz / ásványvíz", "250"},
             {"Sör", "500"}, {"Bor (vörös/fehér)", "150"}, {"Pálinka / tömény", "40"},
             {"Tej", "200"}, {"Üdítő (cukros)", "330"}, {"Energiaital", "250"},
             {"Kávé (fekete)", "200"}, {"Tejeskávé / cappuccino", "250"},

@@ -115,6 +115,9 @@ public class FoodsIntegrationTest {
         assertEquals("Rizs (főtt) 100g", summary("fél bögre rizs"));
         // A „teáskanál" nem egy csésze tea.
         assertEquals("Cukor 10g", summary("egy teáskanál cukor"));
+        // A poharak száma a víznél is szorez – ebből lesz a vízcél-jóváírás.
+        assertEquals("Víz / ásványvíz 750g", summary("ittam 3 pohár vizet"));
+        assertEquals("Víz / ásványvíz 2000g", summary("reggel óta 8 pohár víz"));
     }
 
     @Test public void negationsAndSubstitutionsAreRespected() {
