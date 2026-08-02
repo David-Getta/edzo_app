@@ -882,7 +882,12 @@ public final class Foods {
     static List<Hit> parse(List<Food> list, String query) {
         List<Match> ms = matches(list, query);
         List<Hit> out = new ArrayList<>();
-        if (ms.isEmpty()) return out;
+        if (ms.isEmpty()) {
+            // Az „ittam másfél litert" ital-név nélkül is vizet jelent.
+            Hit w = waterOnly(list, query);
+            if (w != null) out.add(w);
+            return out;
+        }
 
         String q = norm(query);
         // Az ételek szövegbeli helye – ugyanaz, amit a felismerés használt.
@@ -1155,6 +1160,32 @@ public final class Foods {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
         return out;
+    }
+
+    /**
+     * Ivás étel-találat nélkül: ha csak mennyiség van („ittam másfél litert",
+     * „megittam 2 litert"), azt víznek vesszük – ebből lesz a vízcél-jóváírás.
+     */
+    private static Hit waterOnly(List<Food> list, String query) {
+        String s = norm(query);
+        if (!s.contains("ittam") && !s.contains("iszom")) return null;
+        if (looksNegated(query)) return null;
+        double liters = -1;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d+(?:[.,]\\d+)?)\\s?(liter|l\\b|dl|deci)").matcher(s);
+        if (m.find()) {
+            try {
+                double v = Double.parseDouble(m.group(1).replace(',', '.'));
+                String u = m.group(2);
+                liters = (u.equals("dl") || u.equals("deci")) ? v / 10.0 : v;
+            } catch (NumberFormatException ignored) {}
+        } else if (s.contains("masfel liter")) liters = 1.5;
+        else if (s.contains("fel liter")) liters = 0.5;
+        else if (s.contains("egy liter")) liters = 1;
+        else if (s.contains("ket liter")) liters = 2;
+        if (liters <= 0 || liters > 5) return null;
+        for (Food f : list) if (f.name.startsWith("Víz")) return new Hit(f, liters * 1000);
+        return null;
     }
 
     /** Tagadó bevitel: az üres találat oka nem az, hogy nem ismerjük az ételt. */

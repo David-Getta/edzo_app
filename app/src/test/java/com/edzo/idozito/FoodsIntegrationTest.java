@@ -118,6 +118,11 @@ public class FoodsIntegrationTest {
         // A poharak száma a víznél is szorez – ebből lesz a vízcél-jóváírás.
         assertEquals("Víz / ásványvíz 750g", summary("ittam 3 pohár vizet"));
         assertEquals("Víz / ásványvíz 2000g", summary("reggel óta 8 pohár víz"));
+        // Az ivás ital-név nélkül is víz.
+        assertEquals("Víz / ásványvíz 1500g", summary("ittam másfél litert"));
+        assertEquals("Víz / ásványvíz 2000g", summary("megittam 2 litert"));
+        assertEquals("Víz / ásványvíz 300g", summary("ittam 3 dl-t"));
+        assertEquals("", summary("ma még nem ittam semmit"));
     }
 
     @Test public void negationsAndSubstitutionsAreRespected() {
