@@ -31,9 +31,11 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
   nap futottam", „hétvégén 1-1 túra", „kétszer úsztam", „leúsztam 1500
   métert", „tegnap este kondi", „ma 10000 lépés", „július 28-án
-  futottam", „100 fekvőtámasz" – mentés előtt megmutatja, mit értett;
-  a tervekre („jövő héten…") pedig őszintén szól, hogy a napló a
-  megtörtént edzéseké
+  futottam", „100 fekvőtámasz", „júl. 28-án 6x1 km", „napi 20 perc jóga
+  egész héten" – mentés előtt megmutatja, mit értett; a tervekre („jövő
+  héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
+  is érti („ma nem futottam", „kondi helyett futás"), és a pihenőnapot
+  is elfogadja
 - A kézi bejegyzés **mindenben egyenrangú a mérttel**: számít a szériába, az
   XP-be, a jelvényekbe, a heti visszatekintőbe és a statisztikába
 - Elérhető a kezdőlap **„Edzés pótlása"** csempéjéről és az Előzmények
