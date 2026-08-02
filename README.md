@@ -75,6 +75,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 🏋️ Erősítő edzésnapló
 - **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), a legutóbbi alkalom
   automatikus előtöltésével, kereséssel a naplóban
+- **Sorozatok mondatból**: „3x10 fekvenyomás 60 kg", „guggolás 5x5 80 kg",
+  „húzódzkodás 3x8", „bicepsz 12-10-8 15 kg" – akár több gyakorlat egy
+  mondatban; mentés előtt megmutatja, mit értett
 - **Rekordok**: max súly és becsült **1RM** (Epley), **súly-fejlődési grafikon**,
   heti és összesített volumen
 - **Progresszió-javaslat**: mit nyomj ma? Dupla progresszió szerint előbb az
@@ -154,7 +157,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~284 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~293 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

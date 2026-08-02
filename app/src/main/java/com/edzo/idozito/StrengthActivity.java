@@ -68,6 +68,11 @@ public class StrengthActivity extends Activity {
         Button add = primary("＋  Új bejegyzés");
         add.setOnClickListener(v -> addEntryDialog(null));
         col.addView(add);
+        col.addView(gap(10));
+
+        Button quick = ghost("✍️  Sorozatok mondatból");
+        quick.setOnClickListener(v -> sentenceSheet(""));
+        col.addView(quick);
         col.addView(gap(16));
 
         col.addView(restCard());
@@ -375,6 +380,98 @@ public class StrengthActivity extends Activity {
             box.addView(text(sug.why, 12, MUTED, false));
         }
         new Sheet(this, name, "Fejlődés").addCustom(box).addNeutral("Bezár", () -> {}).show();
+    }
+
+    // ---------- Sorozatok mondatból ----------
+
+    private static final String[] SET_EXAMPLES = {
+            "pl. 3x10 fekvenyomás 60 kg",
+            "pl. guggolás 5x5 80 kg",
+            "pl. húzódzkodás 3x8",
+            "pl. bicepsz 12-10-8 15 kg",
+            "pl. guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg",
+            "pl. vállból nyomás 3 sorozat 12 ismétlés 20 kg",
+    };
+
+    /** Egy mondatból több gyakorlat sorozatai – gépelés helyett. */
+    void sentenceSheet(String prefill) {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(10), dp(6), dp(10), 0);
+        final EditText et = new EditText(this);
+        et.setHint(SET_EXAMPLES[(int) (System.currentTimeMillis() / 60000 % SET_EXAMPLES.length)]);
+        et.setHintTextColor(MUTED);
+        et.setTextColor(TXT);
+        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        et.setText(prefill);
+        et.setSelection(prefill.length());
+        box.addView(et, lp());
+
+        // Élő visszajelzés: gépelés közben látszik, mit értett meg.
+        final TextView reco = text("", 12.5f, MUTED, false);
+        reco.setPadding(0, dp(8), 0, 0);
+        box.addView(reco, lp());
+        et.addTextChangedListener(new android.text.TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            public void afterTextChanged(android.text.Editable e) {
+                List<StrengthParse.Item> items = StrengthParse.parse(e.toString());
+                if (items.isEmpty()) { reco.setText(""); return; }
+                StringBuilder sb = new StringBuilder("✔ Felismerve:");
+                for (StrengthParse.Item it : items) sb.append("\n•  ").append(it.label());
+                reco.setText(sb.toString());
+            }
+        });
+
+        new Sheet(this, "Sorozatok mondatból ✍️",
+                "Írd le egy mondatban, mit nyomtál. Mentés előtt megmutatom, mit értettem.")
+                .addCustom(box)
+                .addPrimary("Tovább", () -> sentencePreview(et.getText().toString()))
+                .addCancel()
+                .show();
+    }
+
+    /** Előnézet mentés előtt: kitalált sorozat a rekordokba is bekerülne. */
+    void sentencePreview(String textIn) {
+        final List<StrengthParse.Item> items = StrengthParse.parse(textIn);
+        if (items.isEmpty()) {
+            new Sheet(this, "Ebből nem lettem okos 🤔",
+                    "Ismétlésszám nélkül nem mentek – próbáld így: „3x10 fekvenyomás 60 kg”.")
+                    .addPrimary("Újra", () -> sentenceSheet(textIn))
+                    .addCancel()
+                    .show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (StrengthParse.Item it : items) sb.append("•  ").append(it.label()).append('\n');
+        sb.append("\nMai dátummal, a naplód élére.");
+        new Sheet(this, items.size() + " gyakorlat mentése", sb.toString())
+                .addPrimary("Mentés", () -> saveSentence(items))
+                .addNeutral("Átírom", () -> sentenceSheet(textIn))
+                .addCancel()
+                .show();
+    }
+
+    void saveSentence(List<StrengthParse.Item> items) {
+        long now = System.currentTimeMillis();
+        int i = 0;
+        boolean record = false;
+        for (StrengthParse.Item it : items) {
+            List<StrengthLog.SetEntry> sets = new ArrayList<>();
+            for (StrengthParse.Set s : it.sets)
+                sets.add(new StrengthLog.SetEntry(s.reps, s.weight));
+            // A rekord-ellenőrzés a mentés ELŐTTI állásból nézi a gyakorlatot.
+            double[] prev = StrengthLog.recordsFor(this, it.name);
+            // Másodperc-eltolás: minden bejegyzés külön időbélyeget kap (az
+            // azonosítja őket megnyitáskor és törléskor).
+            StrengthLog.Entry e = new StrengthLog.Entry(now - i++, it.name, sets);
+            StrengthLog.add(this, e);
+            if (prev[0] > 0 && e.topWeight() > prev[0]) record = true;
+        }
+        BlazeWidget.refresh(this);
+        refresh();
+        if (record && rootFl != null) Confetti.burst(rootFl);
+        Toast.makeText(this, "Mentve ✔  (" + items.size() + " gyakorlat)"
+                + (record ? "  ·  új rekord! 🏆" : ""), Toast.LENGTH_LONG).show();
     }
 
     // ---------- Új bejegyzés ----------

@@ -1,0 +1,123 @@
+package com.edzo.idozito;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import java.util.List;
+
+/**
+ * Erősítő sorozatok EGY mondatból.
+ *
+ * A felismerés óvatos: ismétlésszám nélkül nincs mentés, mert egy kitalált
+ * sorozat a rekordokba, az 1RM-be és az izomcsoport-egyensúlyba is bekerülne.
+ */
+public class StrengthParseTest {
+
+    private static String sum(String q) {
+        StringBuilder sb = new StringBuilder();
+        for (StrengthParse.Item it : StrengthParse.parse(q)) {
+            if (sb.length() > 0) sb.append(" | ");
+            sb.append(it.name).append(" ").append(it.sets.size()).append("×");
+            for (int i = 0; i < it.sets.size(); i++) {
+                if (i > 0) sb.append("/");
+                sb.append(it.sets.get(i).reps);
+            }
+            sb.append("@").append(Progression.kg(it.topWeight()));
+        }
+        return sb.toString();
+    }
+
+    @Test public void theClassicSetNotationWorks() {
+        assertEquals("Fekvenyomás 3×10/10/10@60", sum("3x10 fekvenyomás 60 kg"));
+        assertEquals("Guggolás 5×5/5/5/5/5@80", sum("guggolás 5x5 80 kg"));
+        // Szóközzel és szorzójellel is.
+        assertEquals("Guggolás 3×8/8/8@100", sum("guggolás 3 × 8 100 kg"));
+    }
+
+    @Test public void bodyweightExercisesNeedNoWeight() {
+        assertEquals("Húzódzkodás 3×8/8/8@0", sum("húzódzkodás 3x8"));
+        assertEquals("Fekvőtámasz 1×50@0", sum("50 fekvőtámasz"));
+        // A saját testsúlyos sorozat is látszik a címkében.
+        assertTrue(StrengthParse.parse("húzódzkodás 3x8").get(0).label()
+                .contains("saját testsúly"));
+    }
+
+    @Test public void perSetRepsAreKept() {
+        assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
+        assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));
+    }
+
+    @Test public void wordyFormsWork() {
+        assertEquals("Vállból nyomás 3×12/12/12@20",
+                sum("vállból nyomás 3 sorozat 12 ismétlés 20 kg"));
+        assertEquals("Tricepsz 1×15@25", sum("tricepsz 15 ismétlés 25 kg-mal"));
+        assertEquals("Evezés 4×10/10/10/10@50", sum("evezés 4 szett 10 ism 50 kg"));
+    }
+
+    @Test public void severalExercisesInOneSentence() {
+        assertEquals("Guggolás 3×10/10/10@60 | Fekvenyomás 3×8/8/8@50",
+                sum("guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg"));
+        assertEquals("Guggolás 3×10/10/10@60 | Kitörés 3×12/12/12@0",
+                sum("guggolás 3x10 60 kg és kitörés 3x12"));
+        // Ugyanaz a gyakorlat kétszer: egy bejegyzésbe olvad.
+        assertEquals("Fekvenyomás 5×10/10/10/8/8@60",
+                sum("fekvenyomás 3x10 60 kg, majd fekvenyomás 2x8 60 kg"));
+    }
+
+    @Test public void nothingIsInventedWithoutReps() {
+        // Gyakorlat ismétlés nélkül, vagy ismeretlen mozdulat: nincs találat.
+        for (String q : new String[]{"guggolás", "3 sorozat guggolás", "kondiztam egyet",
+                "60 kg", "", "   ", "jó edzés volt"}) {
+            assertEquals("kitalált sorozat: " + q, 0, StrengthParse.parse(q).size());
+        }
+    }
+
+    @Test public void similarNamesDoNotCollide() {
+        // A „fekvenyomás” nem fekvőtámasz, és fordítva.
+        assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x5 100 kg").get(0).name);
+        assertEquals("Fekvőtámasz", StrengthParse.parse("fekvőtámasz 3x20").get(0).name);
+        assertEquals("Vállból nyomás", StrengthParse.parse("vállból nyomás 3x10 30 kg")
+                .get(0).name);
+    }
+
+    @Test public void absurdNumbersAreRejected() {
+        // A számok életszerű tartományban maradnak – a fuzz ne tudjon hülyeséget
+        // bejuttatni a naplóba.
+        for (String q : new String[]{"guggolás 999x999 9999 kg", "bicepsz 0x0",
+                "guggolás 300 ismétlés 900 kg", "fekvenyomás 3x10 800 kg"}) {
+            for (StrengthParse.Item it : StrengthParse.parse(q)) {
+                assertTrue("túl sok sorozat: " + q, it.sets.size() <= 20);
+                for (StrengthParse.Set s : it.sets) {
+                    assertTrue("ismétlés: " + q, s.reps >= 1 && s.reps <= 200);
+                    assertTrue("súly: " + q, s.weight >= 0 && s.weight <= 500);
+                }
+            }
+        }
+    }
+
+    @Test public void randomTextNeverCrashes() {
+        String[] tokens = {"guggolás", "3x10", "60 kg", "fekvenyomás", "és", ",",
+                "bicepsz", "12-10-8", "ismétlés", "sorozat", "húzódzkodás", "x",
+                "0", "999", "-", "…", "🏋", "", " ", "kg", "szett", "50 fekvőtámasz"};
+        java.util.Random rnd = new java.util.Random(20260802);
+        for (int i = 0; i < 4000; i++) {
+            StringBuilder sb = new StringBuilder();
+            int n = rnd.nextInt(10);
+            for (int w = 0; w < n; w++) {
+                sb.append(tokens[rnd.nextInt(tokens.length)]);
+                if (rnd.nextInt(4) > 0) sb.append(' ');
+            }
+            List<StrengthParse.Item> items = StrengthParse.parse(sb.toString());
+            for (StrengthParse.Item it : items) {
+                assertTrue(it.sets.size() >= 1 && it.sets.size() <= 60);
+                for (StrengthParse.Set s : it.sets) {
+                    assertTrue(s.reps >= 1 && s.reps <= 200);
+                    assertTrue(s.weight >= 0 && s.weight <= 500);
+                }
+                assertTrue(!it.label().isEmpty());
+            }
+        }
+    }
+}
