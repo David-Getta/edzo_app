@@ -152,6 +152,18 @@ public class FoodsIntegrationTest {
         assertEquals(false, Foods.looksNegated("ebédre gulyásleves"));
     }
 
+    @Test public void asianAndMexicanDishesAreKnown() {
+        assertEquals("Tavaszi tekercs / gyoza 150g", summary("gyoza"));
+        assertEquals("Wok (zöldséges-húsos) 350g", summary("wok csirke"));
+        assertEquals("Pad thai 350g", summary("pad see ew"));
+        assertEquals("Savanyúság 100g + Rizs (főtt) 200g", summary("kimchi rizzsel"));
+        assertEquals("Csirkemell (sült/grill) 150g", summary("teriyaki csirke"));
+        assertEquals("Chilis bab (con carne) 400g", summary("chili con carne"));
+        assertEquals("Taco 120g", summary("taco"));
+        assertEquals("Sztrapacska 400g", summary("juhtúrós sztrapacska"));
+        assertEquals("Nokedli / galuska 200g", summary("knédli"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
