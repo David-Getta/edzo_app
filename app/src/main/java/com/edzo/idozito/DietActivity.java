@@ -790,6 +790,8 @@ public class DietActivity extends Activity {
             "Mit ettél? (pl. két és fél deci tej müzlivel)",
             "Mit ettél? (pl. spenót főzelék fasírttal)",
             "Mit ettél? (pl. ebédre poke bowl)",
+            "Mit ettél? (pl. két tányér gulyás)",
+            "Mit ettél? (pl. chips helyett almát ettem)",
     };
 
     void addMealDialog(final MealLog.Meal existing, final int editIdx) {

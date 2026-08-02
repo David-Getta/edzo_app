@@ -620,6 +620,8 @@ public class HistoryActivity extends Activity {
             "pl. ma 10000 lépés",
             "pl. lábnap volt, 1 óra",
             "pl. padel 90 perc",
+            "pl. hétfőn és szerdán kondi",
+            "pl. kedden úszás, csütörtökön futás",
     };
 
     /** Egy mondat, amiből több bejegyzés lesz. */

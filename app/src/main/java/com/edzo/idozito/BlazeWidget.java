@@ -48,6 +48,9 @@ public class BlazeWidget extends AppWidgetProvider {
             try {
                 Object[] cst = Challenges.state(c);
                 if ((int) cst[2] >= (int) cst[3]) msg += "  ·  🎯 Kihívás: pipa!";
+                else if ((int) cst[2] > 0)
+                    msg += "  ·  🎯 " + Challenges.fmtProgress((double) cst[5])
+                            + "/" + cst[3] + " " + cst[1];
             } catch (Exception ignored) {}
         } else if (!Theme.isPlanDay(c, dowIdx)) {
             String[] rest = {
