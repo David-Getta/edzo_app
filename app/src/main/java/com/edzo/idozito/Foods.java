@@ -96,7 +96,8 @@ public final class Foods {
         // kettőnek számolna.
         new Food("Leves (átlag)", 50, 3, 400, "leves", "zoldsegleves"),
         // A „vacsorára túró és zöldség" zöldsége eddig eltűnt: vegyes köret.
-        new Food("Zöldség (vegyes / párolt)", 40, 2, 200, "zoldseg", "vitaminsalata"),
+        new Food("Zöldség (vegyes / párolt)", 40, 2, 200, "zoldseg", "vitaminsalata",
+                "pak choi", "pakchoi", "mangold", "articsoka", "edeskomeny"),
         new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott"),
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
@@ -114,7 +115,9 @@ public final class Foods {
         new Food("Paradicsom", 18, 0.9, 100, "paradicsom", "pari"),
         new Food("Uborka", 15, 0.7, 100, "uborka", "ubi"),
         new Food("Paprika", 25, 1, 100, "paprika"),
-        new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali"),
+        new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali",
+                // A „rukkola" vége „kola" – a hosszabb tő elfedi az üdítőt.
+                "rukkola", "endivia", "radicchio"),
         new Food("Sajt (trappista)", 360, 25, 30, "sajt", "trappista", "parenyica"),
         new Food("Mozzarella", 280, 22, 50, "mozzarella"),
         // A „parmezán" MÉZNEK számított (a „mez" tő beleesett a szóba).
@@ -407,7 +410,8 @@ public final class Foods {
         // --- Zöldségek, gyümölcsök, magvak ---
         new Food("Sárgarépa", 41, 0.9, 100, "sargarepa", "repa"),
         // A „cukkini spagetti" zöldségtészta: nem cukkini + főtt tészta.
-        new Food("Cukkini", 17, 1.2, 200, "cukkini", "cukkini spagetti"),
+        new Food("Cukkini", 17, 1.2, 200, "cukkini", "cukkini spagetti",
+                "patisszon", "csillagtok"),
         new Food("Konjac / shirataki tészta", 10, 0, 200,
                 "konjac teszta", "shirataki teszta", "konjac", "shirataki"),
         new Food("Padlizsán", 25, 1, 200, "padlizsan"),
@@ -449,7 +453,10 @@ public final class Foods {
         new Food("Gyümölcspüré / bébiétel", 65, 0.5, 100,
                 "gyumolcspure", "almapure", "almaszosz", "bebietel"),
         new Food("Gránátalma", 83, 1, 150, "granatalma"),
-        new Food("Bogyós gyümölcs", 50, 1, 100, "bogyos", "szeder", "ribizli", "egres"),
+        new Food("Bogyós gyümölcs", 50, 1, 100, "bogyos", "szeder", "ribizli",
+                "egres", "josta", "homoktovis", "licsi"),
+        new Food("Mangó", 60, 0.8, 200, "mango"),
+        new Food("Datolyaszilva", 70, 0.6, 150, "datolyaszilva", "hurma"),
         new Food("Füge", 74, 0.8, 100, "fuge"),
         new Food("Befőtt / kompót", 70, 0.4, 150, "befott", "kompot"),
         new Food("Túrós batyu", 300, 7, 100, "turos batyu", "batyu"),
@@ -647,6 +654,7 @@ public final class Foods {
             {"Rántotta", "55"},
             {"Banán", "120"}, {"Alma", "150"}, {"Narancs", "150"}, {"Körte", "150"},
             {"Kivi", "80"}, {"Mandarin", "100"}, {"Őszibarack", "150"},
+            {"Mangó", "200"}, {"Datolyaszilva", "150"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
             {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
             {"Virsli", "50"}, {"Kakaós csiga", "90"}, {"Fasírt", "60"},

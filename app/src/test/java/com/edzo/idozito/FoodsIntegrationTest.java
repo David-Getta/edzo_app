@@ -164,6 +164,19 @@ public class FoodsIntegrationTest {
         assertEquals("Nokedli / galuska 200g", summary("knédli"));
     }
 
+    @Test public void moreFruitsAndVegetablesAreKnown() {
+        // A „rukkola" nem kóla!
+        assertEquals("Saláta (zöld) 50g", summary("rukkola"));
+        assertEquals("Mangó 100g", summary("fél mangó"));
+        assertEquals("Datolyaszilva 150g", summary("datolyaszilva"));
+        assertEquals("Zöldség (vegyes / párolt) 200g", summary("pak choi"));
+        assertEquals("Zöldség (vegyes / párolt) 200g", summary("articsóka"));
+        assertEquals("Cukkini 200g", summary("patisszon"));
+        assertEquals("Bogyós gyümölcs 100g", summary("licsi"));
+        // A „mángold" zöldség marad, nem mangó.
+        assertEquals("Zöldség (vegyes / párolt) 200g", summary("mángold"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
