@@ -77,8 +77,13 @@ public final class Challenges {
         }
         List<StrengthLog.Entry> sLog = StrengthLog.load(ctx);
         int repsToday = 0;
-        for (StrengthLog.Entry e : sLog)
-            if (e.ts >= dayStart) repsToday += e.totalReps();
+        double volToday = 0, volBest = 0;
+        for (StrengthLog.Entry e : sLog) {
+            if (e.volume() > volBest) volBest = e.volume();
+            if (e.ts < dayStart) continue;
+            repsToday += e.totalReps();
+            volToday += e.volume();
+        }
 
         List<MealLog.Meal> meals = MealLog.load(ctx);
         int mealsToday = 0;
@@ -97,6 +102,8 @@ public final class Challenges {
         if (usesWater) types.add(7);
         if (everSteps) types.add(8);  // lépés-kihívás csak annak, akinél mérve van
         if (everCal) types.add(9);    // kalória-kihívás csak mért kalóriák mellett
+        // Volumen-kihívás annak, aki súllyal edz (a testsúlyos napló volumene 0).
+        if (volBest >= 200) types.add(10);
 
         // A típust a nap folyamán rögzítjük. Enélkül a lista hossza menet közben
         // változna (pl. a nap első étkezésének naplózásakor bejön az 5-ös típus),
@@ -145,6 +152,15 @@ public final class Challenges {
         } else if (type == 8) {
             target = 3000 + (seed / 3 % 3) * 1500; cur = stepsToday; unit = "lépés";
             title = "Gyűjts ma " + target + " lépést edzés közben!";
+        } else if (type == 10) {
+            // A cél a saját legjobb egy-gyakorlatos volumenéhez igazodik.
+            int step = 250;
+            target = (int) (Math.max(500, Math.round(volBest * (1 + (seed / 3 % 3) * 0.25)
+                    / step) * step));
+            cur = (int) volToday;
+            exact = volToday;
+            unit = "kg";
+            title = "Mozgass ma összesen " + target + " kg-ot a súlyzós naplóban!";
         } else if (type == 9) {
             target = 150 + (seed / 3 % 3) * 100; cur = (int) calToday; unit = "kcal";
             exact = calToday;
