@@ -184,4 +184,27 @@ public class FoodsIntegrationTest {
             assertEquals("étel lett a címkéből: " + q, 0, hs.size());
         }
     }
+
+    @Test public void commonWordsHidingFoodStemsAreNotFoods() {
+        // A „vajon" nem vaj, az „első sorban" nem sör, a „sajtótájékoztató"
+        // nem sajt – a gyakori álca-szavak ki vannak maszkolva.
+        for (String q : new String[]{"első sorban ez fontos", "sorban álltam",
+                "borzasztó nap volt", "a laborban dolgoztam", "táborban voltunk",
+                "vajon mi lesz", "hallottam egy jó hírt", "halkan beszélt",
+                "sajtótájékoztató", "paradicsomi állapotok", "narancssárga póló",
+                "kolbászolás a városban", "rumli van otthon",
+                "sorozatot néztem és haladtam a munkával"}) {
+            List<Foods.Hit> hs = Foods.parse(Arrays.asList(Foods.ALL), q);
+            assertEquals("étel lett belőle: " + q, 0, hs.size());
+        }
+        // A ragozott IGAZI ételek viszont élnek.
+        assertEquals("Sör", Foods.parse(Arrays.asList(Foods.ALL),
+                "sört ittam").get(0).food.name);
+        assertEquals("Vaj", Foods.parse(Arrays.asList(Foods.ALL),
+                "vajas kenyér").get(0).food.name);
+        assertEquals("Sajt (trappista)", Foods.parse(Arrays.asList(Foods.ALL),
+                "sajtos szendvics").get(0).food.name);
+        assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL),
+                "halat sütöttem").get(0).food.name);
+    }
 }

@@ -505,6 +505,14 @@ public final class Foods {
     private static final String[] NOT_FOOD = {
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
             "kaveskanal", "evokanal", "teaskanal",
+            // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,
+            // ezért a ragozott igazi ételek („sajtos", „vajas", „sört")
+            // érintetlenek maradnak.
+            "vajon", "hallott", "hallom", "halk", "halad", "halott", "halvany",
+            "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
+            "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",
+            "sorozat", "sorol", "sorren", "paradicsomi", "narancssarga",
+            "kolbaszol", "rumli",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
