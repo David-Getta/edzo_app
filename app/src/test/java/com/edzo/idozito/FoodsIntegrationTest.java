@@ -175,6 +175,10 @@ public class FoodsIntegrationTest {
         assertEquals("Bogyós gyümölcs 100g", summary("licsi"));
         // A „mángold" zöldség marad, nem mangó.
         assertEquals("Zöldség (vegyes / párolt) 200g", summary("mángold"));
+        // A citrom (és a lime) citromléként számol; a citromfű nem étel.
+        assertEquals("Citromlé 30g", summary("fél citrom leve"));
+        assertEquals("Citromlé 30g", summary("egy lime"));
+        assertEquals("Tea (cukrozatlan) 250g", summary("citromfű tea"));
     }
 
     @Test public void hungarianClassicsResolveToTheRightDish() {

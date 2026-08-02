@@ -305,7 +305,7 @@ public final class Foods {
                 "repale", "rostos le", "rostos udito", "cappy", "hohes c"),
         new Food("Szörp (hígítva)", 45, 0, 300, "szorp", "malnaszorp", "barackszorp",
                 "eperszorp"),
-        new Food("Citromlé", 25, 0, 30, "citromle"),
+        new Food("Citromlé", 25, 0, 30, "citromle", "citrom leve", "citrom", "lime"),
         // A „puffasztott rizs" két ételre esett szét (puffasztott + rizs), vagyis
         // duplán számolt. A teljes alak hosszabb szótő, így elnyeli mindkettőt.
         new Food("Rizsszelet / puffasztott rizs", 380, 8, 10,
@@ -527,6 +527,7 @@ public final class Foods {
             "kaveszunet", "teadelutan", "olajfolt", "halaszf", "borvidek",
             "sorhas", "kolbaszujj", "almafa", "kortefa", "diofa",
             "cseresznyefa", "szilvafa", "barackfa", "eperfa", "meggyfa",
+            "citromfu",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
