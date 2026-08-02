@@ -559,6 +559,24 @@ public class ActivitiesParseTest {
         assertFalse(Activities.looksLikeRest("tegnap futottam 5 km-t"));
     }
 
+    @Test public void watchingBuyingAndVenuesAreNotWorkouts() {
+        // A nézett meccs, a megrendelt boxzsák és a bérletvásárlás nem edzés,
+        // és az ÉTterem sem kondi.
+        for (String s : new String[]{"az étteremben vacsoráztunk",
+                "foci vb-t néztem a tévében", "boxzsákot rendeltem",
+                "jógabérletet vettem", "a foci elmaradt",
+                "spinning osztály elmaradt"}) {
+            Activities.Parsed p = Activities.parse(s);
+            assertTrue("edzés lett belőle: " + s, p == null || p.plans.isEmpty());
+        }
+        // Az edzőterem és a részvétel viszont igazi edzés.
+        assertEquals("kondi", Activities.parse("edzőteremben gyúrtam").plans.get(0).kind.id);
+        assertEquals("joga",
+                Activities.parse("részt vettem egy jóga edzésen").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("meccset néztem, utána futottam 5 km-t")
+                .plans.get(0).kind.id);
+    }
+
     @Test public void abbreviatedAndNumericDatesWork() {
         // 2026. július 31. péntek dél (Budapest).
         java.util.Calendar c = java.util.Calendar.getInstance();

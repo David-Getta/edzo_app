@@ -543,6 +543,11 @@ public final class Activities {
                         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
                         if (!isVerbPrefix(s.substring(a, p))) continue;
                     }
+                    // A „terem" az ÉTterem és a MŰterem belsejében nem kondi
+                    // (az edzőterem, gépterem viszont igen).
+                    if (w.equals("terem") && p >= 2
+                            && (s.startsWith("et", p - 2) || s.startsWith("mu", p - 2)))
+                        continue;
                     hits.add(new int[]{p, w.length(), ki});
                 }
             }
@@ -971,14 +976,26 @@ public final class Activities {
             h = s.indexOf("helyett", h + 1);
         }
         s = new String(q);
-        for (String w : new String[]{"nem ", "kihagytam", "elmaradt", "lemondtam"}) {
+        for (String w : new String[]{"nem ", "kihagytam", "elmaradt", "lemondtam",
+                "neztem", "neztuk", "rendeltem", "vettem", "berlet"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
-                if (p == 0 || !Character.isLetter(s.charAt(p - 1))) {
+                boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));
+                // A „részt vettem az edzésen" NEM vásárlás – az él marad.
+                if (boundary && w.equals("vettem")
+                        && p >= 6 && s.startsWith("reszt ", p - 6)) boundary = false;
+                if (boundary) {
+                    // A „nem …" csak előre töröl (a következő tagmondat él);
+                    // az elmaradt/nézett/vásárolt edzésnél az EGÉSZ tagmondat
+                    // megy („a foci elmaradt", „foci vb-t néztem").
+                    int a = p;
+                    if (!w.equals("nem "))
+                        while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.'
+                                && s.charAt(a - 1) != ';') a--;
                     int e = p;
                     while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
                             && s.charAt(e) != ';') e++;
-                    blank(q, p, e);
+                    blank(q, a, e);
                     s = new String(q);
                 }
                 p = s.indexOf(w, p + 1);
