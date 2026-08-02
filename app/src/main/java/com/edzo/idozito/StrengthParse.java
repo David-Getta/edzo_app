@@ -108,22 +108,61 @@ public final class StrengthParse {
     }
 
     private static List<String> splitClauses(String s) {
-        List<String> out = new ArrayList<>();
         // A kötőszavakat is határnak vesszük, de a „3 és fél” nem az.
-        String t = s.replace(';', ',').replace('.', ',');
-        t = t.replace(" majd ", ",").replace(" utana ", ",");
+        StringBuilder b = new StringBuilder(s);
+        for (int i = 0; i < b.length(); i++) {
+            char c = b.charAt(i);
+            if (c != ';' && c != ',' && c != '.') continue;
+            // A tizedesjel NEM tagmondat-határ: a „12,5 kg” egy szám.
+            boolean decimal = i > 0 && i + 1 < b.length()
+                    && Character.isDigit(b.charAt(i - 1)) && Character.isDigit(b.charAt(i + 1));
+            if (!decimal) b.setCharAt(i, '|');
+        }
+        String t = b.toString().replace(" majd ", "|").replace(" utana ", "|");
         int from = 0;
         while (true) {
             int p = t.indexOf(" es ", from);
             if (p < 0) break;
-            boolean fraction = t.startsWith(" es fel", p);
-            if (!fraction) { t = t.substring(0, p) + "," + t.substring(p + 4); }
+            if (!t.startsWith(" es fel", p)) t = t.substring(0, p) + "|" + t.substring(p + 4);
             from = p + 1;
         }
-        for (String part : t.split(",")) {
+        List<String> out = new ArrayList<>();
+        for (String part : t.split("\\|")) {
             String p = part.trim();
-            if (!p.isEmpty()) out.add(p);
+            if (!p.isEmpty()) out.addAll(splitByMoves(p));
         }
+        return out;
+    }
+
+    /**
+     * Kötőszó nélkül felsorolt gyakorlatok: „guggolás 3x10 60kg fekvenyomás
+     * 3x8 50kg”. A második (és további) gyakorlatnév kezdeténél vágunk, hogy
+     * mindegyik megkapja a saját sorozatait.
+     */
+    private static List<String> splitByMoves(String s) {
+        List<Integer> cuts = new ArrayList<>();
+        for (String[] row : MOVES) {
+            int best = -1, bestLen = 0;
+            for (int i = 1; i < row.length; i++) {
+                int p = s.indexOf(row[i]);
+                if (p >= 0 && row[i].length() > bestLen) { best = p; bestLen = row[i].length(); }
+            }
+            if (best >= 0) cuts.add(best);
+        }
+        List<String> out = new ArrayList<>();
+        if (cuts.size() < 2) { out.add(s); return out; }
+        java.util.Collections.sort(cuts);
+        // A MÁSODIK gyakorlatnévtől vágunk: az első elé írt bevezető
+        // („két gyakorlat: guggolás…”) az első darabhoz tartozik.
+        int prev = 0;
+        for (int i = 1; i < cuts.size(); i++) {
+            int c = cuts.get(i);
+            if (c <= prev) continue;
+            String part = s.substring(prev, c).trim();
+            if (!part.isEmpty() && moveIn(part) != null) { out.add(part); prev = c; }
+        }
+        String rest = s.substring(prev).trim();
+        if (!rest.isEmpty()) out.add(rest);
         return out;
     }
 
@@ -135,11 +174,31 @@ public final class StrengthParse {
         double weight = weightIn(s);
         List<Set> sets = new ArrayList<>();
 
-        // 1) „3x10”, „3 x 10”, „3×10”: sorozat × ismétlés.
+        // 1) „3x10”, „3 x 10”, „3×10”: sorozat × ismétlés. A teremben szokásos
+        //    „3x10x60” harmadik tagja maga a súly.
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?!\\s?(?:kg|kilo))").matcher(s);
+                .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?:\\s?[x×]\\s?(\\d{1,3}(?:[.,]\\d{1,2})?))?"
+                        + "(?!\\s?(?:kg|kilo))").matcher(s);
         if (m.find()) {
             int n = Integer.parseInt(m.group(1)), r = Integer.parseInt(m.group(2));
+            if (weight == 0 && m.group(3) != null) {
+                try {
+                    double w = Double.parseDouble(m.group(3).replace(',', '.'));
+                    if (w > 0 && w <= 500) weight = w;
+                } catch (NumberFormatException ignored) {}
+            }
+            // Mértékegység nélkül írt súly a sorozat után: „3x10 60”.
+            if (weight == 0 && m.group(3) == null) {
+                java.util.regex.Matcher w2 = java.util.regex.Pattern
+                        .compile("^\\s*(\\d{1,3}(?:[.,]\\d{1,2})?)(?![\\dx×])")
+                        .matcher(s.substring(m.end()));
+                if (w2.find()) {
+                    try {
+                        double w = Double.parseDouble(w2.group(1).replace(',', '.'));
+                        if (w > 0 && w <= 500) weight = w;
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
             if (n >= 1 && n <= 20 && r >= 1 && r <= 200)
                 for (int i = 0; i < n; i++) sets.add(new Set(r, weight));
         }

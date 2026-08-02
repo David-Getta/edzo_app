@@ -66,6 +66,23 @@ public class StrengthParseTest {
                 sum("fekvenyomás 3x10 60 kg, majd fekvenyomás 2x8 60 kg"));
     }
 
+    @Test public void gymShorthandIsUnderstood() {
+        // A tizedesvessző nem vág ketté mondatot.
+        assertEquals("Bicepsz 3×12/12/12@12,5", sum("bicepsz 3x12 12,5 kg"));
+        // A „3x10x60” harmadik tagja a súly, a „3x10 60” mértékegység nélkül is.
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10x60"));
+        assertEquals("Vállból nyomás 3×10/10/10@30", sum("vállból nyomás 3x10 30"));
+        // Kötőszó nélkül felsorolt gyakorlatok is szétválnak.
+        assertEquals("Guggolás 3×10/10/10@60 | Fekvenyomás 3×8/8/8@50",
+                sum("guggolás 3x10 60kg fekvenyomás 3x8 50kg"));
+        // Bevezető szöveg az első gyakorlat előtt nem zavar.
+        assertEquals("Guggolás 3×10/10/10@60 | Evezés 3×12/12/12@40",
+                sum("két gyakorlat: guggolás 3x10 60 kg; evezés 3x12 40 kg"));
+        // Ragozott alakok.
+        assertEquals("Fekvenyomás 3×10/10/10@60", sum("nyomtam 3x10-et fekvenyomásban 60 kg-mal"));
+        assertEquals("Guggolás 3×10/10/10@60", sum("ma guggolás 3x10 60 kilóval"));
+    }
+
     @Test public void nothingIsInventedWithoutReps() {
         // Gyakorlat ismétlés nélkül, vagy ismeretlen mozdulat: nincs találat.
         for (String q : new String[]{"guggolás", "3 sorozat guggolás", "kondiztam egyet",
