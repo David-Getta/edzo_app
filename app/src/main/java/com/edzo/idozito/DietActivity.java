@@ -443,6 +443,22 @@ public class DietActivity extends Activity {
                 + (streak >= 2 ? "  ·  🔥 " + streak + " napja naplózol" : ""),
                 12.5f, MUTED, true));
         todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
+        // Napi mérleg: amit ma edzéssel elégettél, és ami nettóban marad.
+        double burned = 0;
+        try {
+            org.json.JSONArray h = History.loadAll(this);
+            for (int i = 0; i < h.length(); i++) {
+                org.json.JSONObject o = h.optJSONObject(i);
+                if (o != null && o.optLong("ts") >= t0) burned += o.optDouble("cal", 0);
+            }
+        } catch (Exception ignored) {}
+        if (burned > 0 && kcal > 0) {
+            TextView bt = text("🔥 Edzéssel elégetve: " + Math.round(burned)
+                    + " kcal  ·  nettó: " + Math.round(kcal - burned) + " kcal",
+                    12.5f, MUTED, false);
+            bt.setPadding(0, dp(2), 0, 0);
+            todayCard.addView(bt);
+        }
         double prot = protSum;
         int pGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("protein_goal", 0);
         if (prot > 0 || pGoal > 0) {

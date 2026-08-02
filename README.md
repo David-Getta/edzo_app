@@ -51,6 +51,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
 - **Napi kcal- és fehérje-cél** haladássávval; javaslat a BMR-ből vagy a
   Profilban beállított fogyási célból
+- **Napi mérleg**: a mai kártyán az edzéssel elégetett kalória és a
+  nettó bevitel is látszik
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi
