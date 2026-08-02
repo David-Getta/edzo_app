@@ -485,6 +485,14 @@ public class ActivitiesParseTest {
         assertEquals("harcmuveszet",
                 Activities.parse("önvédelmi tréning 1 óra").plans.get(0).kind.id);
         assertEquals("harcmuveszet", Activities.parse("vívás edzés").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("kettlebell edzés 30 perc").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("parkrun szombaton").plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("megmásztuk a Kékestetőt").plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("átmozgattam magam").plans.get(0).kind.id);
+        // A „bringatúra" EGY biciklizés, nem bringa + túra.
+        Activities.Parsed bt = Activities.parse("bringatúra a Balaton körül");
+        assertEquals(1, bt.plans.size());
+        assertEquals("kerekpar", bt.plans.get(0).kind.id);
         // A társasjátékok és kocsmasportok viszont nem edzések.
         for (String q : new String[]{"biliárd este", "darts a kocsmában", "sakk verseny"}) {
             Activities.Parsed p = Activities.parse(q);

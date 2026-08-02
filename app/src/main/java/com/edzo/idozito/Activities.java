@@ -50,16 +50,19 @@ public final class Activities {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
                     "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep",
-                    "spartan"),
+                    "spartan", "parkrun"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
                     "vizilabda", "aquafit", "vizitorna"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
-                    "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx"),
+                    "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
+                    // A „bringatúra" egyben fedi a „bringa" és a „túra" tövet is.
+                    "bringatura", "biciklitura", "kerekpartura"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
-                    "tura", "gyaloglas", "seta", "setalas", "kirandulas", "nordic"),
+                    "tura", "gyaloglas", "seta", "setalas", "kirandulas", "nordic",
+                    "hegymasz", "megmaszt"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
@@ -68,7 +71,8 @@ public final class Activities {
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
-                    "labnap", "mellnap", "vallnap", "karnap", "akadalypalya"),
+                    "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
+                    "kettlebell"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
@@ -88,7 +92,7 @@ public final class Activities {
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     "joga", "yoga", "pilates", "nyujtas", "stretch", "torna", "medital",
-                    "meditac"),
+                    "meditac", "atmozgat"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
