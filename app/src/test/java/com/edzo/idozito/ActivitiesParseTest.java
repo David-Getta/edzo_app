@@ -569,6 +569,16 @@ public class ActivitiesParseTest {
         // A „másnaponta" minden MÁSODIK nap – nem minden nap.
         assertEquals("14d+0: 7×uszas/45", summary("másnaponta úszás két hétig"));
         assertEquals("7d+0: 3×futas/45", summary("minden második nap futottam a héten"));
+        // Éves lépték: fél évig, egy évig, idén.
+        assertEquals("183d+0: 13×futas/45", summary("kéthetente futottam fél évig"));
+        assertEquals("365d+0: 12×uszas/45", summary("havonta egyszer úszás egy évig"));
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.JULY, 31, 12, 0, 0);
+        assertEquals(212, Activities.parse("idén 40 futás volt", c.getTimeInMillis()).days);
+        // Az „idény" viszont nem időszak.
+        assertEquals(1, Activities.parse("az idény jól sikerült, futottam",
+                c.getTimeInMillis()).days);
     }
 
     @Test public void watchingBuyingAndVenuesAreNotWorkouts() {

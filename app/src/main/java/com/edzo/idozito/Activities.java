@@ -748,6 +748,7 @@ public final class Activities {
     private static int stripFrequency(char[] q) {
         String s = new String(q);
         String[][] ws = {{"kethetente", "14"}, {"hetente", "7"}, {"minden heten", "7"},
+                {"havonta", "30"}, {"minden honapban", "30"},
                 {"ketnaponta", "2"}, {"masnaponta", "2"}, {"minden masodik nap", "2"}};
         for (String[] w : ws) {
             int p = s.indexOf(w[0]);
@@ -1108,6 +1109,32 @@ public final class Activities {
     /** „elmúlt 3 nap”, „3 nap alatt”, „a héten”, „egy hónap alatt” → {kezdet, vég, napok}. */
     private static int[] findSpan(char[] q, long now) {
         String s = new String(q);
+        // Éves léptékű időszakok: a „fél évig" / „egy éven át" fix hosszú.
+        String[][] years = {{"fel evig", "183"}, {"fel even at", "183"},
+                {"fel ev alatt", "183"}, {"egy evig", "365"}, {"egy even at", "365"},
+                {"egy ev alatt", "365"}};
+        for (String[] y : years) {
+            int p = s.indexOf(y[0]);
+            if (p < 0) continue;
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            int e = p + y[0].length();
+            if (e < s.length() && Character.isLetter(s.charAt(e))) continue;
+            return new int[]{p, e, Integer.parseInt(y[1])};
+        }
+        // Az „idén" az év elejétől máig tartó időszak.
+        int ip = s.indexOf("iden");
+        if (ip >= 0 && (ip == 0 || !Character.isLetter(s.charAt(ip - 1)))
+                && (ip + 4 >= s.length() || !Character.isLetter(s.charAt(ip + 4)))) {
+            java.util.Calendar yc = java.util.Calendar.getInstance();
+            yc.setTimeInMillis(now);
+            yc.set(java.util.Calendar.DAY_OF_YEAR, 1);
+            yc.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            yc.set(java.util.Calendar.MINUTE, 0);
+            yc.set(java.util.Calendar.SECOND, 0);
+            yc.set(java.util.Calendar.MILLISECOND, 0);
+            int back = Days.between(yc.getTimeInMillis(), now);
+            if (back >= 1) return new int[]{ip, ip + 4, Math.min(365, back + 1)};
+        }
         // „Január óta": a megnevezett hónap 1-jétől máig tartó időszak.
         int o = s.indexOf("ota");
         while (o >= 0) {
