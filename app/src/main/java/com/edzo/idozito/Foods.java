@@ -55,7 +55,7 @@ public final class Foods {
         // A „tojásfehérje" eddig egész tojás volt: 33 g helyett 55 g, és 17 kcal
         // helyett 78 – négy és félszeres túlszámolás egy sportolós alapdarabon.
         new Food("Tojásfehérje", 52, 11, 33, "tojasfeherje", "tojas feherje", "feherje tojas"),
-        new Food("Rántotta", 180, 12, 150, "rantotta", "omlett"),
+        new Food("Rántotta", 180, 12, 150, "rantotta", "omlett", "shakshuka"),
         new Food("Rizs (főtt)", 130, 2.7, 200, "riz"),
         // A „durum" hosszabb tő, különben a benne lévő „rum" tömény italt adna.
         new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta", "teszta", "spagetti", "penne", "durum"),
@@ -63,9 +63,11 @@ public final class Foods {
         new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "hasabburgonya", "hasáb"),
         new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure", "püré"),
         new Food("Édesburgonya", 90, 1.6, 200, "edesburgonya", "batata"),
-        new Food("Bulgur (főtt)", 120, 4, 200, "bulgur"),
+        new Food("Bulgur (főtt)", 120, 4, 200, "bulgur", "arpagyongy"),
+        new Food("Polenta / puliszka", 85, 2, 250, "polenta", "puliszka"),
         new Food("Quinoa (főtt)", 120, 4.4, 200, "quinoa"),
-        new Food("Kenyér", 250, 8, 70, "kenyer", "piritos", "bagett"),
+        new Food("Kenyér", 250, 8, 70, "kenyer", "piritos", "bagett",
+                "ciabatta", "focaccia", "bruschetta"),
         new Food("Zsemle", 280, 9, 55, "zsemle"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
@@ -140,7 +142,7 @@ public final class Foods {
         new Food("Magvaj (mandula/kesu/tahini)", 600, 20, 20,
                 "mogyorovaj", "mandulavaj", "kesuvaj", "tahini", "magvaj"),
         new Food("Szendvicskrém / kence", 250, 4, 30,
-                "szendvicskrem", "tojaskrem", "vajkrem", "padlizsankrem"),
+                "szendvicskrem", "tojaskrem", "vajkrem", "padlizsankrem", "ajvar"),
         new Food("Szirup (juhar/agavé)", 270, 0, 20, "szirup"),
         new Food("Majonéz", 680, 1, 20, "majonez"),
         new Food("Light majonéz", 240, 1, 20, "light majonez"),
@@ -414,7 +416,9 @@ public final class Foods {
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
         new Food("Kebab", 250, 13, 350, "kebab"),
         new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkussz", "kuszkusz", "couscous"),
-        new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska"),
+        // A puszta „koles" tő a „koleszos"-ba, „koleszterin"-be is beleesne.
+        new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska",
+                "kolest", "koleskasa", "koles kasa", "amarant"),
         new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
