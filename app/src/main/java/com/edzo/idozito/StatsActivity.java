@@ -409,10 +409,18 @@ public class StatsActivity extends Activity {
     }
 
     Bitmap renderStatsCard() {
-        final int W = 1080, H = 1350, M = 80;
+        final int W = 1080, H = 1600, M = 80;
         long now = System.currentTimeMillis();
         Totals wk = totals(weekStart(now), now + 1);
         Totals mo = totals(monthStart(now), now + 1);
+        java.util.Calendar yc = java.util.Calendar.getInstance();
+        yc.setTimeInMillis(now);
+        yc.set(java.util.Calendar.DAY_OF_YEAR, 1);
+        yc.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        yc.set(java.util.Calendar.MINUTE, 0);
+        yc.set(java.util.Calendar.SECOND, 0);
+        yc.set(java.util.Calendar.MILLISECOND, 0);
+        Totals yr = totals(yc.getTimeInMillis(), now + 1);
         Totals all = totals(0, now + 1);
         long xp = Levels.totalXp(this); // erősítő edzésekkel együtt
         int lvl = Levels.levelForXp(xp);
@@ -443,6 +451,7 @@ public class StatsActivity extends Activity {
         String[][] rows = {
                 {"Ezen a héten", wk.count + " edzés", wk.distM > 0 ? fmtDist(wk.distM) : "—", (int) wk.durSec / 60 + " perc"},
                 {"Ebben a hónapban", mo.count + " edzés", mo.distM > 0 ? fmtDist(mo.distM) : "—", (int) mo.durSec / 60 + " perc"},
+                {"Idén", yr.count + " edzés", yr.distM > 0 ? fmtDist(yr.distM) : "—", (int) yr.durSec / 60 + " perc"},
                 {"Összesen", all.count + " edzés", all.distM > 0 ? fmtDist(all.distM) : "—", (int) all.durSec / 60 + " perc"},
         };
         int y = 380, rowH = 250;
