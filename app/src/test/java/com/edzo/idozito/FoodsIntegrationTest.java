@@ -177,6 +177,19 @@ public class FoodsIntegrationTest {
         assertEquals("Zöldség (vegyes / párolt) 200g", summary("mángold"));
     }
 
+    @Test public void hungarianClassicsResolveToTheRightDish() {
+        // A székelygulyás székelykáposzta, nem gulyásleves.
+        assertEquals("Székelykáposzta 350g", summary("székelygulyás"));
+        // A „borsos tokány" nem borsó!
+        assertEquals("Tokány 300g", summary("borsos tokány"));
+        assertEquals("Tokány 300g", summary("hentes tokány"));
+        assertEquals("Szalontüdő 350g", summary("szalontüdő"));
+        assertEquals("Rakott kelkáposzta 400g", summary("kolozsvári káposzta"));
+        assertEquals("Leves (átlag) 400g", summary("tarhonyaleves"));
+        assertEquals("Zsíros kenyér 100g", summary("velős pirítós"));
+        assertEquals("Marhahús 150g", summary("őzgerinc"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
