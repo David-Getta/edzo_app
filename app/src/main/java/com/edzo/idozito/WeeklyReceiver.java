@@ -150,6 +150,30 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 text += "\n🏅 " + sp;
             }
         } catch (Exception ignored) {}
+        // Súlyzós sor: a heti volumen az erősítő edzés legbeszédesebb száma –
+        // a darabszámból nem látszik, mennyi munka volt mögötte.
+        try {
+            int lifts = 0, setCount = 0;
+            double volume = 0;
+            String topLift = null;
+            double topWeight = 0;
+            for (StrengthLog.Entry e : StrengthLog.load(c)) {
+                if (e.ts < from) continue;
+                lifts++;
+                setCount += e.sets.size();
+                volume += e.volume();
+                if (e.topWeight() > topWeight) { topWeight = e.topWeight(); topLift = e.name; }
+            }
+            if (lifts > 0) {
+                String s = "\n🏋️ Súlyzós: " + lifts + " gyakorlat, " + setCount + " sorozat";
+                if (volume >= 100)
+                    s += ", " + String.format(Hu.LOCALE, "%,d", Math.round(volume))
+                            .replace(',', ' ') + " kg volumen";
+                if (topLift != null && topWeight > 0)
+                    s += "  ·  csúcs: " + topLift + " " + Progression.kg(topWeight) + " kg";
+                text += s + ".";
+            }
+        } catch (Exception ignored) {}
         // Étrend-sor annak, aki a héten naplózott: naplózott napok + kcal-átlag.
         try {
             long dayMs = 24L * 3600 * 1000;

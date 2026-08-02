@@ -92,6 +92,25 @@ public class MonthlyReceiver extends BroadcastReceiver {
             sb.append("  ·  ").append(Math.round(burned)).append(" kcal elégetve");
         String text = sb.toString();
 
+        // Súlyzós összegzés: a havi volumen a hosszú távú fejlődés mércéje.
+        try {
+            int lifts = 0, setCount = 0;
+            double volume = 0;
+            for (StrengthLog.Entry e : StrengthLog.load(c)) {
+                if (e.ts < from || e.ts >= to) continue;
+                lifts++;
+                setCount += e.sets.size();
+                volume += e.volume();
+            }
+            if (lifts > 0) {
+                text += "\n🏋️ Súlyzós: " + lifts + " gyakorlat, " + setCount + " sorozat";
+                if (volume >= 100)
+                    text += ", " + String.format(Hu.LOCALE, "%,d", Math.round(volume))
+                            .replace(',', ' ') + " kg volumen";
+                text += ".";
+            }
+        } catch (Exception ignored) {}
+
         // A hónap sportja (csak a valódi napló-bejegyzésekből, mint a hetinél).
         try {
             JSONArray hist = History.load(c);

@@ -97,7 +97,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Helyzet-tudatos köszöntés** belépéskor (veszélyben lévő széria, félbehagyott
   kihívás, mai eredmény, hátralévő fehérje)
 - Napi értesítés, ha még nem edzettél; **heti visszatekintő** vasárnap,
-  **havi visszatekintő** minden hónap 1-jén
+  **havi visszatekintő** minden hónap 1-jén – a súlyzós munka (sorozatok,
+  volumen, csúcssúly), az étrend és a víz is benne
 - **Mozgó widget** a kezdőképernyőn: állapot, mai kcal és víz, gyorsgombok
   (edzés indítása, erősítő napló, +1 pohár víz)
 
