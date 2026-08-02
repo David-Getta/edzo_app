@@ -106,7 +106,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Szintek + XP** (edzés-percek, táv, napi kihívás, étrend napi első bejegyzése)
 - **Napi kihívás** 10 típusból, a szokásaidhoz igazodva (perc, kör, két edzés,
   km, ismétlés, étkezés, fehérje-cél, vízcél, lépésgyűjtés, kalóriaégetés)
-- **Gyűjthető jelvények**, napi és heti sorozat (óraátállás-biztos, terv-tudatos:
+- **Gyűjthető jelvények** (edzésszám, táv, széria, kihívás, étrend, víz és
+  súlyzós mérföldkövek: 10 gyakorlat, 10 tonna volumen, 4 izomcsoport egy
+  héten), napi és heti sorozat (óraátállás-biztos, terv-tudatos:
   a pihenőnap nem töri meg), konfetti, hangulat-napló
 
 ### 📊 Statisztika & előzmények

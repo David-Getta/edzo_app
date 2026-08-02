@@ -51,6 +51,9 @@ public final class Badges {
         new Badge("meal50",  "🥗", "Tudatos étkező","50 naplózott étkezés az Étrendben"),
         new Badge("meald7",  "🧮", "Kalóriamester","Étkezés-napló 7 különböző napon"),
         new Badge("water7",  "💧", "Hidratált",    "Napi vízcél elérve 7 különböző napon"),
+        new Badge("lift10",  "🏋", "Vasalapozó",   "10 gyakorlat az erősítő naplóban"),
+        new Badge("vol10t",  "⚙️", "Tonnás",       "10 tonna összvolumen (ismétlés × súly)"),
+        new Badge("bal4",    "🧩", "Kiegyensúlyozott", "4 izomcsoport egy héten belül"),
     };
 
     /** Visszafelé kompatibilis változat (kihívás-számláló nélkül). */
@@ -75,6 +78,20 @@ public final class Badges {
             if (meals.size() >= 50) out.add("meal50");
             if (mealDays.size() >= 7) out.add("meald7");
             if (Water.daysDone(ctx) >= 7) out.add("water7");
+        } catch (Exception ignored) {}
+        // Súlyzós mérföldkövek: a volumen (ismétlés × súly) az a mérce, ami a
+        // darabszámnál többet mond – tíz tonna elmozgatott súly komoly munka.
+        try {
+            List<StrengthLog.Entry> log = StrengthLog.load(ctx);
+            double volume = 0;
+            for (StrengthLog.Entry e : log) volume += e.volume();
+            if (log.size() >= 10) out.add("lift10");
+            if (volume >= 10000) out.add("vol10t");
+            java.util.LinkedHashMap<String, Integer> bal =
+                    Muscles.weekBalance(log, System.currentTimeMillis(), 7);
+            int groups = 0;
+            for (int v : bal.values()) if (v > 0) groups++;
+            if (groups >= 4) out.add("bal4");
         } catch (Exception ignored) {}
         return out;
     }
