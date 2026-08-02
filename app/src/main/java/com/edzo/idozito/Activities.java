@@ -49,7 +49,8 @@ public final class Activities {
     public static final Kind[] ALL = {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
-                    "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep"),
+                    "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep",
+                    "spartan"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
@@ -66,7 +67,8 @@ public final class Activities {
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
-                    "guggolas", "felules", "huzodzkodas", "plank"),
+                    "guggolas", "felules", "huzodzkodas", "plank", "tabata",
+                    "labnap", "mellnap", "vallnap", "karnap", "akadalypalya"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
@@ -77,9 +79,10 @@ public final class Activities {
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
                     "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong",
-                    "ping pong", "asztalitenisz"),
+                    "ping pong", "asztalitenisz", "padel"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
-                    "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma", "aikido"),
+                    "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma",
+                    "aikido", "onvedelm", "vivas"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "spinning", "kangoo", "alakformalo"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
@@ -88,7 +91,7 @@ public final class Activities {
                     "meditac"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
-                    "jegkorong", "hoki"),
+                    "jegkorong", "hoki", "curling"),
             new Kind("si", "🎿", "Sí / snowboard", 6.0, false, 120,
                     "sieles", "sizes", "snowboard", "sielt", "sifutas"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,

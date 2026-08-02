@@ -475,6 +475,23 @@ public class ActivitiesParseTest {
         assertEquals("tura", Activities.parse("csupán sétáltam").plans.get(0).kind.id);
     }
 
+    @Test public void gymSlangAndNicheSportsAreRecognized() {
+        assertEquals("kondi", Activities.parse("tabata 20 perc").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("lábnap volt, 1 óra").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("akadálypálya 40 perc").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("spartan race futam").plans.get(0).kind.id);
+        assertEquals("korcsolya", Activities.parse("curling 2 óra").plans.get(0).kind.id);
+        assertEquals("tenisz", Activities.parse("padel 90 perc").plans.get(0).kind.id);
+        assertEquals("harcmuveszet",
+                Activities.parse("önvédelmi tréning 1 óra").plans.get(0).kind.id);
+        assertEquals("harcmuveszet", Activities.parse("vívás edzés").plans.get(0).kind.id);
+        // A társasjátékok és kocsmasportok viszont nem edzések.
+        for (String q : new String[]{"biliárd este", "darts a kocsmában", "sakk verseny"}) {
+            Activities.Parsed p = Activities.parse(q);
+            assertTrue("edzés lett belőle: " + q, p == null || p.plans.isEmpty());
+        }
+    }
+
     @Test public void hoursAndMinutesTogetherAreOneDuration() {
         // A „futás 1 óra 15 perc" korábban 15 perc lett: a perc külön
         // időtartamnak számított, és a közelebbi nyert.

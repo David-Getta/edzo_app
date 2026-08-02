@@ -82,8 +82,11 @@ public class TimerCaloriesTest {
         assertTrue("a kézilabda intenzívebb az átlagnál", kezi > plain);
         assertTrue("a jóga nyugodtabb az átlagnál", joga < plain);
         // Ismeretlen név vagy név nélkül: marad az egyen-hatos MET.
-        assertEquals(plain, TimerService.calories(W, 0, 3600, "20-10 Tabata"), 0.01);
+        assertEquals(plain, TimerService.calories(W, 0, 3600, "20-10 Piramis"), 0.01);
         assertEquals(plain, TimerService.calories(W, 0, 3600, null), 0.01);
+        // A Tabata viszont már ismert: kondi-intenzitással számol.
+        assertEquals(5.0 * 3.5 * W / 200.0 * 60,
+                TimerService.calories(W, 0, 3600, "20-10 Tabata"), 0.01);
         // Futásnál a táv-ág továbbra is erősebb a névnél.
         assertEquals(W * 10 * 1.036,
                 TimerService.calories(W, 10_000, 50 * 60, "Reggeli futás"), 0.01);
