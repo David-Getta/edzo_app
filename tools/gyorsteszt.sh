@@ -124,7 +124,7 @@ open(dst + 'StrengthLog.java', 'w').write(
 PY
 
 # 4) Azok a tesztek, amiknek a fentiek elegendők.
-TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsDataQualityTest ParserFuzzTest
+TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
        DaysTest HuTest AlarmsTest MobilityTest"
