@@ -183,7 +183,7 @@ public final class Foods {
         new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
-                "flodni", "macaron"),
+                "flodni", "macaron", "suti"),
         new Food("Muffin / brownie", 380, 5, 80, "muffin", "cupcake", "brownie"),
         new Food("Gofri", 350, 6, 100, "gofri", "waffle"),
         new Food("Energiagolyó", 420, 8, 25,

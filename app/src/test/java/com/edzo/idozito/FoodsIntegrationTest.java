@@ -190,6 +190,18 @@ public class FoodsIntegrationTest {
         assertEquals("Marhahús 150g", summary("őzgerinc"));
     }
 
+    @Test public void verbifiedFoodFormsAreUnderstood() {
+        // A „pizzáztunk", „fagyiztunk", „sütiztünk" igésített alakok is étel.
+        assertEquals("Pizza 300g", summary("pizzáztunk este"));
+        assertEquals("Fagylalt 100g", summary("fagyiztunk a parton"));
+        assertEquals("Sütemény 100g", summary("sütiztünk a nagyinál"));
+        assertEquals("Sütemény 100g", summary("ettem egy sütit"));
+        assertEquals("Lángos 200g", summary("lángosoztunk a strandon"));
+        // Az étkezés-igék viszont továbbra is csak címkék.
+        assertEquals("", summary("vacsoráztunk"));
+        assertEquals("", summary("ebédeltünk a városban"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
