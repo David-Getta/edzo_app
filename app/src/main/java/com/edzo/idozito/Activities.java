@@ -440,6 +440,9 @@ public final class Activities {
         // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
         // a szándék máris bekerülne a szériába és az XP-be.
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
+        // Ami nem történt meg, az nem kerül a naplóba: a „nem futottam", a
+        // „kihagytam", az „elmaradt" és az „X helyett" edzése kitakarva.
+        stripNegated(q);
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
         stripMultiplicative(q);
         // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
@@ -854,6 +857,37 @@ public final class Activities {
                 "huzodzkodas", "plank"})
             if (w.startsWith(r)) return true;
         return false;
+    }
+
+    /**
+     * Tagadás és csere kitakarása. Az „X helyett" X-e a tagmondat elejétől a
+     * szóig, a tagadó/kihagyó igék („nem …", „kihagytam", „elmaradt",
+     * „lemondtam") a tagmondat végéig tűnnek el – a többi tagmondat él marad:
+     * a „ma nem futottam, csak sétáltam" sétája bekerül.
+     */
+    private static void stripNegated(char[] q) {
+        String s = new String(q);
+        int h = s.indexOf("helyett");
+        while (h >= 0) {
+            int a = h;
+            while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.') a--;
+            blank(q, a, h + 7);
+            h = s.indexOf("helyett", h + 1);
+        }
+        s = new String(q);
+        for (String w : new String[]{"nem ", "kihagytam", "elmaradt", "lemondtam"}) {
+            int p = s.indexOf(w);
+            while (p >= 0) {
+                if (p == 0 || !Character.isLetter(s.charAt(p - 1))) {
+                    int e = p;
+                    while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
+                            && s.charAt(e) != ';') e++;
+                    blank(q, p, e);
+                    s = new String(q);
+                }
+                p = s.indexOf(w, p + 1);
+            }
+        }
     }
 
     /** „Minden nap", „naponta", „napi 20 perc": a darabszám naponta értendő. */

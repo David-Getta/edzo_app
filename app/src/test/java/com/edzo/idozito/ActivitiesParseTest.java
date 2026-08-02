@@ -492,6 +492,23 @@ public class ActivitiesParseTest {
         }
     }
 
+    @Test public void negatedWorkoutsAreNotLogged() {
+        // Ami nem történt meg, az nem kerül a naplóba.
+        for (String s : new String[]{"ma nem futottam", "nem edzettem ma",
+                "kihagytam a mai edzést", "elmaradt a kondi",
+                "sajnos nem tudtam úszni menni", "edzés helyett pihenő",
+                "lemondtam a focit"}) {
+            Activities.Parsed p = Activities.parse(s);
+            assertTrue("edzés lett belőle: " + s, p == null || p.plans.isEmpty());
+        }
+        // A csere másik fele és a többi tagmondat viszont él.
+        assertEquals("futas", Activities.parse("kondi helyett futás").plans.get(0).kind.id);
+        assertEquals("tura",
+                Activities.parse("ma nem futottam, csak sétáltam").plans.get(0).kind.id);
+        assertEquals("uszas",
+                Activities.parse("nem volt kondi, de úsztam egy órát").plans.get(0).kind.id);
+    }
+
     @Test public void abbreviatedAndNumericDatesWork() {
         // 2026. július 31. péntek dél (Budapest).
         java.util.Calendar c = java.util.Calendar.getInstance();
