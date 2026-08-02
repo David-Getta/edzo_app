@@ -53,17 +53,19 @@ public final class Challenges {
         // osztva minden alkalommal elveszne a maradék (két 90 másodperces kör
         // így 2 percnek látszana 3 helyett).
         int workSec = 0, bestRounds = 0, stepsToday = 0;
-        double distToday = 0;
-        boolean everDist = false, everSteps = false;
+        double distToday = 0, calToday = 0;
+        boolean everDist = false, everSteps = false, everCal = false;
         for (int i = 0; i < h.length(); i++) {
             JSONObject o = h.optJSONObject(i);
             if (o == null) continue;
             if (o.optDouble("dist", -1) > 500) everDist = true;
             if (o.optInt("steps", 0) > 200) everSteps = true;
+            if (o.optDouble("cal", 0) > 50) everCal = true;
             if (o.optLong("ts") < dayStart) continue;
             workSec += o.optInt("dur");
             bestRounds = Math.max(bestRounds, o.optInt("rounds", 0));
             stepsToday += o.optInt("steps", 0);
+            calToday += o.optDouble("cal", 0);
             double d = o.optDouble("dist", -1);
             if (d > 0) distToday += d;
         }
@@ -94,6 +96,7 @@ public final class Challenges {
         if (pGoal > 0 && !meals.isEmpty()) types.add(6);
         if (usesWater) types.add(7);
         if (everSteps) types.add(8);  // lépés-kihívás csak annak, akinél mérve van
+        if (everCal) types.add(9);    // kalória-kihívás csak mért kalóriák mellett
 
         // A típust a nap folyamán rögzítjük. Enélkül a lista hossza menet közben
         // változna (pl. a nap első étkezésének naplózásakor bejön az 5-ös típus),
@@ -142,6 +145,10 @@ public final class Challenges {
         } else if (type == 8) {
             target = 3000 + (seed / 3 % 3) * 1500; cur = stepsToday; unit = "lépés";
             title = "Gyűjts ma " + target + " lépést edzés közben!";
+        } else if (type == 9) {
+            target = 150 + (seed / 3 % 3) * 100; cur = (int) calToday; unit = "kcal";
+            exact = calToday;
+            title = "Égess el ma " + target + " kcal-t edzéssel!";
         } else {
             int goalCl = Water.goalCl(ctx);
             // Poharakban mérve, felfelé kerekítve (1 pohár = 25 cl).

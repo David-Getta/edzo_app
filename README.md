@@ -93,8 +93,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 
 ### 🏅 Motiváció
 - **Szintek + XP** (edzés-percek, táv, napi kihívás, étrend napi első bejegyzése)
-- **Napi kihívás** 9 típusból, a szokásaidhoz igazodva (perc, kör, két edzés,
-  km, ismétlés, étkezés, fehérje-cél, vízcél, lépésgyűjtés)
+- **Napi kihívás** 10 típusból, a szokásaidhoz igazodva (perc, kör, két edzés,
+  km, ismétlés, étkezés, fehérje-cél, vízcél, lépésgyűjtés, kalóriaégetés)
 - **Gyűjthető jelvények**, napi és heti sorozat (óraátállás-biztos, terv-tudatos:
   a pihenőnap nem töri meg), konfetti, hangulat-napló
 
