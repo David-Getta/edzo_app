@@ -559,6 +559,18 @@ public class ActivitiesParseTest {
         assertFalse(Activities.looksLikeRest("tegnap futottam 5 km-t"));
     }
 
+    @Test public void weeklyFrequenciesMultiplyOverTheSpan() {
+        // A „hetente kétszer … a hónapban" heti két alkalom × négy hét.
+        assertEquals("30d+0: 8×uszas/45",
+                summary("hetente kétszer úsztam az elmúlt hónapban"));
+        assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
+        // Időszak nélkül maga a hét az időszak.
+        assertEquals("7d+0: 2×futas/45", summary("hetente kétszer futottam"));
+        // A „másnaponta" minden MÁSODIK nap – nem minden nap.
+        assertEquals("14d+0: 7×uszas/45", summary("másnaponta úszás két hétig"));
+        assertEquals("7d+0: 3×futas/45", summary("minden második nap futottam a héten"));
+    }
+
     @Test public void watchingBuyingAndVenuesAreNotWorkouts() {
         // A nézett meccs, a megrendelt boxzsák és a bérletvásárlás nem edzés,
         // és az ÉTterem sem kondi.

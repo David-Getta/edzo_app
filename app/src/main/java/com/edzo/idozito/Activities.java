@@ -465,6 +465,10 @@ public final class Activities {
         stripMultiplicative(q);
         // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
         mergeIntervalDistances(q);
+        // Gyakoriság („hetente kétszer", „kéthetente", „másnaponta"): a
+        // periódus hossza napokban – az időszak-kereső előtt vesszük ki, hogy
+        // a „hetente" ne váljon egyhetes időszakká a „hónapban" helyett.
+        int freq = stripFrequency(q);
 
         // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
@@ -692,6 +696,15 @@ public final class Activities {
             Plan p0 = out.get(0);
             out.set(0, new Plan(p0.kind, Math.min(50, p0.count * days), p0.minutes, p0.km));
         }
+        // Gyakoriság kibontása: a „hetente kétszer az elmúlt hónapban" heti
+        // két alkalom × négy hét. Időszak nélkül maga a periódus az időszak.
+        if (freq > 0 && out.size() == 1) {
+            if (days <= 1) days = freq == 2 ? 7 : freq;
+            Plan p0 = out.get(0);
+            out.set(0, new Plan(p0.kind,
+                    Math.min(50, p0.count * Math.max(1, days / freq)),
+                    p0.minutes, p0.km, p0.steps));
+        }
         // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.
         if (wdBacks != null && !out.isEmpty()) {
             int n = wdBacks.size();
@@ -726,6 +739,26 @@ public final class Activities {
             }
         }
         return new Parsed(out, days, offset, findHour(s));
+    }
+
+    /**
+     * Gyakoriság-szavak: a visszaadott érték a periódus hossza napokban
+     * (hetente = 7, kéthetente = 14, másnaponta = 2), 0 = nincs ilyen.
+     */
+    private static int stripFrequency(char[] q) {
+        String s = new String(q);
+        String[][] ws = {{"kethetente", "14"}, {"hetente", "7"}, {"minden heten", "7"},
+                {"ketnaponta", "2"}, {"masnaponta", "2"}, {"minden masodik nap", "2"}};
+        for (String[] w : ws) {
+            int p = s.indexOf(w[0]);
+            if (p < 0) continue;
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            int e = p + w[0].length();
+            while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
+            blank(q, p, e);
+            return Integer.parseInt(w[1]);
+        }
+        return 0;
     }
 
     /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
