@@ -306,11 +306,21 @@ public final class Activities {
         public final int offset;
         /** A múltbeli bejegyzések órája („tegnap este" → 19); alap a dél. */
         public final int hour;
+        /**
+         * Megnevezett napok („hétfőn és szerdán"): alkalmankénti nap-eltolás,
+         * a mentés sorrendjében. Null, ha nincs ilyen – akkor a days/offset
+         * szerinti egyenletes elosztás él.
+         */
+        public final int[] exactDays;
         Parsed(List<Plan> plans, int days, int offset) {
             this(plans, days, offset, 12);
         }
         Parsed(List<Plan> plans, int days, int offset, int hour) {
-            this.plans = plans; this.days = days; this.offset = offset; this.hour = hour;
+            this(plans, days, offset, hour, null);
+        }
+        Parsed(List<Plan> plans, int days, int offset, int hour, int[] exactDays) {
+            this.plans = plans; this.days = days; this.offset = offset;
+            this.hour = hour; this.exactDays = exactDays;
         }
         public boolean isEmpty() { return plans.isEmpty(); }
         public int total() {
@@ -343,7 +353,11 @@ public final class Activities {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         for (Plan pl : p.plans) {
             for (int k = 0; k < pl.count; k++) {
-                int dayBack = p.offset + (p.days > 1 ? (k * p.days) / pl.count : 0);
+                // Megnevezett napoknál („hétfőn és szerdán") alkalmanként
+                // pontos nap jár; egyébként egyenletes elosztás.
+                int dayBack = p.exactDays != null && i < p.exactDays.length
+                        ? p.exactDays[i]
+                        : p.offset + (p.days > 1 ? (k * p.days) / pl.count : 0);
                 cal.setTimeInMillis(now);
                 cal.add(java.util.Calendar.DAY_OF_YEAR, -dayBack);
                 if (dayBack > 0) {
@@ -455,6 +469,7 @@ public final class Activities {
         // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
         int days = 1, offset = 0;
+        java.util.List<int[]> wdBacks = null;
         int[] span = findSpan(q, now);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
@@ -473,9 +488,16 @@ public final class Activities {
                 int[] we = findWeekend(q, now);
                 if (we != null) { offset = we[2]; days = we[3]; blank(q, we[0], we[1]); }
                 else {
-                    // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
-                    int[] one = findSingleDay(q, now);
-                    if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+                    // Több napnév egy mondatban: „hétfőn és szerdán kondi".
+                    java.util.List<int[]> wds = findWeekdays(q, now);
+                    if (wds.size() >= 2) {
+                        for (int[] w : wds) blank(q, w[0], w[1]);
+                        wdBacks = wds;
+                    } else {
+                        // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
+                        int[] one = findSingleDay(q, now);
+                        if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
+                    }
                 }
             }
             }
@@ -665,7 +687,66 @@ public final class Activities {
             Plan p0 = out.get(0);
             out.set(0, new Plan(p0.kind, Math.min(50, p0.count * days), p0.minutes, p0.km));
         }
+        // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.
+        if (wdBacks != null && !out.isEmpty()) {
+            int n = wdBacks.size();
+            java.util.List<Integer> ex = new java.util.ArrayList<>();
+            if (out.size() == 1) {
+                // „Hétfőn és szerdán kondi": naponként ennyi alkalom.
+                Plan p0 = out.get(0);
+                int per = Math.max(1, p0.count);
+                int totalC = Math.min(50, per * n);
+                out.set(0, new Plan(p0.kind, totalC, p0.minutes, p0.km, p0.steps));
+                for (int[] w : wdBacks)
+                    for (int k = 0; k < per && ex.size() < totalC; k++) ex.add(w[2]);
+            } else if (out.size() == n) {
+                // „Kedden úszás, csütörtökön futás": sorrendben párosítva.
+                for (int i = 0; i < n; i++)
+                    for (int k = 0; k < out.get(i).count; k++) ex.add(wdBacks.get(i)[2]);
+            } else {
+                // Nem egyértelmű párosítás: minden a legutóbbi megnevezett napra.
+                int minB = Integer.MAX_VALUE;
+                for (int[] w : wdBacks) minB = Math.min(minB, w[2]);
+                offset = minB;
+            }
+            if (!ex.isEmpty()) {
+                int minB = Integer.MAX_VALUE, maxB = 0;
+                for (int[] w : wdBacks) {
+                    minB = Math.min(minB, w[2]);
+                    maxB = Math.max(maxB, w[2]);
+                }
+                int[] arr = new int[ex.size()];
+                for (int i = 0; i < arr.length; i++) arr[i] = ex.get(i);
+                return new Parsed(out, maxB - minB + 1, minB, findHour(s), arr);
+            }
+        }
         return new Parsed(out, days, offset, findHour(s));
+    }
+
+    /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
+    private static java.util.List<int[]> findWeekdays(char[] q, long now) {
+        String s = new String(q);
+        String[][] dows = {{"hetfo", "2"}, {"kedd", "3"}, {"szerda", "4"},
+                {"csutortok", "5"}, {"pentek", "6"}, {"szombat", "7"}, {"vasarnap", "1"}};
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        int today = cal.get(java.util.Calendar.DAY_OF_WEEK);
+        java.util.List<int[]> out = new java.util.ArrayList<>();
+        for (String[] w : dows) {
+            int from = 0;
+            while (true) {
+                int p = s.indexOf(w[0], from);
+                if (p < 0) break;
+                from = p + 1;
+                if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+                int end = p + w[0].length();
+                while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+                int back = (today - Integer.parseInt(w[1]) + 7) % 7;
+                out.add(new int[]{p, end, back});
+            }
+        }
+        out.sort((a, b) -> a[0] - b[0]);
+        return out;
     }
 
     private static final String[] MONTHS = {"januar", "februar", "marcius", "aprilis",

@@ -668,7 +668,9 @@ public class HistoryActivity extends Activity {
         for (Activities.Plan pl : p.plans) sb.append("• ").append(pl.label()).append('\n');
         // Az eltolt szórás („hétvégén") nem „az elmúlt N nap" – mondjuk ki,
         // pontosan mely napokra kerül.
-        sb.append(p.days > 1 && p.offset > 0
+        sb.append(p.exactDays != null
+                ? "\nA megnevezett napokra."
+                : p.days > 1 && p.offset > 0
                 ? "\n" + p.days + " napra elosztva (" + (p.offset + p.days - 1)
                         + "–" + p.offset + " napja)."
                 : p.days > 1 ? "\nAz elmúlt " + p.days + " napra elosztva."

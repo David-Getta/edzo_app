@@ -29,7 +29,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kalóriabecsléssel (MET × testsúly × idő)
 - **Egy mondatból akár többet is**: „az elmúlt 3 nap alatt 3 futó edzés és
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
-  nap futottam", „hétvégén 1-1 túra", „kétszer úsztam", „leúsztam 1500
+  nap futottam", „hétvégén 1-1 túra", „hétfőn és szerdán kondi", „kétszer úsztam", „leúsztam 1500
   métert", „tegnap este kondi", „ma 10000 lépés", „július 28-án
   futottam", „100 fekvőtámasz", „júl. 28-án 6x1 km", „napi 20 perc jóga
   egész héten" – mentés előtt megmutatja, mit értett; a tervekre („jövő
@@ -154,7 +154,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~276 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~277 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

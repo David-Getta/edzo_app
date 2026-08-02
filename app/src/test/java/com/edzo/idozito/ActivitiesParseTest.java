@@ -500,6 +500,44 @@ public class ActivitiesParseTest {
         }
     }
 
+    @Test public void multipleNamedWeekdaysGetTheirOwnDates() {
+        // 2026. július 31. péntek dél (Budapest).
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.JULY, 31, 12, 0, 0);
+        long friday = c.getTimeInMillis();
+
+        // „Hétfőn és szerdán kondi": két kondi, pontosan hétfőre és szerdára.
+        Activities.Parsed p = Activities.parse("hétfőn és szerdán kondi", friday);
+        assertEquals(1, p.plans.size());
+        assertEquals(2, p.plans.get(0).count);
+        long[] ts = Activities.timestamps(p, friday);
+        assertEquals(2, ts.length);
+        c.setTimeInMillis(ts[0]);
+        assertEquals(27, c.get(java.util.Calendar.DAY_OF_MONTH));
+        c.setTimeInMillis(ts[1]);
+        assertEquals(29, c.get(java.util.Calendar.DAY_OF_MONTH));
+
+        // Két sport két napnévvel: sorrendben párosítva.
+        Activities.Parsed q = Activities.parse("kedden úszás, csütörtökön futás", friday);
+        assertEquals("uszas", q.plans.get(0).kind.id);
+        assertEquals("futas", q.plans.get(1).kind.id);
+        long[] qs = Activities.timestamps(q, friday);
+        c.setTimeInMillis(qs[0]);
+        assertEquals(28, c.get(java.util.Calendar.DAY_OF_MONTH));
+        c.setTimeInMillis(qs[1]);
+        assertEquals(30, c.get(java.util.Calendar.DAY_OF_MONTH));
+
+        // Három napnév „1-1"-gyel: három futás, mind a maga napján.
+        Activities.Parsed r = Activities.parse(
+                "hétfőn, szerdán és pénteken 1-1 futás", friday);
+        assertEquals(3, r.plans.get(0).count);
+        assertEquals(3, Activities.timestamps(r, friday).length);
+
+        // Egyetlen napnév a régi úton marad.
+        assertEquals(3, Activities.parse("kedden 2 kondi", friday).offset);
+    }
+
     @Test public void negatedWorkoutsAreNotLogged() {
         // Ami nem történt meg, az nem kerül a naplóba.
         for (String s : new String[]{"ma nem futottam", "nem edzettem ma",
