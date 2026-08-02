@@ -476,7 +476,7 @@ public final class Foods {
      */
     private static final String[] NOT_FOOD = {
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
-            "kaveskanal", "evokanal",
+            "kaveskanal", "evokanal", "teaskanal",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
@@ -1146,12 +1146,52 @@ public final class Foods {
         }
         out = oneFoodPerWord(q, out);
         applyCombos(list, q, out);
+        out = dropNegated(q, out);
         // Rendezés a szövegbeli előfordulás szerint.
         for (int i = 0; i < out.size(); i++)
             for (int j = i + 1; j < out.size(); j++)
                 if (out.get(j).pos < out.get(i).pos) {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
+        return out;
+    }
+
+    /**
+     * Tagadás és csere: ami nem került a tányérra, az a naplóba se kerüljön.
+     * A „chips helyett almát ettem" chipse és a „csoki nélkül kértem" csokija
+     * kimarad, ahogy a „nem ettem csokit" tagmondatának ételei is.
+     */
+    private static List<Match> dropNegated(String q, List<Match> in) {
+        if (in.isEmpty()) return in;
+        java.util.HashSet<Match> dead = new java.util.HashSet<>();
+        // Az étel közvetlenül a „helyett"/„nélkül" előtt áll (rövid rag belefér).
+        for (String w : new String[]{"helyett", "nelkul"}) {
+            int p = q.indexOf(w);
+            while (p >= 0) {
+                Match best = null;
+                for (Match m : in) {
+                    int end = m.pos + m.len;
+                    if (end <= p && p - end <= 6 && (best == null || m.pos > best.pos))
+                        best = m;
+                }
+                if (best != null) dead.add(best);
+                p = q.indexOf(w, p + 1);
+            }
+        }
+        // Tagadott ige után, ugyanabban a tagmondatban álló ételek.
+        int[] cls = clauses(q);
+        for (String w : new String[]{"nem ettem", "nem eszem", "nem ittam",
+                "nem iszom", "nem kertem", "kihagytam"}) {
+            int p = q.indexOf(w);
+            while (p >= 0) {
+                for (Match m : in)
+                    if (m.pos > p && cls[m.pos] == cls[p]) dead.add(m);
+                p = q.indexOf(w, p + 1);
+            }
+        }
+        if (dead.isEmpty()) return in;
+        List<Match> out = new ArrayList<>();
+        for (Match m : in) if (!dead.contains(m)) out.add(m);
         return out;
     }
 

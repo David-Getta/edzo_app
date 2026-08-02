@@ -113,6 +113,24 @@ public class FoodsIntegrationTest {
         assertEquals("Kesudió 15g", summary("fél marék kesudió"));
         assertEquals("Pálinka / tömény 80g", summary("két kupica pálinka"));
         assertEquals("Rizs (főtt) 100g", summary("fél bögre rizs"));
+        // A „teáskanál" nem egy csésze tea.
+        assertEquals("Cukor 10g", summary("egy teáskanál cukor"));
+    }
+
+    @Test public void negationsAndSubstitutionsAreRespected() {
+        // Ami nem került a tányérra, az a naplóba se kerül.
+        assertEquals("Alma 150g", summary("chips helyett almát ettem"));
+        assertEquals("Víz / ásványvíz 250g", summary("sör helyett víz"));
+        assertEquals("Méz 20g + Tea (cukrozatlan) 250g",
+                summary("cukor helyett méz a teába"));
+        assertEquals("", summary("ma nem ettem csokit"));
+        assertEquals("", summary("nem ittam kávét ma"));
+        assertEquals("Saláta (zöld) 50g",
+                summary("kihagytam a tésztát, csak salátát ettem"));
+        assertEquals("Kávé (fekete) 200g", summary("csoki nélkül ittam a kávét"));
+        assertEquals("Leves (átlag) 400g", summary("tejszín nélkül kértem a levest"));
+        // A tagadás csak a saját tagmondatára hat.
+        assertEquals("Pizza 300g", summary("ebédre pizza, de nem ettem meg a felét"));
     }
 
     @Test public void nothingIsInventedFromMealWords() {
