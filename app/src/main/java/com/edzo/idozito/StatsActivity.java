@@ -727,15 +727,21 @@ public class StatsActivity extends Activity {
         long today0 = c0.getTimeInMillis();
         double[] kcal = new double[7];
         double[] prot = new double[7];
+        double[] partK = new double[3];   // reggel / napközben / este
         for (MealLog.Meal m : MealLog.load(this)) {
             java.util.Calendar cm = java.util.Calendar.getInstance();
             cm.setTimeInMillis(m.ts);
+            int hh = cm.get(java.util.Calendar.HOUR_OF_DAY);
             cm.set(java.util.Calendar.HOUR_OF_DAY, 0);
             cm.set(java.util.Calendar.MINUTE, 0);
             cm.set(java.util.Calendar.SECOND, 0);
             cm.set(java.util.Calendar.MILLISECOND, 0);
             int k = Days.between(cm.getTimeInMillis(), today0);
-            if (k >= 0 && k < 7) { kcal[k] += m.kcal(); prot[k] += m.protein(); }
+            if (k >= 0 && k < 7) {
+                kcal[k] += m.kcal();
+                prot[k] += m.protein();
+                partK[hh < 11 ? 0 : hh < 17 ? 1 : 2] += m.kcal();
+            }
         }
         int days = 0, underGoal = 0;
         double kSum = 0, pSum = 0;
@@ -764,6 +770,21 @@ public class StatsActivity extends Activity {
             tiles.add(new String[]{"💧 Átlag víz",
                     Water.liters((int) Math.round(wSum / (double) wDays)) + "/nap"});
         addTiles(grid, tiles.toArray(new String[0][]));
+        // Napszak-jellemző: ha a kalóriák nagy része egy napszakra esik,
+        // azt érdemes tudni – az esti evés a leggyakoribb buktató.
+        double totK = partK[0] + partK[1] + partK[2];
+        if (totK > 0) {
+            int top = partK[1] > partK[0] ? 1 : 0;
+            if (partK[2] > partK[top]) top = 2;
+            double share = partK[top] / totK;
+            if (share >= 0.45) {
+                String[] names = {"🌅 Reggel", "🌞 Napközben", "🌙 Este"};
+                TextView tv = text(names[top] + " eszed a kalóriáid "
+                        + Math.round(share * 100) + "%-át", 12.5f, MUTED, false);
+                tv.setPadding(dp(10), dp(2), dp(10), dp(8));
+                grid.addView(tv, lp());
+            }
+        }
         return grid;
     }
 
