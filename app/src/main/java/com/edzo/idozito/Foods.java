@@ -1156,6 +1156,15 @@ public final class Foods {
         return out;
     }
 
+    /** Tagadó bevitel: az üres találat oka nem az, hogy nem ismerjük az ételt. */
+    public static boolean looksNegated(String query) {
+        String s = norm(query == null ? "" : query);
+        for (String w : new String[]{"nem ettem", "nem ittam", "nem eszem",
+                "nem iszom", "nem kertem", "kihagytam", "helyett", "nelkul"})
+            if (s.contains(w)) return true;
+        return false;
+    }
+
     /**
      * Tagadás és csere: ami nem került a tányérra, az a naplóba se kerüljön.
      * A „chips helyett almát ettem" chipse és a „csoki nélkül kértem" csokija

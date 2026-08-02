@@ -42,6 +42,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 🍽️ Étrend
 - **Írd le, mit ettél** – az app felismeri az ételeket a mondatból:
   „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
+- **Érti a tagadást is**: a „chips helyett almát ettem" csak almát naplóz,
+  a „csoki nélkül kértem a kávét" csak kávét, a „ma nem ettem csokit" semmit
 - Felismeri a **grammot** (g / gr / gramm / dkg / deka), a **darabszámot**
   (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „két és fél deci"),
   a poharas/korsós italokat, a mérőszavakat (tányér, bögre, kanál,

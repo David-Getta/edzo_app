@@ -813,6 +813,11 @@ public class DietActivity extends Activity {
                 if (q.length() < 3) { reco.setText(""); return; }
                 List<Foods.Hit> g = Foods.parse(DietActivity.this, q);
                 if (g.isEmpty()) {
+                    if (Foods.looksNegated(q)) {
+                        // A „ma nem ettem csokit" nem ismeretlen étel.
+                        reco.setText("😌 Ha nem etted meg, nem is számoljuk – nincs mit naplózni.");
+                        return;
+                    }
                     reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");
                     reco.setClickable(true);
                     reco.setOnClickListener(v -> addCustomFoodSheet(q));

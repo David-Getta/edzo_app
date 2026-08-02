@@ -131,6 +131,9 @@ public class FoodsIntegrationTest {
         assertEquals("Leves (átlag) 400g", summary("tejszín nélkül kértem a levest"));
         // A tagadás csak a saját tagmondatára hat.
         assertEquals("Pizza 300g", summary("ebédre pizza, de nem ettem meg a felét"));
+        // A felismerő sor barátságos üzenetéhez.
+        assertEquals(true, Foods.looksNegated("ma nem ettem csokit"));
+        assertEquals(false, Foods.looksNegated("ebédre gulyásleves"));
     }
 
     @Test public void nothingIsInventedFromMealWords() {
