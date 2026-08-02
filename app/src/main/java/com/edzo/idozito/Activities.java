@@ -859,6 +859,17 @@ public final class Activities {
         return false;
     }
 
+    /** Tagadó / pihenőnapos mondat: az üres eredmény oka nem értetlenség. */
+    public static boolean looksLikeRest(String text) {
+        String s = Foods.norm(text == null ? "" : text);
+        for (String w : new String[]{"nem ", "kihagytam", "elmaradt", "lemondtam",
+                "pihenonap", "pihenes", "pihentem", "rest day"}) {
+            int p = s.indexOf(w);
+            if (p >= 0 && (p == 0 || !Character.isLetter(s.charAt(p - 1)))) return true;
+        }
+        return false;
+    }
+
     /**
      * Tagadás és csere kitakarása. Az „X helyett" X-e a tagmondat elejétől a
      * szóig, a tagadó/kihagyó igék („nem …", „kihagytam", „elmaradt",

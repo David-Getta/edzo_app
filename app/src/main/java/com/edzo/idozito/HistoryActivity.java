@@ -647,12 +647,17 @@ public class HistoryActivity extends Activity {
     void bulkPreview(String text) {
         final Activities.Parsed p = Activities.parse(text);
         if (p.isEmpty()) {
-            // Ha terv volt, mondjuk is meg: nem értetlenség az oka.
+            // Ha terv vagy pihenőnap volt, mondjuk is meg: nem értetlenség az oka.
             boolean future = Activities.looksLikeFuture(text);
+            boolean rest = !future && Activities.looksLikeRest(text);
             new Sheet(this,
-                    future ? "Ez tervnek hangzik 📅" : "Ebből nem lettem okos 🤔",
+                    future ? "Ez tervnek hangzik 📅"
+                            : rest ? "Pihenőnap? Az is számít 😌"
+                            : "Ebből nem lettem okos 🤔",
                     future
                             ? "A napló a megtörtént edzéseké – ha majd megvolt, írd be újra, múlt időben!"
+                            : rest
+                            ? "Ha kimaradt az edzés, nincs mit naplózni – a pihenő a fejlődés része. Blaze holnap is várni fog! 🐺"
                             : "Próbáld így: „az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés”.")
                     .addPrimary("Újra", () -> bulkSheet(text))
                     .addCancel()

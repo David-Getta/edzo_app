@@ -507,6 +507,10 @@ public class ActivitiesParseTest {
                 Activities.parse("ma nem futottam, csak sétáltam").plans.get(0).kind.id);
         assertEquals("uszas",
                 Activities.parse("nem volt kondi, de úsztam egy órát").plans.get(0).kind.id);
+        // A pihenőnap-felismerés az előnézet barátságos üzenetéhez kell.
+        assertTrue(Activities.looksLikeRest("ma nem futottam"));
+        assertTrue(Activities.looksLikeRest("pihenőnap volt"));
+        assertFalse(Activities.looksLikeRest("tegnap futottam 5 km-t"));
     }
 
     @Test public void abbreviatedAndNumericDatesWork() {
