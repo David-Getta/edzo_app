@@ -492,6 +492,24 @@ public class ActivitiesParseTest {
         }
     }
 
+    @Test public void abbreviatedAndNumericDatesWork() {
+        // 2026. július 31. péntek dél (Budapest).
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.JULY, 31, 12, 0, 0);
+        long friday = c.getTimeInMillis();
+        assertEquals(3, Activities.parse("júl 28-án futottam", friday).offset);
+        assertEquals(1, Activities.parse("júl. 30-án kondi", friday).offset);
+        assertEquals(3, Activities.parse("07.28-án futottam", friday).offset);
+        Activities.Parsed p = Activities.parse("2026.07.28 futás", friday);
+        assertEquals(3, p.offset);
+        assertEquals(1, p.plans.get(0).count);   // a 28 nem darabszám!
+        // A tizedespont nem dátum: az „1.5 km" nem január 5-e.
+        assertEquals(0, Activities.parse("1.5 km futás", friday).offset);
+        // A „majd" nem május: rag/ szóhatár nélkül a rövidítés nem él.
+        assertEquals(0, Activities.parse("majd 30 perc futás", friday).offset);
+    }
+
     @Test public void dailyAmountsAndIntervalDistancesAreUnderstood() {
         // A „napi 20 perc" naponta értendő – a héten ez hét alkalom.
         assertEquals("7d+0: 7×joga/20", summary("napi 20 perc jóga egész héten"));

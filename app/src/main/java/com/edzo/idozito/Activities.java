@@ -671,36 +671,77 @@ public final class Activities {
      * és a nap száma is a kitakart részhez tartozik, hogy a szám ne váljon
      * darabszámmá. A puszta „júliusban" (nap nélkül) nem dátum.
      */
+    /** Rövidített hónapnevek is („aug 1-jén", „júl. 28-án"). */
+    private static final String[] MONTH_ABBR = {"jan", "feb", "marc", "apr", "maj",
+            "jun", "jul", "aug", "szept", "okt", "nov", "dec"};
+    private static final int[] MONTH_ABBR_IDX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
     private static int[] findMonthDay(char[] q, long now) {
         String s = new String(q);
         for (int mi = 0; mi < MONTHS.length; mi++) {
-            int p = s.indexOf(MONTHS[mi]);
-            if (p < 0) continue;
-            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
-            int i = p + MONTHS[mi].length();
-            if (i < s.length() && Character.isLetter(s.charAt(i))) continue; // „júliusban"
-            int j = i;
-            while (j < s.length() && s.charAt(j) == ' ') j++;
-            int d = 0, k = j;
-            while (k < s.length() && Character.isDigit(s.charAt(k))) {
-                d = d * 10 + (s.charAt(k) - '0');
-                k++;
-            }
-            if (k == j || d < 1 || d > 31) continue;
-            while (k < s.length() && (s.charAt(k) == '-' || s.charAt(k) == '.'
-                    || Character.isLetter(s.charAt(k)))) k++;
+            int[] r = monthDayAt(s, MONTHS[mi], mi, now);
+            if (r != null) return r;
+        }
+        for (int a = 0; a < MONTH_ABBR.length; a++) {
+            int[] r = monthDayAt(s, MONTH_ABBR[a], MONTH_ABBR_IDX[a], now);
+            if (r != null) return r;
+        }
+        // Számjegyes dátum: „2026.07.28" vagy „07.28-án". Rag vagy évszám
+        // nélkül nem dátum – az „1.5 km" tizedespontja nem január 5-e.
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?:(20\\d{2})\\.\\s?)?(\\d{1,2})\\.(\\d{1,2})(\\.|-j?an|-j?en)?")
+                .matcher(s);
+        while (m.find()) {
+            boolean hasYear = m.group(1) != null;
+            String suf = m.group(4);
+            if (!hasYear && (suf == null || !suf.startsWith("-"))) continue;
+            int mo, d;
+            try {
+                mo = Integer.parseInt(m.group(2));
+                d = Integer.parseInt(m.group(3));
+            } catch (NumberFormatException e) { continue; }
+            if (mo < 1 || mo > 12 || d < 1 || d > 31) continue;
             java.util.Calendar cal = java.util.Calendar.getInstance();
             cal.setTimeInMillis(now);
             cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
-            cal.set(java.util.Calendar.MONTH, mi);
+            cal.set(java.util.Calendar.MONTH, mo - 1);
+            if (hasYear) cal.set(java.util.Calendar.YEAR, Integer.parseInt(m.group(1)));
             if (d > cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) continue;
             cal.set(java.util.Calendar.DAY_OF_MONTH, d);
-            if (cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
+            if (!hasYear && cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
             int back = Days.between(cal.getTimeInMillis(), now);
             if (back < 0 || back > 365) continue;
-            return new int[]{p, k, back};
+            return new int[]{m.start(), m.end(), back};
         }
         return null;
+    }
+
+    private static int[] monthDayAt(String s, String name, int mi, long now) {
+        int p = s.indexOf(name);
+        if (p < 0) return null;
+        if (p > 0 && Character.isLetter(s.charAt(p - 1))) return null;
+        int i = p + name.length();
+        if (i < s.length() && Character.isLetter(s.charAt(i))) return null; // „júliusban"
+        int j = i;
+        while (j < s.length() && (s.charAt(j) == ' ' || s.charAt(j) == '.')) j++;
+        int d = 0, k = j;
+        while (k < s.length() && Character.isDigit(s.charAt(k))) {
+            d = d * 10 + (s.charAt(k) - '0');
+            k++;
+        }
+        if (k == j || d < 1 || d > 31) return null;
+        while (k < s.length() && (s.charAt(k) == '-' || s.charAt(k) == '.'
+                || Character.isLetter(s.charAt(k)))) k++;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        cal.set(java.util.Calendar.MONTH, mi);
+        if (d > cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) return null;
+        cal.set(java.util.Calendar.DAY_OF_MONTH, d);
+        if (cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
+        int back = Days.between(cal.getTimeInMillis(), now);
+        if (back < 0 || back > 365) return null;
+        return new int[]{p, k, back};
     }
 
     /**
