@@ -165,6 +165,8 @@ public final class Programs {
             case "Bicepsz": return "Könyök a törzs mellett marad, ne lendíts a derékkal, lefelé lassíts.";
             case "Tricepsz": return "A felkar rögzítve, csak az alkar mozog. A végén teljes nyújtás, de ne feszítsd túl a könyököd.";
             case "Lábtolás": return "Talp vállszélesen a lapon, térd a lábfej irányába. Ne told teljesen egyenesig a térded.";
+            case "Húzódzkodás": return "Vállszéles fogás, lapockák előbb le és hátra, utána húzz. Lent nyújtsd ki a kart, de tartsd feszesen a vállad.";
+            case "Lehúzás": return "Mellkas fel, rúd a kulcscsont elé. A könyököd húzd le a bordáid felé – ne a karod, a hátad dolgozzon.";
             default: return "";
         }
     }
