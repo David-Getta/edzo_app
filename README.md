@@ -78,8 +78,13 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), a legutóbbi alkalom
   automatikus előtöltésével, kereséssel a naplóban
 - **Sorozatok mondatból**: „3x10 fekvenyomás 60 kg", „guggolás 5x5 80 kg",
-  „húzódzkodás 3x8", „bicepsz 12-10-8 15 kg" – akár több gyakorlat egy
-  mondatban; mentés előtt megmutatja, mit értett
+  „húzódzkodás 3x8" (saját testsúly), „bicepsz 12-10-8 15 kg"
+  (sorozatonként más ismétlés), „guggolás 3x10x60", „vállból nyomás
+  3 sorozat 12 ismétlés 20 kg" – akár több gyakorlat egy mondatban,
+  kötőszó nélkül is. 28 gyakorlat és gép, a jelzős változatokkal
+  („román felhúzás", „bolgár kitörés", „kábeles tricepsz"). Mentés előtt
+  megmutatja, mit értett, és **odaírja a legutóbbi alkalmat is**
+  („↳ múltkor 57,5 kg · ▲ +2,5 kg · 3 napja")
 - **Rekordok**: max súly és becsült **1RM** (Epley), **súly-fejlődési grafikon**,
   heti és összesített volumen
 - **Progresszió-javaslat**: mit nyomj ma? Dupla progresszió szerint előbb az

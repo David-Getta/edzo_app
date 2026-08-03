@@ -391,6 +391,9 @@ public class StrengthActivity extends Activity {
             "pl. bicepsz 12-10-8 15 kg",
             "pl. guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg",
             "pl. vállból nyomás 3 sorozat 12 ismétlés 20 kg",
+            "pl. lábgép 3x12 80 kg és vádli 4x15",
+            "pl. arnold nyomás 3x10 16 kg, oldalemelés 3x15 8 kg",
+            "pl. guggolás 3x10x60",
     };
 
     /** Egy mondatból több gyakorlat sorozatai – gépelés helyett. */
