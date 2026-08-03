@@ -74,15 +74,29 @@ public final class StrengthParse {
             {"Fekvőtámasz", "fekvotamasz", "push up", "pushup"},
             {"Tolódzkodás", "tolodzkod", "dipp", "dips"},
             {"Lehúzás", "lehuzas", "latpull", "lat pull"},
-            {"Oldalemelés", "oldalemel"},
-            {"Plank", "plank", "deszka"},
+            {"Oldalemelés", "oldalemel", "eloreemel"},
+            {"Plank", "plank", "deszka", "oldaltamasz"},
             {"Felülés", "felules", "crunch"},
-            {"Hasprés", "haspres"},
+            {"Hasprés", "haspres", "hasizom"},
             {"Lábemelés", "labemel"},
             {"Combhajlítás", "labhajlit", "combhajlit"},
-            {"Lábnyújtás", "labnyujt", "combfeszit"},
-            {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok"},
+            {"Lábnyújtás", "labnyujt", "combfeszit", "labgep"},
+            {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok",
+                    "farizom"},
+            {"Arnold nyomás", "arnold"},
+            {"Fordított tárogatás", "forditott tarogat", "hatso vall", "hatso deltoid"},
+            {"Csuklyás emelés", "csuklyas", "shrug"},
+            {"Hátizom gép", "hatizom", "hatgep"},
+            {"Mellgép", "mellgep", "tarogat", "pillango"},
+            {"Hegymászó", "hegymaszo"},
     };
+
+    /** A felismerhető gyakorlatok szép nevei (teszthez és súgóhoz). */
+    public static String[] names() {
+        String[] out = new String[MOVES.length];
+        for (int i = 0; i < MOVES.length; i++) out[i] = MOVES[i][0];
+        return out;
+    }
 
     /**
      * A mondat feldolgozása. Tagmondatonként (vessző, pontosvessző, „és”,

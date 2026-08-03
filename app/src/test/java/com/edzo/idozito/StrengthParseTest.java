@@ -114,6 +114,28 @@ public class StrengthParseTest {
         }
     }
 
+    @Test public void gymMachinesAndVariationsAreKnown() {
+        assertEquals("Hasprés 3×20/20/20@0", sum("hasizom 3x20"));
+        assertEquals("Lábnyújtás 3×12/12/12@80", sum("lábgép 3x12 80 kg"));
+        assertEquals("Csuklyás emelés 3×12/12/12@20", sum("csuklyás 3x12 20 kg"));
+        assertEquals("Arnold nyomás 3×10/10/10@16", sum("arnold nyomás 3x10 16 kg"));
+        assertEquals("Fordított tárogatás 3×15/15/15@8", sum("fordított tárogatás 3x15 8 kg"));
+        assertEquals("Mellgép 3×12/12/12@40", sum("mellgép 3x12 40 kg"));
+        assertEquals("Plank 3×45/45/45@0", sum("oldaltámasz 3x45"));
+        assertEquals("Csípőemelés 3×15/15/15@40", sum("farizom 3x15 40 kg"));
+        // A jelzős változatok az alapgyakorlathoz esnek.
+        assertEquals("Felhúzás", StrengthParse.parse("román felhúzás 3x8 80 kg").get(0).name);
+        assertEquals("Guggolás", StrengthParse.parse("elöl guggolás 3x5 60 kg").get(0).name);
+        assertEquals("Kitörés", StrengthParse.parse("bolgár kitörés 3x10 20 kg").get(0).name);
+    }
+
+    @Test public void everyKnownExerciseHasAMuscleGroup() {
+        // Amit a mondat-felvétel elment, annak a heti izomcsoport-egyensúlyban
+        // is látszania kell – különben a napló egy része láthatatlan marad.
+        for (String n : StrengthParse.names())
+            assertTrue("nincs izomcsoportja: " + n, Muscles.groupOf(n) != null);
+    }
+
     @Test public void randomTextNeverCrashes() {
         String[] tokens = {"guggolás", "3x10", "60 kg", "fekvenyomás", "és", ",",
                 "bicepsz", "12-10-8", "ismétlés", "sorozat", "húzódzkodás", "x",
