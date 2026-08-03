@@ -622,6 +622,7 @@ public class HistoryActivity extends Activity {
             "pl. padel 90 perc",
             "pl. hétfőn és szerdán kondi",
             "pl. kedden úszás, csütörtökön futás",
+            "pl. 3x10 fekvenyomás 60 kg",
     };
 
     /** Egy mondat, amiből több bejegyzés lesz. */

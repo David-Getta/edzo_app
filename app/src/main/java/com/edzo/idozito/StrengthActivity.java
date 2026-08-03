@@ -235,7 +235,8 @@ public class StrengthActivity extends Activity {
         recordsBox.removeAllViews();
         List<StrengthLog.Entry> all = StrengthLog.load(this);
         if (all.isEmpty()) {
-            recordsBox.addView(text("Még nincs rögzített gyakorlat. Adj hozzá egyet fent.", 13.5f, MUTED, false));
+            recordsBox.addView(text("Még nincs rögzített gyakorlat. Vedd fel fent – vagy írd "
+                    + "le egy mondatban: „3x10 fekvenyomás 60 kg”.", 13.5f, MUTED, false));
             return;
         }
         // Gyakorlatnevek a legutóbbi használat sorrendjében (a lista legújabb elöl).
