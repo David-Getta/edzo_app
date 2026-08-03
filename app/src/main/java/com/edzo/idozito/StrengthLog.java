@@ -22,9 +22,13 @@ public final class StrengthLog {
     static final String KEY = "strength_log";
 
     /** Gyakori gyakorlatok gyors kiválasztáshoz (a saját nevek elé fűzve). */
+    // A nevek szándékosan egyeznek a mondat-felismerő (StrengthParse) szép
+    // neveivel: így a chippel és a mondattal felvett bejegyzés ugyanahhoz a
+    // gyakorlathoz tartozik, nem két külön néven él tovább.
     public static final String[] COMMON = {
-            "Guggolás", "Fekvenyomás", "Felhúzás", "Vállból nyomás", "Evezés",
-            "Bicepsz", "Tricepsz", "Kitörés", "Lábtolás", "Vádliemelés"
+            "Guggolás", "Fekvenyomás", "Felhúzás", "Húzódzkodás", "Vállból nyomás",
+            "Evezés", "Bicepsz", "Tricepsz", "Kitörés", "Lábtolás", "Lehúzás",
+            "Vádliemelés", "Fekvőtámasz", "Plank"
     };
 
     /** Egy sorozat: ismétlésszám + súly (kg). */

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -127,6 +128,17 @@ public class StrengthParseTest {
         assertEquals("Felhúzás", StrengthParse.parse("román felhúzás 3x8 80 kg").get(0).name);
         assertEquals("Guggolás", StrengthParse.parse("elöl guggolás 3x5 60 kg").get(0).name);
         assertEquals("Kitörés", StrengthParse.parse("bolgár kitörés 3x10 20 kg").get(0).name);
+    }
+
+    @Test public void quickChipNamesMatchTheParserNames() {
+        // A gyors chipek és a mondat-felismerés ugyanazt a nevet használják –
+        // különben ugyanaz a gyakorlat két néven élne a naplóban, és a
+        // rekordok, a progresszió-javaslat meg a „mikor csináltad utoljára”
+        // mind kettéválna.
+        java.util.List<String> parsed = Arrays.asList(StrengthParse.names());
+        for (String chip : StrengthLog.COMMON)
+            assertTrue("a chip neve ismeretlen a felismerőnek: " + chip,
+                    parsed.contains(chip));
     }
 
     @Test public void everyKnownExerciseHasAMuscleGroup() {
