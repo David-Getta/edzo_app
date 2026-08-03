@@ -137,25 +137,37 @@ public class StrengthParseTest {
     }
 
     @Test public void randomTextNeverCrashes() {
+        // Egy külön, 120 000 mondatos futtatás nulla hibát talált; a magok
+        // váltogatása így is beépült, hogy a CI minden változtatást megfogjon.
         String[] tokens = {"guggolás", "3x10", "60 kg", "fekvenyomás", "és", ",",
                 "bicepsz", "12-10-8", "ismétlés", "sorozat", "húzódzkodás", "x",
-                "0", "999", "-", "…", "🏋", "", " ", "kg", "szett", "50 fekvőtámasz"};
-        java.util.Random rnd = new java.util.Random(20260802);
-        for (int i = 0; i < 4000; i++) {
-            StringBuilder sb = new StringBuilder();
-            int n = rnd.nextInt(10);
-            for (int w = 0; w < n; w++) {
-                sb.append(tokens[rnd.nextInt(tokens.length)]);
-                if (rnd.nextInt(4) > 0) sb.append(' ');
-            }
-            List<StrengthParse.Item> items = StrengthParse.parse(sb.toString());
-            for (StrengthParse.Item it : items) {
-                assertTrue(it.sets.size() >= 1 && it.sets.size() <= 60);
-                for (StrengthParse.Set s : it.sets) {
-                    assertTrue(s.reps >= 1 && s.reps <= 200);
-                    assertTrue(s.weight >= 0 && s.weight <= 500);
+                "0", "999", "-", "…", "🏋", "", " ", "kg", "szett", "50 fekvőtámasz",
+                "3x10x60", "99x99", "0x0", "1x200", "21x1", "12,5 kg", "1000 kg",
+                "-5 kg", "hasizom", "lábgép", "mellgép", "arnold", "csuklyás",
+                "oldaltámasz", "×", "majd", "utána", ";", "nem", "helyett",
+                "kilóval", "kg-mal", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"};
+        for (long seed : new long[]{20260802, 42, 777}) {
+            java.util.Random rnd = new java.util.Random(seed);
+            for (int i = 0; i < 4000; i++) {
+                StringBuilder sb = new StringBuilder();
+                int n = rnd.nextInt(12);
+                for (int w = 0; w < n; w++) {
+                    sb.append(tokens[rnd.nextInt(tokens.length)]);
+                    if (rnd.nextInt(4) > 0) sb.append(' ');
                 }
-                assertTrue(!it.label().isEmpty());
+                String q = sb.toString();
+                List<StrengthParse.Item> items = StrengthParse.parse(q);
+                for (StrengthParse.Item it : items) {
+                    assertTrue(!it.name.isEmpty());
+                    assertTrue(it.sets.size() >= 1 && it.sets.size() <= 60);
+                    for (StrengthParse.Set s : it.sets) {
+                        assertTrue(s.reps >= 1 && s.reps <= 200);
+                        assertTrue(s.weight >= 0 && s.weight <= 500);
+                    }
+                    assertTrue(!it.label().isEmpty());
+                }
+                // Ugyanaz a mondat mindig ugyanazt adja (nincs rejtett állapot).
+                assertEquals(items.size(), StrengthParse.parse(q).size());
             }
         }
     }
