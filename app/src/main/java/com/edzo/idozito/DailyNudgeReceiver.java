@@ -85,6 +85,18 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         // kimaradt, azt név szerint mondjuk – a személyes hat, az általános nem.
         String miss = History.missedSportLine(c);
         if (miss != null) text += "\n" + miss;
+        // Ugyanez a súlyzós naplóra: a rég kimaradt gyakorlat nevesítve. A
+        // rekordlistában a legutóbbi van elöl, tehát ez magától nem tűnne fel.
+        try {
+            java.util.List<StrengthLog.Entry> sLog = StrengthLog.load(c);
+            String forgotten = StrengthLog.mostNeglected(sLog, System.currentTimeMillis(),
+                    StrengthLog.NEGLECTED_DAYS);
+            if (forgotten != null) {
+                int d = StrengthLog.daysSince(sLog, forgotten, System.currentTimeMillis());
+                text += "\n💤 " + forgotten + " " + StrengthLog.agoLabel(d)
+                        + " maradt ki – beveszed ma?";
+            }
+        } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
