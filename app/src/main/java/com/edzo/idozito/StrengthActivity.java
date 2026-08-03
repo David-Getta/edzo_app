@@ -442,13 +442,42 @@ public class StrengthActivity extends Activity {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        for (StrengthParse.Item it : items) sb.append("•  ").append(it.label()).append('\n');
+        for (StrengthParse.Item it : items) {
+            sb.append("•  ").append(it.label()).append('\n');
+            String cmp = versusLast(it);
+            if (cmp != null) sb.append("     ").append(cmp).append('\n');
+        }
         sb.append("\nMai dátummal, a naplód élére.");
         new Sheet(this, items.size() + " gyakorlat mentése", sb.toString())
                 .addPrimary("Mentés", () -> saveSentence(items))
                 .addNeutral("Átírom", () -> sentenceSheet(textIn))
                 .addCancel()
                 .show();
+    }
+
+    /**
+     * Összevetés a legutóbbi ugyanilyen gyakorlattal – ez adja meg az
+     * értelmét a mai számoknak: a 60 kg önmagában semmit nem mond, a
+     * „múltkor 57,5 volt” viszont mindent.
+     */
+    String versusLast(StrengthParse.Item it) {
+        StrengthLog.Entry last = null;
+        for (StrengthLog.Entry e : StrengthLog.load(this))
+            if (it.name.equals(e.name)) { last = e; break; }   // a lista legújabb elöl
+        if (last == null) return "↳ első alkalom ezzel a gyakorlattal 🌱";
+        double now = it.topWeight(), then = last.topWeight();
+        String when = "  ·  " + StrengthLog.agoLabel(
+                StrengthLog.dayDiff(last.ts, System.currentTimeMillis()));
+        if (now > 0 && then > 0) {
+            double d = now - then;
+            String arrow = d > 0.01 ? "▲ +" + kg(d) + " kg"
+                    : d < -0.01 ? "▼ −" + kg(-d) + " kg" : "= ugyanannyi";
+            return "↳ múltkor " + kg(then) + " kg  ·  " + arrow + when;
+        }
+        int nr = it.totalReps(), tr = last.totalReps();
+        if (nr != tr) return "↳ múltkor " + tr + " ismétlés  ·  "
+                + (nr > tr ? "▲ +" + (nr - tr) : "▼ −" + (tr - nr)) + when;
+        return "↳ múltkor ugyanennyi" + when;
     }
 
     void saveSentence(List<StrengthParse.Item> items) {
