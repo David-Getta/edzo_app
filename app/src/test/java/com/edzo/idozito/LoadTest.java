@@ -176,4 +176,19 @@ public class LoadTest {
         }
         assertEquals(0, Load.weekly(null, 150).percent);
     }
+    @Test public void weeklySumsSplitTheDaysIntoWeeks() {
+        double[] d = new double[28];
+        for (int i = 0; i < 28; i++) d[i] = i < 7 ? 30 : i < 14 ? 20 : i < 21 ? 10 : 0;
+        double[] w = Load.weekSums(d, 4);
+        assertEquals(210.0, w[0], 0.001);
+        assertEquals(140.0, w[1], 0.001);
+        assertEquals(70.0, w[2], 0.001);
+        assertEquals(0.0, w[3], 0.001);
+        // Az első hét ugyanaz, amit a heti cél is lát.
+        assertEquals(Load.weekly(d, 150).minutes, w[0], 0.001);
+        // Rövid vagy hiányzó adat nem dob hibát.
+        assertEquals(4, Load.weekSums(new double[3], 4).length);
+        assertEquals(0, Load.weekSums(null, 0).length);
+        assertEquals(0.0, Load.weekSums(null, 2)[1], 0.001);
+    }
 }

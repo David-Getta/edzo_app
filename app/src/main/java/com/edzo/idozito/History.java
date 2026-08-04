@@ -110,6 +110,37 @@ public final class History {
      * emlékeztető és az időzített emlékeztetők is ezt kérdezik – egy helyen,
      * hogy ne csúszhasson szét a válasz.
      */
+    /**
+     * Napi mozgás-percek visszafelé (index 0 = ma). A súlyzós napok
+     * időtartam nélkül vannak a naplóban, ezért a sorozatszámból becsüljük –
+     * különben pont a vasazós hetek látszanának üresnek.
+     *
+     * Egy helyen: a statisztika, a heti összegzés és a jelvények ugyanezt a
+     * számot használják, így nem mondhatnak egymásnak ellent.
+     */
+    public static double[] dailyMinutes(Context ctx, long now, int days) {
+        double[] daily = new double[Math.max(0, days)];
+        try {
+            JSONArray h = load(ctx);
+            for (int i = 0; i < h.length(); i++) {
+                JSONObject o = h.optJSONObject(i);
+                if (o == null) continue;
+                int d = Days.ago(o.optLong("ts"), now);
+                if (d >= 0 && d < daily.length) daily[d] += o.optInt("dur") / 60.0;
+            }
+            java.util.HashMap<Integer, Integer> setsPerDay = new java.util.HashMap<>();
+            for (StrengthLog.Entry e : StrengthLog.load(ctx)) {
+                int d = Days.ago(e.ts, now);
+                if (d < 0 || d >= daily.length || e.sets == null) continue;
+                Integer prev = setsPerDay.get(d);
+                setsPerDay.put(d, (prev == null ? 0 : prev) + e.sets.size());
+            }
+            for (java.util.Map.Entry<Integer, Integer> e : setsPerDay.entrySet())
+                daily[e.getKey()] += Load.strengthMinutes(e.getValue());
+        } catch (Exception ignored) {}
+        return daily;
+    }
+
     public static boolean trainedToday(Context ctx) {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(java.util.Calendar.HOUR_OF_DAY, 0);

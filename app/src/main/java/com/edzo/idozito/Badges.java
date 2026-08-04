@@ -54,6 +54,8 @@ public final class Badges {
         new Badge("lift10",  "🏋", "Vasalapozó",   "10 gyakorlat az erősítő naplóban"),
         new Badge("vol10t",  "⚙️", "Tonnás",       "10 tonna összvolumen (ismétlés × súly)"),
         new Badge("bal4",    "🧩", "Kiegyensúlyozott", "4 izomcsoport egy héten belül"),
+        new Badge("move1",   "🎽", "Heti cél",     "A heti mozgás-cél teljesítve"),
+        new Badge("move4",   "🏅", "Négy hét egyben","A heti mozgás-cél négy hete sorban"),
     };
 
     /** Visszafelé kompatibilis változat (kihívás-számláló nélkül). */
@@ -92,6 +94,18 @@ public final class Badges {
             int groups = 0;
             for (int v : bal.values()) if (v > 0) groups++;
             if (groups >= 4) out.add("bal4");
+        } catch (Exception ignored) {}
+        // Heti mozgás-cél: a teljesítés egyszer is jelvény, de a négy hét
+        // sorban a valódi eredmény – a szokás ott kezdődik.
+        try {
+            int goal = ctx.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
+                    .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
+            double[] weeks = Load.weekSums(
+                    History.dailyMinutes(ctx, System.currentTimeMillis(), 4 * Load.ACUTE_DAYS), 4);
+            if (weeks[0] >= goal) out.add("move1");
+            int inRow = 0;
+            for (double v : weeks) { if (v >= goal) inRow++; else break; }
+            if (inRow >= 4) out.add("move4");
         } catch (Exception ignored) {}
         return out;
     }

@@ -84,6 +84,16 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 }
             }
         } catch (Exception ignored) {}
+        // Heti mozgás-cél: hét közben ez a leghasznosabb egy mondat – a napi
+        // biztatás önmagában nem mondja meg, hol tart a hét.
+        try {
+            int goal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                    .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
+            Load.Weekly w = Load.weekly(
+                    History.dailyMinutes(c, System.currentTimeMillis(), Load.ACUTE_DAYS), goal);
+            if (w.minutes > 0 && !w.done)
+                text += "\n🎽 Heti mozgás: " + w.label() + " – " + w.percent + "%.";
+        } catch (Exception ignored) {}
         // Víz-emlékeztető annak, aki ma már használta a számlálót, de a cél még nincs meg.
         try {
             int cl = Water.todayCl(c);

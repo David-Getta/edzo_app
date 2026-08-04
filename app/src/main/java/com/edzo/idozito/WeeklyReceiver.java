@@ -179,23 +179,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
         try {
             long now = System.currentTimeMillis();
             int span = Load.ACUTE_DAYS + Load.CHRONIC_DAYS;
-            double[] daily = new double[span];
-            JSONArray hist = History.load(c);
-            for (int i = 0; i < hist.length(); i++) {
-                JSONObject o = hist.optJSONObject(i);
-                if (o == null) continue;
-                int d = Days.ago(o.optLong("ts"), now);
-                if (d >= 0 && d < span) daily[d] += o.optInt("dur") / 60.0;
-            }
-            java.util.HashMap<Integer, Integer> setsPerDay = new java.util.HashMap<>();
-            for (StrengthLog.Entry e : StrengthLog.load(c)) {
-                int d = Days.ago(e.ts, now);
-                if (d < 0 || d >= span || e.sets == null) continue;
-                Integer prev = setsPerDay.get(d);
-                setsPerDay.put(d, (prev == null ? 0 : prev) + e.sets.size());
-            }
-            for (java.util.Map.Entry<Integer, Integer> e : setsPerDay.entrySet())
-                daily[e.getKey()] += Load.strengthMinutes(e.getValue());
+            double[] daily = History.dailyMinutes(c, now, span);
             Load.Ratio r = Load.of(daily);
             if (r.known && r.level == Load.JUMP)
                 text += "\n⚠️ Terhelés: " + r.label() + " – jövő héten vegyél vissza.";

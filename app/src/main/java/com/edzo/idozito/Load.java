@@ -155,6 +155,20 @@ public final class Load {
     }
 
     /**
+     * Hetenkénti összeg: out[0] az elmúlt 7 nap, out[1] az azt megelőző hét…
+     * A hetek a MAI naptól visszafelé számolódnak, nem naptári hétfőtől –
+     * a szokás nem a naptárhoz igazodik.
+     */
+    public static double[] weekSums(double[] daily, int weeks) {
+        double[] out = new double[Math.max(0, weeks)];
+        if (daily == null) return out;
+        for (int w = 0; w < out.length; w++)
+            for (int i = w * ACUTE_DAYS; i < (w + 1) * ACUTE_DAYS && i < daily.length; i++)
+                out[w] += Math.max(0, daily[i]);
+        return out;
+    }
+
+    /**
      * @param daily napi terhelés percben, daily[0] = ma, daily[1] = tegnap, …
      *              A tömb lehet rövidebb 35 napnál; a hiányzó napok nullák.
      */

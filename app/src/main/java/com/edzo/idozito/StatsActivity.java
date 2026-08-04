@@ -639,38 +639,6 @@ public class StatsActivity extends Activity {
     }
 
     /**
-     * Terhelés-ugrás: az elmúlt hét az azt megelőző négy hét heti átlagához
-     * mérve. A többi kártya azt mutatja, MENNYIT edzett – ez azt, hogy a
-     * mennyiség hogyan VÁLTOZOTT, mert a sérülések többsége nem a sok
-     * edzésből, hanem a hirtelen többől jön.
-     */
-    /**
-     * Napi mozgás-percek az elmúlt 35 napra (index 0 = ma). A súlyzós napok
-     * időtartam nélkül vannak a naplóban: a sorozatszámból becsüljük, különben
-     * pont a vasazós hetek látszanának üresnek.
-     */
-    double[] dailyMinutes(long now) {
-        int days = Load.ACUTE_DAYS + Load.CHRONIC_DAYS;
-        double[] daily = new double[days];
-        for (int i = 0; i < hist.length(); i++) {
-            JSONObject o = hist.optJSONObject(i);
-            if (o == null) continue;
-            int d = Days.ago(o.optLong("ts"), now);
-            if (d >= 0 && d < days) daily[d] += o.optInt("dur") / 60.0;
-        }
-        java.util.HashMap<Integer, Integer> setsPerDay = new java.util.HashMap<>();
-        for (StrengthLog.Entry e : StrengthLog.load(this)) {
-            int d = Days.ago(e.ts, now);
-            if (d < 0 || d >= days || e.sets == null) continue;
-            Integer prev = setsPerDay.get(d);
-            setsPerDay.put(d, (prev == null ? 0 : prev) + e.sets.size());
-        }
-        for (java.util.Map.Entry<Integer, Integer> e : setsPerDay.entrySet())
-            daily[e.getKey()] += Load.strengthMinutes(e.getValue());
-        return daily;
-    }
-
-    /**
      * Heti mozgás-cél: az egészségügyi ajánlás heti 150 perc, és ez az egyetlen
      * szám, amit évtizedek óta ugyanígy mondanak. A kártya a hét állását
      * mutatja, és azt, hogy a hiányzó percek mit jelentenek a gyakorlatban.
@@ -678,7 +646,8 @@ public class StatsActivity extends Activity {
     View weeklyGoalCard(long now) {
         int goal = getSharedPreferences("edzo", MODE_PRIVATE)
                 .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
-        Load.Weekly w = Load.weekly(dailyMinutes(now), goal);
+        Load.Weekly w = Load.weekly(
+                History.dailyMinutes(this, now, Load.ACUTE_DAYS + Load.CHRONIC_DAYS), goal);
         if (w.minutes <= 0) return null;
 
         LinearLayout cardV = card();
@@ -749,8 +718,15 @@ public class StatsActivity extends Activity {
                 .addCancel().show();
     }
 
+    /**
+     * Terhelés-ugrás: az elmúlt hét az azt megelőző négy hét heti átlagához
+     * mérve. A többi kártya azt mutatja, MENNYIT edzett – ez azt, hogy a
+     * mennyiség hogyan VÁLTOZOTT, mert a sérülések többsége nem a sok
+     * edzésből, hanem a hirtelen többől jön.
+     */
     View loadCard(long now) {
-        Load.Ratio r = Load.of(dailyMinutes(now));
+        Load.Ratio r = Load.of(
+                History.dailyMinutes(this, now, Load.ACUTE_DAYS + Load.CHRONIC_DAYS));
         if (!r.known) return null;
 
         LinearLayout cardV = card();
