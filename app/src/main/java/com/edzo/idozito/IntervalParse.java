@@ -76,7 +76,7 @@ public final class IntervalParse {
      */
     public static Plan parse(String text) {
         if (text == null) return null;
-        String s = Foods.norm(text).replace('\n', ' ');
+        String s = digits(Foods.norm(text).replace('\n', ' '));
         if (s.trim().isEmpty()) return null;
 
         // 1) Ismert forma név szerint. A kimondott körszám felülírja az alapot:
@@ -90,11 +90,33 @@ public final class IntervalParse {
                         warmIn(s), coolIn(s));
             }
 
-        // 2) „40/20”, „45-15”, „8x20/10”: a teremben ez a rövid írásmód.
+        // 2) „6 x 3 perc”: körszám × egy szakasz hossza, mértékegységgel.
+        java.util.regex.Matcher mm = java.util.regex.Pattern
+                .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+                        + "(masodperc|mperc|mp\\b|perc)")
+                .matcher(s);
+        if (mm.find()) {
+            try {
+                int r = Integer.parseInt(mm.group(1));
+                double v = Double.parseDouble(mm.group(2).replace(',', '.'));
+                int w = (int) Math.round(mm.group(3).startsWith("perc") ? v * 60 : v);
+                Plan p = build(r, w, secondsBefore(s,
+                        new String[]{"piheno", "pihenes", "szunet", "lazitas", "seta"}),
+                        warmIn(s), coolIn(s));
+                if (p != null) return p;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        // 3) „40/20”, „45-15”, „8x20/10”: a teremben ez a rövid írásmód. A
+        //    kötőjeles alakot csak akkor fogadjuk el, ha nem sorozat: a
+        //    „piramis 20-30-40 mp” nem munka/pihenő pár.
+        String slashable = s.matches(".*\\d\\s?-\\s?\\d{1,3}\\s?-\\s?\\d.*")
+                ? s.replace('-', ' ') : s;
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?[/\\-]\\s?(\\d{1,3})"
                         + "(?:\\s?[x×]\\s?(\\d{1,2}))?")
-                .matcher(s);
+                .matcher(slashable);
         if (m.find()) {
             int rounds = m.group(1) != null ? Integer.parseInt(m.group(1))
                     : m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
@@ -114,14 +136,21 @@ public final class IntervalParse {
             if (p != null) return p;
         }
 
-        // 3) Kimondott alak: „3 kör 40 mp munka 20 mp pihenő”.
+        // 4) Kimondott alak: „3 kör 40 mp munka 20 mp pihenő”.
         int rounds = numberBefore(s, "kor");
         if (rounds <= 0) rounds = numberBefore(s, "sorozat");
         if (rounds <= 0) rounds = numberBefore(s, "szett");
         int work = secondsBefore(s, new String[]{"munka", "aktiv", "terheles", "gyakorlat"});
         int rest = secondsBefore(s, new String[]{"piheno", "pihenes", "szunet", "lazitas"});
-        // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka.
-        if (work <= 0 && rest <= 0) work = firstSeconds(s);
+        // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka. De
+        // megnevezetlenül csak életszerű munkaidőt fogadunk el: a „minden
+        // percben 1 kör, 15 percig” 15 perce nem egyetlen szakasz hossza.
+        if (work <= 0) {
+            // Ha csak a pihenőt nevezték meg („egy perc plank, 30 mp pihenő”),
+            // a munkaidő az első kimondott idő.
+            work = firstSeconds(s);
+            if (rest <= 0 && work > 600) return null;
+        }
         return build(rounds, work, rest, warmIn(s), coolIn(s));
     }
 
@@ -188,19 +217,30 @@ public final class IntervalParse {
                 // mondatban a pihenő elé eső 30 a MÁSIK szakaszé.
                 int from = Math.max(0, p - 22);
                 for (int i = p - 1; i >= from; i--)
-                    if (s.charAt(i) == ',' || s.charAt(i) == ';') { from = i + 1; break; }
+                    if (isBreak(s, i)) { from = i + 1; break; }
                 int before = timeIn(s, from, p, true);
                 if (before > 0) return before;
                 int end = p + w.length();
                 int to = Math.min(s.length(), end + 22);
                 for (int i = end; i < to; i++)
-                    if (s.charAt(i) == ',' || s.charAt(i) == ';') { to = i; break; }
+                    if (isBreak(s, i)) { to = i; break; }
                 int after = timeIn(s, end, to, false);
                 if (after > 0) return after;
                 p = s.indexOf(w, p + 1);
             }
         }
         return 0;
+    }
+
+    /**
+     * Tagmondathatár-e az adott karakter? A tizedesvessző nem az: a
+     * „0,5 perc munka” fél perce különben öt percre ugrott volna.
+     */
+    private static boolean isBreak(String s, int i) {
+        char c = s.charAt(i);
+        if (c != ',' && c != ';') return false;
+        return !(i > 0 && Character.isDigit(s.charAt(i - 1))
+                && i + 1 < s.length() && Character.isDigit(s.charAt(i + 1)));
     }
 
     /** Az első időtartam a mondatban, mértékegységgel együtt. */
@@ -240,6 +280,43 @@ public final class IntervalParse {
             }
         }
         return found;
+    }
+
+    /**
+     * Kiírt számok és a „-szor/-szer” alak számjegyre váltása. A teremben
+     * senki nem ír számjegyet: „négy kör”, „egy perc”, „húszszor”.
+     * A „fél perc” tizedesként megy tovább – az időt kezelő ág érti.
+     */
+    private static final String[][] NUM_WORDS = {
+            {"tizenketto", "12"}, {"tizenket", "12"}, {"tizenegy", "11"},
+            {"tizenot", "15"}, {"huszonot", "25"}, {"husz", "20"}, {"harminc", "30"},
+            {"tizenharom", "13"}, {"tizennegy", "14"}, {"tizenhat", "16"},
+            {"tizennyolc", "18"}, {"tizenhet", "17"}, {"tizenkilenc", "19"},
+            {"tiz", "10"}, {"kilenc", "9"}, {"nyolc", "8"}, {"het", "7"},
+            {"hat", "6"}, {"ot", "5"}, {"negy", "4"}, {"harom", "3"},
+            {"ketto", "2"}, {"ket", "2"}, {"masfel", "1,5"}, {"fel", "0,5"},
+            {"egy", "1"},
+    };
+
+    static String digits(String s) {
+        String out = s;
+        for (String[] w : NUM_WORDS) {
+            int p = out.indexOf(w[0]);
+            while (p >= 0) {
+                int e = p + w[0].length();
+                boolean lettersAround = (p > 0 && Character.isLetter(out.charAt(p - 1)))
+                        || (e < out.length() && Character.isLetter(out.charAt(e))
+                            && !out.startsWith("szor", e) && !out.startsWith("szer", e));
+                if (!lettersAround) {
+                    out = out.substring(0, p) + w[1] + out.substring(e);
+                    p = out.indexOf(w[0], p + w[1].length());
+                } else {
+                    p = out.indexOf(w[0], p + 1);
+                }
+            }
+        }
+        // „8szor” → „8 kor”: a szorzószám a körök száma.
+        return out.replaceAll("(\\d+)\\s?(szor|szer)\\b", "$1 kor");
     }
 
     /** A megadott szó ELŐTT álló szám („3 kör”), vagy 0. */

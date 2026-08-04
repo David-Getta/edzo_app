@@ -134,4 +134,28 @@ public class IntervalParseTest {
         // A kimondott körszám erősebb a számolt értéknél.
         assertEquals("5×40/20", sum("5 kör 40/20 20 perc alatt"));
     }
+    @Test public void theWordsPeopleActuallyUseAreUnderstood() {
+        // Huszonegy valódi terem-megfogalmazással szondáztam a felismerőt;
+        // ezek azok, amiken elhasalt.
+
+        // Kiírt számok – a teremben senki nem ír számjegyet.
+        assertEquals("4×30/0", sum("négy kör 30 másodperc"));
+        assertEquals("4×60/30", sum("egy perc plank, 30 mp pihenő, 4 kör"));
+        // A tizedesvessző nem tagmondathatár: a fél perc fél perc maradt.
+        assertEquals("1×30/30", sum("fél perc munka fél perc pihenő"));
+        // „-szor/-szer”: szorzószám a körökre.
+        assertEquals("8×20/10", sum("20/10 nyolcszor"));
+        // Körszám × szakaszhossz mértékegységgel.
+        assertEquals("6×180/60", sum("6 x 3 perc futás 1 perc séta"));
+        // Csak a pihenőt nevezik meg: a munka az első kimondott idő.
+        assertEquals("10×50/10", sum("köröskénti 50 mp munka és 10 mp pihenő, 10 kör"));
+    }
+
+    @Test public void ambiguousSentencesGiveNothing() {
+        // A „15 percig” a teljes idő, nem egy szakasz hossza – megnevezetlenül
+        // ekkora munkaidőt nem fogadunk el, mert edzés közben derülne ki.
+        assertNull(IntervalParse.parse("minden percben 1 kör, 15 percig"));
+        // Távalapú intervall: nincs benne idő, tehát nincs mit beállítani.
+        assertNull(IntervalParse.parse("intervall: 400 m gyors, 200 m lassú"));
+    }
 }
