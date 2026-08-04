@@ -315,20 +315,25 @@ public class SettingsActivity extends Activity {
         col.post(() -> Ux.enterChildren(col, 30, 45));
     }
 
-    /** A legutóbbi fejlesztések rövid listája. */
+    /**
+     * A legutóbbi fejlesztések rövid listája.
+     *
+     * Ez a lap könnyen elavul: amit itt hirdetünk, azt a felhasználó keresni
+     * fogja. Ezért a régi tételek kikerülnek, ha már nem újdonságok – a
+     * beépült funkciókat a Könyvtár és a README írja le.
+     */
     void whatsNewSheet() {
         String[][] items = {
-            {"🍽", "Étrend-napló", "Írd be, mit ettél – kcal és fehérje magától számolva, fotóval (kamera vagy galéria) és okos elosztással."},
-            {"⚖️", "Mennyiség a szövegből", "„150 g csirkemell 200 g rizs\" és „2 tojás\" – a grammot és a darabszámot is kiolvassuk."},
-            {"★", "Kedvencek", "Bármely étkezés kedvencnek jelölhető, és mindig elöl lesz a gyors csipek közt."},
-            {"🖊", "Saját ételek", "Vedd fel a saját ételeid a kalóriatáblázatba – a felismerés is megtalálja őket."},
-            {"📖", "Kalóriatáblázat", "Élőben szűrhető lista, és egy koppintással naplózható bármelyik étel."},
-            {"💧", "Vízszámláló", "Pohár-alapú vízkövetés céllal, widget-gyorsgombbal és Hidratált jelvénnyel."},
-            {"🎯", "Új kihívások", "Fehérje-cél, vízcél és étkezés-naplózás típusú napi kihívások."},
-            {"⭐", "XP az étrendért", "A nap első étkezés-bejegyzése +5 XP-t ad a szintedhez."},
-            {"📊", "Étrend-statisztika", "7 napos átlagok, 30 napos csík, cél-tartás és napi részletek."},
-            {"🔍", "Keresés", "Keresés az étrend- és az erősítő naplóban is."},
-            {"📤", "Megosztás", "Napi étrend és heti összefoglaló egy koppintással megosztható."},
+            {"✍️", "Mondatból is megy", "Étkezés, edzés-előzmény, erősítő sorozat és időzítő – mind beírható folyó szövegként. A Könyvtárban egy helyen látszik, mit ért az app."},
+            {"⏱", "Időzítő mondatból", "„3 kör 40 mp munka 20 mp pihenő\", „8x20/10\", „tabata\", „20 perc alatt 40/20\" – egy koppintással sablonként is elmenthető."},
+            {"🏋", "Sorozatok mondatból", "„guggolás 5x5 80 kg\", „ötször ötöt\", „bicepsz 12-10-8 15 kg\" – 29 gyakorlat és gép, a jelzős változatokkal."},
+            {"🎽", "Heti mozgás-cél", "Az egészségügyi ajánlás heti 150 perce haladássávval a kezdőlapon, a widgetben és a heti összegzésben. Két jelvény jár érte."},
+            {"⚠️", "Terhelés-figyelés", "Az e heti edzésmennyiség a megelőző négy hét átlagához mérve – a sérülések többsége nem a sok edzésből jön, hanem a hirtelen többől."},
+            {"💡", "Mit egyek még?", "A maradék kalóriára és a hiányzó fehérjére három konkrét ötlet adaggal, egy koppintással naplózva."},
+            {"🎯", "Mai ajánlat", "A héten kimaradt izomcsoportokból egy-egy gyakorlat a progresszió-javaslattal."},
+            {"⏰", "Emlékeztetők", "Több emlékeztető saját üzenettel és napválasztással (hétköznap, hétvége vagy pontos napok)."},
+            {"⚖️", "Testsúly-tendencia", "kg/hét lineáris illesztéssel, és becslés a fogyási célig hátralévő időre."},
+            {"🕗", "Étkezési ablak", "Az első és az utolsó étkezés között eltelt idő – időszakos böjthöz, a statisztikában átlaggal."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
         for (String[] it : items)
