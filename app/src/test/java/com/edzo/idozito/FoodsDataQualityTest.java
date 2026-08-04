@@ -75,4 +75,14 @@ public class FoodsDataQualityTest {
         }
         assertTrue("hiányos tételek:" + bad, bad.length() == 0);
     }
+    @Test public void everySliceMeasuredFoodExists() {
+        // A szelet-tábla nevekre hivatkozik: egy átnevezés csendben kiütné.
+        for (String[] row : Foods.SLICE_GRAMS) {
+            boolean found = false;
+            for (Foods.Food f : Foods.ALL) if (f.name.equals(row[0])) { found = true; break; }
+            assertTrue("nincs ilyen étel: " + row[0], found);
+            int g = Integer.parseInt(row[1]);
+            assertTrue("életszerűtlen szelet: " + row[0], g >= 20 && g <= 300);
+        }
+    }
 }

@@ -315,4 +315,12 @@ public class FoodsIntegrationTest {
         assertEquals("Leves (átlag) 800g + Alma 150g", summary("2 tányér leves után alma"));
         assertEquals("Kávé (fekete) 200g", summary("duplaespresszó"));
     }
+
+    @Test public void pizzaIsEatenBySlice() {
+        // Két szelet pizza eddig egy egész pizzának számított.
+        assertEquals("Pizza 200g", summary("két szelet pizza"));
+        assertEquals("Pizza 100g", summary("egy szelet pizza"));
+        // A fél pizza viszont tényleg fél pizza, nem fél szelet.
+        assertEquals("Pizza 300g", summary("egy egész pizza"));
+    }
 }

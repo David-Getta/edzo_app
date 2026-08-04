@@ -843,6 +843,21 @@ public final class Foods {
         return null;
     }
 
+    /**
+     * Amit SZELETRE esznek, de darabra nem mondanák. A „két szelet pizza"
+     * eddig egy egész pizzának számított – több mint háromszoros kalóriának –,
+     * a „fél pizza" viszont tényleg fél pizza, ezért ez a tábla csak a
+     * „szelet" mérőszóra él.
+     */
+    static final String[][] SLICE_GRAMS = {
+            {"Pizza", "100"}, {"Sajttorta", "120"}, {"Sütemény", "80"},
+    };
+
+    private static int sliceGrams(Food f) {
+        for (String[] p : SLICE_GRAMS) if (p[0].equals(f.name)) return Integer.parseInt(p[1]);
+        return 0;
+    }
+
     private static boolean isPortionWord(String w) {
         for (String p : PORTION_WORDS) if (p.equals(w)) return true;
         return false;
@@ -1148,6 +1163,8 @@ public final class Foods {
                 // Az „adag" bármely ételre megy: egy adag a tipikus adag.
                 // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
                 double piece = between.equals("tabla") ? 100      // egy tábla csoki
+                        : between.equals("szelet") && sliceGrams(foods.get(k)) > 0
+                        ? sliceGrams(foods.get(k))
                         : between.startsWith("adag") || between.equals("porcio")
                                 || isPortionWord(between)
                         ? foods.get(k).portion : pieceGrams(foods.get(k));
