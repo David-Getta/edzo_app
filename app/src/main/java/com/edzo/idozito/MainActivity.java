@@ -911,6 +911,21 @@ public class MainActivity extends Activity {
         mascotBody = text("", 14, TXT, false);
         mascotBody.setPadding(0, dp(3), 0, 0);
         txtCol.addView(mascotBody);
+        // Heti mozgás-cél egy sorban: a kezdőlapon ez az a szám, ami eldönti,
+        // hogy ma kell-e mozdulni. A statisztikában megvan, de oda be kell
+        // lépni – ide viszont mindenki ránéz.
+        try {
+            int mGoal = getSharedPreferences("edzo", MODE_PRIVATE)
+                    .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
+            Load.Weekly wk = Load.weekly(
+                    History.dailyMinutes(this, System.currentTimeMillis(), Load.ACUTE_DAYS), mGoal);
+            if (wk.minutes > 0) {
+                TextView goalTv = text((wk.done ? "✅ " : "🎽 ") + "Heti mozgás: " + wk.label()
+                        + (wk.done ? "" : "  ·  " + wk.percent + "%"), 12, MUTED, false);
+                goalTv.setPadding(0, dp(4), 0, 0);
+                txtCol.addView(goalTv);
+            }
+        } catch (Exception ignored) {}
         cardM.addView(txtCol, new LinearLayout.LayoutParams(0, -2, 1f));
 
         cardM.setClickable(true);

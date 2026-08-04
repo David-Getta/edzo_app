@@ -88,6 +88,16 @@ public class BlazeWidget extends AppWidgetProvider {
             if (wCl > 0)
                 msg += (eaten > 0 ? "   ·   " : "\n") + "💧 " + Water.liters(wCl);
         } catch (Exception ignored) {}
+        // Heti mozgás-cél: a widget a napról szól, de a hét állása az, amiből
+        // kiderül, kell-e ma mozdulni. Csak akkor, ha még nincs meg.
+        try {
+            int mGoal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                    .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
+            Load.Weekly wk = Load.weekly(
+                    History.dailyMinutes(c, System.currentTimeMillis(), Load.ACUTE_DAYS), mGoal);
+            if (wk.minutes > 0 && !wk.done)
+                msg += "\n🎽 Heti mozgás: " + wk.label();
+        } catch (Exception ignored) {}
         rv.setTextViewText(R.id.blaze_msg, msg);
 
         // A címsorban az élő széria is látszik (2 naptól).
