@@ -190,6 +190,29 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 text += "\n🍽 Étrend: " + loggedDays + " naplózott nap, átlag "
                         + Math.round(kcalWeek / loggedDays) + " kcal/nap.";
         } catch (Exception ignored) {}
+        // Testsúly-tendencia az elmúlt hat hétből: a heti ütem az a szám, ami
+        // egy fogyási célnál számít – egyetlen mérés a napi ingadozás miatt nem.
+        try {
+            JSONArray ms = Profile.measurements(c);
+            java.util.ArrayList<Double> ds = new java.util.ArrayList<>();
+            java.util.ArrayList<Double> ws = new java.util.ArrayList<>();
+            long since = System.currentTimeMillis() - 42L * 24 * 3600 * 1000;
+            for (int k = 0; k < ms.length(); k++) {
+                JSONObject o = ms.optJSONObject(k);
+                if (o == null) continue;
+                double w = o.optDouble("w", -1);
+                long ts = o.optLong("ts");
+                if (w > 0 && ts >= since) { ds.add(ts / 86400000.0); ws.add(w); }
+            }
+            if (ds.size() >= 3) {
+                double[] da = new double[ds.size()], wa = new double[ws.size()];
+                for (int k = 0; k < da.length; k++) { da[k] = ds.get(k); wa[k] = ws.get(k); }
+                double per = Profile.weeklyTrend(da, wa);
+                if (Math.abs(per) >= 0.05)
+                    text += String.format(Hu.LOCALE, "\n⚖️ Testsúly: %+.2f kg/hét (6 hét trendje).",
+                            per);
+            }
+        } catch (Exception ignored) {}
         // Víz-átlag a hétből (csak azok a napok, ahol ment a számláló).
         try {
             long now = System.currentTimeMillis();
