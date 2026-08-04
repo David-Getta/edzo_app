@@ -127,4 +127,32 @@ public class ActivitiesTest {
         assertEquals(0, Activities.calories(k, 70, 0), 0.01);
         assertEquals(0, Activities.calories(k, 70, -30), 0.01);
     }
+
+    @Test public void noSportStemBelongsToTwoKinds() {
+        // Ha két mozgásforma ugyanazt a szótövet hirdeti, az egyik csendben
+        // elnyeli a másikat – a felismerés a listasorrendtől függene.
+        java.util.HashMap<String, String> owner = new java.util.HashMap<>();
+        java.util.HashSet<String> ids = new java.util.HashSet<>();
+        StringBuilder bad = new StringBuilder();
+        for (Activities.Kind k : Activities.ALL) {
+            if (!ids.add(k.id)) bad.append("\n  dupla azonosító: ").append(k.id);
+            if (k.defaultMin < 1 || k.defaultMin > 300)
+                bad.append("\n  ").append(k.id).append(": alapidő=").append(k.defaultMin);
+            // A MET-tartomány: séta ~3, sprint/box ~10-12 fölött már nincs sport.
+            if (k.met < 1 || k.met > 16)
+                bad.append("\n  ").append(k.id).append(": MET=").append(k.met);
+            for (String w : k.words) {
+                if (w == null || w.trim().isEmpty()) {
+                    bad.append("\n  ").append(k.id).append(": üres szótő");
+                    continue;
+                }
+                String prev = owner.get(w);
+                if (prev != null)
+                    bad.append("\n  közös szótő \"").append(w).append("\": ")
+                       .append(prev).append(" / ").append(k.id);
+                else owner.put(w, k.id);
+            }
+        }
+        assertTrue("hibás sportág-adatok:" + bad, bad.length() == 0);
+    }
 }

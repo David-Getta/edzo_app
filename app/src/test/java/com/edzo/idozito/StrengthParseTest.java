@@ -141,6 +141,16 @@ public class StrengthParseTest {
                     parsed.contains(chip));
     }
 
+    @Test public void everyExerciseNameResolvesToItself() {
+        // Önellenőrzés: ha egy gyakorlat SAJÁT neve máshová esik, akkor egy
+        // hosszabb tő elnyelte – és a mondatból sosem lehet őt felvenni.
+        for (String n : StrengthParse.names()) {
+            List<StrengthParse.Item> got = StrengthParse.parse(n + " 3x10");
+            assertEquals("nem önmagára esik: " + n, 1, got.size());
+            assertEquals("nem önmagára esik: " + n, n, got.get(0).name);
+        }
+    }
+
     @Test public void everyKnownExerciseHasAMuscleGroup() {
         // Amit a mondat-felvétel elment, annak a heti izomcsoport-egyensúlyban
         // is látszania kell – különben a napló egy része láthatatlan marad.
