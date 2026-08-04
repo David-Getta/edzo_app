@@ -48,8 +48,9 @@ public class FoodsParseTest {
         assertEquals(200.0, hits("2 deci tej").get(0).grams, 0.001);
         assertEquals(250.0, hits("250 ml protein turmix").get(0).grams, 0.001);
         assertEquals(1000.0, hits("1 l üdítő").get(0).grams, 0.001);
-        // A magában álló „l" csak mértékegység lehet: a „2 lecsó" nem 2 liter.
-        assertEquals(0.0, hits("2 lecsó").get(0).grams, 0.001);
+        // A magában álló „l" csak mértékegység lehet: a „2 lecsó" nem 2 liter,
+        // hanem két adag (2 × 300 g).
+        assertEquals(600.0, hits("2 lecsó").get(0).grams, 0.001);
     }
 
     @Test public void withoutANumberGramsStayZero() {
@@ -150,8 +151,11 @@ public class FoodsParseTest {
     }
 
     @Test public void bareNumbersStayIgnoredWhereTheyMakeNoSense() {
-        // Rizst nem darabra számolunk.
-        assertEquals(0.0, hits("2 rizs").get(0).grams, 0.001);
+        // Aminek nincs darabmérete, ott az adag a darab: „2 rizs" két adag.
+        assertEquals(400.0, hits("2 rizs").get(0).grams, 0.001);
+        // De csak életszerű adagszámig – a „12 rizs" inkább elgépelt gramm,
+        // és három kiló rizst írni a naplóba rosszabb, mint egy adagot.
+        assertEquals(0.0, hits("12 rizs").get(0).grams, 0.001);
         // Életszerűtlen darabszám: inkább ne találgassunk.
         assertEquals(0.0, hits("50 tojás").get(0).grams, 0.001);
         // Mértékegység nélküli nagy szám sem gramm.

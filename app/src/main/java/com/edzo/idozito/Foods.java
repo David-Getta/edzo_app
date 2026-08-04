@@ -820,9 +820,26 @@ public final class Foods {
      * közte? A visszatérés a közbeékelt szó ("" ha nincs), vagy null, ha ott
      * valami más áll – akkor a szám nem ehhez az ételhez tartozik.
      */
+    /** Méret-jelzők: nem mérőszavak, csak közéállnak („2 nagy alma"). */
+    private static final String[] SIZE_WORDS =
+            {"nagy", "kis", "kicsi", "kozepes", "szep", "hatalmas", "apro"};
+
     private static String countWordAt(String q, int numEnd, int foodPos) {
         if (foodPos < numEnd) return null;
         String between = q.substring(numEnd, foodPos).trim();
+        // A méret-jelző nem szakítja el a számot az ételtől: a „2 nagy alma"
+        // két alma, nem egy – eddig a jelző miatt elveszett a kettes.
+        boolean stripped = true;
+        while (stripped) {
+            stripped = false;
+            for (String w : SIZE_WORDS)
+                if (between.equals(w)) { return ""; }
+                else if (between.startsWith(w + " ")) {
+                    between = between.substring(w.length() + 1).trim();
+                    stripped = true;
+                    break;
+                }
+        }
         if (between.isEmpty()) return between;
         for (String w : COUNT_WORDS) if (w.equals(between)) return between;
         for (String w : PORTION_WORDS) if (w.equals(between)) return between;
@@ -832,6 +849,12 @@ public final class Foods {
         // csokoládé-töve az „étcsoki" közepén van, így a mérőszó mögött ott
         // maradt egy szótöredék („tabla et"), és a fél tábla elveszett –
         // a bejegyzés a tipikus adaggal, vagyis feleannyival ment tovább.
+        // A szótő ugyanannak a SZÓNAK a belsejében is lehet: a „két
+        // görögdinnye" dinnye-töve elé „görög" került, és a kettes elveszett.
+        // Ha a szám és a tő között egyetlen, szóköz nélküli szótöredék áll,
+        // az ugyanaz a szó – vagyis a szám közvetlenül az ételhez tartozik.
+        String raw = q.substring(numEnd, foodPos);
+        if (raw.matches("^\\s?[a-z0-9]+$")) return "";
         int sp = between.lastIndexOf(' ');
         if (sp > 0) {
             String head = between.substring(0, sp).trim();
@@ -1168,6 +1191,14 @@ public final class Foods {
                         : between.startsWith("adag") || between.equals("porcio")
                                 || isPortionWord(between)
                         ? foods.get(k).portion : pieceGrams(foods.get(k));
+                // Aminek nincs természetes darabmérete, ott a tipikus adag a
+                // darab: a „két kebab" eddig egyetlen kebabnak számított, mert
+                // a számláló egyszerűen elveszett. Ez 267 ételt érintett.
+                //
+                // Csak életszerű adagszámra: a „két wrap" és a „fél kebab"
+                // valódi bevitel, a „12 rizs" viszont inkább elgépelt gramm,
+                // és három kiló rizst írni a naplóba rosszabb, mint egy adagot.
+                if (piece <= 0 && count <= 6) piece = foods.get(k).portion;
                 if (piece <= 0) continue;
                 grams[k] = count * piece;
                 break;

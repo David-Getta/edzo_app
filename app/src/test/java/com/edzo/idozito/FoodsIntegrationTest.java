@@ -176,7 +176,8 @@ public class FoodsIntegrationTest {
         // A „mángold" zöldség marad, nem mangó.
         assertEquals("Zöldség (vegyes / párolt) 200g", summary("mángold"));
         // A citrom (és a lime) citromléként számol; a citromfű nem étel.
-        assertEquals("Citromlé 30g", summary("fél citrom leve"));
+        // A fél citrom leve fél adag – korábban a „fél" elveszett.
+        assertEquals("Citromlé 15g", summary("fél citrom leve"));
         assertEquals("Citromlé 30g", summary("egy lime"));
         assertEquals("Tea (cukrozatlan) 250g", summary("citromfű tea"));
     }
@@ -322,5 +323,28 @@ public class FoodsIntegrationTest {
         assertEquals("Pizza 100g", summary("egy szelet pizza"));
         // A fél pizza viszont tényleg fél pizza, nem fél szelet.
         assertEquals("Pizza 300g", summary("egy egész pizza"));
+    }
+    @Test public void aCountBeforeAFoodIsNotLost() {
+        // Aminek nincs természetes darabmérete, ott eddig egyszerűen elveszett
+        // a számláló: a „két kebab" egyetlen kebabnak számított. Ez 267 ételt
+        // érintett – vagyis az adatbázis négyötödét.
+        assertEquals("Kebab 700g", summary("két kebab"));
+        assertEquals("Kebab 175g", summary("fél kebab"));
+        assertEquals("Csirkés wrap 500g", summary("két csirkés wrap"));
+        assertEquals("Almás pite 240g", summary("két almás pite"));
+        assertEquals("Gyümölcslé 500g", summary("két pohár narancslé"));
+        // A szótő a szó BELSEJÉBEN is lehet: a „görögdinnye" dinnye-töve elé
+        // került a „görög", és a kettes elveszett.
+        assertEquals("Görögdinnye 600g", summary("két görögdinnye"));
+        assertEquals("Csirkenugget 300g", summary("két csirkenugget"));
+    }
+
+    @Test public void aSizeAdjectiveDoesNotSwallowTheCount() {
+        assertEquals("Alma 300g", summary("2 nagy alma"));
+        assertEquals("Körte 300g", summary("két szép körte"));
+        assertEquals("Tojás 165g", summary("3 közepes tojás"));
+        // A mérőszó a jelző mögött is érvényes.
+        assertEquals("Tejföl 60g", summary("két nagy kanál tejföl"));
+        assertEquals("Leves (átlag) 800g", summary("2 nagy tányér leves"));
     }
 }
