@@ -62,7 +62,8 @@ public final class Foods {
         // A „durum" hosszabb tő, különben a benne lévő „rum" tömény italt adna.
         new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta", "teszta", "spagetti", "penne", "durum"),
         new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli", "krumpi"),
-        new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "hasabburgonya", "hasáb"),
+        new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "sultkrumpli",
+                "hasabburgonya", "hasáb"),
         new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure"),
         new Food("Édesburgonya", 90, 1.6, 200, "edesburgonya", "batata"),
         new Food("Bulgur (főtt)", 120, 4, 200, "bulgur", "arpagyongy"),
@@ -288,7 +289,7 @@ public final class Foods {
         new Food("Tökfőzelék", 70, 2, 350, "tokfozelek"),
         new Food("Gnocchi", 160, 4, 250, "gnocchi", "nudli"),
         new Food("Tortilla / wrap", 250, 8, 200, "tortilla", "wrap"),
-        new Food("Túrós csusza", 210, 10, 300, "turos csusza", "csusza"),
+        new Food("Túrós csusza", 210, 10, 300, "turos csusza", "csusza", "turos teszta"),
         new Food("Grízes tészta", 200, 6, 300, "grizes teszta", "griz"),
         // Menza-kör: a mákos tészta mákja eddig eltűnt (csak főtt tészta lett),
         // a grenadírmars és a rántott zöldség pedig ismeretlen volt.
@@ -350,6 +351,10 @@ public final class Foods {
         new Food("Tavaszi tekercs / gyoza", 200, 7, 150,
                 "tavaszi tekercs", "spring roll", "gyoza", "dim sum"),
         new Food("Wok (zöldséges-húsos)", 120, 10, 350, "wok", "bibimbap"),
+        // Kínai büfé: a bundázott, szószos csirke messze nem a wok kalóriája.
+        new Food("Kínai bundás csirke", 250, 14, 250, "kinai csirke", "bundas csirke",
+                "szechuan", "szecsuani", "kung pao", "edes-savanyu csirke",
+                "edes savanyu csirke"),
         new Food("Quesadilla", 250, 11, 200, "quesadilla"),
         new Food("Falafel", 300, 13, 150, "falafel"),
         new Food("Hummusz", 180, 8, 60, "hummus", "humusz"),
@@ -390,6 +395,9 @@ public final class Foods {
         new Food("Gesztenyepüré", 230, 3, 150, "gesztenyepure", "gesztenye pure", "gesztenye"),
         new Food("Tiramisu", 290, 5, 120, "tiramisu"),
         new Food("Krémes", 260, 5, 150, "kremes"),
+        new Food("Vaníliás karika", 380, 6, 70, "vanilias karika", "vaniliaskarika"),
+        new Food("Lekváros bukta", 300, 6, 100, "lekvaros bukta", "bukta"),
+        new Food("Sajttorta", 320, 6, 120, "sajttorta", "cheesecake"),
         new Food("Fánk / churros", 400, 5, 60, "fank", "churros"),
         new Food("Kürtőskalács", 380, 6, 120, "kurtoskalaccs", "kurtoskalacs", "trdelnik"),
         new Food("Rántott gomba", 220, 5, 150, "rantott gomba"),
@@ -490,7 +498,8 @@ public final class Foods {
         // A -val/-vel hasonul: „kaláccsal". A cs+cs alakot külön tő fogja meg.
         new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli"),
         new Food("Almás pite", 240, 3, 120, "almas pite", "almaspite"),
-        new Food("Krumplisaláta", 150, 2.5, 200, "krumplisalata"),
+        new Food("Krumplisaláta", 150, 2.5, 200, "krumplisalata", "krumpli salata",
+                "burgonyasalata", "burgonya salata"),
         new Food("Frankfurti leves", 90, 4, 350, "frankfurti leves", "frankfurti"),
         new Food("Körözött", 250, 12, 80, "korozott"),
         new Food("Sajtkrém", 250, 8, 40, "sajtkrem"),
@@ -1224,6 +1233,7 @@ public final class Foods {
             if (!covered) out.add(m);
         }
         out = oneFoodPerWord(q, out);
+        out = dropRedundantBase(out);
         applyCombos(list, q, out);
         out = dropNegated(q, out);
         // Rendezés a szövegbeli előfordulás szerint.
@@ -1232,6 +1242,47 @@ public final class Foods {
                 if (out.get(j).pos < out.get(i).pos) {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
+        return out;
+    }
+
+    /**
+     * A kész fogás mellől eldobjuk a benne lévő alapanyagot.
+     *
+     * A „bolognai tészta" két találatot adott: a bolognai spagettit ÉS a főtt
+     * tésztát – vagyis egy tányér makaróniból 950 kalória lett. A jelzős
+     * szerkezetnél („carbonara tészta", „milánói tészta") a fogás neve és az
+     * alap külön szóban áll, ezért az átfedés-szűrő nem fogja meg őket.
+     *
+     * Szándékosan felsorolás, nem szabály: a „zöldséges rizs" ugyanígy két
+     * külön szó, de ott a rizs tényleg külön tétel. Csak azokat a fogásokat
+     * soroljuk fel, amelyek a kalóriájukban MÁR tartalmazzák az alapot.
+     */
+    private static final String[][] BASE_INCLUDED = {
+            {"Tészta (főtt)", "Bolognai spagetti", "Tészta carbonara", "Milánói makaróni",
+                    "Sajtos tészta", "Lasagne", "Túrós csusza", "Töltött tészta (tortellini)",
+                    "Mákos tészta", "Grízes tészta", "Káposztás tészta",
+                    "Grenadírmars (krumplis tészta)", "Pad thai"},
+            {"Rizs (főtt)", "Rizottó", "Rizses hús", "Sushi", "Poke bowl", "Tejberizs"},
+            {"Saláta (zöld)", "Görög saláta", "Csirkés saláta", "Tonhalsaláta",
+                    "Caprese saláta", "Uborkasaláta", "Céklasaláta", "Krumplisaláta",
+                    "Franciasaláta / coleslaw"},
+            {"Burgonya (főtt)", "Sült krumpli", "Rakott krumpli", "Krumplisaláta",
+                    "Grenadírmars (krumplis tészta)"},
+    };
+
+    private static List<Match> dropRedundantBase(List<Match> in) {
+        if (in.size() < 2) return in;
+        List<Match> out = new ArrayList<>(in);
+        for (String[] row : BASE_INCLUDED) {
+            Match base = null;
+            boolean dish = false;
+            for (Match m : out) {
+                if (m.food.name.equals(row[0])) base = m;
+                for (int i = 1; i < row.length; i++)
+                    if (m.food.name.equals(row[i])) { dish = true; break; }
+            }
+            if (base != null && dish) out.remove(base);
+        }
         return out;
     }
 

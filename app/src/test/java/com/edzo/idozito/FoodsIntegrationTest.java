@@ -278,4 +278,30 @@ public class FoodsIntegrationTest {
         assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL),
                 "halat sütöttem").get(0).food.name);
     }
+    @Test public void aFinishedDishDoesNotAlsoCountItsBase() {
+        // A „bolognai tészta" korábban két találat volt – a fogás ÉS a főtt
+        // tészta –, vagyis egy tányér makaróniból 950 kalória lett.
+        assertEquals("Bolognai spagetti 350g", summary("bolognai tészta"));
+        assertEquals("Tészta carbonara 350g", summary("carbonara tészta"));
+        assertEquals("Milánói makaróni 350g", summary("milánói tészta"));
+        assertEquals("Túrós csusza 300g", summary("túrós tészta"));
+        assertEquals("Csirkés saláta 300g", summary("csirkés saláta"));
+        assertEquals("Krumplisaláta 200g", summary("krumpli saláta"));
+        assertEquals("Rizses hús 350g", summary("rizses hús"));
+        // Ahol az alap TÉNYLEG külön tétel, ott megmarad.
+        assertEquals("Rántott hús (sertés) 180g + Rizs (főtt) 200g",
+                summary("rántott hús rizzsel"));
+        assertEquals("Zöldség (vegyes / párolt) 200g + Rizs (főtt) 200g",
+                summary("zöldséges rizs"));
+        assertEquals("Darált hús 150g + Tészta (főtt) 250g",
+                summary("darált húsos tészta"));
+    }
+
+    @Test public void theNewlyAddedDishesAreFound() {
+        assertEquals("Vaníliás karika 70g", summary("vaníliás karika"));
+        assertEquals("Lekváros bukta 100g", summary("lekváros bukta"));
+        assertEquals("Sajttorta 120g", summary("egy szelet sajttorta"));
+        assertEquals("Kínai bundás csirke 250g", summary("kínai csirke bundában szechuan"));
+        assertEquals("Sült krumpli 150g", summary("sültkrumpli"));
+    }
 }
