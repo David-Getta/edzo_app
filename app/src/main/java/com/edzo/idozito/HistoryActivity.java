@@ -601,34 +601,10 @@ public class HistoryActivity extends Activity {
 
     // ---- Több edzés egyszerre, szövegből ----
 
-    /**
-     * Váltakozó minta-mondatok: a felhasználó ezekből tanulja meg, mi mindent
-     * ért a felismerés (időszak, táv, óra+perc, „kétszer"). Egy állandó példa
-     * csak az egyetlen formát tanítaná meg.
-     */
-    private static final String[] BULK_EXAMPLES = {
-            "pl. az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés",
-            "pl. kétszer úsztam a héten",
-            "pl. tegnap 10 km futás 50 perc alatt",
-            "pl. hétfőn 1 óra 15 perc kondi",
-            "pl. leúsztam 1500 métert",
-            "pl. egy hónap alatt 10 edzés",
-            "pl. a héten minden nap futottam",
-            "pl. hétvégén 1-1 túra",
-            "pl. tegnap este kondi",
-            "pl. 100 fekvőtámasz",
-            "pl. ma 10000 lépés",
-            "pl. lábnap volt, 1 óra",
-            "pl. padel 90 perc",
-            "pl. hétfőn és szerdán kondi",
-            "pl. kedden úszás, csütörtökön futás",
-            "pl. 3x10 fekvenyomás 60 kg",
-    };
-
     /** Egy mondat, amiből több bejegyzés lesz. */
     void bulkSheet(String prefill) {
         final EditText et = inputField(
-                BULK_EXAMPLES[(int) (System.currentTimeMillis() / 60000 % BULK_EXAMPLES.length)],
+                Examples.hint(Examples.BULK, System.currentTimeMillis()),
                 false);
         if (prefill != null && !prefill.isEmpty()) et.setText(prefill);
         LinearLayout box = vbox();

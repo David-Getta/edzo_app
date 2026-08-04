@@ -792,32 +792,12 @@ public class DietActivity extends Activity {
     private String prefillName;
 
     /** Új étkezés felvitele, vagy meglévő szerkesztése (existing != null esetén). */
-    /**
-     * Váltakozó minta-mondatok: a felhasználó ezekből tanulja meg, mi mindent
-     * ért a felismerés (mennyiségek, adag, italok, tegnapi pótlás) – ugyanaz
-     * az elv, mint az edzés-mondatoknál.
-     */
-    private static final String[] MEAL_EXAMPLES = {
-            "Mit ettél? (pl. 150 g csirkemell rizzsel)",
-            "Mit ettél? (pl. 2 tojás és egy pirítós vajjal)",
-            "Mit ettél? (pl. fél adag gyros)",
-            "Mit ettél? (pl. tegnap este pizzát ettem)",
-            "Mit ettél? (pl. két korsó sör és egy hamburger)",
-            "Mit ettél? (pl. negyvenöt gramm sajt)",
-            "Mit ettél? (pl. ittam fél liter vizet)",
-            "Mit ettél? (pl. két és fél deci tej müzlivel)",
-            "Mit ettél? (pl. spenót főzelék fasírttal)",
-            "Mit ettél? (pl. ebédre poke bowl)",
-            "Mit ettél? (pl. két tányér gulyás)",
-            "Mit ettél? (pl. chips helyett almát ettem)",
-    };
-
     void addMealDialog(final MealLog.Meal existing, final int editIdx) {
         final LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), 0);
 
         final EditText nameEt = input(
-                MEAL_EXAMPLES[(int) (System.currentTimeMillis() / 60000 % MEAL_EXAMPLES.length)]);
+                Examples.mealHint(System.currentTimeMillis()));
         box.addView(nameEt, lp());
         // Élő visszajelzés: mit ismer fel az app a beírt névből.
         final TextView reco = text("", 11.5f, MUTED, false);

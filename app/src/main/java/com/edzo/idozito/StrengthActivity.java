@@ -385,24 +385,12 @@ public class StrengthActivity extends Activity {
 
     // ---------- Sorozatok mondatból ----------
 
-    private static final String[] SET_EXAMPLES = {
-            "pl. 3x10 fekvenyomás 60 kg",
-            "pl. guggolás 5x5 80 kg",
-            "pl. húzódzkodás 3x8",
-            "pl. bicepsz 12-10-8 15 kg",
-            "pl. guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg",
-            "pl. vállból nyomás 3 sorozat 12 ismétlés 20 kg",
-            "pl. lábgép 3x12 80 kg és vádli 4x15",
-            "pl. arnold nyomás 3x10 16 kg, oldalemelés 3x15 8 kg",
-            "pl. guggolás 3x10x60",
-    };
-
     /** Egy mondatból több gyakorlat sorozatai – gépelés helyett. */
     void sentenceSheet(String prefill) {
         final LinearLayout box = vbox();
         box.setPadding(dp(10), dp(6), dp(10), 0);
         final EditText et = new EditText(this);
-        et.setHint(SET_EXAMPLES[(int) (System.currentTimeMillis() / 60000 % SET_EXAMPLES.length)]);
+        et.setHint(Examples.hint(Examples.SET, System.currentTimeMillis()));
         et.setHintTextColor(MUTED);
         et.setTextColor(TXT);
         et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
