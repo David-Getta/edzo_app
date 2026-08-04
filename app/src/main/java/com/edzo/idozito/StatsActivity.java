@@ -847,6 +847,30 @@ public class StatsActivity extends Activity {
         if (wDays > 0)
             tiles.add(new String[]{"💧 Átlag víz",
                     Water.liters((int) Math.round(wSum / (double) wDays)) + "/nap"});
+        // Étkezési ablak átlaga: az első és az utolsó étkezés közti idő
+        // naponta – aki időszakos böjtöt tart, ezt a számot figyeli.
+        java.util.HashMap<Integer, long[]> firstLast = new java.util.HashMap<>();
+        java.util.Calendar mc = java.util.Calendar.getInstance();
+        for (MealLog.Meal m : MealLog.load(this)) {
+            mc.setTimeInMillis(m.ts);
+            mc.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            mc.set(java.util.Calendar.MINUTE, 0);
+            mc.set(java.util.Calendar.SECOND, 0);
+            mc.set(java.util.Calendar.MILLISECOND, 0);
+            int k = Days.between(mc.getTimeInMillis(), today0);
+            if (k < 0 || k >= 7) continue;
+            long[] fl = firstLast.get(k);
+            if (fl == null) firstLast.put(k, new long[]{m.ts, m.ts});
+            else { fl[0] = Math.min(fl[0], m.ts); fl[1] = Math.max(fl[1], m.ts); }
+        }
+        long winSum = 0;
+        int winDays = 0;
+        for (long[] fl : firstLast.values())
+            if (fl[1] > fl[0] + 60000) { winSum += fl[1] - fl[0]; winDays++; }
+        if (winDays > 0) {
+            int mins = (int) (winSum / winDays / 60000);
+            tiles.add(new String[]{"🕗 Étkezési ablak", (mins / 60) + " ó " + (mins % 60) + " p"});
+        }
         addTiles(grid, tiles.toArray(new String[0][]));
         // Napszak-jellemző: ha a kalóriák nagy része egy napszakra esik,
         // azt érdemes tudni – az esti evés a leggyakoribb buktató.

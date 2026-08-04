@@ -130,7 +130,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Súlyzós szekció** (elmúlt 30 nap): edzésnapok, gyakorlatok, sorozatok,
   ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
   és izomcsoporttal
-- **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík
+- **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík, átlagos
+  **étkezési ablak** és napszak-jellemző („🌙 Este eszed a kalóriáid 52%-át")
 - **Profil / BMI / BMR**, testadatok és változás-diagram **testsúly-tendenciával**
   (kg/hét, lineáris illesztéssel az összes mérésre) és a fogyási célhoz mért
   becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)"
