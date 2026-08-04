@@ -108,6 +108,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View load = loadCard(System.currentTimeMillis());
+        if (load != null) {
+            col.addView(sectionTitle("Terhelés · e hét a szokásoshoz mérve"));
+            col.addView(load, lp());
+            col.addView(gap(16));
+        }
+
         View strength = strengthCard();
         if (strength != null) {
             col.addView(sectionTitle("Súlyzós · elmúlt 30 nap"));
@@ -621,6 +628,52 @@ public class StatsActivity extends Activity {
             blp.bottomMargin = dp(4);
             cardV.addView(bar, blp);
         }
+        return cardV;
+    }
+
+    /**
+     * Terhelés-ugrás: az elmúlt hét az azt megelőző négy hét heti átlagához
+     * mérve. A többi kártya azt mutatja, MENNYIT edzett – ez azt, hogy a
+     * mennyiség hogyan VÁLTOZOTT, mert a sérülések többsége nem a sok
+     * edzésből, hanem a hirtelen többől jön.
+     */
+    View loadCard(long now) {
+        int days = Load.ACUTE_DAYS + Load.CHRONIC_DAYS;
+        double[] daily = new double[days];
+        for (int i = 0; i < hist.length(); i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            int d = Days.ago(o.optLong("ts"), now);
+            if (d >= 0 && d < days) daily[d] += o.optInt("dur") / 60.0;
+        }
+        // A súlyzós napok időtartam nélkül vannak a naplóban: a sorozatszámból
+        // becsüljük, különben pont a vasazós hetek látszanának üresnek.
+        java.util.HashMap<Integer, Integer> setsPerDay = new java.util.HashMap<>();
+        for (StrengthLog.Entry e : StrengthLog.load(this)) {
+            int d = Days.ago(e.ts, now);
+            if (d < 0 || d >= days || e.sets == null) continue;
+            Integer prev = setsPerDay.get(d);
+            setsPerDay.put(d, (prev == null ? 0 : prev) + e.sets.size());
+        }
+        for (java.util.Map.Entry<Integer, Integer> e : setsPerDay.entrySet())
+            daily[e.getKey()] += Load.strengthMinutes(e.getValue());
+
+        Load.Ratio r = Load.of(daily);
+        if (!r.known) return null;
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(16), dp(14), dp(16), dp(14));
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(text(r.emoji() + "  " + r.label(), 20,
+                r.level == Load.JUMP ? 0xFFE0A050 : Theme.accent(this), true),
+                new LinearLayout.LayoutParams(-2, -2));
+        cardV.addView(row, lp());
+        cardV.addView(gap(6));
+        cardV.addView(text("Ezen a héten " + Math.round(r.acute) + " perc · a szokásos heti "
+                + Math.round(r.chronic) + " perc", 13.5f, MUTED, false), lp());
+        cardV.addView(gap(8));
+        cardV.addView(text(r.advice(), 13f, MUTED, false), lp());
         return cardV;
     }
 
