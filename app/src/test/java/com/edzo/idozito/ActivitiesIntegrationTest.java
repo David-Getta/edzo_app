@@ -85,4 +85,12 @@ public class ActivitiesIntegrationTest {
         assertEquals(null, Activities.kindByText("Zsírégető HIIT"));
         assertEquals(null, Activities.kindByText("Intervall alap"));
     }
+    @Test public void aNumberBeforeACommaBelongsToThePreviousClause() {
+        // „mellnyomás 4x10 50, evezés 4x10 50" – az 50 az előző gyakorlat
+        // súlya, nem ötven evezés.
+        assertEquals("1d+0 h12: 1×evezes/30",
+                summary("mellnyomás 4x10 50, evezés 4x10 50, bicepsz 3x12 15"));
+        // Vessző nélkül a szám továbbra is darabszám.
+        assertEquals("1d+0 h12: 3×uszas/45", summary("3 úszás"));
+    }
 }

@@ -86,7 +86,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „húzódzkodás 3x8" (saját testsúly), „bicepsz 12-10-8 15 kg"
   (sorozatonként más ismétlés), „guggolás 3x10x60", „vállból nyomás
   3 sorozat 12 ismétlés 20 kg" – akár több gyakorlat egy mondatban,
-  kötőszó nélkül is. 28 gyakorlat és gép, a jelzős változatokkal
+  kötőszó nélkül is. 29 gyakorlat és gép, a jelzős változatokkal
   („román felhúzás", „bolgár kitörés", „kábeles tricepsz"). Mentés előtt
   megmutatja, mit értett, és **odaírja a legutóbbi alkalmat is**
   („↳ múltkor 57,5 kg · ▲ +2,5 kg · 3 napja")
@@ -188,7 +188,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~339 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~342 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

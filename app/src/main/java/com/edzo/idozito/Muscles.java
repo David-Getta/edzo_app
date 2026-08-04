@@ -34,7 +34,7 @@ public final class Muscles {
                     "csipoemel", "csipo emel", "falules", "fal-ules", "wall sit",
                     "fellepes", "fellepo"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
-                    "hatizom", "hatgep", "gerincnyujt", "hiperextenzio",
+                    "hatizom", "hatgep", "gerincnyujt", "hiperextenzi", "hatfeszit",
                     "szuperman", "superman"},
             {MELL, "fekvenyom", "fekve nyom", "tarogat", "pillango", "fekvotamasz",
                     "tolodzkod", "mell", "ferde pad", "ferde nyom"},

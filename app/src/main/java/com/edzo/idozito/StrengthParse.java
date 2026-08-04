@@ -61,7 +61,7 @@ public final class StrengthParse {
      */
     private static final String[][] MOVES = {
             {"Guggolás", "guggol", "szkvot", "squat"},
-            {"Fekvenyomás", "fekvenyom", "fekve nyom", "bench"},
+            {"Fekvenyomás", "fekvenyom", "fekve nyom", "bench", "ferde pad"},
             {"Felhúzás", "felhuzas", "holtemel", "deadlift"},
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk"},
             {"Vállból nyomás", "vallbol nyom", "vallnyom", "vallbol", "ohp"},
@@ -73,7 +73,7 @@ public final class StrengthParse {
             {"Vádliemelés", "vadliemel", "vadli"},
             {"Fekvőtámasz", "fekvotamasz", "push up", "pushup"},
             {"Tolódzkodás", "tolodzkod", "dipp", "dips"},
-            {"Lehúzás", "lehuzas", "latpull", "lat pull"},
+            {"Lehúzás", "lehuzas", "latpull", "lat pull", "lat huzas"},
             {"Oldalemelés", "oldalemel", "eloreemel"},
             {"Plank", "plank", "deszka", "oldaltamasz"},
             {"Felülés", "felules", "crunch"},
@@ -87,8 +87,9 @@ public final class StrengthParse {
             {"Fordított tárogatás", "forditott tarogat", "hatso vall", "hatso deltoid"},
             {"Csuklyás emelés", "csuklyas", "shrug"},
             {"Hátizom gép", "hatizom", "hatgep"},
-            {"Mellgép", "mellgep", "tarogat", "pillango"},
+            {"Mellgép", "mellgep", "tarogat", "pillango", "mellnyom"},
             {"Hegymászó", "hegymaszo"},
+            {"Hátfeszítés", "hiperextenzi", "hatfeszit", "back extension"},
     };
 
     /** A felismerhető gyakorlatok szép nevei (teszthez és súgóhoz). */
@@ -257,6 +258,7 @@ public final class StrengthParse {
                 int e = bare.end();
                 String rest = s.substring(e).trim();
                 if (rest.startsWith("kg") || rest.startsWith("kilo")) continue;
+                if (isWeightSuffixed(s, e)) continue;
                 int r = Integer.parseInt(bare.group(1));
                 if (r >= 1 && r <= 200) { sets.add(new Set(r, weight)); break; }
             }
@@ -288,7 +290,25 @@ public final class StrengthParse {
                 if (w > 0 && w <= 500) return w;
             } catch (NumberFormatException ignored) {}
         }
+        // Mértékegység nélküli, de eszközraggal írt súly: „100-zal", „80-nal",
+        // „60-al". Enélkül a „guggoltam 100-zal ötször ötöt" száz ismétlésnek
+        // olvasódott – onnantól a rekordok és az 1RM is hazudtak volna.
+        m = java.util.regex.Pattern
+                .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?-?\\s?(zal|val|vel|nal|nel|lal|lel|al|el)\\b")
+                .matcher(s);
+        if (m.find()) {
+            try {
+                double w = Double.parseDouble(m.group(1).replace(',', '.'));
+                if (w > 0 && w <= 500) return w;
+            } catch (NumberFormatException ignored) {}
+        }
         return 0;
+    }
+
+    /** A súlyt jelölő eszközragos szám („100-zal") ne legyen ismétlésszám. */
+    private static boolean isWeightSuffixed(String s, int end) {
+        String rest = s.substring(end);
+        return rest.matches("^\\s?-?\\s?(zal|val|vel|nal|nel|lal|lel|al|el)\\b.*");
     }
 
     /**

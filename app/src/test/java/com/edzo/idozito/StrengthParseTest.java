@@ -193,4 +193,21 @@ public class StrengthParseTest {
             }
         }
     }
+    @Test public void theGymWordsRealPeopleWriteAreUnderstood() {
+        // Harmincöt valódi terem-mondattal szondáztam a felismerőt; ezek azok,
+        // amiken elhasalt.
+        assertEquals("Lehúzás 4×12/12/12/12@55", sum("lat húzás 4x12 55"));
+        assertEquals("Mellgép 3×12/12/12@45", sum("mellnyomás gépen 3x12 45 kg"));
+        assertEquals("Fekvenyomás 4×10/10/10/10@30", sum("ferde padon 4x10 30 kg"));
+        assertEquals("Hátfeszítés 3×15/15/15@0", sum("hiperextenzió 3x15"));
+    }
+
+    @Test public void aWeightWrittenWithAnInstrumentalSuffixIsNotRepCount() {
+        // A „100-zal" súly, nem száz ismétlés: onnantól a rekordok, az 1RM és
+        // az izomcsoport-egyensúly is hazudtak volna.
+        assertEquals("Guggolás 3×10/10/10@100", sum("guggolás 3x10 100-zal"));
+        assertEquals("Fekvenyomás 3×8/8/8@80", sum("fekvenyomás 3x8 80-nal"));
+        // Ismétlésszám nélkül inkább semmi, mint kitalált sorozat.
+        assertEquals(0, StrengthParse.parse("guggoltam 100-zal").size());
+    }
 }

@@ -1544,6 +1544,10 @@ public final class Activities {
 
     private static boolean onlyFiller(String s, int from, int to) {
         String mid = s.substring(from, to);
+        // Vessző vagy pontosvessző = tagmondathatár: a szám az ELŐZŐ
+        // tagmondathoz tartozik. A „mellnyomás 4x10 50, evezés" mondatból
+        // különben ötven evezés lett.
+        if (mid.indexOf(',') >= 0 || mid.indexOf(';') >= 0) return false;
         int i = 0;
         while (i < mid.length()) {
             if (!Character.isLetterOrDigit(mid.charAt(i))) { i++; continue; }

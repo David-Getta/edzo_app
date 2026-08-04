@@ -176,6 +176,8 @@ public final class Programs {
             case "Arnold nyomás": return "Tenyér elöl indul, nyomás közben fordul kifelé. Feszes has, ne told előre a bordáidat.";
             case "Fordított tárogatás": return "Törzs döntve, könyök enyhén hajlítva, a lapockákat húzd össze. Hátsó vállra megy, nem a hátra.";
             case "Csuklyás emelés": return "Csak vállvonás, felfelé – nem körzés. Fent egy pillanat, lefelé lassíts.";
+            case "Hátfeszítés": return "Csípő a párnán, a hát egyenes: csak addig emelkedj, "
+                    + "amíg a törzsed vonalba ér – ne feszítsd hátra.";
             case "Hátizom gép": return "Mellkas a párnán, a könyököd húzd hátra a bordáid mellé, lapockák össze.";
             case "Mellgép": return "Könyök vállmagasságban, a mellkas nyomjon – ne a váll elülső része. Ne engedd túl hátra a kart.";
             default: return "";
