@@ -125,4 +125,13 @@ public class IntervalParseTest {
         // írja felül a meglévő beállítást.
         assertEquals(0, q.warm);
     }
+    @Test public void theRoundCountCanComeFromTheTotalTime() {
+        // „20 perc alatt 40/20”: 60 mp-es kör, tehát 20 kör.
+        assertEquals("20×40/20", sum("20 perc alatt 40/20"));
+        assertEquals("10×45/15", sum("10 percig 45/15"));
+        // Jelzőszó nélkül nem találgatunk: a 30 mp itt a munka, nem a teljes idő.
+        assertEquals("1×30/15", sum("30/15"));
+        // A kimondott körszám erősebb a számolt értéknél.
+        assertEquals("5×40/20", sum("5 kör 40/20 20 perc alatt"));
+    }
 }

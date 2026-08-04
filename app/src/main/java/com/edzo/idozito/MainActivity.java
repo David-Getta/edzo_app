@@ -2654,6 +2654,25 @@ public class MainActivity extends Activity {
                     saveAll(); refreshValues(); updateTotal(); vibrateShort();
                     Ux.blazeCard(this, "⏱ Beállítva: " + p.label());
                 })
+                .addNeutral("Beállítom és elmentem sablonként", () -> {
+                    IntervalParse.Plan p = plan[0];
+                    if (p == null) {
+                        Toast.makeText(this, "Ebből nem derül ki a munkaidő.",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    cfg[WORK_K] = p.work; cfg[REST_K] = p.rest; cfg[ROUND_K] = p.rounds;
+                    if (p.warm > 0) cfg[WARM_K] = p.warm;
+                    if (p.cool > 0) cfg[COOL_K] = p.cool;
+                    saveAll(); refreshValues(); updateTotal();
+                    // A név magától adódik a beállításból – aki mondatból állít
+                    // be, az nem akar még egy űrlapot kitölteni.
+                    String tname = p.work + "/" + p.rest + " × " + p.rounds;
+                    Workouts.add(this, new Workouts.W(tname, cfg[PREP_K], p.work, p.rest,
+                            p.rounds, cfg[WARM_K], cfg[COOL_K]));
+                    refreshTemplates();
+                    Ux.blazeCard(this, "⏱ Beállítva és elmentve: " + tname);
+                })
                 .addCancel()
                 .show();
     }

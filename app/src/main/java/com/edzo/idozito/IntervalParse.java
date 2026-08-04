@@ -106,6 +106,10 @@ public final class IntervalParse {
                 if (r <= 0) r = numberBefore(s, "szett");
                 rounds = r;
             }
+            // „20 perc alatt 40/20”: a körszám a teljes időből jön ki. A
+            // teremben gyakran így mondják, és fejben osztani edzés előtt a
+            // legrosszabb pillanat.
+            if (rounds <= 0) rounds = roundsFromTotal(s, work + rest);
             Plan p = build(rounds, work, rest, warmIn(s), coolIn(s));
             if (p != null) return p;
         }
@@ -119,6 +123,32 @@ public final class IntervalParse {
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka.
         if (work <= 0 && rest <= 0) work = firstSeconds(s);
         return build(rounds, work, rest, warmIn(s), coolIn(s));
+    }
+
+    /**
+     * Körszám a kimondott teljes időből: „20 perc alatt 40/20”. Csak
+     * félreérthetetlen jelzőszóval („alatt”, „összesen”, „percig”), különben
+     * a „3 kör 40 mp” munkaideje válna teljes idővé.
+     */
+    private static int roundsFromTotal(String s, int cycle) {
+        if (cycle <= 0) return 0;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{1,3})\\s?perc(?:ig)?(?:\\s?(?:alatt|osszesen))?")
+                .matcher(s);
+        while (m.find()) {
+            boolean marked = m.group(0).contains("alatt") || m.group(0).contains("osszesen")
+                    || m.group(0).contains("percig");
+            if (!marked) continue;
+            int total;
+            try {
+                total = Integer.parseInt(m.group(1)) * 60;
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            int r = total / cycle;
+            if (r >= 2 && r <= MAX_ROUNDS) return r;
+        }
+        return 0;
     }
 
     /** Bemelegítés a mondatból („2 perc bemelegítés”). */
