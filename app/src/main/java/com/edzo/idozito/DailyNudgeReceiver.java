@@ -71,6 +71,17 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 text += left > 0
                         ? "\n🍽 Ma eddig " + eaten + " kcal – még kb. " + left + " kcal fér a célodba."
                         : "\n🍽 A mai " + goal + " kcal-os cél megvan (" + eaten + " kcal).";
+                // A maradék puszta szám; egy konkrét ötlet az, amiből vacsora
+                // lesz. A fehérje-hiány itt is fontosabb, mint a kalória.
+                if (left > 0) {
+                    int pGoal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                            .getInt("protein_goal", 0);
+                    double pLeft = pGoal > 0 ? pGoal - MealLog.todayProtein(c) : 0;
+                    java.util.List<MealIdeas.Idea> ideas = MealIdeas.forRemaining(
+                            Foods.ALL, left, pLeft, System.currentTimeMillis() / 86400000L);
+                    if (!ideas.isEmpty())
+                        text += " Pl. " + ideas.get(0).label() + ".";
+                }
             }
         } catch (Exception ignored) {}
         // Víz-emlékeztető annak, aki ma már használta a számlálót, de a cél még nincs meg.

@@ -64,7 +64,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   (időszakos böjthöz)
 - **„Mit egyek még?"**: a maradék kalóriára és a hiányzó fehérjére három
   konkrét ötlet adaggal együtt („Görög joghurt 150 g · 180 kcal · 14 g
-  fehérje"), egy koppintással naplózható – naponta más választék
+  fehérje"), egy koppintással naplózható – naponta más választék; a napi
+  emlékeztető is konkrét ötletet ad a maradékra
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi

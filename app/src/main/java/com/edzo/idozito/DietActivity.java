@@ -532,6 +532,11 @@ public class DietActivity extends Activity {
             // ötletet ad rá, adaggal, és egy koppintással fel is veszi.
             if (!over) addIdeas(goal - kcal, pGoal > 0 ? pGoal - prot : 0);
         } else {
+            // Kalória-cél nélkül is van mit mondani annak, akinek fehérje-célja
+            // van: a hiányzó fehérje ugyanúgy kérdés, csak nincs mihez mérni a
+            // kalóriát. Ilyenkor egy szokásos étkezésnyi kerettel dolgozunk.
+            if (pGoal > 0 && pGoal - prot >= MealIdeas.PROTEIN_GAP)
+                addIdeas(600, pGoal - prot);
             TextView hint = text("Koppints ide a napi kalória- és fehérje-cél beállításához",
                     11.5f, MUTED, false);
             hint.setPadding(0, dp(4), 0, 0);
