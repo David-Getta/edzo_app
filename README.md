@@ -60,6 +60,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   Profilban beállított fogyási célból
 - **Napi mérleg**: a mai kártyán az edzéssel elégetett kalória és a
   nettó bevitel is látszik
+- **Étkezési ablak**: az első és az utolsó mai étkezés között eltelt idő
+  (időszakos böjthöz)
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi

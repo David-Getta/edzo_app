@@ -459,6 +459,24 @@ public class DietActivity extends Activity {
             bt.setPadding(0, dp(2), 0, 0);
             todayCard.addView(bt);
         }
+        // Étkezési ablak: az első és az utolsó mai étkezés között eltelt idő.
+        // Aki időszakos böjtöt tart, ezt figyeli – eddig fejben kellett számolni.
+        long firstMeal = 0, lastMeal = 0;
+        for (MealLog.Meal m : meals())
+            if (m.ts >= t0) {
+                if (firstMeal == 0 || m.ts < firstMeal) firstMeal = m.ts;
+                if (m.ts > lastMeal) lastMeal = m.ts;
+            }
+        if (firstMeal > 0 && lastMeal > firstMeal + 60000) {
+            java.text.SimpleDateFormat hm = new java.text.SimpleDateFormat("HH:mm", Hu.LOCALE);
+            int mins = (int) ((lastMeal - firstMeal) / 60000);
+            TextView wt = text("🕗 Étkezési ablak: " + hm.format(new java.util.Date(firstMeal))
+                    + " – " + hm.format(new java.util.Date(lastMeal))
+                    + "  ·  " + (mins / 60) + " ó " + (mins % 60) + " p",
+                    12.5f, MUTED, false);
+            wt.setPadding(0, dp(2), 0, 0);
+            todayCard.addView(wt);
+        }
         double prot = protSum;
         int pGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("protein_goal", 0);
         if (prot > 0 || pGoal > 0) {
