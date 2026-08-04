@@ -505,6 +505,20 @@ public class MainActivity extends Activity {
         TextView tip = text("A számra koppintva pontos értéket írhatsz be.", 11.5f, MUTED, false);
         tip.setPadding(dp(4), 0, 0, dp(6));
         col.addView(tip);
+        col.addView(gap(8));
+        Button fromText = new Button(this);
+        fromText.setText("✍️  Beállítás mondatból");
+        fromText.setAllCaps(false);
+        fromText.setTextColor(tAccent);
+        fromText.setTextSize(14);
+        fromText.setStateListAnimator(null);
+        GradientDrawable fbg = new GradientDrawable();
+        fbg.setColor(CARD2);
+        fbg.setCornerRadius(dp(12));
+        fbg.setStroke(dp(1), LINE);
+        fromText.setBackground(fbg);
+        fromText.setOnClickListener(v -> intervalSentenceSheet());
+        col.addView(fromText, new LinearLayout.LayoutParams(-1, -2));
         col.addView(gap(16));
 
         // Hangok + extrák
@@ -2592,6 +2606,50 @@ public class MainActivity extends Activity {
         prefs.edit().putString("progname", programName).apply();
         updateProgramUI();
         vibrateShort();
+    }
+
+    /**
+     * Intervallum egyetlen mondatból. Aki a teremben kap egy edzéstervet, azt
+     * szövegként kapja („3 kör 40 mp munka 20 mp pihenő”), nem csúszkaállásként
+     * – eddig fejben kellett átváltani három beállításra.
+     */
+    void intervalSentenceSheet() {
+        final EditText et = sheetInput("pl. 3 kör 40 mp munka 20 mp pihenő", false);
+        final TextView preview = text("", 13, MUTED, false);
+        preview.setPadding(dp(4), dp(8), dp(4), 0);
+        LinearLayout box = vbox();
+        box.setPadding(dp(6), dp(2), dp(6), dp(4));
+        box.addView(et);
+        box.addView(preview);
+        final IntervalParse.Plan[] plan = {null};
+        et.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(android.text.Editable e) {
+                plan[0] = IntervalParse.parse(e.toString());
+                preview.setText(plan[0] == null
+                        ? "Írd le a kört és a munkaidőt – abból lesz beállítás."
+                        : "→  " + plan[0].label() + "   ·   összesen "
+                                + (plan[0].totalSec() / 60) + " perc");
+                preview.setTextColor(plan[0] == null ? MUTED : tAccent);
+            }
+        });
+        new Sheet(this, "Beállítás mondatból ✍️",
+                "Ismeri a „tabata”, az „emom” és a „8x20/10” alakot is.")
+                .addCustom(box)
+                .addPrimary("Beállítom", () -> {
+                    IntervalParse.Plan p = plan[0];
+                    if (p == null) {
+                        Toast.makeText(this, "Ebből nem derül ki a munkaidő.",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    cfg[WORK_K] = p.work; cfg[REST_K] = p.rest; cfg[ROUND_K] = p.rounds;
+                    saveAll(); refreshValues(); updateTotal(); vibrateShort();
+                    Ux.blazeCard(this, "⏱ Beállítva: " + p.label());
+                })
+                .addCancel()
+                .show();
     }
 
     void newProgramDialog() { editProgramDialog(null); }

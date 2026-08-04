@@ -13,6 +13,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   Levezetés** – másodpercre pontosan
 - **Élő folyamatsáv**, világító körgyűrű, 3-2-1 visszaszámlálás, ünneplő pipa,
   egygombos újraindítás ugyanarra az edzésre
+- **Beállítás mondatból**: „3 kör 40 mp munka 20 mp pihenő”, „8x20/10",
+  „tabata”, „emom 10 perc” – a teremben kapott edzésterv szövegként érkezik,
+  nem csúszkaállásként
 - Gyors sablonok (**HIIT / Tempó / Tabata**) és **10 beépített program**
   (törzs, teljes test, láb, kar, zsírégető HIIT, 7 perces edzés…), saját
   programokkal és gyakorlat-leírásokkal
@@ -198,7 +201,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~356 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~364 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
