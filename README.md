@@ -98,6 +98,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   1,25 kg, felette 2,5 kg). A tempót a leggyengébb sorozat szabja meg, a
   bemelegítő sorozatok nem számítanak bele. Három egyforma alkalom után
   visszavételt javasol. Egy koppintás, és beírja a sorozatokat
+- **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
+  progresszió-javaslattal együtt („🎯 Evezés · 3 × 10 · 52,5 kg") – csak
+  olyat ajánl, amit már csináltál, hogy legyen mihez mérni a súlyt
 - **„Mikor csináltad utoljára"** minden gyakorlatnál, és figyelmeztetés arra,
   ami két hete kimaradt
 - **Izomcsoport-egyensúly**: hány napon volt láb / hát / mell / váll / kar /
@@ -189,7 +192,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~342 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~346 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

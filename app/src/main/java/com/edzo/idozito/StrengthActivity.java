@@ -182,8 +182,35 @@ public class StrengthActivity extends Activity {
             inner.addView(nudge);
         }
         addBalance(inner);
+        addSuggestion(inner);
         card.addView(inner);
         summaryBox.addView(card, lp());
+    }
+
+    /**
+     * „Mit vegyél be ma?" – a héten kimaradt izomcsoportokból egy-egy
+     * gyakorlat, a hozzá tartozó progresszió-javaslattal.
+     *
+     * Az egyensúly-csipek megmutatják, MI maradt ki, de a hiány önmagában még
+     * nem terv. Itt már konkrét sor van: gyakorlat, sorozat, súly – egy
+     * koppintásra a fejlődés-lapjával.
+     */
+    void addSuggestion(LinearLayout inner) {
+        List<StrengthLog.Entry> log = StrengthLog.load(this);
+        List<String> picks = Muscles.suggestForToday(log, System.currentTimeMillis(), 3);
+        if (picks.isEmpty()) return;
+
+        inner.addView(gap(12));
+        inner.addView(text("Mai ajánlat a kimaradt izomcsoportokra", 12, MUTED, true));
+        for (final String name : picks) {
+            Progression.Suggestion s = Progression.next(log, name);
+            String line = "🎯  " + name + (s != null ? "  ·  " + s.headline() : "");
+            TextView row = text(line, 13, Theme.accent(this), true);
+            row.setPadding(0, dp(6), 0, 0);
+            row.setClickable(true);
+            row.setOnClickListener(v -> showProgress(name));
+            inner.addView(row);
+        }
     }
 
     /**

@@ -116,6 +116,51 @@ public final class Muscles {
         return out;
     }
 
+    /**
+     * Mit érdemes ma bevenni: a héten kimaradt izomcsoportokból a legrégebben
+     * csinált gyakorlat.
+     *
+     * Az egyensúly-csipek eddig megmutatták, MI maradt ki, de nem mondták meg,
+     * hogy abból mit csináljon – pedig a hiány önmagában még nem terv. Csak
+     * olyan gyakorlatot ajánlunk, amit a felhasználó már csinált: így van
+     * mihez mérni a súlyt, és nem küldjük neki ismeretlen mozdulatot.
+     *
+     * Ha semelyik csoport nem maradt ki, üres listát ad – a jó hetet nem
+     * kell megjegyzéssel kiegészíteni.
+     *
+     * @param newestFirst a teljes erősítő napló, legújabb bejegyzéssel elöl
+     */
+    public static List<String> suggestForToday(List<StrengthLog.Entry> newestFirst,
+                                               long now, int max) {
+        List<String> out = new ArrayList<>();
+        if (newestFirst == null || max <= 0) return out;
+        LinkedHashMap<String, Integer> bal = weekBalance(newestFirst, now, 7);
+        if (bal.size() < 2) return out;     // egy csoportból nincs mit egyensúlyozni
+
+        // Gyakorlatonként a legutóbbi alkalom. A napló legújabbal kezdődik,
+        // de a hívó sorrendjére nem támaszkodunk.
+        LinkedHashMap<String, Long> lastSeen = new LinkedHashMap<>();
+        for (StrengthLog.Entry e : newestFirst) {
+            if (e == null || e.name == null) continue;
+            Long prev = lastSeen.get(e.name);
+            if (prev == null || e.ts > prev) lastSeen.put(e.name, e.ts);
+        }
+
+        for (String g : GROUPS) {
+            if (out.size() >= max) break;
+            Integer n = bal.get(g);
+            if (n == null || n > 0) continue;      // nem maradt ki
+            String best = null;
+            long bestTs = Long.MAX_VALUE;
+            for (java.util.Map.Entry<String, Long> e : lastSeen.entrySet()) {
+                if (!g.equals(groupOf(e.getKey()))) continue;
+                if (e.getValue() < bestTs) { bestTs = e.getValue(); best = e.getKey(); }
+            }
+            if (best != null) out.add(best);
+        }
+        return out;
+    }
+
     /** „Hát", „Hát és Váll", „Hát, Váll és Kar" – String.join nélkül (API 24). */
     public static String andList(List<String> items) {
         StringBuilder sb = new StringBuilder();

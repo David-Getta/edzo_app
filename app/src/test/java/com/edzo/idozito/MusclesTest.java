@@ -144,4 +144,43 @@ public class MusclesTest {
         assertEquals("Hát, Váll és Kar",
                 Muscles.andList(Arrays.asList("Hát", "Váll", "Kar")));
     }
+    // --- Mai ajánlat ---
+
+    @Test public void theNeglectedGroupsGetASuggestion() {
+        // Láb és mell ment a héten, hát nem – a hátból a legrégebben csinált
+        // gyakorlat jön vissza.
+        List<StrengthLog.Entry> log = log(
+                at("Guggolás", 1), at("Fekvenyomás", 2),
+                at("Húzódzkodás", 20), at("Evezés", 40));
+        List<String> s = Muscles.suggestForToday(log, now(), 3);
+        assertEquals(1, s.size());
+        assertEquals("Evezés", s.get(0));      // régebbi, mint a húzódzkodás
+    }
+
+    @Test public void aBalancedWeekGetsNoNagging() {
+        List<StrengthLog.Entry> log = log(
+                at("Guggolás", 1), at("Fekvenyomás", 2), at("Evezés", 3));
+        assertTrue(Muscles.suggestForToday(log, now(), 3).isEmpty());
+    }
+
+    @Test public void onlyExercisesTheUserHasDoneAreSuggested() {
+        // Amit sosem csinált, azt nem ajánljuk: nincs mihez mérni a súlyt.
+        List<StrengthLog.Entry> log = log(
+                at("Guggolás", 1), at("Evezés", 30), at("Fekvenyomás", 30));
+        List<String> s = Muscles.suggestForToday(log, now(), 5);
+        assertTrue(!s.isEmpty());
+        for (String n : s)
+            assertTrue("sosem csinálta: " + n, n.equals("Evezés") || n.equals("Fekvenyomás"));
+    }
+
+    @Test public void theSuggestionIsCappedAndSafe() {
+        List<StrengthLog.Entry> log = log(
+                at("Guggolás", 30), at("Evezés", 30), at("Fekvenyomás", 30),
+                at("Oldalemelés", 30), at("Bicepsz", 30), at("Plank", 30));
+        assertEquals(2, Muscles.suggestForToday(log, now(), 2).size());
+        assertTrue(Muscles.suggestForToday(log, now(), 0).isEmpty());
+        assertTrue(Muscles.suggestForToday(null, now(), 3).isEmpty());
+        // Egyetlen csoportból nincs mit egyensúlyozni.
+        assertTrue(Muscles.suggestForToday(log(at("Guggolás", 30)), now(), 3).isEmpty());
+    }
 }
