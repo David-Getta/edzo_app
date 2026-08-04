@@ -2614,7 +2614,8 @@ public class MainActivity extends Activity {
      * – eddig fejben kellett átváltani három beállításra.
      */
     void intervalSentenceSheet() {
-        final EditText et = sheetInput("pl. 3 kör 40 mp munka 20 mp pihenő", false);
+        final EditText et = sheetInput(
+                Examples.hint(Examples.INTERVAL, System.currentTimeMillis()), false);
         final TextView preview = text("", 13, MUTED, false);
         preview.setPadding(dp(4), dp(8), dp(4), 0);
         LinearLayout box = vbox();
@@ -2645,6 +2646,11 @@ public class MainActivity extends Activity {
                         return;
                     }
                     cfg[WORK_K] = p.work; cfg[REST_K] = p.rest; cfg[ROUND_K] = p.rounds;
+                    // A bemelegítést és a levezetést csak akkor írjuk felül, ha
+                    // a mondat tényleg mondott róluk valamit – a meglévő
+                    // beállítást némán eldobni bosszantóbb, mint nem érteni.
+                    if (p.warm > 0) cfg[WARM_K] = p.warm;
+                    if (p.cool > 0) cfg[COOL_K] = p.cool;
                     saveAll(); refreshValues(); updateTotal(); vibrateShort();
                     Ux.blazeCard(this, "⏱ Beállítva: " + p.label());
                 })

@@ -25,21 +25,32 @@ public final class IntervalParse {
         public final int work;
         /** Pihenő másodpercben (0 = nincs). */
         public final int rest;
+        /** Bemelegítés másodpercben (0 = nincs). */
+        public final int warm;
+        /** Levezetés másodpercben (0 = nincs). */
+        public final int cool;
 
         Plan(int rounds, int work, int rest) {
+            this(rounds, work, rest, 0, 0);
+        }
+
+        Plan(int rounds, int work, int rest, int warm, int cool) {
             this.rounds = rounds; this.work = work; this.rest = rest;
+            this.warm = warm; this.cool = cool;
         }
 
         /** „8 kör · 20 mp munka · 10 mp pihenő”. */
         public String label() {
             String s = rounds + " kör  ·  " + sec(work) + " munka";
             if (rest > 0) s += "  ·  " + sec(rest) + " pihenő";
+            if (warm > 0) s += "  ·  " + sec(warm) + " bemelegítés";
+            if (cool > 0) s += "  ·  " + sec(cool) + " levezetés";
             return s;
         }
 
         /** A teljes edzés hossza másodpercben (az utolsó pihenő is beleszámít). */
         public int totalSec() {
-            return rounds * (work + rest);
+            return warm + rounds * (work + rest) + cool;
         }
 
         private static String sec(int s) {
@@ -75,7 +86,8 @@ public final class IntervalParse {
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");
                 int rounds = r > 0 && r <= MAX_ROUNDS ? r : Integer.parseInt(p[1]);
-                return new Plan(rounds, Integer.parseInt(p[2]), Integer.parseInt(p[3]));
+                return new Plan(rounds, Integer.parseInt(p[2]), Integer.parseInt(p[3]),
+                        warmIn(s), coolIn(s));
             }
 
         // 2) „40/20”, „45-15”, „8x20/10”: a teremben ez a rövid írásmód.
@@ -94,7 +106,7 @@ public final class IntervalParse {
                 if (r <= 0) r = numberBefore(s, "szett");
                 rounds = r;
             }
-            Plan p = build(rounds, work, rest);
+            Plan p = build(rounds, work, rest, warmIn(s), coolIn(s));
             if (p != null) return p;
         }
 
@@ -106,15 +118,32 @@ public final class IntervalParse {
         int rest = secondsBefore(s, new String[]{"piheno", "pihenes", "szunet", "lazitas"});
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka.
         if (work <= 0 && rest <= 0) work = firstSeconds(s);
-        return build(rounds, work, rest);
+        return build(rounds, work, rest, warmIn(s), coolIn(s));
+    }
+
+    /** Bemelegítés a mondatból („2 perc bemelegítés”). */
+    static int warmIn(String s) {
+        return secondsBefore(Foods.norm(s), new String[]{"bemelegit", "warmup", "warm up"});
+    }
+
+    /** Levezetés a mondatból („levezetés 3 perc”). */
+    static int coolIn(String s) {
+        return secondsBefore(Foods.norm(s), new String[]{"levezet", "nyujtas", "cooldown",
+                "cool down"});
     }
 
     private static Plan build(int rounds, int work, int rest) {
+        return build(rounds, work, rest, 0, 0);
+    }
+
+    private static Plan build(int rounds, int work, int rest, int warm, int cool) {
         if (work < MIN_SEC || work > MAX_SEC) return null;
         if (rest < 0 || rest > MAX_SEC) rest = 0;
+        if (warm < 0 || warm > MAX_SEC) warm = 0;
+        if (cool < 0 || cool > MAX_SEC) cool = 0;
         if (rounds <= 0) rounds = 1;
         if (rounds > MAX_ROUNDS) return null;
-        return new Plan(rounds, work, rest);
+        return new Plan(rounds, work, rest, warm, cool);
     }
 
     /**

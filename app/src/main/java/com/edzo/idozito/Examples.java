@@ -64,6 +64,18 @@ public final class Examples {
             "guggolás 3x10x60",
     };
 
+    /** Intervallum-beállítás egy mondatból. */
+    public static final String[] INTERVAL = {
+            "3 kör 40 mp munka 20 mp pihenő",
+            "8x20/10",
+            "tabata",
+            "5 kör 1 perc munka 30 másodperc pihenő",
+            "emom 10 perc",
+            "45/15 x 6",
+            "10 kör 30 mp munka, 15 mp pihenő",
+            "2 perc bemelegítés, 6 kör 40/20",
+    };
+
     /** Percenként másik példa, hogy ne egyetlen formát tanuljon meg a szem. */
     public static String pick(String[] a, long now) {
         long i = (now / 60000L) % a.length;

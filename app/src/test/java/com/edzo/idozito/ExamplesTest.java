@@ -69,8 +69,18 @@ public class ExamplesTest {
         assertEquals(2, StrengthParse.parse("arnold nyomás 3x10 16 kg, oldalemelés 3x15 8 kg").size());
     }
 
+    @Test public void everyIntervalExampleIsRecognised() {
+        for (String q : Examples.INTERVAL) {
+            IntervalParse.Plan p = IntervalParse.parse(q);
+            assertTrue("nem ismeri fel a saját példáját: " + q, p != null);
+            assertTrue("üres beállítás: " + q, p.rounds >= 1 && p.work >= 5);
+            assertTrue("életszerűtlen hossz: " + q, p.totalSec() <= 4 * 3600);
+        }
+    }
+
     @Test public void hintsAreWellFormedAndRotate() {
-        for (String[] a : new String[][]{Examples.MEAL, Examples.BULK, Examples.SET}) {
+        for (String[] a : new String[][]{Examples.MEAL, Examples.BULK, Examples.SET,
+                Examples.INTERVAL}) {
             Set<String> seen = new HashSet<>();
             for (String s : a) {
                 assertTrue("üres példa", s.trim().length() > 2);

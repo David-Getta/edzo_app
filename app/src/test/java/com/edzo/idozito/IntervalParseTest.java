@@ -106,4 +106,23 @@ public class IntervalParseTest {
             }
         }
     }
+
+    @Test public void warmupAndCooldownAreUnderstood() {
+        IntervalParse.Plan p = IntervalParse.parse("2 perc bemelegítés, 6 kör 40/20");
+        assertNotNull(p);
+        assertEquals(6, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+        assertEquals(120, p.warm);
+        assertEquals(0, p.cool);
+        assertEquals(120 + 6 * 60, p.totalSec());
+        assertTrue(p.label().contains("2 perc bemelegítés"));
+
+        IntervalParse.Plan q = IntervalParse.parse("tabata, levezetés 3 perc");
+        assertNotNull(q);
+        assertEquals(180, q.cool);
+        // Amiről a mondat nem szól, az nulla marad – a hívó ilyenkor nem
+        // írja felül a meglévő beállítást.
+        assertEquals(0, q.warm);
+    }
 }
