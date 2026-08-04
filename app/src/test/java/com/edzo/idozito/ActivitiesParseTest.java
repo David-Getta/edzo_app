@@ -581,6 +581,21 @@ public class ActivitiesParseTest {
                 c.getTimeInMillis()).days);
     }
 
+    @Test public void everydayMovementCounts() {
+        // Nem mindenki „edz": van, aki gyalog megy be, takarít, füvet nyír.
+        // Ezek is mozgásformák – a naplóban a helyük a túra és a fizikai munka.
+        assertEquals("tura", Activities.parse("gyalog mentem be a munkahelyre 25 perc")
+                .plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("babakocsis séta 40 perc").plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("lépcsőztem az irodában").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("takarítottam 1 órát").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("fűnyírás 45 perc").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("költözködés").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("ugrókötél 10 perc").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("trambulin 20 perc").plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("légzőgyakorlat 10 perc").plans.get(0).kind.id);
+    }
+
     @Test public void watchingBuyingAndVenuesAreNotWorkouts() {
         // A nézett meccs, a megrendelt boxzsák és a bérletvásárlás nem edzés,
         // és az ÉTterem sem kondi.

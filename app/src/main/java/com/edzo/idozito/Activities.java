@@ -62,7 +62,7 @@ public final class Activities {
                     "bringatura", "biciklitura", "kerekpartura"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandulas", "nordic",
-                    "hegymasz", "megmaszt"),
+                    "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
@@ -92,7 +92,7 @@ public final class Activities {
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     "joga", "yoga", "pilates", "nyujtas", "stretch", "torna", "medital",
-                    "meditac", "atmozgat"),
+                    "meditac", "atmozgat", "legzogyakorlat", "legzo gyakorlat"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
@@ -101,11 +101,14 @@ public final class Activities {
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "maszas", "boulder", "maszofal"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
-                    "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas"),
+                    "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas",
+                    "takarit", "funyir", "koltoz", "asas", "kapalas", "gereblyez",
+                    "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
-                    "ellipszis", "lepcsozo"),
+                    "ellipszis", "lepcsozo", "trambulin", "ugrokotel", "hulahopp",
+                    "kotelugras"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */
