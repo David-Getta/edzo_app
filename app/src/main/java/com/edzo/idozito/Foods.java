@@ -32,6 +32,10 @@ public final class Foods {
         new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell",
                 "grillcsirke", "teriyaki"),
         new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb", "csirkeszarny"),
+        // Egészben sült csirke: a bőrrel-csonttal tálalt adag zsírosabb, mint
+        // a grillezett mell, és a tepsiben sült zöldség zsírja is rámegy.
+        new Food("Tepsis csirke", 200, 20, 300, "tepsis csirke", "tepsiben sult csirke",
+                "egeszben sult csirke"),
         new Food("Pulykamell", 105, 23, 150, "pulyka"),
         new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes", "tarja",
                 "naturszelet", "natur szelet"),
@@ -496,7 +500,10 @@ public final class Foods {
         new Food("Befőtt / kompót", 70, 0.4, 150, "befott", "kompot"),
         new Food("Túrós batyu", 300, 7, 100, "turos batyu", "batyu"),
         // A -val/-vel hasonul: „kaláccsal". A cs+cs alakot külön tő fogja meg.
-        new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli"),
+        new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli",
+                // A töltelék benne van a kalóriában: a „diós bejgli" ne
+                // számoljon még egy adag diót is mellé.
+                "dios bejgli", "makos bejgli", "makos tekercs", "dios tekercs"),
         new Food("Almás pite", 240, 3, 120, "almas pite", "almaspite"),
         new Food("Krumplisaláta", 150, 2.5, 200, "krumplisalata", "krumpli salata",
                 "burgonyasalata", "burgonya salata"),

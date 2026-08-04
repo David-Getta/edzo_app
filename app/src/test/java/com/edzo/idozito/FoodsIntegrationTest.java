@@ -324,6 +324,14 @@ public class FoodsIntegrationTest {
         // A fél pizza viszont tényleg fél pizza, nem fél szelet.
         assertEquals("Pizza 300g", summary("egy egész pizza"));
     }
+    @Test public void theDishesFromTheLatestProbeAreFound() {
+        assertEquals("Tepsis csirke 300g", summary("tepsis csirke"));
+        assertEquals("Tepsis csirke 300g", summary("egészben sült csirke"));
+        assertEquals("Kalács / bejgli 80g", summary("mákos tekercs"));
+        // A töltelék benne van a kalóriában: ne számoljon még egy adag diót is.
+        assertEquals("Kalács / bejgli 80g", summary("diós bejgli szelet"));
+    }
+
     @Test public void aCountBeforeAFoodIsNotLost() {
         // Aminek nincs természetes darabmérete, ott eddig egyszerűen elveszett
         // a számláló: a „két kebab" egyetlen kebabnak számított. Ez 267 ételt
