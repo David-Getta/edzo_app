@@ -58,6 +58,9 @@ public final class Activities {
                     "vizilabda", "aquafit", "vizitorna"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
+                    // A spinning teremben zajlik, de a lába ugyanazt csinálja:
+                    // a tánc MET-je alábecsülte.
+                    "spinning", "szobabicikli", "spinning ora",
                     // A „bringatúra" egyben fedi a „bringa" és a „túra" tövet is.
                     "bringatura", "biciklitura", "kerekpartura"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
@@ -88,7 +91,7 @@ public final class Activities {
                     "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma",
                     "aikido", "onvedelm", "vivas"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
-                    "tanc", "aerobik", "zumba", "spinning", "kangoo", "alakformalo"),
+                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     "joga", "yoga", "pilates", "nyujtas", "stretch", "torna", "medital",
@@ -97,17 +100,18 @@ public final class Activities {
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
             new Kind("si", "🎿", "Sí / snowboard", 6.0, false, 120,
-                    "sieles", "sizes", "snowboard", "sielt", "sifutas"),
+                    "siel", "sizes", "snowboard", "sifutas"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "maszas", "boulder", "maszofal"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
-                    "kerti munka", "fizikai munka", "kertesz", "favagas", "lapatolas",
+                    "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
                     "takarit", "funyir", "koltoz", "asas", "kapalas", "gereblyez",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
-                    "ellipszis", "lepcsozo", "trambulin", "ugrokotel", "hulahopp",
+                    "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
+                    "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "hulahopp",
                     "kotelugras"),
     };
 
@@ -662,7 +666,11 @@ public final class Activities {
         // menthető: egyéb mozgásként. Csak tartalékként, mert a „3 futó edzés"
         // szóban is benne van az „edzés" – ott a futás a helyes válasz.
         if (out.isEmpty()) {
-            for (String w : new String[]{"edzes", "edzett", "edzeget", "edzeni", "alkalom", "mozgas"}) {
+            // A „HIIT" és az „intervall" itt, a tartalék ágon van, nem
+            // szótőként: időzítős programok nevében is gyakori szó („Zsírégető
+            // HIIT"), és ott a program neve a helyes válasz, nem egy sportág.
+            for (String w : new String[]{"edzes", "edzett", "edzeget", "edzeni", "alkalom",
+                    "mozgas", "hiit", "intervall"}) {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 Kind other = byId("egyeb");
@@ -1527,7 +1535,12 @@ public final class Activities {
      * A szám és a szó között csak szóköz, írásjel vagy jelentéktelen töltelék
      * áll? Ha valódi szó van közte, a szám nem ehhez tartozik.
      */
-    private static final String[] FILLER = {"db", "darab", "alkalom", "meccs", "kb", "x"};
+    private static final String[] FILLER = {"db", "darab", "alkalom", "meccs", "kb", "x",
+            // „háromszor voltam futni": az ige a szám és a mozgás közé ékelődik,
+            // de a szám attól még a mozgáshoz tartozik – korábban egy alkalom
+            // lett belőle, vagyis a hét kétharmada eltűnt.
+            "voltam", "voltunk", "volt", "mentem", "mentunk", "jartam", "jartunk",
+            "elmentem", "elmentunk"};
 
     private static boolean onlyFiller(String s, int from, int to) {
         String mid = s.substring(from, to);

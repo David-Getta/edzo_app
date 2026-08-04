@@ -57,4 +57,32 @@ public class ActivitiesIntegrationTest {
         assertEquals("2d+5 h12: 1×tura/90, 2×uszas/45",
                 summary("hétvégén 1-1 túra és kétszer úsztam"));
     }
+    @Test public void theSentencesRealPeopleWriteAreUnderstood() {
+        // Hatvan valódi edzés-mondattal szondáztam a felismerőt; ezek azok,
+        // amiken elhasalt.
+
+        // A spinning teremben zajlik, de kerékpározás – a tánc MET-je
+        // alábecsülte a kalóriát.
+        assertEquals("1d+0 h12: 1×kerekpar/50", summary("spinning 50 perc"));
+        assertEquals("1d+0 h12: 1×kerekpar/45", summary("szobabicikli 45 perc"));
+        // Az „N-szor" akkor is a mozgáshoz tartozik, ha ige ékelődik közé.
+        // Korábban egy alkalom lett belőle: a hét kétharmada eltűnt.
+        assertEquals("7d+0 h12: 3×futas/45, 2×kondi/60",
+                summary("ezen a héten háromszor voltam futni és kétszer kondizni"));
+        assertEquals("1d+0 h12: 2×uszas/45", summary("kétszer voltam úszni"));
+        // Hiányzó mozgásformák.
+        assertEquals("1d+0 h12: 1×egyeb/30", summary("elliptikus tréner fél óra"));
+        assertEquals("1d+0 h12: 1×egyeb/25", summary("HIIT 25 perc"));
+        assertEquals("1d+0 h12: 1×munka/60", summary("fát vágtam"));
+        assertEquals("1d+0 h12: 1×si/120", summary("sielni voltam egesz nap"));
+        assertEquals("1d+0 h12: 1×egyeb/60",
+                summary("gyerekkel játszottam a játszótéren 1 órát"));
+    }
+
+    @Test public void aTimerProgramNameIsStillNotASport() {
+        // A „HIIT" a tartalék ágon van, nem szótőként: az időzítős programok
+        // nevében gyakori szó, és ott a program neve a helyes válasz.
+        assertEquals(null, Activities.kindByText("Zsírégető HIIT"));
+        assertEquals(null, Activities.kindByText("Intervall alap"));
+    }
 }
