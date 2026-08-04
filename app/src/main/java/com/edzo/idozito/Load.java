@@ -93,6 +93,68 @@ public final class Load {
     }
 
     /**
+     * A WHO ajánlása felnőttnek: heti 150 perc közepes intenzitású mozgás.
+     * Ez az egyetlen szám, amit az egészségügy évtizedek óta ugyanígy mond –
+     * ezért ez az alapérték, és nem valami saját kitalálás.
+     */
+    public static final int DEFAULT_WEEKLY_GOAL = 150;
+
+    /** A heti mozgás-cél állása. */
+    public static final class Weekly {
+        /** Az elmúlt 7 nap percei. */
+        public final double minutes;
+        public final int goal;
+        /** 0–100 közé vágva, a sávhoz. */
+        public final int percent;
+        public final boolean done;
+
+        Weekly(double minutes, int goal, int percent, boolean done) {
+            this.minutes = minutes; this.goal = goal;
+            this.percent = percent; this.done = done;
+        }
+
+        /** „95 / 150 perc" – a kártya fejléce. */
+        public String label() {
+            return Math.round(minutes) + " / " + goal + " perc";
+        }
+
+        /** Egy mondat: mennyi hiányzik, vagy mennyivel van túl. */
+        public String note() {
+            if (done) {
+                int over = (int) Math.round(minutes) - goal;
+                return over >= 15
+                        ? "A heti mozgás-cél megvan, sőt " + over + " perccel túl is."
+                        : "A heti mozgás-cél megvan. Ez az a mennyiség, amire az "
+                                + "egészségügyi ajánlás épül.";
+            }
+            int left = (int) Math.ceil(goal - minutes);
+            return "Még " + left + " perc a heti célig – ez " + spread(left) + ".";
+        }
+
+        /** A hiányzó percek emészthető bontása. */
+        private static String spread(int left) {
+            if (left <= 20) return "egy séta";
+            if (left <= 60) return "két rövid edzés";
+            if (left <= 120) return "három fél óra a héten";
+            return "napi húsz perc mozgás";
+        }
+    }
+
+    /**
+     * @param daily napi terhelés percben (daily[0] = ma); csak az első hét számít
+     * @param goal  a heti cél percben; 0 vagy kevesebb esetén az alapérték
+     */
+    public static Weekly weekly(double[] daily, int goal) {
+        if (goal <= 0) goal = DEFAULT_WEEKLY_GOAL;
+        double sum = 0;
+        if (daily != null)
+            for (int i = 0; i < daily.length && i < ACUTE_DAYS; i++)
+                sum += Math.max(0, daily[i]);
+        int pct = (int) Math.round(Math.max(0, Math.min(1, sum / goal)) * 100);
+        return new Weekly(sum, goal, pct, sum >= goal);
+    }
+
+    /**
      * @param daily napi terhelés percben, daily[0] = ma, daily[1] = tegnap, …
      *              A tömb lehet rövidebb 35 napnál; a hiányzó napok nullák.
      */

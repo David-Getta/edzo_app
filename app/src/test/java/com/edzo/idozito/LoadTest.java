@@ -135,4 +135,45 @@ public class LoadTest {
         assertEquals(Load.JUMP, r.level);
         assertTrue(r.label().startsWith("1,9"));
     }
+
+    // --- Heti mozgás-cél ---
+
+    @Test public void theWeeklyGoalCountsOnlyTheLastSevenDays() {
+        // A régebbi hetek nem számítanak bele: a cél HETI.
+        Load.Weekly w = Load.weekly(days(20, 60), 150);
+        assertEquals(140.0, w.minutes, 0.001);
+        assertEquals(150, w.goal);
+        assertFalse(w.done);
+        assertEquals(93, w.percent);
+        assertEquals("140 / 150 perc", w.label());
+        assertTrue(w.note().contains("Még 10 perc"));
+    }
+
+    @Test public void theDefaultGoalIsTheHealthRecommendation() {
+        assertEquals(150, Load.DEFAULT_WEEKLY_GOAL);
+        assertEquals(150, Load.weekly(days(10, 10), 0).goal);
+        assertEquals(150, Load.weekly(days(10, 10), -5).goal);
+    }
+
+    @Test public void aFinishedGoalIsCelebratedNotOverflowed() {
+        Load.Weekly w = Load.weekly(days(40, 10), 150);
+        assertTrue(w.done);
+        assertEquals(100, w.percent);       // a sáv nem lóg ki
+        assertTrue(w.note().contains("megvan"));
+        // Bőven túl: a többlet is látszik.
+        assertTrue(Load.weekly(days(60, 10), 150).note().contains("perccel túl"));
+    }
+
+    @Test public void theMissingMinutesAreBrokenDownReadably() {
+        assertTrue(Load.weekly(days(0, 0), 150).note().contains("napi húsz perc"));
+        assertTrue(Load.weekly(days(20, 0), 150).note().contains("egy séta"));
+        for (int have = 0; have <= 150; have += 7) {
+            double[] d = new double[35];
+            d[0] = have;
+            Load.Weekly w = Load.weekly(d, 150);
+            assertTrue(!w.note().isEmpty() && !w.label().isEmpty());
+            assertTrue(w.percent >= 0 && w.percent <= 100);
+        }
+        assertEquals(0, Load.weekly(null, 150).percent);
+    }
 }

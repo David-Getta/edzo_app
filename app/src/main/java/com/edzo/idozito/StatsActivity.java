@@ -108,6 +108,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View weekGoal = weeklyGoalCard(System.currentTimeMillis());
+        if (weekGoal != null) {
+            col.addView(sectionTitle("Heti mozgás-cél"));
+            col.addView(weekGoal, lp());
+            col.addView(gap(16));
+        }
+
         View load = loadCard(System.currentTimeMillis());
         if (load != null) {
             col.addView(sectionTitle("Terhelés · e hét a szokásoshoz mérve"));
@@ -637,7 +644,12 @@ public class StatsActivity extends Activity {
      * mennyiség hogyan VÁLTOZOTT, mert a sérülések többsége nem a sok
      * edzésből, hanem a hirtelen többől jön.
      */
-    View loadCard(long now) {
+    /**
+     * Napi mozgás-percek az elmúlt 35 napra (index 0 = ma). A súlyzós napok
+     * időtartam nélkül vannak a naplóban: a sorozatszámból becsüljük, különben
+     * pont a vasazós hetek látszanának üresnek.
+     */
+    double[] dailyMinutes(long now) {
         int days = Load.ACUTE_DAYS + Load.CHRONIC_DAYS;
         double[] daily = new double[days];
         for (int i = 0; i < hist.length(); i++) {
@@ -646,8 +658,6 @@ public class StatsActivity extends Activity {
             int d = Days.ago(o.optLong("ts"), now);
             if (d >= 0 && d < days) daily[d] += o.optInt("dur") / 60.0;
         }
-        // A súlyzós napok időtartam nélkül vannak a naplóban: a sorozatszámból
-        // becsüljük, különben pont a vasazós hetek látszanának üresnek.
         java.util.HashMap<Integer, Integer> setsPerDay = new java.util.HashMap<>();
         for (StrengthLog.Entry e : StrengthLog.load(this)) {
             int d = Days.ago(e.ts, now);
@@ -657,8 +667,90 @@ public class StatsActivity extends Activity {
         }
         for (java.util.Map.Entry<Integer, Integer> e : setsPerDay.entrySet())
             daily[e.getKey()] += Load.strengthMinutes(e.getValue());
+        return daily;
+    }
 
-        Load.Ratio r = Load.of(daily);
+    /**
+     * Heti mozgás-cél: az egészségügyi ajánlás heti 150 perc, és ez az egyetlen
+     * szám, amit évtizedek óta ugyanígy mondanak. A kártya a hét állását
+     * mutatja, és azt, hogy a hiányzó percek mit jelentenek a gyakorlatban.
+     */
+    View weeklyGoalCard(long now) {
+        int goal = getSharedPreferences("edzo", MODE_PRIVATE)
+                .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
+        Load.Weekly w = Load.weekly(dailyMinutes(now), goal);
+        if (w.minutes <= 0) return null;
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(16), dp(14), dp(16), dp(14));
+        LinearLayout row = hbox();
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(text((w.done ? "✅  " : "🎽  ") + w.label(), 20,
+                w.done ? 0xFF22C55E : Theme.accent(this), true),
+                new LinearLayout.LayoutParams(-2, -2));
+        cardV.addView(row, lp());
+        cardV.addView(gap(8));
+
+        LinearLayout barBg = hbox();
+        GradientDrawable bgd = new GradientDrawable();
+        bgd.setColor(Theme.track(this));
+        bgd.setCornerRadius(dp(6));
+        barBg.setBackground(bgd);
+        View fill = new View(this);
+        GradientDrawable fgd = new GradientDrawable();
+        fgd.setColor(w.done ? 0xFF22C55E : Theme.accent(this));
+        fgd.setCornerRadius(dp(6));
+        fill.setBackground(fgd);
+        float f = (float) Math.max(0.02, w.percent / 100.0);
+        barBg.addView(fill, new LinearLayout.LayoutParams(0, dp(10), f));
+        barBg.addView(new View(this), new LinearLayout.LayoutParams(0, dp(10), 1f - f));
+        cardV.addView(barBg, lp());
+        cardV.addView(gap(8));
+        cardV.addView(text(w.note(), 12.5f, MUTED, false), lp());
+        cardV.addView(gap(4));
+        cardV.addView(text("Koppints ide a heti cél átállításához", 11.5f, MUTED, false), lp());
+        cardV.setClickable(true);
+        cardV.setOnClickListener(v -> moveGoalDialog(w.goal));
+        return cardV;
+    }
+
+    /** A heti mozgás-cél átállítása. */
+    void moveGoalDialog(int current) {
+        final android.widget.EditText et = new android.widget.EditText(this);
+        et.setHint("Heti perc (pl. 150)");
+        et.setHintTextColor(MUTED);
+        et.setTextColor(TXT);
+        et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        et.setText(String.valueOf(current));
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(et, lp());
+        new Sheet(this, "Heti mozgás-cél 🎽",
+                "Az egészségügyi ajánlás felnőttnek heti 150 perc közepes "
+                        + "intenzitású mozgás. Ha ez most sok, állítsd lejjebb: a "
+                        + "teljesíthető cél többet ér, mint a szép szám.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    int min;
+                    try {
+                        min = Integer.parseInt(et.getText().toString().trim());
+                    } catch (NumberFormatException e) {
+                        return;
+                    }
+                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                            .putInt("move_goal_min", Math.max(20, Math.min(2000, min))).apply();
+                    recreate();
+                })
+                .addNeutral("⚡ Ajánlott: " + Load.DEFAULT_WEEKLY_GOAL + " perc", () -> {
+                    getSharedPreferences("edzo", MODE_PRIVATE).edit()
+                            .putInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL).apply();
+                    recreate();
+                })
+                .addCancel().show();
+    }
+
+    View loadCard(long now) {
+        Load.Ratio r = Load.of(dailyMinutes(now));
         if (!r.known) return null;
 
         LinearLayout cardV = card();

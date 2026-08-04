@@ -199,6 +199,12 @@ public class WeeklyReceiver extends BroadcastReceiver {
             Load.Ratio r = Load.of(daily);
             if (r.known && r.level == Load.JUMP)
                 text += "\n⚠️ Terhelés: " + r.label() + " – jövő héten vegyél vissza.";
+            // Heti mozgás-cél: a hét zárásakor ez a legfontosabb egy szám.
+            Load.Weekly wk = Load.weekly(daily, c.getSharedPreferences("edzo",
+                    Context.MODE_PRIVATE).getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL));
+            if (wk.minutes > 0)
+                text += "\n🎽 Heti mozgás: " + wk.label()
+                        + (wk.done ? "  ✔" : "  ·  " + wk.percent + "%");
         } catch (Exception ignored) {}
         // Étrend-sor annak, aki a héten naplózott: naplózott napok + kcal-átlag.
         try {

@@ -132,6 +132,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   **12 hetes aktivitás-hőtérkép**, terv-teljesítés
 - **Az idei éved**: éves madártávlat – aktív napok, heti átlag, össz idő
   és táv, az év sportja, a leghosszabb edzés és a legaktívabb hónap
+- **Heti mozgás-cél**: az egészségügyi ajánlás heti 150 perce haladássávval,
+  és a hiányzó percek emberi nyelven („még 40 perc – ez két rövid edzés");
+  a cél átállítható, a heti összegzésben is ott a hét állása
 - **Terhelés-figyelés**: az elmúlt hét edzésperce a megelőző négy hét heti
   átlagához mérve („⚠️ 1,9× a szokásos") – a sérülések többsége nem a sok
   edzésből, hanem a hirtelen többől jön; nagy ugrásnál a heti összegzés is szól
@@ -193,7 +196,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~351 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~355 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
