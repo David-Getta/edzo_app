@@ -304,4 +304,15 @@ public class FoodsIntegrationTest {
         assertEquals("Kínai bundás csirke 250g", summary("kínai csirke bundában szechuan"));
         assertEquals("Sült krumpli 150g", summary("sültkrumpli"));
     }
+    @Test public void aMeasureWordSurvivesACompoundFoodName() {
+        // A csokoládé-tő az „étcsoki" közepén van, így a mérőszó mögött egy
+        // szótöredék maradt, és a fél tábla elveszett: a bejegyzés a tipikus
+        // adaggal, vagyis feleannyival ment tovább.
+        assertEquals("Csokoládé 50g", summary("fél tábla étcsoki"));
+        assertEquals("Csokoládé 100g", summary("egy tábla étcsoki"));
+        assertEquals("Csokoládé 200g", summary("két tábla tejcsoki"));
+        // Ami valóban más szó, azt továbbra sem fogadjuk el mérőszónak.
+        assertEquals("Leves (átlag) 800g + Alma 150g", summary("2 tányér leves után alma"));
+        assertEquals("Kávé (fekete) 200g", summary("duplaespresszó"));
+    }
 }

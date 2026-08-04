@@ -504,7 +504,8 @@ public final class Foods {
         new Food("Körözött", 250, 12, 80, "korozott"),
         new Food("Sajtkrém", 250, 8, 40, "sajtkrem"),
         // --- Italok ---
-        new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo"),
+        new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo",
+                "espresszo", "espresso", "ristretto", "americano"),
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
@@ -827,6 +828,18 @@ public final class Foods {
         for (String w : PORTION_WORDS) if (w.equals(between)) return between;
         for (String w : new String[]{"adag", "adagot", "adagnyi", "porcio", "tabla"})
             if (w.equals(between)) return between;
+        // A szótő HOSSZABB szó belsejébe is eshet: a „fél tábla étcsoki"
+        // csokoládé-töve az „étcsoki" közepén van, így a mérőszó mögött ott
+        // maradt egy szótöredék („tabla et"), és a fél tábla elveszett –
+        // a bejegyzés a tipikus adaggal, vagyis feleannyival ment tovább.
+        int sp = between.lastIndexOf(' ');
+        if (sp > 0) {
+            String head = between.substring(0, sp).trim();
+            for (String w : COUNT_WORDS) if (w.equals(head)) return head;
+            for (String w : PORTION_WORDS) if (w.equals(head)) return head;
+            for (String w : new String[]{"adag", "adagot", "adagnyi", "porcio", "tabla"})
+                if (w.equals(head)) return head;
+        }
         return null;
     }
 
