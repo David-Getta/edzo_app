@@ -80,7 +80,7 @@ public class FoodsIntegrationTest {
         assertEquals("Ramen 500g", summary("pho leves"));
         assertEquals("Poke bowl 400g", summary("poke bowl"));
         assertEquals("Caprese saláta 250g", summary("caprese saláta"));
-        assertEquals("Rizottó 350g + Gomba 100g", summary("risotto gombával"));
+        assertEquals("Rizottó 300g + Gomba 100g", summary("risotto gombával"));
     }
 
     @Test public void thePortionWordWorksAfterTheFoodNameToo() {

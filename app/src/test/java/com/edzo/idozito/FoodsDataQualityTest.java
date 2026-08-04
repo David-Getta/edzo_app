@@ -36,6 +36,34 @@ public class FoodsDataQualityTest {
         assertTrue("képtelen adatok:" + bad, bad.length() == 0);
     }
 
+    @Test public void noNameOrStemAppearsTwice() {
+        // Két azonos nevű tétel közül a második soha nem érhető el a
+        // felismerésből, a táblázatban viszont ott van – csendes kettősség.
+        // A közös szótő ugyanígy: az egyik étel elnyeli a másikat.
+        java.util.HashMap<String, String> names = new java.util.HashMap<>();
+        java.util.HashMap<String, String> stems = new java.util.HashMap<>();
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL) {
+            String key = Foods.norm(f.name);
+            if (names.containsKey(key)) bad.append("\n  dupla név: ").append(f.name);
+            else names.put(key, f.name);
+            for (String s : f.stems) {
+                String ns = Foods.norm(s);
+                if (ns.isEmpty()) continue;
+                String prev = stems.get(ns);
+                // Ékezetes és ékezet nélküli írásmód ugyanarra a tételre:
+                // felesleges, de nem hiba – csak a MÁS ételé az.
+                if (prev != null && !prev.equals(f.name))
+                    bad.append("\n  közös szótő \"").append(ns).append("\": ")
+                       .append(prev).append(" / ").append(f.name);
+                else if (prev != null)
+                    bad.append("\n  felesleges szótő \"").append(ns).append("\": ").append(f.name);
+                else stems.put(ns, f.name);
+            }
+        }
+        assertTrue("kettősségek:" + bad, bad.length() == 0);
+    }
+
     @Test public void everyFoodHasANameAndAStem() {
         StringBuilder bad = new StringBuilder();
         for (Foods.Food f : Foods.ALL) {

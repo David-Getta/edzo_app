@@ -26,7 +26,7 @@ public final class Foods {
     }
 
     public static final Food[] ALL = {
-        new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "bécsi", "becsi",
+        new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "becsi",
                 "rantott szelet", "rantottszelet"),
         new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke"),
         new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell",
@@ -63,7 +63,7 @@ public final class Foods {
         new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta", "teszta", "spagetti", "penne", "durum"),
         new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli", "krumpi"),
         new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "hasabburgonya", "hasáb"),
-        new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure", "püré"),
+        new Food("Burgonyapüré", 110, 2, 200, "burgonyapure", "krumplipure", "pure"),
         new Food("Édesburgonya", 90, 1.6, 200, "edesburgonya", "batata"),
         new Food("Bulgur (főtt)", 120, 4, 200, "bulgur", "arpagyongy"),
         new Food("Polenta / puliszka", 85, 2, 250, "polenta", "puliszka"),
@@ -76,7 +76,7 @@ public final class Foods {
                 "brios", "molnark"),
         new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
                 "protein zabkasa"),
-        new Food("Müzli", 380, 9, 60, "muzli", "müzli", "granola"),
+        new Food("Müzli", 380, 9, 60, "muzli", "granola"),
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
@@ -305,7 +305,7 @@ public final class Foods {
                 "pattogatott kukorica"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital",
                 "red bull", "redbull", "monster"),
-        new Food("Sör", 43, 0.5, 500, "sor", "sör", "radler"),
+        new Food("Sör", 43, 0.5, 500, "sor", "radler"),
         // A „narancslé" 71 kcal-os narancsnak számított (és a „2 dl almalé"
         // 200 g almának): a gyümölcs-összetételek teljes alakja szótő.
         new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsussz", "dzsusz",
@@ -371,12 +371,11 @@ public final class Foods {
         new Food("Bolognai spagetti", 170, 8, 350, "bolognai spagetti", "spagetti bolognai", "bolognai"),
         new Food("Sajtos tészta", 220, 8, 300, "sajtos teszta"),
         new Food("Tojásos nokedli", 190, 7, 300, "tojasos nokedli"),
-        new Food("Rizottó", 150, 5, 300, "rizotto"),
+        new Food("Rizottó", 150, 5, 300, "rizotto", "risotto", "rizsotto"),
         new Food("Túrógombóc", 210, 9, 200, "turogomboc"),
         new Food("Szilvás gombóc", 190, 3, 250, "szilvas gomboc", "szilvasgomboc"),
         new Food("Káposztás tészta", 150, 4, 330, "kaposztas teszta", "kaposztasteszta",
                 "cvekedli", "kaposztas cvekedli"),
-        new Food("Rizottó", 130, 3.5, 350, "rizotto", "risotto", "rizsotto"),
         new Food("Quiche", 300, 9, 200, "quiche"),
         new Food("Poke bowl", 120, 8, 400, "poke"),
         new Food("Caprese saláta", 130, 7, 250, "caprese salata", "caprese"),
@@ -449,7 +448,7 @@ public final class Foods {
         new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
-        new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias", "izotoniás",
+        new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias",
                 "elektrolit"),
         // Kapszula, tabletta, por: kalóriában elhanyagolható, de ha valaki
         // beírja, ne „ismeretlen ételként" kelljen felvennie.
