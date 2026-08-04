@@ -49,7 +49,7 @@ public final class Foods {
         new Food("Hal (fehér)", 120, 22, 150, "hal", "pisztrang", "ponty", "harcsa",
                 "keszeg", "fogas"),
         new Food("Tenger gyümölcsei", 90, 18, 150, "garnela", "kagylo", "polip",
-                "tenger gyumolcsei"),
+                "tenger gyumolcsei", "rakkoktel", "rak koktel", "kaviar"),
         new Food("Tonhal", 130, 24, 100, "tonhal"),
         new Food("Lazac", 210, 20, 150, "lazac"),
         new Food("Makréla / szardínia", 220, 20, 100, "makrela", "szardinia", "sprotni"),
@@ -103,6 +103,7 @@ public final class Foods {
         new Food("Zöldség (vegyes / párolt)", 40, 2, 200, "zoldseg", "vitaminsalata",
                 "pak choi", "pakchoi", "mangold", "articsoka", "edeskomeny"),
         new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott"),
+        new Food("Rakott zöldbab", 110, 5, 350, "rakott zoldbab", "rakott zoldseg"),
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
         new Food("Lencse (főtt)", 115, 9, 200, "lencse"),
@@ -161,7 +162,8 @@ public final class Foods {
         // Az összetett alakok („sajtszósz") teljes szótövek, hogy ne essenek
         // sajt + szósz kettőre.
         new Food("Szósz / mártás", 120, 2, 30, "szosz", "martas",
-                "sajtszosz", "fokhagymaszosz", "gombamartas"),
+                "sajtszosz", "fokhagymaszosz", "gombamartas", "sajtmartas",
+                "kapros martas", "besamel"),
         new Food("Szójaszósz", 60, 6, 10, "szojaszosz", "szoja szosz"),
         new Food("Tartármártás", 520, 1, 30, "tartarmartas", "tartar"),
         new Food("Pesto", 450, 5, 30, "pesto"),
@@ -183,7 +185,8 @@ public final class Foods {
         // A „mentos" tő szándékosan hiányzik: a „mentős"-be esne bele.
         new Food("Gumicukor / cukorka", 340, 0, 30, "gumicukor", "cukorka",
                 "haribo", "skittles", "tic tac"),
-        new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz"),
+        new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz",
+                "zabpelyhes keksz"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
                 "flodni", "macaron", "suti"),
@@ -406,8 +409,11 @@ public final class Foods {
         new Food("Uborkasaláta", 40, 0.7, 150, "uborkasalata"),
         new Food("Céklasaláta", 45, 1.3, 100, "ceklasalata", "cekla salata", "cekla"),
         // A franciasaláta majonézes: nem 8 kcal-os zöldsaláta.
+        // Majonézes hidegtálak: az „orosz hússaláta" és a „tojássaláta" a
+        // majonéz miatt jóval sűrűbb, mint egy zöldsaláta – oda tartoznak.
         new Food("Franciasaláta / coleslaw", 170, 2.5, 150,
-                "franciasalata", "francia salata", "coleslaw"),
+                "franciasalata", "francia salata", "coleslaw", "orosz hussalata",
+                "orosz salata", "tojassalata", "kaszinotojas", "majonezes salata"),
         new Food("Savanyúság", 25, 1, 100, "savanyusag", "savanyu kaposzta", "kimchi"),
         new Food("Spárga", 20, 2.2, 150, "sparga"),
         new Food("Karalábé", 27, 1.7, 150, "karalabe"),

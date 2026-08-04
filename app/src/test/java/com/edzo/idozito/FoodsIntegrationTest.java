@@ -222,6 +222,20 @@ public class FoodsIntegrationTest {
         assertEquals("Növényi tej (mandula/zab) 250g", summary("zabital"));
     }
 
+    @Test public void mayonnaiseColdDishesAreNotGreenSalad() {
+        // Az „orosz hússaláta" a majonéz miatt háromszor annyi kalória, mint
+        // egy zöldsaláta – nem oda tartozik.
+        assertEquals("Franciasaláta / coleslaw 150g", summary("orosz hússaláta"));
+        assertEquals("Franciasaláta / coleslaw 150g", summary("tojássaláta"));
+        assertEquals("Franciasaláta / coleslaw 150g", summary("kaszinótojás"));
+        // A rákkoktél tenger gyümölcse, nem koktél.
+        assertEquals("Tenger gyümölcsei 150g", summary("rákkoktél"));
+        // Egy fogás, nem kettő.
+        assertEquals("Rakott zöldbab 350g", summary("rakott zöldbab"));
+        assertEquals("Keksz 40g", summary("zabpelyhes keksz"));
+        assertEquals("Szósz / mártás 30g", summary("sajtmártás"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {
