@@ -2596,7 +2596,7 @@ public class MainActivity extends Activity {
                     () -> { programName = pn; saveProgram(); });
         }
         sheet.addPrimary("➕  Új saját program", this::newProgramDialog);
-        sheet.addNeutral("📖  Gyakorlat-könyvtár", () -> startActivity(new Intent(this, LibraryActivity.class)));
+        sheet.addNeutral("📖  Könyvtár és mondat-súgó", () -> startActivity(new Intent(this, LibraryActivity.class)));
         sheet.addNeutral("🧘  Nyújtás & mobilitás (videóval)", () -> startActivity(new Intent(this, MobilityActivity.class)));
         sheet.addCancel();
         sheet.show();

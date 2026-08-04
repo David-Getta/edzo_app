@@ -110,8 +110,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Izomcsoport-egyensúly**: hány napon volt láb / hát / mell / váll / kar /
   törzs az elmúlt héten, és mi maradt ki
 - ⏱️ Pihenő-időzítő, 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
-- **Gyakorlat-könyvtár**: technikai tipp minden beépített és felismert
-  gyakorlathoz – a súlyzós alapoktól a gépekig és variációkig
+- **Könyvtár**: egy helyen az összes mondat-forma, amit az app ért (étrend,
+  edzés-előzmény, erősítő sorozat, időzítő) friss példákkal, és technikai tipp
+  minden beépített és felismert gyakorlathoz – a súlyzós alapoktól a gépekig
 
 ### 🐺 Blaze, a kabalafigura
 - **Helyzet-tudatos köszöntés** belépéskor (veszélyben lévő széria, félbehagyott

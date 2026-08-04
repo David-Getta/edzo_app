@@ -11,8 +11,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 /**
- * Gyakorlat-könyvtár: a beépített edzésprogramok gyakorlatai rövid technikai
- * leírással, hogy helyes formával tudj edzeni.
+ * Könyvtár: egy helyen az, amit az app folyó szövegből ért, és a beépített
+ * edzésprogramok gyakorlatai rövid technikai leírással, hogy helyes formával
+ * tudj edzeni.
  */
 public class LibraryActivity extends Activity {
 
@@ -30,9 +31,17 @@ public class LibraryActivity extends Activity {
         LinearLayout col = vbox();
         col.setPadding(dp(18), dp(22), dp(18), dp(40));
 
-        col.addView(text("Gyakorlat-könyvtár", 27, TXT, true));
+        col.addView(text("Könyvtár", 27, TXT, true));
         col.addView(gap(4));
-        col.addView(text("Helyes forma röviden – minden beépített gyakorlathoz.", 13.5f, MUTED, false));
+        col.addView(text("Mit írhatsz le egy mondatban, és hogyan csináld helyesen.",
+                13.5f, MUTED, false));
+        col.addView(gap(18));
+
+        // Mondat-felismerés: az app négy helyen ért folyó szöveget, de ezt
+        // eddig csak a beviteli mezők tippjei árulták el – oda viszont előbb
+        // el kell jutni. Itt egy helyen látszik, mi mindent lehet leírni.
+        col.addView(sectionHead("✍️  Mondatból is megy", "4 helyen"), lp());
+        col.addView(sentenceCard(accent), lp());
         col.addView(gap(18));
 
         // Egyedi (nem duplikált) gyakorlatnevek programonként, leírással
@@ -70,6 +79,46 @@ public class LibraryActivity extends Activity {
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffoldNav(this, sv, "bg_library", -1));
         col.post(() -> Ux.enterChildren(col, 30, 40));
+    }
+
+    /** Ugyanazok a példák, amiket a beviteli mezők is mutatnak. */
+    LinearLayout sentenceCard(int accent) {
+        LinearLayout card = card();
+        String[][] groups = {
+                {"🍽  Étrend", "Mit ettél?", "MEAL"},
+                {"📝  Edzés-előzmény", "Több edzés egy mondatból", "BULK"},
+                {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
+                {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
+        };
+        for (int i = 0; i < groups.length; i++) {
+            String[] g = groups[i];
+            String[] ex = g[2].equals("MEAL") ? Examples.MEAL
+                    : g[2].equals("BULK") ? Examples.BULK
+                    : g[2].equals("SET") ? Examples.SET : Examples.INTERVAL;
+            LinearLayout box = vbox();
+            box.setPadding(dp(14), dp(12), dp(14), dp(12));
+            box.addView(text(g[0], 15.5f, TXT, true));
+            box.addView(text(g[1], 12.5f, MUTED, false));
+            // Három példa, naponta forogva – ugyanaz a válogatás, amit a
+            // beviteli mezők tippjei is mutatnak.
+            long day = System.currentTimeMillis() / 86400000L;
+            for (int k = 0; k < 3 && k < ex.length; k++) {
+                int idx = (int) (((day + k) % ex.length + ex.length) % ex.length);
+                TextView t = text("„" + ex[idx] + "”", 13, accent, false);
+                t.setPadding(0, dp(5), 0, 0);
+                box.addView(t);
+            }
+            card.addView(box);
+            if (i < groups.length - 1) {
+                View dv = new View(this);
+                LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+                dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);
+                dv.setLayoutParams(dvp);
+                dv.setBackgroundColor(LINE);
+                card.addView(dv);
+            }
+        }
+        return card;
     }
 
     /** Szakasz-fejléc: cím balra, darabszám jobbra. */
