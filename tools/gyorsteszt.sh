@@ -39,7 +39,7 @@ if [ -z "${JUNIT_JARS:-}" ] || [ ! -e "${JUNIT_JARS%%:*}" ]; then
 fi
 
 # 1) Teljesen tiszta osztályok: mehetnek egy az egyben.
-for f in Days Hu Progression Muscles Mobility Alarms Activities StrengthParse Examples Load; do
+for f in Days Hu Progression Muscles Mobility Alarms Activities StrengthParse Examples Load MealIdeas; do
   [ -f "$SRC/$f.java" ] && cp "$SRC/$f.java" "$PKG/"
 done
 # Az Alarms Android-része (egyszeri riasztás beállítása) nem kell a teszthez.
@@ -129,7 +129,7 @@ PY
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
-       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest"
+       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest"
 CLASSES=""
 for t in $TESTS; do
   if [ -f "$TST/$t.java" ]; then cp "$TST/$t.java" "$PKG/"; CLASSES="$CLASSES com.edzo.idozito.$t"; fi

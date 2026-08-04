@@ -62,6 +62,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   nettó bevitel is látszik
 - **Étkezési ablak**: az első és az utolsó mai étkezés között eltelt idő
   (időszakos böjthöz)
+- **„Mit egyek még?"**: a maradék kalóriára és a hiányzó fehérjére három
+  konkrét ötlet adaggal együtt („Görög joghurt 150 g · 180 kcal · 14 g
+  fehérje"), egy koppintással naplózható – naponta más választék
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi
@@ -185,7 +188,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~326 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~335 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

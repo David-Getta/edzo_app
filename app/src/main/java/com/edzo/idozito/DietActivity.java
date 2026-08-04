@@ -528,11 +528,44 @@ public class DietActivity extends Activity {
                     : "még " + Math.round(goal - kcal) + " kcal fér bele ma", 12, MUTED, false);
             st.setPadding(0, dp(5), 0, 0);
             todayCard.addView(st);
+            // „Mit egyek még?" – a maradék eddig puszta szám volt. Itt konkrét
+            // ötletet ad rá, adaggal, és egy koppintással fel is veszi.
+            if (!over) addIdeas(goal - kcal, pGoal > 0 ? pGoal - prot : 0);
         } else {
             TextView hint = text("Koppints ide a napi kalória- és fehérje-cél beállításához",
                     11.5f, MUTED, false);
             hint.setPadding(0, dp(4), 0, 0);
             todayCard.addView(hint);
+        }
+    }
+
+    /**
+     * Étel-ötletek a napi maradékra. A javaslat csak akkor ér valamit, ha fel
+     * is lehet venni: minden sor egy koppintással bekerül a naplóba.
+     */
+    void addIdeas(double kcalLeft, double proteinLeft) {
+        long day = System.currentTimeMillis() / 86400000L;
+        List<MealIdeas.Idea> ideas = MealIdeas.forRemaining(Foods.ALL, kcalLeft,
+                proteinLeft, day);
+        if (ideas.isEmpty()) return;
+        TextView head = text(proteinLeft >= MealIdeas.PROTEIN_GAP
+                ? "💡 Fehérje-pótlásra:" : "💡 Ötlet a maradékra:", 12, MUTED, true);
+        head.setPadding(0, dp(10), 0, dp(2));
+        todayCard.addView(head);
+        for (final MealIdeas.Idea idea : ideas) {
+            TextView row = text("＋  " + idea.label(), 12.5f, Theme.accent(this), false);
+            row.setPadding(0, dp(4), 0, dp(4));
+            row.setClickable(true);
+            row.setOnClickListener(v -> {
+                long now = System.currentTimeMillis();
+                List<MealLog.Item> items = new ArrayList<>();
+                items.add(new MealLog.Item(idea.name, idea.grams, idea.kcal, idea.protein));
+                MealLog.add(this, new MealLog.Meal(now, "", items, ""));
+                refresh();
+                Ux.blazeCard(this, "🍽 Naplózva ✔  " + Math.round(idea.kcal) + " kcal"
+                        + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
+            });
+            todayCard.addView(row);
         }
     }
 
