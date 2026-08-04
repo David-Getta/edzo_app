@@ -76,14 +76,19 @@ public final class Challenges {
             if (o != null && o.optLong("ts") >= dayStart) sessions++;
         }
         List<StrengthLog.Entry> sLog = StrengthLog.load(ctx);
-        int repsToday = 0;
+        int repsToday = 0, setsToday = 0;
         double volToday = 0, volBest = 0;
         for (StrengthLog.Entry e : sLog) {
             if (e.volume() > volBest) volBest = e.volume();
             if (e.ts < dayStart) continue;
             repsToday += e.totalReps();
             volToday += e.volume();
+            if (e.sets != null) setsToday += e.sets.size();
         }
+        // A súlyzós napló nem tárol időtartamot, ezért a „mozogj ma N percet"
+        // kihívás egy tisztán vasazós napon nulláról indult volna – pedig az is
+        // mozgás. Ugyanazzal a becsléssel számolunk, mint a heti mozgás-cél.
+        workSec += (int) Math.round(Load.strengthMinutes(setsToday) * 60);
 
         List<MealLog.Meal> meals = MealLog.load(ctx);
         int mealsToday = 0;
