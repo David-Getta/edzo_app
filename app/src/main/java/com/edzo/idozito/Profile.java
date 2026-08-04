@@ -100,6 +100,43 @@ public final class Profile {
     public static int getGoalRate(Context c) { return prefs(c).getInt("g_rate", 1); }
     public static void setGoalRate(Context c, int i) { prefs(c).edit().putInt("g_rate", i).apply(); }
 
+    /**
+     * Testsúly-trend: hány kg/hét a változás a megadott mérésekből, lineáris
+     * illesztéssel (a napi ingadozás – étel, víz, napszak – ±1 kg is lehet, két
+     * pont különbsége ezért félrevezet; az egyenes az egészet látja).
+     *
+     * @param days  a mérések ideje NAPBAN (bármilyen közös nullponthoz képest)
+     * @param kg    a mért testsúlyok, azonos sorrendben
+     * @return kg/hét (negatív = fogyás), vagy 0, ha nincs elég adat
+     */
+    public static double weeklyTrend(double[] days, double[] kg) {
+        if (days == null || kg == null || days.length < 2 || days.length != kg.length) return 0;
+        double n = days.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+        for (int i = 0; i < days.length; i++) {
+            sx += days[i]; sy += kg[i];
+            sxx += days[i] * days[i]; sxy += days[i] * kg[i];
+        }
+        double denom = n * sxx - sx * sx;
+        if (Math.abs(denom) < 1e-9) return 0;          // minden mérés egy napon
+        double slopePerDay = (n * sxy - sx * sy) / denom;
+        double perWeek = slopePerDay * 7;
+        // Életszerű korlát: heti 3 kg fölött már nem trend, hanem elgépelés.
+        if (perWeek > 3) perWeek = 3;
+        if (perWeek < -3) perWeek = -3;
+        return perWeek;
+    }
+
+    /**
+     * Hány HÉT múlva éri el a célt a mostani ütemmel? -1, ha a cél már megvan,
+     * vagy ha az ütem nem visz felé (nulla vagy ellentétes irányú).
+     */
+    public static double weeksToGoal(double remainingKg, double weeklyTrend) {
+        if (remainingKg <= 0.05) return -1;            // megvan
+        if (weeklyTrend >= -0.02) return -1;           // nem fogy (vagy hízik)
+        double w = remainingKg / -weeklyTrend;
+        return w > 260 ? -1 : w;                       // öt évnél távolabbit nem ígérünk
+    }
+
     // ---- BMI ----
 
     /** BMI a magasságból (cm) és testsúlyból (kg), vagy -1 ha hiányos. */

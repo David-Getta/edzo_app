@@ -409,11 +409,15 @@ public class ProfileActivity extends Activity {
         String unit = series == 0 ? "kg" : series == 1 ? "" : "%";
         int color = series == 0 ? WEIGHT_C : series == 1 ? BMI_C : FAT_C;
         java.util.ArrayList<Double> vals = new java.util.ArrayList<>();
+        java.util.ArrayList<Double> daysOf = new java.util.ArrayList<>();   // a trendhez
         for (int i = n - 1; i >= 0; i--) {
             JSONObject o = arr.optJSONObject(i);
             if (o == null) continue;
             double v = o.optDouble(key, -1);
-            if (v > 0) vals.add(v);
+            if (v > 0) {
+                vals.add(v);
+                daysOf.add(o.optLong("ts") / 86400000.0);
+            }
         }
         if (vals.size() < 2) {
             chart.setData(null, color, unit);
@@ -426,8 +430,31 @@ public class ProfileActivity extends Activity {
         for (int i = 0; i < ys.length; i++) ys[i] = vals.get(i);
         chart.setData(ys, color, unit);
         double first = ys[0], last = ys[ys.length - 1], diff = last - first;
-        chartInfo.setText(String.format(Hu.LOCALE, "Első: %s%s  ·  Utolsó: %s%s  ·  Változás: %+.1f%s",
-                trim(first), unit, trim(last), unit, diff, unit.isEmpty() ? "" : " " + unit));
+        String info = String.format(Hu.LOCALE, "Első: %s%s  ·  Utolsó: %s%s  ·  Változás: %+.1f%s",
+                trim(first), unit, trim(last), unit, diff, unit.isEmpty() ? "" : " " + unit);
+        // Testsúlynál a TREND a beszédes szám: két mérés különbsége félrevezet
+        // (a napi ingadozás ±1 kg is lehet), az egyenes viszont az egészet látja.
+        if (series == 0 && ys.length >= 3) {
+            double[] ds = new double[daysOf.size()];
+            for (int i = 0; i < ds.length; i++) ds[i] = daysOf.get(i);
+            double perWeek = Profile.weeklyTrend(ds, ys);
+            if (Math.abs(perWeek) >= 0.05) {
+                info += String.format(Hu.LOCALE, "\n📉 Tendencia: %+.2f kg/hét", perWeek);
+                // Van fogyási cél? Mondjuk meg, mikorra jön ki ezzel az ütemmel.
+                double goal = Profile.getGoalLoss(this);
+                if (goal > 0) {
+                    double lost = Math.max(0, first - last);
+                    double weeks = Profile.weeksToGoal(goal - lost, perWeek);
+                    if (weeks > 0)
+                        info += String.format(Hu.LOCALE,
+                                "  ·  a célig még %.1f kg (~%d hét ezzel az ütemmel)",
+                                goal - lost, Math.round(weeks));
+                    else if (goal - lost <= 0.05)
+                        info += "  ·  a fogyási célod megvan! 🎉";
+                }
+            }
+        }
+        chartInfo.setText(info);
     }
 
     // ---------------- Segéd UI ----------------

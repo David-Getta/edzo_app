@@ -127,7 +127,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
   és izomcsoporttal
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík
-- **Profil / BMI / BMR**, testadatok és változás-diagram
+- **Profil / BMI / BMR**, testadatok és változás-diagram **testsúly-tendenciával**
+  (kg/hét, lineáris illesztéssel az összes mérésre) és a fogyási célhoz mért
+  becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)"
 
 ### 📤 Megosztás & adatok
 - Edzés / haladás / jelvények / statisztika / hőtérkép / napi étrend megosztása
@@ -170,7 +172,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~299 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~305 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

@@ -102,7 +102,9 @@ open(dst + 'Profile.java', 'w').write(
     "    public static final double ACTIVITY = 1.4;\n    "
     + grab(pr, 'public static double bmr(') + "\n    " + grab(pr, 'public static double tdee(')
     + "\n    " + grab(pr, 'public static double dailyDeficit(')
-    + "\n    " + grab(pr, 'public static double intakeForLoss(') + "\n}\n")
+    + "\n    " + grab(pr, 'public static double intakeForLoss(')
+    + "\n    " + grab(pr, 'public static double weeklyTrend(')
+    + "\n    " + grab(pr, 'public static double weeksToGoal(') + "\n}\n")
 
 ss = open(src_dir + 'SessionStore.java').read()
 open(dst + 'SessionStore.java', 'w').write(
@@ -125,7 +127,7 @@ PY
 
 # 4) Azok a tesztek, amiknek a fentiek elegendők.
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
-       TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest SessionOrderTest
+       TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
        DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest"
 CLASSES=""
