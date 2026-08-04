@@ -110,6 +110,39 @@ public final class Alarms {
         return nextMonthly(dayOfMonth, h, m, System.currentTimeMillis(), TimeZone.getDefault());
     }
 
+    /**
+     * A következő {@code h:m} a megadott hétköznapokon. A {@code mask} bitjei
+     * hétfőtől vasárnapig: 1 = hétfő, 2 = kedd, 4 = szerda, … 64 = vasárnap.
+     * A 0 (és a 127) minden napot jelent – így a régi, „minden napra" beállított
+     * emlékeztetők változtatás nélkül működnek tovább.
+     *
+     * Ugyanaz az óraátállás-biztos lépegetés, mint a {@link #nextDaily}-ben: a
+     * nem létező fali időt (tavaszi átállás) átugorjuk.
+     */
+    public static long nextOnDays(int mask, int h, int m, long now, TimeZone tz) {
+        int use = (mask <= 0 || mask >= 127) ? 127 : mask;
+        Calendar cal = Calendar.getInstance(tz);
+        for (int i = 0; i < MAX_STEPS; i++) {
+            cal.setTimeInMillis(now);
+            cal.add(Calendar.DAY_OF_MONTH, i);
+            cal.set(Calendar.HOUR_OF_DAY, h);
+            cal.set(Calendar.MINUTE, m);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            long t = cal.getTimeInMillis();
+            if (t <= now) continue;
+            if (cal.get(Calendar.HOUR_OF_DAY) != h || cal.get(Calendar.MINUTE) != m) continue;
+            // Calendar.DAY_OF_WEEK: vasárnap = 1 … szombat = 7 → bit 0 = hétfő.
+            int bit = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+            if ((use & (1 << bit)) != 0) return t;
+        }
+        return now + 24L * 60 * 60 * 1000;
+    }
+
+    public static long nextOnDays(int mask, int h, int m) {
+        return nextOnDays(mask, h, m, System.currentTimeMillis(), TimeZone.getDefault());
+    }
+
     public static long nextDaily(int h, int m) {
         return nextDaily(h, m, System.currentTimeMillis(), TimeZone.getDefault());
     }

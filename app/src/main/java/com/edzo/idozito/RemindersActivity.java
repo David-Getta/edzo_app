@@ -126,6 +126,7 @@ public class RemindersActivity extends Activity {
             LinearLayout left = vbox();
             left.addView(text(String.format(Locale.US, "%02d:%02d", r.h, r.m), 20, TXT, true));
             left.addView(text(r.text.isEmpty() ? "(nincs szöveg)" : r.text, 13.5f, MUTED, false));
+            left.addView(text(r.daysLabel(), 12, Theme.accent(this), false));
             left.setClickable(true);
             left.setOnClickListener(v -> addOrEdit(r, null));
             row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
@@ -181,6 +182,40 @@ public class RemindersActivity extends Activity {
         box.addView(tp);
         box.addView(et);
 
+        // Napválasztó: melyik napokon szóljon? Alapból minden nap.
+        final int[] mask = {existing != null ? existing.days : 0};
+        box.addView(gap(10));
+        box.addView(text("Mely napokon?", 13, MUTED, true));
+        box.addView(gap(6));
+        final TextView daysInfo = text(Reminders.daysLabel(mask[0]), 12.5f, Theme.accent(this), true);
+        final Button[] dayChips = new Button[7];
+        LinearLayout dayRow = hbox();
+        for (int i = 0; i < 7; i++) {
+            final int bit = 1 << i;
+            Button b = new Button(this);
+            b.setText(Reminders.DAY_ABBR[i]);
+            b.setAllCaps(false);
+            b.setTextSize(12.5f);
+            b.setPadding(0, dp(6), 0, dp(6));
+            b.setStateListAnimator(null);
+            dayChips[i] = b;
+            b.setOnClickListener(v -> {
+                int cur = mask[0] <= 0 || mask[0] >= 127 ? 127 : mask[0];
+                cur ^= bit;
+                if (cur == 0) cur = 127;               // legalább egy nap kell
+                mask[0] = cur == 127 ? 0 : cur;
+                styleDayChips(dayChips, mask[0]);
+                daysInfo.setText(Reminders.daysLabel(mask[0]));
+            });
+            LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(0, -2, 1f);
+            dlp.leftMargin = dp(2); dlp.rightMargin = dp(2);
+            dayRow.addView(b, dlp);
+        }
+        styleDayChips(dayChips, mask[0]);
+        box.addView(dayRow, lp());
+        box.addView(gap(4));
+        box.addView(daysInfo, lp());
+
         new Sheet(this, existing == null ? "Új emlékeztető" : "Emlékeztető szerkesztése")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
@@ -189,12 +224,13 @@ public class RemindersActivity extends Activity {
                     List<Reminders.Reminder> all = Reminders.load(this);
                     Reminders.Reminder target;
                     if (existing == null) {
-                        target = new Reminders.Reminder(Reminders.nextId(this), nh, nm, txt, true);
+                        target = new Reminders.Reminder(Reminders.nextId(this), nh, nm, txt,
+                                true, mask[0]);
                         all.add(target);
                     } else {
                         target = null;
                         for (Reminders.Reminder x : all) if (x.id == existing.id) {
-                            x.h = nh; x.m = nm; x.text = txt; target = x;
+                            x.h = nh; x.m = nm; x.text = txt; x.days = mask[0]; target = x;
                         }
                     }
                     Reminders.save(this, all);
@@ -203,6 +239,20 @@ public class RemindersActivity extends Activity {
                 })
                 .addCancel()
                 .show();
+    }
+
+    /** A kiválasztott napok kiemelve; „minden nap" esetén mind az. */
+    void styleDayChips(Button[] chips, int mask) {
+        int use = mask <= 0 || mask >= 127 ? 127 : mask;
+        for (int i = 0; i < chips.length; i++) {
+            boolean on = (use & (1 << i)) != 0;
+            android.graphics.drawable.GradientDrawable bg =
+                    new android.graphics.drawable.GradientDrawable();
+            bg.setCornerRadius(dp(10));
+            if (on) { bg.setColor(Theme.accent(this)); chips[i].setTextColor(0xFFFFFFFF); }
+            else { bg.setColor(0x22FFFFFF); chips[i].setTextColor(MUTED); }
+            chips[i].setBackground(bg);
+        }
     }
 
     // ---------- UI helpers ----------

@@ -120,6 +120,47 @@ public class AlarmsTest {
         assertEquals(Calendar.APRIL, at(next).get(Calendar.MONTH));
     }
 
+    @Test public void chosenWeekdaysOnlyFireOnThoseDays() {
+        // 2026-08-04 kedd 12:00. Hétköznapi maszk (H–P = 31).
+        long tue = stamp(2026, Calendar.AUGUST, 4, 12, 0);
+        // Ma még van 18:00, tehát ma szól.
+        assertEquals("2026-08-04 18:00", show(Alarms.nextOnDays(31, 18, 0, tue, BP)));
+        // Péntek este után a következő hétköznap a hétfő – a hétvégét átugorja.
+        long friEve = stamp(2026, Calendar.AUGUST, 7, 19, 0);
+        assertEquals("2026-08-10 18:00", show(Alarms.nextOnDays(31, 18, 0, friEve, BP)));
+        // Csak hétvége (Szo+V = 96): keddről szombatra ugrik.
+        assertEquals("2026-08-08 09:00", show(Alarms.nextOnDays(96, 9, 0, tue, BP)));
+        // Egyetlen nap (szerda = 4): a következő szerda.
+        assertEquals("2026-08-05 07:30", show(Alarms.nextOnDays(4, 7, 30, tue, BP)));
+    }
+
+    @Test public void theEmptyMaskMeansEveryDay() {
+        // A régi, nap-választás nélküli emlékeztetők (days = 0) ugyanúgy
+        // működnek, mint eddig: minden nap.
+        long now = stamp(2026, Calendar.JANUARY, 1, 12, 0);
+        for (int i = 0; i < 60; i++) {
+            long a = Alarms.nextOnDays(0, 18, 0, now, BP);
+            assertEquals(show(Alarms.nextDaily(18, 0, now, BP)), show(a));
+            assertEquals(show(Alarms.nextOnDays(127, 18, 0, now, BP)), show(a));
+            now = a;
+        }
+    }
+
+    @Test public void aWeekdayChainNeverDriftsOffTheWallClock() {
+        // Fél éven át láncolva: mindig hétköznap 06:30, az óraátállás sem viszi el.
+        long now = stamp(2026, Calendar.JANUARY, 1, 12, 0);
+        for (int i = 0; i < 120; i++) {
+            long t = Alarms.nextOnDays(31, 6, 30, now, BP);
+            assertTrue("megállt a lánc: " + show(t), t > now);
+            int dow = at(t).get(Calendar.DAY_OF_WEEK);
+            assertTrue("hétvégén szólt: " + show(t),
+                    dow != Calendar.SATURDAY && dow != Calendar.SUNDAY);
+            assertEquals("elcsúszott: " + show(t), 6, at(t).get(Calendar.HOUR_OF_DAY));
+            assertEquals("elcsúszott: " + show(t), 30, at(t).get(Calendar.MINUTE));
+            now = t;
+        }
+    }
+
     @Test public void theWeeklyRecapAlwaysLandsOnSundayEvening() {
         long now = stamp(2026, Calendar.JANUARY, 1, 12, 0);
         long prev = 0;

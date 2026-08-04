@@ -28,9 +28,38 @@ public final class Reminders {
         public int h, m;
         public String text;
         public boolean on;
+        /**
+         * Mely napokon szóljon: bitek hétfőtől vasárnapig (1 = hétfő … 64 =
+         * vasárnap). A 0 minden napot jelent – a régi bejegyzések így
+         * változtatás nélkül működnek tovább.
+         */
+        public int days;
         public Reminder(int id, int h, int m, String text, boolean on) {
-            this.id = id; this.h = h; this.m = m; this.text = text; this.on = on;
+            this(id, h, m, text, on, 0);
         }
+        public Reminder(int id, int h, int m, String text, boolean on, int days) {
+            this.id = id; this.h = h; this.m = m; this.text = text;
+            this.on = on; this.days = days;
+        }
+
+        /** „Minden nap", „Hétköznap", „Hétvégén" vagy „H, Sze, P". */
+        public String daysLabel() { return Reminders.daysLabel(days); }
+    }
+
+    static final String[] DAY_ABBR = {"H", "K", "Sze", "Cs", "P", "Szo", "V"};
+
+    public static String daysLabel(int mask) {
+        int use = (mask <= 0 || mask >= 127) ? 127 : mask;
+        if (use == 127) return "Minden nap";
+        if (use == 31) return "Hétköznap";
+        if (use == 96) return "Hétvégén";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 7; i++)
+            if ((use & (1 << i)) != 0) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(DAY_ABBR[i]);
+            }
+        return sb.toString();
     }
 
     public static List<Reminder> load(Context c) {
@@ -42,7 +71,8 @@ public final class Reminders {
                 JSONObject o = a.optJSONObject(i);
                 if (o == null) continue;
                 out.add(new Reminder(o.optInt("id"), o.optInt("h"), o.optInt("m"),
-                        o.optString("text", ""), o.optBoolean("on", true)));
+                        o.optString("text", ""), o.optBoolean("on", true),
+                        o.optInt("days", 0)));
             }
         } catch (Exception ignored) {}
         return out;
@@ -54,7 +84,7 @@ public final class Reminders {
             try {
                 JSONObject o = new JSONObject();
                 o.put("id", r.id); o.put("h", r.h); o.put("m", r.m);
-                o.put("text", r.text); o.put("on", r.on);
+                o.put("text", r.text); o.put("on", r.on); o.put("days", r.days);
                 a.put(o);
             } catch (Exception ignored) {}
         }
@@ -87,7 +117,7 @@ public final class Reminders {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
         PendingIntent p = pi(c, r);
-        if (r.on) Alarms.oneShot(am, Alarms.nextDaily(r.h, r.m), p);
+        if (r.on) Alarms.oneShot(am, Alarms.nextOnDays(r.days, r.h, r.m), p);
         else am.cancel(p);
     }
 

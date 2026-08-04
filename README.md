@@ -131,6 +131,11 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   (kg/hét, lineáris illesztéssel az összes mérésre) és a fogyási célhoz mért
   becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)"
 
+### ⏰ Emlékeztetők
+- Több emlékeztető tetszőleges időpontra, saját üzenettel
+- **Napválasztás**: minden nap, csak hétköznap, csak hétvégén vagy pontosan
+  a kiválasztott napokon – óraátállás-biztos ütemezéssel
+
 ### 📤 Megosztás & adatok
 - Edzés / haladás / jelvények / statisztika / hőtérkép / napi étrend megosztása
 - **Biztonsági mentés / visszaállítás** fájlba – a GPS-útvonalakkal együtt –,
@@ -172,7 +177,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~305 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~308 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
