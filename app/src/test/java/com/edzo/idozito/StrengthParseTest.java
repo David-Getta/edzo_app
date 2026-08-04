@@ -210,4 +210,17 @@ public class StrengthParseTest {
         // Ismétlésszám nélkül inkább semmi, mint kitalált sorozat.
         assertEquals(0, StrengthParse.parse("guggoltam 100-zal").size());
     }
+    @Test public void writtenOutNumbersWork() {
+        // A teremben ritkán ír bárki számjegyet.
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("guggolás ötször ötöt 100 kg"));
+        assertEquals("Fekvenyomás 4×8/8/8/8@70", sum("fekvenyomás négyszer nyolcat 70 kg"));
+        assertEquals("Bicepsz 3×12/12/12@15", sum("bicepsz háromszor tizenkettőt 15 kg"));
+        assertEquals("Fekvőtámasz 1×10@0", sum("tíz fekvőtámasz"));
+        assertEquals("Húzódzkodás 5×5/5/5/5/5@0", sum("húzódzkodás ötször ötöt"));
+        // Ez korábban semmit nem adott: a „100-zal" súly, az „ötször ötöt"
+        // pedig öt sorozat öt ismétlés.
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("guggoltam 100-zal ötször ötöt"));
+        // Gyakorlat nélkül továbbra sincs bejegyzés.
+        assertEquals(0, StrengthParse.parse("nyomtam háromszor tízet 60 kg").size());
+    }
 }

@@ -46,4 +46,18 @@ public class HuTest {
         assertEquals("0,1", Hu.d1(0.05));      // felfelé kerekít
         assertEquals("0,0", Hu.d1(0.04));
     }
+    @Test public void writtenNumbersBecomeDigits() {
+        assertEquals("4 kor 30 masodperc", Hu.digits("negy kor 30 masodperc"));
+        assertEquals("5szor 5", Hu.digits("otszor otot"));
+        assertEquals("3szor 12", Hu.digits("haromszor tizenkettot"));
+        assertEquals("0,5 perc", Hu.digits("fel perc"));
+        assertEquals("1,5 perc", Hu.digits("masfel perc"));
+        // Csak önálló szó: a „hatizom" nem hat izom, a „hetes" nem hét es.
+        assertEquals("hatizom 3szor 20", Hu.digits("hatizom haromszor husz"));
+        assertEquals("hetes suly", Hu.digits("hetes suly"));
+        assertEquals("egykezes evezes", Hu.digits("egykezes evezes"));
+        // A hosszabb alak nyer: a „tizenketto" nem tiz + enketto.
+        assertEquals("12", Hu.digits("tizenketto"));
+        assertEquals("", Hu.digits(null));
+    }
 }

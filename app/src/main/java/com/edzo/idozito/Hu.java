@@ -24,6 +24,60 @@ public final class Hu {
         return String.format(LOCALE, "%.1f", v);
     }
 
+    /**
+     * Kiírt számok számjeggyé: „négy kör" → „4 kor", „ötször ötöt" → „5ször 5".
+     *
+     * A teremben és a konyhában is ritkán ír bárki számjegyet, a felismerők
+     * viszont számot keresnek. A tárgyragos alak („ötöt", „tízet") külön
+     * szerepel, mert pont az a leggyakoribb: „nyomtam háromszor tízet".
+     *
+     * Csak önálló szót cserélünk – a „hatizom" nem hat izom, a „hetes" nem
+     * hét es. Kivétel a „-szor/-szer" toldalék, ami a számhoz tapad.
+     *
+     * @param s ékezet nélküli, kisbetűs szöveg (Foods.norm kimenete)
+     */
+    public static String digits(String s) {
+        if (s == null) return "";
+        String out = s;
+        for (String[] w : NUM_WORDS) {
+            int p = out.indexOf(w[0]);
+            while (p >= 0) {
+                int e = p + w[0].length();
+                boolean glued = (p > 0 && Character.isLetter(out.charAt(p - 1)))
+                        || (e < out.length() && Character.isLetter(out.charAt(e))
+                            && !out.startsWith("szor", e) && !out.startsWith("szer", e));
+                if (glued) {
+                    p = out.indexOf(w[0], p + 1);
+                } else {
+                    out = out.substring(0, p) + w[1] + out.substring(e);
+                    p = out.indexOf(w[0], p + w[1].length());
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * A hosszabb alak elöl: különben a „tizenketto" tiz + enketto lenne.
+     * A tárgyragos változat is szerepel, mert a felismerő azt is látja.
+     */
+    private static final String[][] NUM_WORDS = {
+            {"tizenkettot", "12"}, {"tizenketto", "12"}, {"tizenket", "12"},
+            {"tizenkilenc", "19"}, {"tizennyolcat", "18"}, {"tizennyolc", "18"},
+            {"tizenhetet", "17"}, {"tizenhet", "17"}, {"tizenhatot", "16"},
+            {"tizenhat", "16"}, {"tizenotot", "15"}, {"tizenot", "15"},
+            {"tizennegyet", "14"}, {"tizennegy", "14"}, {"tizenharmat", "13"},
+            {"tizenharom", "13"}, {"tizenegyet", "11"}, {"tizenegy", "11"},
+            {"huszonotot", "25"}, {"huszonot", "25"}, {"huszat", "20"}, {"husz", "20"},
+            {"harmincat", "30"}, {"harminc", "30"},
+            {"tizet", "10"}, {"tiz", "10"}, {"kilencet", "9"}, {"kilenc", "9"},
+            {"nyolcat", "8"}, {"nyolc", "8"}, {"hetet", "7"}, {"het", "7"},
+            {"hatot", "6"}, {"hat", "6"}, {"otot", "5"}, {"ot", "5"},
+            {"negyet", "4"}, {"negy", "4"}, {"harmat", "3"}, {"harom", "3"},
+            {"kettot", "2"}, {"ketto", "2"}, {"ket", "2"},
+            {"masfel", "1,5"}, {"fel", "0,5"}, {"egyet", "1"}, {"egy", "1"},
+    };
+
     /** Két tizedes, magyarul: „5,23". */
     public static String d2(double v) {
         return String.format(LOCALE, "%.2f", v);

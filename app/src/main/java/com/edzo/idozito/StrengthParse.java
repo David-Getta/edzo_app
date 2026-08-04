@@ -107,7 +107,7 @@ public final class StrengthParse {
     public static List<Item> parse(String text) {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
-        for (String part : splitClauses(Foods.norm(text))) {
+        for (String part : splitClauses(sets(Foods.norm(text)))) {
             Item it = parseOne(part);
             if (it != null) out.add(it);
         }
@@ -179,6 +179,18 @@ public final class StrengthParse {
         String rest = s.substring(prev).trim();
         if (!rest.isEmpty()) out.add(rest);
         return out;
+    }
+
+    /**
+     * Kiírt számok számjeggyé, és a „háromszor tízet” alak sorozat×ismétlésre.
+     *
+     * A teremben ritkán ír bárki számjegyet: „nyomtam ötször ötöt”, „háromszor
+     * tizenkettőt”. Eddig ezekből nem lett bejegyzés – vagy ami rosszabb, a
+     * puszta szám ismétlésszámnak látszott.
+     */
+    static String sets(String s) {
+        return Hu.digits(s)
+                .replaceAll("(\\d{1,2})\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2");
     }
 
     /** Egy tagmondat → gyakorlat + sorozatok, vagy null. */

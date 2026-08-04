@@ -283,40 +283,11 @@ public final class IntervalParse {
     }
 
     /**
-     * Kiírt számok és a „-szor/-szer” alak számjegyre váltása. A teremben
-     * senki nem ír számjegyet: „négy kör”, „egy perc”, „húszszor”.
-     * A „fél perc” tizedesként megy tovább – az időt kezelő ág érti.
+     * Kiírt számok és a „-szor/-szer” alak számjegyre váltása. A
+     * szorzószám itt körszámot jelent: „20/10 nyolcszor” nyolc kör.
      */
-    private static final String[][] NUM_WORDS = {
-            {"tizenketto", "12"}, {"tizenket", "12"}, {"tizenegy", "11"},
-            {"tizenot", "15"}, {"huszonot", "25"}, {"husz", "20"}, {"harminc", "30"},
-            {"tizenharom", "13"}, {"tizennegy", "14"}, {"tizenhat", "16"},
-            {"tizennyolc", "18"}, {"tizenhet", "17"}, {"tizenkilenc", "19"},
-            {"tiz", "10"}, {"kilenc", "9"}, {"nyolc", "8"}, {"het", "7"},
-            {"hat", "6"}, {"ot", "5"}, {"negy", "4"}, {"harom", "3"},
-            {"ketto", "2"}, {"ket", "2"}, {"masfel", "1,5"}, {"fel", "0,5"},
-            {"egy", "1"},
-    };
-
     static String digits(String s) {
-        String out = s;
-        for (String[] w : NUM_WORDS) {
-            int p = out.indexOf(w[0]);
-            while (p >= 0) {
-                int e = p + w[0].length();
-                boolean lettersAround = (p > 0 && Character.isLetter(out.charAt(p - 1)))
-                        || (e < out.length() && Character.isLetter(out.charAt(e))
-                            && !out.startsWith("szor", e) && !out.startsWith("szer", e));
-                if (!lettersAround) {
-                    out = out.substring(0, p) + w[1] + out.substring(e);
-                    p = out.indexOf(w[0], p + w[1].length());
-                } else {
-                    p = out.indexOf(w[0], p + 1);
-                }
-            }
-        }
-        // „8szor” → „8 kor”: a szorzószám a körök száma.
-        return out.replaceAll("(\\d+)\\s?(szor|szer)\\b", "$1 kor");
+        return Hu.digits(s).replaceAll("(\\d+)\\s?(szor|szer)\\b", "$1 kor");
     }
 
     /** A megadott szó ELŐTT álló szám („3 kör”), vagy 0. */
