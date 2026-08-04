@@ -49,6 +49,21 @@ public class LibraryActivity extends Activity {
         col.addView(exerciseCard(StrengthLog.COMMON, accent), lp());
         col.addView(gap(18));
 
+        // Amit a mondat-felvétel még ismer (gépek, variációk): ezek nincsenek
+        // a gyors chipek közt, de a technikai tipp ugyanúgy jár hozzájuk.
+        java.util.ArrayList<String> extra = new java.util.ArrayList<>();
+        for (String n : StrengthParse.names()) {
+            boolean common = false;
+            for (String c : StrengthLog.COMMON) if (c.equals(n)) { common = true; break; }
+            if (!common) extra.add(n);
+        }
+        if (!extra.isEmpty()) {
+            col.addView(sectionHead("🏋️  Gépek és variációk",
+                    extra.size() + " gyakorlat"), lp());
+            col.addView(exerciseCard(extra.toArray(new String[0]), accent), lp());
+            col.addView(gap(18));
+        }
+
         col.addView(text("Tipp: a saját programjaidhoz is adhatsz gyakorlatokat az „Edzés típusa” választóban.",
                 12.5f, MUTED, false));
 

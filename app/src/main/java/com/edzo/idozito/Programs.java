@@ -167,6 +167,17 @@ public final class Programs {
             case "Lábtolás": return "Talp vállszélesen a lapon, térd a lábfej irányába. Ne told teljesen egyenesig a térded.";
             case "Húzódzkodás": return "Vállszéles fogás, lapockák előbb le és hátra, utána húzz. Lent nyújtsd ki a kart, de tartsd feszesen a vállad.";
             case "Lehúzás": return "Mellkas fel, rúd a kulcscsont elé. A könyököd húzd le a bordáid felé – ne a karod, a hátad dolgozzon.";
+            case "Tolódzkodás": return "Vállak lent és hátra, könyök hátrafelé hajlik. Csak addig ereszkedj, ameddig a vállad kényelmesen bírja.";
+            case "Oldalemelés": return "Könyök enyhén hajlítva, vállmagasságig emelj. Kis súly, tiszta mozgás – a lendítés itt semmit nem ad.";
+            case "Felülés": return "Áll ne szoruljon a mellkashoz, a hasad emeljen, ne a nyakad. Lefelé lassíts.";
+            case "Combhajlítás": return "Csípő a párnán marad, a sarkat húzd a fenék felé. A végén ne kapd el, engedd lassan vissza.";
+            case "Lábnyújtás": return "Térd a gép tengelyével egy vonalban, fent egy pillanat megállás. Ne rántsd ki a lábad.";
+            case "Csípőemelés": return "Lapocka a padon, áll behúzva, fent szorítsd meg a farizmot. A derék ne feszüljön túl.";
+            case "Arnold nyomás": return "Tenyér elöl indul, nyomás közben fordul kifelé. Feszes has, ne told előre a bordáidat.";
+            case "Fordított tárogatás": return "Törzs döntve, könyök enyhén hajlítva, a lapockákat húzd össze. Hátsó vállra megy, nem a hátra.";
+            case "Csuklyás emelés": return "Csak vállvonás, felfelé – nem körzés. Fent egy pillanat, lefelé lassíts.";
+            case "Hátizom gép": return "Mellkas a párnán, a könyököd húzd hátra a bordáid mellé, lapockák össze.";
+            case "Mellgép": return "Könyök vállmagasságban, a mellkas nyomjon – ne a váll elülső része. Ne engedd túl hátra a kart.";
             default: return "";
         }
     }

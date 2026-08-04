@@ -30,6 +30,14 @@ public class ProgramsTest {
         }
     }
 
+    @Test public void everyParsedExerciseHasFormCues() {
+        // Amit a mondatból fel lehet venni, azt a Gyakorlat-könyvtár is
+        // megmutatja – leírás nélkül ott üres sor maradna.
+        for (String ex : StrengthParse.names()) {
+            assertFalse("nincs leírása: " + ex, Programs.descOf(ex).isEmpty());
+        }
+    }
+
     @Test public void unknownNamesGiveAnEmptyDescription() {
         assertEquals("", Programs.descOf("Valami saját gyakorlat"));
         assertEquals("", Programs.descOf(null));
