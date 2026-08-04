@@ -206,6 +206,22 @@ public class FoodsIntegrationTest {
         assertEquals("", summary("ebédeltünk a városban"));
     }
 
+    @Test public void supplementsAndProteinDishesAreOneItem() {
+        // A „whey protein" a POR – nem por MELLETT egy kész turmix.
+        assertEquals("Fehérjepor 30g", summary("whey protein 30 g"));
+        assertEquals("Protein turmix 300g", summary("kazein turmix"));
+        // A fehérjés változatok EGY fogások, nem turmix + tészta.
+        assertEquals("Palacsinta 150g", summary("protein palacsinta"));
+        assertEquals("Puding 200g", summary("protein puding"));
+        assertEquals("Gofri 100g", summary("protein gofri"));
+        // A kapszulák-porok nulla kalóriás étrend-kiegészítők.
+        assertEquals("Étrend-kiegészítő 5g", summary("kreatin 5 g"));
+        assertEquals("Étrend-kiegészítő 5g", summary("magnézium tabletta"));
+        assertEquals("Sportital / izotóniás 500g", summary("elektrolit ital"));
+        // Növényi italok.
+        assertEquals("Növényi tej (mandula/zab) 250g", summary("zabital"));
+    }
+
     @Test public void nothingIsInventedFromMealWords() {
         // Az étkezés-címkék magukban nem ételek.
         for (String q : new String[]{"reggeli", "ebédre", "vacsorára", "uzsonnára", "kaja"}) {

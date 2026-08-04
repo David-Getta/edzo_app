@@ -74,11 +74,13 @@ public final class Foods {
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
                 "brios", "molnark"),
-        new Food("Zabpehely", 370, 13, 50, "zab", "kasa"),
+        new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
+                "protein zabkasa"),
         new Food("Müzli", 380, 9, 60, "muzli", "müzli", "granola"),
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
-        new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta"),
+        new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
+                "protein palacsinta", "feherje palacsinta"),
         new Food("Pizza", 260, 11, 300, "pizza"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
                 "whopper"),
@@ -133,7 +135,8 @@ public final class Foods {
                 "kremturo", "turodesszert", "turokrem"),
         new Food("Joghurt", 60, 4, 150, "joghurt"),
         new Food("Ivójoghurt", 75, 3, 200, "ivojoghurt", "joghurtital", "actimel"),
-        new Food("Puding", 120, 3, 200, "puding", "csokipuding"),
+        new Food("Puding", 120, 3, 200, "puding", "csokipuding", "protein puding",
+                "protein pudding", "pudding"),
         new Food("Madártej", 120, 4, 250, "madartej"),
         new Food("Tejszínhab", 300, 2, 30, "tejszinhab", "tejszin"),
         new Food("Tejszelet", 420, 5, 28, "tejszelet", "monte"),
@@ -185,10 +188,11 @@ public final class Foods {
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
                 "flodni", "macaron", "suti"),
         new Food("Muffin / brownie", 380, 5, 80, "muffin", "cupcake", "brownie"),
-        new Food("Gofri", 350, 6, 100, "gofri", "waffle"),
+        new Food("Gofri", 350, 6, 100, "gofri", "waffle", "protein gofri"),
         new Food("Energiagolyó", 420, 8, 25,
                 "energiagolyo", "kokuszgolyo", "zabgolyo", "proteingolyo"),
-        new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt"),
+        new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt", "jegkrem",
+                "protein jegkrem"),
         new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
                 "protein chips"),
         // Nassolás-kör: a hagymakarika hagymának (20 kcal!), a szaloncukor
@@ -246,12 +250,16 @@ public final class Foods {
         new Food("Töltött tészta (tortellini)", 180, 8, 300, "toltott teszta", "tortellini", "ravioli"),
         // A puszta „turmix" magyarul gyümölcsös: nem fehérjeturmix. A teljes
         // „protein turmix" alak szótő, így az egyben marad.
-        new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake"),
+        new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake",
+                "kazein turmix", "whey turmix", "gainer"),
         new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "turmix", "smoothie", "acai"),
         // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
         // talált, vagy a 100 kcal/100 g-os kész italra esett – harmadannyi kalória.
         new Food("Fehérjepor", 380, 75, 30, "feherjepor", "feherje por", "protein por",
-                "proteinpor", "tejsavofeherje", "tejsavo", "whey", "kazein"),
+                "proteinpor", "tejsavofeherje", "tejsavo", "whey", "kazein",
+                // Teljes kifejezésként is, hogy a rövidebb „protein" tő ne
+                // hozzon MELLÉ egy kész turmixot is („whey protein 30 g").
+                "whey protein", "kazein protein", "kollagen"),
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
                 "feherjeszelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
@@ -441,7 +449,14 @@ public final class Foods {
         new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
-        new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias", "izotoniás"),
+        new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias", "izotoniás",
+                "elektrolit"),
+        // Kapszula, tabletta, por: kalóriában elhanyagolható, de ha valaki
+        // beírja, ne „ismeretlen ételként" kelljen felvennie.
+        new Food("Étrend-kiegészítő", 0, 0, 5, "kreatin", "bcaa", "aminosav",
+                "magnezium", "vitamin", "omega 3", "omega-3", "halolaj",
+                "cink", "koffein tabletta", "pre workout", "preworkout",
+                "etrend-kiegeszito", "etrend kiegeszito", "etrendkiegeszito"),
         // --- Magyar klasszikusok ---
         new Food("Bundás kenyér", 260, 9, 120, "bundas kenyer", "bundaskenyer"),
         // A „sajtos pogácsa" sajtra és pogácsára esett szét: két tétel egy sütiből.
@@ -495,7 +510,8 @@ public final class Foods {
         new Food("Pezsgő", 76, 0, 150, "pezsgo", "prosecco", "champagne"),
         new Food("Cider", 45, 0, 330, "cider", "almabor"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",
-                "zabtej", "rizstej", "szojatej"),
+                "zabtej", "rizstej", "szojatej", "zabital", "mandulaital",
+                "rizsital", "szojaital", "kokusztej ital"),
         new Food("Szójakocka", 340, 50, 60, "szojakocka", "szoja"),
     };
 
