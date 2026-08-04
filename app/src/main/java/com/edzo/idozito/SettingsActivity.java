@@ -237,7 +237,9 @@ public class SettingsActivity extends Activity {
                 + "automatikusan mentődnek a Google-fiókodba. Új eszközön, UGYANAZZAL a "
                 + "Google-fiókkal telepítve a rendszer magától visszatölti őket – bejelentkezés "
                 + "nélkül. Ehhez a telefonon bekapcsolt Google biztonsági mentés kell "
-                + "(Beállítások › Google › Biztonsági mentés). Kézi mentésként az alábbi fájl is használható.",
+                + "(Beállítások › Google › Biztonsági mentés). Kézi mentésként az alábbi fájl is használható. "
+                + "A futások útvonala is benne van; az étkezésekhez csatolt FOTÓK viszont a "
+                + "telefonon maradnak, azokat külön mentsd, ha fontosak.",
                 12.5f, MUTED, false));
         col.addView(gap(14));
 
