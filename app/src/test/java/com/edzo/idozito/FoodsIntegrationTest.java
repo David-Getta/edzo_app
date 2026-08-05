@@ -69,7 +69,9 @@ public class FoodsIntegrationTest {
     @Test public void slangNamesAndWorldDishesAreUnderstood() {
         // A „krumpi" nem pálinka (pedig benne van a „rum")!
         assertEquals("Burgonya (főtt) 250g", summary("krumpi hússal"));
-        assertEquals("Saláta (zöld) 50g", summary("sali csirkével"));
+        // A csirke a saláta MELLETT van: 8 kcal helyett 255 az igazság.
+        assertEquals("Saláta (zöld) 50g + Csirkemell (sült/grill) 150g",
+                summary("sali csirkével"));
         assertEquals("Paradicsom 100g + Uborka 100g + Saláta (zöld) 50g",
                 summary("pari ubi saláta"));
         assertEquals("Szendvics 150g + Sonka 50g", summary("egy szendó sonkával"));
@@ -354,5 +356,29 @@ public class FoodsIntegrationTest {
         // A mérőszó a jelző mögött is érvényes.
         assertEquals("Tejföl 60g", summary("két nagy kanál tejföl"));
         assertEquals("Leves (átlag) 800g", summary("2 nagy tányér leves"));
+    }
+
+    @Test public void theBareWordChickenIsFood() {
+        // A „csirke" önmagában eddig semmi volt: a „csirke rizzsel" fél
+        // ebédnek látszott, mert csak a rizs került a naplóba.
+        assertEquals("Csirkemell (sült/grill) 150g + Rizs (főtt) 200g",
+                summary("csirke rizzsel"));
+        assertEquals("Csirkemell (sült/grill) 150g", summary("csirkét ettem"));
+        // A hosszabb név mindig erősebb: a jelzős alakok nem sérülnek.
+        assertEquals("Rántott csirkemell 180g", summary("rántott csirke"));
+        assertEquals("Tepsis csirke 300g", summary("tepsis csirke"));
+        assertEquals("Csirkés saláta 300g", summary("csirkés saláta"));
+        assertEquals("Kínai bundás csirke 250g", summary("kínai csirke"));
+        assertEquals("Csirkemáj 120g", summary("csirkemáj"));
+        assertEquals("Csirkenugget 150g", summary("csirkenugget"));
+    }
+
+    @Test public void chickenIsAnAdjectiveInMeatDishes() {
+        // A „csirke curry" egy tál curry, nem curry PLUSZ egy csirkemell.
+        assertEquals("Curry 300g", summary("csirke curry"));
+        assertEquals("Wok (zöldséges-húsos) 350g", summary("wok csirke"));
+        assertEquals("Gyros 350g", summary("csirkés gyros"));
+        // A leves teljes alakja szótő, nem sült csirkemell.
+        assertEquals("Húsleves 400g", summary("csirkeleves"));
     }
 }

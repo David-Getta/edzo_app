@@ -29,7 +29,7 @@ public final class Foods {
         new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "becsi",
                 "rantott szelet", "rantottszelet"),
         new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke"),
-        new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell",
+        new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell", "csirke",
                 "grillcsirke", "teriyaki"),
         new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb", "csirkeszarny"),
         // Egészben sült csirke: a bőrrel-csonttal tálalt adag zsírosabb, mint
@@ -246,7 +246,10 @@ public final class Foods {
         new Food("Paradicsomos káposzta", 55, 2, 400,
                 "paradicsomos kaposzta", "paradicsomoskaposzta"),
         new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta",
-                "grizgaluska leves", "grizgaluskaleves", "grizgaluska", "majgomboc"),
+                "grizgaluska leves", "grizgaluskaleves", "grizgaluska", "majgomboc",
+                // A teljes alak szótő, különben a „csirke" tő vinné el a
+                // levest sült csirkemellnek.
+                "csirkeleves", "csirke leves", "tyukhusleves", "tyukleves"),
         new Food("Kocsonya", 90, 12, 300, "kocsonya", "aszpik"),
         new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
         // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
@@ -1336,6 +1339,14 @@ public final class Foods {
                     "Franciasaláta / coleslaw"},
             {"Burgonya (főtt)", "Sült krumpli", "Rakott krumpli", "Krumplisaláta",
                     "Grenadírmars (krumplis tészta)"},
+            // A „csirke" a legtöbb ételnév előtt jelző, nem külön adag: a
+            // „csirke curry" egy tál curry, nem curry PLUSZ egy csirkemell.
+            // Csak azok az ételek, amikben a hús ELEVE benne van, és amiket
+            // senki nem eszik külön csirkemell mellé – a „pizza és csirkemell"
+            // két külön adag, ezért a pizza nincs a listán.
+            {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
+                    "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
+                    "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)"},
     };
 
     private static List<Match> dropRedundantBase(List<Match> in) {
