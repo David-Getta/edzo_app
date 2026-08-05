@@ -38,6 +38,12 @@ if [ -z "${JUNIT_JARS:-}" ] || [ ! -e "${JUNIT_JARS%%:*}" ]; then
   exit 2
 fi
 
+# 0) Hiányzó import a UI-osztályokban: az Activity-k csak a CI-ben fordulnak,
+#    egy elfelejtett import ott hét percbe kerül, itt egy másodpercbe.
+if command -v python3 >/dev/null 2>&1; then
+  python3 "$(dirname "$0")/importcheck.py" || exit 1
+fi
+
 # 1) Teljesen tiszta osztályok: mehetnek egy az egyben.
 for f in Days Hu Progression Muscles Mobility Alarms Activities StrengthParse Examples Load MealIdeas IntervalParse Weekplan; do
   [ -f "$SRC/$f.java" ] && cp "$SRC/$f.java" "$PKG/"

@@ -80,6 +80,9 @@ jobs:
           done
           ls -la app/src/main/res/drawable/ || true
 
+      - name: Import check
+        run: python3 tools/importcheck.py
+
       - name: Unit tests
         # Az ételfelismerés logikáját fedik. Ha elhasalnak, ne készüljön APK:
         # ott csendben, ránézésre nehezen észrevehetően romlik el a számolás.
@@ -115,7 +118,7 @@ jobs:
           name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            Grit automatikus build (v51.4, build ${{ github.run_number }}).
+            Grit automatikus build (v51.5, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"
