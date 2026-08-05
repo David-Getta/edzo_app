@@ -353,6 +353,7 @@ public class DietActivity extends Activity {
     /** Gyors-naplózás: előbb a kedvencek, utána a leggyakoribb étkezések csipjei. */
     void refreshQuick() {
         quickBox.removeAllViews();
+        addUsualRow();
         // A kedvencek mindig elöl, kézzel kijelölve.
         java.util.LinkedHashMap<String, MealLog.Meal> picks = new java.util.LinkedHashMap<>();
         java.util.HashSet<String> favLabels = new java.util.HashSet<>();
@@ -730,6 +731,75 @@ public class DietActivity extends Activity {
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTimeInMillis();
+    }
+
+    /**
+     * A szokásos étkezésed a mostani napszakra, egy koppintással.
+     *
+     * A kedvenceket kézzel kell kijelölni; ezt az app magától veszi észre. Aki
+     * reggelente ugyanazt a három dolgot eszi, annak a naplózás a leggyakoribb
+     * művelete – és a leggyakoribb műveletet illik egy koppintásra csökkenteni.
+     */
+    void addUsualRow() {
+        try {
+            List<MealLog.Meal> all = MealLog.load(this);
+            if (all.size() < Habits.MIN_COUNT) return;
+            java.util.List<java.util.List<String>> foods = new ArrayList<>();
+            int[] hours = new int[all.size()];
+            int[] ago = new int[all.size()];
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            long now = System.currentTimeMillis();
+            for (int i = 0; i < all.size(); i++) {
+                MealLog.Meal m = all.get(i);
+                java.util.List<String> names = new ArrayList<>();
+                for (MealLog.Item it : m.items) names.add(it.food);
+                foods.add(names);
+                c.setTimeInMillis(m.ts);
+                hours[i] = c.get(java.util.Calendar.HOUR_OF_DAY);
+                ago[i] = Days.ago(m.ts, now);
+            }
+            c.setTimeInMillis(now);
+            final int bucket = Habits.bucketOf(c.get(java.util.Calendar.HOUR_OF_DAY));
+            final Habits.Usual u = Habits.usual(foods, hours, ago, bucket);
+            if (u == null) return;
+            // Ha ebben a napszakban ma már naplózott, ne ajánlgassuk újra.
+            for (int i = 0; i < all.size(); i++)
+                if (ago[i] == 0 && Habits.bucketOf(hours[i]) == bucket) return;
+
+            StringBuilder names = new StringBuilder();
+            for (String f : u.foods) {
+                if (names.length() > 0) names.append(", ");
+                names.append(f);
+            }
+            TextView row = text(u.label(bucket) + "  ·  " + names, 12.5f,
+                    Theme.accent(this), true);
+            row.setPadding(dp(2), dp(10), dp(2), dp(2));
+            row.setClickable(true);
+            row.setOnClickListener(v -> logUsual(u));
+            quickBox.addView(row, lp());
+        } catch (Exception ignored) {}
+    }
+
+    /** A szokásos étkezés naplózása a legutóbbi ilyen bejegyzés mennyiségeivel. */
+    void logUsual(Habits.Usual u) {
+        List<MealLog.Item> items = new ArrayList<>();
+        for (String name : u.foods) {
+            MealLog.Item found = null;
+            for (MealLog.Meal m : MealLog.load(this)) {
+                for (MealLog.Item it : m.items)
+                    if (it.food.equalsIgnoreCase(name)) { found = it; break; }
+                if (found != null) break;
+            }
+            if (found != null)
+                items.add(new MealLog.Item(found.food, found.grams, found.kcal, found.protein));
+        }
+        if (items.isEmpty()) return;
+        long now = System.currentTimeMillis();
+        MealLog.Meal meal = new MealLog.Meal(now, "", items, "");
+        MealLog.add(this, meal);
+        refresh();
+        Ux.blazeCard(this, "🍽 Naplózva ✔  " + Math.round(meal.kcal()) + " kcal"
+                + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
     }
 
     void editGoalDialog() {

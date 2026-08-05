@@ -74,6 +74,18 @@ def used_short(src, short):
     return False
 
 
+# API 24 a legalacsonyabb támogatott szint: ezek a hívások csak újabb
+# Androidon léteznek, és a régin futásidőben dobnak (a fordítás átmegy).
+API_BANNED = {
+    r"(?<![\w.])String\.join\s*\(": "String.join (API 26) – írj kézi összefűzést",
+    r"(?<![\w.])Objects\.requireNonNullElse\s*\(": "Objects.requireNonNullElse (API 30)",
+    r"(?<![\w.])List\.of\s*\(": "List.of (API 30) – használj Arrays.asList-et",
+    r"(?<![\w.])Map\.of\s*\(": "Map.of (API 30)",
+    r"(?<![\w.])Set\.of\s*\(": "Set.of (API 30)",
+    r"\.stream\s*\(\s*\)": "Stream API (API 24+ csak részben) – írj ciklust",
+}
+
+
 def main():
     problems = []
     for name in sorted(os.listdir(SRC)):
@@ -86,6 +98,10 @@ def main():
                 continue
             if used_short(raw, short):
                 problems.append(f"{name}: {short} rövid néven, de nincs import ({full})")
+        for line in code_lines(raw):
+            for pat, why in API_BANNED.items():
+                if re.search(pat, line):
+                    problems.append(f"{name}: {why}")
 
     if problems:
         print("Hiányzó import:")

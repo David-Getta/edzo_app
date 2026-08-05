@@ -79,6 +79,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi
   napra kerül, a napszaknak megfelelő órával – a „3 napja", a „hétfőn" és a
   kimondott óra („19 órakor") is megy
+- **A szokásos étkezésed**: ha egy napszakban háromszor ugyanazt naplóztad,
+  az app magától felajánlja egy koppintásra (a sorrend és a mennyiség nem
+  számít, csak az, hogy ugyanazok az ételek)
 - **Kedvencek** és gyakori étkezések gyors csipjei, keresés a naplóban,
   napi bontás, napi részletek és megosztás
 
@@ -235,7 +238,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~403 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~410 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
