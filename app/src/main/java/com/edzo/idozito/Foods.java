@@ -833,7 +833,27 @@ public final class Foods {
     private static final String[] COUNT_WORDS =
             {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár",
              "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg",
-             "kupica", "stampedli"};
+             "kupica", "stampedli", "korty", "kortyot", "kancso", "kancsó"};
+
+    /**
+     * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag
+     * (2,5 dl), az üveg, a kancsó és a korty viszont nem – és ezekből lesz a
+     * napi vízcél, ezért itt a tévedés a haladássávon is látszik.
+     *
+     * Csak a vízre él: az „egy üveg sör" fél liter, de a sörnél az adag már
+     * eleve ennyi, az „egy korty bor" pedig nem életszerű bejegyzés.
+     */
+    static final String[][] WATER_ML = {
+            {"korty", "40"}, {"kortyot", "40"},
+            {"uveg", "500"}, {"üveg", "500"},
+            {"kancso", "1000"}, {"kancsó", "1000"},
+    };
+
+    private static int waterMl(Food f, String word) {
+        if (f == null || !f.name.startsWith("Víz")) return 0;
+        for (String[] w : WATER_ML) if (w[0].equals(word)) return Integer.parseInt(w[1]);
+        return 0;
+    }
 
     /**
      * Adag-szorzó mérőszavak: a tipikus adagot sokszorozzák. A „két tányér
@@ -1215,7 +1235,9 @@ public final class Foods {
                 if (between == null) continue;
                 // Az „adag" bármely ételre megy: egy adag a tipikus adag.
                 // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
-                double piece = between.equals("tabla") ? 100      // egy tábla csoki
+                double piece = waterMl(foods.get(k), between) > 0
+                        ? waterMl(foods.get(k), between)
+                        : between.equals("tabla") ? 100      // egy tábla csoki
                         : between.equals("szelet") && sliceGrams(foods.get(k)) > 0
                         ? sliceGrams(foods.get(k))
                         : between.startsWith("adag") || between.equals("porcio")

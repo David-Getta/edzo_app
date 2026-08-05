@@ -130,4 +130,16 @@ public class FoodsQuantityTest {
         assertEquals(250.0, grams("kétszázötven gramm tészta"), 0.001);
         assertEquals(300.0, grams("háromszáz gramm burgonya"), 0.001);
     }
+
+    @Test public void theDrinkMeasuresHaveRealVolumes() {
+        // Az üveg, a kancsó és a korty nem egy pohár: ezekből lesz a napi
+        // vízcél, ezért a tévedés a haladássávon is látszik.
+        assertEquals(500, grams("ittam egy üveg vizet"), 0.01);
+        assertEquals(1000, grams("ittam egy kancsó vizet"), 0.01);
+        assertEquals(40, grams("ittam egy korty vizet"), 0.01);
+        assertEquals(80, grams("két korty vizet"), 0.01);
+        // A pohár marad a tipikus adag.
+        assertEquals(250, grams("ittam egy pohár vizet"), 0.01);
+        assertEquals(2000, grams("ittam 8 pohár vizet"), 0.01);
+    }
 }
