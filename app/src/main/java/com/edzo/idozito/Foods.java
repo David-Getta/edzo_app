@@ -249,7 +249,10 @@ public final class Foods {
                 "grizgaluska leves", "grizgaluskaleves", "grizgaluska", "majgomboc",
                 // A teljes alak szótő, különben a „csirke" tő vinné el a
                 // levest sült csirkemellnek.
-                "csirkeleves", "csirke leves", "tyukhusleves", "tyukleves"),
+                "csirkeleves", "csirke leves", "tyukhusleves", "tyukleves",
+                // Az erőleves tiszta húsleves: az „átlagos" leves ötszörös
+                // kalóriát írt rá (200 helyett 40 kcal/100 g).
+                "eroleves", "ero leves", "csontleves", "bouillon"),
         new Food("Kocsonya", 90, 12, 300, "kocsonya", "aszpik"),
         new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
         // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
@@ -444,7 +447,10 @@ public final class Foods {
         new Food("Zöldbab", 35, 1.8, 150, "zoldbab"),
         new Food("Spenót / paraj", 25, 2.9, 200, "spenot", "paraj"),
         new Food("Krémleves (zöldség)", 60, 2, 350, "kremleves",
-                "brokkoli kremleves", "sutotok kremleves", "gomba kremleves"),
+                "brokkoli kremleves", "sutotok kremleves", "gomba kremleves",
+                // A gombaleves tejfölös, nem víztiszta: a gomba + „átlagos
+                // leves" párosnál ez a közelebbi.
+                "gombaleves", "gomba leves", "karfiolleves", "borsoleves"),
         new Food("Joghurtos öntet", 60, 3, 40, "kefires ontet", "joghurtos ontet", "ontet"),
         new Food("Rántott hal", 230, 16, 180, "rantott hal"),
         new Food("Csirkés wrap", 200, 12, 250, "csirkes wrap"),

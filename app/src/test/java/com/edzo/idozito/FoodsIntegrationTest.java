@@ -432,4 +432,19 @@ public class FoodsIntegrationTest {
         assertEquals("Kávé (fekete) 200g",
                 summary("nem ettem reggelit és ittam egy kávét"));
     }
+
+    @Test public void theClearBrothIsNotAnAverageSoup() {
+        // Az erőleves tiszta húsleves: az „átlagos" leves ötszörös kalóriát
+        // írt rá (200 helyett 40 kcal/100 g).
+        assertEquals("Húsleves 400g", summary("erőleves"));
+        assertEquals("Húsleves 400g", summary("csontleves"));
+        // A gombaleves tejfölös, nem víztiszta – és nem gomba + leves.
+        assertEquals("Krémleves (zöldség) 350g", summary("gombaleves"));
+        assertEquals("Krémleves (zöldség) 350g", summary("gomba leves"));
+        assertEquals("Krémleves (zöldség) 350g", summary("karfiolleves"));
+        // A többi leves változatlan.
+        assertEquals("Gulyásleves 400g", summary("gulyásleves"));
+        assertEquals("Leves (átlag) 400g", summary("leves"));
+        assertEquals("Bableves 400g", summary("bableves"));
+    }
 }
