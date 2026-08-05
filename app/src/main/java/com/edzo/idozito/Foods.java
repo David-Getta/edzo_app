@@ -625,6 +625,14 @@ public final class Foods {
             // „uszodában" szódavizet vitt a naplóba – észrevétlenül, mert a
             // felismerés sikeresnek látszott.
             "majd", "iskola", "uszod",
+            // Ugyanez a fajta ütközés, végigpróbált magyar szólistából. A bal
+            // oldalon mindennapi szó, a jobb oldalon amit eddig naplózott:
+            // hall/halál/halom/halaszt → hal, szabad → zab, babona/babér/bábu →
+            // bab, majom/május/majális → máj, tejút → tej, rizikó → rizs,
+            // alkalmas → alma, bordázat → bor, sorsolás → sör.
+            "hall", "halal", "halom", "halaszt", "szabad", "babon", "baber",
+            "babu", "szobabicikli", "majom", "majus", "majalis", "tejut",
+            "riziko", "sorsol", "alkalm", "borda",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */

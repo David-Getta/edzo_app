@@ -221,6 +221,25 @@ public class FoodsTest {
         assertEquals("Üdítő (cukros)", Foods.find("kólát").name);
     }
 
+    @Test public void aWholeListOfEverydayWordsStaysOutOfTheDiary() {
+        // Egy 300 szavas magyar szólista végigfuttatásából jött. Mindegyik
+        // ütközés csendes volt: a felismerés sikeresnek látszott.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String w : new String[]{"hall", "hallottam", "halál", "halom",
+                "halasztás", "szabad", "szabadnap", "szabadidő", "babona",
+                "babérlevél", "bábu", "szobabicikli", "majom", "május",
+                "majális", "tejút", "rizikó", "sorsolás", "alkalmas",
+                "bordázat", "iskolában", "uszodában", "majd"})
+            assertTrue("ez nem étel: " + w, Foods.parse(all, w).isEmpty());
+        // A valódi ételnevek viszont megmaradnak – a maszkolás nem söpörhet
+        // többet, mint amennyit kell.
+        for (String[] w : new String[][]{{"halat", "Hal (fehér)"},
+                {"zabpehely", "Zabpehely"}, {"bab", "Bab (főtt)"},
+                {"májat", "Csirkemáj"}, {"tejet", "Tej"}, {"rizst", "Rizs (főtt)"},
+                {"sört", "Sör"}, {"almát", "Alma"}, {"majonéz", "Majonéz"}})
+            assertEquals(w[0], w[1], Foods.find(w[0]).name);
+    }
+
     @Test public void aContrastiveConjunctionEndsTheNegation() {
         // A „de" ellentétet nyit: ami utána jön, azt megette az ember. Az „és"
         // viszont folytatja a tagadást – ott mindkét tétel kimarad.
