@@ -240,4 +240,49 @@ public class StrengthParseTest {
         assertEquals(8, two.get(0).rpe);
         assertEquals(10, two.get(1).rpe);
     }
+
+    @Test public void theWeightTimesRepsNotationIsUnderstood() {
+        // Az erőemelők jelölése: súly × ismétlés. A hatvan nem lehet sorozat.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 60x10, 70x8, 80x6");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(10, r.get(0).sets.get(0).reps);
+        assertEquals(60.0, r.get(0).sets.get(0).weight, 0.001);
+        assertEquals(6, r.get(0).sets.get(2).reps);
+        assertEquals(80.0, r.get(0).topWeight(), 0.001);
+        assertEquals(24, r.get(0).totalReps());
+    }
+
+    @Test public void theThreeDigitWeightSurvives() {
+        // A „100x3" súlya száz kiló – korábban a százból ismétlés lett.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 100x3, 100x3, 100x2");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(8, r.get(0).totalReps());
+        assertEquals(100.0, r.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void aContinuationClauseKeepsTheExercise() {
+        // A vessző utáni sorozat ugyanahhoz a gyakorlathoz tartozik.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 3x10 60kg, 2x8 70kg");
+        assertEquals(1, r.size());
+        assertEquals(5, r.get(0).sets.size());
+        assertEquals(46, r.get(0).totalReps());
+        assertEquals(70.0, r.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void aClauseWithOtherWordsIsNotAContinuation() {
+        // A „20 perc futás" húsz perce nem húsz ismétlés.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 3x10, majd 20 perc futás");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(30, r.get(0).totalReps());
+    }
+
+    @Test public void aRoundIsASeries() {
+        // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent.
+        List<StrengthParse.Item> r = StrengthParse.parse("3 kör 10 fekvőtámasz");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(30, r.get(0).totalReps());
+        assertEquals(5, StrengthParse.parse("5 kör 20 guggolás").get(0).sets.size());
+    }
 }

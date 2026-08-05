@@ -113,7 +113,14 @@ public final class StrengthParse {
         String whole = sets(Foods.norm(text));
         for (String part : splitClauses(whole)) {
             Item it = parseOne(part);
-            if (it != null) out.add(it);
+            if (it != null) { out.add(it); continue; }
+            // Sorozatfelsorolás gyakorlatnév nélkül: „fekvenyomás 60x10, 70x8,
+            // 80x6”. A vessző itt nem új gyakorlatot nyit, hanem a következő
+            // sorozatot – név hiányában az előzőhöz tartozik.
+            if (!out.isEmpty()) {
+                List<Set> more = continuationSets(part, out.get(out.size() - 1));
+                if (more != null) out.get(out.size() - 1).sets.addAll(more);
+            }
         }
         // Ugyanaz a gyakorlat kétszer: a sorozatok egy bejegyzésbe kerülnek.
         List<Item> merged = new ArrayList<>();
@@ -131,6 +138,49 @@ public final class StrengthParse {
         // a gyakorlatra vonatkozik. Több gyakorlatnál ezt nem találgatjuk.
         if (merged.size() == 1 && merged.get(0).rpe == 0) merged.get(0).rpe = rpeIn(whole);
         return merged;
+    }
+
+    /**
+     * Egy folytatás-tagmondat sorozatai, vagy null.
+     *
+     * Szándékosan szűk a minta: CSAK a puszta sorozatjelölés számít
+     * folytatásnak („70x8", „2x8 70 kg"). Bármi más szó a tagmondatban azt
+     * jelenti, hogy nem sorozatról van szó – a „guggolás 3x10, majd 20 perc
+     * futás" húsz perce nem húsz ismétlés.
+     */
+    private static List<Set> continuationSets(String s, Item prev) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
+                        + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")
+                .matcher(s.trim());
+        if (!m.matches()) return null;
+        double a;
+        try { a = Double.parseDouble(m.group(1).replace(',', '.')); }
+        catch (NumberFormatException e) { return null; }
+        int reps = Integer.parseInt(m.group(2));
+        if (reps < 1 || reps > 200) return null;
+        List<Set> out = new ArrayList<>();
+        if (m.group(3) != null) {
+            // „2x8 70 kg”: sorozat × ismétlés, kiírt súllyal.
+            double w;
+            try { w = Double.parseDouble(m.group(3).replace(',', '.')); }
+            catch (NumberFormatException e) { return null; }
+            int n = (int) a;
+            if (a != n || n < 1 || n > 20 || w <= 0 || w > 500) return null;
+            for (int i = 0; i < n; i++) out.add(new Set(reps, w));
+            return out;
+        }
+        if (a > 20 && a <= 500) {
+            // „70x8”: súly × ismétlés.
+            out.add(new Set(reps, a));
+            return out;
+        }
+        int n = (int) a;
+        if (a != n || n < 1 || n > 20) return null;
+        // „3x8” súly nélkül: az előző sorozat súlyával megy tovább.
+        double w = prev.sets.isEmpty() ? 0 : prev.sets.get(prev.sets.size() - 1).weight;
+        for (int i = 0; i < n; i++) out.add(new Set(reps, w));
+        return out;
     }
 
     private static List<String> splitClauses(String s) {
@@ -201,7 +251,10 @@ public final class StrengthParse {
      */
     static String sets(String s) {
         return Hu.digits(s)
-                .replaceAll("(\\d{1,2})\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2");
+                .replaceAll("(\\d{1,2})\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2")
+                // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent. A szám a
+                // két oldalon köti a mintát, így a „korcsolya" nem kör.
+                .replaceAll("(\\d{1,2})\\s?kor\\s+(\\d{1,3})", "$1x$2");
     }
 
     /** Egy tagmondat → gyakorlat + sorozatok, vagy null. */
@@ -215,7 +268,8 @@ public final class StrengthParse {
         // 1) „3x10”, „3 x 10”, „3×10”: sorozat × ismétlés. A teremben szokásos
         //    „3x10x60” harmadik tagja maga a súly.
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?:\\s?[x×]\\s?(\\d{1,3}(?:[.,]\\d{1,2})?))?"
+                // Az első tag háromjegyű is lehet: a „100x3" súlya száz kiló.
+                .compile("(\\d{1,3})\\s?[x×]\\s?(\\d{1,3})(?:\\s?[x×]\\s?(\\d{1,3}(?:[.,]\\d{1,2})?))?"
                         + "(?!\\s?(?:kg|kilo))").matcher(s);
         if (m.find()) {
             int n = Integer.parseInt(m.group(1)), r = Integer.parseInt(m.group(2));
@@ -239,6 +293,10 @@ public final class StrengthParse {
             }
             if (n >= 1 && n <= 20 && r >= 1 && r <= 200)
                 for (int i = 0; i < n; i++) sets.add(new Set(r, weight));
+            // „60x10”: sorozatból nem lehet hatvan, súlyból viszont igen. Ez az
+            // erőemelők szokásos jelölése – súly × ismétlés.
+            else if (n > 20 && n <= 500 && r >= 1 && r <= 200)
+                sets.add(new Set(r, weight > 0 ? weight : n));
         }
         // 2) Sorozatonként más ismétlés: „12-10-8”.
         if (sets.isEmpty()) {
@@ -264,6 +322,9 @@ public final class StrengthParse {
             int series = numberBefore(s, "sorozat");
             if (series <= 0) series = numberBefore(s, "szett");
             if (series <= 0) series = numberBefore(s, "set");
+            // A „3 kör 10 fekvőtámasz" köre is sorozat. Szóközzel, hogy a
+            // „korcsolya" ne legyen kör.
+            if (series <= 0) series = numberBefore(s, "kor ");
             if (reps > 0 && reps <= 200) {
                 int n = series > 0 && series <= 20 ? series : 1;
                 for (int i = 0; i < n; i++) sets.add(new Set(reps, weight));
