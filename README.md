@@ -19,7 +19,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   csúszkaállásként; egy koppintással sablonként is elmenthető
 - Gyors sablonok (**HIIT / Tempó / Tabata**) és **10 beépített program**
   (törzs, teljes test, láb, kar, zsírégető HIIT, 7 perces edzés…), saját
-  programokkal és gyakorlat-leírásokkal
+  programokkal és gyakorlat-leírásokkal – a saját programhoz a gyakorlatok
+  a könyvtárból is választhatók, így mindig lesz mellettük technikai tipp
 - 🔊 Hangválasztás, 🗣️ hangos bemondás (TTS), 🎛️ vezérlés az értesítésből,
   🌙 fut kikapcsolt képernyővel is (foreground service + wake lock)
 

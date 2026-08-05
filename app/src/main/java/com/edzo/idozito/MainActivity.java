@@ -2677,6 +2677,23 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    /** Gyakorlat-választó a saját programhoz: a lista a technikai leírással jön. */
+    void pickExerciseSheet(final EditText target) {
+        Sheet sh = new Sheet(this, "Gyakorlat a könyvtárból 📖",
+                "Koppints egyre, és a program listájához fűzöm.");
+        for (String n : Programs.knownExercises()) {
+            final String name = n;
+            // A lap nyitva marad, hogy egymás után többet is fel lehessen venni.
+            sh.addRow("•", n, Programs.descOf(n), false, false, () -> {
+                String cur = target.getText().toString();
+                target.setText(cur.trim().isEmpty() ? name : cur.replaceAll("\\s+$", "")
+                        + "\n" + name);
+                target.setSelection(target.getText().length());
+            });
+        }
+        sh.addPrimary("Kész", () -> {}).show();
+    }
+
     void newProgramDialog() { editProgramDialog(null); }
 
     void editProgramDialog(final Programs.P existing) {
@@ -2698,6 +2715,14 @@ public class MainActivity extends Activity {
             exs.setText(sb.toString());
         }
         box.addView(exs);
+        // Aki nem tudja fejből a neveket, eddig elgépelte – és az elgépelt
+        // névhez nem tartozik technikai leírás. A könyvtárból választva ez
+        // nem fordulhat elő.
+        TextView pick = text("＋  Gyakorlat a könyvtárból", 13, tAccent, true);
+        pick.setPadding(dp(4), dp(10), dp(4), dp(2));
+        pick.setClickable(true);
+        pick.setOnClickListener(v -> pickExerciseSheet(exs));
+        box.addView(pick);
 
         new Sheet(this, existing == null ? "Új saját program" : "Program szerkesztése")
                 .addCustom(box)

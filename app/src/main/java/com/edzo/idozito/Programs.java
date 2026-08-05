@@ -121,6 +121,22 @@ public final class Programs {
     }
 
     /** Rövid gyakorlat-leírás (technikai tipp); üres, ha nincs (pl. saját gyakorlat). */
+    /**
+     * Minden gyakorlat, amihez van technikai leírás – ábécésorrendben.
+     *
+     * A saját program szerkesztője eddig egy üres szövegmező volt: aki nem
+     * tudta fejből a neveket, az vagy elgépelte (és a leírás elmaradt), vagy
+     * bemásolta máshonnan. Ez a lista a választék, és mivel a leírás megléte a
+     * feltétel, a kiválasztott név mellett mindig lesz technikai tipp is.
+     */
+    public static String[] knownExercises() {
+        java.util.TreeSet<String> out = new java.util.TreeSet<>();
+        for (P p : BUILT_IN) for (String e : p.ex) if (!descOf(e).isEmpty()) out.add(e);
+        for (String n : StrengthLog.COMMON) if (!descOf(n).isEmpty()) out.add(n);
+        for (String n : StrengthParse.names()) if (!descOf(n).isEmpty()) out.add(n);
+        return out.toArray(new String[0]);
+    }
+
     public static String descOf(String name) {
         if (name == null) return "";
         switch (name) {

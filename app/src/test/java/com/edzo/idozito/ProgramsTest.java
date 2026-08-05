@@ -62,4 +62,21 @@ public class ProgramsTest {
             }
         }
     }
+    @Test public void theExercisePickerOffersOnlyDocumentedMoves() {
+        String[] all = Programs.knownExercises();
+        assertTrue("üres a választék", all.length >= 30);
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        String prev = null;
+        for (String n : all) {
+            assertTrue("nincs leírása: " + n, !Programs.descOf(n).isEmpty());
+            assertTrue("kétszer szerepel: " + n, seen.add(n));
+            if (prev != null) assertTrue("nem ábécésorrend: " + prev + " → " + n,
+                    prev.compareTo(n) < 0);
+            prev = n;
+        }
+        // A súlyzós alapok és a mondat-felismerés gyakorlatai is benne vannak.
+        java.util.List<String> list = java.util.Arrays.asList(all);
+        assertTrue(list.contains("Guggolás"));
+        assertTrue(list.contains("Plank"));
+    }
 }
