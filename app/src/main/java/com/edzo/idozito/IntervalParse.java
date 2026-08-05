@@ -123,9 +123,11 @@ public final class IntervalParse {
                 int r = Integer.parseInt(mm.group(1));
                 double v = Double.parseDouble(mm.group(2).replace(',', '.'));
                 int w = (int) Math.round(mm.group(3).startsWith("perc") ? v * 60 : v);
-                Plan p = build(r, w, secondsBefore(s,
-                        new String[]{"piheno", "pihenes", "szunet", "lazitas", "seta", "rest", "off"}),
-                        warmIn(s), coolIn(s));
+                int rest = secondsBefore(s, REST_WORDS);
+                // „5x(3 perc / 1 perc)”: a perjel utáni idő a pihenő. Enélkül
+                // a pihenő némán elveszett, és a kör fele lett az edzésnek.
+                if (rest <= 0) rest = secondsAfterSlash(s, mm.end());
+                Plan p = build(r, w, rest, warmIn(s), coolIn(s));
                 if (p != null) return p;
             } catch (NumberFormatException ignored) {
             }
@@ -168,6 +170,9 @@ public final class IntervalParse {
         if (rounds <= 0) rounds = numberBefore(s, "sorozat");
         if (rounds <= 0) rounds = numberBefore(s, "szett");
         if (rounds <= 0) rounds = numberBefore(s, "round");
+        // Az időzítőnél az „ismétlés" a kört jelenti, nem a súlyzós
+        // ismétlésszámot: a „3 perc munka 1 perc pihenő, 6 ismétlés" hat kör.
+        if (rounds <= 0) rounds = numberBefore(s, "ismetles");
         if (rounds <= 0) rounds = numberAfterColon(s, "kor");
         if (rounds <= 0) rounds = numberAfterColon(s, "round");
         if (rounds <= 0) rounds = roundsPrefix(s);
@@ -176,8 +181,7 @@ public final class IntervalParse {
         // úgyis az első kimondott időből jön.
         int work = secondsBefore(s, new String[]{"munka", "aktiv", "terheles", "gyakorlat",
                 "work"});
-        int rest = secondsBefore(s, new String[]{"piheno", "pihenes", "szunet", "lazitas",
-                "rest", "off"});
+        int rest = secondsBefore(s, REST_WORDS);
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka. De
         // megnevezetlenül csak életszerű munkaidőt fogadunk el: a „minden
         // percben 1 kör, 15 percig” 15 perce nem egyetlen szakasz hossza.
@@ -360,6 +364,29 @@ public final class IntervalParse {
     }
 
     /**
+     * A pihenőt jelölő szavak, EGY helyen.
+     *
+     * Korábban két listában éltek, és a rövidebbikből hiányzott a „séta": a
+     * „8 kör: 20 mp sprint, 40 mp séta" pihenője így elveszett, az edzés
+     * pedig szünet nélküli lett.
+     */
+    private static final String[] REST_WORDS = {"piheno", "pihenes", "szunet",
+            "lazitas", "seta", "rest", "off"};
+
+    /** Perjellel elválasztott második idő: „3 perc / 1 perc” → 60. */
+    private static int secondsAfterSlash(String s, int from) {
+        if (from < 0 || from >= s.length()) return 0;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("^\\s?[/-]\\s?(\\d{1,3})\\s?(masodperc|mperc|mp|perc)?")
+                .matcher(s.substring(from));
+        if (!m.find()) return 0;
+        int v = Integer.parseInt(m.group(1));
+        String unit = m.group(2);
+        int sec = unit != null && unit.startsWith("perc") ? v * 60 : v;
+        return sec >= MIN_SEC && sec <= MAX_SEC ? sec : 0;
+    }
+
+    /**
      * Szám a szó után, de CSAK kettősponttal: „kör: 6”.
      *
      * A táblára írt terv gyakran mezőkből áll („kör: 6, munka: 40mp”), és ott a
@@ -388,6 +415,13 @@ public final class IntervalParse {
     private static int roundsPrefix(String s) {
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(?<![\\d.,])(\\d{1,2})\\s?[x×]\\s?(?=\\d)").matcher(s);
+        if (m.find()) {
+            int v = Integer.parseInt(m.group(1));
+            if (v >= 2 && v <= MAX_ROUNDS) return v;
+        }
+        // Záró szorzó: „30 mp on 30 mp off 10x”.
+        m = java.util.regex.Pattern.compile("(?<![\\d.,])(\\d{1,2})\\s?[x×]\\s*$")
+                .matcher(s.trim());
         if (m.find()) {
             int v = Integer.parseInt(m.group(1));
             if (v >= 2 && v <= MAX_ROUNDS) return v;

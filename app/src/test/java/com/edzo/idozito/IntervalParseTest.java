@@ -271,4 +271,25 @@ public class IntervalParseTest {
         // Idő nélkül nincs mit beállítani.
         assertNull(IntervalParse.parse("amrap"));
     }
+
+    @Test public void theRestSurvivesInFourMoreForms() {
+        // Mind a négy alak a teremben szokásos, és mind veszített valamit:
+        // vagy a pihenőt, vagy a körszámot.
+        IntervalParse.Plan a = IntervalParse.parse("8 kör: 20 mp sprint, 40 mp séta");
+        assertEquals(8, a.rounds);
+        assertEquals(20, a.work);
+        assertEquals(40, a.rest);          // a „séta" is pihenő
+        IntervalParse.Plan b = IntervalParse.parse("5x(3 perc / 1 perc)");
+        assertEquals(5, b.rounds);
+        assertEquals(180, b.work);
+        assertEquals(60, b.rest);          // a perjel utáni idő
+        IntervalParse.Plan c = IntervalParse.parse("30 mp on 30 mp off 10x");
+        assertEquals(10, c.rounds);        // záró szorzó
+        assertEquals(30, c.work);
+        assertEquals(30, c.rest);
+        IntervalParse.Plan d = IntervalParse.parse("3 perc munka 1 perc pihenő, 6 ismétlés");
+        assertEquals(6, d.rounds);         // az „ismétlés" itt kör
+        assertEquals(180, d.work);
+        assertEquals(60, d.rest);
+    }
 }
