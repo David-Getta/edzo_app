@@ -1116,6 +1116,17 @@ public final class Activities {
                     if (w.equals("nem ")) {
                         int es = s.indexOf(" es ", p);
                         if (es >= 0 && es < e && !s.startsWith("nem ", es + 4)) e = es;
+                        // A KÍSÉRŐ megmarad: a „nem futottam a kondi mellett"
+                        // kondija megtörtént, csak a futás maradt el. A jelző
+                        // ELŐTT álló szó a kísérő, azt kihagyjuk a törlésből.
+                        for (String mk : new String[]{" mellett", " melle", " hozza"}) {
+                            int m = s.indexOf(mk, p);
+                            if (m < 0 || m >= e) continue;
+                            int b = m;
+                            while (b > p && s.charAt(b - 1) == ' ') b--;
+                            while (b > p && Character.isLetter(s.charAt(b - 1))) b--;
+                            if (b > p) e = Math.min(e, b);
+                        }
                     }
                     blank(q, a, e);
                     s = new String(q);

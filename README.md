@@ -47,7 +47,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   egész héten", „1h20 futás", „45p nyújtás" – mentés előtt megmutatja, mit értett; a tervekre („jövő
   héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
   is érti („ma nem futottam", „kondi helyett futás"; a „nem futottam és
-  kondiztam" kondija viszont megmarad), és a pihenőnapot is elfogadja
+  kondiztam" és a „nem futottam a kondi mellett" kondija viszont
+  megmarad), és a pihenőnapot is elfogadja
 - **Sorozatos mondat esetén** („3x10 fekvenyomás 60 kg") felajánlja az
   Erősítő naplót, ahol a súly és az ismétlés is megmarad
 - A kézi bejegyzés **mindenben egyenrangú a mérttel**: számít a szériába, az
@@ -289,7 +290,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~482 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~483 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

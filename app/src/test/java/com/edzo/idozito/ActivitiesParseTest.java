@@ -819,4 +819,15 @@ public class ActivitiesParseTest {
         // A „helyett" ága érintetlen.
         assertEquals("futas", Activities.parse("kondi helyett futás").plans.get(0).kind.id);
     }
+
+    @Test public void theNegationSparesTheAccompaniment() {
+        // A „nem futottam a kondi mellett" kondija megtörtént: csak a futás
+        // maradt el. A jelző előtt álló szó a kísérő, nem a tagadás tárgya.
+        assertEquals("kondi",
+                Activities.parse("nem futottam a kondi mellett").plans.get(0).kind.id);
+        assertEquals("uszas",
+                Activities.parse("nem futottam az úszás mellett").plans.get(0).kind.id);
+        // Jelző nélkül a tagadás továbbra is mindent elvisz.
+        assertTrue(Activities.parse("nem futottam a kondiban").isEmpty());
+    }
 }
