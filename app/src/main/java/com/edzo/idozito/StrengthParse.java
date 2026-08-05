@@ -298,10 +298,16 @@ public final class StrengthParse {
             else if (n > 20 && n <= 500 && r >= 1 && r <= 200)
                 sets.add(new Set(r, weight > 0 ? weight : n));
         }
-        // 2) Sorozatonként más ismétlés: „12-10-8”.
+        // 2) Sorozatonként más ismétlés: „12-10-8”, „5/5/5”.
+        //
+        // A per-jel ugyanolyan gyakori elválasztó, mint a kötőjel, és nem
+        // ütközik semmivel a súlyzós mondatban. A VESSZŐ szándékosan nem
+        // szerepel: a „10,8" tizedes szám is lehet („60,5 kg"), és egy
+        // félreolvasott súly rosszabb, mint egy fel nem ismert sorozatlista.
         if (sets.isEmpty()) {
             m = java.util.regex.Pattern
-                    .compile("(\\d{1,3})-(\\d{1,3})(?:-(\\d{1,3}))?(?:-(\\d{1,3}))?(?:-(\\d{1,3}))?")
+                    .compile("(\\d{1,3})[-/](\\d{1,3})(?:[-/](\\d{1,3}))?"
+                            + "(?:[-/](\\d{1,3}))?(?:[-/](\\d{1,3}))?")
                     .matcher(s);
             if (m.find()) {
                 List<Set> tmp = new ArrayList<>();

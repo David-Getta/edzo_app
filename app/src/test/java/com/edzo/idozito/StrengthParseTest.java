@@ -285,4 +285,25 @@ public class StrengthParseTest {
         assertEquals(30, r.get(0).totalReps());
         assertEquals(5, StrengthParse.parse("5 kör 20 guggolás").get(0).sets.size());
     }
+
+    @Test public void aSlashSeparatedRepListWorksLikeADash() {
+        // A per-jel ugyanolyan gyakori elválasztó, mint a kötőjel.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 5/5/5 80 kg");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(15, r.get(0).totalReps());
+        assertEquals(80.0, r.get(0).topWeight(), 0.001);
+        assertEquals(3, StrengthParse.parse("bicepsz 12/10/8 15 kg").get(0).sets.size());
+        // A kötőjeles alak változatlan.
+        assertEquals(3, StrengthParse.parse("fekvenyomás 5-5-5 80 kg").get(0).sets.size());
+    }
+
+    @Test public void aDecimalWeightIsNotARepList() {
+        // A vessző szándékosan NEM elválasztó: a „60,5 kg" tizedes szám, és egy
+        // félreolvasott súly rosszabb, mint egy fel nem ismert sorozatlista.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 3x10 60,5 kg");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(60.5, r.get(0).topWeight(), 0.001);
+        assertEquals(60.5, StrengthParse.parse("guggolás 3x10 60.5kg").get(0).topWeight(),
+                0.001);
+    }
 }
