@@ -168,4 +168,17 @@ public class RoutinesTest {
         assertEquals(-1, Routines.lastDone(moves("Guggolás"),
                 new long[]{1}, new String[]{null}, 2));
     }
+
+    @Test public void theShortSummaryFitsANotification() {
+        Routines.Routine r = Routines.byName("", "Lábnap");
+        assertEquals(5, r.moves.size());
+        assertEquals("Guggolás  ·  Lábtolás  ·  Kitörés +2", r.shortSummary(3));
+        assertEquals("Guggolás +4", r.shortSummary(1));
+        // Nulla vagy negatív kérésre is marad legalább egy név.
+        assertEquals("Guggolás +4", r.shortSummary(0));
+        // Ha minden kifér, nincs plusz-jelzés.
+        Routines.Routine t = Routines.byName("", "Teljes test");
+        assertEquals(t.summary(), t.shortSummary(t.moves.size()));
+        assertEquals(t.summary(), t.shortSummary(99));
+    }
 }

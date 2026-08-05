@@ -45,6 +45,23 @@ public final class Routines {
             return name + "  ·  " + moves.size() + " gyakorlat";
         }
 
+        /**
+         * Rövid felsorolás értesítéshez: „Guggolás · Lábtolás · Kitörés +2”.
+         *
+         * Egy hat gyakorlatos nap teljes névsora az értesítésben levágódik –
+         * a levágott vég pedig rosszabb, mint a tudatos rövidítés.
+         */
+        public String shortSummary(int max) {
+            if (max < 1) max = 1;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < moves.size() && i < max; i++) {
+                if (sb.length() > 0) sb.append("  ·  ");
+                sb.append(moves.get(i));
+            }
+            if (moves.size() > max) sb.append(" +").append(moves.size() - max);
+            return sb.toString();
+        }
+
         /** „Fekvenyomás · Vállból nyomás · Tricepsz”. */
         public String summary() {
             StringBuilder sb = new StringBuilder();

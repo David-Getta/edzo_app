@@ -155,7 +155,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   a gyakorlatai legalább fele megvolt aznap). Ha van a mai fókuszhoz illő nap, az
   az erősítő képernyő tetején is ott van – egy kész nap teljes, sorrendbe
   rakott terv, nem három különálló gyakorlat. A kezdőlap csempéje is ezt
-  írja ki („🏋️ Erősítő · ma Lábnap")
+  írja ki („🏋️ Erősítő · ma Lábnap"), és az esti emlékeztető is megnevezi
+  a mai nap első gyakorlatait
 - **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
   progresszió-javaslattal együtt – ha a heti fókuszban áll valami mára, az
   megy elöl („🎯 Evezés · 3 × 10 · 52,5 kg") – csak
@@ -293,7 +294,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~488 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~489 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

@@ -69,6 +69,17 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         // 1) Heti fókusz: ha beírta, mit edz ma, annál konkrétabb nincs.
         try {
             String line = Weekplan.todayLine(Theme.planFocus(c), dowIdx);
+            // Ha a mai fókuszhoz edzésnap is tartozik, a gyakorlatok neve
+            // konkrétabb, mint az izomcsoporté: „Ma: Láb" helyett látszik,
+            // hogy guggolás és kitörés jön.
+            String todayFocus = Weekplan.forDay(Theme.planFocus(c), dowIdx);
+            if (!line.isEmpty() && !todayFocus.isEmpty() && line.contains("Ma:"))
+                for (Routines.Routine r : Routines.all(
+                        Theme.getStr(c, "strength_routines", "")))
+                    if (Foods.norm(r.name).contains(Foods.norm(todayFocus))) {
+                        line += "  ·  " + r.shortSummary(3);
+                        break;
+                    }
             if (!line.isEmpty()) lines.add(line);
         } catch (Exception ignored) {}
 
