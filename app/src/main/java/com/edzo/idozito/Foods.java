@@ -296,6 +296,13 @@ public final class Foods {
         new Food("Tökfőzelék", 70, 2, 350, "tokfozelek"),
         new Food("Gnocchi", 160, 4, 250, "gnocchi", "nudli"),
         new Food("Tortilla / wrap", 250, 8, 200, "tortilla", "wrap"),
+        // Pita és lepénykenyér: a gyros és a humusz mellé is ez jár, és eddig
+        // egyszerűen nem létezett – a köret kalóriája elveszett.
+        new Food("Pita / lepénykenyér", 270, 9, 80, "pita", "lepenykenyer", "naan",
+                "gorog lepeny"),
+        // A növényi húspogácsa könnyebb a marhánál, de nem diétás étel.
+        new Food("Vega burger", 220, 11, 220, "vega burger", "vegan burger",
+                "novenyi burger", "veggie burger"),
         new Food("Túrós csusza", 210, 10, 300, "turos csusza", "csusza", "turos teszta"),
         new Food("Grízes tészta", 200, 6, 300, "grizes teszta", "griz"),
         // Menza-kör: a mákos tészta mákja eddig eltűnt (csak főtt tészta lett),
@@ -1386,6 +1393,9 @@ public final class Foods {
             // Csak azok az ételek, amikben a hús ELEVE benne van, és amiket
             // senki nem eszik külön csirkemell mellé – a „pizza és csirkemell"
             // két külön adag, ezért a pizza nincs a listán.
+            // A gyros és a kebab adagja a lepényt is tartalmazza: a „gyros
+            // pitában" egy gyros, nem gyros PLUSZ egy pita.
+            {"Pita / lepénykenyér", "Gyros", "Kebab"},
             {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
                     "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
                     "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)"},
@@ -1523,6 +1533,15 @@ public final class Foods {
      * Egy szón belül van-e a két találat? Akkor igen, ha köztük (és bennük)
      * nincs szóköz vagy írásjel – így a „csirkemell rizzsel” két külön étel
      * marad, a „csirkemellsaláta” viszont egy.
+     *
+     * A KÖTŐJEL akkor választ el, ha MELLÉKNEVEK közt áll: a „sonkás-sajtos”
+     * két hozzávalót jelent, nem egyet – eddig egy szónak számított, és a
+     * nehezebbik étel elnyomta a másikat (eltűnt a sonka). A magyar
+     * melléknévképző -s-re végződik (sonkás, sajtos, tejfölös, sós), ezért
+     * ehhez elég a kötőjel előtti betűt nézni.
+     *
+     * A „túró-rudi” és a „hot-dog” így egy szó marad: ott a kötőjel nem két
+     * hozzávalót köt össze, hanem egy nevet tagol.
      */
     private static boolean sameWord(String q, Match a, Match b) {
         int from = Math.min(a.pos, b.pos);
@@ -1530,7 +1549,12 @@ public final class Foods {
         if (from < 0 || to > q.length()) return false;
         for (int i = from; i < to; i++) {
             char ch = q.charAt(i);
-            if (!Character.isLetterOrDigit(ch) && ch != '-') return false;
+            if (Character.isLetterOrDigit(ch)) continue;
+            if (ch == '-') {
+                if (i > 0 && q.charAt(i - 1) == 's') return false;   // sonkás-sajtos
+                continue;                                            // túró-rudi
+            }
+            return false;
         }
         return true;
     }

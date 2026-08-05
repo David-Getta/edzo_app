@@ -381,4 +381,32 @@ public class FoodsIntegrationTest {
         // A leves teljes alakja szótő, nem sült csirkemell.
         assertEquals("Húsleves 400g", summary("csirkeleves"));
     }
+
+    @Test public void aHyphenBetweenAdjectivesSeparatesIngredients() {
+        // Magyarul a „sonkás-sajtos" két hozzávaló. Eddig egy szónak számított,
+        // és a nehezebbik étel elnyomta a másikat: eltűnt a sonka.
+        assertEquals("Sonka 50g + Sajt (trappista) 30g + Szendvics 150g",
+                summary("sonkás-sajtos szendvics"));
+        assertEquals("Sonka 50g + Sajt (trappista) 30g + Szendvics 150g",
+                summary("sonkás sajtos szendvics"));
+        assertEquals("Tejföl 30g + Rakott krumpli 350g",
+                summary("húsos-tejfölös rakott krumpli"));
+        // Ahol a kötőjel egy nevet tagol, ott marad egy étel.
+        assertEquals("Túró rudi 51g", summary("túró-rudi"));
+        assertEquals("Hot-dog 150g", summary("hot-dog"));
+        // A kötőjel nélküli összetétel is egy étel marad.
+        assertEquals("Csirkemell (sült/grill) 150g", summary("csirkemellsaláta"));
+    }
+
+    @Test public void theFlatbreadIsFoodOnItsOwn() {
+        // A pita eddig nem létezett: a köret kalóriája elveszett.
+        assertEquals("Pita / lepénykenyér 80g", summary("pita"));
+        assertEquals("Hummusz 60g + Pita / lepénykenyér 80g", summary("humusz pitával"));
+        // A gyros adagja viszont a lepényt is tartalmazza.
+        assertEquals("Gyros 350g", summary("gyros pitában"));
+        // A növényi burger nem marhahúsos burger.
+        assertEquals("Vega burger 220g", summary("vega burger"));
+        assertEquals("Vega burger 220g", summary("vegán burger"));
+        assertEquals("Hamburger 250g", summary("hamburger"));
+    }
 }

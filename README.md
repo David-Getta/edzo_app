@@ -65,7 +65,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „két és fél deci"),
   a poharas/korsós italokat, a mérőszavakat (tányér, bögre, kanál,
   marék, tábla, szelet, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag")
-- **331 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **A kötőjel is számít**: a „sonkás-sajtos szendvics" három tétel (a magyar
+  melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy
+- **333 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -281,7 +283,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~475 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~477 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
