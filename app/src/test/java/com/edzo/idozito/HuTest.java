@@ -92,4 +92,43 @@ public class HuTest {
         assertEquals("szazalek", Hu.digits("szazalek"));
         assertEquals("negyvenes", Hu.digits("negyvenes"));
     }
+
+    @Test public void theCompoundNumberWordsAreUnderstood() {
+        // Ezeket mondja az ember a teremben és a konyhában: „nyolcvanöt kiló",
+        // „harminckettő perc". Eddig csak a kerek tízesek mentek át.
+        assertEquals("32", Hu.digits("harmincketto"));
+        assertEquals("43", Hu.digits("negyvenharom"));
+        assertEquals("56", Hu.digits("otvenhat"));
+        assertEquals("67", Hu.digits("hatvanhet"));
+        assertEquals("78", Hu.digits("hetvennyolc"));
+        assertEquals("85", Hu.digits("nyolcvanot"));
+        assertEquals("89", Hu.digits("nyolcvankilenc"));
+        assertEquals("92", Hu.digits("kilencvenketto"));
+        // Tárgyeset is.
+        assertEquals("85", Hu.digits("nyolcvanotot"));
+        assertEquals("32", Hu.digits("harminckettot"));
+        // Százasok, tízesekkel és egyesekkel.
+        assertEquals("100", Hu.digits("szaz"));
+        assertEquals("125", Hu.digits("szazhuszonot"));
+        assertEquals("150", Hu.digits("szazotven"));
+        assertEquals("200", Hu.digits("ketszaz"));
+        assertEquals("250", Hu.digits("ketszazotven"));
+        assertEquals("305", Hu.digits("haromszazot"));
+        // A régiek változatlanul.
+        assertEquals("11", Hu.digits("tizenegy"));
+        assertEquals("25", Hu.digits("huszonot"));
+        assertEquals("1,5", Hu.digits("masfel"));
+        assertEquals("0,5", Hu.digits("fel"));
+    }
+
+    @Test public void everydayWordsAreNotNumbers() {
+        // A szótár nőtt; a hamis pozitívok viszont nem nőhetnek vele.
+        for (String w : new String[]{"hatizom", "hetes", "hetente", "szazalek",
+                "harmadik", "negyedik", "otodik", "hatodik", "hetedik", "kettesben",
+                "otthon", "egyetem", "hatvanas", "szazados", "kilencedik",
+                "tizedik", "harmadszor", "hatarozott", "negyzet", "otletes"})
+            assertEquals("nem szám: " + w, w, Hu.digits(w));
+        // A „negyven év" viszont VALÓDI szám: az önálló szó cserélődik.
+        assertEquals("40 ev", Hu.digits("negyven ev"));
+    }
 }

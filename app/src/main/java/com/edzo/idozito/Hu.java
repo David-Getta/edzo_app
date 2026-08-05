@@ -69,33 +69,79 @@ public final class Hu {
     }
 
     /**
-     * A hosszabb alak elöl: különben a „tizenketto" tiz + enketto lenne.
-     * A tárgyragos változat is szerepel, mert a felismerő azt is látja.
+     * A magyar számnevek szótára, generálva.
+     *
+     * Kézzel felsorolni a tizenegytől ötszázig terjedő alakokat (tárgyraggal
+     * együtt közel háromszázat) hibalehetőség: pont a ritkábbak maradnának ki,
+     * és pont azok, amiket a teremben mondanak – „nyolcvanöt kiló",
+     * „harminckettő perc". A generálás mellett a törtek és az egyjegyűek
+     * kézzel szerepelnek, mert azoknak nincs szabálya.
+     *
+     * A HOSSZABB alak mindig elöl van (hossz szerint csökkenő rendezés),
+     * különben a „tizenketto" tiz + enketto lenne, a „nyolcvanot" pedig
+     * nyolcvan + ot.
      */
-    private static final String[][] NUM_WORDS = {
-            {"tizenkettot", "12"}, {"tizenketto", "12"}, {"tizenket", "12"},
-            {"tizenkilenc", "19"}, {"tizennyolcat", "18"}, {"tizennyolc", "18"},
-            {"tizenhetet", "17"}, {"tizenhet", "17"}, {"tizenhatot", "16"},
-            {"tizenhat", "16"}, {"tizenotot", "15"}, {"tizenot", "15"},
-            {"tizennegyet", "14"}, {"tizennegy", "14"}, {"tizenharmat", "13"},
-            {"tizenharom", "13"}, {"tizenegyet", "11"}, {"tizenegy", "11"},
-            {"huszonotot", "25"}, {"huszonot", "25"}, {"huszat", "20"}, {"husz", "20"},
-            // A tízesek negyventől: az intervall-időket („negyven másodperc
-            // munka”) és a súlyokat („nyolcvan kiló”) ezekkel mondja az ember.
-            {"harmincotot", "35"}, {"harmincot", "35"}, {"harmincat", "30"}, {"harminc", "30"},
-            {"negyvenotot", "45"}, {"negyvenot", "45"}, {"negyvenet", "40"}, {"negyven", "40"},
-            {"otvenotot", "55"}, {"otvenot", "55"}, {"otvenet", "50"}, {"otven", "50"},
-            {"hatvanat", "60"}, {"hatvan", "60"}, {"hetvenet", "70"}, {"hetven", "70"},
-            {"nyolcvanat", "80"}, {"nyolcvan", "80"},
-            {"kilencvenet", "90"}, {"kilencven", "90"},
-            {"szazat", "100"}, {"szaz", "100"},
-            {"tizet", "10"}, {"tiz", "10"}, {"kilencet", "9"}, {"kilenc", "9"},
-            {"nyolcat", "8"}, {"nyolc", "8"}, {"hetet", "7"}, {"het", "7"},
-            {"hatot", "6"}, {"hat", "6"}, {"otot", "5"}, {"ot", "5"},
-            {"negyet", "4"}, {"negy", "4"}, {"harmat", "3"}, {"harom", "3"},
-            {"kettot", "2"}, {"ketto", "2"}, {"ket", "2"},
-            {"masfel", "1,5"}, {"fel", "0,5"}, {"egyet", "1"}, {"egy", "1"},
-    };
+    private static final String[][] NUM_WORDS = buildNumWords();
+
+    private static String[][] buildNumWords() {
+        java.util.List<String[]> out = new java.util.ArrayList<>();
+        // Egyjegyűek és törtek: ezeknek nincs képzési szabálya.
+        String[][] base = {{"masfel", "1,5"}, {"fel", "0,5"},
+                {"egyet", "1"}, {"egy", "1"}, {"kettot", "2"}, {"ketto", "2"}, {"ket", "2"},
+                {"harmat", "3"}, {"harom", "3"}, {"negyet", "4"}, {"negy", "4"},
+                {"otot", "5"}, {"ot", "5"}, {"hatot", "6"}, {"hat", "6"},
+                {"hetet", "7"}, {"het", "7"}, {"nyolcat", "8"}, {"nyolc", "8"},
+                {"kilencet", "9"}, {"kilenc", "9"}, {"tizet", "10"}, {"tiz", "10"},
+                {"huszat", "20"}, {"husz", "20"}};
+        for (String[] b : base) out.add(b);
+
+        // Egyesek alany- és tárgyesetben, a tízesekhez fűzve.
+        String[][] units = {{"egy", "1"}, {"egyet", "1"}, {"kettot", "2"}, {"ketto", "2"},
+                {"ket", "2"}, {"harom", "3"}, {"harmat", "3"}, {"negy", "4"}, {"negyet", "4"},
+                {"ot", "5"}, {"otot", "5"}, {"hat", "6"}, {"hatot", "6"},
+                {"het", "7"}, {"hetet", "7"}, {"nyolc", "8"}, {"nyolcat", "8"},
+                {"kilenc", "9"}, {"kilencet", "9"}};
+        // A „tizen"/„huszon" csak összetételben szám, a többi magában is.
+        String[][] tens = {{"tizen", "10"}, {"huszon", "20"}, {"harminc", "30"},
+                {"negyven", "40"}, {"otven", "50"}, {"hatvan", "60"}, {"hetven", "70"},
+                {"nyolcvan", "80"}, {"kilencven", "90"}};
+        String[][] tensAcc = {{"harmincat", "30"}, {"negyvenet", "40"}, {"otvenet", "50"},
+                {"hatvanat", "60"}, {"hetvenet", "70"}, {"nyolcvanat", "80"},
+                {"kilencvenet", "90"}};
+        java.util.List<String[]> belowHundred = new java.util.ArrayList<>();
+        for (String[] t : tens) {
+            if (!t[0].equals("tizen") && !t[0].equals("huszon")) belowHundred.add(t);
+            for (String[] u : units)
+                belowHundred.add(new String[]{t[0] + u[0],
+                        String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
+        }
+        for (String[] t : tensAcc) belowHundred.add(t);
+        out.addAll(belowHundred);
+
+        // Százasok: a konyhában és a teremben is gyakoriak („százötven gramm",
+        // „kétszáz méter").
+        String[][] hundreds = {{"szaz", "100"}, {"szazat", "100"}, {"ketszaz", "200"},
+                {"haromszaz", "300"}, {"negyszaz", "400"}, {"otszaz", "500"}};
+        for (String[] h : hundreds) {
+            out.add(h);
+            if (h[0].endsWith("at")) continue;          // a tárgyragoshoz nem fűzünk
+            for (String[] u : units)
+                out.add(new String[]{h[0] + u[0],
+                        String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(u[1]))});
+            for (String[] b : belowHundred)
+                out.add(new String[]{h[0] + b[0],
+                        String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(b[1]))});
+        }
+
+        // Hossz szerint csökkenő: a hosszabb alak mindig előbb illeszkedjen.
+        String[][] arr = out.toArray(new String[0][]);
+        java.util.Arrays.sort(arr, new java.util.Comparator<String[]>() {
+            @Override public int compare(String[] x, String[] y) {
+                return y[0].length() - x[0].length();
+            }
+        });
+        return arr;
+    }
 
     /**
      * Változás az előző időszakhoz képest: „+12%", „−8%", „= 0%".

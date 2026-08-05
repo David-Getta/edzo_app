@@ -66,7 +66,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   az írásjelnél és egy állító igénél („nem ettem semmit, de ittam kávét"),
   és nem viszi el a kísérőt sem („nem kértem sültkrumplit a hamburger mellé")
 - Felismeri a **grammot** (g / gr / gramm / dkg / deka), a **darabszámot**
-  (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „százötven gramm",
+  (számjeggyel és kiírva – az összetett számnevek is: „két tojás",
+  „negyvenöt gramm", „százhuszonöt gramm", „nyolcvanöt kiló",
   „két és fél deci"),
   a poharas/korsós italokat, a mérőszavakat (tányér, bögre, kanál,
   marék, tábla, szelet, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag")
@@ -302,7 +303,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~500 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~502 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
