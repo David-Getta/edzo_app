@@ -81,7 +81,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kimondott óra („19 órakor") is megy
 - **A szokásos étkezésed**: ha egy napszakban háromszor ugyanazt naplóztad,
   az app magától felajánlja egy koppintásra (a sorrend és a mennyiség nem
-  számít, csak az, hogy ugyanazok az ételek)
+  számít, csak az, hogy ugyanazok az ételek); az esti emlékeztető is
+  megnevezi, ha aznap még nem naplóztál
 - **Kedvencek** és gyakori étkezések gyors csipjei, keresés a naplóban,
   napi bontás, napi részletek és megosztás
 

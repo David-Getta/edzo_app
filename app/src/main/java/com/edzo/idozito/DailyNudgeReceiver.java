@@ -176,6 +176,39 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
      * Csak akkor, ha az elmúlt héten legalább háromszor naplózott: alkalmi
      * felhasználót nem nyaggatunk.
      */
+    /** „🍳 A szokásos reggelid: Tojás, Kenyér" – vagy null, ha nincs ilyen. */
+    private static String usualLine(Context c) {
+        try {
+            java.util.List<MealLog.Meal> all = MealLog.load(c);
+            if (all.size() < Habits.MIN_COUNT) return null;
+            java.util.List<java.util.List<String>> foods = new java.util.ArrayList<>();
+            int[] hours = new int[all.size()];
+            int[] ago = new int[all.size()];
+            Calendar cal = Calendar.getInstance();
+            long now = System.currentTimeMillis();
+            for (int i = 0; i < all.size(); i++) {
+                java.util.List<String> names = new java.util.ArrayList<>();
+                for (MealLog.Item it : all.get(i).items) names.add(it.food);
+                foods.add(names);
+                cal.setTimeInMillis(all.get(i).ts);
+                hours[i] = cal.get(Calendar.HOUR_OF_DAY);
+                ago[i] = Days.ago(all.get(i).ts, now);
+            }
+            cal.setTimeInMillis(now);
+            int bucket = Habits.bucketOf(cal.get(Calendar.HOUR_OF_DAY));
+            Habits.Usual u = Habits.usual(foods, hours, ago, bucket);
+            if (u == null) return null;
+            StringBuilder sb = new StringBuilder();
+            for (String f : u.foods) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(f);
+            }
+            return u.label(bucket) + ": " + sb;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private static void maybeDietReminder(Context c) {
         try {
             long dayMs = 24L * 3600 * 1000;
@@ -189,6 +222,10 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
 
             String text = "Ma még nem naplóztál étkezést. 🍽 Két koppintás, és megvan – "
                     + "a falka figyeli a formádat is! 🐺";
+            // Ha van szokásos étkezésed erre a napszakra, nevezzük is meg: a
+            // konkrét étel közelebb van a naplózáshoz, mint az általános biztatás.
+            String usual = usualLine(c);
+            if (usual != null) text += "\n" + usual;
             NotificationManager nm =
                     (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm == null) return;
