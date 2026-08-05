@@ -186,7 +186,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
   és izomcsoporttal, valamint az **átlagos érzett terhelés** (RPE)
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík, átlagos
-  **étkezési ablak** és napszak-jellemző („🌙 Este eszed a kalóriáid 52%-át")
+  **étkezési ablak** és napszak-jellemző („🌙 Este eszed a kalóriáid 52%-át"),
+  valamint a **legnehezebb hétköznap** („📈 Szombat a legnehezebb nap: átlag
+  2600 kcal, a többi napon 2050") – a havi átlag ezt elrejtené
 - **Profil / BMI / BMR**, testadatok és változás-diagram **testsúly-tendenciával**
   (kg/hét, lineáris illesztéssel az összes mérésre) és a fogyási célhoz mért
   becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)"

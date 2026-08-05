@@ -1284,6 +1284,41 @@ public class StatsActivity extends Activity {
         lg.setGravity(Gravity.CENTER);
         lg.setPadding(0, dp(8), 0, 0);
         cardV.addView(lg);
+
+        // Melyik nap a legnehezebb? A havi átlag elrejti a hétvégét: ugyanaz a
+        // 2200-as átlag lehet öt fegyelmezett nap két kilengéssel, és lehet hét
+        // egyforma nap. A kettő nem ugyanaz a feladat.
+        double[] perDay = new double[7];
+        int[] daysWith = new int[7];
+        Calendar cd = Calendar.getInstance();
+        for (int i = 0; i < 30; i++) {
+            if (kcal[i] <= 0) continue;
+            cd.setTimeInMillis(today0 - (29 - i) * dayMs);
+            int idx = (cd.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+            perDay[idx] += kcal[i];
+            daysWith[idx]++;
+        }
+        int bestIdx = -1;
+        double bestAvg = 0, allSum = 0;
+        int allDays = 0;
+        for (int i = 0; i < 7; i++) {
+            if (daysWith[i] == 0) continue;
+            allSum += perDay[i];
+            allDays += daysWith[i];
+            double avg = perDay[i] / daysWith[i];
+            if (avg > bestAvg) { bestAvg = avg; bestIdx = i; }
+        }
+        // Csak akkor mondunk ilyet, ha van elég nap, és tényleg kilóg a nap.
+        if (allDays >= 10 && bestIdx >= 0) {
+            double allAvg = allSum / allDays;
+            if (allAvg > 0 && bestAvg > allAvg * 1.15) {
+                TextView hv = text("📈 " + Hu.dayName(bestIdx) + " a legnehezebb nap: átlag "
+                        + Math.round(bestAvg) + " kcal, a többi napon "
+                        + Math.round(allAvg) + ".", 12, MUTED, false);
+                hv.setPadding(0, dp(8), 0, 0);
+                cardV.addView(hv);
+            }
+        }
         return cardV;
     }
 
