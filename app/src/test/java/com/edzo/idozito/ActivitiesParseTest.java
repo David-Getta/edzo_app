@@ -768,4 +768,40 @@ public class ActivitiesParseTest {
         assertEquals("joga", Activities.parse("nyújtottam 15 percet").plans.get(0).kind.id);
         assertEquals(15, Activities.parse("negyed órát nyújtottam").plans.get(0).minutes);
     }
+
+    @Test public void theMultiplierMayFollowTheActivity() {
+        // „futottam háromszor" – magyarul ez a természetesebb szórend, és
+        // eddig némán elveszett: három futásból egy lett a naplóban.
+        assertEquals(3, Activities.parse("futottam háromszor a héten").plans.get(0).count);
+        assertEquals(2, Activities.parse("úsztam kétszer").plans.get(0).count);
+        assertEquals(3, Activities.parse("futottam 3-szor").plans.get(0).count);
+        assertEquals(3, Activities.parse("kondiztam 3x a héten").plans.get(0).count);
+        assertEquals(2, Activities.parse("a héten kézilabda kétszer").plans.get(0).count);
+        // A tartalék ágon is: itt nincs felismert sportág, csak „edzés".
+        assertEquals(4, Activities.parse("a héten edzettem négyszer").plans.get(0).count);
+    }
+
+    @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
+        // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
+        // már megtalálta, tehát a túra nem veheti el.
+        Activities.Parsed p = Activities.parse("hétvégén 1-1 túra és kétszer úsztam");
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(2, p.plans.get(1).count);
+        // Fordítva viszont az elsőé: a futás egyese nem szorzószám.
+        Activities.Parsed q = Activities.parse("úsztam kétszer és futottam egyszer");
+        assertEquals(2, q.plans.get(0).count);
+        assertEquals(1, q.plans.get(1).count);
+    }
+
+    @Test public void crossCountrySkiingKeepsItsDistanceAndVerb() {
+        // A „sífutottam" a futás tövét is tartalmazza, de a sífutás MET-je a
+        // síé (6,0), nem a futásé (9,8) – másfélszeres kalóriát írnánk.
+        assertEquals("si", Activities.parse("sífutottam 15 km-t").plans.get(0).kind.id);
+        assertEquals("si", Activities.parse("sífutás 15 km").plans.get(0).kind.id);
+        // A sífutás táv-alapú: a km nem esik ki.
+        assertEquals(15.0, Activities.parse("sífutás 15 km").plans.get(0).km, 0.001);
+        // A rendes futás és az igekötős alakok érintetlenek.
+        assertEquals("futas", Activities.parse("elfutottam 5 km-t").plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("kifutottam magam").plans.get(0).kind.id);
+    }
 }

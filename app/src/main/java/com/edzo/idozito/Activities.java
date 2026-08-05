@@ -100,8 +100,9 @@ public final class Activities {
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
-            new Kind("si", "🎿", "Sí / snowboard", 6.0, false, 120,
-                    "siel", "sizes", "snowboard", "sifutas"),
+            // A sífutás táv-alapú: a „20 km sífutás" távja is számít.
+            new Kind("si", "🎿", "Sí / snowboard", 6.0, true, 120,
+                    "siel", "sizes", "snowboard", "sifutas", "sifut"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "maszas", "boulder", "maszofal"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
@@ -331,6 +332,7 @@ public final class Activities {
             case "kerekpar": return 3;
             case "tura": return 12;
             case "evezes": return 5;
+            case "si": return 5;    // sífutás: gyorsabb a gyaloglásnál
             default: return 8;
         }
     }
@@ -500,7 +502,7 @@ public final class Activities {
         // „kihagytam", az „elmaradt" és az „X helyett" edzése kitakarva.
         stripNegated(q);
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
-        stripMultiplicative(q);
+        java.util.List<int[]> mults = stripMultiplicative(q);
         // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
         mergeIntervalDistances(q);
         // Gyakoriság („hetente kétszer", „kéthetente", „másnaponta"): a
@@ -585,7 +587,12 @@ public final class Activities {
                         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
                         if (!isVerbPrefix(s.substring(a, p))) continue;
                     }
-                    // A „terem" az ÉTterem és a MŰterem belsejében nem kondi
+                    // A „sífutottam” nem futás: a sífutás MET-je a síé (6,0),
+                    // nem a futásé (9,8) – másfélszeres kalóriát írnánk.
+                    if (p >= 2 && w.startsWith("fut") && s.startsWith("si", p - 2)
+                            && (p == 2 || !Character.isLetter(s.charAt(p - 3))))
+                        continue;
+                    // A „terem” az ÉTterem és a MŰterem belsejében nem kondi
                     // (az edzőterem, gépterem viszont igen).
                     if (w.equals("terem") && p >= 2
                             && (s.startsWith("et", p - 2) || s.startsWith("mu", p - 2)))
@@ -635,7 +642,21 @@ public final class Activities {
             if (used[h[2]]) continue;               // egy mozgásforma egyszer szerepel
             used[h[2]] = true;
             Kind kind = ALL[h[2]];
+            int nextHit = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
             int count = countBefore(s, h[0]);
+            // „futottam háromszor a héten": a szorzószám a mozgás UTÁN is
+            // állhat – magyarul ez a természetesebb szórend, és eddig némán
+            // elveszett: három futásból egy lett a naplóban.
+            // Csak akkor, ha a szorzószám nem a KÖVETKEZŐ mozgásé: a
+            // „hétvégén 1-1 túra és kétszer úsztam" kettese az úszásé, mert az
+            // úszás a saját darabszámaként már megtalálta.
+            boolean nextTookIt = nextHit != Integer.MAX_VALUE && countBefore(s, nextHit) > 1;
+            if (count <= 1 && !nextTookIt)
+                for (int[] mu : mults)
+                    if (mu[0] > h[0] && mu[0] < nextHit && mu[1] > 1) {
+                        count = Math.min(50, mu[1]);
+                        break;
+                    }
             // A „100 fekvőtámasz" száz ISMÉTLÉS, nem száz edzés – az
             // ismétlés-szavaknál a nagy szám egyetlen alkalom, és az időt is
             // az ismétlésszámból becsüljük.
@@ -659,7 +680,7 @@ public final class Activities {
                 }
                 count = 1;
             }
-            int next = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
+            int next = nextHit;
             int minutes = minutesFor(mins, h[0], next, 0);
             // Ismétlés-alapú tételnél a mondat TÁVOLI (más mozgáshoz írt)
             // időtartama nem érvényes: a „10 km futás 50 perc alatt és 100
@@ -705,8 +726,13 @@ public final class Activities {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 Kind other = byId("egyeb");
+                int n = countBefore(s, p);
+                // A szorzószám itt is állhat hátul: „a héten edzettem négyszer".
+                if (n <= 1)
+                    for (int[] mu : mults)
+                        if (mu[0] > p && mu[1] > 1) { n = Math.min(50, mu[1]); break; }
                 // A kimondott időtartam itt is számít („otthoni edzés 40 perc").
-                if (other != null) out.add(new Plan(other, countBefore(s, p),
+                if (other != null) out.add(new Plan(other, n,
                         minutesFor(mins, p, Integer.MAX_VALUE, other.defaultMin), 0));
                 break;
             }
@@ -1234,8 +1260,9 @@ public final class Activities {
      * szóhatárt vár, így a rag miatt nem találta meg: a „kétszer úsztam" EGY
      * úszás lett. A ragot kitakarjuk, a szám ott marad.
      */
-    private static void stripMultiplicative(char[] q) {
+    private static java.util.List<int[]> stripMultiplicative(char[] q) {
         String s = new String(q);
+        java.util.List<int[]> found = new ArrayList<>();
         for (String suf : new String[]{"szor", "szer"}) {
             int from = 0;
             while (true) {
@@ -1244,19 +1271,50 @@ public final class Activities {
                 from = p + 1;
                 int wordEnd = p + suf.length();
                 while (wordEnd < s.length() && Character.isLetter(s.charAt(wordEnd))) wordEnd++;
-                if (p > 1 && s.charAt(p - 1) == '-' && Character.isDigit(s.charAt(p - 2)))
+                if (p > 1 && s.charAt(p - 1) == '-' && Character.isDigit(s.charAt(p - 2))) {
                     blank(q, p - 1, wordEnd);          // „3-szor"
-                else if (p > 0 && Character.isDigit(s.charAt(p - 1)))
+                    found.add(new int[]{digitsBackFrom(s, p - 1), digitsValue(s, p - 1)});
+                } else if (p > 0 && Character.isDigit(s.charAt(p - 1))) {
                     blank(q, p, wordEnd);              // „3szor"
-                else {
+                    found.add(new int[]{digitsBackFrom(s, p), digitsValue(s, p)});
+                } else {
                     int a = p;
                     while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
                     String prefix = s.substring(a, p); // „ketszer" → „ket"
                     for (String[] w : NUM_WORDS)
-                        if (w[0].equals(prefix)) { blank(q, p, wordEnd); break; }
+                        if (w[0].equals(prefix)) {
+                            blank(q, p, wordEnd);
+                            try { found.add(new int[]{a, Integer.parseInt(w[1])}); }
+                            catch (NumberFormatException ignored) { }
+                            break;
+                        }
                 }
             }
         }
+        // A rövid „3x" alak is szorzószám, de csak szám NÉLKÜL utána: a
+        // „3x10 fekvőtámasz" sorozat×ismétlés, nem három edzés.
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,2})\\s?[x×](?![\\dx×])").matcher(s);
+        while (m.find()) {
+            try { found.add(new int[]{m.start(), Integer.parseInt(m.group(1))}); }
+            catch (NumberFormatException ignored) { }
+        }
+        return found;
+    }
+
+    /** A pozíció előtti számjegyek kezdete. */
+    private static int digitsBackFrom(String s, int end) {
+        int b = end;
+        while (b > 0 && Character.isDigit(s.charAt(b - 1))) b--;
+        return b;
+    }
+
+    /** A pozíció előtti számjegyek értéke, vagy 0. */
+    private static int digitsValue(String s, int end) {
+        int b = digitsBackFrom(s, end);
+        if (b >= end || end - b > 3) return 0;
+        try { return Integer.parseInt(s.substring(b, end)); }
+        catch (NumberFormatException e) { return 0; }
     }
 
     private static int[] spanAt(String s, String unit, int mult) {
