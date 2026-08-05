@@ -236,7 +236,6 @@ public class WeeklyReceiver extends BroadcastReceiver {
         } catch (Exception ignored) {}
         // Étrend-sor annak, aki a héten naplózott: naplózott napok + kcal-átlag.
         try {
-            long dayMs = 24L * 3600 * 1000;
             boolean[] loggedDay = new boolean[7];
             double kcalWeek = 0;
             for (MealLog.Meal m : MealLog.load(c)) {

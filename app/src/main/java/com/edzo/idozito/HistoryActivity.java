@@ -663,10 +663,18 @@ public class HistoryActivity extends Activity {
         if (!lifts.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (StrengthParse.Item it : lifts) sb.append("•  ").append(it.label()).append('\n');
-            Sheet sh = new Sheet(this, "Ez erősítő sorozatnak tűnik 🏋️",
-                    sb + "\nAz erősítő naplóban a súly és az ismétlés is megmarad "
-                            + "– a rekordjaidhoz és a progresszió-javaslathoz.")
-                    .addPrimary("Erősítő naplóba", () -> saveLifts(lifts));
+            // A dátumot ugyanez a mondat hordozza („tegnap guggolás 3x8”), és
+            // a nap a súlyzós naplóban is számít: a széria, a heti kép és a
+            // „mikor csináltad utoljára” mind erre épül.
+            final long when = Activities.singleDayTs(p, System.currentTimeMillis());
+            sb.append("\nAz erősítő naplóban a súly és az ismétlés is megmarad "
+                    + "– a rekordjaidhoz és a progresszió-javaslathoz.");
+            sb.append(when > 0
+                    ? "\n\n📅 Dátum: " + Routines.lastDoneLabel(Days.ago(when,
+                            System.currentTimeMillis())) + "."
+                    : "\n\n📅 Dátum: ma.");
+            Sheet sh = new Sheet(this, "Ez erősítő sorozatnak tűnik 🏋️", sb.toString())
+                    .addPrimary("Erősítő naplóba", () -> saveLifts(lifts, when));
             if (!p.isEmpty()) sh.addNeutral("Sima edzésként", () -> bulkPreviewPlain(p, text));
             sh.addCancel().show();
             return;
@@ -674,9 +682,13 @@ public class HistoryActivity extends Activity {
         bulkPreviewPlain(p, text);
     }
 
-    /** A felismert sorozatok mentése az erősítő naplóba. */
-    void saveLifts(java.util.List<StrengthParse.Item> lifts) {
-        long now = System.currentTimeMillis();
+    /**
+     * A felismert sorozatok mentése az erősítő naplóba.
+     *
+     * @param when a mondatban megnevezett nap időbélyege, vagy 0 = ma
+     */
+    void saveLifts(java.util.List<StrengthParse.Item> lifts, long when) {
+        long now = when > 0 ? when : System.currentTimeMillis();
         int i = 0;
         for (StrengthParse.Item it : lifts) {
             java.util.List<StrengthLog.SetEntry> sets = new java.util.ArrayList<>();

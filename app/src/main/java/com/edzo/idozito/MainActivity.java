@@ -1707,7 +1707,6 @@ public class MainActivity extends Activity {
         // Kcal-átlag összevetés annak, aki étrendet vezet (semleges színnel – a
         // több vagy kevesebb kalória önmagában se nem jó, se nem rossz).
         try {
-            long dayMs = 24L * 3600 * 1000;
             double[] kThis = new double[7], kPrev = new double[7];
             for (MealLog.Meal m : MealLog.load(this)) {
                 if (m.ts >= ws) {

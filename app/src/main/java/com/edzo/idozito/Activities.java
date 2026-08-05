@@ -415,6 +415,39 @@ public final class Activities {
         return out;
     }
 
+    /**
+     * A mondatban megnevezett EGYETLEN múltbeli nap időbélyege, vagy 0.
+     *
+     * A súlyzós mondat („tegnap guggolás 3x8 60 kg”) az erősítő naplóba megy,
+     * nem az edzés-naplóba – a dátumot viszont ugyanez a mondat hordozza. Enélkül
+     * a tegnapi edzés MAI dátummal került be: elcsúszott a széria, a heti kép és
+     * a „mikor csináltad utoljára” is.
+     *
+     * Csak akkor válaszolunk, ha egyértelmű a nap. A több napra szóló mondat
+     * („az elmúlt 3 napban”) egyetlen bejegyzésnél nem eldönthető, ott marad a
+     * mai dátum – találgatni rosszabb, mint a látható alapértelmezés.
+     */
+    public static long singleDayTs(Parsed p, long now) {
+        if (p == null) return 0;
+        int back;
+        if (p.exactDays != null) {
+            if (p.exactDays.length != 1) return 0;
+            back = p.exactDays[0];
+        } else {
+            if (p.days != 1) return 0;
+            back = p.offset;
+        }
+        if (back <= 0 || back > 400) return 0;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        cal.add(java.util.Calendar.DAY_OF_YEAR, -back);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, p.hour);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
+    }
+
     private static final String[][] NUM_WORDS = buildNumWords();
 
     /**

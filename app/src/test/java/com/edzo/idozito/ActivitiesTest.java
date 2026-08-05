@@ -174,4 +174,27 @@ public class ActivitiesTest {
         // A kind nélküli mért bejegyzés futásnak számít – ahogy a szűrőnél is.
         assertTrue(Activities.matches("", "", "", "futás"));
     }
+
+    @Test public void theNamedDayIsKeptForTheStrengthLogToo() {
+        // A súlyzós mondat az erősítő naplóba megy, a dátumot viszont ugyanez a
+        // mondat hordozza – enélkül a tegnapi edzés MAI dátummal került be.
+        long now = System.currentTimeMillis();
+        long ts = Activities.singleDayTs(Activities.parse("tegnap guggolás 3x8 60 kg"), now);
+        assertEquals(1, Days.ago(ts, now));
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(ts);
+        assertEquals(12, c.get(java.util.Calendar.HOUR_OF_DAY));
+        // A kimondott napszak is megmarad.
+        java.util.Calendar e = java.util.Calendar.getInstance();
+        e.setTimeInMillis(Activities.singleDayTs(
+                Activities.parse("tegnap este fekvenyomás 5x5 100 kg"), now));
+        assertEquals(19, e.get(java.util.Calendar.HOUR_OF_DAY));
+        // Ma: nincs mit eltolni.
+        assertEquals(0, Activities.singleDayTs(Activities.parse("guggolás 3x8 60 kg"), now));
+        assertEquals(0, Activities.singleDayTs(Activities.parse("ma guggolás 3x8"), now));
+        // Több napra szóló mondatnál nem találgatunk.
+        assertEquals(0, Activities.singleDayTs(
+                Activities.parse("az elmúlt 3 napban guggolás 3x8"), now));
+        assertEquals(0, Activities.singleDayTs(null, now));
+    }
 }
