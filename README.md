@@ -151,7 +151,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   beépített nap egy koppintással lemásolható sajátnak és úgy szerkeszthető,
   egy koppintással beírható – eddig minden gyakorlatot külön kellett
   kikeresni, és a napot fejben tartani. Ami ma már megvan, az **ki van
-  pipálva** („2 / 5 megvan ma", a végén „🏁 Kész az edzésnap"), és a **heti fókuszhoz illő nap** meg van
+  pipálva** („2 / 5 megvan ma", a végén „🏁 Kész az edzésnap"), és mentés
+  után rögtön vissza is lép a listára a következő gyakorlathoz, és a **heti fókuszhoz illő nap** meg van
   jelölve („🎯 Lábnap · ma ez jön"), és minden nap mellett ott van, mikor
   csináltad utoljára („legutóbb 4 napja" – akkor számít megcsináltnak, ha
   a gyakorlatai legalább fele megvolt aznap). Ha van a mai fókuszhoz illő nap, az

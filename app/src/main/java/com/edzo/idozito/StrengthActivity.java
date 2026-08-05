@@ -593,6 +593,9 @@ public class StrengthActivity extends Activity {
      * @param preset előre kitöltött gyakorlatnév (edzésnap-sablonból), vagy null
      */
     void addEntryDialog(final StrengthLog.Entry edit, final String preset) {
+        // Nem edzésnapból nyílt: az esetleg ottfelejtett visszatérés törlődik,
+        // különben egy megszakított nap után a következő mentés is odaugrana.
+        if (preset == null) openRoutine = null;
         final LinearLayout box = vbox();
         box.setPadding(dp(10), dp(6), dp(10), 0);
 
@@ -762,6 +765,13 @@ public class StrengthActivity extends Activity {
                         int lastRest = getSharedPreferences("edzo", MODE_PRIVATE)
                                 .getInt(REST_SECS_KEY, 0);
                         if (lastRest > 0) startRest(lastRest);
+                        // Edzésnapból jöttünk: vissza a listára, hogy látszódjon
+                        // a friss pipa és a következő gyakorlat.
+                        if (openRoutine != null) {
+                            String back = openRoutine;
+                            openRoutine = null;
+                            routineDaySheet(back);
+                        }
                     }
                 })
                 .addCancel()
@@ -969,6 +979,13 @@ public class StrengthActivity extends Activity {
 
     static final String ROUTINE_KEY = "strength_routines";
 
+    /**
+     * Melyik edzésnapból nyílt a beviteli űrlap – mentés után oda térünk
+     * vissza. Enélkül a lista minden gyakorlat után bezárul, és a felhasználó
+     * fejben tartja, hol tartott.
+     */
+    String openRoutine;
+
     /** A választható edzésnapok: elöl a sajátok, utánuk a beépítettek. */
     void routineSheet() {
         String stored = Theme.getStr(this, ROUTINE_KEY, "");
@@ -1035,8 +1052,10 @@ public class StrengthActivity extends Activity {
             if (d != null) {
                 String what = d.sets.size() + " sorozat  ·  " + d.totalReps() + " ismétlés";
                 if (d.topWeight() > 0) what += "  ·  " + Hu.kg(d.topWeight()) + " kg";
-                sh.addRow("✔", m, "Ma: " + what, false, true,
-                        () -> addEntryDialog(null, m));
+                sh.addRow("✔", m, "Ma: " + what, false, true, () -> {
+                    openRoutine = r.name;
+                    addEntryDialog(null, m);
+                });
                 continue;
             }
             Progression.Suggestion sg = Progression.next(log, m);
@@ -1047,7 +1066,10 @@ public class StrengthActivity extends Activity {
                         Warmup.forWork(sg.weight, Warmup.barFor(m));
                 if (!ramp.isEmpty()) sub += "\n🔥 " + Warmup.summary(ramp);
             }
-            sh.addRow("🏋", m, sub, false, true, () -> addEntryDialog(null, m));
+            sh.addRow("🏋", m, sub, false, true, () -> {
+                openRoutine = r.name;
+                addEntryDialog(null, m);
+            });
         }
         // Törölni csak a SAJÁT napot lehet – a byName a beépítetteket is
         // megtalálja, ezért itt a tárolt listát nézzük közvetlenül.
