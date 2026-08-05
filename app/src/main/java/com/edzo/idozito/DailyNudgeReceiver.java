@@ -21,6 +21,8 @@ import java.util.Calendar;
 public class DailyNudgeReceiver extends BroadcastReceiver {
 
     static final String CHANNEL = "edzo_blaze";
+    /** Ennyi kiegészítő sor fér az üzenetbe a biztatás alá. */
+    static final int MAX_LINES = 4;
     static final int REQ = 88, NOTIF_ID = 9200;
 
     /** A beállított napi időpont következő előfordulására ütemez. Ha ki van kapcsolva, törli. */
@@ -57,12 +59,36 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         // hogy ne szakadjon meg ("ne hagyd kihunyni a X napos lángod").
         int streak = streakBeforeToday(c);
         String text = Mascot.nudge(userName, streak >= 1, streak);
-        // A mai kihívás is bekerül az üzenetbe, ha még nincs teljesítve.
+
+        // Az üzenet sorai fontossági sorrendben gyűlnek, és csak a legjobb
+        // néhány kerül ki. Az app közben sok mindent tud mondani – kilenc sor
+        // viszont már nem üzenet, hanem fal, amit senki nem olvas végig. Ami
+        // MA cselekvésre hív, az előrébb van, mint ami csak érdekes.
+        java.util.List<String> lines = new java.util.ArrayList<>();
+
+        // 1) Heti fókusz: ha beírta, mit edz ma, annál konkrétabb nincs.
+        try {
+            String line = Weekplan.todayLine(Theme.planFocus(c), dowIdx);
+            if (!line.isEmpty()) lines.add(line);
+        } catch (Exception ignored) {}
+
+        // 2) A mai kihívás, ha még nincs teljesítve.
         try {
             Object[] cst = Challenges.state(c);
-            if ((int) cst[2] < (int) cst[3]) text += "\n🎯 " + cst[0];
+            if ((int) cst[2] < (int) cst[3]) lines.add("🎯 " + cst[0]);
         } catch (Exception ignored) {}
-        // Kcal-cél állása annak, aki étrendet vezet: mennyi fér még a mai célba.
+
+        // 3) Heti mozgás-cél: hét közben ez mondja meg, hol tart a hét.
+        try {
+            int goal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
+                    .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
+            Load.Weekly w = Load.weekly(
+                    History.dailyMinutes(c, System.currentTimeMillis(), Load.ACUTE_DAYS), goal);
+            if (w.minutes > 0 && !w.done)
+                lines.add("🎽 Heti mozgás: " + w.label() + " – " + w.percent + "%.");
+        } catch (Exception ignored) {}
+
+        // 4) Kcal-cél állása, konkrét étel-ötlettel a maradékra.
         try {
             int goal = Profile.effectiveGoal(
                     c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getInt("kcal_goal", 0),
@@ -70,48 +96,48 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             int eaten = (int) Math.round(MealLog.todayKcal(c));
             if (goal > 0 && eaten > 0) {
                 int left = goal - eaten;
-                text += left > 0
-                        ? "\n🍽 Ma eddig " + eaten + " kcal – még kb. " + left + " kcal fér a célodba."
-                        : "\n🍽 A mai " + goal + " kcal-os cél megvan (" + eaten + " kcal).";
-                // A maradék puszta szám; egy konkrét ötlet az, amiből vacsora
-                // lesz. A fehérje-hiány itt is fontosabb, mint a kalória.
+                String line = left > 0
+                        ? "🍽 Ma eddig " + eaten + " kcal – még kb. " + left + " kcal fér a célodba."
+                        : "🍽 A mai " + goal + " kcal-os cél megvan (" + eaten + " kcal).";
                 if (left > 0) {
                     int pGoal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
                             .getInt("protein_goal", 0);
                     double pLeft = pGoal > 0 ? pGoal - MealLog.todayProtein(c) : 0;
                     java.util.List<MealIdeas.Idea> ideas = MealIdeas.forRemaining(
                             Foods.ALL, left, pLeft, System.currentTimeMillis() / 86400000L);
-                    if (!ideas.isEmpty())
-                        text += " Pl. " + ideas.get(0).label() + ".";
+                    if (!ideas.isEmpty()) line += " Pl. " + ideas.get(0).label() + ".";
                 }
+                lines.add(line);
             }
         } catch (Exception ignored) {}
-        // Heti fókusz: ha a felhasználó beírta, mit edz ma, az a legkonkrétabb
-        // dolog, amit mondhatunk – ennél jobb emlékeztető nincs.
+
+        // 5) Név szerint kimaradt sportág – a személyes hat, az általános nem.
+        String miss = History.missedSportLine(c);
+        if (miss != null) lines.add(miss);
+
+        // 6) Rég kimaradt gyakorlat: a rekordlistában a legutóbbi van elöl,
+        //    tehát ez magától nem tűnne fel.
         try {
-            String line = Weekplan.todayLine(Theme.planFocus(c), dowIdx);
-            if (!line.isEmpty()) text += "\n" + line;
+            java.util.List<StrengthLog.Entry> sLog = StrengthLog.load(c);
+            String forgotten = StrengthLog.mostNeglected(sLog, System.currentTimeMillis(),
+                    StrengthLog.NEGLECTED_DAYS);
+            if (forgotten != null) {
+                int d = StrengthLog.daysSince(sLog, forgotten, System.currentTimeMillis());
+                lines.add("💤 " + forgotten + " " + StrengthLog.agoLabel(d)
+                        + " maradt ki – beveszed ma?");
+            }
         } catch (Exception ignored) {}
-        // Heti mozgás-cél: hét közben ez a leghasznosabb egy mondat – a napi
-        // biztatás önmagában nem mondja meg, hol tart a hét.
-        try {
-            int goal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
-                    .getInt("move_goal_min", Load.DEFAULT_WEEKLY_GOAL);
-            Load.Weekly w = Load.weekly(
-                    History.dailyMinutes(c, System.currentTimeMillis(), Load.ACUTE_DAYS), goal);
-            if (w.minutes > 0 && !w.done)
-                text += "\n🎽 Heti mozgás: " + w.label() + " – " + w.percent + "%.";
-        } catch (Exception ignored) {}
-        // Víz-emlékeztető annak, aki ma már használta a számlálót, de a cél még nincs meg.
+
+        // 7) Víz: hasznos, de a mozgásnál kevésbé sürgős.
         try {
             int cl = Water.todayCl(c);
             int goalCl = Water.goalCl(c);
             if (cl > 0 && cl < goalCl)
-                text += "\n💧 Vízből " + Water.liters(cl) + " megvan – igyál még "
-                        + Water.liters(goalCl - cl) + "-t ma!";
+                lines.add("💧 Vízből " + Water.liters(cl) + " megvan – igyál még "
+                        + Water.liters(goalCl - cl) + "-t ma!");
         } catch (Exception ignored) {}
-        // Heti szokás: „kedd van – ilyenkor általában úszni jársz". A
-        // hétköznaphoz kötött szokás személyesebb minden általános biztatásnál.
+
+        // 8) Heti szokás: érdekes és személyes, de nem sürgős.
         try {
             org.json.JSONArray hh = History.load(c);
             int[] wd = new int[hh.length()];
@@ -132,25 +158,11 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             String id = Habits.usualSportOn(wd, kinds, ago, dowIdx);
             Activities.Kind k = id == null ? null : Activities.byId(id);
             if (k != null)
-                text += "\n🗓 " + Hu.dayName(dowIdx) + " van – ilyenkor általában "
-                        + k.name.toLowerCase(Hu.LOCALE) + " szokott lenni.";
+                lines.add("🗓 " + Hu.dayName(dowIdx) + " van – ilyenkor általában "
+                        + k.name.toLowerCase(Hu.LOCALE) + " szokott lenni.");
         } catch (Exception ignored) {}
-        // Sport-tudatos sor: ha a szokásos sportág (pl. heti kézilabda) régóta
-        // kimaradt, azt név szerint mondjuk – a személyes hat, az általános nem.
-        String miss = History.missedSportLine(c);
-        if (miss != null) text += "\n" + miss;
-        // Ugyanez a súlyzós naplóra: a rég kimaradt gyakorlat nevesítve. A
-        // rekordlistában a legutóbbi van elöl, tehát ez magától nem tűnne fel.
-        try {
-            java.util.List<StrengthLog.Entry> sLog = StrengthLog.load(c);
-            String forgotten = StrengthLog.mostNeglected(sLog, System.currentTimeMillis(),
-                    StrengthLog.NEGLECTED_DAYS);
-            if (forgotten != null) {
-                int d = StrengthLog.daysSince(sLog, forgotten, System.currentTimeMillis());
-                text += "\n💤 " + forgotten + " " + StrengthLog.agoLabel(d)
-                        + " maradt ki – beveszed ma?";
-            }
-        } catch (Exception ignored) {}
+
+        for (int i = 0; i < lines.size() && i < MAX_LINES; i++) text += "\n" + lines.get(i);
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
