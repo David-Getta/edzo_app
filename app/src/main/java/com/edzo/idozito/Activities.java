@@ -1109,6 +1109,14 @@ public final class Activities {
                     int e = p;
                     while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
                             && s.charAt(e) != ';') e++;
+                    // A „nem futottam és kondiztam" kondija megtörtént: az „és"
+                    // ÚJ állítást nyit, nem folytatja a tagadást. Csak akkor
+                    // fut tovább a törlés, ha a másik fele is tagadva van
+                    // („nem futottam és nem úsztam").
+                    if (w.equals("nem ")) {
+                        int es = s.indexOf(" es ", p);
+                        if (es >= 0 && es < e && !s.startsWith("nem ", es + 4)) e = es;
+                    }
                     blank(q, a, e);
                     s = new String(q);
                 }

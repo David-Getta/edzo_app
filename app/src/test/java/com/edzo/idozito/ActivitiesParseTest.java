@@ -804,4 +804,19 @@ public class ActivitiesParseTest {
         assertEquals("futas", Activities.parse("elfutottam 5 km-t").plans.get(0).kind.id);
         assertEquals("futas", Activities.parse("kifutottam magam").plans.get(0).kind.id);
     }
+
+    @Test public void anAndAfterTheNegationOpensANewStatement() {
+        // A „nem futottam és kondiztam" kondija megtörtént – eddig a tagadás
+        // az „és" utáni edzést is elvitte, vagyis egy valódi edzés hiányzott a
+        // szériából és a statisztikából.
+        assertEquals("kondi",
+                Activities.parse("nem futottam és kondiztam").plans.get(0).kind.id);
+        assertEquals("kondi",
+                Activities.parse("nem futottam, de kondiztam").plans.get(0).kind.id);
+        // Ha a másik fele is tagadva van, marad a semmi.
+        assertTrue(Activities.parse("nem futottam és nem úsztam").isEmpty());
+        assertTrue(Activities.parse("ma nem futottam").isEmpty());
+        // A „helyett" ága érintetlen.
+        assertEquals("futas", Activities.parse("kondi helyett futás").plans.get(0).kind.id);
+    }
 }
