@@ -126,4 +126,46 @@ public class RoutinesTest {
         assertNull(Routines.byName(s, ""));
         assertNull(Routines.byName(s, null));
     }
+
+    @Test public void theLastTimeTheDayWasDoneIsFound() {
+        long d = 86400000L;
+        long now = 1000 * d + 12 * 3600000L;
+        List<String> moves = moves("Guggolás", "Kitörés", "Vádliemelés");
+        // Két nappal ezelőtt kettő megvolt a háromból: ez fél fölött van.
+        long[] ts = {998 * d, 998 * d, 990 * d, 990 * d, 990 * d};
+        String[] names = {"Guggolás", "Kitörés", "Guggolás", "Kitörés", "Vádliemelés"};
+        assertEquals(2, Routines.lastDone(moves, ts, names, now));
+        assertEquals("2 napja", Routines.lastDoneLabel(2));
+        assertEquals("ma", Routines.lastDoneLabel(0));
+        assertEquals("tegnap", Routines.lastDoneLabel(1));
+        assertEquals("", Routines.lastDoneLabel(-1));
+    }
+
+    @Test public void oneExerciseIsNotAWholeDay() {
+        long d = 86400000L;
+        long now = 1000 * d;
+        List<String> moves = moves("Guggolás", "Kitörés", "Vádliemelés", "Lábtolás");
+        // Egyetlen gyakorlat a négyből nem edzésnap.
+        assertEquals(-1, Routines.lastDone(moves,
+                new long[]{999 * d}, new String[]{"Guggolás"}, now));
+        // Kettő a négyből viszont igen (a fele elég).
+        assertEquals(1, Routines.lastDone(moves,
+                new long[]{999 * d, 999 * d}, new String[]{"Guggolás", "Kitörés"}, now));
+        // Ugyanaz a gyakorlat kétszer egy napon nem két gyakorlat.
+        assertEquals(-1, Routines.lastDone(moves,
+                new long[]{999 * d, 999 * d}, new String[]{"Guggolás", "guggolás"}, now));
+    }
+
+    @Test public void brokenLastDoneInputNeverCrashes() {
+        assertEquals(-1, Routines.lastDone(null, null, null, 0));
+        assertEquals(-1, Routines.lastDone(moves("Guggolás"), null, null, 0));
+        assertEquals(-1, Routines.lastDone(new ArrayList<String>(),
+                new long[]{1}, new String[]{"Guggolás"}, 2));
+        // Eltérő hosszú tömbök: a rövidebb dönt.
+        assertEquals(-1, Routines.lastDone(moves("Guggolás"),
+                new long[]{1, 2, 3}, new String[]{}, 4));
+        // Null név nem borít.
+        assertEquals(-1, Routines.lastDone(moves("Guggolás"),
+                new long[]{1}, new String[]{null}, 2));
+    }
 }

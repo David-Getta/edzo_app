@@ -184,6 +184,53 @@ public final class Routines {
         return out;
     }
 
+    /**
+     * Mikor csináltad utoljára ezt az edzésnapot? (Napokban; -1 = soha.)
+     *
+     * Egy nap akkor számít megcsináltnak, ha a gyakorlatainak legalább a FELE
+     * szerepel aznap. Teljes egyezést kérni életszerűtlen: mindig kimarad
+     * valami, és akkor a nap sosem lenne „megcsinálva".
+     *
+     * @param moves az edzésnap gyakorlatai
+     * @param ts    bejegyzésenként az időbélyeg
+     * @param names bejegyzésenként a gyakorlat neve
+     * @param now   a mostani idő
+     */
+    public static int lastDone(List<String> moves, long[] ts, String[] names, long now) {
+        if (moves == null || moves.isEmpty() || ts == null || names == null) return -1;
+        int n = Math.min(ts.length, names.length);
+        // Naponként: hány gyakorlata volt meg ennek a napnak?
+        java.util.LinkedHashMap<Long, java.util.Set<String>> perDay = new java.util.LinkedHashMap<>();
+        for (int i = 0; i < n; i++) {
+            if (names[i] == null) continue;
+            String name = names[i].trim();
+            boolean mine = false;
+            for (String m : moves) if (m.equalsIgnoreCase(name)) mine = true;
+            if (!mine) continue;
+            long day = Days.startOf(ts[i]);
+            java.util.Set<String> set = perDay.get(day);
+            if (set == null) perDay.put(day, set = new java.util.LinkedHashSet<String>());
+            set.add(name.toLowerCase());
+        }
+        int need = (moves.size() + 1) / 2;
+        int best = -1;
+        for (java.util.Map.Entry<Long, java.util.Set<String>> e : perDay.entrySet()) {
+            if (e.getValue().size() < need) continue;
+            int ago = Days.ago(e.getKey(), now);
+            if (ago < 0) continue;
+            if (best < 0 || ago < best) best = ago;
+        }
+        return best;
+    }
+
+    /** „ma", „tegnap", „4 napja" – vagy üres, ha soha. */
+    public static String lastDoneLabel(int daysAgo) {
+        if (daysAgo < 0) return "";
+        if (daysAgo == 0) return "ma";
+        if (daysAgo == 1) return "tegnap";
+        return daysAgo + " napja";
+    }
+
     /** A szeparátorok és a sortörés kiesnek, a szóközök összeérnek. */
     private static String clean(String s) {
         if (s == null) return "";

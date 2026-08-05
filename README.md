@@ -150,7 +150,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   egy koppintással beírható – eddig minden gyakorlatot külön kellett
   kikeresni, és a napot fejben tartani. Ami ma már megvan, az **ki van
   pipálva** („2 / 5 megvan ma"), és a **heti fókuszhoz illő nap** meg van
-  jelölve („🎯 Lábnap · ma ez jön"). Ha van a mai fókuszhoz illő nap, az
+  jelölve („🎯 Lábnap · ma ez jön"), és minden nap mellett ott van, mikor
+  csináltad utoljára („legutóbb 4 napja" – akkor számít megcsináltnak, ha
+  a gyakorlatai legalább fele megvolt aznap). Ha van a mai fókuszhoz illő nap, az
   az erősítő képernyő tetején is ott van – egy kész nap teljes, sorrendbe
   rakott terv, nem három különálló gyakorlat
 - **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
@@ -290,7 +292,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~483 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~486 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

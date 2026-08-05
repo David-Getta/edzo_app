@@ -981,11 +981,24 @@ public class StrengthActivity extends Activity {
         Sheet sh = new Sheet(this, "Edzésnapok",
                 focus.isEmpty() ? "Melyik gyakorlatokat csinálod egy szuszra?"
                         : "A mai fókusz: " + focus);
+        // „Legutóbb 4 napja": ebből derül ki, melyik nap van soron – a
+        // gyakorlatlistából magától nem.
+        java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
+        long[] lts = new long[log.size()];
+        String[] lnames = new String[log.size()];
+        for (int i = 0; i < log.size(); i++) {
+            lts[i] = log.get(i).ts;
+            lnames[i] = log.get(i).name;
+        }
+        long now = System.currentTimeMillis();
         for (final Routines.Routine r : all) {
             boolean fits = !focus.isEmpty()
                     && Foods.norm(r.name).contains(Foods.norm(focus));
-            sh.addRow(fits ? "🎯" : "📅", r.label() + (fits ? "  ·  ma ez jön" : ""),
-                    r.summary(), false, true, () -> routineDaySheet(r.name));
+            String when = Routines.lastDoneLabel(Routines.lastDone(r.moves, lts, lnames, now));
+            String title = r.label() + (fits ? "  ·  ma ez jön" : "")
+                    + (when.isEmpty() ? "" : "  ·  legutóbb " + when);
+            sh.addRow(fits ? "🎯" : "📅", title, r.summary(), false, true,
+                    () -> routineDaySheet(r.name));
         }
         sh.addRow("＋", "Saját edzésnap", "Név és gyakorlatok – a sajátod elnyomja az "
                 + "azonos nevű beépítettet.", false, true, this::newRoutineSheet);
