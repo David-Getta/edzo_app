@@ -94,7 +94,8 @@ public final class Activities {
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
-                    "joga", "yoga", "pilates", "nyujtas", "stretch", "torna", "medital",
+                    // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
+                    "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "legzogyakorlat", "legzo gyakorlat"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
@@ -1405,9 +1406,67 @@ public final class Activities {
         return out;
     }
 
+    /**
+     * Rövidített időtartam-jelölés: „1h20", „2h", „1h30m", „45p".
+     *
+     * Az órák-appok és a sportórák így írják, és chatben is így gépeli az
+     * ember. Enélkül nem csak elveszne az idő: az „1h20 futás" HÚSZ futássá
+     * vált, mert a 20 darabszámnak látszott – ez a naplót írja tele.
+     *
+     * A méter miatt a magában álló „m" SOHA nem perc („1500 m úszás"), csak
+     * az órát követő percé („1h30m"). Betű nem jöhet a jelölés után, így a
+     * „3 hét" és a „2 hónap" nem lesz óra.
+     */
+    private static void findShortTimes(String s, List<int[]> out) {
+        for (int i = 0; i < s.length(); i++) {
+            if (!Character.isDigit(s.charAt(i))) continue;
+            if (i > 0 && (Character.isDigit(s.charAt(i - 1)) || Character.isLetter(s.charAt(i - 1))))
+                continue;
+            int a = i;
+            while (i < s.length() && Character.isDigit(s.charAt(i))) i++;
+            // Húsz számjegy nem óraszám: a hosszú szám nem fér az int-be sem.
+            if (i - a > 4) continue;
+            int num = Integer.parseInt(s.substring(a, i));
+            int j = i;
+            while (j < s.length() && s.charAt(j) == ' ') j++;
+            if (j >= s.length()) continue;
+            char u = s.charAt(j);
+            int val;
+            if (u == 'h') {
+                if (num > 24) continue;
+                val = num * 60;
+                j++;
+                // Az óra utáni perc: „1h20", „1h 20m". A perc-jel elhagyható.
+                int k = j;
+                while (k < s.length() && s.charAt(k) == ' ') k++;
+                int b = k;
+                while (k < s.length() && Character.isDigit(s.charAt(k))) k++;
+                if (k > b) {
+                    if (k - b > 4) continue;
+                    int m = Integer.parseInt(s.substring(b, k));
+                    if (m >= 60) continue;
+                    val += m;
+                    j = k;
+                    if (j < s.length() && (s.charAt(j) == 'm' || s.charAt(j) == 'p')) j++;
+                }
+            } else if (u == 'p') {
+                val = num;
+                j++;
+            } else {
+                continue;
+            }
+            // „2 hét", „3 hónap", „45 perc”: betű után nem rövidítés.
+            if (j < s.length() && Character.isLetter(s.charAt(j))) continue;
+            if (val < 1 || val > 24 * 60) continue;
+            out.add(new int[]{a, val, j, 0});
+            i = j - 1;
+        }
+    }
+
     private static List<int[]> findMinutes(char[] q) {
         String s = new String(q);
         List<int[]> out = new ArrayList<>();
+        findShortTimes(s, out);
         for (String unit : new String[]{"perc", "ora"}) {
             int from = 0;
             while (true) {

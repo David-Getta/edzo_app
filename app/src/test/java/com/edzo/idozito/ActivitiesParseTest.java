@@ -735,4 +735,37 @@ public class ActivitiesParseTest {
         // futás” három futássá válna.
         assertEquals(1, Activities.parse("3 kiló fogyás után futás").plans.get(0).count);
     }
+
+    @Test public void theShortTimeNotationIsUnderstood() {
+        // Az órák-appok és a chat rövidítése: „1h20”, „2h”, „45p”.
+        assertEquals(80, Activities.parse("1h20 futás").plans.get(0).minutes);
+        assertEquals(80, Activities.parse("1h20m futás").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("1h futás").plans.get(0).minutes);
+        assertEquals(120, Activities.parse("2h bringa").plans.get(0).minutes);
+        assertEquals(90, Activities.parse("futás 1h30").plans.get(0).minutes);
+        assertEquals(20, Activities.parse("20p futás").plans.get(0).minutes);
+    }
+
+    @Test public void theShortTimeIsNotACount() {
+        // Ez volt a valódi kár: az „1h20 futás” HÚSZ futássá vált, mert a 20
+        // darabszámnak látszott – egy mondatból húsz naplóbejegyzés lett.
+        assertEquals(1, Activities.parse("1h20 futás").plans.get(0).count);
+        assertEquals(1, Activities.parse("2h30 kondi").plans.get(0).count);
+    }
+
+    @Test public void theShortNotationDoesNotEatOtherNumbers() {
+        // A magában álló „m” méter, nem perc – különben az úszás távja veszne el.
+        assertEquals(1.5, Activities.parse("1500 m úszás").plans.get(0).km, 0.001);
+        // Betű után nem rövidítés: a „3 hét” időszak, a „2 hónap” is.
+        assertEquals(21, Activities.parse("3 héten át futottam").days);
+        assertEquals(45, Activities.parse("2 hónap alatt futás").plans.get(0).minutes);
+        // A kiírt „perc” a régi úton megy tovább.
+        assertEquals(45, Activities.parse("45 perc futás").plans.get(0).minutes);
+    }
+
+    @Test public void stretchingIsRecognisedAsAVerbToo() {
+        // A „nyújtás” szótő szerepelt, az ige nem: a „nyújtottam” semmi volt.
+        assertEquals("joga", Activities.parse("nyújtottam 15 percet").plans.get(0).kind.id);
+        assertEquals(15, Activities.parse("negyed órát nyújtottam").plans.get(0).minutes);
+    }
 }
