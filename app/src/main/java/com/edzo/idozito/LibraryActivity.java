@@ -73,6 +73,13 @@ public class LibraryActivity extends Activity {
             col.addView(gap(18));
         }
 
+        // Sportágak: a kézi felvétel és az edzés-mondat ugyanebből a listából
+        // dolgozik. Aki tudja, mit ismer fel az app, az bátrabban ír mondatot.
+        col.addView(sectionHead("🏃  Ismert sportágak",
+                Activities.ALL.length + " mozgásforma"), lp());
+        col.addView(sportsCard(accent), lp());
+        col.addView(gap(18));
+
         col.addView(text("Tipp: a saját programjaidhoz is adhatsz gyakorlatokat az „Edzés típusa” választóban.",
                 12.5f, MUTED, false));
 
@@ -110,6 +117,30 @@ public class LibraryActivity extends Activity {
             }
             card.addView(box);
             if (i < groups.length - 1) {
+                View dv = new View(this);
+                LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+                dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);
+                dv.setLayoutParams(dvp);
+                dv.setBackgroundColor(LINE);
+                card.addView(dv);
+            }
+        }
+        return card;
+    }
+
+    /** A felismert sportágak, egy szokásos alkalom hosszával. */
+    LinearLayout sportsCard(int accent) {
+        LinearLayout card = card();
+        Activities.Kind[] all = Activities.ALL;
+        for (int i = 0; i < all.length; i++) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(14), dp(10), dp(14), dp(10));
+            row.addView(text(all[i].title(), 14.5f, TXT, false),
+                    new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text(all[i].defaultMin + " perc", 12.5f, MUTED, false));
+            card.addView(row);
+            if (i < all.length - 1) {
                 View dv = new View(this);
                 LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
                 dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);

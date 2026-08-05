@@ -8,7 +8,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * Determinisztikus fuzz a két mondat-értelmezőre (étel, edzés).
+ * Determinisztikus fuzz a mondat-értelmezőkre (étel, edzés, sorozat,
+ * intervallum, időpont).
  *
  * A nyelvtan mára sokrétű: tagmondatok, kitakarás, számnevek, mértékegységek,
  * darabszám, időszak, hétköznapnevek. Minden új szabály új kölcsönhatás – ez a
@@ -86,6 +87,40 @@ public class ParserFuzzTest {
                 // Az időbélyeg-tervezés is korlátos: semmi a jövőben, semmi kivétel.
                 for (long t : Activities.timestamps(p, 1_753_900_000_000L))
                     assertTrue("jövőbeli időbélyeg erre: " + q, t <= 1_753_900_000_000L);
+
+                // Súlyzós sorozatok: a naplóba csak életszerű szám kerülhet.
+                for (StrengthParse.Item it : StrengthParse.parse(q)) {
+                    assertTrue("üres sorozat erre: " + q, !it.sets.isEmpty());
+                    assertTrue("RPE tartományon kívül: " + q,
+                            it.rpe == 0 || (it.rpe >= 6 && it.rpe <= 10));
+                    for (StrengthParse.Set st : it.sets) {
+                        assertTrue("ismétlés elszaladt erre: " + q,
+                                st.reps >= 1 && st.reps <= 200);
+                        assertTrue("súly elszaladt erre: " + q,
+                                st.weight >= 0 && st.weight <= 500);
+                    }
+                }
+
+                // Intervallum: rossz munkaidővel az egész kör használhatatlan.
+                IntervalParse.Plan ip = IntervalParse.parse(q);
+                if (ip != null) {
+                    assertTrue("kör elszaladt erre: " + q,
+                            ip.rounds >= 1 && ip.rounds <= IntervalParse.MAX_ROUNDS);
+                    assertTrue("munkaidő elszaladt erre: " + q,
+                            ip.work >= IntervalParse.MIN_SEC && ip.work <= IntervalParse.MAX_SEC);
+                    assertTrue("pihenő elszaladt erre: " + q,
+                            ip.rest >= 0 && ip.rest <= IntervalParse.MAX_SEC);
+                    assertTrue("bemelegítés elszaladt erre: " + q,
+                            ip.warm >= 0 && ip.warm <= IntervalParse.MAX_SEC);
+                    assertTrue("levezetés elszaladt erre: " + q,
+                            ip.cool >= 0 && ip.cool <= IntervalParse.MAX_SEC);
+                }
+
+                // Időpont: sosem a jövőben, és két hétnél régebbre sem.
+                long when = TimeHint.from(q, 1_753_900_000_000L);
+                assertTrue("jövőbeli időpont erre: " + q, when <= 1_753_900_000_000L + 1000);
+                assertTrue("túl régi időpont erre: " + q,
+                        when >= 1_753_900_000_000L - 15L * 86400000L);
             }
         }
     }
@@ -102,6 +137,9 @@ public class ParserFuzzTest {
             if (q != null) Foods.parse(Arrays.asList(Foods.ALL), q);
             Activities.Parsed p = Activities.parse(q, 1_753_900_000_000L);
             Activities.timestamps(p, 1_753_900_000_000L);
+            StrengthParse.parse(q);
+            IntervalParse.parse(q);
+            TimeHint.from(q, 1_753_900_000_000L);
         }
     }
 }
