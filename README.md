@@ -59,7 +59,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Írd le, mit ettél** – az app felismeri az ételeket a mondatból:
   „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
 - **Érti a tagadást is**: a „chips helyett almát ettem" csak almát naplóz,
-  a „csoki nélkül kértem a kávét" csak kávét, a „ma nem ettem csokit" semmit
+  a „csoki nélkül kértem a kávét" csak kávét, a „ma nem ettem csokit" semmit.
+  A tagadás az „és"-en át is ér („nem ettem csokit és chipset"), de megáll
+  az írásjelnél és egy állító igénél („nem ettem semmit, de ittam kávét"),
+  és nem viszi el a kísérőt sem („nem kértem sültkrumplit a hamburger mellé")
 - Felismeri a **grammot** (g / gr / gramm / dkg / deka), a **darabszámot**
   (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „százötven gramm",
   „két és fél deci"),
@@ -286,7 +289,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~479 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~481 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

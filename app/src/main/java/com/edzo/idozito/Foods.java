@@ -1515,14 +1515,33 @@ public final class Foods {
                 p = q.indexOf(w, p + 1);
             }
         }
-        // Tagadott ige után, ugyanabban a tagmondatban álló ételek.
-        int[] cls = clauses(q);
+        // Tagadott ige után álló ételek, az első ÍRÁSJELIG.
+        //
+        // Az „és" itt nem határ: a „nem ettem csokit és chipset" mindkét
+        // tételt tagadja, a tagmondat-felosztás viszont a chipset külön
+        // tagmondatba tette, és így bekerült a naplóba. Az írásjel viszont
+        // igen: a „nem ettem semmit, de ittam kávét" kávéja megmarad.
         for (String w : new String[]{"nem ettem", "nem eszem", "nem ittam",
                 "nem iszom", "nem kertem", "kihagytam"}) {
             int p = q.indexOf(w);
             while (p >= 0) {
+                int stop = q.length();
+                for (int i = p; i < q.length(); i++) {
+                    char ch = q.charAt(i);
+                    if (ch == ',' || ch == ';' || ch == '.' || ch == '+') { stop = i; break; }
+                }
+                // Egy ÁLLÍTÓ ige is lezárja a tagadást: a „nem ettem reggelit
+                // és ittam egy kávét" kávéját megitta az ember.
+                for (String v : new String[]{"ettem", "eszem", "ittam", "iszom", "kertem"}) {
+                    int a = q.indexOf(v, p + w.length());
+                    while (a >= 0) {
+                        boolean negated = a >= 4 && q.startsWith("nem ", a - 4);
+                        if (!negated) { stop = Math.min(stop, a); break; }
+                        a = q.indexOf(v, a + 1);
+                    }
+                }
                 for (Match m : in)
-                    if (m.pos > p && cls[m.pos] == cls[p]) dead.add(m);
+                    if (m.pos > p && m.pos < stop && !isSideDish(q, m)) dead.add(m);
                 p = q.indexOf(w, p + 1);
             }
         }
@@ -1530,6 +1549,24 @@ public final class Foods {
         List<Match> out = new ArrayList<>();
         for (Match m : in) if (!dead.contains(m)) out.add(m);
         return out;
+    }
+
+    /**
+     * A tagadás KÍSÉRŐJE-e ez az étel?
+     *
+     * A „nem kértem sültkrumplit a hamburger mellé" mondatban a hamburgert
+     * megette az ember – csak a köretet hagyta el. A tagadás eddig az egész
+     * tagmondatot elvitte, vagyis egy valódi, hétszáz kalóriás fogást törölt.
+     *
+     * A „mellé/mellett/hozzá" pont ezt a szerepet jelöli: ami előtte áll, az
+     * a kísérő, nem a tagadás tárgya.
+     */
+    private static boolean isSideDish(String q, Match m) {
+        int end = m.pos + m.len;
+        int to = Math.min(q.length(), end + 14);
+        String after = end < to ? q.substring(end, to) : "";
+        return after.contains("melle") || after.contains("mellett")
+                || after.contains("hozza");
     }
 
     /**

@@ -409,4 +409,27 @@ public class FoodsIntegrationTest {
         assertEquals("Vega burger 220g", summary("vegán burger"));
         assertEquals("Hamburger 250g", summary("hamburger"));
     }
+
+    @Test public void theNegationDoesNotEatTheAccompaniment() {
+        // A „nem kértem sültkrumplit a hamburger mellé" hamburgerét megette az
+        // ember – csak a köretet hagyta el. Eddig a tagadás az egész
+        // tagmondatot elvitte, vagyis egy valódi, 700 kcal-s fogást törölt.
+        assertEquals("Hamburger 250g", summary("nem kértem sültkrumplit a hamburger mellé"));
+        assertEquals("Pizza 300g", summary("nem ettem salátát a pizza mellett"));
+        // Kísérő-jelző nélkül a tagadás továbbra is mindent elvisz.
+        assertEquals("", summary("nem kértem sültkrumplit"));
+    }
+
+    @Test public void theNegationReachesAcrossAnAnd() {
+        // Az „és" nem határ: a „nem ettem csokit és chipset" mindkét tételt
+        // tagadja. A tagmondat-felosztás a chipset külön tagmondatba tette,
+        // és így bekerült a naplóba.
+        assertEquals("", summary("ma nem ettem csokit és chipset"));
+        // Az ÍRÁSJEL viszont határ.
+        assertEquals("Kávé (fekete) 200g", summary("nem ettem semmit, de ittam kávét"));
+        assertEquals("Alma 150g", summary("nem ittam kávét, de ettem egy almát"));
+        // És egy ÁLLÍTÓ ige is lezárja a tagadást.
+        assertEquals("Kávé (fekete) 200g",
+                summary("nem ettem reggelit és ittam egy kávét"));
+    }
 }
