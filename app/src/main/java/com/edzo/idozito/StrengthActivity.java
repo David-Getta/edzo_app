@@ -951,9 +951,20 @@ public class StrengthActivity extends Activity {
     void routineSheet() {
         String stored = Theme.getStr(this, ROUTINE_KEY, "");
         java.util.List<Routines.Routine> all = Routines.all(stored);
-        Sheet sh = new Sheet(this, "Edzésnapok", "Melyik gyakorlatokat csinálod egy szuszra?");
-        for (final Routines.Routine r : all)
-            sh.addRow("📅", r.label(), r.summary(), false, true, () -> routineDaySheet(r.name));
+        // A heti fókusz megmondja, mi van MA soron – ha van hozzá illő nap,
+        // azt jelöljük. Így nem kell fejben összekötni a tervet a sablonnal.
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int dow = (cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+        String focus = Weekplan.forDay(Theme.planFocus(this), dow);
+        Sheet sh = new Sheet(this, "Edzésnapok",
+                focus.isEmpty() ? "Melyik gyakorlatokat csinálod egy szuszra?"
+                        : "A mai fókusz: " + focus);
+        for (final Routines.Routine r : all) {
+            boolean fits = !focus.isEmpty()
+                    && Foods.norm(r.name).contains(Foods.norm(focus));
+            sh.addRow(fits ? "🎯" : "📅", r.label() + (fits ? "  ·  ma ez jön" : ""),
+                    r.summary(), false, true, () -> routineDaySheet(r.name));
+        }
         sh.addRow("＋", "Saját edzésnap", "Név és gyakorlatok – a sajátod elnyomja az "
                 + "azonos nevű beépítettet.", false, true, this::newRoutineSheet);
         sh.addCancel().show();
@@ -970,8 +981,28 @@ public class StrengthActivity extends Activity {
         final Routines.Routine r = Routines.byName(stored, name);
         if (r == null) return;
         java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
-        Sheet sh = new Sheet(this, r.name, "Koppints egy gyakorlatra, és beírom.");
+        long today = Days.startOf(System.currentTimeMillis());
+        // Ami MA már megvan, azt jelöljük: edzés közben a sablon így nem
+        // emlékeztető, hanem lista, amit ki lehet pipálni.
+        java.util.LinkedHashMap<String, StrengthLog.Entry> doneToday =
+                new java.util.LinkedHashMap<>();
+        for (StrengthLog.Entry e : log)
+            if (Days.startOf(e.ts) == today && !doneToday.containsKey(e.name))
+                doneToday.put(e.name, e);
+        int done = 0;
+        for (String m : r.moves) if (doneToday.containsKey(m)) done++;
+        String head = done == 0 ? "Koppints egy gyakorlatra, és beírom."
+                : done + " / " + r.moves.size() + " megvan ma.";
+        Sheet sh = new Sheet(this, r.name, head);
         for (final String m : r.moves) {
+            StrengthLog.Entry d = doneToday.get(m);
+            if (d != null) {
+                String what = d.sets.size() + " sorozat  ·  " + d.totalReps() + " ismétlés";
+                if (d.topWeight() > 0) what += "  ·  " + Hu.kg(d.topWeight()) + " kg";
+                sh.addRow("✔", m, "Ma: " + what, false, true,
+                        () -> addEntryDialog(null, m));
+                continue;
+            }
             Progression.Suggestion sg = Progression.next(log, m);
             String sub = sg == null ? "Még nincs mihez mérni – írd be az elsőt."
                     : sg.headline();
