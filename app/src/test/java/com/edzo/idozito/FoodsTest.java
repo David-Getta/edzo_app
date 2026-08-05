@@ -221,6 +221,67 @@ public class FoodsTest {
         assertEquals("Üdítő (cukros)", Foods.find("kólát").name);
     }
 
+    /**
+     * Hétköznapi magyar szavak, amiknek SEMMI közük az ételhez.
+     *
+     * Ez a lista az őrszem: minden új szótő ellen lefut – az ételeké és (a
+     * StrengthParseTest-ből) a gyakorlatoké ellen is. Az ütközés ugyanis
+     * csendes: a felismerés sikeresnek látszik, csak épp nem azt naplózza,
+     * amit az ember csinált – és pont ezért nem derül ki magától.
+     */
+    static final String[] EVERYDAY = {
+            "abban", "addig", "ahol", "ajtó", "akkor", "alatt", "annyi", "anya", "apa",
+            "arc", "asztal", "átlag", "autó", "bal", "barát", "beszéd", "biztos",
+            "busz", "cél", "cipő", "család", "csend", "csoport", "derék", "döntés",
+            "edzés", "egészség", "együtt", "elég", "élet", "ellen", "előtt", "ember",
+            "erő", "érzés", "fal", "fáradtság", "fejlődés", "felé", "férfi", "fény",
+            "fiú", "fizetés", "fog", "folyamat", "forma", "föld", "gerinc", "gond",
+            "gyakorlat", "gyerek", "gyors", "haj", "hang", "hasonló", "ház", "helyzet",
+            "hiba", "hideg", "hír", "hogyan", "hosszú", "idő", "igaz", "ilyen",
+            "ismét", "iskola", "iskolában", "izom", "jelenleg", "jobb", "kar",
+            "kapcsolat", "kép", "kérdés", "kéz", "kicsi", "kint", "könnyű", "könyv",
+            "környék", "közel", "kutya", "lakás", "lassú", "lehetőség", "lélegzet",
+            "levegő", "macska", "magas", "messze", "mindig", "mozgás", "munka",
+            "nagyon", "nehéz", "nélkül", "nyak", "nyár", "óra", "orvos", "összes",
+            "pár", "pihenő", "pillanat", "probléma", "program", "rend", "rossz",
+            "sok", "sport", "súly", "szabad", "szabadnap", "szabadidő", "szám",
+            "szék", "szem", "személy", "szint", "szoba", "szükség", "talán", "tanár",
+            "tavasz", "tegnap", "tél", "terv", "tévé", "tükör", "új", "ujj", "út",
+            "üzenet", "váll", "változás", "város", "vér", "verseny", "vissza",
+            "zene", "boka", "térd", "csukló", "könyök", "medence", "szalag",
+            "ízület", "pulzus", "légzés", "nyújtás", "bemelegítés", "levezetés",
+            "sorozat", "ismétlés", "súlyzó", "rúd", "tárcsa", "pad", "gép",
+            "szőnyeg", "kötél", "labda", "futópad", "evezőgép", "szobabicikli",
+            "hétfő", "kedd", "szerda", "péntek", "szombat", "vasárnap", "január",
+            "február", "március", "április", "május", "június", "július",
+            "augusztus", "szeptember", "október", "november", "december",
+            "délelőtt", "délután", "hajnal", "fáj", "fájt", "húz", "nyom", "emel",
+            "tol", "fut", "megy", "jár", "úszik", "biciklizik", "edz", "pihen",
+            "alszik", "főz", "vásárol", "dolgozik", "tanul", "olvas", "ír",
+            "beszél", "hallgat", "hallottam", "néz", "lát", "érez", "gondol",
+            "tud", "akar", "kell", "lehet", "szeret", "kezd", "folytat", "befejez",
+            "abbahagy", "próbál", "sikerül", "elront", "javít", "változtat",
+            "motiváció", "fegyelem", "kitartás", "eredmény", "visszaesés", "plató",
+            "regeneráció", "alvás", "stressz", "hangulat", "energia", "erőnlét",
+            "állóképesség", "hajlékonyság", "egyensúly", "koordináció", "technika",
+            "tartás", "tempó", "ritmus", "majd", "majdnem", "majom", "majális",
+            "halál", "halom", "halasztás", "babona", "babérlevél", "bábu",
+            "tejút", "rizikó", "sorsolás", "alkalmas", "alkalom", "bordázat",
+            "uszoda", "uszodában", "edzőterem", "konditerem", "pálya", "park",
+            "erdő", "koleszterin", "multisport", "bérlet", "jegy", "pénz",
+    };
+
+    @Test public void noEverydayWordEverBecomesFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (String w : EVERYDAY) {
+            java.util.List<Foods.Hit> h = Foods.parse(all, w);
+            for (Foods.Hit x : h)
+                bad.append("\n  ").append(w).append(" -> ").append(x.food.name);
+        }
+        assertEquals("hétköznapi szóból étel lett:" + bad, 0, bad.length());
+    }
+
     @Test public void aWholeListOfEverydayWordsStaysOutOfTheDiary() {
         // Egy 300 szavas magyar szólista végigfuttatásából jött. Mindegyik
         // ütközés csendes volt: a felismerés sikeresnek látszott.

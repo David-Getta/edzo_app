@@ -151,6 +151,31 @@ public class StrengthParseTest {
         }
     }
 
+    @Test public void noEverydayWordEverBecomesAnExercise() {
+        // Ugyanaz az őrszem-lista, mint az ételeknél (FoodsTest.EVERYDAY): egy
+        // új, túl rövid gyakorlat-szótő ugyanúgy tud csendben beleesni egy
+        // hétköznapi szóba. Az ismétlésszámot hozzáadjuk, hogy tényleg csak a
+        // NÉV döntsön.
+        StringBuilder bad = new StringBuilder();
+        for (String w : FoodsTest.EVERYDAY) {
+            // Az evezőgép valóban evezés: a gép neve maga a gyakorlat.
+            if (w.equals("evezőgép")) continue;
+            for (StrengthParse.Item it : StrengthParse.parse(w + " 3x10"))
+                bad.append("\n  ").append(w).append(" -> ").append(it.name);
+        }
+        assertEquals("hétköznapi szóból gyakorlat lett:" + bad, 0, bad.length());
+        // És izomcsoport sem lesz belőle – a testrészek nevét kivéve, mert az
+        // szándékosan besorolható.
+        StringBuilder mg = new StringBuilder();
+        for (String w : FoodsTest.EVERYDAY) {
+            if (Arrays.asList("kar", "váll", "térd", "boka", "csukló", "könyök",
+                    "medence", "izom", "gerinc", "nyak", "derék").contains(w)) continue;
+            String g = Muscles.groupOf(w);
+            if (g != null) mg.append("\n  ").append(w).append(" -> ").append(g);
+        }
+        assertEquals("hétköznapi szóból izomcsoport lett:" + mg, 0, mg.length());
+    }
+
     @Test public void everyKnownExerciseHasAMuscleGroup() {
         // Amit a mondat-felvétel elment, annak a heti izomcsoport-egyensúlyban
         // is látszania kell – különben a napló egy része láthatatlan marad.
