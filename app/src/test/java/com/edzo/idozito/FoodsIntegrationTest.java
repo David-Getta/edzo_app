@@ -468,4 +468,26 @@ public class FoodsIntegrationTest {
         assertEquals("Savanyúság 100g", summary("wakame"));
         assertEquals("Húsleves 400g", summary("miso leves"));
     }
+
+    @Test public void oneStemApartCanMeanHalfAgainTheCalories() {
+        // A „bécsi virsli" NEM bécsi szelet: a „bécsi" a rántott hús szótöve.
+        assertEquals("Virsli 100g", summary("bécsi virsli"));
+        assertEquals("Rántott hús (sertés) 180g", summary("bécsi szelet"));
+        // A napraforgóOLAJ 900 kcal, a napraforgóMAG 580.
+        assertEquals("Olaj 10g", summary("napraforgóolaj"));
+        assertEquals("Tökmag / napraforgómag 30g", summary("napraforgómag"));
+        // A zsemlemorzsa egy kanálnyi panír, nem egy egész zsemle.
+        assertEquals("Liszt 30g", summary("zsemlemorzsa"));
+        assertEquals("Zsemle 55g", summary("zsemle"));
+    }
+
+    @Test public void theHungarianSausagesAreSausages() {
+        assertEquals("Kolbász 100g", summary("gyulai"));
+        assertEquals("Kolbász 100g", summary("csabai"));
+        assertEquals("Kolbász 100g", summary("debreceni"));
+        // A zsír az olajjal egy súlycsoport (900 kcal/100 g).
+        assertEquals("Olaj 10g", summary("sertészsír"));
+        // A zsíros kenyérnek viszont saját tétele van.
+        assertEquals("Zsíros kenyér 100g", summary("zsíros kenyér"));
+    }
 }

@@ -45,8 +45,12 @@ public final class Foods {
                 "rostelyos", "ozgerinc"),
         new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt", "stefania"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
-        new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz"),
-        new Food("Virsli", 250, 10, 100, "virsli"),
+        new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz",
+                // A magyar kolbászfajták neve önmagában is kolbászt jelent.
+                "gyulai", "csabai", "debreceni", "szegedi", "lecsokolbasz"),
+        // A „bécsi virsli" NEM bécsi szelet: a hosszabb szótő menti meg a
+        // rántott hústól (320 kcal helyett 250).
+        new Food("Virsli", 250, 10, 100, "virsli", "becsi virsli", "frankfurti virsli"),
         new Food("Sonka", 120, 18, 50, "sonka"),
         new Food("Szalámi", 400, 22, 30, "szalami"),
         new Food("Bacon", 500, 13, 30, "bacon", "szalonna"),
@@ -119,7 +123,9 @@ public final class Foods {
         // Reggeli pehely, nem főzelék-kukorica: négyszeres a különbség.
         new Food("Kukoricapehely", 380, 7, 40, "kukoricapehely", "cornflakes", "corn flakes"),
         new Food("Rizspehely", 380, 6, 40, "rizspehely"),
-        new Food("Liszt", 350, 10, 30, "liszt", "rizsliszt", "zabliszt", "buzaliszt"),
+        new Food("Liszt", 350, 10, 30, "liszt", "rizsliszt", "zabliszt", "buzaliszt",
+                // A zsemlemorzsa egy kanálnyi panír, nem egy egész zsemle.
+                "zsemlemorzsa", "panirmorzsa", "buzadara", "kukoricadara"),
         new Food("Brokkoli", 35, 2.8, 150, "brokkoli"),
         new Food("Karfiol", 25, 2, 150, "karfiol"),
         new Food("Paradicsom", 18, 0.9, 100, "paradicsom", "pari"),
@@ -151,7 +157,10 @@ public final class Foods {
         new Food("Tej", 60, 3.3, 200, "tej"),
         new Food("Zsírszegény tej", 38, 3.4, 200, "zsirszegeny tej", "sovany tej"),
         new Food("Vaj", 720, 0.9, 10, "vaj"),
-        new Food("Olaj", 900, 0, 10, "olaj", "napraforgo olaj"),
+        // A napraforgóOLAJ 900 kcal, a napraforgóMAG 580 – egy szótő
+        // különbség, másfélszeres kalória.
+        new Food("Olaj", 900, 0, 10, "olaj", "napraforgo olaj", "napraforgoolaj",
+                "sertes zsir", "serteszsir", "zsir", "libazsir", "kacsazsir"),
         new Food("Olajbogyó / olívabogyó", 145, 1, 30,
                 "olajbogyo", "olivabogyo", "kapribogyo"),
         new Food("Magvaj (mandula/kesu/tahini)", 600, 20, 20,
