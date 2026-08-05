@@ -167,7 +167,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   sportáganként, arány-sávval – a mért és a kézzel felvett edzés egy sorban
 - **Súlyzós szekció** (elmúlt 30 nap): edzésnapok, gyakorlatok, sorozatok,
   ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
-  és izomcsoporttal
+  és izomcsoporttal, valamint az **átlagos érzett terhelés** (RPE)
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík, átlagos
   **étkezési ablak** és napszak-jellemző („🌙 Este eszed a kalóriáid 52%-át")
 - **Profil / BMI / BMR**, testadatok és változás-diagram **testsúly-tendenciával**

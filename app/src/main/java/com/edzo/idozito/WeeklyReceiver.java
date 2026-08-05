@@ -153,7 +153,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
         // Súlyzós sor: a heti volumen az erősítő edzés legbeszédesebb száma –
         // a darabszámból nem látszik, mennyi munka volt mögötte.
         try {
-            int lifts = 0, setCount = 0;
+            int lifts = 0, setCount = 0, rpeSum = 0, rpeCount = 0;
             double volume = 0;
             String topLift = null;
             double topWeight = 0;
@@ -163,6 +163,7 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 setCount += e.sets.size();
                 volume += e.volume();
                 if (e.topWeight() > topWeight) { topWeight = e.topWeight(); topLift = e.name; }
+                if (e.rpe > 0) { rpeSum += e.rpe; rpeCount++; }
             }
             if (lifts > 0) {
                 String s = "\n🏋️ Súlyzós: " + lifts + " gyakorlat, " + setCount + " sorozat";
@@ -171,6 +172,8 @@ public class WeeklyReceiver extends BroadcastReceiver {
                             .replace(',', ' ') + " kg volumen";
                 if (topLift != null && topWeight > 0)
                     s += "  ·  csúcs: " + topLift + " " + Progression.kg(topWeight) + " kg";
+                if (rpeCount >= 3)
+                    s += "  ·  átlagos érzett terhelés " + Hu.d1(rpeSum / (double) rpeCount);
                 text += s + ".";
             }
         } catch (Exception ignored) {}

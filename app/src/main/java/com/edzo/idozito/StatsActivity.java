@@ -531,7 +531,7 @@ public class StatsActivity extends Activity {
     View strengthCard() {
         java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
         long from = System.currentTimeMillis() - 30L * 24 * 3600 * 1000;
-        int lifts = 0, setCount = 0, reps = 0;
+        int lifts = 0, setCount = 0, reps = 0, rpeSum = 0, rpeCount = 0;
         double volume = 0;
         java.util.HashSet<Integer> days = new java.util.HashSet<>();
         java.util.LinkedHashMap<String, Double> byMove = new java.util.LinkedHashMap<>();
@@ -546,6 +546,7 @@ public class StatsActivity extends Activity {
             days.add(c.get(java.util.Calendar.YEAR) * 400 + c.get(java.util.Calendar.DAY_OF_YEAR));
             Double v = byMove.get(e.name);
             byMove.put(e.name, (v == null ? 0 : v) + e.volume());
+            if (e.rpe > 0) { rpeSum += e.rpe; rpeCount++; }
         }
         if (lifts == 0) return null;
 
@@ -561,6 +562,16 @@ public class StatsActivity extends Activity {
                         : Math.round(volume) + " kg"},
                 {"📈 Napi átlag", Math.round(volume / Math.max(1, days.size())) + " kg"},
         });
+        // Átlagos érzett terhelés: a volumen azt mondja meg, mennyit tettél
+        // le, ez azt, hogy mennyibe került. A kettő együtt a teljes kép.
+        if (rpeCount >= 3) {
+            LinearLayout rpeRow = vbox();
+            rpeRow.setPadding(dp(10), dp(2), dp(10), dp(2));
+            double avg = rpeSum / (double) rpeCount;
+            rpeRow.addView(text("😮‍💨 Átlagos érzett terhelés: " + Hu.d1(avg)
+                    + "  (" + rpeCount + " bejegyzésből)", 13, TXT, false));
+            cardV.addView(rpeRow);
+        }
 
         LinearLayout notes = vbox();
         notes.setPadding(dp(10), dp(4), dp(10), dp(8));
