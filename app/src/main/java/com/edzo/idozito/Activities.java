@@ -435,14 +435,36 @@ public final class Activities {
         String[][] units = {{"egy", "1"}, {"ketto", "2"}, {"ket", "2"}, {"harom", "3"},
                 {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
                 {"nyolc", "8"}, {"kilenc", "9"}};
+        java.util.List<String[]> belowHundred = new java.util.ArrayList<>();
         for (String[] t : tens) {
             if (!t[0].equals("tizen") && !t[0].equals("huszon"))
-                out.add(new String[]{t[0], t[1]});
+                belowHundred.add(new String[]{t[0], t[1]});
             for (String[] u : units)
-                out.add(new String[]{t[0] + u[0],
+                belowHundred.add(new String[]{t[0] + u[0],
                         String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
         }
-        return out.toArray(new String[0][]);
+        out.addAll(belowHundred);
+        // Százasok: az ismétlésszámok ott laknak („száz fekvőtámasz",
+        // „kétszáz felülés"), és eddig egyszerűen nem voltak számok.
+        String[][] hundreds = {{"szaz", "100"}, {"ketszaz", "200"},
+                {"haromszaz", "300"}, {"negyszaz", "400"}, {"otszaz", "500"}};
+        for (String[] h : hundreds) {
+            out.add(h);
+            for (String[] u : units)
+                out.add(new String[]{h[0] + u[0],
+                        String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(u[1]))});
+            for (String[] b : belowHundred)
+                out.add(new String[]{h[0] + b[0],
+                        String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(b[1]))});
+        }
+        // A HOSSZABB alak elöl: különben a „szazotven" szaz + otven lenne.
+        String[][] arr = out.toArray(new String[0][]);
+        java.util.Arrays.sort(arr, new java.util.Comparator<String[]>() {
+            @Override public int compare(String[] x, String[] y) {
+                return y[0].length() - x[0].length();
+            }
+        });
+        return arr;
     }
 
     /**
@@ -1384,6 +1406,11 @@ public final class Activities {
 
     private static boolean isNotSpan(String word) {
         for (String w : NOT_SPAN) if (w.equals(word)) return true;
+        // A HETVEN és összetételei számok, nem hetek. A „hét" magában
+        // kétértelmű (hét nap vagy hetes szám), ezért az marad időszaknak – a
+        // „hetvenöt perc kondi" viszont eddig egyhetes időszakká vált, és
+        // közben a hetvenöt perc is elveszett.
+        if (word.startsWith("hetven")) return true;
         return false;
     }
 
@@ -1477,11 +1504,20 @@ public final class Activities {
                     }
                     break;
                 }
-                if (numStart == numEnd) continue;      // nincs előtte szám
                 double val;
-                try {
-                    val = Double.parseDouble(s.substring(numStart, numEnd).replace(',', '.'));
-                } catch (NumberFormatException e) { continue; }
+                if (numStart == numEnd) {
+                    // Nincs SZÁMJEGY előtte – de lehet kiírva: „huszonöt
+                    // kilométer bringa". Eddig ilyenkor a táv elveszett.
+                    int[] wn = numberBefore(s, p, NUM_REACH);
+                    if (wn == null) continue;
+                    numStart = wn[0];
+                    val = wn[2];
+                } else {
+                    try {
+                        val = Double.parseDouble(
+                                s.substring(numStart, numEnd).replace(',', '.'));
+                    } catch (NumberFormatException e) { continue; }
+                }
                 if (meters) {
                     // 25 méter alatt nem edzés, 100 km felett elgépelés.
                     if (val < 25 || val > 100000) continue;

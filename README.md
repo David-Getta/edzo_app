@@ -45,7 +45,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   métert", „tegnap este kondi", „ma 10000 lépés", „ma reggel 6-kor futottam"
   (a kimondott óra pontosabb a napszaknál), „július 28-án
   futottam", „100 fekvőtámasz", „júl. 28-án 6x1 km", „napi 20 perc jóga
-  egész héten", „1h20 futás", „45p nyújtás" – mentés előtt megmutatja, mit értett; a tervekre („jövő
+  egész héten", „1h20 futás", „45p nyújtás", „hetvenöt perc kondi",
+  „száz fekvőtámasz", „huszonöt kilométer bringa" – mentés előtt megmutatja, mit értett; a tervekre („jövő
   héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
   is érti („ma nem futottam", „kondi helyett futás"; a „nem futottam és
   kondiztam" és a „nem futottam a kondi mellett" kondija viszont
@@ -303,7 +304,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~502 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~505 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

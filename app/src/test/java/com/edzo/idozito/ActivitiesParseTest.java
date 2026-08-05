@@ -857,4 +857,36 @@ public class ActivitiesParseTest {
         // Táv nélküli második említés sem nyit új edzést.
         assertEquals(1, Activities.parse("futottam, aztán még futottam").plans.size());
     }
+
+    @Test public void seventyIsANumberNotAWeek() {
+        // A „hetven" a „hét" szótövet tartalmazza: a mondat egyhetes
+        // időszakká vált, és közben a hetvenöt perc is elveszett.
+        assertEquals(75, Activities.parse("hetvenöt perc kondi").plans.get(0).minutes);
+        assertEquals(70, Activities.parse("hetven perc kondi").plans.get(0).minutes);
+        assertEquals(72, Activities.parse("hetvenkét perc futás").plans.get(0).minutes);
+        // A „hét" magában viszont marad időszak – ott a kétértelműség valódi.
+        assertEquals(7, Activities.parse("egy hét alatt 3 futás").days);
+        assertEquals(7, Activities.parse("a héten kétszer edzettem").days);
+    }
+
+    @Test public void theSpokenHundredsAreCounts() {
+        // „száz fekvőtámasz": az ismétlésszámok itt laknak, és eddig egyszerűen
+        // nem voltak számok.
+        assertEquals(20, Activities.parse("száz fekvőtámasz").plans.get(0).minutes);
+        assertEquals(20, Activities.parse("100 fekvőtámasz").plans.get(0).minutes);
+        assertEquals(30, Activities.parse("százötven fekvőtámasz").plans.get(0).minutes);
+        assertEquals(40, Activities.parse("kétszáz felülés").plans.get(0).minutes);
+    }
+
+    @Test public void aSpokenDistanceCounts() {
+        // „huszonöt kilométer bringa": a táv eddig elveszett, mert csak
+        // számjegyet kerestünk az egység előtt.
+        assertEquals(25.0, Activities.parse("huszonöt kilométer bringa")
+                .plans.get(0).km, 0.001);
+        assertEquals(10.0, Activities.parse("tíz kilométert futottam")
+                .plans.get(0).km, 0.001);
+        assertEquals(2.0, Activities.parse("két kilométer úszás").plans.get(0).km, 0.001);
+        // A számjegyes alak változatlan.
+        assertEquals(5.0, Activities.parse("5 km futás").plans.get(0).km, 0.001);
+    }
 }
