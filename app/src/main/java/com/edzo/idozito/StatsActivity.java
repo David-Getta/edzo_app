@@ -108,6 +108,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View wd = weekdayCard(System.currentTimeMillis());
+        if (wd != null) {
+            col.addView(sectionTitle("Melyik napokon edzel"));
+            col.addView(wd, lp());
+            col.addView(gap(16));
+        }
+
         View monthCmp = monthCompareCard(System.currentTimeMillis());
         if (monthCmp != null) {
             col.addView(sectionTitle("Ez a hónap"));
@@ -660,6 +667,56 @@ public class StatsActivity extends Activity {
             blp.bottomMargin = dp(4);
             cardV.addView(bar, blp);
         }
+        return cardV;
+    }
+
+    /**
+     * Melyik napokon edzel? Tizenkét hét bontása a hét napjaira.
+     *
+     * A hőtérkép megmutatja, MIKOR volt edzés, de a heti mintázat nem
+     * olvasható ki belőle. Ez a kártya egyetlen kérdésre válaszol: melyik nap
+     * a te napod, és melyik az, amelyik rendre kimarad.
+     */
+    View weekdayCard(long now) {
+        int[] per = new int[7];
+        long from = now - 12L * 7 * 24 * 3600 * 1000;
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        int total = 0;
+        org.json.JSONArray all = History.loadAll(this);
+        for (int i = 0; i < all.length(); i++) {
+            JSONObject o = all.optJSONObject(i);
+            if (o == null || o.optLong("ts") < from) continue;
+            c.setTimeInMillis(o.optLong("ts"));
+            per[(c.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7]++;
+            total++;
+        }
+        if (total < 8) return null;      // néhány edzésből nincs mintázat
+
+        int max = 1, bestIdx = 0;
+        for (int i = 0; i < 7; i++) if (per[i] > max) { max = per[i]; bestIdx = i; }
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(14), dp(12), dp(14), dp(12));
+        for (int i = 0; i < 7; i++) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(4), 0, dp(4));
+            row.addView(text(Weekplan.DAY_ABBR[i], 12.5f, i == bestIdx ? TXT : MUTED,
+                    i == bestIdx), new LinearLayout.LayoutParams(dp(34), -2));
+            View bar = new View(this);
+            GradientDrawable bg = new GradientDrawable();
+            bg.setCornerRadius(dp(3));
+            bg.setColor(i == bestIdx ? Theme.accent(this) : Theme.track(this));
+            bar.setBackground(bg);
+            int w = (int) (dp(190) * (per[i] / (double) max));
+            row.addView(bar, new LinearLayout.LayoutParams(Math.max(dp(3), w), dp(9)));
+            row.addView(text("  " + per[i], 12, MUTED, false));
+            cardV.addView(row);
+        }
+        cardV.addView(gap(6));
+        cardV.addView(text(per[bestIdx] > 0
+                ? Hu.dayName(bestIdx) + " a te napod – 12 hét alatt " + per[bestIdx]
+                        + " edzés esett rá."
+                : "", 12, MUTED, false), lp());
         return cardV;
     }
 

@@ -157,6 +157,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 📊 Statisztika & előzmények
 - Heti / havi / összes összesítők, 8-hetes diagram, havi naptár,
   **12 hetes aktivitás-hőtérkép**, terv-teljesítés
+- **Melyik napokon edzel**: a hét napjainak bontása 12 hétből – melyik nap a
+  tiéd, és melyik marad rendre ki
 - **Ez a hónap**: edzések, idő, táv, kalória és volumen az előző hónap
   UGYANANNYI napjához mérve – a folyó hónap nem tűnik visszaesésnek attól,
   hogy még nem ért véget
