@@ -899,7 +899,10 @@ public final class Activities {
     private static int lastWeekShift(String s, int dayPos, int back) {
         int b = Math.max(0, dayPos - 14);
         String head = s.substring(b, dayPos);
-        return head.contains("mult") ? back + 7 : back;
+        // TELJES szó: a „multisport kedden" nem múlt heti kedd.
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![a-z])mult(?![a-z])").matcher(head);
+        return m.find() ? back + 7 : back;
     }
 
     /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
@@ -1158,6 +1161,19 @@ public final class Activities {
                 // A „részt vettem az edzésen" NEM vásárlás – az él marad.
                 if (boundary && w.equals("vettem")
                         && p >= 6 && s.startsWith("reszt ", p - 6)) boundary = false;
+                // A bérlet VÁSÁRLÁSA nem edzés – a bérlettel VÉGZETT edzés
+                // viszont az. A magyar eszközhatározó ragja (-vel/-val, itt
+                // hasonulva) pont ezt a szerepet jelöli: „bérlettel edzettem",
+                // „a bérletemmel jártam el". Enélkül az egész tagmondat
+                // eltűnt, vagyis egy megtörtént edzés nem került a naplóba –
+                // márpedig Magyarországon a legtöbben bérlettel járnak.
+                if (boundary && w.equals("berlet")) {
+                    int e2 = p;
+                    while (e2 < s.length() && Character.isLetter(s.charAt(e2))) e2++;
+                    String word = s.substring(p, e2);
+                    if (word.length() > 6 && (word.endsWith("el") || word.endsWith("al")))
+                        boundary = false;
+                }
                 if (boundary) {
                     // A „nem …" csak előre töröl (a következő tagmondat él);
                     // az elmaradt/nézett/vásárolt edzésnél az EGÉSZ tagmondat

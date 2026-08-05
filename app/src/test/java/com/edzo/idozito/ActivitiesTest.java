@@ -197,4 +197,35 @@ public class ActivitiesTest {
                 Activities.parse("az elmúlt 3 napban guggolás 3x8"), now));
         assertEquals(0, Activities.singleDayTs(null, now));
     }
+
+    @Test public void trainingWithAPassIsStillTraining() {
+        // A bérlet VÁSÁRLÁSA nem edzés – a bérlettel VÉGZETT edzés viszont az.
+        // Eddig az egész tagmondat eltűnt, vagyis egy megtörtént edzés nem
+        // került a naplóba. Magyarországon a legtöbben bérlettel járnak.
+        long now = System.currentTimeMillis();
+        assertEquals(1, Activities.parse("60 perc kondi bérlettel", now).plans.size());
+        assertEquals(1, Activities.parse("bérlettel 60 perc kondi", now).plans.size());
+        assertEquals(1, Activities.parse("a bérletemmel 60 perc kondi", now).plans.size());
+        // A vásárlás továbbra sem edzés.
+        assertTrue(Activities.parse("vettem egy bérletet", now).isEmpty());
+        assertTrue(Activities.parse("bérletre költöttem", now).isEmpty());
+        // Külön tagmondatban a vásárlás mellett az edzés megmarad.
+        assertEquals(1, Activities.parse("bérletet vettem, aztán 60 perc kondi",
+                now).plans.size());
+    }
+
+    @Test public void multisportIsNotLastWeek() {
+        // A MultiSport bérlet neve tartalmazza a „mult"-ot. Szó belsejében az
+        // nem múlt hét – egy hetet csúszott volna a bejegyzés.
+        long now = System.currentTimeMillis();
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(now);
+        int today = (c.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;   // H=0..V=6
+        int kedd = (today - 1 + 7) % 7;                                 // a legutóbbi kedd
+        assertEquals(kedd, Activities.parse("multisport kedden 60 perc kondi",
+                now).offset);
+        // A valódi „múlt kedden" viszont továbbra is egy héttel korábbi.
+        assertEquals(kedd + 7,
+                Activities.parse("múlt kedden 60 perc kondi", now).offset);
+    }
 }
