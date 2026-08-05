@@ -98,6 +98,7 @@ public final class Theme {
         planCache = f;
         return f;
     }
+    public static String getStr(Context c, String key, String def) { return p(c).getString(key, def); }
     public static void setStr(Context c, String key, String v) { p(c).edit().putString(key, v).apply(); bumpRev(c); }
     /** Élő (mozgó) háttér-animáció be/ki. */
     public static boolean liveBg(Context c) { return p(c).getBoolean("livebg", true); }

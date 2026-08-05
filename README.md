@@ -135,6 +135,11 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   1,25 kg, felette 2,5 kg). A tempót a leggyengébb sorozat szabja meg, a
   bemelegítő sorozatok nem számítanak bele. Három egyforma alkalom után
   visszavételt javasol. Egy koppintás, és beírja a sorozatokat
+- 📅 **Edzésnapok (sablonok)**: hat beépített nap (Tolónap, Húzónap, Lábnap,
+  Felsőtest, Alsótest, Teljes test) és saját napok. A nap megnyitva
+  gyakorlatonként ott a mai progresszió-javaslat és a bemelegítő rámpa,
+  egy koppintással beírható – eddig minden gyakorlatot külön kellett
+  kikeresni, és a napot fejben tartani
 - **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
   progresszió-javaslattal együtt – ha a heti fókuszban áll valami mára, az
   megy elöl („🎯 Evezés · 3 × 10 · 52,5 kg") – csak
@@ -272,7 +277,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~466 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~475 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

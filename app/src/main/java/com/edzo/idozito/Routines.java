@@ -1,0 +1,193 @@
+package com.edzo.idozito;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Edzésnapok: melyik gyakorlatokat csinálod egy szuszra.
+ *
+ * Az app eddig gyakorlatonként gondolkodott: mit nyomj ma ebből az egy
+ * gyakorlatból. A teremben viszont senki nem egy gyakorlatot csinál – van egy
+ * lábnapja, egy tolónapja, és azt ismétli hétről hétre. A napot eddig fejben
+ * kellett tartani, és minden gyakorlatot külön kikeresni.
+ *
+ * A tárolt alak szándékosan egyszerű szöveg (`név|gyak1;gyak2|név|…`), hogy egy
+ * beállítás-kulcsba beférjen, és a mentés ne tudjon félig sikerülni. A
+ * gyakorlatneveket NEM ellenőrizzük a felismerő listája ellen: aki saját nevet
+ * ír, annak is működnie kell.
+ *
+ * Tiszta Java (nincs Context), hogy egységteszttel lefedhető legyen.
+ */
+public final class Routines {
+
+    private Routines() {
+    }
+
+    /** Ennél több gyakorlat egy napra már nem edzés, hanem lista. */
+    public static final int MAX_MOVES = 12;
+
+    /** Ennél több edzésnapot nem tárolunk. */
+    public static final int MAX_ROUTINES = 12;
+
+    /** A név ennél hosszabb nem fér ki a gombra. */
+    public static final int MAX_NAME = 24;
+
+    public static final class Routine {
+        public final String name;
+        public final List<String> moves;
+
+        Routine(String name, List<String> moves) {
+            this.name = name; this.moves = moves;
+        }
+
+        /** „Tolónap  ·  4 gyakorlat”. */
+        public String label() {
+            return name + "  ·  " + moves.size() + " gyakorlat";
+        }
+
+        /** „Fekvenyomás · Vállból nyomás · Tricepsz”. */
+        public String summary() {
+            StringBuilder sb = new StringBuilder();
+            for (String m : moves) {
+                if (sb.length() > 0) sb.append("  ·  ");
+                sb.append(m);
+            }
+            return sb.toString();
+        }
+    }
+
+    /**
+     * Beépített edzésnapok. A klasszikus felosztások, a felismerő saját
+     * gyakorlatneveivel – így a progresszió-javaslat és a rekordok is
+     * megtalálják őket.
+     */
+    public static List<Routine> builtIn() {
+        List<Routine> out = new ArrayList<>();
+        out.add(of("Tolónap", "Fekvenyomás", "Vállból nyomás", "Tolódzkodás", "Tricepsz"));
+        out.add(of("Húzónap", "Felhúzás", "Húzódzkodás", "Evezés", "Bicepsz"));
+        out.add(of("Lábnap", "Guggolás", "Lábtolás", "Kitörés", "Combhajlítás", "Vádliemelés"));
+        out.add(of("Felsőtest", "Fekvenyomás", "Evezés", "Vállból nyomás", "Lehúzás",
+                "Bicepsz", "Tricepsz"));
+        out.add(of("Alsótest", "Guggolás", "Felhúzás", "Kitörés", "Lábnyújtás", "Csípőemelés"));
+        out.add(of("Teljes test", "Guggolás", "Fekvenyomás", "Evezés", "Plank"));
+        return out;
+    }
+
+    private static Routine of(String name, String... moves) {
+        List<String> m = new ArrayList<>();
+        for (String s : moves) m.add(s);
+        return new Routine(name, m);
+    }
+
+    /**
+     * Tárolt alak beolvasása. Hibás sorok némán kimaradnak: egy elrontott
+     * beállítás ne vigye magával a többi edzésnapot.
+     */
+    public static List<Routine> parse(String stored) {
+        List<Routine> out = new ArrayList<>();
+        if (stored == null || stored.trim().isEmpty()) return out;
+        String[] parts = stored.split("\\|");
+        for (int i = 0; i + 1 < parts.length; i += 2) {
+            String name = clean(parts[i]);
+            if (name.isEmpty()) continue;
+            List<String> moves = new ArrayList<>();
+            for (String m : parts[i + 1].split(";")) {
+                String t = clean(m);
+                if (!t.isEmpty() && !moves.contains(t) && moves.size() < MAX_MOVES) moves.add(t);
+            }
+            if (moves.isEmpty()) continue;
+            boolean dup = false;
+            for (Routine r : out) if (r.name.equalsIgnoreCase(name)) dup = true;
+            if (dup || out.size() >= MAX_ROUTINES) continue;
+            out.add(new Routine(name, moves));
+        }
+        return out;
+    }
+
+    /** Tárolható alak. A szeparátorok a nevekből kiesnek. */
+    public static String format(List<Routine> routines) {
+        if (routines == null || routines.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        int n = 0;
+        for (Routine r : routines) {
+            if (r == null || r.moves.isEmpty() || n >= MAX_ROUTINES) continue;
+            String name = clean(r.name);
+            if (name.isEmpty()) continue;
+            if (sb.length() > 0) sb.append('|');
+            sb.append(name).append('|');
+            int k = 0;
+            for (String m : r.moves) {
+                String t = clean(m);
+                if (t.isEmpty() || k >= MAX_MOVES) continue;
+                if (k > 0) sb.append(';');
+                sb.append(t);
+                k++;
+            }
+            n++;
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Edzésnap hozzáadása vagy felülírása név szerint.
+     *
+     * Az azonos nevű nap CSERÉLŐDIK, nem duplázódik: aki ugyanazt a nevet írja
+     * be újra, az javítani akar, nem két egyforma napot csinálni.
+     */
+    public static String add(String stored, String name, List<String> moves) {
+        String n = clean(name);
+        if (n.length() > MAX_NAME) n = n.substring(0, MAX_NAME).trim();
+        if (n.isEmpty() || moves == null) return stored == null ? "" : stored;
+        List<String> clean = new ArrayList<>();
+        for (String m : moves) {
+            String t = clean(m);
+            if (!t.isEmpty() && !clean.contains(t) && clean.size() < MAX_MOVES) clean.add(t);
+        }
+        if (clean.isEmpty()) return stored == null ? "" : stored;
+        List<Routine> list = parse(stored);
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).name.equalsIgnoreCase(n)) { list.remove(i); break; }
+        list.add(0, new Routine(n, clean));
+        return format(list);
+    }
+
+    /** Edzésnap törlése név szerint. */
+    public static String remove(String stored, String name) {
+        String n = clean(name);
+        List<Routine> list = parse(stored);
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).name.equalsIgnoreCase(n)) { list.remove(i); break; }
+        return format(list);
+    }
+
+    /** A megadott nevű edzésnap, vagy null. A beépítettek is beleszámítanak. */
+    public static Routine byName(String stored, String name) {
+        String n = clean(name);
+        if (n.isEmpty()) return null;
+        for (Routine r : all(stored)) if (r.name.equalsIgnoreCase(n)) return r;
+        return null;
+    }
+
+    /**
+     * Minden választható edzésnap: elöl a sajátok, utánuk a beépítettek.
+     *
+     * A saját név elnyomja az azonos nevű beépítettet – aki átírja a
+     * „Lábnap"-ot, a sajátját akarja látni, nem kettőt.
+     */
+    public static List<Routine> all(String stored) {
+        List<Routine> out = new ArrayList<>(parse(stored));
+        for (Routine b : builtIn()) {
+            boolean dup = false;
+            for (Routine r : out) if (r.name.equalsIgnoreCase(b.name)) dup = true;
+            if (!dup) out.add(b);
+        }
+        return out;
+    }
+
+    /** A szeparátorok és a sortörés kiesnek, a szóközök összeérnek. */
+    private static String clean(String s) {
+        if (s == null) return "";
+        return s.replace('|', ' ').replace(';', ' ').replace('\n', ' ')
+                .replaceAll("\\s+", " ").trim();
+    }
+}

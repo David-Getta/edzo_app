@@ -88,6 +88,11 @@ public class StrengthActivity extends Activity {
         col.addView(orm);
         col.addView(gap(10));
 
+        Button days = ghost("📅  Edzésnapok (sablonok)");
+        days.setOnClickListener(v -> routineSheet());
+        col.addView(days);
+        col.addView(gap(10));
+
         Button warm = ghost("🔥  Bemelegítő rámpa");
         warm.setOnClickListener(v -> openWarmupCalc());
         col.addView(warm);
@@ -559,6 +564,13 @@ public class StrengthActivity extends Activity {
     // ---------- Új bejegyzés ----------
 
     void addEntryDialog(final StrengthLog.Entry edit) {
+        addEntryDialog(edit, null);
+    }
+
+    /**
+     * @param preset előre kitöltött gyakorlatnév (edzésnap-sablonból), vagy null
+     */
+    void addEntryDialog(final StrengthLog.Entry edit, final String preset) {
         final LinearLayout box = vbox();
         box.setPadding(dp(10), dp(6), dp(10), 0);
 
@@ -627,6 +639,13 @@ public class StrengthActivity extends Activity {
             }
         } else {
             for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
+        }
+        // Edzésnap-sablonból nyitva: a név már megvan, a legutóbbi alkalom és a
+        // javaslat is jöjjön magától – a figyelő beállítása UTÁN, hogy lásson.
+        if (edit == null && preset != null && !preset.trim().isEmpty()) {
+            nameEt.setText(preset);
+            nameEt.setSelection(preset.length());
+            prefillFromLast(preset, setsBox, repsList, wList);
         }
 
         Button more = ghost("＋  Sorozat");
@@ -922,6 +941,104 @@ public class StrengthActivity extends Activity {
         String res = "Oldalanként:\n" + plan;
         if (rem > 0.01) res += "\n(≈ nem jön ki pontosan, marad " + Progression.kg(rem) + " kg/oldal)";
         return res;
+    }
+
+    // ---------- Edzésnapok (sablonok) ----------
+
+    static final String ROUTINE_KEY = "strength_routines";
+
+    /** A választható edzésnapok: elöl a sajátok, utánuk a beépítettek. */
+    void routineSheet() {
+        String stored = Theme.getStr(this, ROUTINE_KEY, "");
+        java.util.List<Routines.Routine> all = Routines.all(stored);
+        Sheet sh = new Sheet(this, "Edzésnapok", "Melyik gyakorlatokat csinálod egy szuszra?");
+        for (final Routines.Routine r : all)
+            sh.addRow("📅", r.label(), r.summary(), false, true, () -> routineDaySheet(r.name));
+        sh.addRow("＋", "Saját edzésnap", "Név és gyakorlatok – a sajátod elnyomja az "
+                + "azonos nevű beépítettet.", false, true, this::newRoutineSheet);
+        sh.addCancel().show();
+    }
+
+    /**
+     * Egy edzésnap gyakorlatai, mindegyik mellett a mai javaslattal.
+     *
+     * A lényeg a sorrend és a súly egy helyen: eddig minden gyakorlatot külön
+     * kellett kikeresni, és a napot fejben tartani.
+     */
+    void routineDaySheet(String name) {
+        String stored = Theme.getStr(this, ROUTINE_KEY, "");
+        final Routines.Routine r = Routines.byName(stored, name);
+        if (r == null) return;
+        java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
+        Sheet sh = new Sheet(this, r.name, "Koppints egy gyakorlatra, és beírom.");
+        for (final String m : r.moves) {
+            Progression.Suggestion sg = Progression.next(log, m);
+            String sub = sg == null ? "Még nincs mihez mérni – írd be az elsőt."
+                    : sg.headline();
+            if (sg != null && !sg.bodyweight) {
+                java.util.List<Warmup.Set> ramp =
+                        Warmup.forWork(sg.weight, Warmup.barFor(m));
+                if (!ramp.isEmpty()) sub += "\n🔥 " + Warmup.summary(ramp);
+            }
+            sh.addRow("🏋", m, sub, false, true, () -> addEntryDialog(null, m));
+        }
+        // Törölni csak a SAJÁT napot lehet – a byName a beépítetteket is
+        // megtalálja, ezért itt a tárolt listát nézzük közvetlenül.
+        boolean own = false;
+        for (Routines.Routine o : Routines.parse(stored))
+            if (o.name.equalsIgnoreCase(r.name)) own = true;
+        if (own)
+            sh.addRow("🗑", "Törlöm ezt az edzésnapot", "A beépített változat marad.",
+                    false, true, () -> {
+                        Theme.setStr(this, ROUTINE_KEY, Routines.remove(
+                                Theme.getStr(this, ROUTINE_KEY, ""), r.name));
+                        Toast.makeText(this, "Törölve: " + r.name, Toast.LENGTH_SHORT).show();
+                    });
+        sh.addCancel().show();
+    }
+
+    /** Saját edzésnap felvétele: név + vesszővel elválasztott gyakorlatok. */
+    void newRoutineSheet() {
+        LinearLayout box = vbox();
+        box.setPadding(dp(10), dp(4), dp(10), 0);
+
+        box.addView(text("Az edzésnap neve", 12.5f, MUTED, false));
+        final EditText nameEt = new EditText(this);
+        nameEt.setHint("pl. Lábnap");
+        nameEt.setHintTextColor(MUTED);
+        nameEt.setTextColor(TXT);
+        nameEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        box.addView(nameEt, lp());
+        box.addView(gap(10));
+
+        box.addView(text("Gyakorlatok vesszővel elválasztva", 12.5f, MUTED, false));
+        final EditText movesEt = new EditText(this);
+        movesEt.setHint("Guggolás, Kitörés, Vádliemelés");
+        movesEt.setHintTextColor(MUTED);
+        movesEt.setTextColor(TXT);
+        movesEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        box.addView(movesEt, lp());
+        box.addView(gap(6));
+        box.addView(text("Saját nevet is írhatsz – a felismerő listája nem korlátoz.",
+                12, MUTED, false));
+
+        new Sheet(this, "Saját edzésnap", "Legfeljebb " + Routines.MAX_MOVES + " gyakorlat")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    java.util.List<String> moves = new java.util.ArrayList<>();
+                    for (String m : movesEt.getText().toString().split(","))
+                        if (!m.trim().isEmpty()) moves.add(m.trim());
+                    String next = Routines.add(Theme.getStr(this, ROUTINE_KEY, ""),
+                            nameEt.getText().toString(), moves);
+                    if (next.equals(Theme.getStr(this, ROUTINE_KEY, ""))) {
+                        Toast.makeText(this, "Név és legalább egy gyakorlat kell.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Theme.setStr(this, ROUTINE_KEY, next);
+                    Toast.makeText(this, "Elmentve.", Toast.LENGTH_SHORT).show();
+                })
+                .addCancel().show();
     }
 
     // ---------- Bemelegítő rámpa ----------
