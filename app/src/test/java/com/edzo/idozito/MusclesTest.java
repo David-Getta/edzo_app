@@ -183,4 +183,37 @@ public class MusclesTest {
         // Egyetlen csoportból nincs mit egyensúlyozni.
         assertTrue(Muscles.suggestForToday(log(at("Guggolás", 30)), now(), 3).isEmpty());
     }
+    @Test public void theWeeklyPlanBeatsTheBalanceHeuristic() {
+        // Ma hát-nap van a heti fókusz szerint, pedig a hát nem maradt ki:
+        // a felhasználó terve erősebb, mint a heurisztika.
+        List<StrengthLog.Entry> log = log(
+                at("Guggolás", 1), at("Evezés", 2), at("Fekvenyomás", 3));
+        List<String> s = Muscles.suggestForToday(log, now(), 3, "Hát");
+        assertTrue("a tervezett csoport nincs elöl: " + s, !s.isEmpty());
+        assertEquals("Evezés", s.get(0));
+        // Fókusz nélkül ugyanez a napló nem ad javaslatot (kiegyensúlyozott hét).
+        assertTrue(Muscles.suggestForToday(log, now(), 3).isEmpty());
+    }
+
+    @Test public void anUnknownFocusFallsBackToTheBalance() {
+        List<StrengthLog.Entry> log = log(
+                at("Guggolás", 1), at("Evezés", 30), at("Fekvenyomás", 30));
+        // „Kardió" nem izomcsoport: marad a kimaradt csoportok szerinti javaslat.
+        List<String> s = Muscles.suggestForToday(log, now(), 3, "Kardió");
+        assertTrue(!s.isEmpty());
+        for (String n : s)
+            assertTrue("sosem csinálta: " + n, n.equals("Evezés") || n.equals("Fekvenyomás"));
+        // Null fókusz ugyanaz, mint a régi hívás.
+        assertEquals(Muscles.suggestForToday(log, now(), 3),
+                Muscles.suggestForToday(log, now(), 3, null));
+    }
+
+    @Test public void aPlannedGroupIsSuggestedEvenForASingleGroupLog() {
+        // Aki csak lábat edz, annak az egyensúly-javaslat hallgat – a terv nem.
+        List<StrengthLog.Entry> log = log(at("Guggolás", 4), at("Kitörés", 9));
+        assertTrue(Muscles.suggestForToday(log, now(), 3).isEmpty());
+        List<String> s = Muscles.suggestForToday(log, now(), 3, "Láb");
+        assertEquals(1, s.size());
+        assertEquals("Kitörés", s.get(0));   // a régebben csinált
+    }
 }

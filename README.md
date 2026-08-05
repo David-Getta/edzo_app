@@ -105,7 +105,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   bemelegítő sorozatok nem számítanak bele. Három egyforma alkalom után
   visszavételt javasol. Egy koppintás, és beírja a sorozatokat
 - **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
-  progresszió-javaslattal együtt („🎯 Evezés · 3 × 10 · 52,5 kg") – csak
+  progresszió-javaslattal együtt – ha a heti fókuszban áll valami mára, az
+  megy elöl („🎯 Evezés · 3 × 10 · 52,5 kg") – csak
   olyat ajánl, amit már csináltál, hogy legyen mihez mérni a súlyt
 - **„Mikor csináltad utoljára"** minden gyakorlatnál, és figyelmeztetés arra,
   ami két hete kimaradt
@@ -216,7 +217,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~380 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~383 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

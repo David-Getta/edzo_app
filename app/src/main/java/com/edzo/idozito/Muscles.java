@@ -132,10 +132,24 @@ public final class Muscles {
      */
     public static List<String> suggestForToday(List<StrengthLog.Entry> newestFirst,
                                                long now, int max) {
+        return suggestForToday(newestFirst, now, max, null);
+    }
+
+    /**
+     * @param preferred a mai napra tervezett izomcsoport (heti fókusz), vagy null.
+     *                  A felhasználó terve erősebb, mint az egyensúly-heurisztika:
+     *                  ha ma hát-nap van, akkor hát-gyakorlat jöjjön elöl, akkor
+     *                  is, ha a hét eddig kiegyensúlyozott volt.
+     */
+    public static List<String> suggestForToday(List<StrengthLog.Entry> newestFirst,
+                                               long now, int max, String preferred) {
         List<String> out = new ArrayList<>();
         if (newestFirst == null || max <= 0) return out;
         LinkedHashMap<String, Integer> bal = weekBalance(newestFirst, now, 7);
-        if (bal.size() < 2) return out;     // egy csoportból nincs mit egyensúlyozni
+        if (bal.isEmpty()) return out;
+        // A tervezett csoport akkor is számít, ha csak egy csoportot edz valaki:
+        // ilyenkor az egyensúly-javaslat hallgat, a terv viszont nem.
+        if (preferred == null && bal.size() < 2) return out;
 
         // Gyakorlatonként a legutóbbi alkalom. A napló legújabbal kezdődik,
         // de a hívó sorrendjére nem támaszkodunk.
@@ -146,17 +160,24 @@ public final class Muscles {
             if (prev == null || e.ts > prev) lastSeen.put(e.name, e.ts);
         }
 
-        for (String g : GROUPS) {
+        // A tervezett csoport megy elöl, utána a héten kimaradtak.
+        List<String> order = new ArrayList<>();
+        String plan = preferred == null ? null : groupOf(preferred);
+        if (plan != null) order.add(plan);
+        for (String g : GROUPS) if (!order.contains(g)) order.add(g);
+
+        for (String g : order) {
             if (out.size() >= max) break;
             Integer n = bal.get(g);
-            if (n == null || n > 0) continue;      // nem maradt ki
+            if (n == null) continue;               // sosem csinálta ezt a csoportot
+            if (n > 0 && !g.equals(plan)) continue; // nem maradt ki, és nem is tervezett
             String best = null;
             long bestTs = Long.MAX_VALUE;
             for (java.util.Map.Entry<String, Long> e : lastSeen.entrySet()) {
                 if (!g.equals(groupOf(e.getKey()))) continue;
                 if (e.getValue() < bestTs) { bestTs = e.getValue(); best = e.getKey(); }
             }
-            if (best != null) out.add(best);
+            if (best != null && !out.contains(best)) out.add(best);
         }
         return out;
     }

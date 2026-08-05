@@ -197,11 +197,19 @@ public class StrengthActivity extends Activity {
      */
     void addSuggestion(LinearLayout inner) {
         List<StrengthLog.Entry> log = StrengthLog.load(this);
-        List<String> picks = Muscles.suggestForToday(log, System.currentTimeMillis(), 3);
+        // A heti fókusz erősebb, mint az egyensúly-heurisztika: ha ma hát-nap
+        // van, a hát jöjjön elöl akkor is, ha a hét eddig kiegyensúlyozott.
+        int dow = (java.util.Calendar.getInstance()
+                .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+        String focus = Weekplan.forDay(Theme.planFocus(this), dow);
+        List<String> picks = Muscles.suggestForToday(log, System.currentTimeMillis(), 3,
+                focus.isEmpty() ? null : focus);
         if (picks.isEmpty()) return;
 
         inner.addView(gap(12));
-        inner.addView(text("Mai ajánlat a kimaradt izomcsoportokra", 12, MUTED, true));
+        inner.addView(text(focus.isEmpty()
+                ? "Mai ajánlat a kimaradt izomcsoportokra"
+                : "Mai ajánlat · " + focus, 12, MUTED, true));
         for (final String name : picks) {
             Progression.Suggestion s = Progression.next(log, name);
             String line = "🎯  " + name + (s != null ? "  ·  " + s.headline() : "");
