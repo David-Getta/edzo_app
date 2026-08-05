@@ -295,7 +295,9 @@ public final class Routines {
      * csinált – a beépített sablonok közül az, amit sosem használt, nem „régi”,
      * hanem nem az övé.
      *
-     * Legalább két használt nap kell: eggyel nincs mit sorba rakni.
+     * Legalább két használt nap kell: eggyel nincs mit sorba rakni. És ha MA
+     * már volt edzésnap, a válasz null – aki ma megcsinálta a lábat, annak ma
+     * nem a húzónapot kell ajánlani.
      *
      * @param list  a választható edzésnapok
      * @param ts    bejegyzésenként az időbélyeg
@@ -309,6 +311,9 @@ public final class Routines {
             if (r == null) continue;
             int ago = lastDone(r.moves, ts, names, now);
             if (ago < 0 || ago > ROTATION_DAYS) continue;
+            // Ma már megvolt egy edzésnap: akkor ma nincs mit „soron” ajánlani.
+            // A következő nap holnap jön, és holnap magától ki is jön belőle.
+            if (ago == 0) return null;
             used++;
             if (ago > bestAgo) { bestAgo = ago; best = r.name; }
         }

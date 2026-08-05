@@ -239,6 +239,9 @@ public class RoutinesTest {
         String[] oldNames = {"Fekvenyomás", "Vállból nyomás",
                 "Guggolás", "Lábtolás", "Kitörés"};
         assertNull(Routines.nextUp(all, old, oldNames, now));
+        // Ha MA már volt edzésnap, ma nincs mit soron ajánlani.
+        long[] today = {1000 * d, 1000 * d, 997 * d, 997 * d, 995 * d, 995 * d, 995 * d};
+        assertNull(Routines.nextUp(all, today, names, now));
         // Hibás bemenet nem borít.
         assertNull(Routines.nextUp(null, ts, names, now));
         assertNull(Routines.nextUp(all, null, null, now));
