@@ -1136,6 +1136,21 @@ public final class Activities {
      * kerül, ha a felhasználó megmondta, mikor volt („tegnap este kondi").
      */
     private static int findHour(String s) {
+        // A kimondott óra pontosabb minden napszaknál: a „reggel 6-kor" hatot
+        // jelent, nem nyolcat. A délutáni napszak a 12 alatti órát átteszi
+        // délutánra („este 8-kor" = 20 óra), mert este nincs nyolc óra.
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,2})\\s?-?(?:kor|orakor)(?![a-z])").matcher(s);
+        if (m.find()) {
+            int h = Integer.parseInt(m.group(1));
+            if (h >= 0 && h <= 23) {
+                if (h < 12) {
+                    int before = findHour(s.substring(0, m.start()));
+                    if (before >= 15) h += 12;
+                }
+                return h;
+            }
+        }
         String[][] tod = {{"reggel", "8"}, {"delelott", "10"}, {"delutan", "16"},
                 {"este", "19"}, {"esti", "19"}, {"ejszaka", "22"}, {"ejjel", "22"}};
         for (String[] w : tod) {
@@ -1473,6 +1488,8 @@ public final class Activities {
                 int p = s.indexOf(unit, from);
                 if (p < 0) break;
                 from = p + 1;
+                // A „7 órakor" időpont, nem hét óra hosszú edzés.
+                if (unit.equals("ora") && s.startsWith("orakor", p)) continue;
                 // A „fél óra" és a „másfél óra" nem egész számnév – külön ág.
                 if (unit.equals("ora")) {
                     int we = p;

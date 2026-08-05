@@ -136,4 +136,26 @@ public class ActivitiesTimestampTest {
             for (long t : Activities.timestamps(Activities.parse(q), now))
                 assertTrue("jövőbeli időbélyeg: " + q, t <= now);
     }
+
+    @Test public void theSpokenClockTimeBeatsThePartOfDay() {
+        // A „reggel 6-kor" hatot jelent, nem a reggel általános nyolcát.
+        assertEquals(6, Activities.parse("ma reggel 6-kor futottam").hour);
+        assertEquals(18, Activities.parse("tegnap 18-kor kondi").hour);
+        assertEquals(23, Activities.parse("23-kor futottam").hour);
+        assertEquals(6, Activities.parse("ma 6 kor futottam").hour);
+        // Este nincs nyolc óra: a délutáni napszak átteszi a 12 alattit.
+        assertEquals(20, Activities.parse("este 8-kor edzettem").hour);
+        assertEquals(17, Activities.parse("délután 5-kor futás").hour);
+        // Napszak óraszám nélkül marad a régi.
+        assertEquals(19, Activities.parse("tegnap este kondi").hour);
+        assertEquals(12, Activities.parse("8 korsó sört ittam és futottam").hour);
+    }
+
+    @Test public void anHourOfTheClockIsNotADuration() {
+        // A „7 órakor" időpont – korábban hét óra hosszú úszás lett belőle.
+        assertEquals(7, Activities.parse("reggel 7 órakor úszás").hour);
+        assertEquals(45, Activities.parse("reggel 7 órakor úszás").plans.get(0).minutes);
+        // A valódi időtartam nem sérül.
+        assertEquals(120, Activities.parse("2 óra úszás").plans.get(0).minutes);
+    }
 }
