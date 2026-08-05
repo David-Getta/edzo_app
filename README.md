@@ -137,7 +137,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 🐺 Blaze, a kabalafigura
 - **Heti szokás**: „kedd van – ilyenkor általában úszás szokott lenni" (csak
   ha a nap tényleg egyértelműen egy sportághoz kötődik)
-- **Élő köszöntés**: belépéskor Blaze beugrik, integet és kacsint egyet
+- **Élő köszöntés**: belépéskor Blaze beugrik, integet, kacsint, majd halkan
+  „lélegzik"; a kezdőlapi kártyáján koppintásra is integet egyet
   (a díszítő animációk kapcsolója ezt is némítja)
 - **Helyzet-tudatos köszöntés** belépéskor (veszélyben lévő széria, félbehagyott
   kihívás, mai eredmény, hátralévő fehérje)

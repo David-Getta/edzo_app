@@ -164,6 +164,7 @@ public final class Ux {
      */
     private static void greetAnim(final View avatar, final View wink) {
         if (!Theme.animEnabled(avatar.getContext())) return;
+        if (avatar.getWidth() == 0 || avatar.getHeight() == 0) return;
         // A billegés a talp körül forog: a fej körüli forgás úgy nézne ki,
         // mintha Blaze elesne.
         avatar.setPivotX(avatar.getWidth() / 2f);
@@ -193,8 +194,10 @@ public final class Ux {
 
     /** A kacsintás: egy rövid összehúzódás, és felvillan a jel. */
     private static void winkAnim(final View avatar, final View wink) {
+        if (wink == null) { breathe(avatar, 0); return; }
         avatar.animate().scaleY(0.9f).scaleX(1.05f).setDuration(110)
-                .withEndAction(() -> avatar.animate().scaleY(1f).scaleX(1f).setDuration(160).start())
+                .withEndAction(() -> avatar.animate().scaleY(1f).scaleX(1f).setDuration(160)
+                        .withEndAction(() -> breathe(avatar, 0)).start())
                 .start();
         wink.setScaleX(0.4f);
         wink.setScaleY(0.4f);
@@ -203,6 +206,34 @@ public final class Ux {
                 .withEndAction(() -> wink.animate().alpha(0f).setStartDelay(620)
                         .setDuration(260).start())
                 .start();
+    }
+
+    /**
+     * Halk „lélegzés" a köszönés után: Blaze nem fagy vissza állóképpé.
+     *
+     * Szándékosan véges (néhány lélegzet), nem végtelen ciklus: a kártya pár
+     * másodperc múlva eltűnik, és egy futó animátor egy levett nézeten csak
+     * a memóriát tartaná életben.
+     */
+    private static void breathe(final View avatar, final int step) {
+        if (step >= 3 || avatar.getParent() == null) return;
+        avatar.animate().scaleX(1.045f).scaleY(1.045f).setDuration(620)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .withEndAction(() -> avatar.animate().scaleX(1f).scaleY(1f).setDuration(620)
+                        .setInterpolator(new AccelerateDecelerateInterpolator())
+                        .withEndAction(() -> breathe(avatar, step + 1)).start())
+                .start();
+    }
+
+    /**
+     * Blaze életre keltése bárhol: beugrik, integet, kacsint.
+     *
+     * @param avatar a kép (vagy emoji) nézete
+     * @param wink   a kacsintás-jel; lehet null, ilyenkor csak az integetés megy
+     */
+    public static void blazeGreet(final View avatar, final View wink) {
+        if (avatar == null) return;
+        avatar.post(() -> greetAnim(avatar, wink));
     }
 
     /** Lassan „élő" háttér: finom, végtelenített zoom + pásztázás. Kikapcsolható a Beállításokban. */

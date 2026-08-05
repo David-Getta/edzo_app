@@ -120,6 +120,7 @@ public class MainActivity extends Activity {
     TextView workSoundLabel, restSoundLabel;
     TextView programLabel, programPreview, workRowTitle, workRowSub;
     LinearLayout programCard;
+    View mascotFace;   // Blaze képe a kabala-kártyán (koppintásra integet)
     Switch distanceSwitch, precountSwitch, voiceSwitch;
     TextView phaseLabel, timeText, roundInfo, distanceText;
     TextView exText, exDesc, nextText, recordText, levelText, blazePraise;
@@ -900,12 +901,14 @@ public class MainActivity extends Activity {
                 }
             });
             badge.addView(iv, new FrameLayout.LayoutParams(-1, -1));
+            mascotFace = iv;
         } else {
             TextView face = new TextView(this);
             face.setText(Mascot.FACE);
             face.setTextSize(30);
             face.setGravity(Gravity.CENTER);
             badge.addView(face, new FrameLayout.LayoutParams(-1, -1));
+            mascotFace = face;
         }
         mascotMoodTv = new TextView(this);
         mascotMoodTv.setTextSize(15);
@@ -969,6 +972,8 @@ public class MainActivity extends Activity {
                 return;
             }
             mascotBody.setText(Mascot.pep());
+            // Blaze nem csak beszél: koppintásra integet is egyet.
+            Ux.blazeGreet(mascotFace, null);
             // Pár másodperc után visszaáll az állapot szerinti üzenetre.
             mascotBody.postDelayed(this::refreshMascot, 8000);
         });
