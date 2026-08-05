@@ -333,16 +333,16 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
-            {"✍️", "Mondatból is megy", "Étkezés, edzés-előzmény, erősítő sorozat és időzítő – mind beírható folyó szövegként. A Könyvtárban egy helyen látszik, mit ért az app."},
-            {"⏱", "Időzítő mondatból", "„3 kör 40 mp munka 20 mp pihenő\", „8x20/10\", „tabata\", „20 perc alatt 40/20\" – egy koppintással sablonként is elmenthető."},
-            {"🏋", "Sorozatok mondatból", "„guggolás 5x5 80 kg\", „ötször ötöt\", „bicepsz 12-10-8 15 kg\" – 29 gyakorlat és gép, a jelzős változatokkal."},
-            {"🎽", "Heti mozgás-cél", "Az egészségügyi ajánlás heti 150 perce haladássávval a kezdőlapon, a widgetben és a heti összegzésben. Két jelvény jár érte."},
+            {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát"). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
+            {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
+            {"🍳", "A szokásos étkezésed", "Ha egy napszakban háromszor ugyanazt naplóztad, az app magától felajánlja – egy koppintás."},
+            {"🏆", "Csúcsaid", "Leghosszabb edzés, leghosszabb táv, leggyorsabb tempó, legtöbb lépés és a legnagyobb napi volumen, dátummal."},
+            {"📊", "Ez a hónap", "Az előző hónap UGYANANNYI napjához mérve – a folyó hónap nem tűnik visszaesésnek attól, hogy még nem ért véget."},
+            {"🗓", "Melyik napokon edzel", "12 hét bontása a hét napjaira, és a heti szokásod az esti üzenetben („kedd van – ilyenkor általában úszás")."},
+            {"🔍", "Keresés az előzményekben", "Sportág, program neve és jegyzet szerint – a szótövekkel együtt, tehát a „bringa" is talál."},
+            {"🍽", "Edzés-kalória a célban", "Kapcsolható: aki sokat edz, annál a fix cél napokon át nagy mínuszt jelentene."},
+            {"✍️", "Mondatból is megy", "Étkezés, edzés-előzmény, erősítő sorozat és időzítő – mind beírható folyó szövegként, immár időponttal („tegnap húzódzkodás 4x8")."},
             {"⚠️", "Terhelés-figyelés", "Az e heti edzésmennyiség a megelőző négy hét átlagához mérve – a sérülések többsége nem a sok edzésből jön, hanem a hirtelen többől."},
-            {"💡", "Mit egyek még?", "A maradék kalóriára és a hiányzó fehérjére három konkrét ötlet adaggal, egy koppintással naplózva."},
-            {"🎯", "Mai ajánlat", "A héten kimaradt izomcsoportokból egy-egy gyakorlat a progresszió-javaslattal."},
-            {"⏰", "Emlékeztetők", "Több emlékeztető saját üzenettel és napválasztással (hétköznap, hétvége vagy pontos napok)."},
-            {"⚖️", "Testsúly-tendencia", "kg/hét lineáris illesztéssel, és becslés a fogyási célig hátralévő időre."},
-            {"🕗", "Étkezési ablak", "Az első és az utolsó étkezés között eltelt idő – időszakos böjthöz, a statisztikában átlaggal."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
         for (String[] it : items)
