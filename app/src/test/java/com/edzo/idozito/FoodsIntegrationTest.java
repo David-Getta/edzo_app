@@ -447,4 +447,25 @@ public class FoodsIntegrationTest {
         assertEquals("Leves (átlag) 400g", summary("leves"));
         assertEquals("Bableves 400g", summary("bableves"));
     }
+
+    @Test public void theShortStemsDoNotCatchEverydayWords() {
+        // A szótő-illesztés szó belsejében is talál, ezért a rövid, ütköző
+        // alakok szándékosan hiányoznak a tövek közül. A „koleszban ettem"
+        // nem köles, az „irodában ettem" nem író.
+        assertEquals("Szendvics 150g", summary("koleszban ettem egy szendvicset"));
+        assertEquals("", summary("koleszterin"));
+        assertEquals("Alma 150g", summary("irodában ettem egy almát"));
+        // A ragozott alakok viszont egyértelműek.
+        assertEquals("Hajdina (főtt) 200g", summary("kölest ettem"));
+        assertEquals("Hajdina (főtt) 200g", summary("kölessel"));
+    }
+
+    @Test public void thePlantBasedItemsAreNotTheirAnimalCounterparts() {
+        // A növényi sajt fehérjéje töredéke a trappistáénak.
+        assertEquals("Növényi sajt 30g", summary("vegán sajt"));
+        assertEquals("Sajt (trappista) 30g", summary("sajt"));
+        // Tengeri alga és miszó: kalóriában a könnyű végén.
+        assertEquals("Savanyúság 100g", summary("wakame"));
+        assertEquals("Húsleves 400g", summary("miso leves"));
+    }
 }

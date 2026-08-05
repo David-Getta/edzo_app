@@ -252,7 +252,9 @@ public final class Foods {
                 "csirkeleves", "csirke leves", "tyukhusleves", "tyukleves",
                 // Az erőleves tiszta húsleves: az „átlagos" leves ötszörös
                 // kalóriát írt rá (200 helyett 40 kcal/100 g).
-                "eroleves", "ero leves", "csontleves", "bouillon"),
+                "eroleves", "ero leves", "csontleves", "bouillon",
+                // A miszó leves is tiszta lé: 35 kcal/100 g körül.
+                "miso leves", "misoleves", "miszo leves"),
         new Food("Kocsonya", 90, 12, 300, "kocsonya", "aszpik"),
         new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
         // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
@@ -342,6 +344,10 @@ public final class Foods {
         new Food("Cottage cheese", 100, 11, 150, "cottage"),
         new Food("Skyr", 65, 11, 150, "skyr"),
         new Food("Tofu", 120, 12, 150, "tofu"),
+        // A növényi sajt kevesebb kalória és lényegesen kevesebb fehérje, mint
+        // a trappista – sajtként számolva a fehérje háromszorosát írtuk volna.
+        new Food("Növényi sajt", 280, 2, 30, "vegan sajt", "vega sajt",
+                "novenyi sajt"),
         new Food("Edamame", 120, 11, 100, "edamame"),
         new Food("Seitan", 140, 25, 100, "seitan", "szejtan"),
         new Food("Tempeh", 190, 19, 100, "tempeh"),
@@ -439,7 +445,9 @@ public final class Foods {
         new Food("Franciasaláta / coleslaw", 170, 2.5, 150,
                 "franciasalata", "francia salata", "coleslaw", "orosz hussalata",
                 "orosz salata", "tojassalata", "kaszinotojas", "majonezes salata"),
-        new Food("Savanyúság", 25, 1, 100, "savanyusag", "savanyu kaposzta", "kimchi"),
+        new Food("Savanyúság", 25, 1, 100, "savanyusag", "savanyu kaposzta", "kimchi",
+                // Tengeri alga: kalóriában a savanyúsághoz áll a legközelebb.
+                "wakame", "nori", "hinar", "tengeri alga"),
         new Food("Spárga", 20, 2.2, 150, "sparga"),
         new Food("Karalábé", 27, 1.7, 150, "karalabe"),
         new Food("Retek", 16, 0.7, 50, "retek", "jegcsapretek"),
@@ -478,7 +486,11 @@ public final class Foods {
         new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkussz", "kuszkusz", "couscous"),
         // A puszta „koles" tő a „koleszos"-ba, „koleszterin"-be is beleesne.
         new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska",
-                "kolest", "koleskasa", "koles kasa", "amarant"),
+                // A puszta „köles" szándékosan NEM szótő: a szótő-illesztés
+                // szó belsejében is talál, és a „koleszterin", „koleszban"
+                // kölessé válna. A ragozott alakok viszont egyértelműek.
+                "kolest", "kolessel", "kolesbol", "koleskasa", "koles kasa",
+                "amarant"),
         new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
