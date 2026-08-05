@@ -333,6 +333,8 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
+            {"🔥", "Bemelegítő rámpa", "A mai munkasúlyhoz üres rúd → 50% → 70% → 85%, felrakható súlyokon. Ott van a mai javaslat mellett és külön kalkulátorként is, a tárcsabontással."},
+            {"💪", "Erő-csúcsok", "A Csúcsaid közt ott a legnehezebb emelésed és a legjobb becsült 1RM-ed, a gyakorlat nevével. A heti összegzés pedig külön szól, ha mindenkori rekord dőlt meg."},
             {"🐺", "Blaze köszönt", "Az app megnyitásakor a köszöntő kártyán integet és kacsint. A kabalára koppintva bármikor újra."},
             {"✍️", "Pontosabb mondatértés", "„1h20 futás”, „fekvenyomás 60x10, 70x8, 80x6”, „1:30 munka 0:30 pihenő”, „száz gramm rizs”, „csirke rizzsel” – és a kimondott óra is számít („ma reggel 6-kor futottam”)."},
             {"📈", "A legnehezebb napod", "A havi étrend-kártya kiírja, melyik hétköznapon eszel a legtöbbet – a havi átlag ezt elrejtené."},
@@ -340,8 +342,6 @@ public class SettingsActivity extends Activity {
             {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
             {"🍳", "A szokásos étkezésed", "Ha egy napszakban háromszor ugyanazt naplóztad, az app magától felajánlja – egy koppintás."},
             {"🏆", "Csúcsaid", "Leghosszabb edzés, leghosszabb táv, leggyorsabb tempó, legtöbb lépés és a legnagyobb napi volumen, dátummal."},
-            {"📊", "Ez a hónap", "Az előző hónap UGYANANNYI napjához mérve – a folyó hónap nem tűnik visszaesésnek attól, hogy még nem ért véget."},
-            {"🗓", "Melyik napokon edzel", "12 hét bontása a hét napjaira, és a heti szokásod az esti üzenetben („kedd van – ilyenkor általában úszás”)."},
             {"⚠️", "Terhelés-figyelés", "Az e heti edzésmennyiség a megelőző négy hét átlagához mérve – a sérülések többsége nem a sok edzésből jön, hanem a hirtelen többől."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");

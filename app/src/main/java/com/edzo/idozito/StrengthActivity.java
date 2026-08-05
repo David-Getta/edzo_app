@@ -420,6 +420,15 @@ public class StrengthActivity extends Activity {
             box.addView(text("Következő alkalom:  " + sug.headline(), 14, Theme.accent(this), true));
             box.addView(gap(3));
             box.addView(text(sug.why, 12, MUTED, false));
+            if (!sug.bodyweight) {
+                java.util.List<Warmup.Set> ramp =
+                        Warmup.forWork(sug.weight, Warmup.barFor(name));
+                if (!ramp.isEmpty()) {
+                    box.addView(gap(6));
+                    box.addView(text("🔥  Bemelegítés:  " + Warmup.summary(ramp),
+                            12, MUTED, false));
+                }
+            }
         }
         new Sheet(this, name, "Fejlődés").addCustom(box).addNeutral("Bezár", () -> {}).show();
     }
