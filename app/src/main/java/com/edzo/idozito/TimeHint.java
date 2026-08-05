@@ -37,7 +37,9 @@ public final class TimeHint {
      *         legpontosabb adat, amink van
      */
     public static long from(String text, long now) {
-        String s = Foods.norm(text == null ? "" : text);
+        // Kiírt számok számjeggyé: a „két napja" ugyanazt jelenti, mint a
+        // „2 napja" – eddig csak az utóbbi kelt át a felismerőn.
+        String s = Hu.digits(Foods.norm(text == null ? "" : text));
         int back = daysBack(s, now);
         int hour = hourOf(s);
         if (back == 0 && hour < 0) return now;
@@ -52,6 +54,9 @@ public final class TimeHint {
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
+        // A kimondott napszak akkor is érvényes, ha még nem járunk ott: aki
+        // délben azt írja, „ma este pizza", a saját estéjéről beszél. A
+        // felhasználó állítását nem írjuk felül az órával.
         return c.getTimeInMillis();
     }
 
@@ -59,6 +64,18 @@ public final class TimeHint {
     static int daysBack(String s, long now) {
         if (s.contains("tegnapelott")) return 2;
         if (s.contains("tegnap")) return 1;
+
+        // „egy hete", „két héttel ezelőtt": hét nap egy hét.
+        java.util.regex.Matcher wm = java.util.regex.Pattern
+                .compile("(\\d{1,2})\\s?h(?:e|é)t(?:e|tel)")
+                .matcher(s);
+        if (wm.find()) {
+            try {
+                int v = Integer.parseInt(wm.group(1));
+                if (v >= 1 && v * 7 <= MAX_BACK) return v * 7;
+            } catch (NumberFormatException ignored) {
+            }
+        }
 
         // „3 napja", „3 nappal ezelőtt".
         java.util.regex.Matcher m = java.util.regex.Pattern
@@ -84,6 +101,14 @@ public final class TimeHint {
         return 0;
     }
 
+    /** Áll-e délutáni/esti napszak-jelző az óraszám előtt? */
+    private static boolean afternoonBefore(String s, int at) {
+        String head = s.substring(0, Math.max(0, at));
+        return head.contains("delutan") || head.contains("este") || head.contains("esti")
+                || head.contains("vacsora") || head.contains("uzsonna")
+                || head.contains("ejjel") || head.contains("ejszaka");
+    }
+
     /** A kimondott napszak órája, vagy -1, ha nincs. */
     static int hourOf(String s) {
         // Pontos óra: „19 órakor", „19:30-kor". A perc nem érdekes: az időpont
@@ -94,7 +119,13 @@ public final class TimeHint {
         if (m.find()) {
             try {
                 int h = Integer.parseInt(m.group(1));
-                if (h >= 0 && h <= 23) return h;
+                if (h >= 0 && h <= 23) {
+                    // A napszak igazít: délután nincs négy óra. A kimondott
+                    // óra pontosabb a napszaknál, de a 12 alatti szám a
+                    // délutáni jelző után délutánt jelent.
+                    if (h < 12 && afternoonBefore(s, m.start())) h += 12;
+                    return h;
+                }
             } catch (NumberFormatException ignored) {
             }
         }

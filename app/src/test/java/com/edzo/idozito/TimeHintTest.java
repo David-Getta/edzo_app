@@ -92,4 +92,38 @@ public class TimeHintTest {
             assertTrue("túl régi: " + q, ts >= now - 15L * 86400000L);
         }
     }
+
+    @Test public void theSpokenNumberOfDaysCounts() {
+        // A „két napja" ugyanaz, mint a „2 napja" – eddig csak az utóbbi
+        // kelt át a felismerőn, a másik a mai napra tette az étkezést.
+        assertEquals(3, dayHour("két napja saláta")[0]);
+        assertEquals(3, dayHour("2 napja saláta")[0]);
+        assertEquals(1, dayHour("négy napja pizza")[0]);
+    }
+
+    @Test public void aWeekAgoIsSevenDays() {
+        assertEquals(29, dayHour("egy hete pizza")[0]);   // július 29.
+        assertEquals(22, dayHour("két hete pizza")[0]);   // július 22.
+        // Két hétnél régebbre nem teszünk vissza semmit.
+        assertEquals(5, dayHour("három hete pizza")[0]);
+    }
+
+    @Test public void theAfternoonPushesTheClockPastNoon() {
+        // Délután nincs négy óra: a napszak igazítja a 12 alatti óraszámot.
+        assertEquals(16, dayHour("délután 4-kor uzsonna")[1]);
+        assertEquals(19, dayHour("tegnap este 7-kor vacsora")[1]);
+        // Reggel viszont marad, ahogy mondták.
+        assertEquals(7, dayHour("reggel 7-kor kávé")[1]);
+        // A 12 fölötti óraszámhoz nem nyúlunk.
+        assertEquals(19, dayHour("tegnap 19 órakor vacsora")[1]);
+    }
+
+    @Test public void theSpokenPartOfDayWinsOverTheClock() {
+        // Aki délben azt írja, „ma este pizza", a saját estéjéről beszél – a
+        // mondat állítását nem írjuk felül azzal, hogy még nincs este.
+        assertEquals(19, dayHour("ma este pizza")[1]);
+        assertEquals(22, dayHour("éjjel ettem csokit")[1]);
+        assertEquals(5, dayHour("ma este pizza")[0]);
+    }
+
 }

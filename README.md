@@ -84,8 +84,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi
-  napra kerül, a napszaknak megfelelő órával – a „3 napja", a „hétfőn" és a
-  kimondott óra („19 órakor") is megy
+  napra kerül, a napszaknak megfelelő órával – a „3 napja", a „két napja",
+  az „egy hete", a „hétfőn" és a kimondott óra („19 órakor", „délután
+  4-kor") is megy
 - **A szokásos étkezésed**: ha egy napszakban háromszor ugyanazt naplóztad,
   az app magától felajánlja egy koppintásra (a sorrend és a mennyiség nem
   számít, csak az, hogy ugyanazok az ételek); az esti emlékeztető is
@@ -268,7 +269,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~457 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~461 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
