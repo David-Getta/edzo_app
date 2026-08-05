@@ -334,6 +334,28 @@ public final class StrengthParse {
                 if (ok && tmp.size() >= 2) sets.addAll(tmp);
             }
         }
+        // 2b) Vesszővel felsorolt ismétlések: „guggolás 5,5,5”.
+        //
+        // Vesszőt CSAK három számtól fölfelé fogadunk el: egy tizedes számban
+        // pontosan egy vessző van, tehát a „60,5” sosem téveszthető össze
+        // ezzel. Enélkül az egész felsorolás kiesett, és ami maradt – például
+        // a súly a „5,5,5 @ 100”-ból – ismétlésszámnak látszott.
+        if (sets.isEmpty()) {
+            m = java.util.regex.Pattern
+                    .compile("(\\d{1,3}),(\\d{1,3}),(\\d{1,3})(?:,(\\d{1,3}))?(?:,(\\d{1,3}))?")
+                    .matcher(s);
+            if (m.find()) {
+                List<Set> tmp = new ArrayList<>();
+                boolean ok = true;
+                for (int g = 1; g <= m.groupCount(); g++) {
+                    if (m.group(g) == null) continue;
+                    int r = Integer.parseInt(m.group(g));
+                    if (r < 1 || r > 200) { ok = false; break; }
+                    tmp.add(new Set(r, weight));
+                }
+                if (ok) sets.addAll(tmp);
+            }
+        }
         // 3) „3 sorozat 10 ismétlés” / „10 ismétlés”.
         if (sets.isEmpty()) {
             int reps = numberBefore(s, "ismetles");
@@ -362,6 +384,7 @@ public final class StrengthParse {
                 String rest = s.substring(e).trim();
                 if (rest.startsWith("kg") || rest.startsWith("kilo")) continue;
                 if (isWeightSuffixed(s, e)) continue;
+                if (isAtWeight(s, bare.start())) continue;
                 int r = Integer.parseInt(bare.group(1));
                 if (r >= 1 && r <= 200) { sets.add(new Set(r, weight)); break; }
             }
@@ -428,7 +451,27 @@ public final class StrengthParse {
                 if (w > 0 && w <= 500) return w;
             } catch (NumberFormatException ignored) {}
         }
+        // A kukac az edzésnaplók nemzetközi rövidítése a súlyra: „5x5 @ 100”.
+        // Mértékegység nélkül eddig ismétlésszámnak látszott, és a „5,5,5 @ 100”
+        // egyetlen, száz ismétléses sorozat lett.
+        m = java.util.regex.Pattern.compile("@\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)").matcher(s);
+        if (m.find()) {
+            try {
+                double w = Double.parseDouble(m.group(1).replace(',', '.'));
+                if (w > 0 && w <= 500) return w;
+            } catch (NumberFormatException ignored) {}
+        }
         return 0;
+    }
+
+    /** A kukac utáni szám a súly, nem ismétlés: „5x5 @ 100”. */
+    private static boolean isAtWeight(String s, int start) {
+        for (int i = start - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            if (c == ' ') continue;
+            return c == '@';
+        }
+        return false;
     }
 
     /** A súlyt jelölő eszközragos szám („100-zal") ne legyen ismétlésszám. */

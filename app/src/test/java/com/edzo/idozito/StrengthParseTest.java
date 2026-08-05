@@ -275,6 +275,32 @@ public class StrengthParseTest {
         assertEquals(10, mix.get(0).totalReps());
     }
 
+    @Test public void aCommaSeparatedRepListNeedsThreeNumbers() {
+        // Három számnál a vessző már nem lehet tizedesjel: egy tizedes számban
+        // pontosan egy vessző van.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 12,10,8 60 kg");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(30, r.get(0).totalReps());
+        assertEquals(60.0, r.get(0).topWeight(), 0.001);
+        // Kettőnél viszont igen – a „60,5 kg" súly, nem két sorozat.
+        List<StrengthParse.Item> dec = StrengthParse.parse("guggolás 3x8 60,5 kg");
+        assertEquals(3, dec.get(0).sets.size());
+        assertEquals(60.5, dec.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void theAtSignMarksTheWeight() {
+        // A „@" az edzésnaplók nemzetközi rövidítése a súlyra. Korábban a
+        // „5,5,5 @ 100" egyetlen, SZÁZ ismétléses sorozat lett.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás: 5,5,5 @ 100");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(15, r.get(0).totalReps());
+        assertEquals(100.0, r.get(0).topWeight(), 0.001);
+        List<StrengthParse.Item> x = StrengthParse.parse("guggolás 5x5 @ 100");
+        assertEquals(5, x.get(0).sets.size());
+        assertEquals(100.0, x.get(0).topWeight(), 0.001);
+    }
+
     @Test public void theThreeDigitWeightSurvives() {
         // A „100x3" súlya száz kiló – korábban a százból ismétlés lett.
         List<StrengthParse.Item> r = StrengthParse.parse("guggolás 100x3, 100x3, 100x2");
