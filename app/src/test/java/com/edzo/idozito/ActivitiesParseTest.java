@@ -830,4 +830,31 @@ public class ActivitiesParseTest {
         // Jelző nélkül a tagadás továbbra is mindent elvisz.
         assertTrue(Activities.parse("nem futottam a kondiban").isEmpty());
     }
+
+    @Test public void twoRunsWithTheirOwnDistanceAreTwoSessions() {
+        // A „reggel 5 km futás, este 8 km futás" nyolc kilométere eddig némán
+        // elveszett: egy mozgásforma egyszer szerepelhetett, és a második
+        // futás egyszerűen kimaradt.
+        Activities.Parsed p = Activities.parse("reggel 5 km futás, este 8 km futás");
+        assertEquals(2, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.001);
+        assertEquals(8.0, p.plans.get(1).km, 0.001);
+    }
+
+    @Test public void oneRunMentionedTwiceStaysOneRun() {
+        // A „lefutottam a maratont" kétszer említi a futást, de egy futás volt:
+        // a második említésnek nincs SAJÁT, eltérő távja.
+        Activities.Parsed m = Activities.parse("lefutottam a maratont");
+        assertEquals(1, m.plans.size());
+        assertEquals(42.2, m.plans.get(0).km, 0.001);
+        // A részlet sem külön edzés.
+        Activities.Parsed r = Activities.parse("futottam 10 km-t, ebből 5 km tempó");
+        assertEquals(1, r.plans.size());
+        assertEquals(10.0, r.plans.get(0).km, 0.001);
+        // Azonos táv kétszer: óvatosak vagyunk, marad egy.
+        assertEquals(1, Activities.parse("reggel 5 km futás, este 5 km futás")
+                .plans.size());
+        // Táv nélküli második említés sem nyit új edzést.
+        assertEquals(1, Activities.parse("futottam, aztán még futottam").plans.size());
+    }
 }

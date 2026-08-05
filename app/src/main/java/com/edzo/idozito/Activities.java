@@ -639,7 +639,8 @@ public final class Activities {
         boolean[] used = new boolean[ALL.length];
         for (int i = 0; i < keep.size(); i++) {
             int[] h = keep.get(i);
-            if (used[h[2]]) continue;               // egy mozgásforma egyszer szerepel
+            if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i]))
+                continue;                           // egy mozgásforma egyszer szerepel
             used[h[2]] = true;
             Kind kind = ALL[h[2]];
             int nextHit = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
@@ -1678,6 +1679,25 @@ public final class Activities {
             out.remove(i + 1);
         }
         return out;
+    }
+
+    /**
+     * Ugyanaz a mozgásforma másodszor: külön edzés-e?
+     *
+     * Alapból egy mozgásforma egyszer szerepel – a „leFUTOTTAM a MARATONT"
+     * kétszer említi a futást, de egy futás volt. Ha viszont a második
+     * említésnek SAJÁT, az elsőtől eltérő távja van, akkor két külön edzés:
+     * a „reggel 5 km futás, este 8 km futás" nyolc kilométere eddig némán
+     * elveszett, mert a második futás egyszerűen kimaradt.
+     *
+     * A táv az egyetlen elég erős jel: a maraton-példában a második említés
+     * ugyanazt a távot kapja (a táv-hozzárendelés átmásolja), tehát nem tér el.
+     */
+    private static boolean separateSession(List<Plan> out, Kind kind, double km) {
+        if (km <= 0) return false;
+        for (Plan p : out)
+            if (p.kind == kind && (p.km <= 0 || Math.abs(p.km - km) < 0.001)) return false;
+        return true;
     }
 
     /** A megadott mozgáshoz tartozó időtartam, vagy az alapértelmezett. */

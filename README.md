@@ -40,7 +40,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
   nap futottam", „hétvégén 1-1 túra", „hétfőn és szerdán kondi", „kétszer úsztam",
   „futottam háromszor a héten" (a szorzószám hátul is állhat),
-  „múlt kedden kondi", „tegnap hajnalban futás", „leúsztam 1500
+  „múlt kedden kondi", „tegnap hajnalban futás",
+  „reggel 5 km futás, este 8 km futás" (két külön edzés), „leúsztam 1500
   métert", „tegnap este kondi", „ma 10000 lépés", „ma reggel 6-kor futottam"
   (a kimondott óra pontosabb a napszaknál), „július 28-án
   futottam", „100 fekvőtámasz", „júl. 28-án 6x1 km", „napi 20 perc jóga
@@ -299,7 +300,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~493 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~495 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
