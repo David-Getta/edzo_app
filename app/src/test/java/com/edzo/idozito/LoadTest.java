@@ -176,6 +176,7 @@ public class LoadTest {
         }
         assertEquals(0, Load.weekly(null, 150).percent);
     }
+
     @Test public void weeklySumsSplitTheDaysIntoWeeks() {
         double[] d = new double[28];
         for (int i = 0; i < 28; i++) d[i] = i < 7 ? 30 : i < 14 ? 20 : i < 21 ? 10 : 0;

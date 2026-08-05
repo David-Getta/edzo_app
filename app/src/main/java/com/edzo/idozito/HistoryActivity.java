@@ -44,6 +44,9 @@ public class HistoryActivity extends Activity {
     java.util.List<StrengthLog.Entry> strArr;
     SimpleDateFormat listDf;
     final TextView[] filterChips = new TextView[3];
+    /** Keresés a naplóban: sportág, program neve, jegyzet. */
+    String query = "";
+    android.widget.EditText searchEt;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -96,6 +99,25 @@ public class HistoryActivity extends Activity {
             strArr = sArr;
             listDf = new SimpleDateFormat("yyyy. MMM d. · HH:mm", new Locale("hu"));
             col.addView(filterRow(), lp());
+            col.addView(gap(10));
+            // Keresés: az erősítő naplóban régóta van, itt viszont a legtöbb
+            // bejegyzés gyűlik – görgetéssel megtalálni a tavalyi túrát reménytelen.
+            searchEt = new android.widget.EditText(this);
+            searchEt.setHint("Keresés (pl. bringa, túra, „térd\")");
+            searchEt.setHintTextColor(MUTED);
+            searchEt.setTextColor(TXT);
+            searchEt.setTextSize(13);
+            searchEt.setSingleLine(true);
+            searchEt.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
+                @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
+                @Override public void afterTextChanged(android.text.Editable e) {
+                    query = e.toString();
+                    shownLimit = PAGE;
+                    renderList();
+                }
+            });
+            col.addView(searchEt, lp());
             col.addView(gap(12));
             listBox = vbox();
             col.addView(listBox, lp());
@@ -182,8 +204,15 @@ public class HistoryActivity extends Activity {
                 boolean isRun = jo.optString("name", "").isEmpty()
                         || Activities.isCardio(jo.optString("kind", ""));
                 fits = !((filter == 1 && !isRun) || (filter == 2 && isRun));
+                if (fits) fits = Activities.matches(jo.optString("kind", ""),
+                        jo.optString("name", ""), jo.optString("note", ""), query);
             } else {
                 fits = filter != 1;   // súlyzós bejegyzés nem futás
+                // A súlyzós bejegyzést a gyakorlat neve azonosítja.
+                if (fits && !query.trim().isEmpty()) {
+                    StrengthLog.Entry se = (StrengthLog.Entry) it[1];
+                    fits = Foods.norm(se.name).contains(Foods.norm(query).trim());
+                }
             }
             if (!fits) continue;
             matching++;
@@ -197,7 +226,9 @@ public class HistoryActivity extends Activity {
             shown++;
         }
         if (shown == 0) {
-            TextView none = text("Nincs ilyen típusú edzés.", 13, MUTED, false);
+            TextView none = text(query.trim().isEmpty()
+                    ? "Nincs ilyen típusú edzés."
+                    : "Nincs találat erre: „" + query.trim() + "\"", 13, MUTED, false);
             none.setPadding(dp(4), dp(10), 0, 0);
             listBox.addView(none);
         } else if (matching > shown) {

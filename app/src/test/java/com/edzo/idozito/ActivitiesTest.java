@@ -155,4 +155,23 @@ public class ActivitiesTest {
         }
         assertTrue("hibás sportág-adatok:" + bad, bad.length() == 0);
     }
+    @Test public void theHistorySearchFindsWhatPeopleType() {
+        // A sportág neve és a szótövei is jók: aki „bicikli"-t ír, a
+        // kerékpáros edzéseket keresi, nem a „Kerékpár" pontos alakját.
+        assertTrue(Activities.matches("kerekpar", "", "", "bicikli"));
+        assertTrue(Activities.matches("kerekpar", "", "", "kerékpár"));
+        assertTrue(Activities.matches("kerekpar", "", "", "bringa"));
+        assertTrue(Activities.matches("kezilabda", "", "", "kézi"));
+        // Program- és jegyzetnév is számít.
+        assertTrue(Activities.matches("", "Zsírégető HIIT", "", "zsírégető"));
+        assertTrue(Activities.matches("futas", "", "Fájt a térdem", "térd"));
+        // Üres keresésre minden illik.
+        assertTrue(Activities.matches("futas", "", "", ""));
+        assertTrue(Activities.matches("futas", null, null, null));
+        // Ami tényleg nem illik, az nem illik.
+        assertFalse(Activities.matches("kerekpar", "", "", "úszás"));
+        assertFalse(Activities.matches("futas", "Reggeli torna", "", "kondi"));
+        // A kind nélküli mért bejegyzés futásnak számít – ahogy a szűrőnél is.
+        assertTrue(Activities.matches("", "", "", "futás"));
+    }
 }

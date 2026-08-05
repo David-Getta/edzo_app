@@ -127,6 +127,36 @@ public final class Activities {
      * futás vagy a terem szűrőbe kerüljön. Ismeretlen (vagy hiányzó) azonosító
      * esetén false – a régi, kézi bejegyzés előtti naplók így változatlanok.
      */
+    /**
+     * Illik-e egy naplóbejegyzés a keresőszóra?
+     *
+     * Az erősítő naplóban régóta lehet keresni, az edzés-előzményekben nem –
+     * pedig ott gyűlik a legtöbb bejegyzés. A keresés a sportág nevét, a
+     * program nevét és a jegyzetet is nézi, ráadásul a sportág SZÓTÖVEIT is:
+     * aki „bicikli"-t ír, a kerékpáros edzéseket keresi, nem a „Kerékpár"
+     * szó pontos alakját.
+     *
+     * @param kindId a bejegyzés sportág-azonosítója (lehet üres)
+     * @param name   program- vagy sportnév a bejegyzésből (lehet null)
+     * @param note   a bejegyzéshez fűzött jegyzet (lehet null)
+     * @param query  a keresőmező tartalma; üresre minden illik
+     */
+    public static boolean matches(String kindId, String name, String note, String query) {
+        String q = Foods.norm(query == null ? "" : query).trim();
+        if (q.isEmpty()) return true;
+        if (name != null && Foods.norm(name).contains(q)) return true;
+        if (note != null && Foods.norm(note).contains(q)) return true;
+        Kind k = byId(kindId);
+        // Kind nélküli (mért) bejegyzés futásnak számít – ahogy a szűrőnél is.
+        if (k == null && (kindId == null || kindId.isEmpty())
+                && (name == null || name.isEmpty())) k = byId("futas");
+        if (k == null && name != null) k = kindByText(name);
+        if (k == null) return false;
+        if (Foods.norm(k.name).contains(q) || k.id.contains(q)) return true;
+        for (String st : k.words) if (st.contains(q) || q.contains(st)) return true;
+        return false;
+    }
+
     public static boolean isCardio(String id) {
         Kind k = byId(id);
         return k != null && k.distance;

@@ -146,6 +146,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Terhelés-figyelés**: az elmúlt hét edzésperce a megelőző négy hét heti
   átlagához mérve („⚠️ 1,9× a szokásos") – a sérülések többsége nem a sok
   edzésből, hanem a hirtelen többől jön; nagy ugrásnál a heti összegzés is szól
+- **Keresés az előzményekben**: sportág, program neve és jegyzet szerint –
+  a szótövekkel együtt, tehát a „bringa" a kerékpáros edzéseket is megtalálja
 - **Sportágankénti bontás** (elmúlt 30 nap): alkalmak és össz-idő
   sportáganként, arány-sávval – a mért és a kézzel felvett edzés egy sorban
 - **Súlyzós szekció** (elmúlt 30 nap): edzésnapok, gyakorlatok, sorozatok,
@@ -204,7 +206,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~372 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~373 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
