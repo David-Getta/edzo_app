@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
@@ -135,5 +136,29 @@ public class HuTest {
             assertEquals("nem szám: " + w, w, Hu.digits(w));
         // A „negyven év" viszont VALÓDI szám: az önálló szó cserélődik.
         assertEquals("40 ev", Hu.digits("negyven ev"));
+    }
+
+    @Test public void theGeneratedTableHasNoConflictingEntries() throws Exception {
+        // A tábla generált: egy elrontott képlet ugyanazt a szót két külön
+        // értékkel is felvehetné, és onnantól a sorrend döntené el, melyik
+        // nyer. Az ilyen hiba némán rossz számot ír a naplóba.
+        java.lang.reflect.Field f = Hu.class.getDeclaredField("NUM_WORDS");
+        f.setAccessible(true);
+        String[][] t = (String[][]) f.get(null);
+        assertTrue("gyanúsan kicsi a tábla: " + t.length, t.length > 500);
+        java.util.Map<String, String> seen = new java.util.LinkedHashMap<>();
+        StringBuilder bad = new StringBuilder();
+        for (String[] w : t) {
+            assertTrue("üres szótő", w[0] != null && !w[0].isEmpty());
+            String prev = seen.put(w[0], w[1]);
+            if (prev != null && !prev.equals(w[1]))
+                bad.append("\n  ").append(w[0]).append(" = ").append(prev)
+                   .append(" vagy ").append(w[1]);
+        }
+        assertEquals("ütköző szótövek:" + bad, 0, bad.length());
+        // A hosszabb alak elöl: erre épül az egész illesztés.
+        for (int i = 1; i < t.length; i++)
+            assertTrue("nem hossz szerint csökkenő a tábla",
+                    t[i - 1][0].length() >= t[i][0].length());
     }
 }
