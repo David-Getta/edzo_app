@@ -214,6 +214,24 @@ public class ActivitiesTest {
                 now).plans.size());
     }
 
+    @Test public void theVerbFormsOfTheseSportsAreRecognised() {
+        // A szótő eddig főnévi alakban volt („birkózás”, „lapátolás”), az
+        // emberek viszont igét írnak. Ami nem esett kindra, az elveszett vagy
+        // „egyéb mozgás” lett – rossz MET-tel és rossz szűrővel.
+        long now = System.currentTimeMillis();
+        String[][] cases = {{"birkóztam 60 percet", "harcmuveszet"},
+                {"balettoztam 60 percet", "tanc"},
+                {"havat lapátoltam 45 percet", "munka"},
+                {"ugrálókötél 15 perc", "egyeb"},
+                {"köredzés 40 perc", "kondi"},
+                {"mobilizáltam 15 percet", "joga"}};
+        for (String[] c : cases) {
+            Activities.Parsed p = Activities.parse(c[0], now);
+            assertEquals(c[0], 1, p.plans.size());
+            assertEquals(c[0], c[1], p.plans.get(0).kind.id);
+        }
+    }
+
     @Test public void aConjunctionOpensANewStatement() {
         // A kötőszó után ÚJ állítás jön, vessző nélkül is. Eddig a vásárlás,
         // a lemondás és a meccsnézés magával vitte a mondat másik felét –

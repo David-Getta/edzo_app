@@ -73,6 +73,7 @@ public final class Activities {
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
                     "kettlebell"),
@@ -88,15 +89,15 @@ public final class Activities {
                     "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong",
                     "ping pong", "asztalitenisz", "padel"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
-                    "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "mma",
+                    "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "birkoz", "mma",
                     "aikido", "onvedelm", "vivas"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
-                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo"),
+                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
-                    "meditac", "atmozgat", "legzogyakorlat", "legzo gyakorlat"),
+                    "meditac", "atmozgat", "mobiliz", "legzogyakorlat", "legzo gyakorlat"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
@@ -104,17 +105,19 @@ public final class Activities {
             new Kind("si", "🎿", "Sí / snowboard", 6.0, true, 120,
                     "siel", "sizes", "snowboard", "sifutas", "sifut"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
-                    "falmaszas", "maszas", "boulder", "maszofal"),
+                    "falmaszas", "falmasz", "maszas", "sziklamasz",
+                    "boulder", "maszofal"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
                     "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
-                    "takarit", "funyir", "koltoz", "asas", "kapalas", "gereblyez",
+                    "takarit", "funyir", "koltoz", "asas", "kapalas", "kapal", "gereblyez",
+                    "lapatol",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
-                    "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "hulahopp",
-                    "kotelugras"),
+                    "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
+                    "ugralo kotel", "hulahopp", "kotelugras"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */
