@@ -142,4 +142,27 @@ public class FoodsQuantityTest {
         assertEquals(250, grams("ittam egy pohár vizet"), 0.01);
         assertEquals(2000, grams("ittam 8 pohár vizet"), 0.01);
     }
+
+    @Test public void theCountMayFollowTheFoodName() {
+        // Bevásárlólista-szórend: „banán 2 db". Legalább olyan gyakori, mint a
+        // fordítottja – eddig mégis egyetlen adag lett belőle.
+        assertEquals(240, grams("banán 2 db"), 0.01);
+        assertEquals(240, grams("banán (2 db)"), 0.01);
+        assertEquals(240, grams("2 db banán"), 0.01);
+        assertEquals(165, grams("tojás (3 db)"), 0.01);
+        assertEquals(70, grams("kenyér (2 szelet)"), 0.01);
+        // Gramm mindkét irányban megy, ezen nem változtattunk.
+        assertEquals(150, grams("csirkemell (150 g)"), 0.01);
+        assertEquals(200, grams("rizs (200 g)"), 0.01);
+    }
+
+    @Test public void aCountAfterTheNameNeedsToBelongToIt() {
+        // Mérőszó nélküli szám nem darabszám: a „banán 2" bármi lehet.
+        assertEquals(0, grams("banán 2"), 0.01);
+        // Közbeékelt SZÓ elszakítja: a „banán és rizs 200 g" grammja a rizsé.
+        List<Foods.Hit> two = Foods.parse(Arrays.asList(Foods.ALL), "banán és rizs 200 g");
+        assertEquals(2, two.size());
+        assertEquals(0, two.get(0).grams, 0.01);
+        assertEquals(200, two.get(1).grams, 0.01);
+    }
 }

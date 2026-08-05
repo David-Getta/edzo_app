@@ -938,6 +938,28 @@ public final class Foods {
         return 0;
     }
 
+    /** A szöveg első szava (betűk és számjegyek), vagy üres. */
+    private static String firstWord(String s) {
+        int i = 0;
+        while (i < s.length() && !Character.isLetterOrDigit(s.charAt(i))) i++;
+        int b = i;
+        while (i < s.length() && Character.isLetterOrDigit(s.charAt(i))) i++;
+        return s.substring(b, i);
+    }
+
+    private static boolean isCountWord(String w) {
+        for (String c : COUNT_WORDS) if (norm(c).equals(w)) return true;
+        return false;
+    }
+
+    /** Csak írásjel és szóköz áll a két pozíció között? */
+    private static boolean onlyPunctBetween(String q, int from, int to) {
+        if (from > to) return false;
+        for (int i = from; i < to; i++)
+            if (Character.isLetterOrDigit(q.charAt(i))) return false;
+        return true;
+    }
+
     private static boolean isPortionWord(String w) {
         for (String p : PORTION_WORDS) if (p.equals(w)) return true;
         return false;
@@ -1272,14 +1294,33 @@ public final class Foods {
             int numStart = bareNumPos.get(n);
             int numEnd = numStart + bareNumLen.get(n);
             String after = numEnd < q.length() ? q.substring(numEnd).trim() : "";
-            if (!(after.startsWith("adag") || after.startsWith("porcio"))) continue;
+            // Mérőszó a szám után: „grillcsirke fél adag", „banán 2 db",
+            // „tojás (3 db)", „kenyér 2 szelet". A bevásárlólista-szórend
+            // („étel mennyiség") legalább olyan gyakori, mint a fordítottja –
+            // eddig mégis csak az adag/porció ment át, a többiből egy adag lett.
+            String unit = firstWord(after);
+            boolean portionWord = unit.startsWith("adag") || unit.equals("porcio");
+            if (!portionWord && !isCountWord(unit) && !isPortionWord(unit)) continue;
             int best = -1;
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0 || foodPos.get(k) >= numStart) continue;
                 if (clause[foodPos.get(k)] != clause[numStart]) continue;
+                // Csak az étel és a szám KÖZÖTT álló írásjelek engedettek:
+                // a „banán (2 db)" zárójele nem szakítja el, egy közbeékelt
+                // másik szó viszont igen.
+                if (!onlyPunctBetween(q, foodPos.get(k) + foodLen.get(k), numStart)) continue;
                 if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
             }
-            if (best >= 0) grams[best] = count * foods.get(best).portion;
+            if (best < 0) continue;
+            double piece = portionWord || isPortionWord(unit)
+                    ? foods.get(best).portion
+                    : waterMl(foods.get(best), unit) > 0 ? waterMl(foods.get(best), unit)
+                    : unit.equals("tabla") ? 100
+                    : unit.equals("szelet") && sliceGrams(foods.get(best)) > 0
+                    ? sliceGrams(foods.get(best)) : pieceGrams(foods.get(best));
+            if (piece <= 0 && count <= 6) piece = foods.get(best).portion;
+            if (piece <= 0) continue;
+            grams[best] = count * piece;
         }
         for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
         return out;
