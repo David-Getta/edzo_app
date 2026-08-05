@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -204,5 +205,29 @@ public class FoodsTest {
     @Test public void accentsAreIgnored() {
         assertEquals(one("túró"), one("turo"));
         assertEquals(names("rántott hús"), names("rantott hus"));
+    }
+
+    @Test public void everydayWordsWithAFoodStemInsideAreNotFood() {
+        // Mind a három valódi eset volt, és mind észrevétlen: a felismerés
+        // sikeresnek látszott, csak épp nem azt naplózta, amit az ember evett.
+        assertTrue("a majd nem csirkemáj",
+                Foods.parse(java.util.Arrays.asList(Foods.ALL), "majd").isEmpty());
+        assertTrue("az iskolában nem kóla",
+                Foods.parse(java.util.Arrays.asList(Foods.ALL), "iskolában").isEmpty());
+        assertTrue("az uszodában nem szódavíz",
+                Foods.parse(java.util.Arrays.asList(Foods.ALL), "uszodában").isEmpty());
+        // A valódi alakok viszont megmaradnak.
+        assertEquals("Csirkemáj", Foods.find("májat").name);
+        assertEquals("Üdítő (cukros)", Foods.find("kólát").name);
+    }
+
+    @Test public void aContrastiveConjunctionEndsTheNegation() {
+        // A „de" ellentétet nyit: ami utána jön, azt megette az ember. Az „és"
+        // viszont folytatja a tagadást – ott mindkét tétel kimarad.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.List<Foods.Hit> h = Foods.parse(all, "nem ettem csokit de almát igen");
+        assertEquals(1, h.size());
+        assertEquals("Alma", h.get(0).food.name);
+        assertTrue(Foods.parse(all, "nem ettem csokit és chipset").isEmpty());
     }
 }

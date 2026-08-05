@@ -620,6 +620,11 @@ public final class Foods {
             "sorhas", "kolbaszujj", "almafa", "kortefa", "diofa",
             "cseresznyefa", "szilvafa", "barackfa", "eperfa", "meggyfa",
             "citromfu",
+            // Hétköznapi szavak, amikben egy rövid étel-szótő lakik. Mind
+            // valódi eset volt: a „majd" csirkemájat, az „iskolában" kólát, az
+            // „uszodában" szódavizet vitt a naplóba – észrevétlenül, mert a
+            // felismerés sikeresnek látszott.
+            "majd", "iskola", "uszod",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
@@ -1579,6 +1584,13 @@ public final class Foods {
                 for (int i = p; i < q.length(); i++) {
                     char ch = q.charAt(i);
                     if (ch == ',' || ch == ';' || ch == '.' || ch == '+') { stop = i; break; }
+                }
+                // Az ELLENTÉTES kötőszó írásjel nélkül is lezárja a tagadást:
+                // a „nem ettem csokit de almát igen" almáját megette az ember.
+                // Az „és" szándékosan nincs itt: az folytatja a tagadást.
+                for (String c : new String[]{" de ", " viszont ", " ellenben ", " azonban "}) {
+                    int k = q.indexOf(c, p);
+                    if (k >= 0 && k < stop) stop = k;
                 }
                 // Egy ÁLLÍTÓ ige is lezárja a tagadást: a „nem ettem reggelit
                 // és ittam egy kávét" kávéját megitta az ember.
