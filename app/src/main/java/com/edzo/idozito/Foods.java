@@ -776,13 +776,33 @@ public final class Foods {
         String[][] units = {{"egy", "1"}, {"ketto", "2"}, {"ket", "2"}, {"harom", "3"},
                 {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
                 {"nyolc", "8"}, {"kilenc", "9"}};
+        java.util.List<String[]> belowHundred = new java.util.ArrayList<>();
         for (String[] t : tens) {
             // A „tizen"/„huszon" csak összetételben szám, a többi magában is.
             if (!t[0].equals("tizen") && !t[0].equals("huszon"))
-                out.add(new String[]{t[0], t[1]});
+                belowHundred.add(new String[]{t[0], t[1]});
             for (String[] u : units)
-                out.add(new String[]{t[0] + u[0],
+                belowHundred.add(new String[]{t[0] + u[0],
                         String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
+        }
+        // A „tíz" és a „húsz" magában az alaplistában van; a százas
+        // összetételekhez („százhúsz") itt is kell.
+        belowHundred.add(new String[]{"tiz", "10"});
+        belowHundred.add(new String[]{"husz", "20"});
+        out.addAll(belowHundred);
+        // A százas adagok („száz gramm rizs", „százötven gramm csirkemell") a
+        // konyhában a leggyakoribbak – eddig pont ezek maradtak ki, és a
+        // tipikus adag ment helyettük a naplóba.
+        String[][] hundreds = {{"szaz", "100"}, {"ketszaz", "200"}, {"haromszaz", "300"},
+                {"negyszaz", "400"}, {"otszaz", "500"}};
+        for (String[] h : hundreds) {
+            out.add(new String[]{h[0], h[1]});
+            for (String[] u : units)
+                out.add(new String[]{h[0] + u[0],
+                        String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(u[1]))});
+            for (String[] b : belowHundred)
+                out.add(new String[]{h[0] + b[0],
+                        String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(b[1]))});
         }
         return out.toArray(new String[0][]);
     }

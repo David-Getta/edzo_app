@@ -119,4 +119,15 @@ public class FoodsQuantityTest {
         assertEquals(0, two.get(0).grams, 0.01);
         assertEquals(30, two.get(1).grams, 0.01);
     }
+
+    @Test public void theHundredsAreNumbersToo() {
+        // A konyhában a százas adag a leggyakoribb, és pont ez maradt ki:
+        // „száz gramm rizs" helyett a tipikus adag ment a naplóba.
+        assertEquals(100.0, grams("száz gramm rizs"), 0.001);
+        assertEquals(150.0, grams("százötven gramm csirkemell"), 0.001);
+        assertEquals(120.0, grams("százhúsz gramm rizs"), 0.001);
+        assertEquals(200.0, grams("kétszáz gramm rizs"), 0.001);
+        assertEquals(250.0, grams("kétszázötven gramm tészta"), 0.001);
+        assertEquals(300.0, grams("háromszáz gramm burgonya"), 0.001);
+    }
 }

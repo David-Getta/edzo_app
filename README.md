@@ -58,7 +58,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Érti a tagadást is**: a „chips helyett almát ettem" csak almát naplóz,
   a „csoki nélkül kértem a kávét" csak kávét, a „ma nem ettem csokit" semmit
 - Felismeri a **grammot** (g / gr / gramm / dkg / deka), a **darabszámot**
-  (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „két és fél deci"),
+  (számjeggyel és kiírva: „két tojás", „negyvenöt gramm", „százötven gramm",
+  „két és fél deci"),
   a poharas/korsós italokat, a mérőszavakat (tányér, bögre, kanál,
   marék, tábla, szelet, kupica) és az **adagot** („fél adag gyros", „grillcsirke fél adag")
 - **331 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
