@@ -84,6 +84,20 @@ public final class IntervalParse {
         // A zárójel csak tagolás: a „10x(40s/20s)" ugyanaz, mint a „10x40/20".
         s = s.replace('(', ' ').replace(')', ' ');
 
+        // 0) AMRAP: „amrap 20 perc” – annyi kör, amennyi belefér. Az időzítőnek
+        //    ez EGY hosszú szakasz, nem több rövid; körszámot adni neki éppen
+        //    azt venné el, amiről az AMRAP szól.
+        if (s.contains("amrap")) {
+            int min = numberAfter(s, "amrap");
+            // „20 perc amrap”: a szám a név ELŐTT, mértékegységgel.
+            if (min <= 0) {
+                int sec = firstSeconds(s);
+                if (sec >= 60) min = sec / 60;
+            }
+            if (min >= 1 && min <= 60)
+                return new Plan(1, min * 60, 0, warmIn(s), coolIn(s));
+        }
+
         // 1) Ismert forma név szerint. A kimondott körszám felülírja az alapot:
         //    „tabata 6 kör” hat kört jelent, nem nyolcat.
         for (String[] p : PRESETS)
@@ -154,6 +168,9 @@ public final class IntervalParse {
         if (rounds <= 0) rounds = numberBefore(s, "sorozat");
         if (rounds <= 0) rounds = numberBefore(s, "szett");
         if (rounds <= 0) rounds = numberBefore(s, "round");
+        if (rounds <= 0) rounds = numberAfterColon(s, "kor");
+        if (rounds <= 0) rounds = numberAfterColon(s, "round");
+        if (rounds <= 0) rounds = roundsPrefix(s);
         // Az „on" NEM szerepel: szó belsejében is előfordul („huszonöt"),
         // és a secondsBefore nem néz szóhatárt. Az „off" mellett a munkaidő
         // úgyis az első kimondott időből jön.
@@ -338,6 +355,42 @@ public final class IntervalParse {
                 }
             }
             p = s.indexOf(word, p + 1);
+        }
+        return 0;
+    }
+
+    /**
+     * Szám a szó után, de CSAK kettősponttal: „kör: 6”.
+     *
+     * A táblára írt terv gyakran mezőkből áll („kör: 6, munka: 40mp”), és ott a
+     * körszám a szó mögött van. Kettőspont nélkül nem találgatunk: a puszta
+     * „kör 40 mp munka” negyvene munkaidő, nem negyven kör.
+     */
+    private static int numberAfterColon(String s, String word) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile(word + "\\w*\\s?:\\s?(\\d{1,3})").matcher(s);
+        if (m.find()) {
+            try {
+                int v = Integer.parseInt(m.group(1));
+                if (v >= 1 && v <= 999) return v;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Vezető szorzó körszámként: „10x30s on 30s off” tíz kör.
+     *
+     * A perjeles alaknál („8x20/10”) ez már megvolt, a kiírtnál nem – ott a
+     * tíz kör csendben egyre olvadt, és az edzés a tizedénél véget ért.
+     */
+    private static int roundsPrefix(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d.,])(\\d{1,2})\\s?[x×]\\s?(?=\\d)").matcher(s);
+        if (m.find()) {
+            int v = Integer.parseInt(m.group(1));
+            if (v >= 2 && v <= MAX_ROUNDS) return v;
         }
         return 0;
     }

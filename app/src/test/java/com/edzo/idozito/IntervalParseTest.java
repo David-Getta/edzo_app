@@ -230,4 +230,45 @@ public class IntervalParseTest {
         assertEquals(30, q.rest);
         assertEquals(8, q.rounds);
     }
+
+    @Test public void aLeadingMultiplierIsTheRoundCount() {
+        // „10x30s on 30s off": az „on" nem kulcsszó, a perjel hiányzik – a tíz
+        // kör korábban csendben EGYRE olvadt, és az edzés a tizedénél véget ért.
+        IntervalParse.Plan p = IntervalParse.parse("10x30s on 30s off");
+        assertEquals(10, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+        // A szorzó CSAK végső esetben körszám: a kimondott „kör” előrébb van.
+        assertEquals(8, IntervalParse.parse("30 mp munka 30 mp pihenő 8 kör").rounds);
+        // És nem csinál időzítőt a súlyzós mondatból: a „3x10” tíze ismétlés,
+        // nem másodperc.
+        assertNull(IntervalParse.parse("guggolás 3x10"));
+        assertNull(IntervalParse.parse("3x10 60 kg"));
+    }
+
+    @Test public void theFieldNotationOnTheBoardIsUnderstood() {
+        // A táblára írt terv mezőkből áll, és ott a körszám a szó MÖGÖTT van.
+        IntervalParse.Plan p = IntervalParse.parse("kör: 6, munka: 40mp, pihenő: 20mp");
+        assertEquals(6, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+        // Kettőspont nélkül nem találgatunk: a „kör 40 mp munka" negyvene
+        // munkaidő, nem negyven kör.
+        IntervalParse.Plan q = IntervalParse.parse("kör 40 mp munka");
+        assertEquals(1, q.rounds);
+        assertEquals(40, q.work);
+    }
+
+    @Test public void amrapIsOneLongBlock() {
+        // Az AMRAP-ban annyi kör megy, amennyi belefér – körszámot adni neki
+        // pont azt venné el, amiről szól.
+        IntervalParse.Plan p = IntervalParse.parse("amrap 20 perc");
+        assertEquals(1, p.rounds);
+        assertEquals(1200, p.work);
+        assertEquals(0, p.rest);
+        assertEquals(1200, IntervalParse.parse("20 perc amrap").work);
+        assertEquals(720, IntervalParse.parse("amrap 12").work);
+        // Idő nélkül nincs mit beállítani.
+        assertNull(IntervalParse.parse("amrap"));
+    }
 }
