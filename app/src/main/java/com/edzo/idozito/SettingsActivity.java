@@ -333,6 +333,7 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
+            {"📅", "Edzésnapok", "Tolónap, Húzónap, Lábnap… – hat beépített nap, és sajátot is felvehetsz. A nap megnyitva gyakorlatonként ott a mai javaslat és a bemelegítés, ami megvan, az ki van pipálva."},
             {"🔥", "Bemelegítő rámpa", "A mai munkasúlyhoz üres rúd → 50% → 70% → 85%, felrakható súlyokon. Ott van a mai javaslat mellett és külön kalkulátorként is, a tárcsabontással."},
             {"💪", "Erő-csúcsok", "A Csúcsaid közt ott a legnehezebb emelésed és a legjobb becsült 1RM-ed, a gyakorlat nevével. A heti összegzés pedig külön szól, ha mindenkori rekord dőlt meg."},
             {"🐺", "Blaze köszönt", "Az app megnyitásakor a köszöntő kártyán integet és kacsint. A kabalára koppintva bármikor újra."},
@@ -341,7 +342,6 @@ public class SettingsActivity extends Activity {
             {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát”). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
             {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
             {"🍳", "A szokásos étkezésed", "Ha egy napszakban háromszor ugyanazt naplóztad, az app magától felajánlja – egy koppintás."},
-            {"🏆", "Csúcsaid", "Leghosszabb edzés, leghosszabb táv, leggyorsabb tempó, legtöbb lépés és a legnagyobb napi volumen, dátummal."},
             {"⚠️", "Terhelés-figyelés", "Az e heti edzésmennyiség a megelőző négy hét átlagához mérve – a sérülések többsége nem a sok edzésből jön, hanem a hirtelen többől."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
