@@ -75,7 +75,7 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             String todayFocus = Weekplan.forDay(Theme.planFocus(c), dowIdx);
             if (!line.isEmpty() && !todayFocus.isEmpty() && line.contains("Ma:"))
                 for (Routines.Routine r : Routines.all(
-                        Theme.getStr(c, "strength_routines", "")))
+                        Theme.getStr(c, Routines.KEY, "")))
                     if (Foods.norm(r.name).contains(Foods.norm(todayFocus))) {
                         line += "  ·  " + r.shortSummary(3);
                         break;

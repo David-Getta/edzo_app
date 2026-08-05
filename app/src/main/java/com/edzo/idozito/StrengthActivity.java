@@ -217,7 +217,7 @@ public class StrengthActivity extends Activity {
         // különálló gyakorlat.
         Routines.Routine day = null;
         if (!focus.isEmpty())
-            for (Routines.Routine r : Routines.all(Theme.getStr(this, ROUTINE_KEY, "")))
+            for (Routines.Routine r : Routines.all(Theme.getStr(this, Routines.KEY, "")))
                 if (Foods.norm(r.name).contains(Foods.norm(focus))) { day = r; break; }
         if (day != null) {
             final String dayName = day.name;
@@ -977,8 +977,6 @@ public class StrengthActivity extends Activity {
 
     // ---------- Edzésnapok (sablonok) ----------
 
-    static final String ROUTINE_KEY = "strength_routines";
-
     /**
      * Melyik edzésnapból nyílt a beviteli űrlap – mentés után oda térünk
      * vissza. Enélkül a lista minden gyakorlat után bezárul, és a felhasználó
@@ -988,7 +986,7 @@ public class StrengthActivity extends Activity {
 
     /** A választható edzésnapok: elöl a sajátok, utánuk a beépítettek. */
     void routineSheet() {
-        String stored = Theme.getStr(this, ROUTINE_KEY, "");
+        String stored = Theme.getStr(this, Routines.KEY, "");
         java.util.List<Routines.Routine> all = Routines.all(stored);
         // A heti fókusz megmondja, mi van MA soron – ha van hozzá illő nap,
         // azt jelöljük. Így nem kell fejben összekötni a tervet a sablonnal.
@@ -1029,7 +1027,7 @@ public class StrengthActivity extends Activity {
      * kellett kikeresni, és a napot fejben tartani.
      */
     void routineDaySheet(String name) {
-        String stored = Theme.getStr(this, ROUTINE_KEY, "");
+        String stored = Theme.getStr(this, Routines.KEY, "");
         final Routines.Routine r = Routines.byName(stored, name);
         if (r == null) return;
         java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
@@ -1092,8 +1090,8 @@ public class StrengthActivity extends Activity {
         if (own)
             sh.addRow("🗑", "Törlöm ezt az edzésnapot", "A beépített változat marad.",
                     false, true, () -> {
-                        Theme.setStr(this, ROUTINE_KEY, Routines.remove(
-                                Theme.getStr(this, ROUTINE_KEY, ""), r.name));
+                        Theme.setStr(this, Routines.KEY, Routines.remove(
+                                Theme.getStr(this, Routines.KEY, ""), r.name));
                         Toast.makeText(this, "Törölve: " + r.name, Toast.LENGTH_SHORT).show();
                         routineSheet();
                     });
@@ -1169,14 +1167,14 @@ public class StrengthActivity extends Activity {
                     java.util.List<String> moves = new java.util.ArrayList<>();
                     for (String m : movesEt.getText().toString().split(","))
                         if (!m.trim().isEmpty()) moves.add(m.trim());
-                    String next = Routines.add(Theme.getStr(this, ROUTINE_KEY, ""),
+                    String next = Routines.add(Theme.getStr(this, Routines.KEY, ""),
                             nameEt.getText().toString(), moves);
-                    if (next.equals(Theme.getStr(this, ROUTINE_KEY, ""))) {
+                    if (next.equals(Theme.getStr(this, Routines.KEY, ""))) {
                         Toast.makeText(this, "Név és legalább egy gyakorlat kell.",
                                 Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Theme.setStr(this, ROUTINE_KEY, next);
+                    Theme.setStr(this, Routines.KEY, next);
                     Toast.makeText(this, "Elmentve.", Toast.LENGTH_SHORT).show();
                     routineSheet();      // a friss lista rögtön látszik
                 })

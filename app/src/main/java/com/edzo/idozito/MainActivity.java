@@ -1059,7 +1059,7 @@ public class MainActivity extends Activity {
         String todayFocus = Weekplan.forDay(Theme.planFocus(this), dowIdx);
         if (!todayFocus.isEmpty())
             for (Routines.Routine r : Routines.all(
-                    Theme.getStr(this, StrengthActivity.ROUTINE_KEY, "")))
+                    Theme.getStr(this, Routines.KEY, "")))
                 if (Foods.norm(r.name).contains(Foods.norm(todayFocus))) {
                     sLabel = "Erősítő · ma " + r.name;
                     break;

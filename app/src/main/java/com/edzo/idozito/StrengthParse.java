@@ -295,8 +295,21 @@ public final class StrengthParse {
                 for (int i = 0; i < n; i++) sets.add(new Set(r, weight));
             // „60x10”: sorozatból nem lehet hatvan, súlyból viszont igen. Ez az
             // erőemelők szokásos jelölése – súly × ismétlés.
-            else if (n > 20 && n <= 500 && r >= 1 && r <= 200)
+            else if (n > 20 && n <= 500 && r >= 1 && r <= 200) {
                 sets.add(new Set(r, weight > 0 ? weight : n));
+                // Piramis vesszők nélkül: „fekvenyomás 60x10 70x8 80x6”. A
+                // vesszős alakot már értettük, a szóközöset nem – abból egyetlen
+                // sorozat lett, a másik kettő némán elveszett. Csak a súly ×
+                // ismétlés alakot folytatjuk: a „3x10” hármasa sorozatszám,
+                // annak a szóköz nem elválasztója.
+                while (m.find()) {
+                    if (m.group(3) != null) break;
+                    int wn = Integer.parseInt(m.group(1));
+                    int wr = Integer.parseInt(m.group(2));
+                    if (wn <= 20 || wn > 500 || wr < 1 || wr > 200) break;
+                    sets.add(new Set(wr, wn));
+                }
+            }
         }
         // 2) Sorozatonként más ismétlés: „12-10-8”, „5/5/5”.
         //

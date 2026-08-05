@@ -640,7 +640,7 @@ public class StatsActivity extends Activity {
         StringBuilder rline = new StringBuilder();
         long nowMs = System.currentTimeMillis();
         for (Routines.Routine r : Routines.all(
-                Theme.getStr(this, StrengthActivity.ROUTINE_KEY, ""))) {
+                Theme.getStr(this, Routines.KEY, ""))) {
             int n = Routines.doneDays(r.moves, rts, rnames, nowMs, 30);
             if (n <= 0) continue;
             if (rline.length() > 0) rline.append("  ·  ");

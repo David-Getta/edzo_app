@@ -253,6 +253,28 @@ public class StrengthParseTest {
         assertEquals(24, r.get(0).totalReps());
     }
 
+    @Test public void aPyramidWithoutCommasKeepsEverySet() {
+        // Vessző nélkül is ugyanaz a mondat – korábban ebből EGY sorozat lett,
+        // a másik kettő némán elveszett.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 60x10 70x8 80x6");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(24, r.get(0).totalReps());
+        assertEquals(80.0, r.get(0).topWeight(), 0.001);
+        // A folytatás nem lép át a következő gyakorlatba.
+        List<StrengthParse.Item> two =
+                StrengthParse.parse("guggolás 60x10 70x8 majd fekvenyomás 50x10");
+        assertEquals(2, two.size());
+        assertEquals(2, two.get(0).sets.size());
+        assertEquals(1, two.get(1).sets.size());
+        assertEquals(50.0, two.get(1).topWeight(), 0.001);
+        // A sorozat × ismétlés alakot a szóköz NEM folytatja: a „3x8” hármasa
+        // sorozatszám, nem súly.
+        List<StrengthParse.Item> mix = StrengthParse.parse("fekvenyomás 60x10 3x8");
+        assertEquals(1, mix.get(0).sets.size());
+        assertEquals(10, mix.get(0).totalReps());
+    }
+
     @Test public void theThreeDigitWeightSurvives() {
         // A „100x3" súlya száz kiló – korábban a százból ismétlés lett.
         List<StrengthParse.Item> r = StrengthParse.parse("guggolás 100x3, 100x3, 100x2");

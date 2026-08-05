@@ -23,6 +23,16 @@ public final class Routines {
     private Routines() {
     }
 
+    /**
+     * A beállítás-kulcs, ami alatt a saját edzésnapok laknak.
+     *
+     * Itt, a tárolás gazdájánál, nem az Activityben: hat helyen olvassuk-írjuk,
+     * köztük egy értesítés-küldő BroadcastReceiverből is, és egy elgépelt
+     * literál nem hibát okozna, hanem üres listát – vagyis némán eltűnne az
+     * összes edzésnap.
+     */
+    public static final String KEY = "strength_routines";
+
     /** Ennél több gyakorlat egy napra már nem edzés, hanem lista. */
     public static final int MAX_MOVES = 12;
 
