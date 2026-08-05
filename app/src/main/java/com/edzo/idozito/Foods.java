@@ -198,12 +198,16 @@ public final class Foods {
                 "balaton szelet", "3bit", "milky way"),
         // A „mentos" tő szándékosan hiányzik: a „mentős"-be esne bele.
         new Food("Gumicukor / cukorka", 340, 0, 30, "gumicukor", "cukorka",
-                "haribo", "skittles", "tic tac"),
+                "haribo", "skittles", "tic tac", "nyaloka", "savanyu cukor"),
         new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz",
-                "zabpelyhes keksz"),
+                // A „csokis keksz" EGY süti: enélkül a csoki és a keksz külön
+                // tételként, kétszeres kalóriával került a naplóba.
+                "zabpelyhes keksz", "csokis keksz", "csokis kekssz",
+                "haztartasi keksz"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
-                "flodni", "macaron", "suti"),
+                "flodni", "macaron", "suti", "eszterhazy", "dobostorta",
+                "dobos torta", "somloi kocka"),
         new Food("Muffin / brownie", 380, 5, 80, "muffin", "cupcake", "brownie"),
         new Food("Gofri", 350, 6, 100, "gofri", "waffle", "protein gofri"),
         new Food("Energiagolyó", 420, 8, 25,
@@ -216,7 +220,8 @@ public final class Foods {
         // kanál cukornak, a mézeskalács kalácsnak számított.
         new Food("Hagymakarika (rántott)", 280, 4, 100, "hagymakarika"),
         new Food("Perec", 380, 9, 50, "perec", "pretzel"),
-        new Food("Ropi / kréker", 400, 9, 30, "ropi", "kreker", "sajtos taller", "taller"),
+        new Food("Ropi / kréker", 400, 9, 30, "ropi", "kreker", "sajtos taller", "taller",
+                "sos rud", "sospalcika", "sos palcika"),
         new Food("Pisztácia", 580, 20, 30, "pisztaci"),
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
         new Food("Szaloncukor", 450, 3, 15, "szaloncukor"),
@@ -292,7 +297,7 @@ public final class Foods {
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog", "hot dog"),
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
-        new Food("Müzliszelet", 400, 6, 30, "muzliszelet"),
+        new Food("Müzliszelet", 400, 6, 30, "muzliszelet", "zabszelet", "granolaszelet"),
         // A „felvágott" gyűjtőnév is ide fut be: kalóriában a párizsi az átlag.
         new Food("Párizsi / felvágott", 230, 12, 50, "parizsi", "felvagott", "mortadella",
                 "loncshus"),
@@ -537,7 +542,7 @@ public final class Foods {
         new Food("Befőtt / kompót", 70, 0.4, 150, "befott", "kompot"),
         new Food("Túrós batyu", 300, 7, 100, "turos batyu", "batyu"),
         // A -val/-vel hasonul: „kaláccsal". A cs+cs alakot külön tő fogja meg.
-        new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli",
+        new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli", "beigli",
                 // A töltelék benne van a kalóriában: a „diós bejgli" ne
                 // számoljon még egy adag diót is mellé.
                 "dios bejgli", "makos bejgli", "makos tekercs", "dios tekercs"),

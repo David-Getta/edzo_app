@@ -490,4 +490,22 @@ public class FoodsIntegrationTest {
         // A zsíros kenyérnek viszont saját tétele van.
         assertEquals("Zsíros kenyér 100g", summary("zsíros kenyér"));
     }
+
+    @Test public void aChocolateBiscuitIsOneBiscuit() {
+        // A „csokis keksz" EGY süti: enélkül a csoki és a keksz külön
+        // tételként, kétszeres kalóriával került a naplóba.
+        assertEquals("Keksz 40g", summary("csokis keksz"));
+        assertEquals("Csokoládé 25g", summary("csoki"));
+        assertEquals("Keksz 40g", summary("háztartási keksz"));
+    }
+
+    @Test public void theMissingSweetsAreThereNow() {
+        assertEquals("Kalács / bejgli 80g", summary("beigli"));
+        assertEquals("Sütemény 100g", summary("eszterházy"));
+        assertEquals("Sütemény 100g", summary("dobostorta"));
+        assertEquals("Ropi / kréker 30g", summary("sós rúd"));
+        assertEquals("Gumicukor / cukorka 30g", summary("nyalóka"));
+        // A zabszelet müzliszelet, nem egy tál zabpehely.
+        assertEquals("Müzliszelet 30g", summary("zabszelet"));
+    }
 }
