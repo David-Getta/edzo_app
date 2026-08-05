@@ -179,6 +179,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Heti fókusz**: melyik napon mit edzel („H: Láb · Sze: Hát · P: Mell”) –
   a kezdőlap és a napi emlékeztető is mutatja, és ha ma nincs fókusz,
   a holnapit írja ki
+- **Fókusz-teljesülés a heti összegzésben**: a hát-napon tényleg hát volt-e –
+  elnézően, mert a terv nem tiltólista
 
 ### ⏰ Emlékeztetők
 - Több emlékeztető tetszőleges időpontra, saját üzenettel
@@ -227,7 +229,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~392 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~395 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

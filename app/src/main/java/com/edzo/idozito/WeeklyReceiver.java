@@ -193,6 +193,26 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 text += "\n🎽 Heti mozgás: " + wk.label()
                         + (wk.done ? "  ✔" : "  ·  " + wk.percent + "%");
         } catch (Exception ignored) {}
+        // Heti fókusz: teljesült-e, amit a hétre tervezett? A terv-napok
+        // darabszáma önmagában nem árulja el, hogy a HÁT-napon tényleg hát volt-e.
+        try {
+            String focusCsv = Theme.planFocus(c);
+            if (Weekplan.any(focusCsv)) {
+                String[] dayGroups = new String[7];
+                for (StrengthLog.Entry e : StrengthLog.load(c)) {
+                    int idx = Days.between(from, e.ts);
+                    if (idx < 0 || idx > 6) continue;
+                    String g = Muscles.groupOf(e.name);
+                    if (g == null) continue;
+                    dayGroups[idx] = dayGroups[idx] == null ? g
+                            : dayGroups[idx].contains(g) ? dayGroups[idx] : dayGroups[idx] + "," + g;
+                }
+                int[] a = Weekplan.adherence(focusCsv, dayGroups, trainedDay);
+                if (a[1] > 0)
+                    text += "\n📋 Heti fókusz: " + a[0] + "/" + a[1] + " nap teljesült"
+                            + (a[0] >= a[1] ? "  ✔" : ".");
+            }
+        } catch (Exception ignored) {}
         // Étrend-sor annak, aki a héten naplózott: naplózott napok + kcal-átlag.
         try {
             long dayMs = 24L * 3600 * 1000;

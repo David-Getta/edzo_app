@@ -81,6 +81,36 @@ public final class Weekplan {
     }
 
     /**
+     * Teljesült-e a heti fókusz? Egy tervezett nap akkor számít teljesítettnek,
+     * ha aznap tényleg azt edzette, amit odaírt – vagy ha a fókusz nem
+     * izomcsoport („Kardió", „Pihenő"), akkor ha aznap volt bármilyen edzés.
+     *
+     * Szándékosan elnéző: aki lábnapon a láb mellé kart is csinált, az
+     * teljesítette a tervet. A terv nem tiltólista.
+     *
+     * @param dayGroups  naponként az aznap edzett izomcsoportok, vesszővel
+     *                   összefűzve (0 = hétfő); null vagy üres, ha nem volt
+     * @param trainedDay volt-e aznap bármilyen edzés
+     * @return {teljesült, tervezett} – tervezett 0, ha nincs fókusz
+     */
+    public static int[] adherence(String csv, String[] dayGroups, boolean[] trainedDay) {
+        String[] f = parse(csv);
+        int planned = 0, done = 0;
+        for (int i = 0; i < 7; i++) {
+            if (f[i].isEmpty()) continue;
+            planned++;
+            String g = Muscles.groupOf(f[i]);
+            if (g == null) {
+                if (trainedDay != null && i < trainedDay.length && trainedDay[i]) done++;
+            } else if (dayGroups != null && i < dayGroups.length && dayGroups[i] != null
+                    && dayGroups[i].contains(g)) {
+                done++;
+            }
+        }
+        return new int[]{done, planned};
+    }
+
+    /**
      * A mai sor a kezdőlapra, vagy üres. A holnapi fókuszt is megmutatjuk, ha
      * ma nincs: a „mire készülj" ugyanannyit ér, mint a „mi van ma”.
      */

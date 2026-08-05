@@ -78,4 +78,34 @@ public class WeekplanTest {
         assertEquals("📋  Holnap: Mell", Weekplan.todayLine(csv, 3));
         assertEquals("", Weekplan.todayLine("", 0));
     }
+
+    @Test public void thePlanAdherenceCountsWhatWasActuallyTrained() {
+        String csv = Weekplan.format(new String[]{"Láb", "", "Hát", "", "Mell", "", ""});
+        String[] groups = {"Láb,Kar", "", "Váll", "", "Mell", "", ""};
+        boolean[] trained = {true, false, true, false, true, false, false};
+        int[] a = Weekplan.adherence(csv, groups, trained);
+        // Hétfő: láb megvolt (kar mellé is fért) ✔; szerda: vállat edzett ✘;
+        // péntek: mell ✔.
+        assertEquals(2, a[0]);
+        assertEquals(3, a[1]);
+    }
+
+    @Test public void aNonMuscleFocusCountsAsAnyTraining() {
+        // A „Kardió" nem izomcsoport: ott elég, hogy volt edzés.
+        String csv = Weekplan.format(new String[]{"Kardió", "", "", "", "", "", ""});
+        assertEquals(1, Weekplan.adherence(csv, new String[]{""},
+                new boolean[]{true, false, false, false, false, false, false})[0]);
+        assertEquals(0, Weekplan.adherence(csv, new String[]{""},
+                new boolean[]{false, false, false, false, false, false, false})[0]);
+    }
+
+    @Test public void adherenceIsSafeWithoutData() {
+        assertEquals(0, Weekplan.adherence("", null, null)[1]);
+        String csv = Weekplan.format(new String[]{"Láb", "", "", "", "", "", ""});
+        int[] a = Weekplan.adherence(csv, null, null);
+        assertEquals(0, a[0]);
+        assertEquals(1, a[1]);
+        // Rövidebb tömbök sem dobnak hibát.
+        assertEquals(1, Weekplan.adherence(csv, new String[]{"Láb"}, new boolean[]{true})[0]);
+    }
 }
