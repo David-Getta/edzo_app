@@ -48,6 +48,13 @@ public class ParserFuzzTest {
             "10", "100", "1000", "2,5", "1,5", "999999999", "0,0001", ",", ".",
             ";", "-", "(", ")", "!", "?", "…", "„", "”", "×", "🏃", "🤾",
             "", " ", "  ", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "ő", "ű",
+            // Az újabb értelmezési utak: vessző nélküli piramis, vesszős
+            // ismétlés-lista, kukacos súly, táblás körjelölés, AMRAP, és az
+            // új gyakorlatnevek.
+            "60x10", "70x8", "80x6", "5,5,5", "12,10,8", "@", "@100", "kör:",
+            "10x30s", "on", "off", "amrap", "swing", "kettlebell swing",
+            "step up", "alkartámasz", "lábtávolítás", "russian twist",
+            "másodperc", "munka", "pihenő", "rpe 9",
     };
 
     @Test public void randomSentencesNeverCrashTheParsers() {
@@ -116,9 +123,21 @@ public class ParserFuzzTest {
                             ip.cool >= 0 && ip.cool <= IntervalParse.MAX_SEC);
                 }
 
-                // Időpont: sosem a jövőben, és két hétnél régebbre sem.
+                // A súlyzós mondat dátuma: vagy nincs, vagy múltbeli és
+                // életszerű – ez írja a bejegyzés napját az erősítő naplóban.
+                long day = Activities.singleDayTs(p, 1_753_900_000_000L);
+                assertTrue("képtelen dátum erre: " + q, day == 0
+                        || (day <= 1_753_900_000_000L
+                            && day >= 1_753_900_000_000L - 400L * 86400000L));
+
+                // Időpont: a mai napnál nem későbbi, és két hétnél régebbre sem.
+                //
+                // A kimondott napszak SZÁNDÉKOSAN eshet a mostani óra utánra:
+                // aki délben azt írja, „ma este pizza", a saját estéjéről
+                // beszél. Ezért a mai nap vége a határ, nem a mostani perc.
                 long when = TimeHint.from(q, 1_753_900_000_000L);
-                assertTrue("jövőbeli időpont erre: " + q, when <= 1_753_900_000_000L + 1000);
+                assertTrue("holnapi vagy későbbi időpont erre: " + q,
+                        when <= 1_753_900_000_000L + 86400000L);
                 assertTrue("túl régi időpont erre: " + q,
                         when >= 1_753_900_000_000L - 15L * 86400000L);
             }

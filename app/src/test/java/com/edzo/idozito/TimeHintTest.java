@@ -149,4 +149,27 @@ public class TimeHintTest {
         assertEquals(5, dayHour("hajnalban ettem")[1]);
         assertEquals(4, dayHour("tegnap hajnalban ettem")[0]);
     }
+
+    @Test public void aTimeWordInsideAnotherWordDoesNotCount() {
+        // Ez csendben másik napra vagy másik napszakra vitte a bejegyzést.
+        long now = 1_753_900_000_000L;   // 2025. július 30., szerda
+        // „fejjel" nem éjjel, „teste" nem este, „kereste"/„festettem" sem.
+        for (String q : new String[]{"fejjel lefelé lógás", "fájt a teste",
+                "kereste a súlyzót", "festettem a kerítést"})
+            assertEquals("szó belseje: " + q, now, TimeHint.from(q, now));
+        // A valódi alakok viszont továbbra is jók, toldalékkal együtt.
+        assertEquals(19, hourOf("ma este pizza", now));
+        assertEquals(19, hourOf("estére csirke", now));
+        assertEquals(8, hourOf("reggelire tojás", now));
+        assertEquals(22, hourOf("éjjel ettem", now));
+        // A „múlt" itt teljes szó: a multivitamin nem múlt hét.
+        assertEquals(1, Days.ago(TimeHint.from("multivitamin kedden", now), now));
+        assertEquals(8, Days.ago(TimeHint.from("múlt kedden", now), now));
+    }
+
+    private static int hourOf(String q, long now) {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(TimeHint.from(q, now));
+        return c.get(java.util.Calendar.HOUR_OF_DAY);
+    }
 }

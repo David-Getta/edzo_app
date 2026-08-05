@@ -115,8 +115,8 @@ public final class TimeHint {
 
     /** Hány nappal ezelőttre utal a mondat (0 = ma). */
     static int daysBack(String s, long now) {
-        if (s.contains("tegnapelott")) return 2;
-        if (s.contains("tegnap")) return 1;
+        if (has(s, "tegnapelott")) return 2;
+        if (has(s, "tegnap")) return 1;
 
         int md = monthDayBack(s, now);
         if (md > 0) return md;
@@ -151,21 +151,52 @@ public final class TimeHint {
         c.setTimeInMillis(now);
         int todayIdx = (c.get(Calendar.DAY_OF_WEEK) + 5) % 7;   // H=0..V=6
         for (int i = 0; i < 7; i++) {
-            if (!s.contains(DAYS[i])) continue;
+            if (!has(s, DAYS[i])) continue;
             int back = (todayIdx - i + 7) % 7;
             // A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit.
-            if (s.contains("mult") && back + 7 <= MAX_BACK) back += 7;
+            // Itt TELJES szó kell: a „multivitamin" nem múlt hét.
+            if (hasWord(s, "mult") && back + 7 <= MAX_BACK) back += 7;
             return back;
         }
         return 0;
     }
 
+    /**
+     * Szó ELEJÉN álló szótő.
+     *
+     * A magyar toldalék hozzáragad („estére", „hétfőn", „ebédnél”), ezért a
+     * végét nem kötjük meg – a szó BELSEJÉBE eső egyezés viszont majdnem
+     * mindig téves. A „fejjel lefelé" nem éjjel, a „fájt a teste" nem este, a
+     * „multivitamin" nem múlt hét. Egy ilyen találat csendben egy másik napra
+     * vagy másik napszakra viszi a bejegyzést.
+     */
+    private static boolean has(String s, String stem) {
+        int p = s.indexOf(stem);
+        while (p >= 0) {
+            if (p == 0 || !Character.isLetter(s.charAt(p - 1))) return true;
+            p = s.indexOf(stem, p + 1);
+        }
+        return false;
+    }
+
+    /** Ugyanaz, de a szó VÉGÉT is megköti – toldalék nélküli alakokhoz. */
+    private static boolean hasWord(String s, String word) {
+        int p = s.indexOf(word);
+        while (p >= 0) {
+            int e = p + word.length();
+            if ((p == 0 || !Character.isLetter(s.charAt(p - 1)))
+                    && (e >= s.length() || !Character.isLetter(s.charAt(e)))) return true;
+            p = s.indexOf(word, p + 1);
+        }
+        return false;
+    }
+
     /** Áll-e délutáni/esti napszak-jelző az óraszám előtt? */
     private static boolean afternoonBefore(String s, int at) {
         String head = s.substring(0, Math.max(0, at));
-        return head.contains("delutan") || head.contains("este") || head.contains("esti")
-                || head.contains("vacsora") || head.contains("uzsonna")
-                || head.contains("ejjel") || head.contains("ejszaka");
+        return has(head, "delutan") || has(head, "este") || has(head, "esti")
+                || has(head, "vacsora") || has(head, "uzsonna")
+                || has(head, "ejjel") || has(head, "ejszaka");
     }
 
     /** A kimondott napszak órája, vagy -1, ha nincs. */
@@ -188,13 +219,13 @@ public final class TimeHint {
             } catch (NumberFormatException ignored) {
             }
         }
-        if (s.contains("hajnal")) return 5;
-        if (s.contains("reggel")) return 8;
-        if (s.contains("tizorai")) return 10;
-        if (s.contains("ebed") || s.contains("delben")) return 13;
-        if (s.contains("uzsonna") || s.contains("delutan")) return 16;
-        if (s.contains("vacsora") || s.contains("este")) return 19;
-        if (s.contains("ejjel") || s.contains("ejszaka")) return 22;
+        if (has(s, "hajnal")) return 5;
+        if (has(s, "reggel")) return 8;
+        if (has(s, "tizorai")) return 10;
+        if (has(s, "ebed") || has(s, "delben")) return 13;
+        if (has(s, "uzsonna") || has(s, "delutan")) return 16;
+        if (has(s, "vacsora") || has(s, "este")) return 19;
+        if (has(s, "ejjel") || has(s, "ejszaka")) return 22;
         return -1;
     }
 }
