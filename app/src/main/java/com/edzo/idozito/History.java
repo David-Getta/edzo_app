@@ -106,11 +106,6 @@ public final class History {
     }
 
     /**
-     * Volt-e ma bármilyen edzés (időzítős VAGY erősítő)? A widget, a napi
-     * emlékeztető és az időzített emlékeztetők is ezt kérdezik – egy helyen,
-     * hogy ne csúszhasson szét a válasz.
-     */
-    /**
      * Napi mozgás-percek visszafelé (index 0 = ma). A súlyzós napok
      * időtartam nélkül vannak a naplóban, ezért a sorozatszámból becsüljük –
      * különben pont a vasazós hetek látszanának üresnek.
@@ -155,6 +150,11 @@ public final class History {
         return sum;
     }
 
+    /**
+     * Volt-e ma bármilyen edzés (időzítős VAGY erősítő)? A widget, a napi
+     * emlékeztető és az időzített emlékeztetők is ezt kérdezik – egy helyen,
+     * hogy ne csúszhasson szét a válasz.
+     */
     public static boolean trainedToday(Context ctx) {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -170,7 +170,6 @@ public final class History {
         return false;
     }
 
-    /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     /**
      * Kézzel felvett edzés: olyan mozgás, amit nem az app mért (kézilabda,
      * úszás, kondi…). A bejegyzés mindenben ugyanolyan, mint egy mért edzés,
@@ -222,6 +221,7 @@ public final class History {
         }
     }
 
+    /** Egy befejezett edzés hozzáadása a napló elejére. distanceM/maxSpeedKmh < 0, ha nem volt táv-mérés. */
     public static void add(Context ctx, long ts, int durationSec, double distanceM,
                            int rounds, int work, int rest, double maxSpeedKmh,
                            int steps, int movingSec, double elevGainM, double calories,

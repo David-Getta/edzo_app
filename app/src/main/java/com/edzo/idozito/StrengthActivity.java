@@ -791,7 +791,6 @@ public class StrengthActivity extends Activity {
         }
     }
 
-    /** A sorozat-mezők feltöltése az adott gyakorlat legutóbbi bejegyzéséből. */
     /**
      * „Mai javaslat" kártya: mit érdemes ma nyomni ebből a gyakorlatból az
      * eddigiek alapján. Koppintásra be is írja a sorozatokat, hogy ne kelljen
@@ -843,6 +842,7 @@ public class StrengthActivity extends Activity {
         Toast.makeText(this, "Beírtam: " + s.headline(), Toast.LENGTH_SHORT).show();
     }
 
+    /** A sorozat-mezők feltöltése az adott gyakorlat legutóbbi bejegyzéséből. */
     void prefillFromLast(String name, LinearLayout setsBox, List<EditText> repsList, List<EditText> wList) {
         StrengthLog.Entry last = null;
         for (StrengthLog.Entry e : StrengthLog.load(this)) {   // a lista legújabb elöl

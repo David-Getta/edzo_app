@@ -30,11 +30,6 @@ public final class Ux {
         catch (Exception e) { return 0; }
     }
 
-    /**
-     * Blaze-stílusú felugró kártya (a rendszer-Toast helyett): felülről beúszó,
-     * bordó, Blaze képével díszített üzenet. ~4,5 mp után magától eltűnik,
-     * koppintásra azonnal bezárható. Bármely képernyőről hívható.
-     */
     /** A kártyák azonosítója, hogy egyszerre mindig csak egy legyen kint. */
     private static final String CARD_TAG = "blaze_card";
 
@@ -57,6 +52,11 @@ public final class Ux {
         if (!cardShowing(a)) blazeCard(a, msg, true);
     }
 
+    /**
+     * Blaze-stílusú felugró kártya (a rendszer-Toast helyett): felülről beúszó,
+     * bordó, Blaze képével díszített üzenet. ~4,5 mp után magától eltűnik,
+     * koppintásra azonnal bezárható. Bármely képernyőről hívható.
+     */
     public static void blazeCard(final Activity a, String msg) {
         blazeCard(a, msg, false);
     }

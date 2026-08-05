@@ -120,7 +120,6 @@ public final class Programs {
         return null;
     }
 
-    /** Rövid gyakorlat-leírás (technikai tipp); üres, ha nincs (pl. saját gyakorlat). */
     /**
      * Minden gyakorlat, amihez van technikai leírás – ábécésorrendben.
      *
@@ -137,6 +136,7 @@ public final class Programs {
         return out.toArray(new String[0]);
     }
 
+    /** Rövid gyakorlat-leírás (technikai tipp); üres, ha nincs (pl. saját gyakorlat). */
     public static String descOf(String name) {
         if (name == null) return "";
         switch (name) {

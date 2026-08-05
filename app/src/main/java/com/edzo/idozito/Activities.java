@@ -125,11 +125,6 @@ public final class Activities {
     }
 
     /**
-     * Táv-alapú mozgás-e? Az előzményekben ez dönti el, hogy a bejegyzés a
-     * futás vagy a terem szűrőbe kerüljön. Ismeretlen (vagy hiányzó) azonosító
-     * esetén false – a régi, kézi bejegyzés előtti naplók így változatlanok.
-     */
-    /**
      * Illik-e egy naplóbejegyzés a keresőszóra?
      *
      * Az erősítő naplóban régóta lehet keresni, az edzés-előzményekben nem –
@@ -159,6 +154,11 @@ public final class Activities {
         return false;
     }
 
+    /**
+     * Táv-alapú mozgás-e? Az előzményekben ez dönti el, hogy a bejegyzés a
+     * futás vagy a terem szűrőbe kerüljön. Ismeretlen (vagy hiányzó) azonosító
+     * esetén false – a régi, kézi bejegyzés előtti naplók így változatlanok.
+     */
     public static boolean isCardio(String id) {
         Kind k = byId(id);
         return k != null && k.distance;
@@ -857,7 +857,6 @@ public final class Activities {
         return 0;
     }
 
-    /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
     /**
      * A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit.
      *
@@ -870,6 +869,7 @@ public final class Activities {
         return head.contains("mult") ? back + 7 : back;
     }
 
+    /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
     private static java.util.List<int[]> findWeekdays(char[] q, long now) {
         String s = new String(q);
         String[][] dows = {{"hetfo", "2"}, {"kedd", "3"}, {"szerda", "4"},
@@ -899,17 +899,17 @@ public final class Activities {
             "majus", "junius", "julius", "augusztus", "szeptember", "oktober",
             "november", "december"};
 
+    /** Rövidített hónapnevek is („aug 1-jén", „júl. 28-án"). */
+    private static final String[] MONTH_ABBR = {"jan", "feb", "marc", "apr", "maj",
+            "jun", "jul", "aug", "szept", "okt", "nov", "dec"};
+    private static final int[] MONTH_ABBR_IDX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
     /**
      * Konkrét dátum hónapnévvel: „július 28-án" → {kezdet, vég, hány napja}.
      * A legutóbbi ilyen dátum: ha az idei még nem volt meg, a tavalyi. A rag
      * és a nap száma is a kitakart részhez tartozik, hogy a szám ne váljon
      * darabszámmá. A puszta „júliusban" (nap nélkül) nem dátum.
      */
-    /** Rövidített hónapnevek is („aug 1-jén", „júl. 28-án"). */
-    private static final String[] MONTH_ABBR = {"jan", "feb", "marc", "apr", "maj",
-            "jun", "jul", "aug", "szept", "okt", "nov", "dec"};
-    private static final int[] MONTH_ABBR_IDX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-
     private static int[] findMonthDay(char[] q, long now) {
         String s = new String(q);
         for (int mi = 0; mi < MONTHS.length; mi++) {
@@ -1399,7 +1399,6 @@ public final class Activities {
         }
     }
 
-    /** „45 perc”, „másfél óra” helyett egyszerűen: szám + perc/óra. */
     /** A teljes szó a megadott pozíció körül. */
     private static String wordAt(String s, int p) {
         int a = p, b = p;
@@ -1609,6 +1608,7 @@ public final class Activities {
         }
     }
 
+    /** „45 perc”, „másfél óra” helyett egyszerűen: szám + perc/óra. */
     private static List<int[]> findMinutes(char[] q) {
         String s = new String(q);
         List<int[]> out = new ArrayList<>();

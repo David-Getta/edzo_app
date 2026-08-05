@@ -916,15 +916,15 @@ public final class Foods {
              "kanal", "kanalnyi", "evokanal", "evokanalnyi", "teaskanal",
              "teaskanalnyi", "marek", "mareknyi", "csomag", "zacsko", "tal"};
 
+    /** Méret-jelzők: nem mérőszavak, csak közéállnak („2 nagy alma"). */
+    private static final String[] SIZE_WORDS =
+            {"nagy", "kis", "kicsi", "kozepes", "szep", "hatalmas", "apro"};
+
     /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
      * közte? A visszatérés a közbeékelt szó ("" ha nincs), vagy null, ha ott
      * valami más áll – akkor a szám nem ehhez az ételhez tartozik.
      */
-    /** Méret-jelzők: nem mérőszavak, csak közéállnak („2 nagy alma"). */
-    private static final String[] SIZE_WORDS =
-            {"nagy", "kis", "kicsi", "kozepes", "szep", "hatalmas", "apro"};
-
     private static String countWordAt(String q, int numEnd, int foodPos) {
         if (foodPos < numEnd) return null;
         String between = q.substring(numEnd, foodPos).trim();

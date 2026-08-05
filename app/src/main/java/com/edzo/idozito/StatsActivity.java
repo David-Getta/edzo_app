@@ -534,10 +534,6 @@ public class StatsActivity extends Activity {
     }
 
     /**
-     * Sportágankénti bontás az elmúlt 30 napból, vagy null, ha nincs mit
-     * mutatni (egyetlen sportág önmagában nem bontás).
-     */
-    /**
      * Súlyzós összegzés 30 napra: a volumen (ismétlés × súly) az a szám, amiből
      * a fejlődés látszik – az alkalmak darabszáma erről semmit nem mond. A
      * legtöbbet mozgatott gyakorlat és izomcsoport is kiderül.
@@ -656,6 +652,10 @@ public class StatsActivity extends Activity {
         return cardV;
     }
 
+    /**
+     * Sportágankénti bontás az elmúlt 30 napból, vagy null, ha nincs mit
+     * mutatni (egyetlen sportág önmagában nem bontás).
+     */
     View sportsCard() {
         JSONArray h = History.load(this);
         long from = System.currentTimeMillis() - 30L * 24 * 3600 * 1000;

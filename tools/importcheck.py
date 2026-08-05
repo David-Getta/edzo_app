@@ -135,6 +135,24 @@ def unbalanced_quotes(src):
     return out
 
 
+def orphan_javadoc(src):
+    """Olyan `/** … */` blokkok, amiket rögtön egy MÁSIK ilyen blokk követ.
+
+    Ez mindig hiba: Javában a dokumentáció ahhoz tartozik, ami utána
+    következik, tehát a kettőből az elsőnek nincs gazdája. Nem elírásból
+    születik, hanem átrendezésből – egy metódust arrébb visznek, a leírása
+    meg ottmarad, és onnantól egy IDEGEN metódusról vagy mezőről állít
+    valamit. Rosszabb, mint a hiányzó megjegyzés: azt tudni, hogy nincs.
+
+    A visszatérés a blokkot kezdő sorok listája.
+    """
+    out = []
+    for m in re.finditer(r"/\*\*.*?\*/", src, flags=re.S):
+        if src[m.end():].lstrip().startswith("/**"):
+            out.append(src[:m.start()].count("\n") + 1)
+    return out
+
+
 def main():
     problems = []
     for name in sorted(os.listdir(SRC)):
@@ -153,13 +171,16 @@ def main():
                     problems.append(f"{name}: {why}")
         for lineno, text in unbalanced_quotes(raw):
             problems.append(f"{name}:{lineno}: páratlan idézőjel – {text}")
+        for lineno in orphan_javadoc(raw):
+            problems.append(f"{name}:{lineno}: gazdátlan javadoc – "
+                            "rögtön egy másik javadoc követi")
 
     if problems:
-        print("Hiányzó import:")
+        print("Hiba:")
         for p in problems:
             print("  " + p)
         return 1
-    print("Rendben: minden rövid néven használt Android-típushoz van import.")
+    print("Rendben: import, API-szint, idézőjelek és javadoc-gazda.")
     return 0
 
 

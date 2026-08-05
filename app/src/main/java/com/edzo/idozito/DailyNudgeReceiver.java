@@ -218,12 +218,6 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         nm.notify(NOTIF_ID, b.build());
     }
 
-    /**
-     * Ha ma már volt edzés, edzésért nem szólunk – de aki rendszeresen naplóz
-     * étrendet és ma még semmit nem írt be, annak Blaze küld egy halk emlékeztetőt.
-     * Csak akkor, ha az elmúlt héten legalább háromszor naplózott: alkalmi
-     * felhasználót nem nyaggatunk.
-     */
     /** „🍳 A szokásos reggelid: Tojás, Kenyér" – vagy null, ha nincs ilyen. */
     private static String usualLine(Context c) {
         try {
@@ -257,6 +251,12 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Ha ma már volt edzés, edzésért nem szólunk – de aki rendszeresen naplóz
+     * étrendet és ma még semmit nem írt be, annak Blaze küld egy halk emlékeztetőt.
+     * Csak akkor, ha az elmúlt héten legalább háromszor naplózott: alkalmi
+     * felhasználót nem nyaggatunk.
+     */
     private static void maybeDietReminder(Context c) {
         try {
             long dayMs = 24L * 3600 * 1000;

@@ -322,7 +322,6 @@ public final class IntervalParse {
         return Hu.digits(s).replaceAll("(\\d+)\\s?(szor|szer)\\b", "$1 kor");
     }
 
-    /** A megadott szó ELŐTT álló szám („3 kör”), vagy 0. */
     /** Az első szám a szó után: „emom 12” → 12. */
     private static int numberAfter(String s, String word) {
         int p = s.indexOf(word);
@@ -343,6 +342,7 @@ public final class IntervalParse {
         return 0;
     }
 
+    /** A megadott szó ELŐTT álló szám („3 kör”), vagy 0. */
     private static int numberBefore(String s, String word) {
         int p = s.indexOf(word);
         while (p >= 0) {

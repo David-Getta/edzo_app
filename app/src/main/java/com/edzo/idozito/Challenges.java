@@ -20,14 +20,6 @@ public final class Challenges {
     private Challenges() {}
 
     /**
-     * A mai kihívás állapota:
-     * {title(String), unit(String), cur(int), target(int), seed(int), exact(double)}.
-     *
-     * A `cur` a teljesítés eldöntéséhez van (egész, lefelé kerekítve – 2,9 km
-     * még nem 3), az `exact` pedig a kijelzéshez: a haladássáv és a felirat így
-     * nem tünteti el a megtett út utolsó kilométerének nagy részét.
-     */
-    /**
      * A haladás kiírása: a kerek érték egész marad („2 / 3 km"), a törtnél egy
      * tizedes jár magyar vesszővel („2,9 / 3 km"). Nem kerekítünk felfelé egészre,
      * mert az azt sugallná, hogy megvan a feladat.
@@ -38,6 +30,14 @@ public final class Challenges {
         return String.valueOf(r).replace('.', ',');
     }
 
+    /**
+     * A mai kihívás állapota:
+     * {title(String), unit(String), cur(int), target(int), seed(int), exact(double)}.
+     *
+     * A `cur` a teljesítés eldöntéséhez van (egész, lefelé kerekítve – 2,9 km
+     * még nem 3), az `exact` pedig a kijelzéshez: a haladássáv és a felirat így
+     * nem tünteti el a megtett út utolsó kilométerének nagy részét.
+     */
     public static Object[] state(Context ctx) {
         Calendar now = Calendar.getInstance();
         int seed = now.get(Calendar.YEAR) * 366 + now.get(Calendar.DAY_OF_YEAR);

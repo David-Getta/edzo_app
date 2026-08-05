@@ -39,16 +39,6 @@ public final class Bests {
     }
 
     /**
-     * @param ts      az időzítős/kézi edzések időbélyegei
-     * @param durSec  hosszuk másodpercben (azonos hosszú tömb)
-     * @param distM   távjuk méterben (0 = nincs)
-     * @param cal     elégetett kalória (0 = nincs)
-     * @param steps   lépésszám (0 = nincs)
-     * @param liftTs  a súlyzós bejegyzések időbélyegei
-     * @param liftVol a súlyzós bejegyzések volumene (ismétlés × súly)
-     * @return a megtalált csúcsok, megjelenítési sorrendben; üres, ha nincs egy sem
-     */
-    /**
      * Ennél könnyebb sorozat nem „legnehezebb emelés": a 20 kilós bicepsz
      * rekordja senkit nem érdekel, és elnyomná a valódi csúcsot.
      */
@@ -149,6 +139,19 @@ public final class Bests {
         return out;
     }
 
+    /**
+     * Az időzítős és kézi edzések csúcsai: leghosszabb edzés, leghosszabb táv,
+     * leggyorsabb tempó, legtöbb lépés, legtöbb kalória, legnagyobb napi volumen.
+     *
+     * @param ts      az időzítős/kézi edzések időbélyegei
+     * @param durSec  hosszuk másodpercben (azonos hosszú tömb)
+     * @param distM   távjuk méterben (0 = nincs)
+     * @param cal     elégetett kalória (0 = nincs)
+     * @param steps   lépésszám (0 = nincs)
+     * @param liftTs  a súlyzós bejegyzések időbélyegei
+     * @param liftVol a súlyzós bejegyzések volumene (ismétlés × súly)
+     * @return a megtalált csúcsok, megjelenítési sorrendben; üres, ha nincs egy sem
+     */
     public static List<Best> of(long[] ts, int[] durSec, double[] distM, double[] cal,
                                 int[] steps, long[] liftTs, double[] liftVol) {
         List<Best> out = new ArrayList<>();
