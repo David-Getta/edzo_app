@@ -1057,13 +1057,25 @@ public class MainActivity extends Activity {
         int dowIdx = (java.util.Calendar.getInstance()
                 .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
         String todayFocus = Weekplan.forDay(Theme.planFocus(this), dowIdx);
-        if (!todayFocus.isEmpty())
-            for (Routines.Routine r : Routines.all(
-                    Theme.getStr(this, Routines.KEY, "")))
+        java.util.List<Routines.Routine> routines = Routines.all(
+                Theme.getStr(this, Routines.KEY, ""));
+        if (!todayFocus.isEmpty()) {
+            for (Routines.Routine r : routines)
                 if (Foods.norm(r.name).contains(Foods.norm(todayFocus))) {
                     sLabel = "Erősítő · ma " + r.name;
                     break;
                 }
+        } else if (!sLog.isEmpty()) {
+            // Heti terv nélkül a rotáció válaszol: a legrégebben csinált nap.
+            long[] rts = new long[sLog.size()];
+            String[] rnames = new String[sLog.size()];
+            for (int i = 0; i < sLog.size(); i++) {
+                rts[i] = sLog.get(i).ts;
+                rnames[i] = sLog.get(i).name;
+            }
+            String due = Routines.nextUp(routines, rts, rnames, System.currentTimeMillis());
+            if (due != null) sLabel = "Erősítő · ma " + due;
+        }
         t.add(new TileDef("strength", "🏋️", sLabel, 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
         double kcalT = MealLog.todayKcal(this);
         t.add(new TileDef("diet", "🍽", kcalT > 0 ? "Étrend · " + Math.round(kcalT) + " kcal" : "Étrend", 0xFFFFB74D, () -> startActivity(new Intent(this, DietActivity.class))));

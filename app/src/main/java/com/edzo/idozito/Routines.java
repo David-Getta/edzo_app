@@ -275,6 +275,46 @@ public final class Routines {
         return n;
     }
 
+    /**
+     * Ennyi napra visszamenőleg nézzük, hogy egy edzésnap „használatban van-e”.
+     * Ami két hónapja nem volt, az nem a rotáció része, hanem múlt.
+     */
+    public static final int ROTATION_DAYS = 60;
+
+    /**
+     * Melyik edzésnap van soron? A neve, vagy null.
+     *
+     * Aki felosztásban edz, az körbejár: toló, húzó, láb, és kezdi elölről. A
+     * lista eddig megmutatta, mikor volt melyik, de a „na és akkor most melyik?”
+     * kérdésre a felhasználónak kellett válaszolnia – pont akkor, amikor már a
+     * teremben áll.
+     *
+     * A válasz a legrégebben csinált nap. Nem tárolunk külön sorrendet: azt
+     * karban kellene tartani, és egy elrontott sorrend rosszabb, mint a
+     * semmilyen. Csak azokat nézzük, amiket az elmúlt két hónapban tényleg
+     * csinált – a beépített sablonok közül az, amit sosem használt, nem „régi”,
+     * hanem nem az övé.
+     *
+     * Legalább két használt nap kell: eggyel nincs mit sorba rakni.
+     *
+     * @param list  a választható edzésnapok
+     * @param ts    bejegyzésenként az időbélyeg
+     * @param names bejegyzésenként a gyakorlat neve
+     */
+    public static String nextUp(List<Routine> list, long[] ts, String[] names, long now) {
+        if (list == null) return null;
+        String best = null;
+        int bestAgo = -1, used = 0;
+        for (Routine r : list) {
+            if (r == null) continue;
+            int ago = lastDone(r.moves, ts, names, now);
+            if (ago < 0 || ago > ROTATION_DAYS) continue;
+            used++;
+            if (ago > bestAgo) { bestAgo = ago; best = r.name; }
+        }
+        return used >= 2 ? best : null;
+    }
+
     /** „ma", „tegnap", „4 napja" – vagy üres, ha soha. */
     public static String lastDoneLabel(int daysAgo) {
         if (daysAgo < 0) return "";

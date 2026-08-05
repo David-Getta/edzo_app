@@ -220,4 +220,27 @@ public class RoutinesTest {
         // A legutóbbi továbbra is stimmel.
         assertEquals(1, Routines.lastDone(m, ts, names, now));
     }
+
+    @Test public void theLongestUnusedDayIsTheOneComingUp() {
+        long d = 86400000L;
+        long now = 1000 * d + 12 * 3600000L;
+        List<Routines.Routine> all = Routines.all("");
+        // Tolónap 1 napja, Lábnap 5 napja, Húzónap 3 napja – a láb van soron.
+        long[] ts = {999 * d, 999 * d, 997 * d, 997 * d, 995 * d, 995 * d, 995 * d};
+        String[] names = {"Fekvenyomás", "Vállból nyomás",
+                "Felhúzás", "Húzódzkodás",
+                "Guggolás", "Lábtolás", "Kitörés"};
+        assertEquals("Lábnap", Routines.nextUp(all, ts, names, now));
+        // Egyetlen használt nappal nincs mit sorba rakni.
+        assertNull(Routines.nextUp(all, new long[]{999 * d, 999 * d},
+                new String[]{"Fekvenyomás", "Vállból nyomás"}, now));
+        // Amit két hónapnál régebben csinált, az nem a rotáció része.
+        long[] old = {999 * d, 999 * d, 900 * d, 900 * d, 900 * d};
+        String[] oldNames = {"Fekvenyomás", "Vállból nyomás",
+                "Guggolás", "Lábtolás", "Kitörés"};
+        assertNull(Routines.nextUp(all, old, oldNames, now));
+        // Hibás bemenet nem borít.
+        assertNull(Routines.nextUp(null, ts, names, now));
+        assertNull(Routines.nextUp(all, null, null, now));
+    }
 }

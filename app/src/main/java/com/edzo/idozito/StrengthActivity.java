@@ -1006,9 +1006,14 @@ public class StrengthActivity extends Activity {
             lnames[i] = log.get(i).name;
         }
         long now = System.currentTimeMillis();
+        // Ha nincs heti fókusz, a rotáció válaszol: a legrégebben csinált nap
+        // jön. Enélkül a lista megmutatta, mikor volt melyik, de a „na és most
+        // melyik?" kérdés a felhasználóra maradt – a teremben állva.
+        String due = focus.isEmpty() ? Routines.nextUp(all, lts, lnames, now) : null;
         for (final Routines.Routine r : all) {
             boolean fits = !focus.isEmpty()
-                    && Foods.norm(r.name).contains(Foods.norm(focus));
+                    ? Foods.norm(r.name).contains(Foods.norm(focus))
+                    : r.name.equals(due);
             String when = Routines.lastDoneLabel(Routines.lastDone(r.moves, lts, lnames, now));
             String title = r.label() + (fits ? "  ·  ma ez jön" : "")
                     + (when.isEmpty() ? "" : "  ·  legutóbb " + when);
