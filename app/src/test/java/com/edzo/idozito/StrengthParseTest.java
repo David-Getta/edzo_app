@@ -301,6 +301,24 @@ public class StrengthParseTest {
         assertEquals(100.0, x.get(0).topWeight(), 0.001);
     }
 
+    @Test public void theNewMachineAndKettlebellNamesAreRecognised() {
+        // Ezek eddig NEM léteztek a felismerőnek: az egész mondat elveszett,
+        // nem csak a név.
+        assertEquals("Kettlebell lendítés",
+                StrengthParse.parse("kettlebell swing 5x20 24 kg").get(0).name);
+        assertEquals("Kettlebell lendítés", StrengthParse.parse("swing 4x20 24 kg").get(0).name);
+        // A „kettlebell" magában nem lendítés: a kettlebell-guggolás guggolás.
+        assertEquals("Guggolás",
+                StrengthParse.parse("kettlebell guggolás 3x10 20 kg").get(0).name);
+        assertEquals("Lábtávolítás", StrengthParse.parse("lábtávolítás 3x15 40 kg").get(0).name);
+        assertEquals("Lábközelítés", StrengthParse.parse("lábközelítés 3x15 35 kg").get(0).name);
+        assertEquals("Fellépés", StrengthParse.parse("fellépés 3x10 20 kg").get(0).name);
+        assertEquals("Alkarhajlítás", StrengthParse.parse("csuklóhajlítás 3x20 8 kg").get(0).name);
+        assertEquals("Orosz csavarás", StrengthParse.parse("russian twist 3x20").get(0).name);
+        // Az „alkartámasz" a plank magyar neve – nem alkarhajlítás.
+        assertEquals("Plank", StrengthParse.parse("alkartámasz 3x60").get(0).name);
+    }
+
     @Test public void theThreeDigitWeightSurvives() {
         // A „100x3" súlya száz kiló – korábban a százból ismétlés lett.
         List<StrengthParse.Item> r = StrengthParse.parse("guggolás 100x3, 100x3, 100x2");

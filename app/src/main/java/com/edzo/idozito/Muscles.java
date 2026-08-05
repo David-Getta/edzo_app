@@ -32,7 +32,10 @@ public final class Muscles {
             {LAB, "guggol", "kitores", "labtolas", "labnyujt", "labhajlit", "labgep",
                     "vadli", "comb", "farizom", "medencelok", "hipthrust", "lepcsozes",
                     "csipoemel", "csipo emel", "falules", "fal-ules", "wall sit",
-                    "fellepes", "fellepo"},
+                    "fellepes", "fellepo", "labtavolit", "combtavolit", "abduktor",
+                    "labkozelit", "combkozelit", "adduktor",
+                    // A kettlebell-lendítés csípőből megy: far- és combhajlító.
+                    "kettlebell", "swing"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
                     "hatizom", "hatgep", "gerincnyujt", "hiperextenzi", "hatfeszit",
                     "szuperman", "superman"},

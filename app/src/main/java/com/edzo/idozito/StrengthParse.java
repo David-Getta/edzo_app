@@ -78,7 +78,7 @@ public final class StrengthParse {
             {"Tolódzkodás", "tolodzkod", "dipp", "dips"},
             {"Lehúzás", "lehuzas", "latpull", "lat pull", "lat huzas"},
             {"Oldalemelés", "oldalemel", "eloreemel"},
-            {"Plank", "plank", "deszka", "oldaltamasz"},
+            {"Plank", "plank", "deszka", "oldaltamasz", "alkartamasz"},
             {"Felülés", "felules", "crunch"},
             {"Hasprés", "haspres", "hasizom"},
             {"Lábemelés", "labemel"},
@@ -93,6 +93,15 @@ public final class StrengthParse {
             {"Mellgép", "mellgep", "tarogat", "pillango", "mellnyom"},
             {"Hegymászó", "hegymaszo"},
             {"Hátfeszítés", "hiperextenzi", "hatfeszit", "back extension"},
+            // A „kettlebell" magában nem elég: a kettlebell-guggolás guggolás.
+            {"Kettlebell lendítés", "kettlebell swing", "kettlebell lendit", "kb swing",
+                    "swing"},
+            {"Lábtávolítás", "labtavolit", "combtavolit", "abduktor"},
+            {"Lábközelítés", "labkozelit", "combkozelit", "adduktor"},
+            {"Fellépés", "fellepes", "step up", "stepup"},
+            // Csak a teljes szó: az „alkartámasz" plank, nem alkarhajlítás.
+            {"Alkarhajlítás", "alkarhajlit", "csuklohajlit"},
+            {"Orosz csavarás", "orosz csav", "oroszcsav", "russian twist"},
     };
 
     /** A felismerhető gyakorlatok szép nevei (teszthez és súgóhoz). */
