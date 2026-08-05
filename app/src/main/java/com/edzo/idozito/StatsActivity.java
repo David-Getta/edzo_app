@@ -817,6 +817,21 @@ public class StatsActivity extends Activity {
             lvol[i] = log.get(i).volume();
         }
         java.util.List<Bests.Best> bests = Bests.of(ts, dur, dist, cal, steps, lts, lvol);
+        // A napi volumen a munka mennyiségét méri; az erőt a legnehezebb
+        // sorozat és a becsült 1RM – a teremben ezekre emlékszik az ember.
+        int sn = 0;
+        for (StrengthLog.Entry e : log) sn += e.sets.size();
+        long[] sts = new long[sn];
+        String[] snames = new String[sn];
+        double[] sw = new double[sn];
+        int[] sr = new int[sn];
+        int si = 0;
+        for (StrengthLog.Entry e : log)
+            for (StrengthLog.SetEntry st : e.sets) {
+                sts[si] = e.ts; snames[si] = e.name; sw[si] = st.weight; sr[si] = st.reps;
+                si++;
+            }
+        bests.addAll(Bests.ofLifts(sts, snames, sw, sr));
         if (bests.isEmpty()) return null;
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy. MMM d.", new Locale("hu"));

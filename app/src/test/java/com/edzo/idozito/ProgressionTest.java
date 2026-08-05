@@ -207,4 +207,21 @@ public class ProgressionTest {
         long ts = System.currentTimeMillis() - daysAgo * 86400000L;
         return new StrengthLog.Entry(ts, name, l, rpe);
     }
+
+    @Test public void theOneRepMaxIsHonestAtOneRep() {
+        // Egy ismétlésnél a súly MAGA az egy ismétléses maximum – az eredeti
+        // Epley ott 3,3%-kal fölé lőne, és egy valódi szingli rekordját írná
+        // felül egy kitalált, nagyobb számmal.
+        assertEquals(120.0, Progression.oneRm(120, 1), 0.001);
+        // Efölött a szokásos képlet.
+        assertEquals(100 * (1 + 5 / 30.0), Progression.oneRm(100, 5), 0.001);
+        assertEquals(80 * (1 + 10 / 30.0), Progression.oneRm(80, 10), 0.001);
+        // Több ismétlés ugyanazzal a súllyal mindig nagyobb becslés.
+        for (int r = 1; r < 12; r++)
+            assertTrue(Progression.oneRm(100, r + 1) > Progression.oneRm(100, r));
+        // Képtelen bemenet: nulla, nem kivétel.
+        assertEquals(0.0, Progression.oneRm(0, 5), 0.001);
+        assertEquals(0.0, Progression.oneRm(100, 0), 0.001);
+        assertEquals(0.0, Progression.oneRm(-10, 5), 0.001);
+    }
 }

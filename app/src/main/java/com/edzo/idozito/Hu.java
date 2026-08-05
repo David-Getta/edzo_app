@@ -19,6 +19,17 @@ public final class Hu {
 
     public static final Locale LOCALE = new Locale("hu");
 
+    /**
+     * Súly kiírása: egész, ha kerek (40), egyébként egy tizedessel (42,5).
+     *
+     * Egy „120,0 kg"-os rekord úgy néz ki, mintha a tizedes számítana – a
+     * teremben viszont senki nem mond nullát a vessző után.
+     */
+    public static String kg(double v) {
+        if (Math.abs(v - Math.round(v)) < 0.05) return String.valueOf(Math.round(v));
+        return d1(v);
+    }
+
     /** Egy tizedes, magyarul: „5,2". */
     public static String d1(double v) {
         return String.format(LOCALE, "%.1f", v);

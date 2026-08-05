@@ -119,8 +119,7 @@ public final class Warmup {
 
     /** Súly kiírása: egész, ha kerek (40), egyébként egy tizedessel (42,5). */
     static String kg(double w) {
-        if (Math.abs(w - Math.round(w)) < 0.05) return String.valueOf(Math.round(w));
-        return Hu.d1(w);
+        return Hu.kg(w);
     }
 
     /** Egysoros összefoglaló: „20×10 · 45×5 · 62,5×3 · 75×2”. */

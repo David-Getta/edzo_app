@@ -849,8 +849,7 @@ public class StrengthActivity extends Activity {
 
     /** Súly kiírása: egész, ha kerek (40), egyébként 1 tizedes vesszővel (42,5). */
     static String fmtKg(double w) {
-        if (Math.abs(w - Math.round(w)) < 0.05) return String.valueOf(Math.round(w));
-        return Hu.d1(w);
+        return Hu.kg(w);
     }
 
     // ---------- Súlytárcsa-kalkulátor ----------
@@ -1016,7 +1015,7 @@ public class StrengthActivity extends Activity {
     /** Epley-becslés + a leggyakoribb edzés-százalékok táblázata. */
     static String oneRmPlan(double w, int reps) {
         if (w <= 0 || reps <= 0) return "Adj meg súlyt és ismétlést.";
-        double orm = w * (1 + reps / 30.0);
+        double orm = Progression.oneRm(w, reps);
         StringBuilder sb = new StringBuilder();
         sb.append("Becsült 1RM:  ").append(fmtKg(orm)).append(" kg\n\n");
         int[] pct = {95, 90, 85, 80, 75, 70, 65, 60};

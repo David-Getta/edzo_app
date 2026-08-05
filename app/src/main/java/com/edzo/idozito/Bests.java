@@ -48,6 +48,57 @@ public final class Bests {
      * @param liftVol a súlyzós bejegyzések volumene (ismétlés × súly)
      * @return a megtalált csúcsok, megjelenítési sorrendben; üres, ha nincs egy sem
      */
+    /**
+     * Ennél könnyebb sorozat nem „legnehezebb emelés": a 20 kilós bicepsz
+     * rekordja senkit nem érdekel, és elnyomná a valódi csúcsot.
+     */
+    static final double MIN_LIFT_KG = 30;
+
+    /**
+     * A legnehezebb valaha felemelt sorozat és a legjobb becsült 1RM.
+     *
+     * A napi volumen a munka MENNYISÉGÉT méri – ez a kettő az ERŐT, és a
+     * teremben ez az, amire emlékszik az ember. Külön metódus, mert a
+     * gyakorlat neve is kell hozzá, a többi csúcshoz meg nem.
+     *
+     * @param ts      sorozatonként a bejegyzés napja
+     * @param names   sorozatonként a gyakorlat neve
+     * @param weights sorozatonként a súly kg-ban
+     * @param reps    sorozatonként az ismétlésszám
+     */
+    public static List<Best> ofLifts(long[] ts, String[] names, double[] weights, int[] reps) {
+        List<Best> out = new ArrayList<>();
+        if (ts == null || names == null || weights == null || reps == null) return out;
+        int n = Math.min(ts.length, Math.min(names.length,
+                Math.min(weights.length, reps.length)));
+        double bestKg = 0, bestOrm = 0;
+        long bestKgTs = 0, bestOrmTs = 0;
+        String bestKgName = null, bestOrmName = null;
+        int bestKgReps = 0;
+        for (int i = 0; i < n; i++) {
+            double w = weights[i];
+            int r = reps[i];
+            String name = names[i];
+            if (w < MIN_LIFT_KG || w > 1000 || r < 1 || r > 100) continue;
+            if (name == null || name.trim().isEmpty()) continue;
+            if (w > bestKg) {
+                bestKg = w; bestKgTs = ts[i]; bestKgName = name; bestKgReps = r;
+            }
+            // Tíz fölött a képlet már túlbecsül, ezért ott nem becslünk.
+            if (r <= 10) {
+                double orm = Progression.oneRm(w, r);
+                if (orm > bestOrm) { bestOrm = orm; bestOrmTs = ts[i]; bestOrmName = name; }
+            }
+        }
+        if (bestKg > 0)
+            out.add(new Best("💪", "Legnehezebb emelés  ·  " + bestKgName,
+                    Hu.kg(bestKg) + " kg × " + bestKgReps, bestKgTs));
+        if (bestOrm > 0)
+            out.add(new Best("📊", "Legjobb becsült 1RM  ·  " + bestOrmName,
+                    Math.round(bestOrm) + " kg", bestOrmTs));
+        return out;
+    }
+
     public static List<Best> of(long[] ts, int[] durSec, double[] distM, double[] cal,
                                 int[] steps, long[] liftTs, double[] liftVol) {
         List<Best> out = new ArrayList<>();

@@ -181,7 +181,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   UGYANANNYI napjához mérve – a folyó hónap nem tűnik visszaesésnek attól,
   hogy még nem ért véget
 - **Csúcsaid**: leghosszabb edzés, leghosszabb táv, leggyorsabb tempó,
-  legtöbb lépés, legtöbb elégetett kalória és a legnagyobb napi volumen –
+  legtöbb lépés, legtöbb elégetett kalória, a legnagyobb napi volumen,
+  valamint a **legnehezebb emelés** és a **legjobb becsült 1RM** a
+  gyakorlat nevével („💪 Legnehezebb emelés · Guggolás — 120 kg × 1") –
   mindegyik dátummal
 - **Az idei éved**: éves madártávlat – aktív napok, heti átlag, össz idő
   és táv, az év sportja, a leghosszabb edzés és a legaktívabb hónap
@@ -263,7 +265,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~448 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~453 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

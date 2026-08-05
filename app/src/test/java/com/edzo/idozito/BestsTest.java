@@ -90,4 +90,60 @@ public class BestsTest {
         assertEquals("4:30", Bests.fmtPace(4.5));
         assertEquals("6:05", Bests.fmtPace(6.0833));
     }
+
+    @Test public void theHeaviestLiftAndTheBestOneRmAreFound() {
+        long d = 86400000L;
+        long[] ts = {1000 * d, 1000 * d, 1010 * d, 1010 * d};
+        String[] names = {"Guggolás", "Fekvenyomás", "Guggolás", "Fekvenyomás"};
+        double[] w = {100, 80, 120, 85};
+        int[] r = {5, 8, 1, 5};
+        List<Bests.Best> b = Bests.ofLifts(ts, names, w, r);
+        assertEquals(2, b.size());
+        // A legnehezebb sorozat a 120 kg-os guggolás.
+        assertTrue(b.get(0).label.contains("Guggolás"));
+        assertEquals("120 kg × 1", b.get(0).value);
+        assertEquals(1010 * d, b.get(0).ts);
+        // A legjobb becsült 1RM viszont a 100×5 (Epley: 116,7) ellenében a
+        // 120×1 (120) – ugyanaz a nap.
+        assertTrue(b.get(1).label.contains("Guggolás"));
+        assertEquals("120 kg", b.get(1).value);
+    }
+
+    @Test public void theOneRmPrefersTheBetterEstimate() {
+        // 100 kg × 5 (Epley 116,7) erősebb, mint 110 kg × 1 (110) – a
+        // legnehezebb sorozat viszont a 110.
+        long[] ts = {1, 2};
+        String[] names = {"Felhúzás", "Felhúzás"};
+        List<Bests.Best> b = Bests.ofLifts(ts, names, new double[]{100, 110}, new int[]{5, 1});
+        assertEquals("110 kg × 1", b.get(0).value);
+        assertEquals("117 kg", b.get(1).value);
+    }
+
+    @Test public void lightSetsAreNotRecords() {
+        // A 20 kilós bicepsz rekordja senkit nem érdekel.
+        assertTrue(Bests.ofLifts(new long[]{1}, new String[]{"Bicepsz"},
+                new double[]{20}, new int[]{10}).isEmpty());
+        // Magas ismétlésszámra nem becslünk 1RM-et (a képlet ott túlbecsül),
+        // de a legnehezebb sorozat attól még megvan.
+        List<Bests.Best> b = Bests.ofLifts(new long[]{1}, new String[]{"Guggolás"},
+                new double[]{60}, new int[]{20});
+        assertEquals(1, b.size());
+        assertTrue(b.get(0).label.contains("Legnehezebb"));
+    }
+
+    @Test public void brokenLiftInputNeverCrashes() {
+        assertTrue(Bests.ofLifts(null, null, null, null).isEmpty());
+        assertTrue(Bests.ofLifts(new long[]{1}, new String[]{null},
+                new double[]{100}, new int[]{5}).isEmpty());
+        assertTrue(Bests.ofLifts(new long[]{1}, new String[]{"  "},
+                new double[]{100}, new int[]{5}).isEmpty());
+        // Eltérő hosszú tömbök: a rövidebb dönt.
+        assertTrue(Bests.ofLifts(new long[]{1, 2, 3}, new String[]{"Guggolás"},
+                new double[]{}, new int[]{5}).isEmpty());
+        // Képtelen értékek kiesnek.
+        assertTrue(Bests.ofLifts(new long[]{1}, new String[]{"Guggolás"},
+                new double[]{5000}, new int[]{5}).isEmpty());
+        assertTrue(Bests.ofLifts(new long[]{1}, new String[]{"Guggolás"},
+                new double[]{100}, new int[]{0}).isEmpty());
+    }
 }

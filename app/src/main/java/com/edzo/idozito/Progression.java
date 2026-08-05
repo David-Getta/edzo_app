@@ -192,6 +192,19 @@ public final class Progression {
      * és a hosszabb pihenő már csak nyújtja az edzést. Testsúlyos gyakorlatnál
      * rövidebb, mert kisebb a terhelés.
      */
+    /**
+     * Egy ismétlésre becsült maximum (Epley).
+     *
+     * Egy ismétlésnél NEM becslünk: az már maga az egy ismétléses maximum. Az
+     * eredeti képlet ott 3,3%-kal fölé lőne, és egy valódi szingli rekordját
+     * írná felül egy kitalált, nagyobb számmal.
+     */
+    public static double oneRm(double weight, int reps) {
+        if (weight <= 0 || reps <= 0) return 0;
+        if (reps == 1) return weight;
+        return weight * (1 + reps / 30.0);
+    }
+
     public static int restSeconds(int reps, boolean bodyweight) {
         if (reps <= 0) return 90;
         int base = reps <= 5 ? 180 : reps <= 8 ? 150 : reps <= 12 ? 90 : 60;
