@@ -29,6 +29,10 @@ public final class Examples {
             "ebédre poke bowl",
             "két tányér gulyás",
             "chips helyett almát ettem",
+            "banán 2 db",
+            "százhúsz gramm csirkemell",
+            "sonkás-sajtos szendvics",
+            "július 30-án tortát ettem",
     };
 
     /** Több edzés egy mondatból – az előzmények tömeges felvitelénél. */
@@ -49,6 +53,11 @@ public final class Examples {
             "hétfőn és szerdán kondi",
             "kedden úszás, csütörtökön futás",
             "3x10 fekvenyomás 60 kg",
+            "futottam háromszor a héten",
+            "1h20 futás",
+            "reggel 5 km futás, este 8 km futás",
+            "ma reggel 6-kor futottam",
+            "huszonöt kilométer bringa",
     };
 
     /** Erősítő sorozatok egy mondatból. */
@@ -64,6 +73,9 @@ public final class Examples {
             "guggolás 3x10x60",
             "guggolás 3x10 100 kg rpe 8",
             "tegnap húzódzkodás 4x8",
+            "fekvenyomás 60x10, 70x8, 80x6",
+            "guggolás 5x5 hetvenöt kiló",
+            "3 kör 10 fekvőtámasz",
     };
 
     /** Intervallum-beállítás egy mondatból. */
@@ -76,6 +88,10 @@ public final class Examples {
             "45/15 x 6",
             "10 kör 30 mp munka, 15 mp pihenő",
             "2 perc bemelegítés, 6 kör 40/20",
+            "1:30 munka 0:30 pihenő 6 kör",
+            "40 mp / 20 mp, 10 kör",
+            "10x(40s/20s)",
+            "emom 12",
     };
 
     /** Percenként másik példa, hogy ne egyetlen formát tanuljon meg a szem. */
