@@ -1054,6 +1054,19 @@ public class StrengthActivity extends Activity {
         boolean own = false;
         for (Routines.Routine o : Routines.parse(stored))
             if (o.name.equalsIgnoreCase(r.name)) own = true;
+        // Beépített napot nem lehet átírni – de le lehet másolni, és a
+        // másolat már a sajátod. Enélkül újra kellene gépelni az egészet.
+        if (!own) {
+            StringBuilder csv = new StringBuilder();
+            for (String m : r.moves) {
+                if (csv.length() > 0) csv.append(", ");
+                csv.append(m);
+            }
+            final String moves = csv.toString();
+            sh.addRow("📋", "Másolat sajátként", "Ugyanez a nap, szerkeszthetően – "
+                    + "a másolat elnyomja a beépítettet.", false, true,
+                    () -> newRoutineSheet(r.name, moves));
+        }
         if (own)
             sh.addRow("🗑", "Törlöm ezt az edzésnapot", "A beépített változat marad.",
                     false, true, () -> {
@@ -1065,8 +1078,17 @@ public class StrengthActivity extends Activity {
         sh.addCancel().show();
     }
 
-    /** Saját edzésnap felvétele: név + vesszővel elválasztott gyakorlatok. */
     void newRoutineSheet() {
+        newRoutineSheet("", "");
+    }
+
+    /**
+     * Saját edzésnap felvétele: név + vesszővel elválasztott gyakorlatok.
+     *
+     * @param presetName  előre kitöltött név (beépített nap másolásakor)
+     * @param presetMoves előre kitöltött gyakorlatok, vesszővel
+     */
+    void newRoutineSheet(String presetName, String presetMoves) {
         LinearLayout box = vbox();
         box.setPadding(dp(10), dp(4), dp(10), 0);
 
@@ -1076,6 +1098,7 @@ public class StrengthActivity extends Activity {
         nameEt.setHintTextColor(MUTED);
         nameEt.setTextColor(TXT);
         nameEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        nameEt.setText(presetName);
         box.addView(nameEt, lp());
         box.addView(gap(10));
 
@@ -1085,6 +1108,8 @@ public class StrengthActivity extends Activity {
         movesEt.setHintTextColor(MUTED);
         movesEt.setTextColor(TXT);
         movesEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        movesEt.setText(presetMoves);
+        movesEt.setSelection(presetMoves.length());
         box.addView(movesEt, lp());
         box.addView(gap(6));
         box.addView(text("Koppints a nevekre, vagy írd be sajátot – a felismerő "
