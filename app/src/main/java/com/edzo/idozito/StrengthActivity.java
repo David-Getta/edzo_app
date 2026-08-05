@@ -86,6 +86,11 @@ public class StrengthActivity extends Activity {
         Button orm = ghost("📈  1RM & százalék kalkulátor");
         orm.setOnClickListener(v -> openOneRmCalc());
         col.addView(orm);
+        col.addView(gap(10));
+
+        Button warm = ghost("🔥  Bemelegítő rámpa");
+        warm.setOnClickListener(v -> openWarmupCalc());
+        col.addView(warm);
         col.addView(gap(16));
 
         summaryBox = vbox();
@@ -899,6 +904,72 @@ public class StrengthActivity extends Activity {
         String res = "Oldalanként:\n" + plan;
         if (rem > 0.01) res += "\n(≈ nem jön ki pontosan, marad " + Progression.kg(rem) + " kg/oldal)";
         return res;
+    }
+
+    // ---------- Bemelegítő rámpa ----------
+
+    /**
+     * Bemelegítő sorozatok a mai munkasúlyhoz, felrakható súlyokkal.
+     *
+     * A rámpa fejben is kiszámolható – csak a végén nem kerek súly jön ki,
+     * amit rá lehetne rakni a rúdra. Itt minden lépcső 2,5 kg-os osztáson áll,
+     * és a tárcsabontás is ott van mellette, hogy ne kelljen átlépni a másik
+     * kalkulátorba.
+     */
+    void openWarmupCalc() {
+        LinearLayout box = vbox();
+        box.setPadding(dp(10), dp(4), dp(10), 0);
+
+        box.addView(text("Mai munkasúly (kg)", 12.5f, MUTED, false));
+        final EditText work = numEt("pl. 100");
+        work.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        box.addView(work, lp());
+        box.addView(gap(8));
+
+        box.addView(text("Rúd súlya (kg) – kézisúlyzónál 0", 12.5f, MUTED, false));
+        final EditText bar = numEt("20");
+        bar.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        bar.setText("20");
+        box.addView(bar, lp());
+        box.addView(gap(12));
+
+        final LinearLayout result = vbox();
+        Button calc = primary("Számol");
+        calc.setOnClickListener(v -> {
+            result.removeAllViews();
+            double w = parseDouble(work.getText().toString());
+            double b = parseDouble(bar.getText().toString());
+            java.util.List<Warmup.Set> sets = Warmup.forWork(w, b);
+            if (sets.isEmpty()) {
+                result.addView(text(w > 0 && w < Warmup.MIN_WORK
+                        ? "Ehhez a súlyhoz nem kell külön rámpa – az első sorozat maga "
+                          + "a bemelegítés."
+                        : "Adj meg egy munkasúlyt (és a rúd súlyát).", 13, MUTED, false));
+                return;
+            }
+            for (int i = 0; i < sets.size(); i++) {
+                Warmup.Set st = sets.get(i);
+                TextView line = text((i + 1) + ".   " + st.label(), 15, TXT, true);
+                line.setPadding(0, dp(6), 0, 0);
+                result.addView(line);
+                if (b > 0 && st.weight > b) {
+                    TextView pl = text(platePlan(st.weight, b).replace("\n", "  "),
+                            12, MUTED, false);
+                    pl.setPadding(dp(14), dp(2), 0, 0);
+                    result.addView(pl);
+                }
+            }
+            TextView last = text("Utána: " + fmtKg(w) + " kg – a munkasorozatok.",
+                    12.5f, MUTED, false);
+            last.setPadding(0, dp(12), 0, 0);
+            result.addView(last);
+        });
+        box.addView(calc);
+        box.addView(gap(6));
+        box.addView(result, lp());
+
+        new Sheet(this, "Bemelegítő rámpa", "Mivel melegíts be a mai súlyhoz?")
+                .addCustom(box).addNeutral("Bezár", () -> {}).show();
     }
 
     // ---------- 1RM & százalék kalkulátor ----------

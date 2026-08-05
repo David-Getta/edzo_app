@@ -119,6 +119,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   („román felhúzás", „bolgár kitörés", „kábeles tricepsz"). Mentés előtt
   megmutatja, mit értett, és **odaírja a legutóbbi alkalmat is**
   („↳ múltkor 57,5 kg · ▲ +2,5 kg · 3 napja")
+- 🔥 **Bemelegítő rámpa**: a mai munkasúlyhoz üres rúd → 50% → 70% → 85%,
+  mindegyik lépcső **felrakható** súlyon (2,5 kg-os osztás), a tárcsabontással
+  együtt – a rámpát fejben is ki lehet számolni, csak a végén nem kerek szám
+  jön ki, amit rá lehetne rakni a rúdra
 - **Rekordok**: max súly és becsült **1RM** (Epley), **súly-fejlődési grafikon**,
   heti és összesített volumen
 - **Progresszió-javaslat**: mit nyomj ma? Dupla progresszió szerint előbb az
@@ -257,7 +261,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~440 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~447 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
