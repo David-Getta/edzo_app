@@ -150,7 +150,21 @@ if [ ! -f "$OUT/com/edzo/idozito/Foods.class" ]; then
   echo "A fordítás nem sikerült."; rm -rf "$WORK"; exit 1
 fi
 
+# Amit itt NEM tudunk futtatni (Context vagy Android-osztály kell hozzá), az
+# csak a CI-ben derül ki – hét perc múlva. Kiírjuk a nevüket, hogy egy közös
+# képlet átírásakor eszébe jusson az embernek átnézni őket.
+SKIPPED=""
+RAN=" $(echo $TESTS) "          # idézőjel nélkül: a sortörések szóközzé esnek
+for f in "$TST"/*.java; do
+  t="$(basename "$f" .java)"
+  case "$RAN" in *" $t "*) ;; *) SKIPPED="$SKIPPED $t";; esac
+done
+
 java -cp "$JUNIT_JARS:$OUT" org.junit.runner.JUnitCore $CLASSES
 CODE=$?
 rm -rf "$WORK"
+if [ -n "$SKIPPED" ]; then
+  echo
+  echo "Csak a CI-ben fut (Context kell hozzá):$SKIPPED"
+fi
 exit $CODE

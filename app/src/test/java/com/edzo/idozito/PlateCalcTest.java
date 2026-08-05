@@ -108,8 +108,12 @@ public class PlateCalcTest {
     }
 
     @Test public void oneRmOfASingleRepIsTheWeightItself() {
+        // Egy ismétlésnél a súly MAGA az egy ismétléses maximum. Az eredeti
+        // Epley itt 103,3-at adna: 3,3%-kal fölé lőne egy valódi szinglinél,
+        // és kitalált számmal írná felül a rekordot.
         String s = StrengthActivity.oneRmPlan(100, 1);
-        assertTrue(s, s.contains("103,3"));   // 100 × (1 + 1/30)
+        assertTrue(s, s.contains("Becsült 1RM:  100 kg"));
+        assertFalse(s, s.contains("103,3"));
     }
 
     @Test public void oneRmNeedsBothNumbers() {
