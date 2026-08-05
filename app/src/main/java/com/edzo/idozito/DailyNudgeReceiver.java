@@ -81,6 +81,27 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                         break;
                     }
             if (!line.isEmpty()) lines.add(line);
+            // Heti terv nélkül a rotáció válaszol: a legrégebben csinált nap.
+            // Ugyanaz, amit a kezdőlap csempéje és az edzésnap-lista mond –
+            // három helyen három különböző válasz csak zavarna.
+            if (line.isEmpty() && todayFocus.isEmpty()) {
+                java.util.List<StrengthLog.Entry> sLog = StrengthLog.load(c);
+                long[] rts = new long[sLog.size()];
+                String[] rnames = new String[sLog.size()];
+                for (int i = 0; i < sLog.size(); i++) {
+                    rts[i] = sLog.get(i).ts;
+                    rnames[i] = sLog.get(i).name;
+                }
+                java.util.List<Routines.Routine> all =
+                        Routines.all(Theme.getStr(c, Routines.KEY, ""));
+                String due = Routines.nextUp(all, rts, rnames, System.currentTimeMillis());
+                if (due != null) {
+                    Routines.Routine r = Routines.byName(
+                            Theme.getStr(c, Routines.KEY, ""), due);
+                    if (r != null)
+                        lines.add("🏋 Soron: " + r.name + "  ·  " + r.shortSummary(3));
+                }
+            }
         } catch (Exception ignored) {}
 
         // 2) A mai kihívás, ha még nincs teljesítve.

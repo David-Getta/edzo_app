@@ -215,14 +215,29 @@ public class StrengthActivity extends Activity {
         // Ha van a mai fókuszhoz illő edzésnap, az ERŐSEBB az egyenkénti
         // ajánlásnál: egy kész nap teljes, sorrendbe rakott terv, nem három
         // különálló gyakorlat.
+        java.util.List<Routines.Routine> all =
+                Routines.all(Theme.getStr(this, Routines.KEY, ""));
         Routines.Routine day = null;
-        if (!focus.isEmpty())
-            for (Routines.Routine r : Routines.all(Theme.getStr(this, Routines.KEY, "")))
+        String why = focus;
+        if (!focus.isEmpty()) {
+            for (Routines.Routine r : all)
                 if (Foods.norm(r.name).contains(Foods.norm(focus))) { day = r; break; }
+        } else {
+            // Heti terv nélkül a rotáció válaszol: a legrégebben csinált nap.
+            long[] rts = new long[log.size()];
+            String[] rnames = new String[log.size()];
+            for (int i = 0; i < log.size(); i++) {
+                rts[i] = log.get(i).ts;
+                rnames[i] = log.get(i).name;
+            }
+            String due = Routines.nextUp(all, rts, rnames, System.currentTimeMillis());
+            for (Routines.Routine r : all)
+                if (r.name.equals(due)) { day = r; why = "a legrégebben volt"; break; }
+        }
         if (day != null) {
             final String dayName = day.name;
             inner.addView(gap(12));
-            inner.addView(text("Ma ez jön · " + focus, 12, MUTED, true));
+            inner.addView(text("Ma ez jön · " + why, 12, MUTED, true));
             TextView row = text("🎯  " + day.label(), 13.5f, Theme.accent(this), true);
             row.setPadding(0, dp(6), 0, 0);
             row.setClickable(true);
