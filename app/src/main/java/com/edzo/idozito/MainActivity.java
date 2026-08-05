@@ -925,6 +925,17 @@ public class MainActivity extends Activity {
         mascotBody = text("", 14, TXT, false);
         mascotBody.setPadding(0, dp(3), 0, 0);
         txtCol.addView(mascotBody);
+        // Heti fókusz: ha van terv, a kezdőlap mondja meg, mi van ma.
+        try {
+            int dow = (java.util.Calendar.getInstance()
+                    .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+            String line = Weekplan.todayLine(Theme.planFocus(this), dow);
+            if (!line.isEmpty()) {
+                TextView planTv = text(line, 12.5f, tAccent, true);
+                planTv.setPadding(0, dp(4), 0, 0);
+                txtCol.addView(planTv);
+            }
+        } catch (Exception ignored) {}
         // Heti mozgás-cél egy sorban: a kezdőlapon ez az a szám, ami eldönti,
         // hogy ma kell-e mozdulni. A statisztikában megvan, de oda be kell
         // lépni – ide viszont mindenki ránéz.

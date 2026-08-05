@@ -84,6 +84,12 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 }
             }
         } catch (Exception ignored) {}
+        // Heti fókusz: ha a felhasználó beírta, mit edz ma, az a legkonkrétabb
+        // dolog, amit mondhatunk – ennél jobb emlékeztető nincs.
+        try {
+            String line = Weekplan.todayLine(Theme.planFocus(c), dowIdx);
+            if (!line.isEmpty()) text += "\n" + line;
+        } catch (Exception ignored) {}
         // Heti mozgás-cél: hét közben ez a leghasznosabb egy mondat – a napi
         // biztatás önmagában nem mondja meg, hol tart a hét.
         try {

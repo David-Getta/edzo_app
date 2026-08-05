@@ -154,6 +154,15 @@ public class SettingsActivity extends Activity {
                 + "napokon emlékeztet. Üresen hagyva minden nap edzésnap.", 12.5f, MUTED, false));
         col.addView(gap(8));
         col.addView(planDayChips(), lp());
+        col.addView(gap(10));
+        Button focus = ghost("📋  Heti fókusz (mikor mit edzel)");
+        focus.setOnClickListener(v -> planFocusSheet());
+        col.addView(focus);
+        col.addView(gap(6));
+        focusLabel = text("", 12, MUTED, false);
+        focusLabel.setPadding(dp(4), 0, 0, 0);
+        refreshFocusLabel();
+        col.addView(focusLabel, lp());
         col.addView(gap(18));
 
         // --- Értesítések és adatok ---
@@ -551,6 +560,57 @@ public class SettingsActivity extends Activity {
             btns[i] = b;
         }
         return row;
+    }
+
+    /**
+     * Heti fókusz: melyik napon mit edzel. A tervezett napok azt mondják meg,
+     * MIKOR van edzés – ez azt, hogy MIT. Aki osztott edzést csinál, annak ez
+     * a fontosabbik fele, és eddig fejben tartotta.
+     */
+    TextView focusLabel;
+
+    void refreshFocusLabel() {
+        if (focusLabel == null) return;
+        String sum = Weekplan.summary(Theme.planFocus(this));
+        focusLabel.setText(sum.isEmpty() ? "Nincs beállítva – a napok fókusz nélkül maradnak." : sum);
+    }
+
+    void planFocusSheet() {
+        String[] cur = Weekplan.parse(Theme.planFocus(this));
+        final EditText[] ets = new EditText[7];
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), dp(4));
+        for (int i = 0; i < 7; i++) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.addView(text(Weekplan.DAY_ABBR[i], 14, TXT, true),
+                    new LinearLayout.LayoutParams(dp(42), -2));
+            EditText et = new EditText(this);
+            et.setHint(i == 0 ? "pl. Láb" : i == 2 ? "pl. Hát, bicepsz" : "—");
+            et.setHintTextColor(MUTED);
+            et.setTextColor(TXT);
+            et.setTextSize(14);
+            et.setSingleLine(true);
+            et.setText(cur[i]);
+            ets[i] = et;
+            row.addView(et, new LinearLayout.LayoutParams(0, -2, 1f));
+            box.addView(row, lp());
+        }
+        new Sheet(this, "Heti fókusz 📋",
+                "Melyik napon mit edzel. Amit ideírsz, azt a kezdőlap és a napi "
+                        + "emlékeztető is mutatja. Üresen hagyott nap: nincs fókusz.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    String[] out = new String[7];
+                    for (int i = 0; i < 7; i++) out[i] = ets[i].getText().toString();
+                    Theme.setPlanFocus(this, out);
+                    refreshFocusLabel();
+                    Toast.makeText(this, Weekplan.any(Theme.planFocus(this))
+                            ? "Heti fókusz mentve ✔" : "Heti fókusz törölve.",
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addCancel()
+                .show();
     }
 
     /** Tervezett edzésnapok (többes kijelölés, 0=hétfő .. 6=vasárnap). */

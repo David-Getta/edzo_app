@@ -57,6 +57,13 @@ public final class Theme {
 
     /** Tervezett edzésnapok CSV-ben (0=hétfő .. 6=vasárnap); üres = minden nap. */
     public static String planDays(Context c) { return p(c).getString("plan_days", ""); }
+    /** Heti fókusz naponként, CSV-ben (0=hétfő .. 6=vasárnap); üres = nincs terv. */
+    public static String planFocus(Context c) { return p(c).getString("plan_focus", ""); }
+
+    public static void setPlanFocus(Context c, String[] focus) {
+        p(c).edit().putString("plan_focus", Weekplan.format(focus)).apply();
+    }
+
     /** Edzésnap-e az adott nap (0=hétfő .. 6=vasárnap)? Üres terv = minden nap az. */
     public static boolean isPlanDay(Context c, int dowIdx) {
         if (dowIdx < 0 || dowIdx > 6) return false;
@@ -138,7 +145,7 @@ public final class Theme {
                 .remove("c_accent").remove("c_accent2").remove("c_work").remove("c_rest")
                 .remove("volume").remove("vibrate").remove("cd_secs").remove("pace").remove("recap").remove("livebg").remove("duck").remove("screenon")
                 .remove("anim").remove("lightmode").remove("blaze_nudge").remove("blaze_hour")
-                .remove("plan_days").remove("tts_rate")
+                .remove("plan_days").remove("plan_focus").remove("tts_rate")
                 .apply();
         bumpRev(c);
     }
