@@ -81,6 +81,8 @@ public final class IntervalParse {
         // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
         // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
         s = clockToSeconds(s);
+        // A zárójel csak tagolás: a „10x(40s/20s)" ugyanaz, mint a „10x40/20".
+        s = s.replace('(', ' ').replace(')', ' ');
 
         // 1) Ismert forma név szerint. A kimondott körszám felülírja az alapot:
         //    „tabata 6 kör” hat kört jelent, nem nyolcat.
@@ -88,6 +90,7 @@ public final class IntervalParse {
             if (s.contains(p[0])) {
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");
+                if (r <= 0) r = numberBefore(s, "round");
                 // Az EMOM percenként egy kör: az „emom 12" tizenkét kör, az
                 // „emom 20 perc" húsz. A szám a név UTÁN áll, nem előtte.
                 if (r <= 0 && p[0].equals("emom")) r = numberAfter(s, "emom");
@@ -107,7 +110,7 @@ public final class IntervalParse {
                 double v = Double.parseDouble(mm.group(2).replace(',', '.'));
                 int w = (int) Math.round(mm.group(3).startsWith("perc") ? v * 60 : v);
                 Plan p = build(r, w, secondsBefore(s,
-                        new String[]{"piheno", "pihenes", "szunet", "lazitas", "seta"}),
+                        new String[]{"piheno", "pihenes", "szunet", "lazitas", "seta", "rest", "off"}),
                         warmIn(s), coolIn(s));
                 if (p != null) return p;
             } catch (NumberFormatException ignored) {
@@ -122,8 +125,8 @@ public final class IntervalParse {
         java.util.regex.Matcher m = java.util.regex.Pattern
                 // A mértékegység kiírva is állhat a pár két oldalán:
                 // „40 mp / 20 mp”. Enélkül a pihenő némán elveszett.
-                .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?(?:mp|masodperc|mperc)?"
-                        + "\\s?[/\\-]\\s?(\\d{1,3})\\s?(?:mp|masodperc|mperc)?"
+                .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?(?:masodperc|mperc|mp|sec|s)?"
+                        + "\\s?[/\\-]\\s?(\\d{1,3})\\s?(?:masodperc|mperc|mp|sec|s)?"
                         + "(?:\\s?[x×]\\s?(\\d{1,2}))?")
                 .matcher(slashable);
         if (m.find()) {
@@ -135,6 +138,7 @@ public final class IntervalParse {
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");
                 if (r <= 0) r = numberBefore(s, "szett");
+                if (r <= 0) r = numberBefore(s, "round");
                 rounds = r;
             }
             // „20 perc alatt 40/20”: a körszám a teljes időből jön ki. A
@@ -149,8 +153,14 @@ public final class IntervalParse {
         int rounds = numberBefore(s, "kor");
         if (rounds <= 0) rounds = numberBefore(s, "sorozat");
         if (rounds <= 0) rounds = numberBefore(s, "szett");
-        int work = secondsBefore(s, new String[]{"munka", "aktiv", "terheles", "gyakorlat"});
-        int rest = secondsBefore(s, new String[]{"piheno", "pihenes", "szunet", "lazitas"});
+        if (rounds <= 0) rounds = numberBefore(s, "round");
+        // Az „on" NEM szerepel: szó belsejében is előfordul („huszonöt"),
+        // és a secondsBefore nem néz szóhatárt. Az „off" mellett a munkaidő
+        // úgyis az első kimondott időből jön.
+        int work = secondsBefore(s, new String[]{"munka", "aktiv", "terheles", "gyakorlat",
+                "work"});
+        int rest = secondsBefore(s, new String[]{"piheno", "pihenes", "szunet", "lazitas",
+                "rest", "off"});
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka. De
         // megnevezetlenül csak életszerű munkaidőt fogadunk el: a „minden
         // percben 1 kör, 15 percig” 15 perce nem egyetlen szakasz hossza.

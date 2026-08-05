@@ -198,4 +198,25 @@ public class IntervalParseTest {
         // Kimondott körszám továbbra is erősebb.
         assertEquals(6, IntervalParse.parse("tabata 6 kör").rounds);
     }
+
+    @Test public void theEnglishGymPlanIsUnderstoodToo() {
+        // Az internetről másolt terv angolul érkezik – a mp/perc egységeket
+        // eddig is értette, a kulcsszavakat nem.
+        IntervalParse.Plan p = IntervalParse.parse("8 rounds 20 sec work 10 sec rest");
+        assertEquals(8, p.rounds);
+        assertEquals(20, p.work);
+        assertEquals(10, p.rest);
+        IntervalParse.Plan q = IntervalParse.parse("5 rounds of 30s work 30s rest");
+        assertEquals(5, q.rounds);
+        assertEquals(30, q.work);
+        assertEquals(30, q.rest);
+    }
+
+    @Test public void bracketsAreJustPunctuation() {
+        // „10x(40s/20s)" ugyanaz, mint a „10x40/20" – eddig egy kör lett belőle.
+        IntervalParse.Plan p = IntervalParse.parse("10x(40s/20s)");
+        assertEquals(10, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+    }
 }
