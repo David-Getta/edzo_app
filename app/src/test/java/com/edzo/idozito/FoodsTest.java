@@ -240,6 +240,19 @@ public class FoodsTest {
             assertEquals(w[0], w[1], Foods.find(w[0]).name);
     }
 
+    @Test public void theFourNewEntriesLandWhereTheyShould() {
+        // A gyümölcssaláta korábban ZÖLD salátára esett: egy 200 grammos adag
+        // 30 kalóriának látszott a valós ~120 helyett.
+        assertEquals("Gyümölcssaláta", Foods.find("gyümölcssaláta").name);
+        assertEquals("Saláta (zöld)", Foods.find("saláta").name);
+        assertEquals("Görög saláta", Foods.find("görög saláta").name);
+        // A puszta „köles" mostantól jó – a koleszterin viszont nem étel.
+        assertEquals("Hajdina / köles (főtt)", Foods.find("köles").name);
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL), "koleszterin").isEmpty());
+        assertEquals("Kenyér", Foods.find("toast").name);
+        assertEquals("Tökmag / napraforgómag", Foods.find("magvak").name);
+    }
+
     @Test public void aContrastiveConjunctionEndsTheNegation() {
         // A „de" ellentétet nyit: ami utána jön, azt megette az ember. Az „és"
         // viszont folytatja a tagadást – ott mindkét tétel kimarad.

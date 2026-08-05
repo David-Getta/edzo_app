@@ -456,8 +456,8 @@ public class FoodsIntegrationTest {
         assertEquals("", summary("koleszterin"));
         assertEquals("Alma 150g", summary("irodában ettem egy almát"));
         // A ragozott alakok viszont egyértelműek.
-        assertEquals("Hajdina (főtt) 200g", summary("kölest ettem"));
-        assertEquals("Hajdina (főtt) 200g", summary("kölessel"));
+        assertEquals("Hajdina / köles (főtt) 200g", summary("kölest ettem"));
+        assertEquals("Hajdina / köles (főtt) 200g", summary("kölessel"));
     }
 
     @Test public void thePlantBasedItemsAreNotTheirAnimalCounterparts() {

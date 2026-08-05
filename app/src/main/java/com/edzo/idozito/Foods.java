@@ -82,7 +82,7 @@ public final class Foods {
         new Food("Polenta / puliszka", 85, 2, 250, "polenta", "puliszka"),
         new Food("Quinoa (főtt)", 120, 4.4, 200, "quinoa"),
         new Food("Kenyér", 250, 8, 70, "kenyer", "piritos", "bagett",
-                "ciabatta", "focaccia", "bruschetta"),
+                "ciabatta", "focaccia", "bruschetta", "toast", "tosztkenyer"),
         new Food("Zsemle", 280, 9, 55, "zsemle"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
@@ -135,6 +135,10 @@ public final class Foods {
         new Food("Paradicsom", 18, 0.9, 100, "paradicsom", "pari"),
         new Food("Uborka", 15, 0.7, 100, "uborka", "ubi"),
         new Food("Paprika", 25, 1, 100, "paprika"),
+        // A „gyümölcssaláta" korábban zöld salátára esett: 200 grammból 30
+        // kalória lett a valós ~120 helyett, mert a rövidebb „salata" tő nyert.
+        new Food("Gyümölcssaláta", 60, 0.8, 200, "gyumolcssalata",
+                "gyumolcs salata"),
         new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali",
                 // A „rukkola" vége „kola" – a hosszabb tő elfedi az üdítőt.
                 "rukkola", "endivia", "radicchio"),
@@ -502,7 +506,7 @@ public final class Foods {
         new Food("Cseresznye / meggy", 60, 1, 150, "cseresznye", "meggy"),
         new Food("Datolya", 280, 2.5, 30, "datolya"),
         new Food("Tökmag / napraforgómag", 570, 22, 30, "tokmag", "napraforgomag",
-                "napraforgo", "fenyomag"),
+                "napraforgo", "fenyomag", "magvak", "vegyes mag"),
         new Food("Chia / lenmag", 490, 17, 15, "chia", "lenmag", "lenmagliszt"),
         new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
@@ -510,13 +514,13 @@ public final class Foods {
         // számolva a kalória harmada veszett el.
         new Food("Kebab", 250, 13, 350, "kebab", "durum", "durum tekercs"),
         new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkussz", "kuszkusz", "couscous"),
-        // A puszta „koles" tő a „koleszos"-ba, „koleszterin"-be is beleesne.
-        new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska",
-                // A puszta „köles" szándékosan NEM szótő: a szótő-illesztés
-                // szó belsejében is talál, és a „koleszterin", „koleszban"
-                // kölessé válna. A ragozott alakok viszont egyértelműek.
-                "kolest", "kolessel", "kolesbol", "koleskasa", "koles kasa",
-                "amarant"),
+        // A puszta „köles" korábban azért maradt ki, mert a szótő-illesztés a
+        // „koleszterin" és a „koleszban" szó belsejében is talált volna. A
+        // megoldás nem a szótő elhagyása, hanem a két ütköző szó álcázása
+        // (NOT_FOOD) – így a legegyszerűbb alak, a „köles", is jó.
+        new Food("Hajdina / köles (főtt)", 130, 5, 200, "hajdina", "haricska",
+                "koles", "kolest", "kolessel", "kolesbol", "koleskasa",
+                "koles kasa", "amarant"),
         new Food("Darált hús", 250, 18, 150, "daralt hus", "daralthus"),
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
@@ -633,6 +637,8 @@ public final class Foods {
             "hall", "halal", "halom", "halaszt", "szabad", "babon", "baber",
             "babu", "szobabicikli", "majom", "majus", "majalis", "tejut",
             "riziko", "sorsol", "alkalm", "borda",
+            // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
+            "kolesz",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
