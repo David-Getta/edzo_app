@@ -158,4 +158,31 @@ public class ActivitiesTimestampTest {
         // A valódi időtartam nem sérül.
         assertEquals(120, Activities.parse("2 óra úszás").plans.get(0).minutes);
     }
+
+    @Test public void lastWeekdayGoesBackAWholeWeek() {
+        // A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit –
+        // különben a bejegyzés hét nappal a helye elé kerül a naplóban.
+        assertEquals(8, Activities.parse("múlt kedden futottam", WED_NOON).offset);
+        assertEquals(1, Activities.parse("kedden futottam", WED_NOON).offset);
+        assertEquals(9, Activities.parse("múlt hétfőn kondi", WED_NOON).offset);
+        assertEquals(11, Activities.parse("múlt szombaton túra", WED_NOON).offset);
+    }
+
+    @Test public void dawnIsItsOwnPartOfTheDay() {
+        assertEquals(5, Activities.parse("tegnap hajnalban futottam", WED_NOON).hour);
+        assertEquals(5, Activities.parse("múlt pénteken hajnalban futás", WED_NOON).hour);
+        // A többi napszak érintetlen.
+        assertEquals(8, Activities.parse("tegnap reggel futottam", WED_NOON).hour);
+        assertEquals(19, Activities.parse("tegnap este kondi", WED_NOON).hour);
+    }
+
+    /** 2026. augusztus 5., szerda dél. */
+    private static final long WED_NOON = wedNoon();
+
+    private static long wedNoon() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(2026, java.util.Calendar.AUGUST, 5, 12, 0, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
 }

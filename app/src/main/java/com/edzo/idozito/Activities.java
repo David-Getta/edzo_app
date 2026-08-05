@@ -831,6 +831,18 @@ public final class Activities {
     }
 
     /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
+    /**
+     * A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit.
+     *
+     * A jelzőnek a napnév ELŐTT kell állnia, különben a „kedden futottam,
+     * múlt heti tempóval" keddje is elcsúszna.
+     */
+    private static int lastWeekShift(String s, int dayPos, int back) {
+        int b = Math.max(0, dayPos - 14);
+        String head = s.substring(b, dayPos);
+        return head.contains("mult") ? back + 7 : back;
+    }
+
     private static java.util.List<int[]> findWeekdays(char[] q, long now) {
         String s = new String(q);
         String[][] dows = {{"hetfo", "2"}, {"kedd", "3"}, {"szerda", "4"},
@@ -848,7 +860,7 @@ public final class Activities {
                 if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
                 int end = p + w[0].length();
                 while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
-                int back = (today - Integer.parseInt(w[1]) + 7) % 7;
+                int back = lastWeekShift(s, p, (today - Integer.parseInt(w[1]) + 7) % 7);
                 out.add(new int[]{p, end, back});
             }
         }
@@ -1177,7 +1189,8 @@ public final class Activities {
                 return h;
             }
         }
-        String[][] tod = {{"reggel", "8"}, {"delelott", "10"}, {"delutan", "16"},
+        String[][] tod = {{"hajnal", "5"}, {"reggel", "8"}, {"delelott", "10"},
+                {"delutan", "16"},
                 {"este", "19"}, {"esti", "19"}, {"ejszaka", "22"}, {"ejjel", "22"}};
         for (String[] w : tod) {
             int p = s.indexOf(w[0]);
@@ -1405,7 +1418,7 @@ public final class Activities {
             if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
             int end = p + w[0].length();
             while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
-            int back = (today - Integer.parseInt(w[1]) + 7) % 7;
+            int back = lastWeekShift(s, p, (today - Integer.parseInt(w[1]) + 7) % 7);
             return new int[]{p, end, back};
         }
         return null;
