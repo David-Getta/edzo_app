@@ -165,7 +165,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   volumen, csúcssúly), az étrend és a víz is benne. Ha a héten
   **mindenkori rekord** dőlt meg, azt külön kiírja („🏆 Új csúcs:
   Guggolás 120 kg") – a hét csúcssúlyából magától nem derülne ki,
-  hogy az „ez volt a hét" vagy „ilyet még soha"
+  hogy az „ez volt a hét" vagy „ilyet még soha". A havi visszatekintő
+  ugyanezt hozza, ott legfeljebb hármat felsorolva
 - **Mozgó widget** a kezdőképernyőn: állapot, mai kcal és víz, gyorsgombok
   (edzés indítása, erősítő napló, +1 pohár víz)
 

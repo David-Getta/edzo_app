@@ -137,6 +137,34 @@ public class MonthlyReceiver extends BroadcastReceiver {
                     text += ", " + String.format(Hu.LOCALE, "%,d", Math.round(volume))
                             .replace(',', ' ') + " kg volumen";
                 text += ".";
+                // A havi volumen a munka mennyiségét méri; a hónap igazi
+                // eredménye viszont az, hogy mi dőlt meg – egy hónap alatt
+                // több rekord is összejöhet, ezért hármat is felsorolunk.
+                java.util.List<StrengthLog.Entry> all = StrengthLog.load(c);
+                int sn = 0;
+                for (StrengthLog.Entry e : all) sn += e.sets.size();
+                long[] rts = new long[sn];
+                String[] rnames = new String[sn];
+                double[] rw = new double[sn];
+                int ri = 0;
+                for (StrengthLog.Entry e : all)
+                    for (StrengthLog.SetEntry st : e.sets) {
+                        // A hónap UTÁNI bejegyzés nem tartozik ide: a
+                        // visszatekintő a lezárt hónapról szól.
+                        if (e.ts >= to) continue;
+                        rts[ri] = e.ts; rnames[ri] = e.name; rw[ri] = st.weight; ri++;
+                    }
+                long[] cts = java.util.Arrays.copyOf(rts, ri);
+                String[] cnames = java.util.Arrays.copyOf(rnames, ri);
+                double[] cw = java.util.Arrays.copyOf(rw, ri);
+                java.util.List<String> recs = Bests.newRecordsSince(from, cts, cnames, cw);
+                if (!recs.isEmpty()) {
+                    String line = "\n🏆 Új csúcs: " + recs.get(0);
+                    for (int i = 1; i < recs.size() && i < 3; i++)
+                        line += "  ·  " + recs.get(i);
+                    if (recs.size() > 3) line += "  ·  +" + (recs.size() - 3) + " további";
+                    text += line;
+                }
             }
         } catch (Exception ignored) {}
 
