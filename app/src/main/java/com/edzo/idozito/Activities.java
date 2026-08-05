@@ -1137,6 +1137,9 @@ public final class Activities {
         return false;
     }
 
+    /** Kötőszavak, amik vessző nélkül is ÚJ állítást nyitnak. */
+    private static final String[] LINKERS = {" es ", " majd ", " utana ", " aztan ", " viszont "};
+
     /**
      * Tagadás és csere kitakarása. Az „X helyett" X-e a tagmondat elejétől a
      * szóig, a tagadó/kihagyó igék („nem …", „kihagytam", „elmaradt",
@@ -1185,6 +1188,18 @@ public final class Activities {
                     int e = p;
                     while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
                             && s.charAt(e) != ';') e++;
+                    // A kötőszó ÚJ állítást nyit, vessző nélkül is: a „focit
+                    // néztem és futottam 30 percet" futása megtörtént, a
+                    // „vettem egy cipőt és futottam 5 km-t" öt kilométere
+                    // szintén. Enélkül a kötőszó utáni valódi edzés is eltűnt.
+                    if (!w.equals("nem ")) {
+                        for (String c : LINKERS) {
+                            int k = s.indexOf(c, p);
+                            if (k >= 0 && k < e) e = k;
+                            k = s.lastIndexOf(c, p);
+                            if (k >= 0 && k >= a) a = k + c.length();
+                        }
+                    }
                     // A „nem futottam és kondiztam" kondija megtörtént: az „és"
                     // ÚJ állítást nyit, nem folytatja a tagadást. Csak akkor
                     // fut tovább a törlés, ha a másik fele is tagadva van

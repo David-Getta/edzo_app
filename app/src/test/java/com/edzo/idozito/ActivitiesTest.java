@@ -214,6 +214,27 @@ public class ActivitiesTest {
                 now).plans.size());
     }
 
+    @Test public void aConjunctionOpensANewStatement() {
+        // A kötőszó után ÚJ állítás jön, vessző nélkül is. Eddig a vásárlás,
+        // a lemondás és a meccsnézés magával vitte a mondat másik felét –
+        // vagyis egy megtörtént edzés nem került a naplóba.
+        long now = System.currentTimeMillis();
+        for (String q : new String[]{
+                "vettem egy új cipőt és futottam 5 km-t",
+                "rendeltem pizzát és futottam 30 percet",
+                "lemondtam az órát és úsztam 40 percet",
+                "focit néztem és futottam 30 percet",
+                "futottam 30 percet majd rendeltem pizzát",
+                "futottam 5 km-t és vettem egy cipőt"})
+            assertEquals("elveszett az edzés: " + q, 1,
+                    Activities.parse(q, now).plans.size());
+        // Kötőszó nélkül viszont az egész tagmondat marad kizárva.
+        assertTrue(Activities.parse("vettem egy bérletet", now).isEmpty());
+        assertTrue(Activities.parse("focimeccset néztem", now).isEmpty());
+        assertTrue(Activities.parse("elmaradt a foci", now).isEmpty());
+        assertTrue(Activities.parse("kihagytam az edzést", now).isEmpty());
+    }
+
     @Test public void multisportIsNotLastWeek() {
         // A MultiSport bérlet neve tartalmazza a „mult"-ot. Szó belsejében az
         // nem múlt hét – egy hetet csúszott volna a bejegyzés.
