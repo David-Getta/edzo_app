@@ -77,7 +77,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Fotó** az étkezéshez (kamera vagy galéria), és **arány-csúszkák**: a kép
   alapján utólag pontosítható, miből mennyi volt
 - **Utólagos pótlás mondatból**: a „tegnap este pizzát ettem" a tegnapi
-  napra kerül, a napszaknak megfelelő órával
+  napra kerül, a napszaknak megfelelő órával – a „3 napja", a „hétfőn" és a
+  kimondott óra („19 órakor") is megy
 - **Kedvencek** és gyakori étkezések gyors csipjei, keresés a naplóban,
   napi bontás, napi részletek és megosztás
 
@@ -232,7 +233,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~396 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~403 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

@@ -1036,26 +1036,9 @@ public class DietActivity extends Activity {
         // Szerkesztésnél az eredeti időpont és fotó megmarad.
         long ts = existing != null ? existing.ts : System.currentTimeMillis();
         // A „tegnap este pizzát ettem" a tegnapi napra kerül – ahogy az
-        // edzés-mondatoknál is. A napszak-szó az órát is beállítja; nélküle
-        // az étkezés-szó dönt (vacsora → este), különben dél.
-        if (existing == null) {
-            String nrm = Foods.norm(nameEt.getText().toString());
-            int back = nrm.contains("tegnapelott") ? 2 : nrm.contains("tegnap") ? 1 : 0;
-            if (back > 0) {
-                java.util.Calendar cal = java.util.Calendar.getInstance();
-                cal.add(java.util.Calendar.DAY_OF_YEAR, -back);
-                int hour = nrm.contains("reggel") ? 8
-                        : nrm.contains("tizorai") ? 10
-                        : nrm.contains("ebed") ? 13
-                        : nrm.contains("uzsonna") ? 16
-                        : nrm.contains("vacsora") || nrm.contains("este") ? 19 : 12;
-                cal.set(java.util.Calendar.HOUR_OF_DAY, hour);
-                cal.set(java.util.Calendar.MINUTE, 0);
-                cal.set(java.util.Calendar.SECOND, 0);
-                cal.set(java.util.Calendar.MILLISECOND, 0);
-                ts = cal.getTimeInMillis();
-            }
-        }
+        // edzés-mondatoknál is. A felismerés a hétköznapneveket („hétfőn") és
+        // a „3 napja" alakot is érti, a napszak-szó pedig az órát adja.
+        if (existing == null) ts = MealTime.from(nameEt.getText().toString(), ts);
         String photo = existing != null ? existing.photo : "";
         MealLog.Meal meal = new MealLog.Meal(ts, nameEt.getText().toString().trim(), items, photo);
         if (existing != null) MealLog.removeByTs(this, existing.ts);
