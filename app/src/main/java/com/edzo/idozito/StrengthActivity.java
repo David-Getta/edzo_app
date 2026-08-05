@@ -212,6 +212,28 @@ public class StrengthActivity extends Activity {
         int dow = (java.util.Calendar.getInstance()
                 .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
         String focus = Weekplan.forDay(Theme.planFocus(this), dow);
+        // Ha van a mai fókuszhoz illő edzésnap, az ERŐSEBB az egyenkénti
+        // ajánlásnál: egy kész nap teljes, sorrendbe rakott terv, nem három
+        // különálló gyakorlat.
+        Routines.Routine day = null;
+        if (!focus.isEmpty())
+            for (Routines.Routine r : Routines.all(Theme.getStr(this, ROUTINE_KEY, "")))
+                if (Foods.norm(r.name).contains(Foods.norm(focus))) { day = r; break; }
+        if (day != null) {
+            final String dayName = day.name;
+            inner.addView(gap(12));
+            inner.addView(text("Ma ez jön · " + focus, 12, MUTED, true));
+            TextView row = text("🎯  " + day.label(), 13.5f, Theme.accent(this), true);
+            row.setPadding(0, dp(6), 0, 0);
+            row.setClickable(true);
+            row.setOnClickListener(v -> routineDaySheet(dayName));
+            inner.addView(row);
+            TextView sub = text(day.summary(), 12, MUTED, false);
+            sub.setPadding(0, dp(2), 0, 0);
+            inner.addView(sub);
+            return;
+        }
+
         List<String> picks = Muscles.suggestForToday(log, System.currentTimeMillis(), 3,
                 focus.isEmpty() ? null : focus);
         if (picks.isEmpty()) return;

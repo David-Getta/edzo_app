@@ -141,7 +141,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   egy koppintással beírható – eddig minden gyakorlatot külön kellett
   kikeresni, és a napot fejben tartani. Ami ma már megvan, az **ki van
   pipálva** („2 / 5 megvan ma"), és a **heti fókuszhoz illő nap** meg van
-  jelölve („🎯 Lábnap · ma ez jön")
+  jelölve („🎯 Lábnap · ma ez jön"). Ha van a mai fókuszhoz illő nap, az
+  az erősítő képernyő tetején is ott van – egy kész nap teljes, sorrendbe
+  rakott terv, nem három különálló gyakorlat
 - **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
   progresszió-javaslattal együtt – ha a heti fókuszban áll valami mára, az
   megy elöl („🎯 Evezés · 3 × 10 · 52,5 kg") – csak
