@@ -431,7 +431,7 @@ public class SettingsActivity extends Activity {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("datum;gyakorlat;sorozat;ismetles;suly_kg;volumen_kg\n");
+        sb.append("datum;gyakorlat;sorozat;ismetles;suly_kg;volumen_kg;rpe\n");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
         for (StrengthLog.Entry e : list) {
             String d = df.format(new Date(e.ts));
@@ -443,7 +443,8 @@ public class SettingsActivity extends Activity {
                   .append(setNo++).append(';')
                   .append(s.reps).append(';')
                   .append(String.format(Locale.US, "%.1f", s.weight)).append(';')
-                  .append(String.format(Locale.US, "%.1f", s.reps * s.weight)).append('\n');
+                  .append(String.format(Locale.US, "%.1f", s.reps * s.weight)).append(';')
+                  .append(e.rpe > 0 ? String.valueOf(e.rpe) : "").append('\n');
             }
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_erosito.csv", "text/csv");

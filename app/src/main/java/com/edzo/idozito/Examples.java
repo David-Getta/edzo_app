@@ -62,6 +62,7 @@ public final class Examples {
             "lábgép 3x12 80 kg és vádli 4x15",
             "arnold nyomás 3x10 16 kg, oldalemelés 3x15 8 kg",
             "guggolás 3x10x60",
+            "guggolás 3x10 100 kg rpe 8",
     };
 
     /** Intervallum-beállítás egy mondatból. */

@@ -223,4 +223,21 @@ public class StrengthParseTest {
         // Gyakorlat nélkül továbbra sincs bejegyzés.
         assertEquals(0, StrengthParse.parse("nyomtam háromszor tízet 60 kg").size());
     }
+    @Test public void theFeltEffortCanComeFromTheSentence() {
+        assertEquals(8, StrengthParse.parse("guggolás 3x10 100 kg rpe 8").get(0).rpe);
+        assertEquals(9, StrengthParse.parse("fekvenyomás 3x5 90 kg rpe9").get(0).rpe);
+        assertEquals(7, StrengthParse.parse("evezés 4x12 60 kg, 7-es rpe").get(0).rpe);
+        // A címkében is látszik.
+        assertTrue(StrengthParse.parse("guggolás 3x10 100 kg rpe 8").get(0).label()
+                .contains("RPE 8"));
+        // Ami nincs a 6–10 sávban, az nem RPE.
+        assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rpe 3").get(0).rpe);
+        assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg").get(0).rpe);
+        // Gyakorlatonként külön: a második mondatrész saját értéket kap.
+        java.util.List<StrengthParse.Item> two =
+                StrengthParse.parse("guggolás 3x10 100 kg rpe 8, fekvenyomás 3x8 60 kg rpe 10");
+        assertEquals(2, two.size());
+        assertEquals(8, two.get(0).rpe);
+        assertEquals(10, two.get(1).rpe);
+    }
 }

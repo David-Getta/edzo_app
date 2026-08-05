@@ -90,7 +90,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   automatikus előtöltésével, kereséssel a naplóban
 - **Érzett terhelés (RPE 6–10)**, elhagyható: a súly és az ismétlés nem mondja
   meg, mennyi maradt a tankban. Könnyű napnál (≤7) a javaslat rögtön súlyt
-  emel, a határon (10) pedig megismételteti ugyanazt
+  emel, a határon (10) pedig megismételteti ugyanazt. Mondatból is megy
+  („guggolás 3x10 100 kg rpe 8"), és a CSV exportban is szerepel
 - **Sorozatok mondatból**: „3x10 fekvenyomás 60 kg", „guggolás 5x5 80 kg",
   „húzódzkodás 3x8" (saját testsúly), „bicepsz 12-10-8 15 kg"
   (sorozatonként más ismétlés), „guggolás 3x10x60", „vállból nyomás
@@ -185,7 +186,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - Edzés / haladás / jelvények / statisztika / hőtérkép / napi étrend megosztása
 - **Biztonsági mentés / visszaállítás** fájlba – a GPS-útvonalakkal együtt;
   az étkezés-fotók a telefonon maradnak –,
-  **CSV export** (előzmények, erősítő napló, étrend a vízzel együtt)
+  **CSV export** (előzmények, erősítő napló RPE-vel, étrend a vízzel együtt)
 
 ## Automatikus frissítés (ajánlott) — Obtainium
 
@@ -223,7 +224,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~390 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~391 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

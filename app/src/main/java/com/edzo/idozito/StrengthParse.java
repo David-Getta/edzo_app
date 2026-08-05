@@ -29,6 +29,8 @@ public final class StrengthParse {
     public static final class Item {
         public final String name;
         public final List<Set> sets;
+        /** Érzett terhelés a mondatból („rpe 8”), 0 = nem mondta. */
+        public int rpe;
         Item(String name, List<Set> sets) { this.name = name; this.sets = sets; }
         public int totalReps() { int r = 0; for (Set s : sets) r += s.reps; return r; }
         public double topWeight() {
@@ -50,6 +52,7 @@ public final class StrengthParse {
             double w = topWeight();
             if (w > 0) sb.append("  ·  ").append(Progression.kg(w)).append(" kg");
             else sb.append("  ·  saját testsúly");
+            if (rpe > 0) sb.append("  ·  RPE ").append(rpe);
             return sb.toString();
         }
     }
@@ -107,7 +110,8 @@ public final class StrengthParse {
     public static List<Item> parse(String text) {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
-        for (String part : splitClauses(sets(Foods.norm(text)))) {
+        String whole = sets(Foods.norm(text));
+        for (String part : splitClauses(whole)) {
             Item it = parseOne(part);
             if (it != null) out.add(it);
         }
@@ -117,8 +121,15 @@ public final class StrengthParse {
             Item same = null;
             for (Item m : merged) if (m.name.equals(it.name)) { same = m; break; }
             if (same == null) merged.add(it);
-            else same.sets.addAll(it.sets);
+            else {
+                same.sets.addAll(it.sets);
+                if (same.rpe == 0) same.rpe = it.rpe;
+            }
         }
+        // Egyetlen gyakorlatnál az RPE a mondat bármely részében állhat: a
+        // „4x12 60 kg, 7-es rpe" vesszője tagmondatot zár, de a szám ugyanarra
+        // a gyakorlatra vonatkozik. Több gyakorlatnál ezt nem találgatjuk.
+        if (merged.size() == 1 && merged.get(0).rpe == 0) merged.get(0).rpe = rpeIn(whole);
         return merged;
     }
 
@@ -276,7 +287,30 @@ public final class StrengthParse {
             }
         }
         if (sets.isEmpty()) return null;
-        return new Item(name, sets);
+        Item it = new Item(name, sets);
+        it.rpe = rpeIn(s);
+        return it;
+    }
+
+    /**
+     * Érzett terhelés a tagmondatból: „rpe 8”, „rpe8”, „8-as rpe”. Csak a
+     * 6–10 sáv életszerű; ami ezen kívül esik, az nem RPE, hanem valami más
+     * szám a mondatban.
+     */
+    private static int rpeIn(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("rpe\\s*-?\\s*(\\d{1,2})|(\\d{1,2})\\s*-?\\s*(?:as|es|os)?\\s*rpe")
+                .matcher(s);
+        while (m.find()) {
+            String g = m.group(1) != null ? m.group(1) : m.group(2);
+            if (g == null) continue;
+            try {
+                int v = Integer.parseInt(g);
+                if (v >= 6 && v <= 10) return v;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return 0;
     }
 
     /** A leghosszabb illeszkedő gyakorlat-tő szép neve, vagy null. */

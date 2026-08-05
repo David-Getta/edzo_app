@@ -520,7 +520,7 @@ public class StrengthActivity extends Activity {
             double[] prev = StrengthLog.recordsFor(this, it.name);
             // Másodperc-eltolás: minden bejegyzés külön időbélyeget kap (az
             // azonosítja őket megnyitáskor és törléskor).
-            StrengthLog.Entry e = new StrengthLog.Entry(now - i++, it.name, sets);
+            StrengthLog.Entry e = new StrengthLog.Entry(now - i++, it.name, sets, it.rpe);
             StrengthLog.add(this, e);
             if (prev[0] > 0 && e.topWeight() > prev[0]) record = true;
         }
