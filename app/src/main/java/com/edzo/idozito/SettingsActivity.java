@@ -577,7 +577,7 @@ public class SettingsActivity extends Activity {
 
     void planFocusSheet() {
         String[] cur = Weekplan.parse(Theme.planFocus(this));
-        final EditText[] ets = new EditText[7];
+        final android.widget.EditText[] ets = new android.widget.EditText[7];
         LinearLayout box = vbox();
         box.setPadding(dp(4), 0, dp(4), dp(4));
         for (int i = 0; i < 7; i++) {
@@ -585,7 +585,7 @@ public class SettingsActivity extends Activity {
             row.setGravity(Gravity.CENTER_VERTICAL);
             row.addView(text(Weekplan.DAY_ABBR[i], 14, TXT, true),
                     new LinearLayout.LayoutParams(dp(42), -2));
-            EditText et = new EditText(this);
+            android.widget.EditText et = new android.widget.EditText(this);
             et.setHint(i == 0 ? "pl. Láb" : i == 2 ? "pl. Hát, bicepsz" : "—");
             et.setHintTextColor(MUTED);
             et.setTextColor(TXT);
