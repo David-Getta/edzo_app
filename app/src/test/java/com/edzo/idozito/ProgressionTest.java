@@ -155,4 +155,23 @@ public class ProgressionTest {
         assertEquals("52,5", Progression.kg(52.5));
         assertEquals("16,25", Progression.kg(16.25));
     }
+    @Test public void theRestSuggestionFollowsTheRepRange() {
+        // Nehéz sorozat: hosszabb pihenő; tömegépítő sáv: rövidebb.
+        assertEquals(180, Progression.restSeconds(5, false));
+        assertEquals(150, Progression.restSeconds(8, false));
+        assertEquals(90, Progression.restSeconds(12, false));
+        assertEquals(60, Progression.restSeconds(20, false));
+        // Testsúlyosnál kisebb a terhelés, rövidebb a pihenő.
+        assertEquals(150, Progression.restSeconds(5, true));
+        assertEquals(60, Progression.restSeconds(12, true));
+        // Ismeretlen ismétlésszámra biztonságos alapérték.
+        assertEquals(90, Progression.restSeconds(0, false));
+        // Minden sávhoz tartozik indoklás, és a pihenő életszerű marad.
+        for (int r = 1; r <= 50; r++) {
+            int s = Progression.restSeconds(r, r % 2 == 0);
+            assertTrue("pihenő: " + r + " → " + s, s >= 45 && s <= 180);
+            assertTrue(!Progression.restWhy(r).isEmpty());
+        }
+        assertEquals("", Progression.restWhy(0));
+    }
 }

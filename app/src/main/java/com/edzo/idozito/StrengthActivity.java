@@ -652,6 +652,13 @@ public class StrengthActivity extends Activity {
                                     : "Blaze büszke rád! 🐺";
                             Ux.blazeCard(this, "Mentve ✔  +8 XP  ·  " + praise);
                         }
+                        // A teremben a mentés után rögtön a pihenő jön. Csak
+                        // annak indítjuk magától, aki már használta a
+                        // pihenő-időzítőt: aki nem, azt ne lepje meg egy
+                        // visszaszámlálás.
+                        int lastRest = getSharedPreferences("edzo", MODE_PRIVATE)
+                                .getInt(REST_SECS_KEY, 0);
+                        if (lastRest > 0) startRest(lastRest);
                     }
                 })
                 .addCancel()
@@ -913,6 +920,21 @@ public class StrengthActivity extends Activity {
             row.addView(b);
         }
         inner.addView(row);
+
+        // Javaslat a legutóbbi sorozat ismétlésszámából: a nehéz sorozat más
+        // pihenőt kíván, mint a tömegépítő sáv.
+        List<StrengthLog.Entry> log = StrengthLog.load(this);
+        if (!log.isEmpty() && log.get(0).sets != null && !log.get(0).sets.isEmpty()) {
+            StrengthLog.SetEntry lastSet = log.get(0).sets.get(log.get(0).sets.size() - 1);
+            int sug = Progression.restSeconds(lastSet.reps, lastSet.weight <= 0);
+            TextView hint = text("Javaslat a legutóbbi sorozatod alapján: "
+                    + (sug / 60) + ":" + String.format(Locale.US, "%02d", sug % 60)
+                    + "  ·  " + Progression.restWhy(lastSet.reps), 11.5f, MUTED, false);
+            hint.setPadding(0, dp(8), 0, 0);
+            hint.setClickable(true);
+            hint.setOnClickListener(v -> startRest(sug));
+            inner.addView(hint);
+        }
 
         restText = text("", 24, Theme.accent(this), true);
         restText.setGravity(Gravity.CENTER);

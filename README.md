@@ -110,7 +110,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   ami két hete kimaradt
 - **Izomcsoport-egyensúly**: hány napon volt láb / hát / mell / váll / kar /
   törzs az elmúlt héten, és mi maradt ki
-- ⏱️ Pihenő-időzítő, 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
+- ⏱️ **Pihenő-időzítő**: mentés után magától indul (ha már használtad), és
+  javaslatot ad a legutóbbi sorozatod ismétlésszámából – nehéz sorozathoz
+  hosszabb, tömegépítő sávhoz rövidebb pihenő
+- 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
 - **Könyvtár**: egy helyen az összes mondat-forma, amit az app ért (étrend,
   edzés-előzmény, erősítő sorozat, időzítő) friss példákkal, és technikai tipp
   minden beépített és felismert gyakorlathoz – a súlyzós alapoktól a gépekig
@@ -206,7 +209,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~373 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~374 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

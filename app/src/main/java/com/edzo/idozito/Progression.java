@@ -168,6 +168,29 @@ public final class Progression {
      * Súly magyar tizedesvesszővel, felesleges „,0" nélkül. Két tizedes kell:
      * az 1,25 kg-os lépés különben 16,3-ra kerekedne, ami tárcsákban értelmetlen.
      */
+    /**
+     * Ajánlott pihenő két sorozat között, másodpercben.
+     *
+     * Az erő és az izomtömeg más pihenőt kíván: 1–5 ismétlésnél az idegrendszer
+     * a szűk keresztmetszet, ott három perc sem sok; 8–12-nél másfél perc elég,
+     * és a hosszabb pihenő már csak nyújtja az edzést. Testsúlyos gyakorlatnál
+     * rövidebb, mert kisebb a terhelés.
+     */
+    public static int restSeconds(int reps, boolean bodyweight) {
+        if (reps <= 0) return 90;
+        int base = reps <= 5 ? 180 : reps <= 8 ? 150 : reps <= 12 ? 90 : 60;
+        return bodyweight ? Math.max(45, base - 30) : base;
+    }
+
+    /** Egymondatos indoklás a pihenő-javaslathoz. */
+    public static String restWhy(int reps) {
+        if (reps <= 0) return "";
+        if (reps <= 5) return "Nehéz sorozatnál az idegrendszer pihen a leglassabban.";
+        if (reps <= 8) return "Erő és tömeg között: két-két és fél perc a szokásos.";
+        if (reps <= 12) return "Tömegépítő sávban másfél perc elég – a hosszabb csak nyújtja az edzést.";
+        return "Sok ismétlésnél rövid pihenő tartja meg az ingert.";
+    }
+
     static String kg(double w) {
         double r = Math.round(w * 100) / 100.0;
         if (Math.abs(r - Math.round(r)) < 0.005) return String.valueOf(Math.round(r));
