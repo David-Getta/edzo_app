@@ -100,4 +100,23 @@ public class ExamplesTest {
         // Negatív időbélyeg se dobjon indexhibát.
         assertTrue(Examples.pick(Examples.SET, -1234567L).length() > 0);
     }
+
+    @Test public void everyHintActuallyParses() {
+        // A beviteli mezőben ezek a minták váltakoznak. Ha egy közülük nem
+        // működne, pont a mintamondat járatná le a felismerést.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String s : Examples.MEAL)
+            assertTrue("étel-minta nem érthető: " + s, !Foods.parse(all, s).isEmpty());
+        for (String s : Examples.SET)
+            assertTrue("sorozat-minta nem érthető: " + s, !StrengthParse.parse(s).isEmpty());
+        for (String s : Examples.INTERVAL)
+            assertTrue("intervall-minta nem érthető: " + s, IntervalParse.parse(s) != null);
+        for (String s : Examples.BULK) {
+            // Egyetlen kivétel: a súlyzós mondat SZÁNDÉKOSAN szerepel az
+            // edzés-mezőben is – ott az app az Erősítő naplót ajánlja fel,
+            // ezért a mozgás-felismerő üresen tér vissza rá.
+            if (!StrengthParse.parse(s).isEmpty()) continue;
+            assertTrue("edzés-minta nem érthető: " + s, !Activities.parse(s).isEmpty());
+        }
+    }
 }
