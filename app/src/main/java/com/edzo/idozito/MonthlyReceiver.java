@@ -92,6 +92,35 @@ public class MonthlyReceiver extends BroadcastReceiver {
             sb.append("  ·  ").append(Math.round(burned)).append(" kcal elégetve");
         String text = sb.toString();
 
+        // A lezárt hónap az azt megelőzőhöz mérve: az összeg önmagában nem
+        // mondja meg, hogy jó irányba megy-e a dolog. Itt már mindkét hónap
+        // teljes, tehát a nyers összehasonlítás korrekt.
+        try {
+            Calendar pc = Calendar.getInstance();
+            pc.setTimeInMillis(from);
+            pc.add(Calendar.MONTH, -1);
+            long prevFrom = pc.getTimeInMillis();
+            int prevCount = 0;
+            long prevDur = 0;
+            double prevDist = 0;
+            for (int k = 0; k < h.length(); k++) {
+                JSONObject o = h.optJSONObject(k);
+                if (o == null) continue;
+                long ts = o.optLong("ts");
+                if (ts < prevFrom || ts >= from) continue;
+                prevCount++;
+                prevDur += o.optInt("dur");
+                double d = o.optDouble("dist", -1);
+                if (d > 0) prevDist += d;
+            }
+            if (prevCount > 0) {
+                String line = "\n📊 Az előző hónaphoz: edzés " + Hu.delta(count, prevCount)
+                        + "  ·  idő " + Hu.delta(dur, prevDur);
+                if (dist > 0 || prevDist > 0) line += "  ·  táv " + Hu.delta(dist, prevDist);
+                text += line;
+            }
+        } catch (Exception ignored) {}
+
         // Súlyzós összegzés: a havi volumen a hosszú távú fejlődés mércéje.
         try {
             int lifts = 0, setCount = 0;
