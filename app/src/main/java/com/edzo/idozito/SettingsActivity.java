@@ -333,15 +333,15 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
-            {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát"). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
+            {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát”). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
             {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
             {"🍳", "A szokásos étkezésed", "Ha egy napszakban háromszor ugyanazt naplóztad, az app magától felajánlja – egy koppintás."},
             {"🏆", "Csúcsaid", "Leghosszabb edzés, leghosszabb táv, leggyorsabb tempó, legtöbb lépés és a legnagyobb napi volumen, dátummal."},
             {"📊", "Ez a hónap", "Az előző hónap UGYANANNYI napjához mérve – a folyó hónap nem tűnik visszaesésnek attól, hogy még nem ért véget."},
-            {"🗓", "Melyik napokon edzel", "12 hét bontása a hét napjaira, és a heti szokásod az esti üzenetben („kedd van – ilyenkor általában úszás")."},
-            {"🔍", "Keresés az előzményekben", "Sportág, program neve és jegyzet szerint – a szótövekkel együtt, tehát a „bringa" is talál."},
+            {"🗓", "Melyik napokon edzel", "12 hét bontása a hét napjaira, és a heti szokásod az esti üzenetben („kedd van – ilyenkor általában úszás”)."},
+            {"🔍", "Keresés az előzményekben", "Sportág, program neve és jegyzet szerint – a szótövekkel együtt, tehát a „bringa” is talál."},
             {"🍽", "Edzés-kalória a célban", "Kapcsolható: aki sokat edz, annál a fix cél napokon át nagy mínuszt jelentene."},
-            {"✍️", "Mondatból is megy", "Étkezés, edzés-előzmény, erősítő sorozat és időzítő – mind beírható folyó szövegként, immár időponttal („tegnap húzódzkodás 4x8")."},
+            {"✍️", "Mondatból is megy", "Étkezés, edzés-előzmény, erősítő sorozat és időzítő – mind beírható folyó szövegként, immár időponttal („tegnap húzódzkodás 4x8”)."},
             {"⚠️", "Terhelés-figyelés", "Az e heti edzésmennyiség a megelőző négy hét átlagához mérve – a sérülések többsége nem a sok edzésből jön, hanem a hirtelen többől."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");

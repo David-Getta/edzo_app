@@ -86,6 +86,55 @@ API_BANNED = {
 }
 
 
+def unbalanced_quotes(src):
+    """Sorok, ahol nyitva marad egy string-literál – Javában fordítási hiba.
+
+    A magyar tipográfia miatt könnyű elrontani: a „…" pár lezáró jele ASCII
+    idézőjel, ami kettévágja a literált, és a fordító csak a CI-ben szól.
+
+    Karakterenként olvasunk, és a megjegyzéseket is itt kezeljük: a `//` csak
+    literálon kívül megjegyzés (különben minden `https://` téves riasztás
+    lenne), a `/*` pedig csak akkor blokk-nyitó (különben az `"image/*"`
+    elnyelné a fájl felét).
+    """
+    out = []
+    in_block = False
+    for i, line in enumerate(src.split("\n"), 1):
+        in_str = False
+        k = 0
+        while k < len(line):
+            ch = line[k]
+            if in_block:
+                if ch == "*" and k + 1 < len(line) and line[k + 1] == "/":
+                    in_block = False
+                    k += 2
+                    continue
+            elif in_str:
+                if ch == "\\":
+                    k += 2
+                    continue
+                if ch == '"':
+                    in_str = False
+            else:
+                if ch == '"':
+                    in_str = True
+                elif ch == "'":
+                    # Karakterliterál: '"' vagy '\\''.
+                    k += 3 if k + 1 < len(line) and line[k + 1] == "\\" else 2
+                    continue
+                elif ch == "/" and k + 1 < len(line):
+                    if line[k + 1] == "/":
+                        break
+                    if line[k + 1] == "*":
+                        in_block = True
+                        k += 2
+                        continue
+            k += 1
+        if in_str:
+            out.append((i, line.strip()[:70]))
+    return out
+
+
 def main():
     problems = []
     for name in sorted(os.listdir(SRC)):
@@ -102,6 +151,8 @@ def main():
             for pat, why in API_BANNED.items():
                 if re.search(pat, line):
                     problems.append(f"{name}: {why}")
+        for lineno, text in unbalanced_quotes(raw):
+            problems.append(f"{name}:{lineno}: páratlan idézőjel – {text}")
 
     if problems:
         print("Hiányzó import:")
