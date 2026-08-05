@@ -60,10 +60,66 @@ public final class TimeHint {
         return c.getTimeInMillis();
     }
 
+    /** Hónapnevek, ékezet nélkül; a rövidítés is illeszkedik (a hosszabb elöl). */
+    private static final String[] MONTHS = {
+            "januar", "februar", "marcius", "aprilis", "majus", "junius",
+            "julius", "augusztus", "szeptember", "oktober", "november", "december"
+    };
+    private static final String[] MONTHS_SHORT = {
+            "jan", "feb", "marc", "apr", "maj", "jun",
+            "jul", "aug", "szept", "okt", "nov", "dec"
+    };
+
+    /**
+     * Konkrét dátum hónapnévvel: „július 30-án", „aug. 1-jén".
+     *
+     * A pótlás legpontosabb alakja – aki napokkal később ír be egy ebédet,
+     * gyakran a dátumot mondja, nem azt, hogy „hat napja".
+     *
+     * @return hány nappal ezelőtt volt, vagy 0, ha nincs ilyen dátum a
+     *         mondatban (vagy kívül esik a pótlás ablakán)
+     */
+    static int monthDayBack(String s, long now) {
+        for (int mi = 0; mi < 12; mi++) {
+            int p = s.indexOf(MONTHS[mi]);
+            int len = MONTHS[mi].length();
+            if (p < 0) { p = s.indexOf(MONTHS_SHORT[mi]); len = MONTHS_SHORT[mi].length(); }
+            if (p < 0) continue;
+            // A szó eleje legyen: a „majus" ne találjon a szó belsejében.
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("^[\\s.]*(\\d{1,2})").matcher(s.substring(p + len));
+            if (!m.find()) continue;
+            int day;
+            try { day = Integer.parseInt(m.group(1)); }
+            catch (NumberFormatException e) { continue; }
+            if (day < 1 || day > 31) continue;
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(now);
+            Calendar t = Calendar.getInstance();
+            t.setTimeInMillis(now);
+            t.set(Calendar.MONTH, mi);
+            t.set(Calendar.DAY_OF_MONTH, day);
+            t.set(Calendar.HOUR_OF_DAY, 12);
+            t.set(Calendar.MINUTE, 0);
+            t.set(Calendar.SECOND, 0);
+            t.set(Calendar.MILLISECOND, 0);
+            // A jövőbe eső dátum tavalyi: december 30-át január 2-án írva a
+            // múlt évre gondolt az ember.
+            if (t.getTimeInMillis() > now) t.add(Calendar.YEAR, -1);
+            int back = Days.ago(t.getTimeInMillis(), now);
+            if (back >= 1 && back <= MAX_BACK) return back;
+        }
+        return 0;
+    }
+
     /** Hány nappal ezelőttre utal a mondat (0 = ma). */
     static int daysBack(String s, long now) {
         if (s.contains("tegnapelott")) return 2;
         if (s.contains("tegnap")) return 1;
+
+        int md = monthDayBack(s, now);
+        if (md > 0) return md;
 
         // „egy hete", „két héttel ezelőtt": hét nap egy hét.
         java.util.regex.Matcher wm = java.util.regex.Pattern
@@ -96,7 +152,10 @@ public final class TimeHint {
         int todayIdx = (c.get(Calendar.DAY_OF_WEEK) + 5) % 7;   // H=0..V=6
         for (int i = 0; i < 7; i++) {
             if (!s.contains(DAYS[i])) continue;
-            return (todayIdx - i + 7) % 7;
+            int back = (todayIdx - i + 7) % 7;
+            // A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit.
+            if (s.contains("mult") && back + 7 <= MAX_BACK) back += 7;
+            return back;
         }
         return 0;
     }
@@ -129,6 +188,7 @@ public final class TimeHint {
             } catch (NumberFormatException ignored) {
             }
         }
+        if (s.contains("hajnal")) return 5;
         if (s.contains("reggel")) return 8;
         if (s.contains("tizorai")) return 10;
         if (s.contains("ebed") || s.contains("delben")) return 13;

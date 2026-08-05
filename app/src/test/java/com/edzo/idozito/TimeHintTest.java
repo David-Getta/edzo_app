@@ -126,4 +126,27 @@ public class TimeHintTest {
         assertEquals(5, dayHour("ma este pizza")[0]);
     }
 
+    @Test public void anExplicitDateIsUnderstood() {
+        // Aki napokkal később ír be egy ebédet, gyakran a dátumot mondja,
+        // nem azt, hogy „hat napja".
+        assertEquals(30, dayHour("július 30-án torta")[0]);
+        assertEquals(1, dayHour("aug 1-jén sütemény")[0]);
+        assertEquals(3, dayHour("augusztus 3. vacsora")[0]);
+        // A pótlás ablakán kívül eső dátumhoz nem nyúlunk: marad a mai nap.
+        assertEquals(5, dayHour("július 4-én fagyi")[0]);
+        assertEquals(5, dayHour("december 24-én bejgli")[0]);
+        // Hónapnév szám nélkül nem dátum.
+        assertEquals(5, dayHour("májusi eper")[0]);
+    }
+
+    @Test public void lastWeekdayGoesBackAWholeWeek() {
+        // A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit.
+        assertEquals(28, dayHour("múlt kedden pizza")[0]);   // július 28.
+        assertEquals(4, dayHour("kedden pizza")[0]);         // augusztus 4.
+    }
+
+    @Test public void dawnIsItsOwnPartOfTheDay() {
+        assertEquals(5, dayHour("hajnalban ettem")[1]);
+        assertEquals(4, dayHour("tegnap hajnalban ettem")[0]);
+    }
 }
