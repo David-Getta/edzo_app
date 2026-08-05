@@ -77,7 +77,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   mint a fordítottja
 - **A kötőjel is számít**: a „sonkás-sajtos szendvics" három tétel (a magyar
   melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy
-- **334 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **338 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -304,7 +304,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~513 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~514 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

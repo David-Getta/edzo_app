@@ -191,6 +191,11 @@ public final class Foods {
         new Food("Alma", 52, 0.3, 150, "alma"),
         new Food("Banán", 89, 1.1, 120, "banan"),
         new Food("Narancs", 47, 0.9, 150, "narancs", "naranccs"),
+        // A grapefruit a fogyókúrás reggelik klasszikusa – eddig nem létezett.
+        new Food("Grapefruit", 42, 0.8, 200, "grapefruit", "grepfrut", "greipfrut"),
+        // Sütőtök: az őszi konyha alapja, és a „tök" magában túl rövid tő
+        // (a „tökmag" és a „tökéletes" is tartalmazza).
+        new Food("Sütőtök", 40, 1, 200, "sutotok", "suto tok", "tokfozelek nyers"),
         new Food("Szőlő", 70, 0.7, 100, "szolo"),
         new Food("Eper", 33, 0.7, 100, "eper"),
         new Food("Avokádó", 160, 2, 70, "avokado"),

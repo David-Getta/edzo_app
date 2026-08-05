@@ -532,4 +532,16 @@ public class FoodsIntegrationTest {
         assertEquals("Sushi 250g", summary("nigiri"));
         assertEquals("Sushi 250g", summary("sashimi"));
     }
+
+    @Test public void theMissingProduceIsThereNow() {
+        // A grapefruit a fogyókúrás reggelik klasszikusa, a sütőtök az őszi
+        // konyha alapja – egyik sem létezett.
+        assertEquals("Grapefruit 200g", summary("grapefruit"));
+        assertEquals("Sütőtök 200g", summary("sütőtök"));
+        // A rokon tételek nem sérültek: a tökmag mag, a tökfőzelék főzelék,
+        // a sütőtökkrémleves krémleves.
+        assertEquals("Tökmag / napraforgómag 30g", summary("tökmag"));
+        assertEquals("Tökfőzelék 350g", summary("tökfőzelék"));
+        assertEquals("Krémleves (zöldség) 350g", summary("sütőtök krémleves"));
+    }
 }
