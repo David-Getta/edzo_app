@@ -181,4 +181,25 @@ public class RoutinesTest {
         assertEquals(t.summary(), t.shortSummary(t.moves.size()));
         assertEquals(t.summary(), t.shortSummary(99));
     }
+
+    @Test public void everyBuiltInExerciseHasAMuscleGroup() {
+        // Az izomcsoport-egyensúly és a „mai ajánlat" ezen múlik: egy
+        // besorolatlan gyakorlat csendben kiesne a heti képből.
+        for (Routines.Routine r : Routines.builtIn())
+            for (String m : r.moves) {
+                String g = Muscles.groupOf(m);
+                assertTrue(r.name + " / " + m + ": nincs izomcsoport",
+                        g != null && !g.isEmpty());
+            }
+    }
+
+    @Test public void theBuiltInDaysCoverEveryMuscleGroup() {
+        // Ha egy csoportra egyetlen beépített nap sem jut, azt a felhasználó
+        // sosem kapja meg sablonból.
+        java.util.Set<String> seen = new java.util.LinkedHashSet<>();
+        for (Routines.Routine r : Routines.builtIn())
+            for (String m : r.moves) seen.add(Muscles.groupOf(m));
+        for (String g : new String[]{"Láb", "Hát", "Mell", "Váll", "Kar", "Törzs"})
+            assertTrue("egyetlen beépített napban sincs: " + g, seen.contains(g));
+    }
 }

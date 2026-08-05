@@ -1027,6 +1027,7 @@ public class StrengthActivity extends Activity {
         int done = 0;
         for (String m : r.moves) if (doneToday.containsKey(m)) done++;
         String head = done == 0 ? "Koppints egy gyakorlatra, és beírom."
+                : done >= r.moves.size() ? "🏁  Kész az edzésnap – mind megvan!"
                 : done + " / " + r.moves.size() + " megvan ma.";
         Sheet sh = new Sheet(this, r.name, head);
         for (final String m : r.moves) {

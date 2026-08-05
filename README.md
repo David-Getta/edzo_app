@@ -149,7 +149,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   gyakorlatonként ott a mai progresszió-javaslat és a bemelegítő rámpa,
   egy koppintással beírható – eddig minden gyakorlatot külön kellett
   kikeresni, és a napot fejben tartani. Ami ma már megvan, az **ki van
-  pipálva** („2 / 5 megvan ma"), és a **heti fókuszhoz illő nap** meg van
+  pipálva** („2 / 5 megvan ma", a végén „🏁 Kész az edzésnap"), és a **heti fókuszhoz illő nap** meg van
   jelölve („🎯 Lábnap · ma ez jön"), és minden nap mellett ott van, mikor
   csináltad utoljára („legutóbb 4 napja" – akkor számít megcsináltnak, ha
   a gyakorlatai legalább fele megvolt aznap). Ha van a mai fókuszhoz illő nap, az
@@ -294,7 +294,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~489 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~491 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 
