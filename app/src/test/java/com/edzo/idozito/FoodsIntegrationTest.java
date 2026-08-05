@@ -508,4 +508,28 @@ public class FoodsIntegrationTest {
         // A zabszelet müzliszelet, nem egy tál zabpehely.
         assertEquals("Müzliszelet 30g", summary("zabszelet"));
     }
+
+    @Test public void thePizzaToppingIsInThePizza() {
+        // A „négy sajtos pizza" egy pizza, nem pizza PLUSZ egy adag sajt –
+        // az utóbbi 1212 kcal-t írt egy 780-as helyett.
+        assertEquals("Pizza 300g", summary("négy sajtos pizza"));
+        assertEquals("Pizza 300g", summary("sonkás pizza"));
+        assertEquals("Pizza 300g", summary("szalámis pizza"));
+        assertEquals("Pizza 300g", summary("gombás pizza"));
+        // Pizza nélkül a feltét önálló étel marad.
+        assertEquals("Sajt (trappista) 30g", summary("sajt"));
+        assertEquals("Sonka 50g", summary("sonka"));
+    }
+
+    @Test public void theWrapIsNotPasta() {
+        // A puszta „durum" a kebabos tekercs: tésztaként a kalória harmada
+        // veszett el. A teljes „durum tészta" viszont tészta marad.
+        assertEquals("Kebab 350g", summary("durum"));
+        assertEquals("Tészta (főtt) 250g", summary("durum tészta"));
+        assertEquals("Tészta (főtt) 250g", summary("tészta"));
+        // Sushi-változatok.
+        assertEquals("Sushi 250g", summary("maki"));
+        assertEquals("Sushi 250g", summary("nigiri"));
+        assertEquals("Sushi 250g", summary("sashimi"));
+    }
 }

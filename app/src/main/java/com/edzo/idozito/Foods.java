@@ -68,7 +68,11 @@ public final class Foods {
         new Food("Rántotta", 180, 12, 150, "rantotta", "omlett", "shakshuka"),
         new Food("Rizs (főtt)", 130, 2.7, 200, "riz"),
         // A „durum" hosszabb tő, különben a benne lévő „rum" tömény italt adna.
-        new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta", "teszta", "spagetti", "penne", "durum"),
+        // A puszta „durum" a kebabos tekercs (dürüm), nem durumbúza tészta:
+        // aki tésztát naplóz, azt „tésztának", „spagettinek" írja. A „durum
+        // tészta" teljes alakja viszont egyértelmű, és hosszabb tőként nyer.
+        new Food("Tészta (főtt)", 150, 5, 250, "durum teszta", "durumteszta",
+                "teszta", "spagetti", "penne"),
         new Food("Burgonya (főtt)", 87, 2, 250, "burgonya", "krumpli", "krumpi"),
         new Food("Sült krumpli", 300, 3.5, 150, "sult krumpli", "sultkrumpli",
                 "hasabburgonya", "hasáb"),
@@ -367,7 +371,8 @@ public final class Foods {
         new Food("Tempeh", 190, 19, 100, "tempeh"),
         new Food("Kókusztej", 190, 2, 100, "kokusztej"),
         new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "cezar salata", "cezar", "caesar"),
-        new Food("Sushi", 150, 6, 250, "sushi"),
+        new Food("Sushi", 150, 6, 250, "sushi", "maki", "nigiri", "sashimi",
+                "sushi tekercs"),
         // Éttermi kör: egy 57 neves próbából 18-at egyáltalán nem ismert az
         // adatbázis, a görög saláta pedig 8 kcal-os zöldsalátának számított.
         new Food("Cordon bleu", 250, 20, 180, "cordon"),
@@ -496,7 +501,9 @@ public final class Foods {
         new Food("Chia / lenmag", 490, 17, 15, "chia", "lenmag", "lenmagliszt"),
         new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
-        new Food("Kebab", 250, 13, 350, "kebab"),
+        // A „durum" a tekercsbe csavart kebab, nem durumbúza tészta – tésztaként
+        // számolva a kalória harmada veszett el.
+        new Food("Kebab", 250, 13, 350, "kebab", "durum", "durum tekercs"),
         new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkussz", "kuszkusz", "couscous"),
         // A puszta „koles" tő a „koleszos"-ba, „koleszterin"-be is beleesne.
         new Food("Hajdina (főtt)", 130, 5, 200, "hajdina", "haricska",
@@ -1469,6 +1476,12 @@ public final class Foods {
             // A gyros és a kebab adagja a lepényt is tartalmazza: a „gyros
             // pitában" egy gyros, nem gyros PLUSZ egy pita.
             {"Pita / lepénykenyér", "Gyros", "Kebab"},
+            // A pizza feltétje benne van a pizza kalóriájában: a „négy sajtos
+            // pizza" egy pizza, nem pizza PLUSZ egy adag sajt (1212 kcal!).
+            {"Sajt (trappista)", "Pizza"},
+            {"Sonka", "Pizza"},
+            {"Szalámi", "Pizza"},
+            {"Gomba", "Pizza"},
             {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
                     "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
                     "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)"},
