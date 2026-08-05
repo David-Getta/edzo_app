@@ -319,6 +319,33 @@ public class StrengthParseTest {
         assertEquals("Plank", StrengthParse.parse("alkartámasz 3x60").get(0).name);
     }
 
+    @Test public void aCommaSeparatedEnumerationIsOneEntry() {
+        // „ma guggoltam, 5 sorozat, 5 ismétlés, 100 kg" – a darabok külön-külön
+        // értelmetlenek, ezért az EGÉSZ mondatból nem lett bejegyzés.
+        List<StrengthParse.Item> r =
+                StrengthParse.parse("ma guggoltam, 5 sorozat, 5 ismétlés, 100 kg");
+        assertEquals(1, r.size());
+        assertEquals("Guggolás", r.get(0).name);
+        assertEquals(5, r.get(0).sets.size());
+        assertEquals(100.0, r.get(0).topWeight(), 0.001);
+        // A folytatás csak a puszta mennyiség-töredékre igaz: a „majd 20 perc
+        // futás" továbbra sem sorozat.
+        assertEquals(3, StrengthParse.parse("guggolás 3x10, majd 20 perc futás")
+                .get(0).sets.size());
+    }
+
+    @Test public void aMaxLiftIsASingle() {
+        // „fekvenyomás max 120 kg”: a legnehezebb, amit egyszer megnyomott.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás max 120 kg");
+        assertEquals(1, r.size());
+        assertEquals(1, r.get(0).sets.size());
+        assertEquals(1, r.get(0).totalReps());
+        assertEquals(120.0, r.get(0).topWeight(), 0.001);
+        // Súly nélkül vagy ismeretlen ismétlésszámmal nem találunk ki semmit.
+        assertTrue(StrengthParse.parse("húzódzkodás 3 szett maximumig").isEmpty());
+        assertTrue(StrengthParse.parse("fekvenyomás max").isEmpty());
+    }
+
     @Test public void theThreeDigitWeightSurvives() {
         // A „100x3" súlya száz kiló – korábban a százból ismétlés lett.
         List<StrengthParse.Item> r = StrengthParse.parse("guggolás 100x3, 100x3, 100x2");

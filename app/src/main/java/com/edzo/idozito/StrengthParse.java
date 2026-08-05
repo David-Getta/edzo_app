@@ -214,7 +214,17 @@ public final class StrengthParse {
         List<String> out = new ArrayList<>();
         for (String part : t.split("\\|")) {
             String p = part.trim();
-            if (!p.isEmpty()) out.addAll(splitByMoves(p));
+            if (p.isEmpty()) continue;
+            // Vesszővel tagolt felsorolás: „guggoltam, 5 sorozat, 5 ismétlés,
+            // 100 kg”. A darabok külön-külön értelmetlenek – a sorozatszámhoz
+            // nincs ismétlés, az ismétléshez nincs gyakorlat –, ezért eddig az
+            // EGÉSZ mondatból nem lett bejegyzés. Együtt viszont teljes.
+            if (!out.isEmpty() && p.matches(
+                    "^\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")) {
+                out.set(out.size() - 1, out.get(out.size() - 1) + " " + p);
+                continue;
+            }
+            out.addAll(splitByMoves(p));
         }
         return out;
     }
@@ -398,6 +408,11 @@ public final class StrengthParse {
                 if (r >= 1 && r <= 200) { sets.add(new Set(r, weight)); break; }
             }
         }
+        // „fekvenyomás max 120 kg”: a legnehezebb, amit egyszer megnyomott.
+        // Csak ha van súly ÉS nincs semmilyen ismétlés-adat – a „3 szett
+        // maximumig” ismétlésszáma ismeretlen, abból nem találunk ki egyet.
+        if (sets.isEmpty() && weight > 0 && s.matches(".*(^|[^a-z])max.*"))
+            sets.add(new Set(1, weight));
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);
         it.rpe = rpeIn(s);
