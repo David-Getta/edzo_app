@@ -1060,6 +1060,7 @@ public class StrengthActivity extends Activity {
                         Theme.setStr(this, ROUTINE_KEY, Routines.remove(
                                 Theme.getStr(this, ROUTINE_KEY, ""), r.name));
                         Toast.makeText(this, "Törölve: " + r.name, Toast.LENGTH_SHORT).show();
+                        routineSheet();
                     });
         sh.addCancel().show();
     }
@@ -1086,8 +1087,34 @@ public class StrengthActivity extends Activity {
         movesEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         box.addView(movesEt, lp());
         box.addView(gap(6));
-        box.addView(text("Saját nevet is írhatsz – a felismerő listája nem korlátoz.",
-                12, MUTED, false));
+        box.addView(text("Koppints a nevekre, vagy írd be sajátot – a felismerő "
+                + "listája nem korlátoz.", 12, MUTED, false));
+        box.addView(gap(6));
+
+        // Gyakorlat-csipek: gépelés helyett koppintás. Elöl a saját naplóból
+        // ismert nevek, mert azokhoz van már súly és progresszió.
+        LinearLayout chips = hbox();
+        java.util.List<String> offer = new java.util.ArrayList<>(StrengthLog.knownNames(this));
+        for (String n : StrengthParse.names()) if (!offer.contains(n)) offer.add(n);
+        for (final String n : offer) {
+            Button chip = ghost(n);
+            chip.setTextSize(12.5f);
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
+            clp.rightMargin = dp(6);
+            chip.setLayoutParams(clp);
+            chip.setOnClickListener(v -> {
+                String cur = movesEt.getText().toString().trim();
+                String next = cur.isEmpty() ? n
+                        : cur.endsWith(",") ? cur + " " + n : cur + ", " + n;
+                movesEt.setText(next);
+                movesEt.setSelection(next.length());
+            });
+            chips.addView(chip);
+        }
+        HorizontalScrollView hs = new HorizontalScrollView(this);
+        hs.setHorizontalScrollBarEnabled(false);
+        hs.addView(chips);
+        box.addView(hs);
 
         new Sheet(this, "Saját edzésnap", "Legfeljebb " + Routines.MAX_MOVES + " gyakorlat")
                 .addCustom(box)
@@ -1104,6 +1131,7 @@ public class StrengthActivity extends Activity {
                     }
                     Theme.setStr(this, ROUTINE_KEY, next);
                     Toast.makeText(this, "Elmentve.", Toast.LENGTH_SHORT).show();
+                    routineSheet();      // a friss lista rögtön látszik
                 })
                 .addCancel().show();
     }

@@ -147,6 +147,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - 📅 **Edzésnapok (sablonok)**: hat beépített nap (Tolónap, Húzónap, Lábnap,
   Felsőtest, Alsótest, Teljes test) és saját napok. A nap megnyitva
   gyakorlatonként ott a mai progresszió-javaslat és a bemelegítő rámpa,
+  saját nap felvételénél pedig gyakorlat-csipekkel (gépelés helyett),
   egy koppintással beírható – eddig minden gyakorlatot külön kellett
   kikeresni, és a napot fejben tartani. Ami ma már megvan, az **ki van
   pipálva** („2 / 5 megvan ma", a végén „🏁 Kész az edzésnap"), és a **heti fókuszhoz illő nap** meg van
