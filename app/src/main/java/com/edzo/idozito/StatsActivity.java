@@ -108,6 +108,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View bests = bestsCard();
+        if (bests != null) {
+            col.addView(sectionTitle("Csúcsaid"));
+            col.addView(bests, lp());
+            col.addView(gap(16));
+        }
+
         View weekGoal = weeklyGoalCard(System.currentTimeMillis());
         if (weekGoal != null) {
             col.addView(sectionTitle("Heti mozgás-cél"));
@@ -634,6 +641,62 @@ public class StatsActivity extends Activity {
             LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(Math.max(dp(8), w), dp(3));
             blp.bottomMargin = dp(4);
             cardV.addView(bar, blp);
+        }
+        return cardV;
+    }
+
+    /**
+     * Személyes csúcsok: a leghosszabb edzés, a legnagyobb táv, a leggyorsabb
+     * tempó és társaik – dátummal.
+     *
+     * A többi kártya átlagokat és összegeket mutat: azok arról szólnak, milyen
+     * szokott lenni. A csúcs arról, hogy mire vagy képes – és pont ezért marad meg.
+     */
+    View bestsCard() {
+        int n = hist.length();
+        long[] ts = new long[n];
+        int[] dur = new int[n], steps = new int[n];
+        double[] dist = new double[n], cal = new double[n];
+        for (int i = 0; i < n; i++) {
+            JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            ts[i] = o.optLong("ts");
+            dur[i] = o.optInt("dur");
+            dist[i] = Math.max(0, o.optDouble("dist", 0));
+            cal[i] = Math.max(0, o.optDouble("cal", 0));
+            steps[i] = o.optInt("steps", 0);
+        }
+        java.util.List<StrengthLog.Entry> log = StrengthLog.load(this);
+        long[] lts = new long[log.size()];
+        double[] lvol = new double[log.size()];
+        for (int i = 0; i < log.size(); i++) {
+            lts[i] = log.get(i).ts;
+            lvol[i] = log.get(i).volume();
+        }
+        java.util.List<Bests.Best> bests = Bests.of(ts, dur, dist, cal, steps, lts, lvol);
+        if (bests.isEmpty()) return null;
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy. MMM d.", new Locale("hu"));
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(14), dp(10), dp(14), dp(10));
+        for (int i = 0; i < bests.size(); i++) {
+            Bests.Best b = bests.get(i);
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(8), 0, dp(8));
+            LinearLayout mid = vbox();
+            mid.addView(text(b.emoji + "  " + b.label, 13.5f, TXT, false));
+            if (b.ts > 0)
+                mid.addView(text(df.format(new Date(b.ts)), 11.5f, MUTED, false));
+            row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text(b.value, 15, Theme.accent(this), true),
+                    new LinearLayout.LayoutParams(-2, -2));
+            cardV.addView(row);
+            if (i < bests.size() - 1) {
+                View dv = new View(this);
+                dv.setBackgroundColor(LINE);
+                cardV.addView(dv, new LinearLayout.LayoutParams(-1, dp(1)));
+            }
         }
         return cardV;
     }
