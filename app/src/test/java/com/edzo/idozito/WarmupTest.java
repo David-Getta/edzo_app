@@ -94,4 +94,28 @@ public class WarmupTest {
         assertEquals("42,5", Warmup.kg(42.5));
         assertEquals("40", Warmup.kg(40));
     }
+
+    @Test public void theBarbellLiftsKnowTheirBar() {
+        assertEquals(20.0, Warmup.barFor("Guggolás"), 0.001);
+        assertEquals(20.0, Warmup.barFor("Fekvenyomás"), 0.001);
+        assertEquals(20.0, Warmup.barFor("Felhúzás"), 0.001);
+        assertEquals(20.0, Warmup.barFor("Vállból nyomás"), 0.001);
+        // Kézisúlyzó és gép: nincs rúd, de a rámpa attól még megvan.
+        assertEquals(0.0, Warmup.barFor("Bicepsz"), 0.001);
+        assertEquals(0.0, Warmup.barFor("Lábtolás"), 0.001);
+        assertEquals(0.0, Warmup.barFor("Oldalemelés"), 0.001);
+        assertEquals(0.0, Warmup.barFor(null), 0.001);
+        assertEquals(0.0, Warmup.barFor(""), 0.001);
+        // Minden felismert gyakorlatnév ad értelmes rudat, és a rámpa
+        // mindegyikhez felrakható súlyokat: itt bukna ki egy elgépelt név.
+        for (String n : StrengthParse.names()) {
+            double bar = Warmup.barFor(n);
+            assertTrue(n, bar == 0 || bar == 20);
+            for (Warmup.Set st : Warmup.forWork(80, bar)) {
+                double over = st.weight - bar;
+                assertTrue(n + ": " + st.weight,
+                        Math.abs(over / 2.5 - Math.round(over / 2.5)) < 1e-6);
+            }
+        }
+    }
 }

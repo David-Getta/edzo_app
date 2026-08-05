@@ -748,6 +748,16 @@ public class StrengthActivity extends Activity {
         c.addView(text("Mai javaslat:  " + s.headline(), 15, Theme.accent(this), true));
         c.addView(gap(4));
         c.addView(text(s.why, 12.5f, MUTED, false));
+        // A bemelegítő rámpa ott a leghasznosabb, ahol a mai súly kiderül:
+        // különben a felhasználó a javaslattól a kalkulátorig visz fejben egy
+        // számot, és ott számolja ki, amit itt is meg lehetett volna mondani.
+        if (!s.bodyweight) {
+            java.util.List<Warmup.Set> ramp = Warmup.forWork(s.weight, Warmup.barFor(name));
+            if (!ramp.isEmpty()) {
+                c.addView(gap(8));
+                c.addView(text("🔥  Bemelegítés:  " + Warmup.summary(ramp), 12.5f, MUTED, false));
+            }
+        }
         c.addView(gap(8));
         c.addView(text("Koppints, és beírom a sorozatokat.", 12, MUTED, true));
         c.setClickable(true);

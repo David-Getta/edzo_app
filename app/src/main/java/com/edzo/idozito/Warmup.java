@@ -98,6 +98,25 @@ public final class Warmup {
         return bar + Math.round(over / STEP) * STEP;
     }
 
+    /**
+     * A gyakorlathoz tartozó rúd súlya, vagy 0.
+     *
+     * A klasszikus rudas emelések olimpiai rúddal (20 kg) mennek, és ott az
+     * üres rúd külön lépcső. Kézisúlyzónál és gépnél nincs rúd: ott a rámpa
+     * nullától indul, és a lépcsők ugyanúgy 2,5 kg-os osztáson állnak.
+     *
+     * Csuklyás emelés és csípőemelés is rudas, de ezeknél a súly annyival
+     * nagyobb, hogy az üres rúd amúgy sem kerülne be a rámpába.
+     */
+    public static double barFor(String exercise) {
+        if (exercise == null) return 0;
+        String n = Foods.norm(exercise);
+        for (String w : new String[]{"guggolas", "fekvenyomas", "felhuzas", "vallbol nyomas",
+                "evezes", "kitores", "csuklyas emeles", "csipoemeles", "hatfeszites"})
+            if (n.contains(w)) return 20;
+        return 0;
+    }
+
     /** Súly kiírása: egész, ha kerek (40), egyébként egy tizedessel (42,5). */
     static String kg(double w) {
         if (Math.abs(w - Math.round(w)) < 0.05) return String.valueOf(Math.round(w));
