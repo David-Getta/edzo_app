@@ -154,7 +154,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   csináltad utoljára („legutóbb 4 napja" – akkor számít megcsináltnak, ha
   a gyakorlatai legalább fele megvolt aznap). Ha van a mai fókuszhoz illő nap, az
   az erősítő képernyő tetején is ott van – egy kész nap teljes, sorrendbe
-  rakott terv, nem három különálló gyakorlat
+  rakott terv, nem három különálló gyakorlat. A kezdőlap csempéje is ezt
+  írja ki („🏋️ Erősítő · ma Lábnap")
 - **Mai ajánlat**: a héten kimaradt izomcsoportokból egy-egy gyakorlat a
   progresszió-javaslattal együtt – ha a heti fókuszban áll valami mára, az
   megy elöl („🎯 Evezés · 3 × 10 · 52,5 kg") – csak

@@ -1052,6 +1052,18 @@ public class MainActivity extends Activity {
         int sDays = StrengthLog.daysTrainedIn(sLog, System.currentTimeMillis(), 7);
         String sLabel = sLog.isEmpty() ? "Erősítő napló"
                 : sDays > 0 ? "Erősítő · " + sDays + " nap/hét" : "Erősítő · rég volt";
+        // Ha a heti fókuszhoz van edzésnap, az a mai terv – az konkrétabb
+        // minden heti számlálónál, és a kezdőlapról egy koppintásra elérhető.
+        int dowIdx = (java.util.Calendar.getInstance()
+                .get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+        String todayFocus = Weekplan.forDay(Theme.planFocus(this), dowIdx);
+        if (!todayFocus.isEmpty())
+            for (Routines.Routine r : Routines.all(
+                    Theme.getStr(this, StrengthActivity.ROUTINE_KEY, "")))
+                if (Foods.norm(r.name).contains(Foods.norm(todayFocus))) {
+                    sLabel = "Erősítő · ma " + r.name;
+                    break;
+                }
         t.add(new TileDef("strength", "🏋️", sLabel, 0xFFFF7BA6, () -> startActivity(new Intent(this, StrengthActivity.class))));
         double kcalT = MealLog.todayKcal(this);
         t.add(new TileDef("diet", "🍽", kcalT > 0 ? "Étrend · " + Math.round(kcalT) + " kcal" : "Étrend", 0xFFFFB74D, () -> startActivity(new Intent(this, DietActivity.class))));
