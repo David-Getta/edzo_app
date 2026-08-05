@@ -306,4 +306,18 @@ public class StrengthParseTest {
         assertEquals(60.5, StrengthParse.parse("guggolás 3x10 60.5kg").get(0).topWeight(),
                 0.001);
     }
+
+    @Test public void theSpokenWeightIsUnderstood() {
+        // A teremben kimondva is mondják a súlyt – az összetett számnevekkel.
+        assertEquals(75.0, StrengthParse.parse("guggolás 5x5 hetvenöt kiló")
+                .get(0).topWeight(), 0.001);
+        assertEquals(85.0, StrengthParse.parse("fekvenyomás 3x10 nyolcvanöt kg")
+                .get(0).topWeight(), 0.001);
+        assertEquals(120.0, StrengthParse.parse("guggolás 3x10 százhúsz kilóval")
+                .get(0).topWeight(), 0.001);
+        assertEquals(110.0, StrengthParse.parse("fekvenyomás 5x5 száztíz kg")
+                .get(0).topWeight(), 0.001);
+        assertEquals(200.0, StrengthParse.parse("guggolás ötször ötöt kétszáz kiló")
+                .get(0).topWeight(), 0.001);
+    }
 }

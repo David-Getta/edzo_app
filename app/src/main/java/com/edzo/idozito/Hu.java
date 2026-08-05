@@ -116,6 +116,10 @@ public final class Hu {
                         String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
         }
         for (String[] t : tensAcc) belowHundred.add(t);
+        // A „tíz" és a „húsz" magában az alaplistában van; a százas
+        // összetételekhez („százhúsz", „száztíz") itt is kell.
+        belowHundred.add(new String[]{"tiz", "10"});
+        belowHundred.add(new String[]{"husz", "20"});
         out.addAll(belowHundred);
 
         // Százasok: a konyhában és a teremben is gyakoriak („százötven gramm",

@@ -443,6 +443,10 @@ public final class Activities {
                 belowHundred.add(new String[]{t[0] + u[0],
                         String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(u[1]))});
         }
+        // A „tíz" és a „húsz" magában az alaplistában van; a százas
+        // összetételekhez („százhúsz", „száztíz") itt is kell.
+        belowHundred.add(new String[]{"tiz", "10"});
+        belowHundred.add(new String[]{"husz", "20"});
         out.addAll(belowHundred);
         // Százasok: az ismétlésszámok ott laknak („száz fekvőtámasz",
         // „kétszáz felülés"), és eddig egyszerűen nem voltak számok.

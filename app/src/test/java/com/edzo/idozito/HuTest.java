@@ -111,6 +111,11 @@ public class HuTest {
         assertEquals("100", Hu.digits("szaz"));
         assertEquals("125", Hu.digits("szazhuszonot"));
         assertEquals("150", Hu.digits("szazotven"));
+        // A „tíz" és a „húsz" magában az alaplistában van – a százas
+        // összetételekhez („százhúsz", „száztíz") külön kellett hozzáadni.
+        assertEquals("120", Hu.digits("szazhusz"));
+        assertEquals("110", Hu.digits("szaztiz"));
+        assertEquals("220", Hu.digits("ketszazhusz"));
         assertEquals("200", Hu.digits("ketszaz"));
         assertEquals("250", Hu.digits("ketszazotven"));
         assertEquals("305", Hu.digits("haromszazot"));

@@ -219,4 +219,15 @@ public class IntervalParseTest {
         assertEquals(40, p.work);
         assertEquals(20, p.rest);
     }
+
+    @Test public void theSpokenSecondsAreUnderstood() {
+        IntervalParse.Plan p = IntervalParse.parse("százhúsz másodperc munka 6 kör");
+        assertEquals(120, p.work);
+        assertEquals(6, p.rounds);
+        IntervalParse.Plan q = IntervalParse.parse(
+                "hetven másodperc munka harminc másodperc pihenő 8 kör");
+        assertEquals(70, q.work);
+        assertEquals(30, q.rest);
+        assertEquals(8, q.rounds);
+    }
 }
