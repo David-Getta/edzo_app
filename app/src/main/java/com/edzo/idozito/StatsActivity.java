@@ -606,6 +606,25 @@ public class StatsActivity extends Activity {
         if (topG != null && topD > 0)
             notes.addView(text("🎯 Legtöbbet edzett: " + topG + " (" + topD + " nap)",
                     13, TXT, false));
+        // Edzésnapok: melyik sablon él, és melyik csak jókívánság. Egy nap
+        // akkor számít megcsináltnak, ha a gyakorlatai fele megvolt aznap.
+        long[] rts = new long[log.size()];
+        String[] rnames = new String[log.size()];
+        for (int i = 0; i < log.size(); i++) {
+            rts[i] = log.get(i).ts;
+            rnames[i] = log.get(i).name;
+        }
+        StringBuilder rline = new StringBuilder();
+        long nowMs = System.currentTimeMillis();
+        for (Routines.Routine r : Routines.all(
+                Theme.getStr(this, StrengthActivity.ROUTINE_KEY, ""))) {
+            int n = Routines.doneDays(r.moves, rts, rnames, nowMs, 30);
+            if (n <= 0) continue;
+            if (rline.length() > 0) rline.append("  ·  ");
+            rline.append(r.name).append(" ").append(n).append("×");
+        }
+        if (rline.length() > 0)
+            notes.addView(text("📅 Edzésnapok: " + rline, 13, TXT, false));
         if (notes.getChildCount() > 0) cardV.addView(notes, lp());
         return cardV;
     }

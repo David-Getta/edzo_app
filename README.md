@@ -232,7 +232,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   sportáganként, arány-sávval – a mért és a kézzel felvett edzés egy sorban
 - **Súlyzós szekció** (elmúlt 30 nap): edzésnapok, gyakorlatok, sorozatok,
   ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
-  és izomcsoporttal, valamint az **átlagos érzett terhelés** (RPE)
+  és izomcsoporttal, valamint az **átlagos érzett terhelés** (RPE); és hogy
+  **melyik edzésnapot hányszor** csináltad meg („📅 Lábnap 4× · Tolónap 3×")
+  – egy sablon, amit sosem csinálsz meg, nem terv, hanem jókívánság
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík, átlagos
   **étkezési ablak** és napszak-jellemző („🌙 Este eszed a kalóriáid 52%-át"),
   valamint a **legnehezebb hétköznap** („📈 Szombat a legnehezebb nap: átlag
@@ -296,7 +298,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~492 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~493 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

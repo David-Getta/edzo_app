@@ -202,4 +202,22 @@ public class RoutinesTest {
         for (String g : new String[]{"Láb", "Hát", "Mell", "Váll", "Kar", "Törzs"})
             assertTrue("egyetlen beépített napban sincs: " + g, seen.contains(g));
     }
+
+    @Test public void theNumberOfTimesTheDayWasDoneIsCounted() {
+        long d = 86400000L;
+        long now = 1000 * d + 12 * 3600000L;
+        List<String> m = moves("Guggolás", "Kitörés");
+        long[] ts = {999 * d, 999 * d, 995 * d, 995 * d, 960 * d, 960 * d};
+        String[] names = {"Guggolás", "Kitörés", "Guggolás", "Kitörés",
+                "Guggolás", "Kitörés"};
+        assertEquals(2, Routines.doneDays(m, ts, names, now, 30));
+        assertEquals(3, Routines.doneDays(m, ts, names, now, 60));
+        assertEquals(1, Routines.doneDays(m, ts, names, now, 3));
+        // Az ablakon kívüli és a képtelen kérés nem számít.
+        assertEquals(0, Routines.doneDays(m, ts, names, now, 0));
+        assertEquals(0, Routines.doneDays(m, ts, names, now, -5));
+        assertEquals(0, Routines.doneDays(null, ts, names, now, 30));
+        // A legutóbbi továbbra is stimmel.
+        assertEquals(1, Routines.lastDone(m, ts, names, now));
+    }
 }

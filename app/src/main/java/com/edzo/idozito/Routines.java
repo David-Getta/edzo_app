@@ -214,10 +214,22 @@ public final class Routines {
      * @param now   a mostani idő
      */
     public static int lastDone(List<String> moves, long[] ts, String[] names, long now) {
-        if (moves == null || moves.isEmpty() || ts == null || names == null) return -1;
+        int best = -1;
+        for (Long day : qualifyingDays(moves, ts, names)) {
+            int ago = Days.ago(day, now);
+            if (ago < 0) continue;
+            if (best < 0 || ago < best) best = ago;
+        }
+        return best;
+    }
+
+    /** Azok a napok, amelyeken az edzésnap gyakorlatainak legalább fele megvolt. */
+    private static List<Long> qualifyingDays(List<String> moves, long[] ts, String[] names) {
+        List<Long> out = new ArrayList<>();
+        if (moves == null || moves.isEmpty() || ts == null || names == null) return out;
         int n = Math.min(ts.length, names.length);
-        // Naponként: hány gyakorlata volt meg ennek a napnak?
-        java.util.LinkedHashMap<Long, java.util.Set<String>> perDay = new java.util.LinkedHashMap<>();
+        java.util.LinkedHashMap<Long, java.util.Set<String>> perDay =
+                new java.util.LinkedHashMap<>();
         for (int i = 0; i < n; i++) {
             if (names[i] == null) continue;
             String name = names[i].trim();
@@ -230,14 +242,27 @@ public final class Routines {
             set.add(name.toLowerCase());
         }
         int need = (moves.size() + 1) / 2;
-        int best = -1;
-        for (java.util.Map.Entry<Long, java.util.Set<String>> e : perDay.entrySet()) {
-            if (e.getValue().size() < need) continue;
-            int ago = Days.ago(e.getKey(), now);
-            if (ago < 0) continue;
-            if (best < 0 || ago < best) best = ago;
+        for (java.util.Map.Entry<Long, java.util.Set<String>> e : perDay.entrySet())
+            if (e.getValue().size() >= need) out.add(e.getKey());
+        return out;
+    }
+
+    /**
+     * Hányszor csináltad meg ezt az edzésnapot az elmúlt N napban?
+     *
+     * Ugyanaz a küszöb, mint a lastDone-nál: a gyakorlatok legalább fele.
+     * Ebből derül ki, hogy a terv él-e – egy sablon, amit sosem csinálsz meg,
+     * nem terv, hanem jókívánság.
+     */
+    public static int doneDays(List<String> moves, long[] ts, String[] names,
+                               long now, int days) {
+        if (days < 1) return 0;
+        int n = 0;
+        for (Long day : qualifyingDays(moves, ts, names)) {
+            int ago = Days.ago(day, now);
+            if (ago >= 0 && ago < days) n++;
         }
-        return best;
+        return n;
     }
 
     /** „ma", „tegnap", „4 napja" – vagy üres, ha soha. */
