@@ -130,7 +130,13 @@ open(dst + 'StrengthLog.java', 'w').write(
     "        public final List<SetEntry> sets; public final int rpe;\n"
     "        public Entry(long t, String n, List<SetEntry> s) { this(t, n, s, 0); }\n"
     "        public Entry(long t, String n, List<SetEntry> s, int r) { ts = t; name = n;\n"
-    "            sets = s; rpe = r >= 6 && r <= 10 ? r : 0; } }\n"
+    "            sets = s; rpe = r >= 6 && r <= 10 ? r : 0; }\n"
+    "        public double topWeight() { double m = 0;\n"
+    "            for (SetEntry x : sets) m = Math.max(m, x.weight); return m; }\n"
+    "        public double volume() { double v = 0;\n"
+    "            for (SetEntry x : sets) v += x.reps * x.weight; return v; }\n"
+    "        public int totalReps() { int r2 = 0;\n"
+    "            for (SetEntry x : sets) r2 += x.reps; return r2; } }\n"
     "    " + common + "\n"
     "    public static int dayDiff(long a, long b) { return (int) ((b - a) / 86400000L); }\n}\n")
 PY

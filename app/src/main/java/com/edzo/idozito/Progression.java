@@ -1,5 +1,6 @@
 package com.edzo.idozito;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -192,6 +193,48 @@ public final class Progression {
      * és a hosszabb pihenő már csak nyújtja az edzést. Testsúlyos gyakorlatnál
      * rövidebb, mert kisebb a terhelés.
      */
+    /** Ennél kevesebb alkalomból nem mondunk fejlődést: két pont nem tendencia. */
+    public static final int MIN_SESSIONS_FOR_TREND = 4;
+
+    /**
+     * Mennyit fejlődtél egy gyakorlatban? {első csúcs, mostani csúcs} – vagy null.
+     *
+     * A rekord azt mondja meg, hol a plafon; ez azt, hogy MERRE tartasz. A
+     * kettő nem ugyanaz: aki két éve nyomott egy nagyot, majd leállt, annak a
+     * rekordja szép, a tendenciája viszont nem.
+     *
+     * Az ablak első és utolsó HARMADÁT hasonlítjuk: egyetlen jó vagy rossz nap
+     * így nem billenti el, és a közepe (ahol a legtöbb átfedés van) kimarad.
+     *
+     * @param newestFirst a napló, legújabb elöl
+     * @param name        a gyakorlat neve
+     * @param now         a mostani idő
+     * @param days        hány napra visszamenőleg nézzük
+     */
+    public static double[] progress(List<StrengthLog.Entry> newestFirst, String name,
+                                    long now, int days) {
+        if (newestFirst == null || name == null || days < 1) return null;
+        List<double[]> tops = new ArrayList<>();      // {ts, csúcssúly}
+        for (StrengthLog.Entry e : newestFirst) {
+            if (!name.equals(e.name)) continue;
+            if (e.ts < now - days * 86400000L || e.ts > now) continue;
+            double w = e.topWeight();
+            if (w <= 0) continue;
+            tops.add(new double[]{e.ts, w});
+        }
+        if (tops.size() < MIN_SESSIONS_FOR_TREND) return null;
+        // A lista legújabb elöl jön; a régi vége az „első harmad".
+        int third = Math.max(1, tops.size() / 3);
+        double firstSum = 0, lastSum = 0;
+        for (int i = 0; i < third; i++) {
+            lastSum += tops.get(i)[1];
+            firstSum += tops.get(tops.size() - 1 - i)[1];
+        }
+        double first = firstSum / third, last = lastSum / third;
+        if (first <= 0) return null;
+        return new double[]{first, last};
+    }
+
     /**
      * Egy ismétlésre becsült maximum (Epley).
      *

@@ -614,6 +614,33 @@ public class StatsActivity extends Activity {
             rts[i] = log.get(i).ts;
             rnames[i] = log.get(i).name;
         }
+        // Merre tartasz? A rekord a plafont mutatja, ez az irányt: aki két éve
+        // nyomott egy nagyot, majd leállt, annak a rekordja szép, a
+        // tendenciája viszont nem.
+        java.util.LinkedHashMap<String, Double> volByMove = new java.util.LinkedHashMap<>();
+        for (StrengthLog.Entry e : log) {
+            if (e.ts < from || e.topWeight() <= 0) continue;
+            Double v = volByMove.get(e.name);
+            volByMove.put(e.name, (v == null ? 0 : v) + e.volume());
+        }
+        int shown = 0;
+        for (int k = 0; k < 3; k++) {
+            String top = null;
+            double best = 0;
+            for (java.util.Map.Entry<String, Double> e : volByMove.entrySet())
+                if (e.getValue() > best) { best = e.getValue(); top = e.getKey(); }
+            if (top == null) break;
+            volByMove.remove(top);
+            double[] pr = Progression.progress(log, top, System.currentTimeMillis(), 90);
+            if (pr == null) continue;
+            long pct = Math.round((pr[1] - pr[0]) / pr[0] * 100);
+            if (Math.abs(pct) < 2) continue;      // a zaj nem fejlődés
+            if (shown == 0) notes.addView(text("📈 Fejlődés · 90 nap", 12, MUTED, true));
+            notes.addView(text("   " + top + ": " + Hu.kg(pr[0]) + " → " + Hu.kg(pr[1])
+                    + " kg  (" + (pct > 0 ? "+" : "−") + Math.abs(pct) + "%)", 13, TXT, false));
+            shown++;
+        }
+
         StringBuilder rline = new StringBuilder();
         long nowMs = System.currentTimeMillis();
         for (Routines.Routine r : Routines.all(

@@ -235,6 +235,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Súlyzós szekció** (elmúlt 30 nap): edzésnapok, gyakorlatok, sorozatok,
   ismétlések, **volumen** és napi átlag, a legtöbb munkát kapott gyakorlattal
   és izomcsoporttal, valamint az **átlagos érzett terhelés** (RPE); és hogy
+  **merre tartasz** a fő gyakorlatokban („📈 Fejlődés · 90 nap – Guggolás
+  82,5 → 98,8 kg (+20%)"; a rekord a plafont mutatja, ez az irányt), és hogy
   **melyik edzésnapot hányszor** csináltad meg („📅 Lábnap 4× · Tolónap 3×")
   – egy sablon, amit sosem csinálsz meg, nem terv, hanem jókívánság
 - **Étrend-szekció**: 7 napos átlagok, cél-tartás, 30 napos csík, átlagos
@@ -300,7 +302,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~496 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~498 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

@@ -224,4 +224,51 @@ public class ProgressionTest {
         assertEquals(0.0, Progression.oneRm(100, 0), 0.001);
         assertEquals(0.0, Progression.oneRm(-10, 5), 0.001);
     }
+
+    @Test public void theTrendComparesTheFirstAndLastThird() {
+        // A rekord azt mondja meg, hol a plafon; ez azt, hogy MERRE tartasz.
+        long d = 86400000L, now = 1000 * d;
+        java.util.List<StrengthLog.Entry> log = new java.util.ArrayList<>();
+        // Legújabb elöl: 100, 97,5, 95, 90, 85, 80.
+        double[] w = {100, 97.5, 95, 90, 85, 80};
+        for (int i = 0; i < w.length; i++)
+            log.add(entry(now - i * 7L * d, "Guggolás", 3, 5, w[i]));
+        // Hat alkalom → kettesével átlagol: a két legrégebbi (80, 85) és a két
+        // legújabb (100, 97,5) átlaga. Egyetlen jó vagy rossz nap így nem
+        // billenti el a képet.
+        double[] p = Progression.progress(log, "Guggolás", now, 90);
+        assertEquals(82.5, p[0], 0.001);
+        assertEquals(98.75, p[1], 0.001);
+        assertTrue("felfelé tart", p[1] > p[0]);
+    }
+
+    @Test public void theTrendNeedsEnoughSessions() {
+        long d = 86400000L, now = 1000 * d;
+        java.util.List<StrengthLog.Entry> log = new java.util.ArrayList<>();
+        for (int i = 0; i < 3; i++)
+            log.add(entry(now - i * 7L * d, "Guggolás", 3, 5, 80 + i));
+        // Két-három pont nem tendencia.
+        assertNull(Progression.progress(log, "Guggolás", now, 90));
+        // Ablakon kívüli alkalmak nem számítanak.
+        java.util.List<StrengthLog.Entry> old = new java.util.ArrayList<>();
+        for (int i = 0; i < 6; i++)
+            old.add(entry(now - (200L + i) * d, "Guggolás", 3, 5, 80));
+        assertNull(Progression.progress(old, "Guggolás", now, 90));
+        // Képtelen bemenet: null, nem kivétel.
+        assertNull(Progression.progress(null, "Guggolás", now, 90));
+        assertNull(Progression.progress(log, null, now, 90));
+        assertNull(Progression.progress(log, "Guggolás", now, 0));
+        // Testsúlyos (0 kg) alkalmakból nincs tendencia.
+        java.util.List<StrengthLog.Entry> bw = new java.util.ArrayList<>();
+        for (int i = 0; i < 6; i++)
+            bw.add(entry(now - i * 7L * d, "Fekvőtámasz", 3, 20, 0));
+        assertNull(Progression.progress(bw, "Fekvőtámasz", now, 90));
+    }
+
+    private static StrengthLog.Entry entry(long ts, String name, int sets, int reps,
+                                           double weight) {
+        java.util.List<StrengthLog.SetEntry> l = new java.util.ArrayList<>();
+        for (int i = 0; i < sets; i++) l.add(new StrengthLog.SetEntry(reps, weight));
+        return new StrengthLog.Entry(ts, name, l);
+    }
 }
