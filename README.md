@@ -148,6 +148,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 📊 Statisztika & előzmények
 - Heti / havi / összes összesítők, 8-hetes diagram, havi naptár,
   **12 hetes aktivitás-hőtérkép**, terv-teljesítés
+- **Ez a hónap**: edzések, idő, táv, kalória és volumen az előző hónap
+  UGYANANNYI napjához mérve – a folyó hónap nem tűnik visszaesésnek attól,
+  hogy még nem ért véget
 - **Csúcsaid**: leghosszabb edzés, leghosszabb táv, leggyorsabb tempó,
   legtöbb lépés, legtöbb elégetett kalória és a legnagyobb napi volumen –
   mindegyik dátummal
@@ -229,7 +232,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~395 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~396 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

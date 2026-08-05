@@ -108,6 +108,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View monthCmp = monthCompareCard(System.currentTimeMillis());
+        if (monthCmp != null) {
+            col.addView(sectionTitle("Ez a hónap"));
+            col.addView(monthCmp, lp());
+            col.addView(gap(16));
+        }
+
         View bests = bestsCard();
         if (bests != null) {
             col.addView(sectionTitle("Csúcsaid"));
@@ -652,6 +659,74 @@ public class StatsActivity extends Activity {
             LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(Math.max(dp(8), w), dp(3));
             blp.bottomMargin = dp(4);
             cardV.addView(bar, blp);
+        }
+        return cardV;
+    }
+
+    /**
+     * Ez a hónap az előzőhöz mérve. Az összegek önmagukban nem mondják meg,
+     * hogy jó irányba megy-e a dolog – az előző hónap az egyetlen viszonyítás,
+     * ami a szezont és a szokásokat is magában hordozza.
+     *
+     * A folyó hónap mindig rövidebb, mint a lezárt előző, ezért az AZONOS
+     * napszámú szakaszt hasonlítjuk: ma 12-e van, tehát az előző hónap első
+     * 12 napja a mérce. Enélkül minden hónap eleje csúfos visszaesésnek tűnne.
+     */
+    View monthCompareCard(long now) {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(now);
+        int dayOfMonth = c.get(java.util.Calendar.DAY_OF_MONTH);
+        c.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        c.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long thisStart = c.getTimeInMillis();
+        c.add(java.util.Calendar.MONTH, -1);
+        long prevStart = c.getTimeInMillis();
+        // Az előző hónap ugyanennyiedik napjának vége.
+        java.util.Calendar pc = java.util.Calendar.getInstance();
+        pc.setTimeInMillis(prevStart);
+        int prevDays = pc.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+        pc.set(java.util.Calendar.DAY_OF_MONTH, Math.min(dayOfMonth, prevDays));
+        pc.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        long prevEnd = pc.getTimeInMillis();
+
+        Totals nowT = totals(thisStart, now + 1);
+        Totals prevT = totals(prevStart, prevEnd);
+        if (nowT.count == 0 && prevT.count == 0) return null;
+
+        double nowVol = 0, prevVol = 0;
+        for (StrengthLog.Entry e : StrengthLog.load(this)) {
+            if (e.ts >= thisStart && e.ts <= now) nowVol += e.volume();
+            else if (e.ts >= prevStart && e.ts < prevEnd) prevVol += e.volume();
+        }
+
+        LinearLayout cardV = card();
+        cardV.setPadding(dp(14), dp(10), dp(14), dp(10));
+        cardV.addView(text("Az előző hónap első " + dayOfMonth + " napjához mérve",
+                11.5f, MUTED, false), lp());
+        cardV.addView(gap(6));
+        String[][] rows = {
+                {"🔁 Edzések", String.valueOf(nowT.count), Hu.delta(nowT.count, prevT.count)},
+                {"⏱ Idő", fmtDur((int) nowT.durSec), Hu.delta(nowT.durSec, prevT.durSec)},
+                {"📍 Táv", nowT.distM > 0 ? fmtDist(nowT.distM) : "—",
+                        Hu.delta(nowT.distM, prevT.distM)},
+                {"🔥 Kalória", Math.round(nowT.cal) + " kcal", Hu.delta(nowT.cal, prevT.cal)},
+                {"🏋 Volumen", Math.round(nowVol) + " kg", Hu.delta(nowVol, prevVol)},
+        };
+        for (String[] r : rows) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(7), 0, dp(7));
+            row.addView(text(r[0], 13.5f, TXT, false),
+                    new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(text(r[1], 13.5f, TXT, true), new LinearLayout.LayoutParams(-2, -2));
+            TextView d = text("   " + r[2], 12.5f,
+                    r[2].startsWith("+") || r[2].equals("új") ? 0xFF22C55E
+                            : r[2].startsWith("−") ? 0xFFE0A050 : MUTED, true);
+            row.addView(d, new LinearLayout.LayoutParams(dp(58), -2));
+            cardV.addView(row);
         }
         return cardV;
     }

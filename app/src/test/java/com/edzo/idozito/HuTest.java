@@ -60,4 +60,16 @@ public class HuTest {
         assertEquals("12", Hu.digits("tizenketto"));
         assertEquals("", Hu.digits(null));
     }
+    @Test public void theChangeIsReadableAndHonest() {
+        assertEquals("+50%", Hu.delta(15, 10));
+        assertEquals("−20%", Hu.delta(8, 10));
+        assertEquals("=", Hu.delta(10, 10));
+        assertEquals("=", Hu.delta(10.04, 10));  // fél százalék alatt nincs változás
+        assertEquals("+2%", Hu.delta(10.2, 10));
+        assertEquals("−100%", Hu.delta(0, 10));
+        // Előzmény nélkül nincs mihez viszonyítani: az „új" nem „+100%".
+        assertEquals("új", Hu.delta(10, 0));
+        assertEquals("—", Hu.delta(0, 0));
+        assertEquals("—", Hu.delta(0, -5));
+    }
 }

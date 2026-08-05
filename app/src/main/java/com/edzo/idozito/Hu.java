@@ -78,6 +78,22 @@ public final class Hu {
             {"masfel", "1,5"}, {"fel", "0,5"}, {"egyet", "1"}, {"egy", "1"},
     };
 
+    /**
+     * Változás az előző időszakhoz képest: „+12%", „−8%", „= 0%".
+     *
+     * Ha nem volt előzmény, nincs mihez viszonyítani: ilyenkor „új" a válasz,
+     * nem „+100%" – az utóbbi azt sugallná, hogy a duplájára nőtt valami,
+     * ami eddig nem is létezett.
+     */
+    public static String delta(double now, double prev) {
+        if (prev <= 0) return now > 0 ? "új" : "—";
+        if (now <= 0) return "−100%";
+        double pct = (now - prev) / prev * 100;
+        long r = Math.round(pct);
+        if (r == 0) return "=";
+        return (r > 0 ? "+" : "−") + Math.abs(r) + "%";
+    }
+
     /** Két tizedes, magyarul: „5,23". */
     public static String d2(double v) {
         return String.format(LOCALE, "%.2f", v);
