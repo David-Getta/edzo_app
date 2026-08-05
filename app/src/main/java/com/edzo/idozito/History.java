@@ -141,6 +141,20 @@ public final class History {
         return daily;
     }
 
+    /** A mai edzésekkel elégetett kalória (0, ha nincs mérés). */
+    public static double burnedToday(Context ctx) {
+        double sum = 0;
+        try {
+            long t0 = Days.startOf(System.currentTimeMillis());
+            JSONArray h = loadAll(ctx);
+            for (int i = 0; i < h.length(); i++) {
+                JSONObject o = h.optJSONObject(i);
+                if (o != null && o.optLong("ts") >= t0) sum += Math.max(0, o.optDouble("cal", 0));
+            }
+        } catch (Exception ignored) {}
+        return sum;
+    }
+
     public static boolean trainedToday(Context ctx) {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(java.util.Calendar.HOUR_OF_DAY, 0);

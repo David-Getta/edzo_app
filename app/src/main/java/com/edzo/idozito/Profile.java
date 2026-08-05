@@ -73,6 +73,28 @@ public final class Profile {
      * különbsége nem is a beállított kalóriahiány volt. Aki utánaszámolt, annak
      * nem jött ki.
      */
+    /**
+     * A napi kalória-cél az edzéssel elégetett kalóriával megnövelve, ha a
+     * felhasználó ezt kérte.
+     *
+     * Két iskola van, és mindkettőnek igaza van a maga módján. Aki fix célt
+     * tart, annak az edzés a deficit része – neki ne mozogjon a cél. Aki
+     * viszont sokat edz, annál a fix cél napokon át 800 kalóriás mínuszt
+     * jelentene, és az nem fogyás, hanem éhezés. Ezért ez beállítás, nem
+     * döntés helyette.
+     *
+     * A beszámított rész felső határa napi 800 kcal: a becsült égetés fölfelé
+     * téved a legkönnyebben, és egy elszámolt óra nem érhet meg egy plusz
+     * vacsorát.
+     */
+    static final double MAX_CREDIT = 800;
+
+    public static int effectiveGoal(int goal, double burned, boolean credit) {
+        if (goal <= 0) return goal;
+        if (!credit || burned <= 0) return goal;
+        return goal + (int) Math.round(Math.min(MAX_CREDIT, burned));
+    }
+
     public static final double ACTIVITY = 1.4;
 
     /** Napi kalóriaszükséglet a BMR-ből, vagy -1 ha a BMR sem számolható. */

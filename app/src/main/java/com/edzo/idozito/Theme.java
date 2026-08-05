@@ -57,6 +57,9 @@ public final class Theme {
 
     /** Tervezett edzésnapok CSV-ben (0=hétfő .. 6=vasárnap); üres = minden nap. */
     public static String planDays(Context c) { return p(c).getString("plan_days", ""); }
+    /** Beszámítsuk-e az edzéssel elégetett kalóriát a napi célba? */
+    public static boolean kcalCredit(Context c) { return p(c).getBoolean("kcal_credit", false); }
+
     /** Heti fókusz naponként, CSV-ben (0=hétfő .. 6=vasárnap); üres = nincs terv. */
     public static String planFocus(Context c) { return p(c).getString("plan_focus", ""); }
 
@@ -145,7 +148,8 @@ public final class Theme {
                 .remove("c_accent").remove("c_accent2").remove("c_work").remove("c_rest")
                 .remove("volume").remove("vibrate").remove("cd_secs").remove("pace").remove("recap").remove("livebg").remove("duck").remove("screenon")
                 .remove("anim").remove("lightmode").remove("blaze_nudge").remove("blaze_hour")
-                .remove("plan_days").remove("plan_focus").remove("tts_rate")
+                .remove("plan_days").remove("plan_focus").remove("kcal_credit")
+                .remove("tts_rate")
                 .apply();
         bumpRev(c);
     }

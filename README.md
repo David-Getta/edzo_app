@@ -65,6 +65,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   Profilban beállított fogyási célból
 - **Napi mérleg**: a mai kártyán az edzéssel elégetett kalória és a
   nettó bevitel is látszik
+- **Edzés-kalória beszámítása** (kapcsolható): aki sokat edz, annál a fix cél
+  napokon át nagy mínuszt jelentene – bekapcsolva a napi cél az elégetett
+  kalóriával nő, legfeljebb napi 800-zal
 - **Étkezési ablak**: az első és az utolsó mai étkezés között eltelt idő
   (időszakos böjthöz)
 - **„Mit egyek még?"**: a maradék kalóriára és a hiányzó fehérjére három
@@ -224,7 +227,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~391 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~392 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

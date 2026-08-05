@@ -105,7 +105,9 @@ pr = open(src_dir + 'Profile.java').read()
 open(dst + 'Profile.java', 'w').write(
     "package com.edzo.idozito;\npublic final class Profile {\n"
     "    public static final double[] RATES = {0.25, 0.5, 0.75, 1.0};\n"
-    "    public static final double ACTIVITY = 1.4;\n    "
+    "    public static final double ACTIVITY = 1.4;\n"
+    "    static final double MAX_CREDIT = 800;\n    "
+    + grab(pr, 'public static int effectiveGoal(') + "\n    "
     + grab(pr, 'public static double bmr(') + "\n    " + grab(pr, 'public static double tdee(')
     + "\n    " + grab(pr, 'public static double dailyDeficit(')
     + "\n    " + grab(pr, 'public static double intakeForLoss(')

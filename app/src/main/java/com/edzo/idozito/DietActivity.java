@@ -437,21 +437,18 @@ public class DietActivity extends Activity {
         long t0 = dayStartMs();
         for (MealLog.Meal m : meals())
             if (m.ts >= t0) { kcal += m.kcal(); protSum += m.protein(); }
-        int goal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
+        final int baseGoal = getSharedPreferences("edzo", MODE_PRIVATE).getInt("kcal_goal", 0);
         int streak = MealLog.logStreak(this);
+        // Napi mérleg: amit ma edzéssel elégettél. Ha a beállítás kéri, ez a
+        // cél része lesz – aki sokat edz, annál a fix cél napokon át nagy
+        // mínuszt jelentene.
+        double burned = History.burnedToday(this);
+        final int goal = Profile.effectiveGoal(baseGoal, burned, Theme.kcalCredit(this));
         todayCard.addView(text("🍽 Ma összesen" + (goal > 0 ? "  ·  cél: " + goal + " kcal" : "")
+                + (goal > baseGoal ? " (" + baseGoal + " + edzés)" : "")
                 + (streak >= 2 ? "  ·  🔥 " + streak + " napja naplózol" : ""),
                 12.5f, MUTED, true));
         todayCard.addView(text(Math.round(kcal) + " kcal", 26, Theme.accent(this), true));
-        // Napi mérleg: amit ma edzéssel elégettél, és ami nettóban marad.
-        double burned = 0;
-        try {
-            org.json.JSONArray h = History.loadAll(this);
-            for (int i = 0; i < h.length(); i++) {
-                org.json.JSONObject o = h.optJSONObject(i);
-                if (o != null && o.optLong("ts") >= t0) burned += o.optDouble("cal", 0);
-            }
-        } catch (Exception ignored) {}
         if (burned > 0 && kcal > 0) {
             TextView bt = text("🔥 Edzéssel elégetve: " + Math.round(burned)
                     + " kcal  ·  nettó: " + Math.round(kcal - burned) + " kcal",
@@ -750,6 +747,19 @@ public class DietActivity extends Activity {
         LinearLayout.LayoutParams pl = lp();
         pl.topMargin = dp(8);
         box.addView(pEt, pl);
+        // Két iskola van, és mindkettőnek igaza van a maga módján: aki fix
+        // célt tart, annál az edzés a deficit része; aki sokat edz, annál a
+        // fix cél napokon át 800-as mínuszt jelentene. Ezért beállítás.
+        final boolean[] credit = {Theme.kcalCredit(this)};
+        final TextView creditTv = text("", 12.5f, MUTED, false);
+        creditTv.setPadding(dp(4), dp(12), dp(4), 0);
+        creditTv.setClickable(true);
+        Runnable paint = () -> creditTv.setText((credit[0] ? "☑" : "☐")
+                + "  Az edzéssel elégetett kalória beleszámít a célba"
+                + (credit[0] ? "  (max. +800 kcal/nap)" : ""));
+        paint.run();
+        creditTv.setOnClickListener(v -> { credit[0] = !credit[0]; paint.run(); });
+        box.addView(creditTv, lp());
         Sheet sh = new Sheet(this, "Napi célok 🎯",
                 "Tipp: a Profil oldalon a BMR-ed jó kiindulási alap.")
                 .addCustom(box)
@@ -758,7 +768,8 @@ public class DietActivity extends Activity {
                     int pg = (int) parse(pEt.getText().toString());
                     getSharedPreferences("edzo", MODE_PRIVATE).edit()
                             .putInt("kcal_goal", Math.max(0, g))
-                            .putInt("protein_goal", Math.max(0, pg)).apply();
+                            .putInt("protein_goal", Math.max(0, pg))
+                            .putBoolean("kcal_credit", credit[0]).apply();
                     refresh();
                 });
         // Ha a Profil adataiból számolható BMR, egy koppintással betölthető.

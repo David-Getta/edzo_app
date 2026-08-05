@@ -79,8 +79,9 @@ public class BlazeWidget extends AppWidgetProvider {
         }
         // A mai kcal-állás egy pillantásra annak, aki étrendet vezet (cél esetén céllal).
         try {
-            int kGoal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE)
-                    .getInt("kcal_goal", 0);
+            int kGoal = Profile.effectiveGoal(
+                    c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getInt("kcal_goal", 0),
+                    History.burnedToday(c), Theme.kcalCredit(c));
             int eaten = (int) Math.round(MealLog.todayKcal(c));
             if (eaten > 0)
                 msg += "\n🍽 " + eaten + (kGoal > 0 ? " / " + kGoal : "") + " kcal ma";

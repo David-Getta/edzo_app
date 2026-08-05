@@ -69,4 +69,19 @@ public class ProfileEnergyTest {
         assertTrue(Profile.tdee(BMR_M) < BMR_M * 2);
         assertEquals(BMR_M * Profile.ACTIVITY, Profile.tdee(BMR_M), 0.001);
     }
+    @Test public void theBurnedCaloriesCountOnlyIfAskedFor() {
+        // Kikapcsolva a cél nem mozdul – az edzés a deficit része.
+        assertEquals(2000, Profile.effectiveGoal(2000, 500, false));
+        // Bekapcsolva hozzáadódik.
+        assertEquals(2500, Profile.effectiveGoal(2000, 500, true));
+        // Nincs cél: nincs mit növelni.
+        assertEquals(0, Profile.effectiveGoal(0, 500, true));
+        // Negatív vagy nulla égetés nem von le.
+        assertEquals(2000, Profile.effectiveGoal(2000, 0, true));
+        assertEquals(2000, Profile.effectiveGoal(2000, -300, true));
+        // Felső határ: egy elszámolt óra ne érjen meg egy plusz vacsorát.
+        assertEquals(2800, Profile.effectiveGoal(2000, 2500, true));
+        // Kerekítés a legközelebbi egészre.
+        assertEquals(2400, Profile.effectiveGoal(2000, 399.6, true));
+    }
 }

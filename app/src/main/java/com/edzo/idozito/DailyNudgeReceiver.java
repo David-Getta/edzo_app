@@ -64,7 +64,9 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
         } catch (Exception ignored) {}
         // Kcal-cél állása annak, aki étrendet vezet: mennyi fér még a mai célba.
         try {
-            int goal = c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getInt("kcal_goal", 0);
+            int goal = Profile.effectiveGoal(
+                    c.getSharedPreferences("edzo", Context.MODE_PRIVATE).getInt("kcal_goal", 0),
+                    History.burnedToday(c), Theme.kcalCredit(c));
             int eaten = (int) Math.round(MealLog.todayKcal(c));
             if (goal > 0 && eaten > 0) {
                 int left = goal - eaten;
