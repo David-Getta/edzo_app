@@ -99,6 +99,56 @@ public final class Bests {
         return out;
     }
 
+    /**
+     * Melyik gyakorlatban dőlt meg a rekord az adott időpont ÓTA?
+     *
+     * A heti összegzés eddig a hét legnehezebb emelését írta ki – abból nem
+     * derült ki, hogy az mindenkori csúcs volt-e, vagy csak a hét legnehezebb
+     * napja. Pedig a kettő között van a különbség aközött, hogy „ez volt a
+     * hét" és „ilyet még soha".
+     *
+     * Csak akkor rekord, ha VOLT mihez mérni: az első alkalom nem rekord,
+     * különben minden új gyakorlat rögtön ünneplést kapna.
+     *
+     * @return „Guggolás 120 kg" alakú sorok, a legnehezebbtől lefelé
+     */
+    public static List<String> newRecordsSince(long since, long[] ts, String[] names,
+                                               double[] weights) {
+        List<String> out = new ArrayList<>();
+        if (ts == null || names == null || weights == null) return out;
+        int n = Math.min(ts.length, Math.min(names.length, weights.length));
+        java.util.LinkedHashMap<String, double[]> before = new java.util.LinkedHashMap<>();
+        java.util.LinkedHashMap<String, double[]> after = new java.util.LinkedHashMap<>();
+        for (int i = 0; i < n; i++) {
+            String name = names[i];
+            double w = weights[i];
+            if (name == null || name.trim().isEmpty()) continue;
+            if (w < MIN_LIFT_KG || w > 1000) continue;
+            java.util.LinkedHashMap<String, double[]> m = ts[i] >= since ? after : before;
+            double[] cur = m.get(name);
+            if (cur == null) m.put(name, new double[]{w});
+            else if (w > cur[0]) cur[0] = w;
+        }
+        List<double[]> vals = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
+        for (java.util.Map.Entry<String, double[]> e : after.entrySet()) {
+            double[] old = before.get(e.getKey());
+            if (old == null || e.getValue()[0] <= old[0]) continue;
+            keys.add(e.getKey());
+            vals.add(e.getValue());
+        }
+        // A legnehezebb elöl: ha több rekord is született, az a beszédesebb.
+        for (int i = 0; i < keys.size(); i++)
+            for (int j = i + 1; j < keys.size(); j++)
+                if (vals.get(j)[0] > vals.get(i)[0]) {
+                    double[] tv = vals.get(i); vals.set(i, vals.get(j)); vals.set(j, tv);
+                    String tk = keys.get(i); keys.set(i, keys.get(j)); keys.set(j, tk);
+                }
+        for (int i = 0; i < keys.size(); i++)
+            out.add(keys.get(i) + " " + Hu.kg(vals.get(i)[0]) + " kg");
+        return out;
+    }
+
     public static List<Best> of(long[] ts, int[] durSec, double[] distM, double[] cal,
                                 int[] steps, long[] liftTs, double[] liftVol) {
         List<Best> out = new ArrayList<>();

@@ -159,7 +159,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kihívás, mai eredmény, hátralévő fehérje)
 - Napi értesítés, ha még nem edzettél; **heti visszatekintő** vasárnap,
   **havi visszatekintő** minden hónap 1-jén – a súlyzós munka (sorozatok,
-  volumen, csúcssúly), az étrend és a víz is benne
+  volumen, csúcssúly), az étrend és a víz is benne. Ha a héten
+  **mindenkori rekord** dőlt meg, azt külön kiírja („🏆 Új csúcs:
+  Guggolás 120 kg") – a hét csúcssúlyából magától nem derülne ki,
+  hogy az „ez volt a hét" vagy „ilyet még soha"
 - **Mozgó widget** a kezdőképernyőn: állapot, mai kcal és víz, gyorsgombok
   (edzés indítása, erősítő napló, +1 pohár víz)
 
@@ -265,7 +268,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~453 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~457 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

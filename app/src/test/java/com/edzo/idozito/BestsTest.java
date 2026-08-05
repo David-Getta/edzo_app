@@ -146,4 +146,45 @@ public class BestsTest {
         assertTrue(Bests.ofLifts(new long[]{1}, new String[]{"Guggolás"},
                 new double[]{100}, new int[]{0}).isEmpty());
     }
+
+    @Test public void aNewAllTimeRecordIsRecognised() {
+        long week = 7 * 86400000L;
+        long since = 100 * week;
+        long[] ts = {50 * week, 50 * week, 101 * week, 101 * week};
+        String[] names = {"Guggolás", "Fekvenyomás", "Guggolás", "Fekvenyomás"};
+        double[] w = {100, 80, 120, 75};
+        List<String> r = Bests.newRecordsSince(since, ts, names, w);
+        // Csak a guggolás dőlt meg; a fekvenyomás 75-je nem éri el a 80-at.
+        assertEquals(1, r.size());
+        assertEquals("Guggolás 120 kg", r.get(0));
+    }
+
+    @Test public void theFirstTimeIsNotARecord() {
+        // Nem volt mihez mérni: az első alkalom nem rekord, különben minden
+        // új gyakorlat rögtön ünneplést kapna.
+        assertTrue(Bests.newRecordsSince(10, new long[]{20}, new String[]{"Guggolás"},
+                new double[]{100}).isEmpty());
+        // Az azonos súly sem rekord – megismételni nem megdönteni.
+        assertTrue(Bests.newRecordsSince(10, new long[]{1, 20},
+                new String[]{"Guggolás", "Guggolás"}, new double[]{100, 100}).isEmpty());
+    }
+
+    @Test public void theHeaviestRecordComesFirst() {
+        List<String> r = Bests.newRecordsSince(10,
+                new long[]{1, 1, 20, 20},
+                new String[]{"Bicepsz", "Guggolás", "Bicepsz", "Guggolás"},
+                new double[]{30, 100, 40, 120});
+        assertEquals(2, r.size());
+        assertEquals("Guggolás 120 kg", r.get(0));
+        assertEquals("Bicepsz 40 kg", r.get(1));
+    }
+
+    @Test public void brokenRecordInputNeverCrashes() {
+        assertTrue(Bests.newRecordsSince(0, null, null, null).isEmpty());
+        assertTrue(Bests.newRecordsSince(0, new long[]{1, 2}, new String[]{null, "  "},
+                new double[]{100, 100}).isEmpty());
+        // Könnyű sorozatból nincs rekord.
+        assertTrue(Bests.newRecordsSince(10, new long[]{1, 20},
+                new String[]{"Bicepsz", "Bicepsz"}, new double[]{10, 20}).isEmpty());
+    }
 }

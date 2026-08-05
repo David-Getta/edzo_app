@@ -175,6 +175,27 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 if (rpeCount >= 3)
                     s += "  ·  átlagos érzett terhelés " + Hu.d1(rpeSum / (double) rpeCount);
                 text += s + ".";
+                // Mindenkori rekord vagy csak a hét legnehezebb napja? A kettő
+                // között van a különbség aközött, hogy „ez volt a hét" és
+                // „ilyet még soha".
+                java.util.List<StrengthLog.Entry> all = StrengthLog.load(c);
+                int sn = 0;
+                for (StrengthLog.Entry e : all) sn += e.sets.size();
+                long[] rts = new long[sn];
+                String[] rnames = new String[sn];
+                double[] rw = new double[sn];
+                int ri = 0;
+                for (StrengthLog.Entry e : all)
+                    for (StrengthLog.SetEntry st : e.sets) {
+                        rts[ri] = e.ts; rnames[ri] = e.name; rw[ri] = st.weight; ri++;
+                    }
+                java.util.List<String> recs = Bests.newRecordsSince(from, rts, rnames, rw);
+                if (!recs.isEmpty()) {
+                    String line = "\n🏆 Új csúcs: " + recs.get(0);
+                    if (recs.size() > 1) line += "  ·  " + recs.get(1);
+                    if (recs.size() > 2) line += "  ·  +" + (recs.size() - 2) + " további";
+                    text += line;
+                }
             }
         } catch (Exception ignored) {}
         // Terhelés-ugrás: csak akkor szólunk, ha a hét kilóg a megszokottból.
