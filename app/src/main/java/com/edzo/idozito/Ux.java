@@ -52,10 +52,16 @@ public final class Ux {
      * üzenetekhez (pl. belépő köszöntés), hogy ne nyomja el az ünneplést.
      */
     public static void blazeCardIfFree(Activity a, String msg) {
-        if (!cardShowing(a)) blazeCard(a, msg);
+        // A belépő köszöntésnél Blaze él is: integet és kacsint. A többi
+        // kártya (mentve, rekord) gyakori – ott a mozgás hamar zajjá válna.
+        if (!cardShowing(a)) blazeCard(a, msg, true);
     }
 
     public static void blazeCard(final Activity a, String msg) {
+        blazeCard(a, msg, false);
+    }
+
+    public static void blazeCard(final Activity a, String msg, boolean greet) {
         final FrameLayout root = a.findViewById(android.R.id.content);
         if (root == null || a.isFinishing()) return;
         final float d = a.getResources().getDisplayMetrics().density;
@@ -84,6 +90,10 @@ public final class Ux {
         g.setElevation(12 * d);
         g.setPadding((int) (14 * d), (int) (12 * d), (int) (16 * d), (int) (12 * d));
 
+        // Blaze a saját képével (vagy emojival), egy keretben: a keretbe fér
+        // be a kacsintás-jel is, anélkül hogy a kártya elrendezését tolná.
+        final FrameLayout avatarWrap = new FrameLayout(a);
+        final View avatar;
         int bid = drawableId(a, "blaze");
         if (bid != 0) {
             ImageView iv = new ImageView(a);
@@ -95,17 +105,27 @@ public final class Ux {
                     o.setOval(0, 0, v.getWidth(), v.getHeight());
                 }
             });
-            LinearLayout.LayoutParams ivlp =
-                    new LinearLayout.LayoutParams((int) (46 * d), (int) (46 * d));
-            ivlp.rightMargin = (int) (12 * d);
-            g.addView(iv, ivlp);
+            avatar = iv;
+            avatarWrap.addView(iv, new FrameLayout.LayoutParams((int) (46 * d), (int) (46 * d)));
         } else {
             TextView e = new TextView(a);
             e.setText("🐺");
             e.setTextSize(26);
-            e.setPadding(0, 0, (int) (12 * d), 0);
-            g.addView(e);
+            e.setGravity(Gravity.CENTER);
+            avatar = e;
+            avatarWrap.addView(e, new FrameLayout.LayoutParams((int) (46 * d), (int) (46 * d)));
         }
+        final TextView wink = new TextView(a);
+        wink.setText("😉");
+        wink.setTextSize(15);
+        wink.setAlpha(0f);
+        FrameLayout.LayoutParams wlp = new FrameLayout.LayoutParams(-2, -2);
+        wlp.gravity = Gravity.TOP | Gravity.END;
+        avatarWrap.addView(wink, wlp);
+        LinearLayout.LayoutParams awlp =
+                new LinearLayout.LayoutParams((int) (46 * d), (int) (46 * d));
+        awlp.rightMargin = (int) (12 * d);
+        g.addView(avatarWrap, awlp);
         TextView t = new TextView(a);
         t.setText(msg);
         t.setTextSize(13.5f);
@@ -131,6 +151,58 @@ public final class Ux {
         };
         g.postDelayed(dismiss, 4500);
         g.setOnClickListener(v -> dismiss.run());
+        if (greet) avatar.post(() -> greetAnim(avatar, wink));
+    }
+
+    /**
+     * Blaze köszönése: beugrik, integet, majd kacsint.
+     *
+     * A kép egyetlen állókép, tehát a mozgás magából a nézetből jön: a
+     * pattanás a testsúlyt adja, a talp körüli billegés az integetést, a
+     * kacsintást pedig egy rövid összehúzódás és a felvillanó jel együtt.
+     * Egymásba fűzött animációk, mert az AnimatorSet ehhez túl merev lenne.
+     */
+    private static void greetAnim(final View avatar, final View wink) {
+        if (!Theme.animEnabled(avatar.getContext())) return;
+        // A billegés a talp körül forog: a fej körüli forgás úgy nézne ki,
+        // mintha Blaze elesne.
+        avatar.setPivotX(avatar.getWidth() / 2f);
+        avatar.setPivotY(avatar.getHeight());
+        avatar.setScaleX(0.55f);
+        avatar.setScaleY(0.55f);
+        avatar.setRotation(0f);
+        avatar.animate().scaleX(1.14f).scaleY(1.14f).setDuration(210)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                .withEndAction(() -> avatar.animate().scaleX(1f).scaleY(1f).setDuration(150)
+                        .withEndAction(() -> wave(avatar, wink, 0)).start())
+                .start();
+    }
+
+    /** Az integetés lépései: jobbra-balra billegés, egyre kisebb kilengéssel. */
+    private static void wave(final View avatar, final View wink, final int step) {
+        final float[] angles = {-17f, 15f, -11f, 7f, 0f};
+        if (step >= angles.length) {
+            winkAnim(avatar, wink);
+            return;
+        }
+        avatar.animate().rotation(angles[step]).setDuration(step == 0 ? 150 : 125)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .withEndAction(() -> wave(avatar, wink, step + 1))
+                .start();
+    }
+
+    /** A kacsintás: egy rövid összehúzódás, és felvillan a jel. */
+    private static void winkAnim(final View avatar, final View wink) {
+        avatar.animate().scaleY(0.9f).scaleX(1.05f).setDuration(110)
+                .withEndAction(() -> avatar.animate().scaleY(1f).scaleX(1f).setDuration(160).start())
+                .start();
+        wink.setScaleX(0.4f);
+        wink.setScaleY(0.4f);
+        wink.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(180)
+                .setInterpolator(new android.view.animation.OvershootInterpolator())
+                .withEndAction(() -> wink.animate().alpha(0f).setStartDelay(620)
+                        .setDuration(260).start())
+                .start();
     }
 
     /** Lassan „élő" háttér: finom, végtelenített zoom + pásztázás. Kikapcsolható a Beállításokban. */
