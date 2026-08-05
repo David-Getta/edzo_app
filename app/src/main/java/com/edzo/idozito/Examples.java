@@ -63,6 +63,7 @@ public final class Examples {
             "arnold nyomás 3x10 16 kg, oldalemelés 3x15 8 kg",
             "guggolás 3x10x60",
             "guggolás 3x10 100 kg rpe 8",
+            "tegnap húzódzkodás 4x8",
     };
 
     /** Intervallum-beállítás egy mondatból. */

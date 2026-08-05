@@ -290,7 +290,7 @@ public class DietActivity extends Activity {
                                         Toast.LENGTH_SHORT).show();
                             });
                 sh.addRow("🕒", "Időpont módosítása", "Ha máskor etted, mint amikor beírtad",
-                        false, true, () -> editMealTime(m));
+                        false, true, () -> editTimeHint(m));
                 boolean fav = MealLog.isFav(this, m);
                 sh.addRow(fav ? "★" : "☆",
                         fav ? "Levétel a kedvencekről" : "Kedvencnek jelöl",
@@ -1038,7 +1038,7 @@ public class DietActivity extends Activity {
         // A „tegnap este pizzát ettem" a tegnapi napra kerül – ahogy az
         // edzés-mondatoknál is. A felismerés a hétköznapneveket („hétfőn") és
         // a „3 napja" alakot is érti, a napszak-szó pedig az órát adja.
-        if (existing == null) ts = MealTime.from(nameEt.getText().toString(), ts);
+        if (existing == null) ts = TimeHint.from(nameEt.getText().toString(), ts);
         String photo = existing != null ? existing.photo : "";
         MealLog.Meal meal = new MealLog.Meal(ts, nameEt.getText().toString().trim(), items, photo);
         if (existing != null) MealLog.removeByTs(this, existing.ts);
@@ -1507,7 +1507,7 @@ public class DietActivity extends Activity {
     }
 
     /** Dátum + idő választó egy bejegyzés időpontjának utólagos módosításához. */
-    void editMealTime(final MealLog.Meal m) {
+    void editTimeHint(final MealLog.Meal m) {
         final Calendar c = Calendar.getInstance();
         c.setTimeInMillis(m.ts);
         new android.app.DatePickerDialog(this, (dp, y, mo, d) ->

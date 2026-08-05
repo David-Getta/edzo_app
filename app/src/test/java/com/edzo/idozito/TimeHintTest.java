@@ -8,13 +8,13 @@ import org.junit.Test;
 import java.util.Calendar;
 
 /**
- * Az étkezés időpontja a mondatból.
+ * Az időpont a mondatból.
  *
- * Egy rossz nap két helyen is elrontja a napi kalóriát: ahonnan elveszi, és
+ * Egy rossz nap két helyen is elrontja a napi összesítőt: ahonnan elveszi, és
  * ahová beteszi. Ezért inkább maradjon a mostani pillanat, ha a mondat nem
  * mond semmit az időről.
  */
-public class MealTimeTest {
+public class TimeHintTest {
 
     /** Szerda dél – innen minden hétköznapnév egyértelmű. */
     private static long wednesdayNoon() {
@@ -25,7 +25,7 @@ public class MealTimeTest {
     }
 
     private static int[] dayHour(String text) {
-        long ts = MealTime.from(text, wednesdayNoon());
+        long ts = TimeHint.from(text, wednesdayNoon());
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(ts);
         return new int[]{c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY)};
@@ -44,7 +44,7 @@ public class MealTimeTest {
         assertEquals(1, dayHour("4 nappal ezelőtt reggel zabkása")[0]);
         assertEquals(8, dayHour("4 nappal ezelőtt reggel zabkása")[1]);
         // Két hétnél régebbre nem teszünk vissza semmit.
-        assertEquals(0, MealTime.daysBack("30 napja", wednesdayNoon()));
+        assertEquals(0, TimeHint.daysBack("30 napja", wednesdayNoon()));
     }
 
     @Test public void weekdayNamesPointToTheMostRecentSuchDay() {
@@ -58,22 +58,22 @@ public class MealTimeTest {
 
     @Test public void withoutATimeHintTheMomentIsKept() {
         long now = wednesdayNoon() + 37 * 60 * 1000 + 12;   // 12:37:00,012
-        assertEquals(now, MealTime.from("csirkemell rizzsel", now));
-        assertEquals(now, MealTime.from("", now));
-        assertEquals(now, MealTime.from(null, now));
+        assertEquals(now, TimeHint.from("csirkemell rizzsel", now));
+        assertEquals(now, TimeHint.from("", now));
+        assertEquals(now, TimeHint.from(null, now));
     }
 
     @Test public void aSpokenHourWinsOverTheDefault() {
-        assertEquals(19, MealTime.hourOf("19 orakor"));
-        assertEquals(7, MealTime.hourOf("reggel 7 orakor"));
-        assertEquals(20, MealTime.hourOf("20:30-kor"));
-        assertEquals(-1, MealTime.hourOf("csirkemell"));
+        assertEquals(19, TimeHint.hourOf("19 orakor"));
+        assertEquals(7, TimeHint.hourOf("reggel 7 orakor"));
+        assertEquals(20, TimeHint.hourOf("20:30-kor"));
+        assertEquals(-1, TimeHint.hourOf("csirkemell"));
         // Napszak-szavak.
-        assertEquals(8, MealTime.hourOf("reggelire"));
-        assertEquals(13, MealTime.hourOf("ebedre"));
-        assertEquals(16, MealTime.hourOf("uzsonnara"));
-        assertEquals(19, MealTime.hourOf("vacsorara"));
-        assertEquals(22, MealTime.hourOf("ejjel"));
+        assertEquals(8, TimeHint.hourOf("reggelire"));
+        assertEquals(13, TimeHint.hourOf("ebedre"));
+        assertEquals(16, TimeHint.hourOf("uzsonnara"));
+        assertEquals(19, TimeHint.hourOf("vacsorara"));
+        assertEquals(22, TimeHint.hourOf("ejjel"));
     }
 
     @Test public void aTimeHintAloneStillMovesTheHour() {
@@ -87,7 +87,7 @@ public class MealTimeTest {
         long now = wednesdayNoon();
         for (String q : new String[]{null, "", "   ", "0 napja", "999 napja",
                 "hétfőn kedden szerdán", "12:00", "🍕"}) {
-            long ts = MealTime.from(q, now);
+            long ts = TimeHint.from(q, now);
             assertTrue("jövőbeli időpont: " + q, ts <= now + 1000);
             assertTrue("túl régi: " + q, ts >= now - 15L * 86400000L);
         }

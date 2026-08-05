@@ -3,23 +3,25 @@ package com.edzo.idozito;
 import java.util.Calendar;
 
 /**
- * Mikor volt az étkezés? A mondatból.
+ * Mikor történt? Az időpont a mondatból – étkezéshez és súlyzós sorozathoz
+ * egyaránt.
  *
  * A „tegnap este pizzát ettem" eddig is a tegnapi napra került, de csak a
- * „tegnap" és a „tegnapelőtt" szavakat ismerte. Az edzés-felismerő közben
- * régóta érti a hétköznapneveket és a „3 napja" alakot is – ugyanaz a
- * felhasználó ugyanúgy fogalmaz, akár ételről, akár edzésről ír.
+ * „tegnap" és a „tegnapelőtt" szavakat ismerte, és csak az étrendben. Az
+ * edzés-felismerő közben régóta érti a hétköznapneveket és a „3 napja"
+ * alakot is – ugyanaz a felhasználó ugyanúgy fogalmaz, akár ételről, akár
+ * edzésről ír.
  *
  * Tiszta Java (nincs Context), hogy egységteszttel lefedhető legyen: egy
- * rossz nap a napi kalóriát két helyen is elrontja (ahonnan elveszi, és
+ * rossz nap a napi összesítőt két helyen is elrontja (ahonnan elveszi, és
  * ahová beteszi).
  */
-public final class MealTime {
+public final class TimeHint {
 
-    private MealTime() {
+    private TimeHint() {
     }
 
-    /** Ennél régebbre nem teszünk vissza semmit: az „5 hete" nem étkezés-pótlás. */
+    /** Ennél régebbre nem teszünk vissza semmit: az „5 hete" nem utólagos pótlás. */
     static final int MAX_BACK = 14;
 
     /** Hétfőtől vasárnapig, ékezet nélkül; a ragozott alak is illeszkedik. */
@@ -30,7 +32,7 @@ public final class MealTime {
     /**
      * @param text a beírt mondat
      * @param now  a mostani idő
-     * @return az étkezés időbélyege; ha a mondat nem utal korábbi napra és
+     * @return a bejegyzés időbélyege; ha a mondat nem utal korábbi napra és
      *         napszakra sem, akkor pontosan `now` – a mostani pillanat a
      *         legpontosabb adat, amink van
      */
@@ -84,8 +86,8 @@ public final class MealTime {
 
     /** A kimondott napszak órája, vagy -1, ha nincs. */
     static int hourOf(String s) {
-        // Pontos óra: „19 órakor", „19:30-kor". A perc nem érdekes: az étkezés
-        // ideje amúgy is becslés, az óra viszont a napszakot rögzíti.
+        // Pontos óra: „19 órakor", „19:30-kor". A perc nem érdekes: az időpont
+        // amúgy is becslés, az óra viszont a napszakot rögzíti.
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(\\d{1,2})(?::\\d{2})?\\s?(?:ora(?:kor)?|-kor)")
                 .matcher(s);

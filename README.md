@@ -101,7 +101,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   (sorozatonként más ismétlés), „guggolás 3x10x60", „vállból nyomás
   3 sorozat 12 ismétlés 20 kg", „guggolás ötször ötöt 100 kg" – akár több
   gyakorlat egy mondatban,
-  kötőszó nélkül is. 29 gyakorlat és gép, a jelzős változatokkal
+  kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
+  29 gyakorlat és gép, a jelzős változatokkal
   („román felhúzás", „bolgár kitörés", „kábeles tricepsz"). Mentés előtt
   megmutatja, mit értett, és **odaírja a legutóbbi alkalmat is**
   („↳ múltkor 57,5 kg · ▲ +2,5 kg · 3 napja")

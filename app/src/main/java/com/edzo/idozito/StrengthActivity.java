@@ -475,9 +475,17 @@ public class StrengthActivity extends Activity {
             String cmp = versusLast(it);
             if (cmp != null) sb.append("     ").append(cmp).append('\n');
         }
-        sb.append("\nMai dátummal, a naplód élére.");
+        // A mondat időpontot is mondhat („tegnap guggolás 3x10 100 kg”), ahogy
+        // az étrendben – aki este pótolja az edzést, ne kézzel javítsa a napot.
+        final long when = TimeHint.from(textIn, System.currentTimeMillis());
+        if (when >= System.currentTimeMillis() - 60000) {
+            sb.append("\nMai dátummal, a naplód élére.");
+        } else {
+            sb.append("\nDátum: ").append(new SimpleDateFormat("yyyy. MMM d. · HH:mm",
+                    new Locale("hu")).format(new Date(when))).append('.');
+        }
         new Sheet(this, items.size() + " gyakorlat mentése", sb.toString())
-                .addPrimary("Mentés", () -> saveSentence(items))
+                .addPrimary("Mentés", () -> saveSentence(items, when))
                 .addNeutral("Átírom", () -> sentenceSheet(textIn))
                 .addCancel()
                 .show();
@@ -509,7 +517,10 @@ public class StrengthActivity extends Activity {
     }
 
     void saveSentence(List<StrengthParse.Item> items) {
-        long now = System.currentTimeMillis();
+        saveSentence(items, System.currentTimeMillis());
+    }
+
+    void saveSentence(List<StrengthParse.Item> items, long now) {
         int i = 0;
         boolean record = false;
         for (StrengthParse.Item it : items) {
