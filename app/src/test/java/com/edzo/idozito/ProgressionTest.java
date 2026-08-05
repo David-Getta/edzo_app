@@ -174,4 +174,37 @@ public class ProgressionTest {
         }
         assertEquals("", Progression.restWhy(0));
     }
+    @Test public void theFeltEffortSteersTheNextStep() {
+        // Könnyű nap (RPE 7): ne ismétléssel araszoljunk, jöjjön a tárcsa.
+        List<StrengthLog.Entry> easy = new java.util.ArrayList<>();
+        easy.add(entry("Guggolás", 0, 7, 3, 8, 100));
+        Progression.Suggestion s = Progression.next(easy, "Guggolás");
+        assertEquals(102.5, s.weight, 0.001);
+        assertEquals(8, s.reps);
+        assertTrue(s.why.contains("maradt a tankban"));
+
+        // A határon (RPE 10): ugyanez jöjjön újra, ne toljuk tovább.
+        List<StrengthLog.Entry> hard = new java.util.ArrayList<>();
+        hard.add(entry("Guggolás", 0, 10, 3, 8, 100));
+        Progression.Suggestion h = Progression.next(hard, "Guggolás");
+        assertEquals(100.0, h.weight, 0.001);
+        assertEquals(8, h.reps);
+        assertTrue(h.why.contains("határon"));
+
+        // RPE nélkül a régi viselkedés: egy ismétléssel több.
+        List<StrengthLog.Entry> plain = new java.util.ArrayList<>();
+        plain.add(entry("Guggolás", 0, 0, 3, 8, 100));
+        Progression.Suggestion p = Progression.next(plain, "Guggolás");
+        assertEquals(100.0, p.weight, 0.001);
+        assertEquals(9, p.reps);
+    }
+
+    /** Egy bejegyzés adott napra, RPE-vel és azonos sorozatokkal. */
+    private static StrengthLog.Entry entry(String name, int daysAgo, int rpe,
+                                           int sets, int reps, double kg) {
+        java.util.List<StrengthLog.SetEntry> l = new java.util.ArrayList<>();
+        for (int i = 0; i < sets; i++) l.add(new StrengthLog.SetEntry(reps, kg));
+        long ts = System.currentTimeMillis() - daysAgo * 86400000L;
+        return new StrengthLog.Entry(ts, name, l, rpe);
+    }
 }

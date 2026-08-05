@@ -125,8 +125,10 @@ open(dst + 'StrengthLog.java', 'w').write(
     "    public static final class SetEntry { public final int reps; public final double weight;\n"
     "        public SetEntry(int r, double w) { reps = r; weight = w; } }\n"
     "    public static final class Entry { public final long ts; public final String name;\n"
-    "        public final List<SetEntry> sets;\n"
-    "        public Entry(long t, String n, List<SetEntry> s) { ts = t; name = n; sets = s; } }\n"
+    "        public final List<SetEntry> sets; public final int rpe;\n"
+    "        public Entry(long t, String n, List<SetEntry> s) { this(t, n, s, 0); }\n"
+    "        public Entry(long t, String n, List<SetEntry> s, int r) { ts = t; name = n;\n"
+    "            sets = s; rpe = r >= 6 && r <= 10 ? r : 0; } }\n"
     "    " + common + "\n"
     "    public static int dayDiff(long a, long b) { return (int) ((b - a) / 86400000L); }\n}\n")
 PY

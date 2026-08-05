@@ -81,7 +81,23 @@ public final class Progression {
         int setCount = last.sets.size();
         boolean bw = lastW <= 0;
 
+        int rpe = last.rpe;
         if (bw) return bodyweight(setCount, lastHard, sameCount);
+
+        // Az érzett terhelés (RPE) többet tud, mint a szám: ugyanaz a 3×8
+        // lehet könnyű nap és lehet a határ. Ha volt még bőven a tankban,
+        // ne az ismétléssel araszoljunk – ha viszont a határon volt, ne
+        // toljuk tovább csak azért, mert a tábla szerint jönne a következő lépés.
+        if (rpe > 0 && rpe <= 7) {
+            return new Suggestion(setCount, MIN_REPS, lastW + step(lastW), false,
+                    "Múltkor " + rpe + "-es érzett terhelést jeleztél: maradt a tankban. "
+                            + "Emeld a súlyt, és kezdd újra " + MIN_REPS + " ismétléstől.");
+        }
+        if (rpe >= 10 && sameCount < STALL_SESSIONS) {
+            return new Suggestion(setCount, lastHard, lastW, false,
+                    "Múltkor a határon voltál (RPE 10). Ismételd meg ugyanezt – a "
+                            + "következő lépés akkor jön, ha ez már könnyebb.");
+        }
 
         if (sameCount >= STALL_SESSIONS) {
             double down = deload(lastW);

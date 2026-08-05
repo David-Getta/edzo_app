@@ -43,8 +43,20 @@ public final class StrengthLog {
         public final long ts;
         public final String name;
         public final List<SetEntry> sets;
+        /**
+         * Érzett terhelés (RPE) 6–10 között, 0 = nem adta meg.
+         *
+         * A súly és az ismétlés önmagában nem mondja meg, mennyi maradt a
+         * tankban. Ugyanaz a 3×8 lehet könnyű nap és lehet a határ – a
+         * progresszió-javaslat pont ezen múlik.
+         */
+        public final int rpe;
         public Entry(long ts, String name, List<SetEntry> sets) {
+            this(ts, name, sets, 0);
+        }
+        public Entry(long ts, String name, List<SetEntry> sets, int rpe) {
             this.ts = ts; this.name = name; this.sets = sets;
+            this.rpe = rpe >= 6 && rpe <= 10 ? rpe : 0;
         }
         public double topWeight() {
             double m = 0; for (SetEntry s : sets) m = Math.max(m, s.weight); return m;
@@ -102,7 +114,8 @@ public final class StrengthLog {
                     if (so == null) continue;
                     sets.add(new SetEntry(so.optInt("r"), so.optDouble("w")));
                 }
-                out.add(new Entry(o.optLong("ts"), o.optString("name", "Gyakorlat"), sets));
+                out.add(new Entry(o.optLong("ts"), o.optString("name", "Gyakorlat"), sets,
+                        o.optInt("rpe", 0)));
             }
         } catch (Exception ignored) {}
         return out;
@@ -123,6 +136,9 @@ public final class StrengthLog {
                     sa.put(so);
                 }
                 o.put("sets", sa);
+                // Csak akkor írjuk ki, ha van: a régi bejegyzések maradjanak
+                // pontosan olyanok, amilyenek.
+                if (e.rpe > 0) o.put("rpe", e.rpe);
                 a.put(o);
             } catch (Exception ignored) {}
         }

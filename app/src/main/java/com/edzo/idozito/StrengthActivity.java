@@ -346,7 +346,8 @@ public class StrengthActivity extends Activity {
             top.addView(text(Math.round(e.volume()) + " kg volumen", 12, Theme.accent(this), true));
             inner.addView(top);
 
-            inner.addView(text(fmt.format(new Date(e.ts)), 11.5f, MUTED, false));
+            inner.addView(text(fmt.format(new Date(e.ts))
+                    + (e.rpe > 0 ? "   ·   RPE " + e.rpe : ""), 11.5f, MUTED, false));
             inner.addView(gap(6));
 
             StringBuilder sb = new StringBuilder();
@@ -609,6 +610,34 @@ public class StrengthActivity extends Activity {
         box.addView(gap(4));
         box.addView(more);
 
+        // Érzett terhelés (RPE): a súly és az ismétlés nem mondja meg, mennyi
+        // maradt a tankban – a progresszió-javaslat viszont pont ezen múlik.
+        // Elhagyható: aki nem tölti ki, ugyanazt kapja, mint eddig.
+        final int[] rpe = {edit != null ? edit.rpe : 0};
+        box.addView(gap(12));
+        box.addView(text("Érzett terhelés (elhagyható)", 12, MUTED, true));
+        box.addView(gap(6));
+        LinearLayout rpeRow = hbox();
+        final Button[] rpeBtns = new Button[5];
+        for (int i = 0; i < 5; i++) {
+            final int val = 6 + i;
+            Button b = ghost(String.valueOf(val));
+            b.setTextSize(13.5f);
+            b.setOnClickListener(v -> {
+                rpe[0] = rpe[0] == val ? 0 : val;   // ismételt koppintás: törlés
+                styleRpe(rpeBtns, rpe[0]);
+            });
+            rpeBtns[i] = b;
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, -2, 1f);
+            p.leftMargin = dp(3); p.rightMargin = dp(3);
+            rpeRow.addView(b, p);
+        }
+        styleRpe(rpeBtns, rpe[0]);
+        box.addView(rpeRow);
+        box.addView(gap(4));
+        box.addView(text("6 = könnyű  ·  8 = 2 ismétlés maradt  ·  10 = a határon",
+                11, MUTED, false));
+
         new Sheet(this, edit != null ? "Bejegyzés szerkesztése" : "Új bejegyzés")
                 .addCustom(box)
                 .addPrimary("Mentés", () -> {
@@ -630,7 +659,7 @@ public class StrengthActivity extends Activity {
                     double[] prevRec = StrengthLog.recordsFor(this, name);
                     // Szerkesztésnél a helyén cseréljük, az eredeti időpontot megtartva.
                     long ts = edit != null ? edit.ts : System.currentTimeMillis();
-                    StrengthLog.Entry ne = new StrengthLog.Entry(ts, name, sets);
+                    StrengthLog.Entry ne = new StrengthLog.Entry(ts, name, sets, rpe[0]);
                     // Időbélyeg alapján cserélünk: a lista szűrve is lehet, az index csalna.
                     if (edit != null) StrengthLog.replaceByTs(this, edit.ts, ne);
                     else StrengthLog.add(this, ne);
@@ -671,6 +700,19 @@ public class StrengthActivity extends Activity {
                 })
                 .addCancel()
                 .show();
+    }
+
+    /** A kiválasztott RPE-gomb kiemelése (0 = nincs kiválasztva). */
+    void styleRpe(Button[] btns, int sel) {
+        for (int i = 0; i < btns.length; i++) {
+            boolean on = sel == 6 + i;
+            GradientDrawable bg = new GradientDrawable();
+            bg.setColor(on ? CARD2 : 0x00000000);
+            bg.setCornerRadius(dp(13));
+            bg.setStroke(dp(1), on ? Theme.accent(this) : LINE);
+            btns[i].setBackground(bg);
+            btns[i].setTextColor(on ? Theme.accent(this) : MUTED);
+        }
     }
 
     /** A sorozat-mezők feltöltése az adott gyakorlat legutóbbi bejegyzéséből. */
