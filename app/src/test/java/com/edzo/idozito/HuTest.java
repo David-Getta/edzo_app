@@ -78,4 +78,18 @@ public class HuTest {
         assertEquals("", Hu.dayName(-1));
         assertEquals("", Hu.dayName(7));
     }
+
+    @Test public void theTensAboveThirtyAreNumbers() {
+        assertEquals("40 masodperc", Hu.digits("negyven masodperc"));
+        assertEquals("45 mp", Hu.digits("negyvenot mp"));
+        assertEquals("50 kg", Hu.digits("otven kg"));
+        assertEquals("60 mp", Hu.digits("hatvan mp"));
+        assertEquals("80 kg", Hu.digits("nyolcvan kg"));
+        assertEquals("90 mp", Hu.digits("kilencven mp"));
+        assertEquals("100 fekvotamasz", Hu.digits("szaz fekvotamasz"));
+        assertEquals("35 mp", Hu.digits("harmincot mp"));
+        // A szóba ragadt alak nem szám: a „százalék" nem 100-alék.
+        assertEquals("szazalek", Hu.digits("szazalek"));
+        assertEquals("negyvenes", Hu.digits("negyvenes"));
+    }
 }

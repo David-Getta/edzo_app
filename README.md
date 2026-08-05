@@ -15,7 +15,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   egygombos újraindítás ugyanarra az edzésre
 - **Beállítás mondatból**: „3 kör 40 mp munka 20 mp pihenő”, „8x20/10",
   „tabata”, „emom 10 perc”, „20 perc alatt 40/20”, „négy kör 30 másodperc”,
-  „20/10 nyolcszor”, „2 perc bemelegítés, 6 kör 40/20” – a teremben kapott edzésterv szövegként érkezik, nem
+  „20/10 nyolcszor”, „2 perc bemelegítés, 6 kör 40/20”,
+  „1:30 munka 0:30 pihenő 6 kör” (edzőtermi tábla-írásmód),
+  „40 mp / 20 mp, 10 kör”, „emom 12”,
+  „négyszer negyven másodperc munka húsz másodperc pihenő” – a teremben kapott edzésterv szövegként érkezik, nem
   csúszkaállásként; egy koppintással sablonként is elmenthető
 - Gyors sablonok (**HIIT / Tempó / Tabata**) és **10 beépített program**
   (törzs, teljes test, láb, kar, zsírégető HIIT, 7 perces edzés…), saját

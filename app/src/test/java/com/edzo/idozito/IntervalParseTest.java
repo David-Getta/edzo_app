@@ -160,4 +160,42 @@ public class IntervalParseTest {
         // Távalapú intervall: nincs benne idő, tehát nincs mit beállítani.
         assertNull(IntervalParse.parse("intervall: 400 m gyors, 200 m lassú"));
     }
+
+    @Test public void theSpokenTensAreNumbersToo() {
+        // A „negyven" eddig szó maradt, ezért a munkaidő a pihenőé lett:
+        // negyven másodperc helyett húsz.
+        IntervalParse.Plan p = IntervalParse.parse(
+                "négyszer negyven másodperc munka húsz másodperc pihenő");
+        assertEquals(4, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+    }
+
+    @Test public void theUnitMayStandOnBothSidesOfTheSlash() {
+        // „40 mp / 20 mp": a pihenő eddig némán elveszett.
+        IntervalParse.Plan p = IntervalParse.parse("40 mp / 20 mp, 10 kör");
+        assertEquals(10, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+    }
+
+    @Test public void theGymBoardClockNotationWorks() {
+        // Perc:másodperc, ahogy a táblára írják.
+        IntervalParse.Plan p = IntervalParse.parse("1:30 munka 0:30 pihenő 6 kör");
+        assertEquals(6, p.rounds);
+        assertEquals(90, p.work);
+        assertEquals(30, p.rest);
+        IntervalParse.Plan q = IntervalParse.parse("8 kör 1:00 munka 0:20 pihenő");
+        assertEquals(60, q.work);
+        assertEquals(20, q.rest);
+    }
+
+    @Test public void emomCountsTheMinutesAsRounds() {
+        // Az EMOM percenként egy kör – a szám a név után áll.
+        assertEquals(12, IntervalParse.parse("emom 12").rounds);
+        assertEquals(20, IntervalParse.parse("emom 20 perc").rounds);
+        assertEquals(10, IntervalParse.parse("emom 10 perc").rounds);
+        // Kimondott körszám továbbra is erősebb.
+        assertEquals(6, IntervalParse.parse("tabata 6 kör").rounds);
+    }
 }

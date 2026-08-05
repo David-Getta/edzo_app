@@ -69,7 +69,15 @@ public final class Hu {
             {"tizennegyet", "14"}, {"tizennegy", "14"}, {"tizenharmat", "13"},
             {"tizenharom", "13"}, {"tizenegyet", "11"}, {"tizenegy", "11"},
             {"huszonotot", "25"}, {"huszonot", "25"}, {"huszat", "20"}, {"husz", "20"},
-            {"harmincat", "30"}, {"harminc", "30"},
+            // A tízesek negyventől: az intervall-időket („negyven másodperc
+            // munka”) és a súlyokat („nyolcvan kiló”) ezekkel mondja az ember.
+            {"harmincotot", "35"}, {"harmincot", "35"}, {"harmincat", "30"}, {"harminc", "30"},
+            {"negyvenotot", "45"}, {"negyvenot", "45"}, {"negyvenet", "40"}, {"negyven", "40"},
+            {"otvenotot", "55"}, {"otvenot", "55"}, {"otvenet", "50"}, {"otven", "50"},
+            {"hatvanat", "60"}, {"hatvan", "60"}, {"hetvenet", "70"}, {"hetven", "70"},
+            {"nyolcvanat", "80"}, {"nyolcvan", "80"},
+            {"kilencvenet", "90"}, {"kilencven", "90"},
+            {"szazat", "100"}, {"szaz", "100"},
             {"tizet", "10"}, {"tiz", "10"}, {"kilencet", "9"}, {"kilenc", "9"},
             {"nyolcat", "8"}, {"nyolc", "8"}, {"hetet", "7"}, {"het", "7"},
             {"hatot", "6"}, {"hat", "6"}, {"otot", "5"}, {"ot", "5"},

@@ -78,6 +78,9 @@ public final class IntervalParse {
         if (text == null) return null;
         String s = digits(Foods.norm(text).replace('\n', ' '));
         if (s.trim().isEmpty()) return null;
+        // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
+        // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
+        s = clockToSeconds(s);
 
         // 1) Ismert forma név szerint. A kimondott körszám felülírja az alapot:
         //    „tabata 6 kör” hat kört jelent, nem nyolcat.
@@ -85,6 +88,9 @@ public final class IntervalParse {
             if (s.contains(p[0])) {
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");
+                // Az EMOM percenként egy kör: az „emom 12" tizenkét kör, az
+                // „emom 20 perc" húsz. A szám a név UTÁN áll, nem előtte.
+                if (r <= 0 && p[0].equals("emom")) r = numberAfter(s, "emom");
                 int rounds = r > 0 && r <= MAX_ROUNDS ? r : Integer.parseInt(p[1]);
                 return new Plan(rounds, Integer.parseInt(p[2]), Integer.parseInt(p[3]),
                         warmIn(s), coolIn(s));
@@ -114,7 +120,10 @@ public final class IntervalParse {
         String slashable = s.matches(".*\\d\\s?-\\s?\\d{1,3}\\s?-\\s?\\d.*")
                 ? s.replace('-', ' ') : s;
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?[/\\-]\\s?(\\d{1,3})"
+                // A mértékegység kiírva is állhat a pár két oldalán:
+                // „40 mp / 20 mp”. Enélkül a pihenő némán elveszett.
+                .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?(?:mp|masodperc|mperc)?"
+                        + "\\s?[/\\-]\\s?(\\d{1,3})\\s?(?:mp|masodperc|mperc)?"
                         + "(?:\\s?[x×]\\s?(\\d{1,2}))?")
                 .matcher(slashable);
         if (m.find()) {
@@ -189,6 +198,19 @@ public final class IntervalParse {
     static int coolIn(String s) {
         return secondsBefore(Foods.norm(s), new String[]{"levezet", "nyujtas", "cooldown",
                 "cool down"});
+    }
+
+    /** „1:30” → „90 mp”. Csak érvényes perc:másodperc alak, 0–59 másodperccel. */
+    static String clockToSeconds(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d:])(\\d{1,2}):([0-5]\\d)(?![\\d:])").matcher(s);
+        StringBuffer b = new StringBuffer();
+        while (m.find()) {
+            int sec = Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
+            m.appendReplacement(b, sec + " mp");
+        }
+        m.appendTail(b);
+        return b.toString();
     }
 
     private static Plan build(int rounds, int work, int rest) {
@@ -291,6 +313,26 @@ public final class IntervalParse {
     }
 
     /** A megadott szó ELŐTT álló szám („3 kör”), vagy 0. */
+    /** Az első szám a szó után: „emom 12” → 12. */
+    private static int numberAfter(String s, String word) {
+        int p = s.indexOf(word);
+        while (p >= 0) {
+            int b = p + word.length();
+            while (b < s.length() && s.charAt(b) == ' ') b++;
+            int e = b;
+            while (e < s.length() && Character.isDigit(s.charAt(e))) e++;
+            if (e > b) {
+                try {
+                    int v = Integer.parseInt(s.substring(b, e));
+                    if (v >= 1 && v <= 999) return v;
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            p = s.indexOf(word, p + 1);
+        }
+        return 0;
+    }
+
     private static int numberBefore(String s, String word) {
         int p = s.indexOf(word);
         while (p >= 0) {
