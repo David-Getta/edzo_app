@@ -135,6 +135,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   valamint az összes felismert sportág a szokásos alkalom-hosszal
 
 ### 🐺 Blaze, a kabalafigura
+- **Heti szokás**: „kedd van – ilyenkor általában úszás szokott lenni" (csak
+  ha a nap tényleg egyértelműen egy sportághoz kötődik)
 - **Helyzet-tudatos köszöntés** belépéskor (veszélyben lévő széria, félbehagyott
   kihívás, mai eredmény, hátralévő fehérje)
 - Napi értesítés, ha még nem edzettél; **heti visszatekintő** vasárnap,
@@ -239,7 +241,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~410 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~415 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 ```
 

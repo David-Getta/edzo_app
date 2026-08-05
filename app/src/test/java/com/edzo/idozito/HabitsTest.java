@@ -98,4 +98,39 @@ public class HabitsTest {
         assertEquals(1, u.foods.size());
         assertEquals(3, u.count);
     }
+    @Test public void theWeekdaySportHabitIsFound() {
+        // Kedden háromszor úszás, egyszer futás: a kedd az úszásé.
+        int[] wd = {1, 1, 1, 1, 3};
+        String[] kinds = {"uszas", "uszas", "uszas", "futas", "uszas"};
+        int[] ago = {7, 14, 21, 28, 5};
+        assertEquals("uszas", Habits.usualSportOn(wd, kinds, ago, 1));
+        // Szerdán nincs elég adat.
+        assertNull(Habits.usualSportOn(wd, kinds, ago, 2));
+    }
+
+    @Test public void anAmbiguousHabitIsNoHabit() {
+        // Háromszor úszás, háromszor futás ugyanazon a napon: nem lehet
+        // megmondani, melyik a mai.
+        int[] wd = {1, 1, 1, 1, 1, 1};
+        String[] kinds = {"uszas", "uszas", "uszas", "futas", "futas", "futas"};
+        int[] ago = {7, 14, 21, 28, 35, 42};
+        assertNull(Habits.usualSportOn(wd, kinds, ago, 1));
+    }
+
+    @Test public void oldSportHabitsAreForgotten() {
+        int[] wd = {1, 1, 1};
+        String[] kinds = {"uszas", "uszas", "uszas"};
+        int[] ago = {100, 200, 300};
+        assertNull(Habits.usualSportOn(wd, kinds, ago, 1));
+    }
+
+    @Test public void theSportHabitSurvivesBrokenInput() {
+        assertNull(Habits.usualSportOn(null, null, null, 1));
+        assertNull(Habits.usualSportOn(new int[]{1}, new String[]{""}, new int[]{7}, 1));
+        assertNull(Habits.usualSportOn(new int[]{1, 1, 1}, new String[]{null, "", "  "},
+                new int[]{7, 14, 21}, 1));
+        // Eltérő hosszú tömbök: a rövidebb dönt.
+        assertNull(Habits.usualSportOn(new int[]{1, 1, 1}, new String[]{"uszas"},
+                new int[]{7}, 1));
+    }
 }

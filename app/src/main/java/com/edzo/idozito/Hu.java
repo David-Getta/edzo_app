@@ -94,6 +94,12 @@ public final class Hu {
         return (r > 0 ? "+" : "−") + Math.abs(r) + "%";
     }
 
+    /** A hét napja magyarul, hétfőtől (0) vasárnapig (6). */
+    public static String dayName(int dowIdx) {
+        String[] n = {"Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"};
+        return dowIdx >= 0 && dowIdx <= 6 ? n[dowIdx] : "";
+    }
+
     /** Két tizedes, magyarul: „5,23". */
     public static String d2(double v) {
         return String.format(LOCALE, "%.2f", v);

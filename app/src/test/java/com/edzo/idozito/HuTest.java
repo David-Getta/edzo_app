@@ -72,4 +72,10 @@ public class HuTest {
         assertEquals("—", Hu.delta(0, 0));
         assertEquals("—", Hu.delta(0, -5));
     }
+    @Test public void theWeekdayNamesStartOnMonday() {
+        assertEquals("Hétfő", Hu.dayName(0));
+        assertEquals("Vasárnap", Hu.dayName(6));
+        assertEquals("", Hu.dayName(-1));
+        assertEquals("", Hu.dayName(7));
+    }
 }

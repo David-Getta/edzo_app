@@ -110,6 +110,31 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                 text += "\n💧 Vízből " + Water.liters(cl) + " megvan – igyál még "
                         + Water.liters(goalCl - cl) + "-t ma!";
         } catch (Exception ignored) {}
+        // Heti szokás: „kedd van – ilyenkor általában úszni jársz". A
+        // hétköznaphoz kötött szokás személyesebb minden általános biztatásnál.
+        try {
+            org.json.JSONArray hh = History.load(c);
+            int[] wd = new int[hh.length()];
+            String[] kinds = new String[hh.length()];
+            int[] ago = new int[hh.length()];
+            Calendar hc = Calendar.getInstance();
+            long now = System.currentTimeMillis();
+            for (int i = 0; i < hh.length(); i++) {
+                org.json.JSONObject o = hh.optJSONObject(i);
+                if (o == null) continue;
+                hc.setTimeInMillis(o.optLong("ts"));
+                wd[i] = (hc.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+                Activities.Kind k = Activities.byId(o.optString("kind", ""));
+                if (k == null) k = Activities.kindByText(o.optString("name", ""));
+                kinds[i] = k == null ? "" : k.id;
+                ago[i] = Days.ago(o.optLong("ts"), now);
+            }
+            String id = Habits.usualSportOn(wd, kinds, ago, dowIdx);
+            Activities.Kind k = id == null ? null : Activities.byId(id);
+            if (k != null)
+                text += "\n🗓 " + Hu.dayName(dowIdx) + " van – ilyenkor általában "
+                        + k.name.toLowerCase(Hu.LOCALE) + " szokott lenni.";
+        } catch (Exception ignored) {}
         // Sport-tudatos sor: ha a szokásos sportág (pl. heti kézilabda) régóta
         // kimaradt, azt név szerint mondjuk – a személyes hat, az általános nem.
         String miss = History.missedSportLine(c);

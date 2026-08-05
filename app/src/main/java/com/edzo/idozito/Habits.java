@@ -82,6 +82,51 @@ public final class Habits {
     }
 
     /**
+     * Ennyi hétre visszamenőleg nézzük a heti szokást. Nyolc hét elég ahhoz,
+     * hogy egy szokás kirajzolódjon, és rövid ahhoz, hogy a tavalyi
+     * szokásokat ne emlegessük.
+     */
+    public static final int SPORT_WEEKS = 8;
+
+    /**
+     * Melyik sportágat szoktad ezen a napon? A hétköznaphoz kötött szokás
+     * személyesebb minden általános biztatásnál: „kedd van – ilyenkor
+     * általában úszni jársz".
+     *
+     * @param weekdays   bejegyzésenként a hét napja (0 = hétfő)
+     * @param kindIds    bejegyzésenként a sportág azonosítója
+     * @param daysAgo    hány napja volt
+     * @param weekday    melyik napra kérdezünk
+     * @return a sportág azonosítója, vagy null, ha nincs elég egyértelmű szokás
+     */
+    public static String usualSportOn(int[] weekdays, String[] kindIds, int[] daysAgo,
+                                      int weekday) {
+        if (weekdays == null || kindIds == null || daysAgo == null) return null;
+        int n = Math.min(weekdays.length, Math.min(kindIds.length, daysAgo.length));
+        LinkedHashMap<String, int[]> counts = new LinkedHashMap<>();
+        for (int i = 0; i < n; i++) {
+            if (weekdays[i] != weekday) continue;
+            if (daysAgo[i] < 0 || daysAgo[i] > SPORT_WEEKS * 7) continue;
+            String id = kindIds[i];
+            if (id == null || id.trim().isEmpty()) continue;
+            int[] c = counts.get(id);
+            if (c == null) counts.put(id, c = new int[1]);
+            c[0]++;
+        }
+        String best = null;
+        int bestN = 0, secondN = 0;
+        for (Map.Entry<String, int[]> e : counts.entrySet()) {
+            int v = e.getValue()[0];
+            if (v > bestN) { secondN = bestN; bestN = v; best = e.getKey(); }
+            else if (v > secondN) secondN = v;
+        }
+        // Szokás akkor, ha elég sokszor volt ÉS egyértelműen kiemelkedik: két
+        // egyforma gyakoriságú sportágból nem lehet megmondani, melyik a mai.
+        if (bestN < MIN_COUNT || bestN == secondN) return null;
+        return best;
+    }
+
+    /**
      * A megadott napszak leggyakoribb étkezés-összeállítása, vagy null.
      *
      * Az összeállítás akkor számít azonosnak, ha UGYANAZOK az ételek vannak
