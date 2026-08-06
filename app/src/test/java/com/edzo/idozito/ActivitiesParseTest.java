@@ -283,6 +283,21 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 2×tura/90", summary("2 séta"));
     }
 
+    @Test public void theDurationCanAlsoComeBeforeTheSport() {
+        // Magyarul ez a természetesebb szórend, és eddig CSERÉLŐDÖTT: a futás
+        // a kondi idejét kapta meg, a kondi meg az alapértelmezettet – vagyis
+        // mindkét bejegyzés hibás lett.
+        assertEquals("1d+0: 1×futas/30, 1×kondi/20", summary("30 perc futás, 20 perc kondi"));
+        assertEquals("1d+0: 1×futas/30, 1×kondi/20", summary("30 perc futás és 20 perc kondi"));
+        assertEquals("1d+0: 1×kondi/60, 1×futas/30", summary("1 óra kondi, 30 perc futás"));
+        // A fordított szórend és a vegyes eset is jó marad.
+        assertEquals("1d+0: 1×futas/30, 1×kondi/20", summary("futás 30 perc, kondi 20 perc"));
+        assertEquals("1d+0: 1×kondi/60, 1×futas/40", summary("kondi 1 óra futás 40 perc"));
+        // Egyetlen időtartam továbbra is mindenkire vonatkozik.
+        assertEquals("7d+0: 3×futas/40, 2×uszas/40",
+                summary("az elmúlt héten 3 futás és 2 úszás, 40 perc"));
+    }
+
     @Test public void manyWorkoutsNeedManyDays() {
         // Húsz edzés EGY napon tizenöt óra mozgás: a napi percek, a széria és
         // a terhelés-figyelés is elszállna tőle. Időszakot nem találunk ki a

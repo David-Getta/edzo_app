@@ -697,8 +697,11 @@ public final class Activities {
                 if (keep.get(i)[2] == keep.get(j)[2] && kmOf[i] == 0 && kmOf[j] > 0)
                     kmOf[i] = kmOf[j];
 
-        // 5) Minden találathoz darabszám (előtte) és időtartam (utána).
+        // 5) Minden találathoz darabszám (előtte) és időtartam (előtte vagy utána).
         boolean[] used = new boolean[ALL.length];
+        // Egy időtartamot csak EGY mozgás vihet el: a „kondi 1 óra futás 40
+        // perc" órája a kondié, tehát a futásnak már csak a negyven perc marad.
+        boolean[] minsUsed = new boolean[mins.size()];
         for (int i = 0; i < keep.size(); i++) {
             int[] h = keep.get(i);
             if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i]))
@@ -744,7 +747,8 @@ public final class Activities {
                 count = 1;
             }
             int next = nextHit;
-            int minutes = minutesFor(mins, h[0], next, 0);
+            int prevHit = i > 0 ? keep.get(i - 1)[0] : -1;
+            int minutes = minutesFor(mins, minsUsed, h[0], h[0] + h[1], prevHit, next, 0);
             // Ismétlés-alapú tételnél a mondat TÁVOLI (más mozgáshoz írt)
             // időtartama nem érvényes: a „10 km futás 50 perc alatt és 100
             // fekvőtámasz" fekvőtámasza nem 50 perc – az ismétlésből becsülünk.
@@ -796,7 +800,8 @@ public final class Activities {
                         if (mu[0] > p && mu[1] > 1) { n = Math.min(50, mu[1]); break; }
                 // A kimondott időtartam itt is számít („otthoni edzés 40 perc").
                 if (other != null) out.add(new Plan(other, n,
-                        minutesFor(mins, p, Integer.MAX_VALUE, other.defaultMin), 0));
+                        minutesFor(mins, null, p, p, -1, Integer.MAX_VALUE,
+                                other.defaultMin), 0));
                 break;
             }
         }
@@ -1824,9 +1829,36 @@ public final class Activities {
         return true;
     }
 
-    /** A megadott mozgáshoz tartozó időtartam, vagy az alapértelmezett. */
-    private static int minutesFor(List<int[]> mins, int at, int nextAt, int fallback) {
-        for (int[] m : mins) if (m[0] > at && m[0] < nextAt) return m[1];
+    /**
+     * A megadott mozgáshoz tartozó időtartam, vagy az alapértelmezett.
+     *
+     * Az időtartam a mozgás neve UTÁN és ELŐTTE is állhat: a „futás 30 perc" és
+     * a „30 perc futás" ugyanaz. Korábban csak az utána álló számított, ezért a
+     * „30 perc futás, 20 perc kondi" mondatban a futás a KONDI idejét kapta
+     * meg, a kondi pedig az alapértelmezettet – vagyis mindkét bejegyzés
+     * hibás lett.
+     *
+     * A szomszédos mozgások zárják a szakaszt, azon belül a NÉVHEZ LEGKÖZELEBBI
+     * időtartam nyer. Így mindkét szórend jól dől el, és az idő nem vándorol át
+     * a szomszéd mozgáshoz.
+     */
+    private static int minutesFor(List<int[]> mins, boolean[] minsUsed, int at, int atEnd,
+                                  int prevAt, int nextAt, int fallback) {
+        int bestIdx = -1, bestDist = Integer.MAX_VALUE;
+        for (int k = 0; k < mins.size(); k++) {
+            int[] m = mins.get(k);
+            if (minsUsed != null && minsUsed[k]) continue;
+            if (m[0] <= prevAt || m[0] >= nextAt) continue;
+            // A KÖZ számít, nem a szavak közepe közti távolság: a „30 perc
+            // futás, 20 perc kondi" harmincát egyetlen szóköz választja el a
+            // futástól, a húszat viszont egy vessző és egy szóköz.
+            int d = m[2] <= at ? at - m[2] : m[0] >= atEnd ? m[0] - atEnd : 0;
+            if (d < bestDist) { bestDist = d; bestIdx = k; }
+        }
+        if (bestIdx >= 0) {
+            if (minsUsed != null) minsUsed[bestIdx] = true;
+            return mins.get(bestIdx)[1];
+        }
         // Ha az egész mondatban EGY időtartam van, az mindenkire vonatkozik
         // („az elmúlt héten 3 futás és 2 úszás, 40 perc”).
         if (mins.size() == 1) return mins.get(0)[1];
