@@ -272,7 +272,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   2600 kcal, a többi napon 2050") – a havi átlag ezt elrejtené
 - **Profil / BMI / BMR**, testadatok és változás-diagram **testsúly-tendenciával**
   (kg/hét, lineáris illesztéssel az összes mérésre) és a fogyási célhoz mért
-  becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)"
+  becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)". Ha rég volt mérés,
+  szól is érte („⚖️ 12 napja mérted magad utoljára") – a tendencia annyit ér,
+  amennyi adat van mögötte
 - ⚖️ **Mérés mondatból** (a Profil „✍️ Mérés mondatból" gombjáról, vagy bárhonnan,
   ahol mondatot írsz): „ma reggel 78,4 kg", „78 kiló vagyok", „mérleg: 81,2",
   „78,4 kg és 18% testzsír" – a számokat beírja a mezőkbe, a mentést te nyomod

@@ -211,6 +211,40 @@ public final class Profile {
     /** A legutóbb mentett testsúly, vagy -1. */
     public static double lastWeight(Context c) { return lastOf(measurements(c), "w"); }
 
+    /**
+     * Hány napja volt az utolsó mérés, vagy -1, ha még egy sincs.
+     *
+     * A súlytrend annyit ér, amennyi adat van benne: két mérés között eltelt
+     * hat hét után a „kg/hét" már nem tendencia, csak két pont.
+     */
+    public static int daysSinceMeasurement(Context c, long now) {
+        JSONArray a = measurements(c);
+        long last = 0;
+        for (int i = 0; i < a.length(); i++) {
+            JSONObject o = a.optJSONObject(i);
+            if (o != null) last = Math.max(last, o.optLong("ts"));
+        }
+        return last <= 0 ? -1 : Days.ago(last, now);
+    }
+
+    /** Ennyi nap után érdemes újra mérni – ekkortól szólunk is érte. */
+    public static final int MEASURE_REMIND_DAYS = 10;
+
+    /**
+     * Emlékeztető szöveg a mérés koráról, vagy üres, ha friss.
+     *
+     * Szándékosan nem sürget: a testsúly napi ingadozása nagyobb, mint a heti
+     * változás, ezért a napi mérésnek nincs értelme – tíz nap viszont már
+     * lyuk a görbén.
+     */
+    public static String measureNudge(int daysAgo) {
+        if (daysAgo < 0) return "Még nincs mentett mérésed – az elsővel indul a görbe.";
+        if (daysAgo < MEASURE_REMIND_DAYS) return "";
+        if (daysAgo < 30) return "⚖️ " + daysAgo + " napja mérted magad utoljára.";
+        return "⚖️ Több mint egy hónapja nem mérted magad – egy friss adat "
+                + "helyre teszi a görbét.";
+    }
+
     public static double lastBodyFat(Context c) { return lastOf(measurements(c), "bf"); }
 
     /**

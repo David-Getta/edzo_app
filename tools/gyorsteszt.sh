@@ -112,7 +112,9 @@ open(dst + 'Profile.java', 'w').write(
     + "\n    " + grab(pr, 'public static double dailyDeficit(')
     + "\n    " + grab(pr, 'public static double intakeForLoss(')
     + "\n    " + grab(pr, 'public static double weeklyTrend(')
-    + "\n    " + grab(pr, 'public static double weeksToGoal(') + "\n}\n")
+    + "\n    " + grab(pr, 'public static double weeksToGoal(')
+    + "\n    public static final int MEASURE_REMIND_DAYS = 10;"
+    + "\n    " + grab(pr, 'public static String measureNudge(') + "\n}\n")
 
 ss = open(src_dir + 'SessionStore.java').read()
 open(dst + 'SessionStore.java', 'w').write(

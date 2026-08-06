@@ -84,4 +84,21 @@ public class ProfileEnergyTest {
         // Kerekítés a legközelebbi egészre.
         assertEquals(2400, Profile.effectiveGoal(2000, 399.6, true));
     }
+
+    /**
+     * A mérés-emlékeztető nem sürget, de a lyukat kimondja.
+     *
+     * A testsúly napi ingadozása nagyobb, mint a heti változás, ezért a napi
+     * mérésnek nincs értelme – tíz nap viszont már lyuk a görbén, és a
+     * „kg/hét" tendencia is csak akkor tendencia, ha van mihez mérni.
+     */
+    @Test public void theMeasurementNudgeStaysQuietWhileTheDataIsFresh() {
+        for (int d = 0; d < Profile.MEASURE_REMIND_DAYS; d++)
+            assertEquals("nap " + d, "", Profile.measureNudge(d));
+        assertTrue(Profile.measureNudge(Profile.MEASURE_REMIND_DAYS).contains("10 napja"));
+        assertTrue(Profile.measureNudge(20).contains("20 napja"));
+        assertTrue(Profile.measureNudge(45).contains("egy hónapja"));
+        // Még nincs mérés: ez nem szemrehányás, hanem meghívó.
+        assertTrue(Profile.measureNudge(-1).contains("elsővel"));
+    }
 }

@@ -503,6 +503,10 @@ public class ProfileActivity extends Activity {
                     : "Legalább 2 mérés kell a diagramhoz.");
             return;
         }
+        // A görbe annyit ér, amennyi adat van benne: ha rég volt mérés, a
+        // tendencia már nem tendencia, csak két pont.
+        String nudge = Profile.measureNudge(
+                Profile.daysSinceMeasurement(this, System.currentTimeMillis()));
         double[] ys = new double[vals.size()];
         for (int i = 0; i < ys.length; i++) ys[i] = vals.get(i);
         chart.setData(ys, color, unit);
@@ -531,6 +535,7 @@ public class ProfileActivity extends Activity {
                 }
             }
         }
+        if (!nudge.isEmpty()) info += "\n" + nudge;
         chartInfo.setText(info);
     }
 
