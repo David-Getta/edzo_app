@@ -454,7 +454,7 @@ public final class Foods {
         new Food("Vaníliás karika", 380, 6, 70, "vanilias karika", "vaniliaskarika"),
         new Food("Lekváros bukta", 300, 6, 100, "lekvaros bukta", "bukta"),
         new Food("Sajttorta", 320, 6, 120, "sajttorta", "cheesecake"),
-        new Food("Fánk / churros", 400, 5, 60, "fank", "churros"),
+        new Food("Fánk / churros", 400, 5, 60, "fank", "churros", "donut", "doughnut"),
         new Food("Kürtőskalács", 380, 6, 120, "kurtoskalaccs", "kurtoskalacs", "trdelnik"),
         new Food("Rántott gomba", 220, 5, 150, "rantott gomba"),
         new Food("Gomba", 22, 3, 100, "gomba"),
@@ -581,7 +581,11 @@ public final class Foods {
         // --- Italok ---
         new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo",
                 "espresszo", "espresso", "ristretto", "americano"),
-        new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte"),
+        // A „macchiato" ide tartozik, és nem csak azért, mert kávé: a „chia" tő
+        // a szó KÖZEPÉN illeszkedett rá, így a kávéból chiamag lett. A
+        // jegeskávé sem fekete kávé – tej és jégkrém van benne.
+        new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte",
+                "macchiato", "flat white", "jegeskave", "jeges kave"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
         // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.

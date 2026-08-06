@@ -348,4 +348,19 @@ public class FoodsTest {
         assertEquals("Alma", h.get(0).food.name);
         assertTrue(Foods.parse(all, "nem ettem csokit és chipset").isEmpty());
     }
+    /**
+     * A „macchiato" kávé, nem chiamag.
+     *
+     * A „chia" szótő a szó KÖZEPÉN illeszkedett rá – a rövid tövek klasszikus
+     * csapdája. A bejegyzés létrejött, csak épp tizenöt gramm chiamagként.
+     */
+    @Test public void aMacchiatoIsCoffee() {
+        java.util.List<Foods.Hit> h =
+                Foods.parse(java.util.Arrays.asList(Foods.ALL), "macchiato");
+        assertEquals(1, h.size());
+        assertEquals("Tejeskávé / cappuccino", h.get(0).food.name);
+        // A chia magától továbbra is chia.
+        assertEquals("Chia / lenmag", Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "chia puding").get(0).food.name);
+    }
 }
