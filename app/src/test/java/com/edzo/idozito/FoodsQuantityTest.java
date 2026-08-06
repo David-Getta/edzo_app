@@ -261,4 +261,23 @@ public class FoodsQuantityTest {
         assertEquals(50, grams("fél tábla csoki"), 0.01);
         assertEquals(70, grams("két szelet kenyér"), 0.01);
     }
+    /**
+     * „2-3 szelet kenyér": a tartomány KÖZEPE a becslés.
+     *
+     * Eddig a nagyobbik nyert – az állt közelebb az ételhez –, vagyis a
+     * bizonytalanul megadott mennyiség rendszeresen felfelé csúszott. Aki
+     * naponta többször ír be tartományt, annak ez a napi összegen is látszik.
+     */
+    @Test public void aRangeMeansItsMiddle() {
+        assertEquals(87.5, grams("2-3 szelet kenyér"), 0.01);
+        assertEquals(375, grams("2-3 alma"), 0.01);
+        assertEquals(82.5, grams("1-2 tojás"), 0.01);
+        // Az „1-1" osztó alak nem tartomány – egy darab marad.
+        assertEquals(150, grams("1-1 alma"), 0.01);
+        // A sima darabszám nem változott.
+        assertEquals(70, grams("2 szelet kenyér"), 0.01);
+        assertEquals(105, grams("3 szelet kenyér"), 0.01);
+        // Nagy ugrás nem tartomány, hanem két külön adat: marad a régi olvasat.
+        assertEquals(150, grams("100-150 g rizs"), 0.01);
+    }
 }

@@ -684,7 +684,8 @@ public class StrengthActivity extends Activity {
                 addSetRow(setsBox, repsList, wList, repsHint(startName));
                 int idx = repsList.size() - 1;
                 repsList.get(idx).setText(String.valueOf(s.reps));
-                wList.get(idx).setText(fmtKg(s.weight));
+                // A nulla kiló nem információ: testsúlyosnál maradjon üres.
+                wList.get(idx).setText(s.weight > 0 ? fmtKg(s.weight) : "");
             }
         } else {
             for (int i = 0; i < 3; i++)
@@ -885,7 +886,7 @@ public class StrengthActivity extends Activity {
             addSetRow(setsBox, repsList, wList, repsHint(name));
             int idx = repsList.size() - 1;
             repsList.get(idx).setText(String.valueOf(s.reps));
-            wList.get(idx).setText(fmtKg(s.weight));
+            wList.get(idx).setText(s.weight > 0 ? fmtKg(s.weight) : "");
         }
     }
 

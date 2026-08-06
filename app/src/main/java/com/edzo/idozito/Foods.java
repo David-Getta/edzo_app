@@ -1048,6 +1048,36 @@ public final class Foods {
     }
 
     /**
+     * „2-3 szelet kenyér": a tartomány közepe a becslés.
+     *
+     * Eddig a nagyobbik nyert – az állt közelebb az ételhez –, vagyis a
+     * bizonytalanul megadott mennyiség RENDSZERESEN felfelé csúszott.
+     * A középérték elfogulatlan: két és fél szelet.
+     *
+     * Csak a mértékegység nélküli párokra él („2-3 alma", „1-2 tojás"). A
+     * „3-4 dkg" felső értéke marad, mert ott a két szám külön ágon van, és
+     * egy félig átírt mennyiség rosszabb, mint egy következetes.
+     */
+    private static void averageRanges(String q, List<Integer> pos, List<Double> val,
+                                      List<Integer> len) {
+        for (int i = 0; i < pos.size(); i++) {
+            int end = pos.get(i) + len.get(i);
+            if (end >= q.length() || q.charAt(end) != '-') continue;
+            for (int j = 0; j < pos.size(); j++) {
+                if (j == i || pos.get(j) != end + 1 || val.get(j) < val.get(i)) continue;
+                // Öt darabnál nagyobb ugrás nem tartomány, hanem két adat.
+                if (val.get(j) - val.get(i) > 5) break;
+                val.set(j, (val.get(i) + val.get(j)) / 2);
+                len.set(j, pos.get(j) + len.get(j) - pos.get(i));
+                pos.set(j, pos.get(i));
+                pos.remove(i); val.remove(i); len.remove(i);
+                i--;
+                break;
+            }
+        }
+    }
+
+    /**
      * Amit SZELETRE esznek, de darabra nem mondanák. A „két szelet pizza"
      * eddig egy egész pizzának számított – több mint háromszoros kalóriának –,
      * a „fél pizza" viszont tényleg fél pizza, ezért ez a tábla csak a
@@ -1363,6 +1393,7 @@ public final class Foods {
             }
         }
         mergeAndHalf(q, bareNumPos, bareNumVal, bareNumLen);
+        averageRanges(q, bareNumPos, bareNumVal, bareNumLen);
         // Darabszámok: „2 tojás" = 2 × egy tojás súlya. Csak akkor számít, ha a
         // szám közvetlenül egy darabra számolható étel előtt áll, az étel még nem
         // kapott grammot, és a darabszám életszerű (legfeljebb 20).
