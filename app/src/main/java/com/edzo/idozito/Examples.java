@@ -117,6 +117,42 @@ public final class Examples {
             "45 másodperc munka 15 pihenő nyolcszor",
     };
 
+    /** Testsúly- és testzsír-mérés egy mondatból. */
+    public static final String[] BODY = {
+            "ma reggel 78,4 kg",
+            "78 kiló vagyok",
+            "mérleg: 81,2",
+            "78,4 kg és 18% testzsír",
+            "testsúly 80,5 kg",
+            "18% testzsír",
+            "reggel 79",
+            "85 kiló lettem",
+    };
+
+    /**
+     * A könyvtár mondat-csoportjai: cím, alcím, lista-kulcs.
+     *
+     * Itt van, nem a képernyőn, mert a fejléc darabszáma is ebből jön – egy új
+     * csoport felvételekor a „4 helyen" különben csendben hazuggá válna –, és
+     * mert így egységteszt is átfuthat rajta.
+     */
+    public static final String[][] GROUPS = {
+            {"🍽  Étrend", "Mit ettél?", "MEAL"},
+            {"📝  Edzés-előzmény", "Több edzés egy mondatból", "BULK"},
+            {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
+            {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
+            {"⚖️  Mérés", "Testsúly és testzsír", "BODY"},
+    };
+
+    /** A könyvtár csoportjai névvel hivatkoznak a listákra. */
+    public static String[] byKey(String key) {
+        if ("MEAL".equals(key)) return MEAL;
+        if ("BULK".equals(key)) return BULK;
+        if ("SET".equals(key)) return SET;
+        if ("BODY".equals(key)) return BODY;
+        return INTERVAL;
+    }
+
     /** Percenként másik példa, hogy ne egyetlen formát tanuljon meg a szem. */
     public static String pick(String[] a, long now) {
         long i = (now / 60000L) % a.length;

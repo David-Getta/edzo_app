@@ -78,9 +78,28 @@ public class ExamplesTest {
         }
     }
 
+    /** A mérés-példák is azt jelentik, aminek látszanak. */
+    @Test public void everyBodyExampleIsRecognised() {
+        for (String q : Examples.BODY) {
+            BodyParse.Body b = BodyParse.parse(q);
+            assertTrue("nem ismeri fel a saját példáját: " + q, !b.isEmpty());
+            assertTrue("életszerűtlen mérés: " + q,
+                    (b.kg == 0 || (b.kg >= 30 && b.kg <= 250))
+                            && (b.fatPct == 0 || (b.fatPct >= 3 && b.fatPct <= 60)));
+        }
+    }
+
+    /** A könyvtár minden csoportjához tartozik valódi példalista. */
+    @Test public void everyLibraryGroupHasExamples() {
+        for (String[] g : Examples.GROUPS) {
+            String[] ex = Examples.byKey(g[2]);
+            assertTrue("üres csoport: " + g[2], ex.length >= 3);
+        }
+    }
+
     @Test public void hintsAreWellFormedAndRotate() {
         for (String[] a : new String[][]{Examples.MEAL, Examples.BULK, Examples.SET,
-                Examples.INTERVAL}) {
+                Examples.INTERVAL, Examples.BODY}) {
             Set<String> seen = new HashSet<>();
             for (String s : a) {
                 assertTrue("üres példa", s.trim().length() > 2);

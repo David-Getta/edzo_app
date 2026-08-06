@@ -554,7 +554,7 @@ public class DietActivity extends Activity {
      * is lehet venni: minden sor egy koppintással bekerül a naplóba.
      */
     void addIdeas(double kcalLeft, double proteinLeft) {
-        long day = System.currentTimeMillis() / 86400000L;
+        long day = Days.index(System.currentTimeMillis());
         List<MealIdeas.Idea> ideas = MealIdeas.forRemaining(Foods.ALL, kcalLeft,
                 proteinLeft, day);
         if (ideas.isEmpty()) return;

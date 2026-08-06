@@ -37,10 +37,10 @@ public class LibraryActivity extends Activity {
                 13.5f, MUTED, false));
         col.addView(gap(18));
 
-        // Mondat-felismerés: az app négy helyen ért folyó szöveget, de ezt
+        // Mondat-felismerés: az app öt helyen ért folyó szöveget, de ezt
         // eddig csak a beviteli mezők tippjei árulták el – oda viszont előbb
         // el kell jutni. Itt egy helyen látszik, mi mindent lehet leírni.
-        col.addView(sectionHead("✍️  Mondatból is megy", "4 helyen"), lp());
+        col.addView(sectionHead("✍️  Mondatból is megy", Examples.GROUPS.length + " helyen"), lp());
         col.addView(sentenceCard(accent), lp());
         col.addView(gap(18));
 
@@ -91,24 +91,17 @@ public class LibraryActivity extends Activity {
     /** Ugyanazok a példák, amiket a beviteli mezők is mutatnak. */
     LinearLayout sentenceCard(int accent) {
         LinearLayout card = card();
-        String[][] groups = {
-                {"🍽  Étrend", "Mit ettél?", "MEAL"},
-                {"📝  Edzés-előzmény", "Több edzés egy mondatból", "BULK"},
-                {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
-                {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
-        };
+        String[][] groups = Examples.GROUPS;
         for (int i = 0; i < groups.length; i++) {
             String[] g = groups[i];
-            String[] ex = g[2].equals("MEAL") ? Examples.MEAL
-                    : g[2].equals("BULK") ? Examples.BULK
-                    : g[2].equals("SET") ? Examples.SET : Examples.INTERVAL;
+            String[] ex = Examples.byKey(g[2]);
             LinearLayout box = vbox();
             box.setPadding(dp(14), dp(12), dp(14), dp(12));
             box.addView(text(g[0], 15.5f, TXT, true));
             box.addView(text(g[1], 12.5f, MUTED, false));
             // Három példa, naponta forogva – ugyanaz a válogatás, amit a
             // beviteli mezők tippjei is mutatnak.
-            long day = System.currentTimeMillis() / 86400000L;
+            long day = Days.index(System.currentTimeMillis());
             for (int k = 0; k < 3 && k < ex.length; k++) {
                 int idx = (int) (((day + k) % ex.length + ex.length) % ex.length);
                 TextView t = text("„" + ex[idx] + "”", 13, accent, false);

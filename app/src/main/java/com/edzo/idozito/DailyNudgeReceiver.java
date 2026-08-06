@@ -136,7 +136,7 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
                             .getInt("protein_goal", 0);
                     double pLeft = pGoal > 0 ? pGoal - MealLog.todayProtein(c) : 0;
                     java.util.List<MealIdeas.Idea> ideas = MealIdeas.forRemaining(
-                            Foods.ALL, left, pLeft, System.currentTimeMillis() / 86400000L);
+                            Foods.ALL, left, pLeft, Days.index(System.currentTimeMillis()));
                     if (!ideas.isEmpty()) line += " Pl. " + ideas.get(0).label() + ".";
                 }
                 lines.add(line);

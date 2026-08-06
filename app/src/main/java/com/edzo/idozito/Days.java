@@ -43,4 +43,16 @@ public final class Days {
     public static int ago(long ts, long now) {
         return between(ts, now);
     }
+
+    /**
+     * Naponta eggyel növő sorszám – naponta forgó válogatásokhoz (példamondatok,
+     * étel-ötletek).
+     *
+     * A kézenfekvő {@code ts / 86400000} UTC szerint fordul: nyáron
+     * hajnali kettőkor cserélődne a „mai" válogatás, télen egykor. Nem hiba,
+     * csak észrevehető – aki éjjel fél egykor nézi meg, holnapi ötletet kap.
+     */
+    public static long index(long ts) {
+        return Math.floorDiv(startOf(ts), 86_400_000L);
+    }
 }
