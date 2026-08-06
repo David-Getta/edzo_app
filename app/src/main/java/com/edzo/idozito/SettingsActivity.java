@@ -420,7 +420,9 @@ public class SettingsActivity extends Activity {
                 sb.append(when).append(';')
                   .append(name).append(';')
                   .append(it.food.replace(';', ',')).append(';')
-                  .append(Math.round(it.grams)).append(';')
+                  // A gramm nélküli (kalóriás) bejegyzésnél üres cella: a 0
+                  // egy táblázatban mért nullának látszana.
+                  .append(it.grams > 0 ? String.valueOf(Math.round(it.grams)) : "").append(';')
                   .append(Math.round(it.kcal)).append(';')
                   .append(it.protein > 0 ? String.valueOf(Math.round(it.protein)) : "").append(';')
                   .append(water).append('\n');

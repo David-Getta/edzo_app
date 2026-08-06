@@ -79,6 +79,12 @@ public class DietActivity extends Activity {
         table.setTextSize(13.5f);
         table.setOnClickListener(v -> foodTableSheet());
         col.addView(table);
+        // Csak a szám, semmi más: a dobozról leolvasott kalória két
+        // koppintásra a naplóban van, étel-felismerés nélkül.
+        Button quickKcal = ghost("🔢  Csak kalória");
+        quickKcal.setTextSize(13.5f);
+        quickKcal.setOnClickListener(v -> quickKcalSheet());
+        col.addView(quickKcal);
         quickBox = vbox();
         col.addView(quickBox, lp());
         col.addView(gap(18));
@@ -1599,6 +1605,53 @@ public class DietActivity extends Activity {
                     MealLog.add(this, meal);
                     refresh();
                     Ux.blazeCard(this, "🍽 Naplózva ✔  " + Math.round(meal.kcal()) + " kcal"
+                            + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
+                })
+                .addCancel()
+                .show();
+    }
+
+    /**
+     * Csak a szám: a dobozról leolvasott kalória azonnal a naplóba.
+     *
+     * Az adatbázis és a felismerés a legtöbb esetben jobb – de amikor az ember
+     * a kezében tartja a csomagolást, a leggyorsabb út az, ha egyszerűen
+     * beírja, ami rajta áll. Grammot nem kérünk: azt úgysem mérte meg senki.
+     */
+    void quickKcalSheet() {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        final EditText kcalEt = input("kcal");
+        kcalEt.setInputType(InputType.TYPE_CLASS_NUMBER);
+        box.addView(kcalEt, lp());
+        final EditText nameEt = input("Mi volt? (nem kötelező)");
+        LinearLayout.LayoutParams l1 = lp(); l1.topMargin = dp(8);
+        box.addView(nameEt, l1);
+        final EditText protEt = input("fehérje g (nem kötelező)");
+        protEt.setInputType(InputType.TYPE_CLASS_NUMBER
+                | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        LinearLayout.LayoutParams l2 = lp(); l2.topMargin = dp(8);
+        box.addView(protEt, l2);
+        new Sheet(this, "Csak kalória 🔢",
+                "Ami a dobozon áll. Ha nem írsz nevet, „Étel” lesz.")
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    int k = (int) parse(kcalEt.getText().toString());
+                    if (k < Kcal.MIN || k > Kcal.MAX) {
+                        Toast.makeText(this, "Írj be egy kalória-értéket ("
+                                + Kcal.MIN + "–" + Kcal.MAX + ").",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String n = nameEt.getText().toString().trim();
+                    if (n.isEmpty()) n = "Étel";
+                    double pr = Math.max(0, parse(protEt.getText().toString()));
+                    long now = System.currentTimeMillis();
+                    List<MealLog.Item> items = new ArrayList<>();
+                    items.add(new MealLog.Item(n, 0, k, pr));
+                    MealLog.add(this, new MealLog.Meal(now, n, items, ""));
+                    refresh();
+                    Ux.blazeCard(this, "🍽 Naplózva ✔  " + k + " kcal"
                             + (awardDailyLogXp(now) ? "  ·  +5 XP" : ""));
                 })
                 .addCancel()

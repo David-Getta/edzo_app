@@ -132,6 +132,16 @@ public class ParserFuzzTest {
                             ip.cool >= 0 && ip.cool <= IntervalParse.MAX_SEC);
                 }
 
+                // Kimondott kalória és fehérje: vagy nincs, vagy a sávban van.
+                int kc = Kcal.stated(q), bn = Kcal.burned(q), pr = Kcal.protein(q);
+                assertTrue("kalória elszaladt erre: " + q,
+                        kc == -1 || (kc >= Kcal.MIN && kc <= Kcal.MAX));
+                assertTrue("égetés elszaladt erre: " + q,
+                        bn == -1 || (bn >= Kcal.MIN && bn <= Kcal.MAX));
+                assertTrue("fehérje elszaladt erre: " + q,
+                        pr == -1 || (pr >= Kcal.MIN_PROT && pr <= Kcal.MAX_PROT));
+                assertTrue("üres név erre: " + q, !Kcal.label(q).trim().isEmpty());
+
                 // A súlyzós mondat dátuma: vagy nincs, vagy múltbeli és
                 // életszerű – ez írja a bejegyzés napját az erősítő naplóban.
                 long day = Activities.singleDayTs(p, 1_753_900_000_000L);
@@ -168,6 +178,10 @@ public class ParserFuzzTest {
             StrengthParse.parse(q);
             IntervalParse.parse(q);
             TimeHint.from(q, 1_753_900_000_000L);
+            Kcal.stated(q);
+            Kcal.burned(q);
+            Kcal.protein(q);
+            Kcal.label(q);
         }
     }
 }

@@ -80,7 +80,7 @@ public class Sopres {
 PY
 
 # 3) A tiszta Java osztályok (ugyanaz a válogatás, mint a gyorsteszté).
-for f in BodyParse Sentence Days Hu Muscles Activities StrengthParse IntervalParse Load Progression Warmup Mobility Routines; do
+for f in Kcal BodyParse Sentence Days Hu Muscles Activities StrengthParse IntervalParse Load Progression Warmup Mobility Routines; do
   [ -f "$SRC/$f.java" ] && cp "$SRC/$f.java" "$PKG/"
 done
 python3 - "$SRC/Foods.java" "$PKG/Foods.java" <<'PY'
