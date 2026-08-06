@@ -175,4 +175,24 @@ public class FoodsParseTest {
     @Test public void nothingRecognisedGivesEmptyResult() {
         assertTrue(hits("zzzqqq 100 g").isEmpty());
     }
+    /**
+     * Hátravetett tagadás: „csokit nem ettem".
+     *
+     * A tagadás eddig csak ELŐRE hatott. Magyarul viszont ugyanolyan gyakori
+     * a fordított szórend, és ott az étel a tagadás ELŐTT áll: minden ilyen
+     * mondat felvette azt, amit az ember épp NEM evett meg.
+     */
+    @Test public void aTrailingNegationAlsoCancelsTheFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"csokit nem ettem", "sört nem ittam",
+                "pizzát nem kértem", "kenyeret nem eszem", "nem ettem csokit"})
+            assertTrue(q + " -> " + Foods.parse(all, q), Foods.parse(all, q).isEmpty());
+        // A tagadás nem eszi meg a szomszéd tagmondat ételét.
+        java.util.List<Foods.Hit> h = Foods.parse(all, "csokit nem, almát igen");
+        assertEquals(1, h.size());
+        assertEquals("Alma", h.get(0).food.name);
+        h = Foods.parse(all, "csirkemellet ettem, csokit nem");
+        assertEquals(1, h.size());
+        assertEquals("Csirkemell (sült/grill)", h.get(0).food.name);
+    }
 }

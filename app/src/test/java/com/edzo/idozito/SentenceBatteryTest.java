@@ -224,6 +224,8 @@ public class SentenceBatteryTest {
                 {"elmajszoltam egy almát", "Alma 150g"},
                 {"zöldséges wok", "Wok (zöldséges-húsos) 350g"},
                 {"egy pohár rizling", "Bor (vörös/fehér) 150g"},
+                {"csokit nem ettem", "—"},
+                {"csirkemellet ettem, csokit nem", "Csirkemell (sült/grill) 150g"},
                 {"vizsga után ettem", "—"},
                 {"zabáltam", "—"},
                 {"majd", "—"},

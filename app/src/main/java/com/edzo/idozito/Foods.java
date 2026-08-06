@@ -1715,6 +1715,49 @@ public final class Foods {
     }
 
     /**
+     * Hátravetett tagadás: „csokit nem ettem", „sört nem ittam", „csokit nem,
+     * almát igen".
+     *
+     * A tagadás eddig csak ELŐRE hatott. Magyarul viszont ugyanolyan gyakori
+     * a fordított szórend, és ott az étel a tagadás ELŐTT áll: eddig minden
+     * ilyen mondat felvette azt, amit az ember épp NEM evett meg – a csokit,
+     * a sört, a pizzát.
+     *
+     * Csak akkor lép működésbe, ha a „nem" után evés-ige áll, vagy ha a „nem"
+     * zárja a tagmondatot („csokit nem, almát igen"). A visszafelé törlés a
+     * tagmondat elején és a kötőszónál megáll.
+     */
+    private static void dropBackwardNegated(String q, List<Match> in,
+                                            java.util.Set<Match> dead) {
+        int p = q.indexOf("nem");
+        while (p >= 0) {
+            boolean word = (p == 0 || !Character.isLetter(q.charAt(p - 1)))
+                    && (p + 3 >= q.length() || !Character.isLetter(q.charAt(p + 3)));
+            if (word) {
+                String after = q.substring(Math.min(q.length(), p + 3)).trim();
+                boolean undone = after.isEmpty() || after.startsWith(",")
+                        || after.startsWith(";");
+                for (String v : new String[]{"ettem", "eszem", "ettunk", "ittam",
+                        "iszom", "ittunk", "kertem", "kerek", "kertunk", "volt",
+                        "fogyasztottam", "tettem", "hoztam", "vettem"})
+                    if (after.startsWith(v)) undone = true;
+                if (undone) {
+                    int a = p;
+                    while (a > 0 && q.charAt(a - 1) != ',' && q.charAt(a - 1) != ';'
+                            && q.charAt(a - 1) != '.') a--;
+                    for (String c : new String[]{" de ", " viszont ", " azonban ",
+                            " es ", " majd "}) {
+                        int k = q.lastIndexOf(c, p);
+                        if (k >= 0 && k >= a) a = k + c.length();
+                    }
+                    for (Match m : in) if (m.pos >= a && m.pos < p) dead.add(m);
+                }
+            }
+            p = q.indexOf("nem", p + 1);
+        }
+    }
+
+    /**
      * Külön tételként van-e felsorolva a két találat?
      *
      * A jelzős szerkezet („csokis müzliszelet") EGY ételt jelent, a kötőszós
@@ -1866,6 +1909,7 @@ public final class Foods {
     private static List<Match> dropNegated(String q, List<Match> in) {
         if (in.isEmpty()) return in;
         java.util.HashSet<Match> dead = new java.util.HashSet<>();
+        dropBackwardNegated(q, in, dead);
         // Az étel közvetlenül a „helyett"/„nélkül" előtt áll (rövid rag belefér).
         for (String w : new String[]{"helyett", "nelkul"}) {
             int p = q.indexOf(w);
