@@ -233,6 +233,7 @@ public class MainActivity extends Activity {
         handleRepeatIntent(getIntent());
         handleQuickStartIntent(getIntent());
         handleSentenceIntent(getIntent());
+        handleSharedText(getIntent());
         maybeShowWelcome();
     }
 
@@ -3650,6 +3651,7 @@ public class MainActivity extends Activity {
         handleRepeatIntent(intent);
         handleQuickStartIntent(intent);
         handleSentenceIntent(intent);
+        handleSharedText(intent);
     }
 
     /**
@@ -3667,6 +3669,50 @@ public class MainActivity extends Activity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isFinishing()) intervalSentenceSheet(s);
         }, 350);
+    }
+
+    /**
+     * Máshonnan MEGOSZTOTT szöveg: a Grit a megfelelő naplóba viszi.
+     *
+     * A teremben kapott edzésterv, a recept és a baráttól jött ötlet is
+     * szövegként érkezik – eddig kézzel kellett átgépelni. Csak akkor
+     * nyitunk lapot, ha valamelyik felismerő tényleg ért belőle valamit:
+     * egy hírlink megosztásából ne pattanjon fel egy üres űrlap.
+     */
+    void handleSharedText(Intent intent) {
+        if (intent == null || !Intent.ACTION_SEND.equals(intent.getAction())) return;
+        String s = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (s == null || s.trim().isEmpty()) return;
+        // Csak egyszer: a mentés utáni recreate() ugyanezt az Intentet kapja.
+        intent.removeExtra(Intent.EXTRA_TEXT);
+        // A megosztott szöveg gyakran hosszú (cikk, üzenet); a felismerők az
+        // első pár mondatból is kiolvassák, amit tudnak.
+        final String text = s.length() > 400 ? s.substring(0, 400) : s;
+        final Sentence.Kind k = Sentence.of(text, Foods.all(this), System.currentTimeMillis());
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (isFinishing()) return;
+            if (k == Sentence.Kind.NONE) {
+                new Sheet(this, "Ebből nem lettem okos 🤔",
+                        "A megosztott szövegben nem találtam se edzést, se étkezést, "
+                                + "se időzítő-tervet.\n\n„" + shortened(text) + "”")
+                        .addPrimary("Rendben", () -> {})
+                        .show();
+                return;
+            }
+            if (k == Sentence.Kind.INTERVAL) { intervalSentenceSheet(text); return; }
+            new Sheet(this, "Megosztott szöveg 🧭",
+                    "Ezt a(z) " + Sentence.where(k) + " érti meg – átviszem oda a "
+                            + "szöveggel együtt.\n\n„" + shortened(text) + "”")
+                    .addPrimary(Sentence.where(k), () -> Ux.openFor(this, k, text))
+                    .addCancel()
+                    .show();
+        }, 350);
+    }
+
+    /** Hosszú szöveg rövidítve, hogy a lapon elférjen. */
+    private static String shortened(String s) {
+        String t = s.trim().replaceAll("\\s+", " ");
+        return t.length() > 120 ? t.substring(0, 120) + "…" : t;
     }
 
     void cmd(String action) {
