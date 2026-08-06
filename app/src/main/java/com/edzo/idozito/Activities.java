@@ -675,6 +675,7 @@ public final class Activities {
         for (double[] t : kms) blank(q, (int) t[0], (int) t[2]);
         List<int[]> mins = findMinutes(q);          // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
+        mergeTimeRanges(beforeBlank, mins, q);
         dropWarmupTimes(beforeBlank, mins);
 
         // 3) Mozgásformák a maradék szövegben.
@@ -906,12 +907,17 @@ public final class Activities {
         // kiesett (egy mozgásforma egyszer szerepel), a „délelőtt 1 óra,
         // délután fél óra kondi" második ideje pedig gazdátlanul maradt.
         // Mindkét esetben a nap fele hiányzott a naplóból.
-        if (out.size() == 1 && mins.size() == 2 && out.get(0).count == 1
-                && dayParts(s) >= 2) {
+        if (out.size() == 1 && out.get(0).count == 1 && dayParts(s) >= 2) {
             Plan p = out.get(0);
-            int total = mins.get(0)[1] + mins.get(1)[1];
-            if (total >= 2 && total <= 24 * 60)
-                out.set(0, new Plan(p.kind, 2, Math.max(1, total / 2), p.km));
+            if (mins.size() == 2) {
+                int total = mins.get(0)[1] + mins.get(1)[1];
+                if (total >= 2 && total <= 24 * 60)
+                    out.set(0, new Plan(p.kind, 2, Math.max(1, total / 2), p.km));
+            } else if (mins.size() == 1 && distributiveBefore(beforeBlank, mins.get(0))) {
+                // „reggel és este is futottam 20-20 percet": az osztó alak
+                // ALKALMANKÉNT húsz percet jelent, nem összesen annyit.
+                out.set(0, new Plan(p.kind, 2, mins.get(0)[1], p.km));
+            }
         }
 
         // Ha nincs felismert mozgás, de van táv, az futás: a „nyomtam egy
@@ -2095,6 +2101,61 @@ public final class Activities {
         String part = s.substring(from, to);
         for (Kind k : ALL) for (String w : k.words) if (part.contains(w)) return true;
         return false;
+    }
+
+    /**
+     * Kötőjeles szám az időtartam ELŐTT: „10-15 perc futás", „20-20 percet".
+     *
+     * A kitakarás eddig csak a második számot vitte el a mértékegységével
+     * együtt, az első ott maradt – és DARABSZÁMNAK látszott: a „10-15 perc
+     * futás" tíz külön futás lett, tizenöt percenként. Csendben, minden
+     * ilyen mondatnál.
+     *
+     * Ha a két szám különbözik, az tartomány: a közepe a becslés (ahogy az
+     * étkezésnél is). Ha egyezik, az osztó alak – ott az érték marad, a
+     * darabszámot a napszakok döntik el.
+     */
+    private static void mergeTimeRanges(String s, List<int[]> mins, char[] q) {
+        for (int[] m : mins) {
+            int b = m[0], e = b;
+            while (e < s.length() && Character.isDigit(s.charAt(e))) e++;
+            if (e == b) continue;
+            double hi;
+            try { hi = Double.parseDouble(s.substring(b, e)); }
+            catch (NumberFormatException ex) { continue; }
+            int dash = b - 1;
+            if (dash < 0 || s.charAt(dash) != '-') continue;
+            int st = dash;
+            while (st > 0 && Character.isDigit(s.charAt(st - 1))) st--;
+            if (st == dash) continue;
+            double lo;
+            try { lo = Double.parseDouble(s.substring(st, dash)); }
+            catch (NumberFormatException ex) { continue; }
+            if (lo <= 0 || hi <= 0) continue;
+            blank(q, st, dash + 1);
+            if (lo == hi || lo > hi || hi > lo * 3) continue;
+            m[1] = Math.max(1, (int) Math.round(m[1] * (lo + hi) / (2 * hi)));
+        }
+    }
+
+    /**
+     * Osztó alak közvetlenül az időtartam előtt: „20-20 percet".
+     *
+     * Ugyanaz a szám kötőjellel megismételve magyarul azt jelenti, hogy
+     * ALKALMANKÉNT ennyi – nem összesen. Az egyjegyű alakot („1-1 túra") már
+     * régen értettük, de csak darabszámként; itt a szám mértékegységet visel.
+     */
+    private static boolean distributiveBefore(String s, int[] m) {
+        int b = m[0];
+        int e = b;
+        while (e < s.length() && Character.isDigit(s.charAt(e))) e++;
+        if (e == b) return false;
+        String num = s.substring(b, e);
+        int dash = b - 1;
+        if (dash < 0 || s.charAt(dash) != '-') return false;
+        int start = dash - num.length();
+        return start >= 0 && s.substring(start, dash).equals(num)
+                && (start == 0 || !Character.isDigit(s.charAt(start - 1)));
     }
 
     /** Hányféle napszakot említ a mondat? */

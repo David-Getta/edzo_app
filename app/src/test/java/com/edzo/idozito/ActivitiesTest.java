@@ -525,4 +525,41 @@ public class ActivitiesTest {
                 }
         assertEquals("ütköző mozgás-szó:" + bad, 0, bad.length());
     }
+    /**
+     * Kötőjeles szám az időtartam előtt: „10-15 perc futás".
+     *
+     * A kitakarás eddig csak a második számot vitte el a mértékegységével
+     * együtt; az első ott maradt, és DARABSZÁMNAK látszott. A „10-15 perc
+     * futás" tíz külön futás lett, tizenöt percenként – és ugyanígy a
+     * „30-30 perc kondi" harminc darab. Csendben, minden ilyen mondatnál.
+     */
+    @Test public void aHyphenatedNumberBeforeTheTimeIsNotACount() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed a = Activities.parse("10-15 perc futás", now);
+        assertEquals(1, a.plans.size());
+        assertEquals(1, a.plans.get(0).count);
+        assertEquals(13, a.plans.get(0).minutes);      // a tartomány közepe
+        Activities.Parsed b = Activities.parse("20-20 perc futás", now);
+        assertEquals(1, b.plans.get(0).count);
+        assertEquals(20, b.plans.get(0).minutes);
+    }
+
+    /**
+     * Az osztó alak alkalmanként értendő: „reggel és este 30-30 perc kondi"
+     * két harmincperces edzés.
+     */
+    @Test public void theDistributiveFormMeansPerOccasion() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse("reggel és este 30-30 perc kondi", now);
+        assertEquals(1, p.plans.size());
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(30, p.plans.get(0).minutes);
+        Activities.Parsed q =
+                Activities.parse("reggel és este is futottam 20-20 percet", now);
+        assertEquals(2, q.plans.get(0).count);
+        assertEquals(20, q.plans.get(0).minutes);
+        // A darabszámos osztó alak nem romolhatott el.
+        assertEquals(2, Activities.parse("tegnap és ma 1-1 futás", now)
+                .plans.get(0).count);
+    }
 }
