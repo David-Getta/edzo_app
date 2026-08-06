@@ -514,6 +514,10 @@ public final class Activities {
     private static final String[] NOT_SPAN = {
             "napi", "naplo", "naploban", "naplot", "naptar", "napozas", "napsutes",
             "hetfo", "hetfon", "hetfoi", "hetvege", "hetvegen", "hetkoznap", "hetkoznapon",
+            // A „hetes" sorszám vagy jelző, nem időszak: a „hetes bérlettel
+            // kondi" és a „futás a hetes buszmegállóig" egyaránt EGY napról
+            // szól, eddig viszont mindkettő egyhetes időszakra terült szét.
+            "hetes", "hetesben", "hetessel", "hetedik", "hetediken", "hetedike",
     };
 
     /**

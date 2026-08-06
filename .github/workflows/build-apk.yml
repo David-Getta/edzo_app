@@ -118,7 +118,7 @@ jobs:
           name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            Grit automatikus build (v62.2, build ${{ github.run_number }}).
+            Grit automatikus build (v62.3, build ${{ github.run_number }}).
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"

@@ -232,6 +232,18 @@ public class ActivitiesTest {
         }
     }
 
+    @Test public void theOrdinalSevenIsNotAWeek() {
+        // A „hetes" sorszám vagy jelző, nem időszak: eddig a „hetes bérlettel
+        // kondi" és a „futás a hetes buszmegállóig" is egyhetes időszakra
+        // terült szét, vagyis egy edzésből hét nap átlaga lett.
+        long now = System.currentTimeMillis();
+        assertEquals(1, Activities.parse("hetes bérlettel kondi", now).days);
+        assertEquals(1, Activities.parse("futás a hetes buszmegállóig", now).days);
+        // A valódi időszak viszont megmarad.
+        assertEquals(7, Activities.parse("a héten 3 futás", now).days);
+        assertEquals(7, Activities.parse("az elmúlt héten 2 úszás", now).days);
+    }
+
     @Test public void everyMorningMeansEveryDay() {
         // A „minden reggel 20 perc jóga a héten" hét jógát jelent, nem egyet:
         // eddig a napszak elnyelte a „minden"-t, és a heti ismétlődés elveszett.
