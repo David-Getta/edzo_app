@@ -68,6 +68,8 @@ public class SentenceBatteryTest {
                         "Guggolás 5@100/5@100/5@100/5@100/5@100"},
                 {"50 fekvőtámasz", "Fekvőtámasz 50@0"},
                 {"guggolás 3x10, majd 20 perc futás", "Guggolás 10@0/10@0/10@0"},
+                {"guggolás 60 kg bemelegítés, aztán 3x5 100", "Guggolás 5@100/5@100/5@100"},
+                {"húzódzkodás 3x max", "—"},
                 {"jó edzés volt", "—"},
                 {"húzódzkodás 3 szett maximumig", "—"},
                 {"plank 3x60", "Plank 60@0/60@0/60@0"},

@@ -170,9 +170,18 @@ public final class StrengthParse {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
         String whole = sets(Foods.norm(text));
+        // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
+        // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
+        // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
+        // elveszett, pedig együtt teljesen egyértelmű.
+        String pending = null;
         for (String part : splitClauses(whole)) {
             Item it = parseOne(part);
-            if (it != null) { out.add(it); continue; }
+            // A név ékezetes, szép alak; a tagmondat viszont már normalizált,
+            // ezért a nevet is úgy adjuk hozzá.
+            if (it == null && pending != null) it = parseOne(Foods.norm(pending) + " " + part);
+            if (it != null) { out.add(it); pending = null; continue; }
+            if (out.isEmpty() && pending == null) pending = moveIn(part);
             // Sorozatfelsorolás gyakorlatnév nélkül: „fekvenyomás 60x10, 70x8,
             // 80x6”. A vessző itt nem új gyakorlatot nyit, hanem a következő
             // sorozatot – név hiányában az előzőhöz tartozik.
@@ -491,6 +500,9 @@ public final class StrengthParse {
                 int e = bare.end();
                 String rest = s.substring(e).trim();
                 if (rest.startsWith("kg") || rest.startsWith("kilo")) continue;
+                // A „3x max" hármasa SOROZATSZÁM: az ismétlés ismeretlen, és
+                // hármat beírni helyette csendes hazugság lenne.
+                if (rest.startsWith("x") || rest.startsWith("×")) continue;
                 if (isWeightSuffixed(s, e)) continue;
                 if (isAtWeight(s, bare.start())) continue;
                 int r = Integer.parseInt(bare.group(1));

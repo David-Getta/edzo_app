@@ -477,4 +477,38 @@ public class StrengthParseTest {
         assertEquals(200.0, StrengthParse.parse("guggolás ötször ötöt kétszáz kiló")
                 .get(0).topWeight(), 0.001);
     }
+    /**
+     * Gyakorlatnév az egyik tagmondatban, sorozat a másikban.
+     *
+     * A „guggolás 60 kg bemelegítés, aztán 3x5 100" első tagmondatában nincs
+     * ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat elveszett,
+     * pedig együtt teljesen egyértelmű.
+     */
+    @Test public void theNameCanStandInAnEarlierClause() {
+        List<StrengthParse.Item> it =
+                StrengthParse.parse("guggolás 60 kg bemelegítés, aztán 3x5 100");
+        assertEquals(1, it.size());
+        assertEquals("Guggolás", it.get(0).name);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(5, it.get(0).sets.get(0).reps);
+        assertEquals(100, it.get(0).sets.get(0).weight, 0.001);
+        // A függő név nem ragad rá a KÖVETKEZŐ, saját nevű gyakorlatra.
+        List<StrengthParse.Item> b =
+                StrengthParse.parse("guggolás, majd fekvenyomás 3x8 60");
+        assertEquals(1, b.size());
+        assertEquals("Fekvenyomás", b.get(0).name);
+    }
+
+    /**
+     * A „3x max" hármasa sorozatszám, nem ismétlés.
+     *
+     * Hármat beírni ismétlésként csendes hazugság lenne – a „3 szett
+     * maximumig" alakot ugyanezért nem értjük.
+     */
+    @Test public void aSetCountIsNotARepCount() {
+        assertTrue(StrengthParse.parse("húzódzkodás 3x max").isEmpty());
+        assertTrue(StrengthParse.parse("húzódzkodás 3 szett maximumig").isEmpty());
+        // A teljes alak viszont megy.
+        assertEquals(3, StrengthParse.parse("húzódzkodás 3x8").get(0).sets.size());
+    }
 }
