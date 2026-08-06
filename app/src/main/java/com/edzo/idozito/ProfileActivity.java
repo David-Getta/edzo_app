@@ -41,6 +41,7 @@ public class ProfileActivity extends Activity {
     Button[] rateBtns = new Button[4];
     ChartView chart;
     TextView chartInfo;
+    LinearLayout measList;
     Button[] seriesBtns = new Button[3];
     int series = 0; // 0 testsúly, 1 BMI, 2 testzsír
 
@@ -169,9 +170,17 @@ public class ProfileActivity extends Activity {
         col.addView(chartCard, lp());
         col.addView(gap(14));
 
+        // Mentett mérések listája: egyetlen elgépelt adat is javítható, nem
+        // kell hozzá az egész görbét feláldozni.
+        measList = vbox();
+        col.addView(measList, lp());
+        refreshMeasList();
+        col.addView(gap(14));
+
         Button clear = ghost("Mérések törlése");
         clear.setOnClickListener(v -> new Sheet(this, "Mérések törlése", "Törlöd az összes mentett mérést?")
-                .addDestructive("Törlés", () -> { Profile.clearMeasurements(this); refreshChart(); })
+                .addDestructive("Törlés", () -> {
+                    Profile.clearMeasurements(this); refreshChart(); refreshMeasList(); })
                 .addCancel().show());
         col.addView(clear);
 
@@ -450,6 +459,7 @@ public class ProfileActivity extends Activity {
         Profile.addMeasurement(this, System.currentTimeMillis(), w > 0 ? w : -1, bf > 0 ? bf : -1, bmi);
         Toast.makeText(this, "Mérés elmentve ✔", Toast.LENGTH_SHORT).show();
         refreshChart();
+        refreshMeasList();
     }
 
     // ---------------- Diagram ----------------
@@ -533,6 +543,77 @@ public class ProfileActivity extends Activity {
         }
         if (!nudge.isEmpty()) info += "\n" + nudge;
         chartInfo.setText(info);
+    }
+
+    /** Ennyi legutóbbi mérést sorolunk fel – a többi a diagramon látszik. */
+    static final int MEAS_LIST = 8;
+
+    /**
+     * A legutóbbi mérések listája, törlési lehetőséggel.
+     *
+     * Egy elgépelt szám (87 a 78 helyett) az egész görbét félrehúzza, a
+     * tendenciát és a fogyási becslést is – eddig viszont csak az ÖSSZES
+     * mérés törlésével lehetett szabadulni tőle.
+     */
+    void refreshMeasList() {
+        if (measList == null) return;
+        measList.removeAllViews();
+        JSONArray a = Profile.measurements(this);
+        if (a.length() == 0) return;
+        measList.addView(text("Mentett mérések", 17, TXT, true));
+        measList.addView(gap(10));
+        LinearLayout card = card();
+        java.text.SimpleDateFormat df =
+                new java.text.SimpleDateFormat("yyyy. MMM d. · HH:mm", new Locale("hu"));
+        int shown = 0;
+        for (int i = 0; i < a.length() && shown < MEAS_LIST; i++) {
+            JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            final long ts = o.optLong("ts");
+            double w = o.optDouble("w", -1), bf = o.optDouble("bf", -1);
+            StringBuilder val = new StringBuilder();
+            if (w > 0) val.append(trim(w)).append(" kg");
+            if (bf > 0) val.append(val.length() > 0 ? "  ·  " : "").append(trim(bf)).append("%");
+            if (val.length() == 0) continue;
+            if (shown > 0) card.addView(divider());
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(16), dp(12), dp(12), dp(12));
+            LinearLayout left = vbox();
+            left.addView(text(val.toString(), 15, TXT, true));
+            left.addView(text(df.format(new java.util.Date(ts)), 12, MUTED, false));
+            row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
+            TextView del = text("✕", 17, MUTED, false);
+            del.setPadding(dp(12), dp(6), dp(12), dp(6));
+            del.setClickable(true);
+            del.setOnClickListener(v -> new Sheet(this, "Mérés törlése",
+                    val + "\n" + df.format(new java.util.Date(ts)))
+                    .addDestructive("Törlés", () -> {
+                        Profile.removeMeasurement(this, ts);
+                        refreshMeasList();
+                        refreshChart();
+                        loadLastIntoFields();
+                    })
+                    .addCancel().show());
+            row.addView(del);
+            card.addView(row);
+            shown++;
+        }
+        measList.addView(card, lp());
+    }
+
+    /**
+     * A törlés után a mezők a MEGMARADT legutóbbi mérést mutassák.
+     *
+     * Enélkül a képernyőn ott maradna a most törölt érték, és a következő
+     * mentés némán visszahozná.
+     */
+    void loadLastIntoFields() {
+        double lw = Profile.lastWeight(this);
+        weightEt.setText(lw > 0 ? trim(lw) : "");
+        double lf = Profile.lastBodyFat(this);
+        bodyFatEt.setText(lf > 0 ? trim(lf) : "");
+        recompute();
     }
 
     // ---------------- Segéd UI ----------------

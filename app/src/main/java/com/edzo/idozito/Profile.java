@@ -204,6 +204,27 @@ public final class Profile {
         try { return new JSONArray(s); } catch (Exception e) { return new JSONArray(); }
     }
 
+    /**
+     * Egyetlen mérés törlése időbélyeg szerint.
+     *
+     * Eddig csak az ÖSSZES mérést lehetett törölni: egy elgépelt 87 kiló miatt
+     * az egész görbét fel kellett áldozni. A javításnak nem szabad ennyibe
+     * kerülnie.
+     */
+    public static boolean removeMeasurement(Context c, long ts) {
+        JSONArray a = measurements(c);
+        JSONArray out = new JSONArray();
+        boolean removed = false;
+        for (int i = 0; i < a.length(); i++) {
+            JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            if (!removed && o.optLong("ts") == ts) { removed = true; continue; }
+            out.put(o);
+        }
+        if (removed) prefs(c).edit().putString(KEY, out.toString()).apply();
+        return removed;
+    }
+
     public static void clearMeasurements(Context c) {
         prefs(c).edit().remove(KEY).apply();
     }
