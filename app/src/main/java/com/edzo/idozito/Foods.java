@@ -286,6 +286,9 @@ public final class Foods {
         new Food("Franciakrumpli (rakott)", 140, 7, 400, "franciakrumpli"),
         // A teljes „harcsapaprikás" alak szótő, különben a harcsa (hal) és a
         // paprikás kettőnek számolna.
+        // A gombapaprikás hústalan: a „paprikás" tő eddig a csirkéset hozta rá,
+        // vagyis a húsmentes fogás a csirke kalóriáját és fehérjéjét kapta.
+        new Food("Gombapaprikás", 95, 3.5, 300, "gombapaprikas", "gomba paprikas"),
         new Food("Csirkepaprikás", 160, 14, 300, "paprikas", "harcsapaprikas"),
         new Food("Milánói makaróni", 180, 7, 350, "milanoi", "makaroni"),
         new Food("Lasagne", 160, 9, 350, "lasagne", "lazanya"),
@@ -423,8 +426,10 @@ public final class Foods {
         new Food("Halászlé", 60, 8, 400, "halaszle"),
         new Food("Hekk (sült)", 190, 16, 200, "hekk"),
         // A „rakott kelkáposzta" nem rakott krumpli + káposzta: saját fogás.
+        // A rövid „rakott kel" alak eddig a puszta „rakott" tövön a rakott
+        // KRUMPLIRA esett: ugyanarra az adagra másfélszeres kalóriára.
         new Food("Rakott kelkáposzta", 120, 7, 400, "rakott kelkaposzta",
-                "rakott kaposzta", "kolozsvari kaposzta"),
+                "rakott kel", "rakottkel", "rakott kaposzta", "kolozsvari kaposzta"),
         new Food("Paprikás krumpli", 120, 4, 350, "paprikas krumpli"),
         new Food("Rizses hús", 160, 8, 350, "rizses hus"),
         new Food("Bolognai spagetti", 170, 8, 350, "bolognai spagetti", "spagetti bolognai", "bolognai"),
@@ -454,6 +459,11 @@ public final class Foods {
         new Food("Rántott gomba", 220, 5, 150, "rantott gomba"),
         new Food("Gomba", 22, 3, 100, "gomba"),
         new Food("Csirkemáj", 130, 20, 120, "csirkemaj", "maj"),
+        // A libamáj nem liba: a hízott máj zsírtartalma sokszorosa a húsénak.
+        // A puszta „liba" tövön eddig a HÚS ment be – kevesebb kalóriával,
+        // több fehérjével, mint a valóság.
+        new Food("Libamáj / kacsamáj (sült)", 400, 11, 100, "libamaj", "kacsamaj",
+                "hizott maj", "foie gras"),
         // A „tepertő" 33 kcal-os EPERNEK számított (az „eper" tő beleesett),
         // a disznósajt sajtnak, a májkrém nyers csirkemájnak.
         new Food("Tepertő", 700, 15, 50, "teperto", "topertyu"),
