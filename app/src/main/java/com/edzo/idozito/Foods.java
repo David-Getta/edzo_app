@@ -622,7 +622,7 @@ public final class Foods {
             "lencseveg", "banankoz", "narancsbor", "kenyerkeres", "tortaform",
             "kaveszunet", "teadelutan", "olajfolt", "halaszf", "borvidek",
             "sorhas", "kolbaszujj", "almafa", "kortefa", "diofa",
-            "cseresznyefa", "szilvafa", "barackfa", "eperfa", "meggyfa",
+            "cseresznyefa", "szilvafa", "barackfa", "eperfa", "meggyfa", "fugefa",
             "citromfu",
             // Hétköznapi szavak, amikben egy rövid étel-szótő lakik. Mind
             // valódi eset volt: a „majd" csirkemájat, az „iskolában" kólát, az

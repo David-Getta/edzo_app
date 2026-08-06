@@ -853,7 +853,6 @@ public final class Activities {
                 count = 1;
             }
             int next = nextHit;
-            int prevHit = i > 0 ? keep.get(i - 1)[0] : -1;
             int minutes = minsOf[i] > 0 ? minsOf[i] : loneAfterAll;
             // Ismétlés-alapú tételnél a mondat TÁVOLI (más mozgáshoz írt)
             // időtartama nem érvényes: a „10 km futás 50 perc alatt és 100
