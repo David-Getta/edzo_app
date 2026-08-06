@@ -511,4 +511,27 @@ public class StrengthParseTest {
         // A teljes alak viszont megy.
         assertEquals(3, StrengthParse.parse("húzódzkodás 3x8").get(0).sets.size());
     }
+    /**
+     * Két különböző gyakorlat egy mondatban: mindkettő megmarad, a
+     * sorrendjükben.
+     *
+     * A gyakorlatnevek egymásba érhetnek („fekvenyomás" / „fekvőtámasz",
+     * „alkartámasz" / „alkarhajlítás"), és egy ilyen ütközés csendben elnyeli
+     * az egyik sorozatot. Az összes névpárt átfuttatjuk.
+     */
+    @Test public void twoExercisesInOneSentenceBothSurvive() {
+        String[] names = StrengthParse.names();
+        StringBuilder bad = new StringBuilder();
+        for (int i = 0; i < names.length; i++)
+            for (int j = 0; j < names.length; j++) {
+                if (i == j) continue;
+                String q = names[i] + " 3x10, " + names[j] + " 4x8";
+                List<StrengthParse.Item> it = StrengthParse.parse(q);
+                if (it.size() == 2 && it.get(0).name.equals(names[i])
+                        && it.get(1).name.equals(names[j])) continue;
+                bad.append("\n  ").append(q).append(" -> ");
+                for (StrengthParse.Item x : it) bad.append(x.name).append(' ');
+            }
+        assertEquals("ütköző gyakorlatnév:" + bad, 0, bad.length());
+    }
 }

@@ -500,4 +500,29 @@ public class ActivitiesTest {
         assertEquals(90, Activities.parse("futás 1 óra és 30 perc", now)
                 .plans.get(0).minutes);
     }
+    /**
+     * Ugyanannak a sportnak KÉT szava egymás mellett is egy edzés.
+     *
+     * A „kondi konditerem" nem két edzés, és nem is más sport. A rövid tövek
+     * csapdája itt is él: egy új szó beleeshet egy másikba, és a bejegyzés
+     * csendben megkettőződik vagy átcsúszik. Az étel-oldalon pontosan ez
+     * bújt meg a párizsiban.
+     */
+    @Test public void twoWordsOfTheSameSportStillMeanOneWorkout() {
+        long now = 1_753_869_600_000L;
+        StringBuilder bad = new StringBuilder();
+        for (Activities.Kind k : Activities.ALL)
+            for (int i = 0; i < k.words.length; i++)
+                for (int j = 0; j < k.words.length; j++) {
+                    if (i == j) continue;
+                    String q = k.words[i] + " " + k.words[j] + " 30 perc";
+                    Activities.Parsed p = Activities.parse(q, now);
+                    if (p.plans.size() == 1 && p.plans.get(0).kind.id.equals(k.id)
+                            && p.plans.get(0).count == 1) continue;
+                    bad.append("\n  ").append(q).append(" -> ");
+                    for (Activities.Plan pl : p.plans)
+                        bad.append(pl.kind.id).append('×').append(pl.count).append(' ');
+                }
+        assertEquals("ütköző mozgás-szó:" + bad, 0, bad.length());
+    }
 }
