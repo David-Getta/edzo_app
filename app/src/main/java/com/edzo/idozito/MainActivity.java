@@ -1692,7 +1692,9 @@ public class MainActivity extends Activity {
         insightBox.removeAllViews();
         JSONArray arr = activityLog();
         long ws = weekStartMs();
-        long prevWs = ws - 7L * 24 * 3600 * 1000;
+        // Naptári léptetés, nem pontos 7×24 óra: az óraátállás hetén az
+        // utóbbi egy órát tévedne, és a „múlt héthez képest" ezen múlik.
+        long prevWs = prevWeekOf(ws);
         int cThis = 0, cPrev = 0;
         long durThis = 0, durPrev = 0;
         double mThis = 0, mPrev = 0;   // méterben

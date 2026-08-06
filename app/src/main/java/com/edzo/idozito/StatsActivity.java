@@ -33,7 +33,6 @@ import java.util.Locale;
 public class StatsActivity extends Activity {
 
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
-    static final long WEEK = 7L * 24 * 3600 * 1000;
 
     JSONArray hist;
     BarChart chart;
@@ -413,7 +412,7 @@ public class StatsActivity extends Activity {
 
     /** Az e heti teljesítmény összevetése az előző héttel (trend-nyilakkal). */
     LinearLayout trendCard(long weekStart, long now) {
-        long lastStart = weekStart - WEEK;
+        long lastStart = prevWeek(weekStart);
         Totals cur = totals(weekStart, now + 1);
         Totals prev = totals(lastStart, weekStart);
         LinearLayout c = card();
@@ -1401,6 +1400,14 @@ public class StatsActivity extends Activity {
     /** Előző hét kezdete (óraátállítás-biztos: 3 nappal visszalépve normalizálunk). */
     long prevWeek(long ws) { return weekStart(ws - 3L * 24 * 3600 * 1000); }
 
+    /**
+     * Következő hét kezdete, ugyanezzel a módszerrel.
+     *
+     * A pontos 7×24 óra évente kétszer téved egy órát: az óraátállás hetének
+     * vasárnapján 23:00 után rögzített edzés a szomszédos oszlopba csúszna.
+     */
+    long nextWeek(long ws) { return weekStart(ws + 10L * 24 * 3600 * 1000); }
+
     /** A valaha volt leghosszabb megszakítás nélküli heti sorozat. */
     int bestWeekStreak() {
         java.util.HashSet<Long> weeks = new java.util.HashSet<>();
@@ -1681,9 +1688,15 @@ public class StatsActivity extends Activity {
         String[] labels = new String[n];
         SimpleDateFormat df = new SimpleDateFormat("MM.dd", new Locale("hu"));
         double total = 0;
+        // A hetek kezdetét naptári léptetéssel gyűjtjük össze (óraátállás!),
+        // nem pontos 7×24 órás szorzással.
+        long[] starts = new long[n + 1];
+        starts[n - 1] = thisWeek;
+        for (int k = n - 2; k >= 0; k--) starts[k] = prevWeek(starts[k + 1]);
+        starts[n] = nextWeek(thisWeek);
         for (int k = 0; k < n; k++) {
-            long start = thisWeek - (long) (n - 1 - k) * WEEK;
-            long end = start + WEEK;
+            long start = starts[k];
+            long end = starts[k + 1];
             Totals t = totals(start, end);
             double v;
             switch (metric) {
