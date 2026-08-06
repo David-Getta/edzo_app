@@ -163,7 +163,7 @@ PY
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
-       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest"
+       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest"
 CLASSES=""
 for t in $TESTS; do
   if [ -f "$TST/$t.java" ]; then cp "$TST/$t.java" "$PKG/"; CLASSES="$CLASSES com.edzo.idozito.$t"; fi
