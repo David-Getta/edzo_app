@@ -264,7 +264,7 @@ public class StatsActivity extends Activity {
                 {"📍 Táv", t.distM > 0 ? fmtDist(t.distM) : "—"},
                 {"⏱ Idő", fmtDur((int) t.durSec)},
                 {"🔥 Kalória", Math.round(t.cal) + " kcal"},
-                {"👟 Lépések", t.steps > 0 ? String.valueOf((long) t.steps) : "—"},
+                {"👟 Lépések", t.steps > 0 ? Hu.num((long) t.steps) : "—"},
                 {"⚡ Átlag táv", t.count > 0 && t.distM > 0 ? fmtDist(t.distM / t.count) : "—"},
         });
         return grid;
@@ -1064,7 +1064,7 @@ public class StatsActivity extends Activity {
                 {"📅 Aktív napok", String.valueOf(activeDays.size())},
                 {"⏱ Össz idő", fmtDur((int) t.durSec)},
                 {"📍 Táv", t.distM > 0 ? fmtDist(t.distM) : "—"},
-                {"👟 Lépések", t.steps > 0 ? String.valueOf((long) t.steps) : "—"},
+                {"👟 Lépések", t.steps > 0 ? Hu.num((long) t.steps) : "—"},
                 {"📈 Heti átlag", String.format(Hu.LOCALE, "%.1f edzés",
                         t.count / (double) weeks)},
         });
@@ -1177,7 +1177,7 @@ public class StatsActivity extends Activity {
                 {"⚡ Legjobb átlag", bestAvg > 0 ? fmtSpeed(bestAvg) : "—"},
                 {"🚀 Legjobb csúcs", bestMax > 0 ? fmtSpeed(bestMax) : "—"},
                 {"🍩 Legtöbb kalória", bestCal > 0 ? Math.round(bestCal) + " kcal" : "—"},
-                {"👟 Legtöbb lépés", bestSteps > 0 ? String.valueOf(bestSteps) : "—"},
+                {"👟 Legtöbb lépés", bestSteps > 0 ? Hu.num(bestSteps) : "—"},
         });
         return grid;
     }

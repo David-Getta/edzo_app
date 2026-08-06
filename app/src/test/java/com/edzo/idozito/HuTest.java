@@ -174,4 +174,23 @@ public class HuTest {
         assertEquals("3szor a heten", Hu.digits("haromszor a heten"));
         assertEquals("5szor 5", Hu.digits("otszor otot"));
     }
+    /**
+     * Ezres tagolás: a lépésszám négy-öt jegyű, és tagolás nélkül egy
+     * pillanatra minden ilyen szám egyforma – a „9870" és a „19870"
+     * ránézésre ugyanaz.
+     */
+    @Test public void thousandsAreGrouped() {
+        assertEquals("0", Hu.num(0));
+        assertEquals("7", Hu.num(7));
+        assertEquals("999", Hu.num(999));
+        assertEquals("1\u202f000", Hu.num(1000));
+        assertEquals("12\u202f345", Hu.num(12345));
+        assertEquals("1\u202f234\u202f567", Hu.num(1234567));
+        assertEquals("-12\u202f345", Hu.num(-12345));
+        // Magyarul a tagolás SZÓKÖZ: se vessző, se pont nem kerülhet bele.
+        for (long v : new long[]{1000, 12345, 1234567, Long.MAX_VALUE}) {
+            String out = Hu.num(v);
+            assertTrue(out, out.indexOf(',') < 0 && out.indexOf('.') < 0);
+        }
+    }
 }

@@ -32,7 +32,7 @@ public class BestsTest {
         List<Bests.Best> b = Bests.of(ts, dur, dist, cal, steps, null, null);
         assertEquals("1 ó 0 p", find(b, "Leghosszabb edzés"));
         assertEquals("10,0 km", find(b, "Leghosszabb táv"));
-        assertEquals("12000", find(b, "Legtöbb lépés"));
+        assertEquals(Hu.num(12000), find(b, "Legtöbb lépés"));
         assertEquals("700 kcal", find(b, "Legtöbb kalória"));
         // A leghosszabb edzés napja is megvan.
         for (Bests.Best x : b) if (x.label.equals("Leghosszabb edzés")) assertEquals(T0, x.ts);

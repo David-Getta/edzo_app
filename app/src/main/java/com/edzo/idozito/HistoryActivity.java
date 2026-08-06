@@ -432,7 +432,7 @@ public class HistoryActivity extends Activity {
             if (avg > 0) addPill(pills, "⚡", fmtSpeed(avg));
         }
         int steps = o.optInt("steps", 0);
-        if (steps > 0) addPill(pills, "👟", steps + "");
+        if (steps > 0) addPill(pills, "👟", Hu.num(steps));
         body.addView(pills, lp());
 
         outer.addView(body, new LinearLayout.LayoutParams(0, -2, 1f));

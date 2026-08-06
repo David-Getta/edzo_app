@@ -30,6 +30,24 @@ public final class Hu {
         return d1(v);
     }
 
+    /**
+     * Ezres tagolás magyarul, keskeny szóközzel: „12 345".
+     *
+     * A lépésszám négy-öt jegyű, és tagolás nélkül egy pillanatra minden
+     * ilyen szám egyforma: a „9870" és a „19870" ránézésre ugyanaz. Magyarul
+     * a tagolás szóköz (nem vessző és nem pont) – a nem törhető keskeny
+     * szóköz tartja egyben a számot a sortörésnél.
+     */
+    public static String num(long v) {
+        String d = String.valueOf(Math.abs(v));
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < d.length(); i++) {
+            if (i > 0 && (d.length() - i) % 3 == 0) sb.append('\u202f');
+            sb.append(d.charAt(i));
+        }
+        return (v < 0 ? "-" : "") + sb;
+    }
+
     /** Egy tizedes, magyarul: „5,2". */
     public static String d1(double v) {
         return String.format(LOCALE, "%.1f", v);

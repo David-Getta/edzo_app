@@ -178,7 +178,7 @@ public class WorkoutDetailActivity extends Activity {
                 {"🔥 Kalória", Math.round(cal) + " kcal"},
                 {"⚡ Átlag", avgKmh >= 0 ? fmtSpeed(avgKmh) : "—"},
                 {"🚀 Max", maxKmh >= 0 ? fmtSpeed(maxKmh) : "—"},
-                {"👟 Lépések", steps > 0 ? String.valueOf(steps) : "—"},
+                {"👟 Lépések", steps > 0 ? Hu.num(steps) : "—"},
                 {"🎵 Kadencia", cadence >= 0 ? Math.round(cadence) + " /min" : "—"},
                 {"⛰ Emelkedő", elev > 0 ? Math.round(elev) + " m" : "—"},
                 {"🔁 Körök", rounds > 0 ? String.valueOf(rounds) : "—"},
@@ -339,7 +339,7 @@ public class WorkoutDetailActivity extends Activity {
                 {"Átlag", avg > 0 ? fmtSpeed(avg) : "—"},
                 {"Max", mx > 0 ? fmtSpeed(mx) : "—"},
                 {"Kalória", Math.round(cal) + " kcal"},
-                {steps > 0 ? "Lépések" : "Körök", steps > 0 ? String.valueOf(steps) : String.valueOf(rounds)},
+                {steps > 0 ? "Lépések" : "Körök", steps > 0 ? Hu.num(steps) : String.valueOf(rounds)},
         };
 
         int gap = 28, cols = 2;

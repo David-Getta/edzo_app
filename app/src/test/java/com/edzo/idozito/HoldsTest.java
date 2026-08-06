@@ -202,7 +202,7 @@ public class HoldsTest {
         List<Bests.Best> b = Bests.of(new long[]{1_000}, new int[]{0}, new double[]{0},
                 new double[]{0}, new int[]{Bests.MIN_STEPS}, null, null);
         assertEquals(1, b.size());
-        assertEquals(String.valueOf(Bests.MIN_STEPS), b.get(0).value);
+        assertEquals(Hu.num(Bests.MIN_STEPS), b.get(0).value);
         // Azonos napi volumennél a KORÁBBI nap a rekord: akkor érted el először.
         long d1 = Days.startOf(1_000_000_000_000L), d2 = d1 + 86_400_000L * 5;
         List<Bests.Best> v = Bests.of(new long[0], new int[0], new double[0],

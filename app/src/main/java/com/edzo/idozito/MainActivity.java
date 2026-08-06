@@ -3721,7 +3721,7 @@ public class MainActivity extends Activity {
         statElapsed.setText(fmtLong(elapsed));
         statRemain.setText(fmtLong(totalRemain));
         statCal.setText(cal + " kcal");
-        statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
+        statSteps.setText(steps > 0 ? Hu.num(steps) : "—");
 
         lastPaused = paused;
         pauseBtn.setText(paused ? "Folytatás" : "Szünet");
@@ -3767,7 +3767,7 @@ public class MainActivity extends Activity {
         statRemain.setText("0:00");
         if (overallFill != null) overallFill.setScaleX(1f);
         statCal.setText(cal + " kcal");
-        statSteps.setText(steps > 0 ? String.valueOf(steps) : "—");
+        statSteps.setText(steps > 0 ? Hu.num(steps) : "—");
 
         String records = i.getStringExtra(TimerService.EX_RECORDS);
         lastRecords = records != null ? records : "";

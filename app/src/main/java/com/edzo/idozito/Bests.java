@@ -289,7 +289,7 @@ public final class Bests {
         if (bestPace > 0)
             out.add(new Best("⚡", "Leggyorsabb tempó", fmtPace(bestPace) + " /km", bestPaceTs));
         if (bestSteps > 0)
-            out.add(new Best("👟", "Legtöbb lépés", String.valueOf(bestSteps), bestStepsTs));
+            out.add(new Best("👟", "Legtöbb lépés", Hu.num(bestSteps), bestStepsTs));
         if (bestCal >= 100)
             out.add(new Best("🔥", "Legtöbb kalória", Math.round(bestCal) + " kcal", bestCalTs));
         if (bestVol >= 100)
