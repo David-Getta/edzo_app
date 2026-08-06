@@ -37,7 +37,7 @@ public class LibraryActivity extends Activity {
                 13.5f, MUTED, false));
         col.addView(gap(18));
 
-        // Mondat-felismerés: az app öt helyen ért folyó szöveget, de ezt
+        // Mondat-felismerés: az app hat helyen ért folyó szöveget, de ezt
         // eddig csak a beviteli mezők tippjei árulták el – oda viszont előbb
         // el kell jutni. Itt egy helyen látszik, mi mindent lehet leírni.
         col.addView(sectionHead("✍️  Mondatból is megy", Examples.GROUPS.length + " helyen"), lp());

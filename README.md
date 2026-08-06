@@ -208,7 +208,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
 - **Könyvtár**: egy helyen az összes mondat-forma, amit az app ért, és amit
   megosztani lehet (étrend,
-  edzés-előzmény, erősítő sorozat, időzítő) friss példákkal, és technikai tipp
+  edzés-előzmény, erősítő sorozat, időzítő, mérés, edzésnap) friss példákkal, és technikai tipp
   minden beépített és felismert gyakorlathoz – a súlyzós alapoktól a gépekig –,
   valamint az összes felismert sportág a szokásos alkalom-hosszal
 - 📨 **Megosztott szöveg**: bármelyik appból (jegyzetek, üzenet, böngésző)

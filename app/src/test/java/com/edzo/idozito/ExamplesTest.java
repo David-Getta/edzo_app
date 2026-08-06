@@ -89,6 +89,15 @@ public class ExamplesTest {
         }
     }
 
+    /** A hirdetett edzésnapok tényleg edzésnapként olvashatók vissza. */
+    @Test public void everyRoutineExampleIsRecognised() {
+        for (String q : Examples.ROUTINE) {
+            Routines.Routine r = Routines.parseShared(q);
+            assertTrue("nem ismeri fel a saját példáját: " + q, r != null);
+            assertTrue("kevés gyakorlat: " + q, r.moves.size() >= 2);
+        }
+    }
+
     /** A könyvtár minden csoportjához tartozik valódi példalista. */
     @Test public void everyLibraryGroupHasExamples() {
         for (String[] g : Examples.GROUPS) {
@@ -99,7 +108,7 @@ public class ExamplesTest {
 
     @Test public void hintsAreWellFormedAndRotate() {
         for (String[] a : new String[][]{Examples.MEAL, Examples.BULK, Examples.SET,
-                Examples.INTERVAL, Examples.BODY}) {
+                Examples.INTERVAL, Examples.BODY, Examples.ROUTINE}) {
             Set<String> seen = new HashSet<>();
             for (String s : a) {
                 assertTrue("üres példa", s.trim().length() > 2);

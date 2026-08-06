@@ -240,9 +240,22 @@ public class ProfileActivity extends Activity {
      * A mezőket rögtön kitöltjük, hogy látszódjon, mit értett az app – és
      * hogy egy elgépelt szám még mentés előtt javítható legyen.
      */
-    void measurementSheet(String sentence) {
+    void measurementSheet(final String sentence) {
         BodyParse.Body b = BodyParse.parse(sentence);
         if (b.isEmpty()) {
+            // Lehet, hogy nem is mérés: a mondat itt is megtalálhatja a helyét.
+            final Sentence.Kind k =
+                    Sentence.of(sentence, Foods.all(this), System.currentTimeMillis());
+            if (k != Sentence.Kind.NONE && k != Sentence.Kind.BODY) {
+                new Sheet(this, "Ez máshova való 🧭",
+                        "Ezt a mondatot a(z) " + Sentence.where(k) + " érti meg – "
+                                + "és megy veled, nem kell újra begépelni.")
+                        .addPrimary(Sentence.where(k), () -> Ux.openFor(this, k, sentence))
+                        .addNeutral("Átírom", this::measurementInputSheet)
+                        .addCancel()
+                        .show();
+                return;
+            }
             new Sheet(this, "Ebből nem lettem okos 🤔",
                     "A mérleg számát keresem – „78,4 kg”, „78 kiló vagyok”, „mérleg: 81,2”.")
                     .addPrimary("Újra", this::measurementInputSheet)

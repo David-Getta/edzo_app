@@ -129,6 +129,16 @@ public final class Examples {
             "85 kiló lettem",
     };
 
+    /** Edzésnap egy sorban – megosztáshoz és felvételhez. */
+    public static final String[] ROUTINE = {
+            "Lábnap: guggolás, lábtolás, kitörés, vádliemelés",
+            "Tolónap: fekvenyomás, vállból nyomás, tricepsz",
+            "Húzónap: húzódzkodás, evezés, bicepsz",
+            "Hátnap: húzódzkodás, evezés, lehúzás, csuklyás emelés",
+            "Teljes test: guggolás, fekvenyomás, evezés, plank",
+            "guggolás, fekvenyomás, felhúzás",
+    };
+
     /**
      * A könyvtár mondat-csoportjai: cím, alcím, lista-kulcs.
      *
@@ -142,6 +152,7 @@ public final class Examples {
             {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
             {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
             {"⚖️  Mérés", "Testsúly és testzsír", "BODY"},
+            {"📅  Edzésnap", "Név és gyakorlatok, vesszővel", "ROUTINE"},
     };
 
     /** A könyvtár csoportjai névvel hivatkoznak a listákra. */
@@ -150,6 +161,7 @@ public final class Examples {
         if ("BULK".equals(key)) return BULK;
         if ("SET".equals(key)) return SET;
         if ("BODY".equals(key)) return BODY;
+        if ("ROUTINE".equals(key)) return ROUTINE;
         return INTERVAL;
     }
 
