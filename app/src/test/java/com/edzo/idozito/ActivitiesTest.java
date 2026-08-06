@@ -596,4 +596,38 @@ public class ActivitiesTest {
                 {"kosár edzés", "kosarlabda"}, {"ásás", "munka"}})
             assertEquals(q[0], q[1], Activities.parse(q[0], now).plans.get(0).kind.id);
     }
+    /**
+     * A leggyakoribb IGEALAKOK is felismerhetők.
+     *
+     * Magyarul az ember igét ír, nem főnevet: „úsztam", nem „úszás". Az
+     * összes mozgásforma első személyű múlt idejét végigfuttatjuk, mert egy
+     * hiányzó igealaknál a bejegyzés némán elveszik.
+     */
+    @Test public void thePastTenseFormsAreUnderstood() {
+        long now = 1_753_869_600_000L;
+        String[][] cases = {
+                {"futottam 30 percet", "futas"}, {"kocogtam 30 percet", "futas"},
+                {"úsztam 30 percet", "uszas"}, {"bicikliztem 30 percet", "kerekpar"},
+                {"kerékpároztam 30 percet", "kerekpar"}, {"gyalogoltam 30 percet", "tura"},
+                {"sétáltam 30 percet", "tura"}, {"túráztam 30 percet", "tura"},
+                {"jógáztam 30 percet", "joga"}, {"nyújtottam 30 percet", "joga"},
+                {"táncoltam 30 percet", "tanc"}, {"kondiztam 30 percet", "kondi"},
+                {"gyúrtam 30 percet", "kondi"}, {"eveztem 30 percet", "evezes"},
+                {"korcsolyáztam 30 percet", "korcsolya"}, {"síztem 30 percet", "si"},
+                {"fociztam 30 percet", "foci"}, {"kosaraztam 30 percet", "kosarlabda"},
+                {"teniszeztem 30 percet", "tenisz"}, {"röplabdáztam 30 percet", "roplabda"},
+                {"kéziztem 30 percet", "kezilabda"}, {"boxoltam 30 percet", "harcmuveszet"},
+                {"karatéztam 30 percet", "harcmuveszet"},
+                {"tekéztem 30 percet", "egyeb"}, {"sportoltam 30 percet", "egyeb"},
+        };
+        StringBuilder bad = new StringBuilder();
+        for (String[] c : cases) {
+            Activities.Parsed p = Activities.parse(c[0], now);
+            String got = p.plans.isEmpty() ? "—" : p.plans.get(0).kind.id;
+            if (!got.equals(c[1]))
+                bad.append("\n  ").append(c[0]).append(" -> ").append(got)
+                   .append(" (várt: ").append(c[1]).append(')');
+        }
+        assertEquals("elcsúszott igealak:" + bad, 0, bad.length());
+    }
 }

@@ -112,7 +112,10 @@ public final class Activities {
                     "jegkorong", "hoki", "curling"),
             // A sífutás táv-alapú: a „20 km sífutás" távja is számít.
             new Kind("si", "🎿", "Sí / snowboard", 6.0, true, 120,
-                    "siel", "sizes", "snowboard", "sifutas", "sifut"),
+                    // A „sízem/síztem/sízni" alakok is: a puszta „si" nem
+                    // lehet szótő (a HASIZOMban is benne van).
+                    "siel", "sizes", "siztem", "sizni", "sizunk", "sizik", "sizel",
+                    "snowboard", "sifutas", "sifut"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "falmasz", "maszas", "sziklamasz",
                     "boulder", "maszofal"),
@@ -124,7 +127,9 @@ public final class Activities {
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     // A „kardió" edzés-szó: enélkül a „45 perc kardió" semmi
                     // volt. (Az étel-oldalon ugyanez a szó a diót hozta.)
-                    "kardio",
+                    // A puszta „tekez" nem elég: az érTEKEZletben is benne van.
+                    "kardio", "bowling", "tekepalya", "tekezes", "tekeztem", "tekezni",
+                    "tekezunk", "tekezik",
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
