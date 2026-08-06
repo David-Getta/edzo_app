@@ -556,7 +556,7 @@ public class FoodsIntegrationTest {
         java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
         for (String q : new String[]{"unalmas nap", "alkalmas", "fájdalmas edzés után",
                 "nyugalmas vacsora", "álmatlanság", "parkolás", "halogatás",
-                "borostyán", "sörény"})
+                "borostyán", "sörény", "figyelmeztetés", "memorizálás"})
             assertTrue(q + " -> " + Foods.parse(all, q),
                     Foods.parse(all, q).isEmpty());
         // A méret-jelző nem viheti el az ételt, és fantomot sem tehet mellé.

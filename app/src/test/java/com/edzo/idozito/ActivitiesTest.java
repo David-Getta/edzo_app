@@ -576,4 +576,24 @@ public class ActivitiesTest {
         assertEquals(2, Activities.parse("tegnap és ma 1-1 futás", now)
                 .plans.get(0).count);
     }
+    /**
+     * Hétköznapi szavak, amikben egy mozgásforma neve rejtőzik.
+     *
+     * A megTAKARÍTás nem takarítás, a légKONDI nem kondi, a tanTEREM nem
+     * edzőterem, az olvASÁSban pedig ott az ásás – a fotelban töltött este
+     * eddig kerti munkaként került a naplóba.
+     */
+    @Test public void everydayWordsHidingASportAreNotWorkouts() {
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"megtakarítás", "légkondi", "tanterem", "díszterem",
+                "olvasás", "kosár", "bevásárlókosár", "étterem", "műterem"})
+            assertTrue(q + " -> " + Activities.parse(q, now).plans,
+                    Activities.parse(q, now).plans.isEmpty());
+        // A valódi alakok érintetlenek.
+        for (String[] q : new String[][]{{"takarítás", "munka"}, {"kondi", "kondi"},
+                {"konditerem", "kondi"}, {"edzőterem", "kondi"}, {"tornaterem", "kondi"},
+                {"kosárlabda", "kosarlabda"}, {"kosaraztam", "kosarlabda"},
+                {"kosár edzés", "kosarlabda"}, {"ásás", "munka"}})
+            assertEquals(q[0], q[1], Activities.parse(q[0], now).plans.get(0).kind.id);
+    }
 }

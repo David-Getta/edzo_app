@@ -88,7 +88,8 @@ public final class Activities {
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
                     "foci", "focizas", "labdarugas", "focizt", "futball"),
             new Kind("kosarlabda", "🏀", "Kosárlabda", 6.5, false, 60,
-                    "kosarlabda", "kosarazas", "kosar edzes", "kosar"),
+                    // A puszta „kosár" nem sport: a bevásárlókosár is az.
+                    "kosarlabda", "kosaraz", "kosar edzes"),
             new Kind("roplabda", "🏐", "Röplabda", 4.0, false, 60,
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
@@ -532,8 +533,9 @@ public final class Activities {
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             "boxutca", "tancsics", "kosarka",
             // Az „olvasás" közepén ott az „ásás": a fotelban töltött este
-            // eddig kerti munkaként került a naplóba.
-            "olvas",
+            // eddig kerti munkaként került a naplóba. A megTAKARÍTás nem
+            // takarítás, a légKONDI nem kondi.
+            "olvas", "megtakarit", "legkondi",
     };
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
@@ -722,7 +724,9 @@ public final class Activities {
                     // A „terem” az ÉTterem és a MŰterem belsejében nem kondi
                     // (az edzőterem, gépterem viszont igen).
                     if (w.equals("terem") && p >= 2
-                            && (s.startsWith("et", p - 2) || s.startsWith("mu", p - 2)))
+                            && (s.startsWith("et", p - 2) || s.startsWith("mu", p - 2)
+                                || s.startsWith("disz", p - 4)
+                                || (p >= 3 && s.startsWith("tan", p - 3))))
                         continue;
                     hits.add(new int[]{p, w.length(), ki});
                 }
