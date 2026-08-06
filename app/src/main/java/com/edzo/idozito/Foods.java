@@ -904,6 +904,10 @@ public final class Foods {
                         {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"},
                         {"husz", "20"}, {"fel", "0.5"}, {"masfel", "1.5"},
                         {"negyed", "0.25"}, {"haromnegyed", "0.75"},
+                        // A birtokos alak is fél: „a fele adag rizs", „a
+                        // pizza fele". A puszta „fel" tő ezt nem fogta, mert
+                        // betű követi.
+                        {"fele", "0.5"},
                         // A „dupla adag" és a „tripla eszpresszó" is szám: a
                         // szorzó nélkül a tipikus adag ment be, vagyis fele
                         // vagy harmada annak, amit az ember megevett.
@@ -1552,7 +1556,12 @@ public final class Foods {
             // eddig mégis csak az adag/porció ment át, a többiből egy adag lett.
             String unit = firstWord(after);
             boolean portionWord = unit.startsWith("adag") || unit.equals("porcio");
-            if (!portionWord && !isCountWord(unit) && !isPortionWord(unit)) continue;
+            // Tört a név UTÁN, mértékegység nélkül: „az alma fele", „a pizza
+            // fele". Csak törtre él: a „csirkemell 150" százötven grammot
+            // jelent, nem százötven adagot.
+            boolean fractionAtEnd = unit.isEmpty() && count < 1;
+            if (!portionWord && !fractionAtEnd && !isCountWord(unit)
+                    && !isPortionWord(unit)) continue;
             int best = -1;
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0 || foodPos.get(k) >= numStart) continue;
@@ -1564,7 +1573,8 @@ public final class Foods {
                 if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
             }
             if (best < 0) continue;
-            double piece = pieceFor(foods.get(best), unit);
+            double piece = fractionAtEnd ? foods.get(best).portion
+                    : pieceFor(foods.get(best), unit);
             if (piece <= 0 && count <= 6) piece = foods.get(best).portion;
             if (piece <= 0) continue;
             grams[best] = count * piece;

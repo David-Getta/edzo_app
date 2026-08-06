@@ -292,4 +292,21 @@ public class FoodsQuantityTest {
         assertEquals(150, grams("150 g csirkemell"), 0.01);
         assertEquals(500, grams("fél liter tej"), 0.01);
     }
+    /**
+     * A birtokos „fele" is fél – a név előtt és a név UTÁN is.
+     *
+     * A puszta „fél" szótő ezt nem fogta, mert betű követi. Az „az alma fele"
+     * és a „pizza fele" így EGÉSZ adagként ment be: kétszer annyi.
+     */
+    @Test public void thePossessiveHalfIsAlsoHalf() {
+        assertEquals(100, grams("a fele adag rizs"), 0.01);
+        assertEquals(75, grams("az alma fele"), 0.01);
+        assertEquals(150, grams("a pizza fele"), 0.01);
+        // A sima fél nem romolhatott el.
+        assertEquals(100, grams("fél adag rizs"), 0.01);
+        assertEquals(150, grams("fél pizza"), 0.01);
+        // A név utáni EGÉSZ szám továbbra sem adagszorzó (mértékegység nélkül
+        // nem tudjuk, mit jelent), tehát a tipikus adaggal megy tovább.
+        assertEquals(0, grams("csirkemell 150"), 0.01);
+    }
 }
