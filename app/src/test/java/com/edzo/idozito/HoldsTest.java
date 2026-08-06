@@ -191,4 +191,23 @@ public class HoldsTest {
                 new String[]{"Fekvőtámasz", "Fekvőtámasz"},
                 new double[]{0, 0}).isEmpty());
     }
+    /**
+     * A lépés-rekordnak is kell alsó határ, és a napi volumen holtversenyét
+     * nem a HashMap bejárási sorrendje dönti el.
+     */
+    @Test public void theStepAndVolumeRecordsAreSane() {
+        // Háromszáz lépés nem „legtöbb lépés".
+        assertTrue(Bests.of(new long[]{1_000}, new int[]{0}, new double[]{0},
+                new double[]{0}, new int[]{300}, null, null).isEmpty());
+        List<Bests.Best> b = Bests.of(new long[]{1_000}, new int[]{0}, new double[]{0},
+                new double[]{0}, new int[]{Bests.MIN_STEPS}, null, null);
+        assertEquals(1, b.size());
+        assertEquals(String.valueOf(Bests.MIN_STEPS), b.get(0).value);
+        // Azonos napi volumennél a KORÁBBI nap a rekord: akkor érted el először.
+        long d1 = Days.startOf(1_000_000_000_000L), d2 = d1 + 86_400_000L * 5;
+        List<Bests.Best> v = Bests.of(new long[0], new int[0], new double[0],
+                new double[0], new int[0], new long[]{d2, d1}, new double[]{5_000, 5_000});
+        assertEquals(1, v.size());
+        assertEquals(d1, v.get(0).ts);
+    }
 }

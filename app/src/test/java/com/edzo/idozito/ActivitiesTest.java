@@ -432,4 +432,26 @@ public class ActivitiesTest {
             assertEquals(q, 300, p.plans.get(0).minutes);
         }
     }
+    /**
+     * A kimondott tempó pontosabb, mint a mozgásforma átlaga.
+     *
+     * Tíz kilométer 5:30-as tempóval ötvenöt perc; a becslés hatvanat mondott.
+     * Aki kiírja a tempóját, az pontosan tudja, mennyit futott.
+     */
+    @Test public void theStatedPaceWins() {
+        long now = 1_753_869_600_000L;
+        assertEquals(55, Activities.parse("10 km-t futottam 5:30-as tempóval", now)
+                .plans.get(0).minutes);
+        assertEquals(55, Activities.parse("10 km futás 5:30/km", now).plans.get(0).minutes);
+        // Sportnév nélkül, pusztán távból is: az „5 km" magyarul futás.
+        assertEquals(50, Activities.parse("10 km 5:00-es tempó", now).plans.get(0).minutes);
+        // Tempó nélkül marad a mozgásforma átlaga.
+        assertEquals(60, Activities.parse("10 km futás", now).plans.get(0).minutes);
+        // Életszerűtlen tempóra nem hallgatunk: az 1:30/km nem futás.
+        assertEquals(60, Activities.parse("10 km futás 1:30-as tempóval", now)
+                .plans.get(0).minutes);
+        // A kimondott időtartam viszont a tempónál is erősebb.
+        assertEquals(52, Activities.parse("10 km futás 52 perc 5:30-as tempóval", now)
+                .plans.get(0).minutes);
+    }
 }

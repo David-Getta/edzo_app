@@ -25,6 +25,8 @@ public final class Bests {
     static final int MIN_DUR_SEC = 600;
     /** Táv- és tempó-rekordhoz legalább ennyi méter kell. */
     static final double MIN_DIST_M = 1000;
+    /** Lépés-rekordhoz ennyi kell: háromszáz lépés nem „legtöbb lépés". */
+    static final int MIN_STEPS = 1000;
     /** Életszerű tempó-tartomány perc/km-ben – ezen kívül mérési hiba. */
     static final double MIN_PACE = 2.0, MAX_PACE = 15.0;
 
@@ -245,7 +247,7 @@ public final class Bests {
 
             if (d >= MIN_DUR_SEC && d > bestDur) { bestDur = d; bestDurTs = ts[i]; }
             if (km >= MIN_DIST_M && km > bestDist) { bestDist = km; bestDistTs = ts[i]; }
-            if (st > bestSteps) { bestSteps = st; bestStepsTs = ts[i]; }
+            if (st >= MIN_STEPS && st > bestSteps) { bestSteps = st; bestStepsTs = ts[i]; }
             if (kc > bestCal) { bestCal = kc; bestCalTs = ts[i]; }
             // Tempó: a KISEBB a jobb, ezért külön feltétel.
             if (km >= MIN_DIST_M && d > 0) {
@@ -268,8 +270,15 @@ public final class Bests {
                 if (row == null) perDay.put(day, row = new double[1]);
                 row[0] += Math.max(0, liftVol[i]);
             }
+            // Holtversenynél a KORÁBBI nap nyer: a rekordot akkor állítottad
+            // fel, amikor először elérted. A HashMap bejárási sorrendje
+            // ráadásul nem rögzített – enélkül a kártyán ugráló dátum állt.
             for (java.util.Map.Entry<Long, double[]> e : perDay.entrySet())
-                if (e.getValue()[0] > bestVol) { bestVol = e.getValue()[0]; bestVolTs = e.getKey(); }
+                if (e.getValue()[0] > bestVol
+                        || (e.getValue()[0] == bestVol && bestVolTs > 0 && e.getKey() < bestVolTs)) {
+                    bestVol = e.getValue()[0];
+                    bestVolTs = e.getKey();
+                }
         }
 
         if (bestDur > 0)

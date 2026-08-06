@@ -668,9 +668,11 @@ public final class Activities {
         // Távok („10 km”, „2,5 km”): a mozgás-alapú sportokhoz tartoznak.
         // Kitakarjuk őket, hogy a bennük lévő szám ne legyen darabszám –
         // különben a „10 km futás” tíz külön futássá válna.
+        // A kimondott tempó a KITAKARÁS ELŐTTI szövegben van: a „10 km futás
+        // 5:30/km" perjeles alakjából a táv kitakarása után csak töredék marad.
+        String beforeBlank = new String(q);
         List<double[]> kms = findKms(q);            // {pos, km, vég}
         for (double[] t : kms) blank(q, (int) t[0], (int) t[2]);
-        String beforeBlank = new String(q);
         List<int[]> mins = findMinutes(q);          // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
         dropWarmupTimes(beforeBlank, mins);
@@ -890,7 +892,7 @@ public final class Activities {
                 minutes = reps > 0
                         ? Math.max(5, Math.min(60, reps / 5))
                         : kmOf[i] > 0
-                        ? Math.max(1, (int) Math.round(kmOf[i] * minPerKm(kind)))
+                        ? Math.max(1, (int) Math.round(kmOf[i] * pace(beforeBlank, kind)))
                         : kind.defaultMin;
             // A távból becsült hossz is maradjon egy napon belül (100 km úszás
             // tempóból számolva 41 óra lenne).
@@ -904,7 +906,7 @@ public final class Activities {
             Kind run = byId("futas");
             double km0 = kms.get(0)[1];
             out.add(new Plan(run, 1,
-                    Math.min(24 * 60, Math.max(1, (int) Math.round(km0 * minPerKm(run)))),
+                    Math.min(24 * 60, Math.max(1, (int) Math.round(km0 * pace(beforeBlank, run)))),
                     km0));
         }
 
@@ -1830,6 +1832,25 @@ public final class Activities {
             mins.clear();
             mins.addAll(keep);
         }
+    }
+
+    /**
+     * A használandó tempó perc/km-ben: a kimondott, ha van, különben a
+     * mozgásforma átlaga.
+     *
+     * „10 km-t futottam 5:30-as tempóval": ez ötvenöt perc, nem a becsült
+     * hatvan. Aki kiírja a tempóját, az pontosan tudja, mennyit futott – kár
+     * lenne felülírni egy átlaggal.
+     */
+    private static double pace(String s, Kind kind) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{1,2}):([0-5]\\d) ?(?:-?[a-z]{0,3} ?tempo|/ ?km|per km)")
+                .matcher(s);
+        if (m.find()) {
+            double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;
+            if (p >= 2 && p <= 20) return p;
+        }
+        return minPerKm(kind);
     }
 
     /**
