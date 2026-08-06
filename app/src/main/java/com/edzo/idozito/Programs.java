@@ -176,6 +176,9 @@ public final class Programs {
             // Súlyzós alapgyakorlatok (az Erősítő napló felkínált nevei).
             case "Fekvenyomás": return "Lapockák hátra és le, rúd a mellkas közepére, könyök kb. 45°-ban. Ne pattintsd meg a mellkasodon.";
             case "Felhúzás": return "Rúd a lábközépnél, egyenes hát, mellkas fel. Nem húzod: a lábaddal nyomod el magad a talajtól.";
+            case "Román felhúzás": return "Kis térdhajlítás végig, csípőből told hátra a medencéd, a rúd a combodon csúszik. A hátsó combodban érzed – nem guggolás.";
+            case "Bolgár kitörés": return "Hátsó lábfej padon, a súly az első lábon. Törzs kissé előre, térd a lábfej felett, mélyre le.";
+            case "Ferde fekvenyomás": return "30–45°-os pad, rúd a kulcscsont alá. Meredekebb padon már a vállad dolgozik, nem a mellkasod.";
             case "Vállból nyomás": return "Feszes has és farizom, fej egy kicsit hátra a rúd elől, nyomás egyenesen fel. Ne told előre a bordáidat.";
             case "Evezés": return "Törzs döntve, hát végig egyenes, húzd a rudat a hasfalhoz, lapockák hátra.";
             case "Bicepsz": return "Könyök a törzs mellett marad, ne lendíts a derékkal, lefelé lassíts.";

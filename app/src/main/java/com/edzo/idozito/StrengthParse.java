@@ -66,7 +66,17 @@ public final class StrengthParse {
      */
     private static final String[][] MOVES = {
             {"Guggolás", "guggol", "szkvot", "squat"},
-            {"Fekvenyomás", "fekvenyom", "fekve nyom", "bench", "ferde pad", "mellet nyom"},
+            {"Fekvenyomás", "fekvenyom", "fekve nyom", "bench", "mellet nyom"},
+            // A jelzős változatok KÜLÖN gyakorlatok, nem a bázis becézései: a
+            // román felhúzás jóval könnyebb súllyal megy, mint a holtemelés, a
+            // bolgár kitörés pedig egy lábra. Egy vödörbe téve a
+            // progresszió-javaslat a nehezebbik súlyát kínálná a könnyebbik
+            // gyakorlathoz, a rekord meg sosem dőlne meg a könnyebbikkel.
+            {"Román felhúzás", "roman felhuzas", "roman holtemel", "roman huzas", "rdl"},
+            {"Bolgár kitörés", "bolgar kitores", "bolgar guggolas", "bolgar split",
+                    "bolgar szplit"},
+            {"Ferde fekvenyomás", "ferde fekvenyom", "ferde pad", "ferde nyomas",
+                    "incline"},
             {"Felhúzás", "felhuzas", "holtemel", "deadlift"},
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk", "chin up", "chinup",
                     "allhuzodzkodas", "all fole huzas"},

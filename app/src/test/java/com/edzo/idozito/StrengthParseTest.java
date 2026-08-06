@@ -124,10 +124,22 @@ public class StrengthParseTest {
         assertEquals("Mellgép 3×12/12/12@40", sum("mellgép 3x12 40 kg"));
         assertEquals("Plank 3×45/45/45@0", sum("oldaltámasz 3x45"));
         assertEquals("Csípőemelés 3×15/15/15@40", sum("farizom 3x15 40 kg"));
-        // A jelzős változatok az alapgyakorlathoz esnek.
-        assertEquals("Felhúzás", StrengthParse.parse("román felhúzás 3x8 80 kg").get(0).name);
+        // A jelzős változatok többsége az alapgyakorlathoz esik – a súlyuk
+        // nagyjából ugyanaz, és külön nyilvántartva csak szétaprózódna a
+        // rekord.
         assertEquals("Guggolás", StrengthParse.parse("elöl guggolás 3x5 60 kg").get(0).name);
-        assertEquals("Kitörés", StrengthParse.parse("bolgár kitörés 3x10 20 kg").get(0).name);
+        // Ahol viszont a súly nagyságrendben más, ott KÜLÖN gyakorlat: a
+        // román felhúzás jóval könnyebb a holtemelésnél, a bolgár kitörés egy
+        // lábra megy, a ferde pad pedig a vállnak dolgoztat. Egy vödörbe téve
+        // a progresszió a nehezebbik súlyát kínálná a könnyebbikhez, és a
+        // rekord sosem dőlne meg a könnyebbikkel.
+        assertEquals("Román felhúzás", StrengthParse.parse("román felhúzás 3x8 80 kg").get(0).name);
+        assertEquals("Bolgár kitörés", StrengthParse.parse("bolgár kitörés 3x10 20 kg").get(0).name);
+        assertEquals("Ferde fekvenyomás", StrengthParse.parse("ferde fekvenyomás 3x8 60 kg").get(0).name);
+        // …de a bázis a maga nevén marad.
+        assertEquals("Felhúzás", StrengthParse.parse("felhúzás 3x8 120 kg").get(0).name);
+        assertEquals("Kitörés", StrengthParse.parse("kitörés 3x10 20 kg").get(0).name);
+        assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x8 80 kg").get(0).name);
     }
 
     @Test public void quickChipNamesMatchTheParserNames() {
@@ -223,7 +235,7 @@ public class StrengthParseTest {
         // amiken elhasalt.
         assertEquals("Lehúzás 4×12/12/12/12@55", sum("lat húzás 4x12 55"));
         assertEquals("Mellgép 3×12/12/12@45", sum("mellnyomás gépen 3x12 45 kg"));
-        assertEquals("Fekvenyomás 4×10/10/10/10@30", sum("ferde padon 4x10 30 kg"));
+        assertEquals("Ferde fekvenyomás 4×10/10/10/10@30", sum("ferde padon 4x10 30 kg"));
         assertEquals("Hátfeszítés 3×15/15/15@0", sum("hiperextenzió 3x15"));
     }
 

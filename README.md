@@ -140,8 +140,11 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „3 kör 10 fekvőtámasz" – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
-  38 gyakorlat és gép, a jelzős változatokkal
-  („román felhúzás", „bolgár kitörés", „kábeles tricepsz"). Mentés előtt
+  41 gyakorlat és gép, a jelzős változatokkal
+  („kábeles tricepsz", „elöl guggolás"). Ahol a súly nagyságrendben más, ott
+  külön gyakorlat: a „román felhúzás", a „bolgár kitörés" és a „ferde
+  fekvenyomás" saját néven él, saját rekorddal és progresszióval – egy
+  vödörben a nehezebbik súlya kerülne a könnyebbik javaslatába. Mentés előtt
   megmutatja, mit értett, és **odaírja a legutóbbi alkalmat is**
   („↳ múltkor 57,5 kg · ▲ +2,5 kg · 3 napja")
 - 🔥 **Bemelegítő rámpa**: ott van a mai javaslat kártyáján is („🔥 Bemelegítés:
