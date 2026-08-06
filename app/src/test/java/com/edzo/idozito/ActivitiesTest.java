@@ -646,4 +646,19 @@ public class ActivitiesTest {
         // A kizárás nélküli alak változatlan: az a legutóbbi vasárnap.
         assertEquals(3, Activities.parse("vasárnap kondi", now).offset);
     }
+
+    /**
+     * Az „mma" három betű, és magyar szavakban is ott ül.
+     *
+     * A dileMMA, az EMMA és a geMMA eddig harcművész edzést vitt a naplóba –
+     * a bejegyzés létrejött, csak épp nem történt meg.
+     */
+    @Test public void threeLetterSportStemsDoNotHideInWords() {
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"Emma", "Emma jött velem", "dilemma volt",
+                "gamma sugárzás", "gemma"})
+            assertTrue("edzés lett belőle: " + q, Activities.parse(q, now).isEmpty());
+        // A valódi harcművészet marad.
+        assertTrue(!Activities.parse("mma edzés 1 óra", now).isEmpty());
+    }
 }

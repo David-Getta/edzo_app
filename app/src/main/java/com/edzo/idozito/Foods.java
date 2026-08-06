@@ -707,6 +707,15 @@ public final class Foods {
             "kasza", "purist", "spuriz", "kombajn", "kombinal", "kombi",
             "halando", "borotva", "borz", "abortusz", "tabor", "labor",
             "zabolatlan", "zabal", "kabat", "olimpia",
+            // Magyar kereszt- és helynevekkel is végigsöpörtem a felismerőt.
+            // A SzaBOlcsban és a szabásban a zab, a Kálmánban az alma, a
+            // Tiborban és a bordóban a bor, a Reginában és az originalban a
+            // gin, a HódMEZővásárhelyen a méz, a SzázHALombattán a hal. A
+            // „bordó" ráadásul az app saját színe.
+            "szabo", "szabas", "szabotazs", "zabla", "kalman", "tibor", "bordo",
+            "origin", "virgin", "regina", "reggina", "gingiv",
+            "meztelen", "mezben", "mezt", "halmoz", "halandzsa", "halovany",
+            "hodmezo", "szazhalom", "heviz",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */

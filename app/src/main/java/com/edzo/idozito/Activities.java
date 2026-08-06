@@ -549,6 +549,10 @@ public final class Activities {
             // Az edzésTERV és az edzésNAPLÓ nem edzés: a megírásuk nem
             // negyvenöt perc mozgás.
             "edzesterv", "edzesnaplo",
+            // Az „mma" három betű, és magyar szavak közepén is ott ül:
+            // dileMMA, EMMA, geMMA. Egy név vagy egy dilemma eddig harcművész
+            // edzést vitt a naplóba.
+            "emma", "gemma", "dilemma", "gamma", "summa", "komma",
     };
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */

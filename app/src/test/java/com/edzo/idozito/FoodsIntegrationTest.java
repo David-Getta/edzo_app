@@ -280,6 +280,19 @@ public class FoodsIntegrationTest {
                 "vajas kenyér").get(0).food.name);
         assertEquals("Sajt (trappista)", Foods.parse(Arrays.asList(Foods.ALL),
                 "sajtos rántotta").get(0).food.name);
+        // Magyar kereszt- és helynevek: a SzaBOlcsban a zab, a Kálmánban az
+        // alma, a Tiborban a bor, a Reginában a gin, a HódMEZővásárhelyen a
+        // méz, a SzázHALombattán a hal. Egy edzőtárs neve nem étkezés.
+        for (String q : new String[]{"Szabolcs", "Tibor", "Regina", "Kálmán",
+                "Hódmezővásárhely", "Százhalombatta", "Hévíz", "bordó pulcsi",
+                "új mezben futottam", "Szabolccsal futottam", "szabás", "szabó",
+                "halmoz", "halandzsa", "original", "meztelen"})
+            assertEquals("étel lett belőle: " + q, 0,
+                    Foods.parse(Arrays.asList(Foods.ALL), q).size());
+        // …de a valódi ételek maradnak.
+        assertEquals("Méz", Foods.parse(Arrays.asList(Foods.ALL), "méz").get(0).food.name);
+        assertEquals("Halászlé", Foods.parse(Arrays.asList(Foods.ALL), "halászlé").get(0).food.name);
+        assertEquals("Zabpehely", Foods.parse(Arrays.asList(Foods.ALL), "zabkása").get(0).food.name);
         assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL),
                 "halat sütöttem").get(0).food.name);
     }
