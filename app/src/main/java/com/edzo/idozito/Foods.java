@@ -639,6 +639,19 @@ public final class Foods {
             "riziko", "sorsol", "alkalm", "borda",
             // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
             "kolesz",
+            // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, tea,
+            // mez) hétköznapi szavak belsejében is illeszkednek. Mind valódi
+            // eset: a „vizsga" vizet, a „szabály" zabpelyhet, a „frizura"
+            // rizst, a „fórum" pálinkát, a „táborban" bort naplózott.
+            "vizsg", "vizit", "vizual", "televizi", "vizsla", "szabaly",
+            "frizur", "krizis", "brizol", "sorompo", "sorsj", "forum",
+            "szerum", "korrump", "rumba", "teatrum", "centrum", "album",
+            "vajud", "vajat", "workshop", "network", "garnizon", "operaci",
+            "szuper", "temperal", "mezei", "mezogazdas", "mezitlab", "paritas",
+            "szaporit", "paripa", "reparal", "terapeut", "stekker", "kaszab",
+            "kasza", "purist", "spuriz", "kombajn", "kombinal", "kombi",
+            "halando", "borotva", "borz", "abortusz", "tabor", "labor",
+            "zabolatlan", "zabal", "kabat", "olimpia",
     };
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */

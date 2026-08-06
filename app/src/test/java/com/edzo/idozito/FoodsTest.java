@@ -269,6 +269,13 @@ public class FoodsTest {
             "tejút", "rizikó", "sorsolás", "alkalmas", "alkalom", "bordázat",
             "uszoda", "uszodában", "edzőterem", "konditerem", "pálya", "park",
             "erdő", "koleszterin", "multisport", "bérlet", "jegy", "pénz",
+            // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, mez)
+            // hétköznapi szavak belsejében is illeszkednek.
+            "vizsga", "vizsgálat", "vizit", "televízió", "szabály", "frizura",
+            "krízis", "sorompó", "sorsjegy", "fórum", "szérum", "rumba",
+            "teátrum", "centrum", "album", "vajúdik", "tábor", "labor",
+            "zabál", "kombájn", "olimpia", "kabát", "borotva", "terapeuta",
+            "kultúra", "struktúra", "tekercs", "tornacipő", "kézitáska",
     };
 
     @Test public void noEverydayWordEverBecomesFood() {
