@@ -232,6 +232,61 @@ public class ActivitiesTest {
         }
     }
 
+    @Test public void noEverydayWordDistortsTheWorkout() {
+        // Ugyanaz az őrszem, mint az ételeknél: hétköznapi szó + egy egyszerű
+        // edzés. A szó nem változtathatja meg sem az alkalmak számát, sem az
+        // időszakot. Három valódi hiba került így elő: a „lehetőség" (le-HET-
+        // őség) egy hetes időszak lett, a „kétszeres" két alkalom, a „hetes"
+        // szintén egy hét.
+        long now = System.currentTimeMillis();
+        StringBuilder bad = new StringBuilder();
+        // Amiknek VAN jelentésük az edzés-naplóban, azok kimaradnak: a
+        // napnevek és a hónapnevek dátumot jelölnek, az eszköznevek pedig
+        // valódi mozgásformák (a futópad futás, az evezőgép evezés).
+        java.util.List<String> skip = java.util.Arrays.asList("tegnap", "hétfő", "kedd",
+                "szerda", "péntek", "szombat", "vasárnap", "január", "február",
+                "március", "április", "május", "június", "július", "augusztus",
+                "szeptember", "október", "november", "december", "nyújtás",
+                "futópad", "evezőgép", "szobabicikli", "sport", "edzés",
+                "délelőtt", "délután", "hajnal", "alvás", "pihenő", "labda",
+                "kötél", "medence", "úszik", "biciklizik", "edz", "fut", "jár",
+                "pihen", "megy");
+        for (String w : FoodsTest.EVERYDAY) {
+            if (skip.contains(w)) continue;
+            // A bérlet VÁSÁRLÁSA szándékosan kizárja a tagmondatot.
+            if (w.startsWith("bérlet")) continue;
+            Activities.Parsed p = Activities.parse(w + " 30 perc kondi", now);
+            if (p.plans.size() != 1 || !p.plans.get(0).kind.id.equals("kondi")
+                    || p.plans.get(0).count != 1 || p.plans.get(0).minutes != 30
+                    || p.days != 1 || p.offset != 0)
+                bad.append("\n  ").append(w).append(" -> nap ").append(p.days)
+                   .append(" eltol ").append(p.offset).append(" terv ")
+                   .append(p.plans.size());
+        }
+        assertEquals("hétköznapi szó torzította az edzést:" + bad, 0, bad.length());
+    }
+
+    @Test public void aMonthNameIsNotAlwaysADate() {
+        // A szám MÉRTÉKEGYSÉGE elárulja, hogy nem a hónap napja: a „január 30
+        // perc kondi" harminc perc, nem január 30-a. Eddig a fél éves
+        // visszadátumozás miatt a bejegyzés a semmibe került.
+        long now = System.currentTimeMillis();
+        assertEquals(0, Activities.parse("január 30 perc kondi", now).offset);
+        assertEquals(30, Activities.parse("január 30 perc kondi", now)
+                .plans.get(0).minutes);
+        assertEquals(0, Activities.parse("március 15 km futás", now).offset);
+        // A ragozott dátum viszont dátum marad.
+        assertTrue(Activities.parse("július 28-án 45 perc futás", now).offset > 0);
+        // Az „úsz" tő az aug-USZ-tusban és a b-USZ-ban is benne van, de ott
+        // nem úszás.
+        assertTrue(Activities.parse("augusztus 5 perc nyújtás", now).plans.size() == 1);
+        assertEquals("kondi", Activities.parse("busszal mentem, 30 perc kondi", now)
+                .plans.get(0).kind.id);
+        // Igekötő után viszont igen.
+        assertEquals("uszas", Activities.parse("leúsztam 1500 métert", now)
+                .plans.get(0).kind.id);
+    }
+
     @Test public void theOrdinalSevenIsNotAWeek() {
         // A „hetes" sorszám vagy jelző, nem időszak: eddig a „hetes bérlettel
         // kondi" és a „futás a hetes buszmegállóig" is egyhetes időszakra

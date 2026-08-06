@@ -653,6 +653,14 @@ public final class Activities {
                         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
                         if (!isVerbPrefix(s.substring(a, p))) continue;
                     }
+                    // Az „úsz" tő ugyanilyen érzékeny: benne van az
+                    // aug-USZ-tusban és a b-USZ-ban is. Szó belsejében csak
+                    // igekötő után érvényes (leúsztam, átúsztam).
+                    if (p > 0 && Character.isLetter(s.charAt(p - 1)) && w.startsWith("usz")) {
+                        int a = p;
+                        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+                        if (!isVerbPrefix(s.substring(a, p))) continue;
+                    }
                     // A „sífutottam” nem futás: a sífutás MET-je a síé (6,0),
                     // nem a futásé (9,8) – másfélszeres kalóriát írnánk.
                     if (p >= 2 && w.startsWith("fut") && s.startsWith("si", p - 2)
@@ -1078,6 +1086,14 @@ public final class Activities {
             k++;
         }
         if (k == j || d < 1 || d > 31) return null;
+        // A szám MÉRTÉKEGYSÉGE elárulja, hogy nem a hónap napja: a „január 30
+        // perc kondi" harminc perc, nem január 30-a. A dátumnál rag vagy
+        // írásjel jön („január 30-án", „január 30."), nem mértékegység.
+        int u = k;
+        while (u < s.length() && s.charAt(u) == ' ') u++;
+        for (String unit : new String[]{"perc", "ora", "km", "meter", "masodperc",
+                "mp", "kilometer", "lepes"})
+            if (s.startsWith(unit, u)) return null;
         while (k < s.length() && (s.charAt(k) == '-' || s.charAt(k) == '.'
                 || Character.isLetter(s.charAt(k)))) k++;
         java.util.Calendar cal = java.util.Calendar.getInstance();
@@ -1499,6 +1515,9 @@ public final class Activities {
                 from = p + 1;
                 int wordEnd = p + suf.length();
                 while (wordEnd < s.length() && Character.isLetter(s.charAt(wordEnd))) wordEnd++;
+                // A toldaléknak a szó VÉGÉN kell állnia: a „kétszeres" nem két
+                // alkalom, a „háromszoros" nem három – ezek melléknevek.
+                if (wordEnd != p + suf.length()) continue;
                 if (p > 1 && s.charAt(p - 1) == '-' && Character.isDigit(s.charAt(p - 2))) {
                     blank(q, p - 1, wordEnd);          // „3-szor"
                     found.add(new int[]{digitsBackFrom(s, p - 1), digitsValue(s, p - 1)});
@@ -1555,6 +1574,11 @@ public final class Activities {
             // szavak viszont nem (hétfőn, naplóban).
             int end = p + unit.length();
             while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+            // Az időszak-szónak a szó ELEJÉN kell állnia. A ragozott alak jó
+            // („héten", „napban"), a szó belsejébe eső egyezés viszont nem: a
+            // „lehetőség" nem egy hét, a „kanapé" nem egy nap. A hasonló
+            // hangzású, szó eleji alakokat (hétfő, napló) a NOT_SPAN zárja ki.
+            if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
             if (isNotSpan(wordAt(s, p))) continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {
