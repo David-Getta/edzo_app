@@ -155,6 +155,50 @@ public class FoodsDataQualityTest {
             assertTrue("sör lett belőle: " + q, Foods.parse(all, q).isEmpty());
     }
 
+    /**
+     * Ékezetes ütközések: MÉZ/mező, KÁVÉ/falkavezér, KÓLA/csonkolás,
+     * TEJ/estéjéről, BOR/bőrrel, FOGAS/fogás.
+     *
+     * Ugyanaz a fajta hiba, mint a sörnél, csak más betűvel: ékezet nélkül a
+     * hétköznapi szó és az étel neve egybeesik. A jobb oldalon mindig az áll,
+     * amit eddig naplózott.
+     */
+    @Test public void accentTellsTheFoodFromTheEverydayWord() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[] notFood = {"adatmezők", "falkavezér", "csonkolás", "estéjéről", "bőrrel",
+                "fogás", "fogások", "fogásnak", "beszédbuborék", "szappanbuborék",
+                "főképernyő", "kezdőképernyő", "domborítsd", "buktató", "ellenőrizzük",
+                "fogalmaz", "durumbúza"};
+        for (String q : notFood)
+            assertTrue("ételt talált benne: " + q + " -> " + names(Foods.parse(all, q)),
+                    Foods.parse(all, q).isEmpty());
+        // A valódi tételek viszont maradnak – ékezet nélkül gépelve is.
+        String[] food = {"méz", "mez", "kávé", "kave", "kóla", "kola", "tej", "bor",
+                "fogas", "vörösbor", "tejföl", "mézes", "fogassal"};
+        for (String q : food)
+            assertTrue("elveszett az étel: " + q, !Foods.parse(all, q).isEmpty());
+    }
+
+    /**
+     * Átfedő szótöveknél a HOSSZABB dönt, nem a súlyosabb étel.
+     *
+     * Egy szón belül általában a súlyosabb tétel nyer (a „csirkemellsalátá"-ban
+     * a csirkemell, nem a saláta). Ha viszont a két találat ugyanazokon a
+     * betűkön osztozik, akkor nem két összetevőről van szó, hanem egyetlen
+     * szóról: az „almáját" eddig csirkemájat naplózott.
+     */
+    @Test public void overlappingStemsPreferTheLongerOne() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[][] cases = {{"almáját", "Alma"}, {"almája", "Alma"},
+                {"megettem az almáját", "Alma"}, {"tejföl", "Tejföl"},
+                {"csirkemáj", "Csirkemáj"}, {"gránátalma", "Gránátalma"}};
+        for (String[] c : cases) {
+            java.util.List<Foods.Hit> h = Foods.parse(all, c[0]);
+            assertEquals(c[0] + " -> " + names(h), 1, h.size());
+            assertEquals(c[0], c[1], h.get(0).food.name);
+        }
+    }
+
     private static String names(java.util.List<Foods.Hit> h) {
         if (h.isEmpty()) return "—";
         StringBuilder sb = new StringBuilder();

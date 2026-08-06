@@ -776,7 +776,16 @@ public final class Foods {
             // kiütné a „quattro formaggi" pizzát is – a saját adatminőség-
             // teszt fogta meg, két perccel a bővebb változat után.
             "elso", "formaj", "maszkol",
+            // A hatezer szavas söprés maradéka: a buBORékban és a domBORítsban
+            // a bor, a BUKTAtóban a bukta, a duruMBÚZÁban a dürüm, az
+            // ellenŐRIZben a rizs, a FOGALMazban az alma, a főKÉPERNYŐben az
+            // eper, a felraKÁSÁban a (zab)kása.
+            "buborek", "dombor", "buktat", "durumbuza", "oriz", "ellenoriz",
+            "fogalm", "felrak",
     };
+
+    /** Összetétel utótagjaként is maszkolandó szavak. */
+    private static final String[] ENDS_BAD = {"buborek", "kepernyo"};
 
     /**
      * Maszkolandó-e a szó – igekötővel együtt is.
@@ -790,6 +799,10 @@ public final class Foods {
      */
     private static boolean masked(String tok) {
         if (startsWithBad(tok)) return true;
+        // Összetétel MÁSODIK tagjaként is előfordulnak: a beszédbuborékban és
+        // a szappanbuborékban a bor, a főképernyőn és a kezdőképernyőn az
+        // eper. Az előtagot nem lehet felsorolni, a végét viszont igen.
+        for (String e : ENDS_BAD) if (tok.length() > e.length() && tok.endsWith(e)) return true;
         for (String v : VERB_PREFIX)
             if (tok.length() > v.length() + 2 && tok.startsWith(v)
                     && startsWithBad(tok.substring(v.length()))) return true;
@@ -838,33 +851,41 @@ public final class Foods {
     }
 
     /**
-     * Ugyanaz, mint a norm(), de az „ö/ő" megmarad.
+     * Ugyanaz, mint a norm(), csak az ékezetek maradnak.
      *
-     * Minden lépése karakter-helyes (egy betűből egy betű lesz), ezért a
-     * két szöveg INDEXEI megegyeznek: a norm()-ban talált pozíción itt is
-     * ugyanaz a szó áll, csak ékezettel.
+     * Minden lépése karakter-helyes (egy betűből egy betű lesz), ezért a két
+     * szöveg INDEXEI megegyeznek: a norm()-ban talált pozíción itt is ugyanaz
+     * a szó áll, csak ékezettel.
      */
-    static String normO(String s) {
+    static String normAcc(String s) {
         if (s == null) return "";
         s = s.toLowerCase(new Locale("hu"));
-        s = s.replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
-        return s.replace('á','a').replace('é','e').replace('í','i').replace('ó','o')
-                .replace('ú','u').replace('ü','u').replace('ű','u').replace('ä','a');
+        return s.replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
     }
 
     /**
-     * Ékezettel megkülönböztetett szótövek: a SÖR és a SOR.
+     * Ékezettel megkülönböztetett szótövek – bal oldalt a tő, jobbra az IGAZI
+     * írásmód.
      *
-     * Ékezet nélkül a kettő ugyanaz a szó, és a magyar bőven gyárt olyan
-     * összetételeket, amiknek a VÉGE „-sor": névsor, címsor, gyakorlatsor,
-     * munkasorozat, ábécésorrend. Ezek mind sört írtak a naplóba.
+     * Ékezet nélkül a SÖR és a SOR ugyanaz a szó, és a magyar bőven gyárt
+     * olyan összetételeket, amiknek a vége „-sor": névsor, címsor,
+     * gyakorlatsor, munkasorozat, ábécésorrend. Ugyanígy volt a MÉZ az
+     * adatmezőben, a KÁVÉ a falkavezérben, a KÓLA a csonkolásban, a TEJ az
+     * estéjéről-ben, a BOR a bőrrel-ben, a FOGAS (egy hal) minden „fogás"-ban.
+     * Tiltólista ezt nem oldja meg: az összetételek osztálya végtelen.
      *
-     * A megoldás nem tiltólista (végtelen sok ilyen összetétel van), hanem az
-     * ékezet: szó BELSEJÉBEN csak akkor fogadjuk el a tövet, ha tényleg úgy
-     * írták, ahogy az ital nevét („búzasör"). Szó elején marad a régi
-     * viselkedés, hogy az ékezet nélkül gépelőktől ne vegyük el a sört.
+     * Két eset van, és magától adódik, melyik:
+     *  - ha az igazi alak ÉKEZETES („sör", „méz", „kávé", „kóla"), akkor csak
+     *    szó BELSEJÉBEN kérjük számon – szó elején marad a régi viselkedés,
+     *    hogy az ékezet nélkül gépelőktől ne vegyük el a sörüket;
+     *  - ha az igazi alak ÉKEZET NÉLKÜLI („bor", „tej", „fogas"), akkor
+     *    mindenhol kérjük, hiszen aki ékezet nélkül gépel, ugyanezt írja –
+     *    így viszont a „bőr", a „téj" és a „fogás" kiesik.
      */
-    private static final String[][] ACCENTED_STEM = {{"sor", "sör"}};
+    private static final String[][] ACCENTED_STEM = {
+            {"sor", "sör"}, {"mez", "méz"}, {"kave", "kávé"}, {"kola", "kóla"},
+            {"bor", "bor"}, {"tej", "tej"}, {"fogas", "fogas"},
+    };
 
     /**
      * A szótő első ELFOGADHATÓ előfordulása, vagy -1.
@@ -876,9 +897,11 @@ public final class Foods {
         String acc = null;
         for (String[] a : ACCENTED_STEM) if (a[0].equals(ns)) { acc = a[1]; break; }
         if (acc == null) return q.indexOf(ns);
+        // Ékezetes igazi alaknál a szó eleje kivétel (ott az ékezet nélkül
+        // gépelő is a valódi szót írja); ékezet nélkülinél nincs kivétel.
+        boolean startFree = !acc.equals(ns);
         for (int p = q.indexOf(ns); p >= 0; p = q.indexOf(ns, p + 1)) {
-            boolean wordStart = p == 0 || !Character.isLetter(q.charAt(p - 1));
-            if (wordStart) return p;
+            if (startFree && (p == 0 || !Character.isLetter(q.charAt(p - 1)))) return p;
             if (p + acc.length() <= qAcc.length()
                     && qAcc.regionMatches(p, acc, 0, acc.length())) return p;
         }
@@ -1872,7 +1895,7 @@ public final class Foods {
         q = q.substring(0, qe);
         // Az ékezetes párja ugyanolyan hosszú és ugyanúgy indexelhető: az
         // ékezettel megkülönböztetett tövek (sör/sor) ebből döntenek.
-        String qAcc = normO(query);
+        String qAcc = normAcc(query);
         if (qAcc.length() > qe) qAcc = qAcc.substring(0, qe);
         List<Match> found = new ArrayList<>();
         for (Food f : list) {
@@ -2248,7 +2271,14 @@ public final class Foods {
             boolean beaten = false;
             for (int j = 0; j < in.size() && !beaten; j++) {
                 if (i == j || !sameWord(q, in.get(i), in.get(j))) continue;
-                beaten = beats(in.get(j), j, in.get(i), i);
+                Match a = in.get(j), b2 = in.get(i);
+                // Ha a két találat ÁTFEDI egymást, nem a súlyosabb étel dönt,
+                // hanem a hosszabb szótő: az „almáját"-ban az „alma" és a
+                // „máj" ugyanazokon a betűkön osztozik, és ott az alma a szó.
+                // (Az „almáját" eddig csirkemájat naplózott.)
+                boolean over = a.pos < b2.pos + b2.len && b2.pos < a.pos + a.len;
+                beaten = over ? (a.len > b2.len || (a.len == b2.len && j < i))
+                              : beats(a, j, b2, i);
             }
             if (!beaten) out.add(in.get(i));
         }

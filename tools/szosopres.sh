@@ -138,7 +138,7 @@ javac -d "$OUT" "$PKG"/*.java 2>&1 | grep -v '^Note:' || true
 if [ ! -f "$OUT/com/edzo/idozito/Sopres.class" ]; then
   echo "A fordítás nem sikerült."; rm -rf "$WORK"; exit 1
 fi
-java -cp "$OUT" com.edzo.idozito.Sopres
+java -Dstdout.encoding=UTF-8 -Dfile.encoding=UTF-8 -cp "$OUT" com.edzo.idozito.Sopres
 CODE=$?
 rm -rf "$WORK"
 exit $CODE
