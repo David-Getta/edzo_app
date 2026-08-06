@@ -104,6 +104,9 @@ public final class StrengthParse {
             // Csak a teljes szó: az „alkartámasz" plank, nem alkarhajlítás.
             {"Alkarhajlítás", "alkarhajlit", "csuklohajlit"},
             {"Orosz csavarás", "orosz csav", "oroszcsav", "russian twist"},
+            {"Fal ülés", "fal ules", "falules", "wall sit", "wallsit"},
+            {"Holt függés", "holt fugges", "holtfugges", "dead hang", "deadhang",
+                    "holtakasztas"},
     };
 
     /**
@@ -324,10 +327,43 @@ public final class StrengthParse {
                 .replaceAll("(\\d{1,2})\\s?kor\\s+(\\d{1,3})", "$1x$2");
     }
 
+    /**
+     * Percből másodperc a tartásos mondatokban: „1 perc” → „60 mp”.
+     *
+     * A mértékegység szándékosan bennmarad: a puszta szám ismétlésnek
+     * látszana, és a „3 sorozat 1 perc” ismétlés nélkül maradna – vagyis
+     * elveszne az egész bejegyzés.
+     */
+    private static String holdSeconds(String s) {
+        s = s.replaceAll("(?<![a-z0-9])fel ?perc", "30 mp");
+        // A törtrész is számít: a „másfél perc" itt már „1,5 perc", és
+        // enélkül az ötös maradt volna belőle – öt perc plank.
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,3})(?:[.,](\\d))? ?perc").matcher(s);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            int v = Integer.parseInt(m.group(1));
+            int sec = v * 60 + (m.group(2) == null ? 0 : Integer.parseInt(m.group(2)) * 6);
+            m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(
+                    v > 0 && v <= 10 ? sec + " mp" : m.group()));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
     /** Egy tagmondat → gyakorlat + sorozatok, vagy null. */
     private static Item parseOne(String s) {
         String name = moveIn(s);
         if (name == null) return null;
+
+        // Tartásnál a perc percet jelent, és a szám másodperc: a „plank 3×1
+        // perc" három egyperces tartás. Átváltás nélkül a bejegyzés csendben
+        // létrejön – csak hatvanszor rövidebben.
+        boolean timed = isTimed(name);
+        if (timed) s = holdSeconds(s);
+        // Egy négyperces fal ülés hihető; négyszáz ismétlés nem. A korlát
+        // ezért a mértékegységhez igazodik.
+        int maxRep = timed ? 600 : 200;
 
         double weight = weightIn(s);
         List<Set> sets = new ArrayList<>();
@@ -358,11 +394,11 @@ public final class StrengthParse {
                     } catch (NumberFormatException ignored) {}
                 }
             }
-            if (n >= 1 && n <= 20 && r >= 1 && r <= 200)
+            if (n >= 1 && n <= 20 && r >= 1 && r <= maxRep)
                 for (int i = 0; i < n; i++) sets.add(new Set(r, weight));
             // „60x10”: sorozatból nem lehet hatvan, súlyból viszont igen. Ez az
             // erőemelők szokásos jelölése – súly × ismétlés.
-            else if (n > 20 && n <= 500 && r >= 1 && r <= 200) {
+            else if (!timed && n > 20 && n <= 500 && r >= 1 && r <= 200) {
                 sets.add(new Set(r, weight > 0 ? weight : n));
                 // Piramis vesszők nélkül: „fekvenyomás 60x10 70x8 80x6”. A
                 // vesszős alakot már értettük, a szóközöset nem – abból egyetlen
@@ -395,7 +431,7 @@ public final class StrengthParse {
                 for (int g = 1; g <= m.groupCount(); g++) {
                     if (m.group(g) == null) continue;
                     int r = Integer.parseInt(m.group(g));
-                    if (r < 1 || r > 200) { ok = false; break; }
+                    if (r < 1 || r > maxRep) { ok = false; break; }
                     tmp.add(new Set(r, weight));
                 }
                 if (ok && tmp.size() >= 2) sets.addAll(tmp);
@@ -417,7 +453,7 @@ public final class StrengthParse {
                 for (int g = 1; g <= m.groupCount(); g++) {
                     if (m.group(g) == null) continue;
                     int r = Integer.parseInt(m.group(g));
-                    if (r < 1 || r > 200) { ok = false; break; }
+                    if (r < 1 || r > maxRep) { ok = false; break; }
                     tmp.add(new Set(r, weight));
                 }
                 if (ok) sets.addAll(tmp);
@@ -427,13 +463,16 @@ public final class StrengthParse {
         if (sets.isEmpty()) {
             int reps = numberBefore(s, "ismetles");
             if (reps <= 0) reps = numberBefore(s, "ism");
+            // Tartásnál a másodperc a „hányat", nem a súly.
+            if (reps <= 0 && timed) reps = numberBefore(s, "mp");
+            if (reps <= 0 && timed) reps = numberBefore(s, "masodperc");
             int series = numberBefore(s, "sorozat");
             if (series <= 0) series = numberBefore(s, "szett");
             if (series <= 0) series = numberBefore(s, "set");
             // A „3 kör 10 fekvőtámasz" köre is sorozat. Szóközzel, hogy a
             // „korcsolya" ne legyen kör.
             if (series <= 0) series = numberBefore(s, "kor ");
-            if (reps > 0 && reps <= 200) {
+            if (reps > 0 && reps <= maxRep) {
                 int n = series > 0 && series <= 20 ? series : 1;
                 for (int i = 0; i < n; i++) sets.add(new Set(reps, weight));
             } else if (series > 0 && series <= 20) {
@@ -453,7 +492,7 @@ public final class StrengthParse {
                 if (isWeightSuffixed(s, e)) continue;
                 if (isAtWeight(s, bare.start())) continue;
                 int r = Integer.parseInt(bare.group(1));
-                if (r >= 1 && r <= 200) { sets.add(new Set(r, weight)); break; }
+                if (r >= 1 && r <= maxRep) { sets.add(new Set(r, weight)); break; }
             }
         }
         // „fekvenyomás max 120 kg”: a legnehezebb, amit egyszer megnyomott.

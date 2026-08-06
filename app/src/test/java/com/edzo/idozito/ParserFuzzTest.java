@@ -100,9 +100,12 @@ public class ParserFuzzTest {
                     assertTrue("üres sorozat erre: " + q, !it.sets.isEmpty());
                     assertTrue("RPE tartományon kívül: " + q,
                             it.rpe == 0 || (it.rpe >= 6 && it.rpe <= 10));
+                    // Tartásnál a szám másodperc: ott tíz perc a felső határ,
+                    // ismétlésnél kétszáz darab.
+                    int cap = StrengthParse.isTimed(it.name) ? 600 : 200;
                     for (StrengthParse.Set st : it.sets) {
                         assertTrue("ismétlés elszaladt erre: " + q,
-                                st.reps >= 1 && st.reps <= 200);
+                                st.reps >= 1 && st.reps <= cap);
                         assertTrue("súly elszaladt erre: " + q,
                                 st.weight >= 0 && st.weight <= 500);
                     }

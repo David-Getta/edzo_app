@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,10 +39,12 @@ public class HoldsTest {
     @Test public void theOrdinaryExercisesAreNotHolds() {
         // Minden ismert gyakorlat, ami NEM tartás – itt egy téves találat
         // rögtön rossz progresszió-javaslatot adna.
+        List<String> holds = Arrays.asList("Plank", "Fal ülés", "Holt függés");
         for (String n : StrengthParse.names()) {
-            if (n.equals("Plank")) continue;
+            if (holds.contains(n)) continue;
             assertFalse(n, StrengthParse.isTimed(n));
         }
+        for (String n : holds) assertTrue(n, StrengthParse.isTimed(n));
         for (String n : new String[]{"Guggolás", "Fekvőtámasz", "Húzódzkodás",
                 "Bicepsz", "Superman", "Hasprés", "Kitörés", "Evezés", null, ""})
             assertFalse(String.valueOf(n), StrengthParse.isTimed(n));

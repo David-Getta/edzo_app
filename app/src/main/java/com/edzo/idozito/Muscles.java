@@ -31,14 +31,16 @@ public final class Muscles {
             // kimutatás vak arra a munkára, amit maga az app javasolt.
             {LAB, "guggol", "kitores", "labtolas", "labnyujt", "labhajlit", "labgep",
                     "vadli", "comb", "farizom", "medencelok", "hipthrust", "lepcsozes",
-                    "csipoemel", "csipo emel", "falules", "fal-ules", "wall sit",
+                    "csipoemel", "csipo emel", "falules", "fal-ules", "fal ules", "wall sit",
                     "fellepes", "fellepo", "labtavolit", "combtavolit", "abduktor",
                     "labkozelit", "combkozelit", "adduktor",
                     // A kettlebell-lendítés csípőből megy: far- és combhajlító.
                     "kettlebell", "swing"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
                     "hatizom", "hatgep", "gerincnyujt", "hiperextenzi", "hatfeszit",
-                    "szuperman", "superman"},
+                    "szuperman", "superman",
+                    // A holt függés a fogásé és a szélesháté – a lelógás is munka.
+                    "holt fugges", "holtfugges", "dead hang", "deadhang", "holtakasztas"},
             {MELL, "fekvenyom", "fekve nyom", "tarogat", "pillango", "fekvotamasz",
                     "tolodzkod", "mell", "ferde pad", "ferde nyom"},
             // A „fordított tárogatás" hátsó vállra megy, nem mellre. A rövidebb
@@ -48,7 +50,9 @@ public final class Muscles {
                     "vallemel", "eloreemel"},
             {KAR, "bicepsz", "tricepsz", "kalapacs", "francia", "alkar"},
             {TORZS, "hasizom", "haspres", "plank", "deszka", "crunch", "felules",
-                    "oroszcsav", "orosz csav", "oldaltamasz", "torzs", "labemel",
+                    // Az „alkartámasz" plank, nem alkar: a rövidebb „alkar"
+                    // különben karnak vette volna.
+                    "oroszcsav", "orosz csav", "oldaltamasz", "alkartamasz", "torzs", "labemel",
                     "hegymaszo", "madar-kutya", "madarkutya", "madar kutya"},
     };
 

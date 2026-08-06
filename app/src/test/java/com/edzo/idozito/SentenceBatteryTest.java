@@ -70,6 +70,12 @@ public class SentenceBatteryTest {
                 {"guggolás 3x10, majd 20 perc futás", "Guggolás 10@0/10@0/10@0"},
                 {"jó edzés volt", "—"},
                 {"húzódzkodás 3 szett maximumig", "—"},
+                {"plank 3x60", "Plank 60@0/60@0/60@0"},
+                {"plank 3x1 perc", "Plank 60@0/60@0/60@0"},
+                {"3 perc plank", "Plank 180@0"},
+                {"plank másfél perc", "Plank 90@0"},
+                {"fal ülés 3x40 mp", "Fal ülés 40@0/40@0/40@0"},
+                {"plank 3 sorozat 60 másodperc", "Plank 60@0/60@0/60@0"},
         };
         check(cases, "súlyzós");
     }
