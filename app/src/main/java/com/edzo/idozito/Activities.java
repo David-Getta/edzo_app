@@ -558,6 +558,8 @@ public final class Activities {
             "csatorna", "assistance", "importance",
             // A kézisúlyzó nem kézilabda: a „kezi" tő a nevében is ott van.
             "kezisulyzo", "kezisuly",
+            // A „részleTEKÉRT" végén a tekerés, a MEGERŐSÍTésben az erősítés.
+            "reszlet", "megerosit",
     };
 
     /** Maszkolandó-e a szó – igekötővel együtt is. */

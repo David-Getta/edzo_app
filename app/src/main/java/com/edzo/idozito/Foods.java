@@ -720,6 +720,26 @@ public final class Foods {
             // „hónapHOZ"-ban a pho. Mind gyakori szó – a „nincs kifogás"
             // pedig épp egy edzős mondat.
             "kepernyo", "kifogas", "naphoz", "honap", "hetkoznap", "kezisulyzo",
+            // A „sör" és a „sor" ékezet nélkül ugyanaz a szó. A sör marad, a
+            // leggyakoribb SOR-os szavak viszont nem: „a nap során", „sorban
+            // álltam", „sorrend", „sorszám", „sortörés".
+            "soran", "sorban", "sorrend", "sorszam", "sorok", "sora", "sorra",
+            "sortores", "soros",
+            // A KÖZÉPértékben az eper, a ruGALMASban az alma, a PRÓBÁban a bab,
+            // a rosSZABBban a zab.
+            "kozep", "rugalmas", "proba", "rossz", "szabhat", "szakasz",
+            // A TARTALMAzban és az ÁRTALMAtlanban is alma van – a
+            // „zsírtartalma" ráadásul étel-mondatban is előfordul. A TETEJÉn
+            // tej, a TEMPÓként poke, az ÉRTELMEZésben és az ÜTEMEZésben méz,
+            // az ÉPÍTÉSben és a TELEPÍTÉSben pite, a testreSZABásban zab.
+            "tartalm", "artalm", "tetej", "tempo", "ertelmez", "alapertelmez",
+            "utemez", "elemez", "jellemez", "fegyelmez", "epit", "telepit",
+            "testreszab", "testtomeg",
+            // A zsírégető edzés nem konyhai zsír. (A „zsírszegény" viszont
+            // marad: az egy valódi tétel neve – zsírszegény tej.)
+            "zsireget", "zsirtartalm",
+            // A vízszintes és a víztiszta nem ital; a vízcél az app szava.
+            "vizszint", "viztiszta", "vizcel", "vizbevitel", "vizkovet",
     };
 
     /**
@@ -747,7 +767,10 @@ public final class Foods {
 
     /** Magyar igekötők: ami utánuk áll, az a szó töve (fel-sorolás). */
     static final String[] VERB_PREFIX = {"meg", "el", "fel", "be", "ki", "le",
-            "at", "ra", "ossze", "szet", "vissza", "vegig", "oda", "korbe", "elo"};
+            "at", "ra", "ossze", "szet", "vissza", "vegig", "oda", "korbe", "elo",
+            // A felsőfok is a tő elé áll: legHALVÁNYabb, legROSSZabb; az
+            // „újra" ugyanígy: ÚJRAépítés, ÚJRAértelmez.
+            "leg", "ujra"};
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
     static String mask(String q) {

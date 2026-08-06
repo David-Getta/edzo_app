@@ -298,6 +298,17 @@ public class FoodsIntegrationTest {
                 "meghallgatáshoz", "visszaolvasása"})
             assertEquals("étel lett belőle: " + q, 0,
                     Foods.parse(Arrays.asList(Foods.ALL), q).size());
+        // Hatezer magyar szóból (a saját forrás kommentjeiből) ezek voltak a
+        // leggyakoribbak, amikben egy étel-szótő lakik: a TARTALMAzban alma,
+        // a TETEJÉn tej, a TEMPÓként poke, az ÉRTELMEZésben méz, az
+        // ÉPÍTÉSben pite, a nap SORÁNban sör, a KÖZÉPértékben eper.
+        for (String q : new String[]{"tartalmaz", "zsírtartalma", "ártalmatlan",
+                "a tetején", "tempóként", "értelmezés", "ütemezés", "elemezni",
+                "építés", "újratelepítés", "a nap során", "sorban álltam",
+                "sorrend", "középérték", "testreszabás", "vízszintes",
+                "zsírégető", "legrosszabb", "rugalmas", "próbából"})
+            assertEquals("étel lett belőle: " + q, 0,
+                    Foods.parse(Arrays.asList(Foods.ALL), q).size());
         // …de a valódi ételek maradnak.
         assertEquals("Méz", Foods.parse(Arrays.asList(Foods.ALL), "méz").get(0).food.name);
         assertEquals("Halászlé", Foods.parse(Arrays.asList(Foods.ALL), "halászlé").get(0).food.name);
@@ -305,6 +316,10 @@ public class FoodsIntegrationTest {
         assertEquals("Eper", Foods.parse(Arrays.asList(Foods.ALL), "eper").get(0).food.name);
         assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL), "fogas").get(0).food.name);
         assertEquals("Ramen", Foods.parse(Arrays.asList(Foods.ALL), "pho leves").get(0).food.name);
+        assertEquals("Sör", Foods.parse(Arrays.asList(Foods.ALL), "sört ittam").get(0).food.name);
+        assertEquals("Tej", Foods.parse(Arrays.asList(Foods.ALL), "tejet ittam").get(0).food.name);
+        assertEquals("Zsírszegény tej",
+                Foods.parse(Arrays.asList(Foods.ALL), "zsírszegény tej").get(0).food.name);
         assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL),
                 "halat sütöttem").get(0).food.name);
     }
