@@ -63,7 +63,9 @@ public final class BodyParse {
     /** A mondatban rejlő mérés, vagy egy üres Body. */
     public static Body parse(String q) {
         if (q == null) return new Body(0, 0);
-        String s = Foods.norm(q);
+        // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
+        // mérleget sokan hangosan olvassák fel, és úgy is írják le.
+        String s = Hu.digits(Foods.norm(q));
         if (s.isEmpty()) return new Body(0, 0);
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.

@@ -36,6 +36,18 @@ public class BodyParseTest {
         kg("78,4", 78.4);
     }
 
+    /** A mérleget sokan hangosan olvassák fel – és úgy is írják le. */
+    @Test public void spelledOutNumbersAreMeasurementsToo() {
+        kg("hetvennyolc kiló vagyok", 78);
+        kg("nyolcvanöt kiló vagyok", 85);
+        kg("ma reggel hetvennyolc kiló", 78);
+        kg("száz kiló vagyok", 100);
+        assertEquals(18, BodyParse.parse("tizennyolc százalék testzsír").fatPct, 0.001);
+        // …de a kiírt szám sem tesz mérést abból, ami nem az.
+        none("fekvenyomás nyolcvan kiló");
+        none("kettő tojás");
+    }
+
     @Test public void bodyFatIsUnderstoodToo() {
         assertEquals(18, BodyParse.parse("18% testzsír").fatPct, 0.001);
         assertEquals(18, BodyParse.parse("testzsír 18").fatPct, 0.001);

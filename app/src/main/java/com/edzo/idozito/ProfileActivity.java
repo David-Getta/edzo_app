@@ -141,6 +141,11 @@ public class ProfileActivity extends Activity {
         Button save = primary("💾  Mérés mentése");
         save.setOnClickListener(v -> saveMeasurement());
         col.addView(save);
+        col.addView(gap(8));
+        // Aki reggel leolvassa a mérleget, egy mondatot ír, nem két mezőt tölt ki.
+        Button bySentence = ghost("✍️  Mérés mondatból");
+        bySentence.setOnClickListener(v -> measurementInputSheet());
+        col.addView(bySentence);
         col.addView(gap(24));
 
         // --- Diagram ---
@@ -188,6 +193,43 @@ public class ProfileActivity extends Activity {
     }
 
     /**
+     * Beviteli lap a mérés-mondathoz, élő előnézettel.
+     *
+     * A számokat csak akkor írjuk a mezőkbe, ha a felhasználó tovább is lép:
+     * gépelés közben egy félkész szám („7”) nem törölheti felül azt, ami a
+     * mezőben már ott van.
+     */
+    void measurementInputSheet() {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(10), dp(6), dp(10), 0);
+        final EditText et = new EditText(this);
+        et.setHint(Examples.hint(Examples.BODY, System.currentTimeMillis()));
+        et.setHintTextColor(MUTED);
+        et.setTextColor(TXT);
+        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        box.addView(et, lp());
+        final TextView reco = text("", 12.5f, MUTED, false);
+        reco.setPadding(0, dp(8), 0, 0);
+        box.addView(reco, lp());
+        et.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            public void afterTextChanged(Editable e) {
+                BodyParse.Body b = BodyParse.parse(e.toString());
+                reco.setText(b.isEmpty()
+                        ? "Írd le a mérleg számát – „78,4 kg” vagy „78 kiló vagyok”."
+                        : "✔ Felismerve:  " + b.label());
+            }
+        });
+        new Sheet(this, "Mérés mondatból ✍️",
+                "Ahogy a mérlegről leolvastad. A mentést te nyomod meg.")
+                .addCustom(box)
+                .addPrimary("Tovább", () -> measurementSheet(et.getText().toString()))
+                .addCancel()
+                .show();
+    }
+
+    /**
      * Mérés mondatból: előnézet, majd egy koppintással mentés.
      *
      * A mezőket rögtön kitöltjük, hogy látszódjon, mit értett az app – és
@@ -195,7 +237,14 @@ public class ProfileActivity extends Activity {
      */
     void measurementSheet(String sentence) {
         BodyParse.Body b = BodyParse.parse(sentence);
-        if (b.isEmpty()) return;
+        if (b.isEmpty()) {
+            new Sheet(this, "Ebből nem lettem okos 🤔",
+                    "A mérleg számát keresem – „78,4 kg”, „78 kiló vagyok”, „mérleg: 81,2”.")
+                    .addPrimary("Újra", this::measurementInputSheet)
+                    .addCancel()
+                    .show();
+            return;
+        }
         if (b.kg > 0) weightEt.setText(trim(b.kg));
         if (b.fatPct > 0) bodyFatEt.setText(trim(b.fatPct));
         recompute();
