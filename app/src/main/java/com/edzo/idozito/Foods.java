@@ -1850,8 +1850,11 @@ public final class Foods {
             // a „sonkás-sajtos melegszendvics" egy szendvics, nem szendvics
             // PLUSZ egy adag sonka PLUSZ egy adag sajt – az együtt már két
             // szendvicsnyi kalória.
-            {"Sajt (trappista)", "Pizza", "Szendvics", "Hamburger"},
-            {"Sonka", "Pizza", "Szendvics"},
+            // A gyros és a kebab kész tál: a hús, a lepény és az öntet együtt
+            // van benne. A quesadilla neve maga jelenti a sajtot.
+            {"Sajt (trappista)", "Pizza", "Szendvics", "Hamburger", "Gyros", "Kebab",
+                    "Quesadilla"},
+            {"Sonka", "Pizza", "Szendvics", "Gyros", "Kebab"},
             {"Szalámi", "Pizza", "Szendvics"},
             {"Gomba", "Pizza"},
             // A wok adagja a zöldséget is tartalmazza: a „zöldséges wok" egy
@@ -1859,7 +1862,9 @@ public final class Foods {
             {"Zöldség (vegyes / párolt)", "Wok (zöldséges-húsos)"},
             {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
                     "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
-                    "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)"},
+                    "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)", "Rizottó"},
+            // A csusza tejfölös: ez a neve, nem egy külön kanál tejföl.
+            {"Tejföl", "Túrós csusza"},
     };
 
     private static List<Match> dropRedundantBase(String q, List<Match> in) {

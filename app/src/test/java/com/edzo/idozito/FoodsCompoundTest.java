@@ -176,4 +176,21 @@ public class FoodsCompoundTest {
         assertEquals(2, Foods.parse(all, "szendvics és sonka").size());
         assertEquals(2, Foods.parse(all, "hamburger és sajt").size());
     }
+
+    /**
+     * A kész tál jelzője sem külön adag.
+     *
+     * A gyros és a kebab a hússal, a lepénnyel és az öntettel együtt egy
+     * adag; a quesadilla neve maga jelenti a sajtot; a csuszában benne a
+     * tejföl. Jelzőként hozzáolvasva mindegyik száz kalória fölött tévedett.
+     */
+    @Test public void anAdjectiveOnAFinishedDishIsNotAnExtraPortion() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"sonkás gyros", "sajtos gyros", "sajtos kebab",
+                "sajtos quesadilla", "csirkés rizottó", "tejfölös csusza"})
+            assertEquals(q, 1, Foods.parse(all, q).size());
+        // A tényleg hozzáadott feltét viszont megmarad.
+        assertEquals(2, Foods.parse(all, "gombás rizottó").size());
+        assertEquals(2, Foods.parse(all, "gyros és sajt").size());
+    }
 }
