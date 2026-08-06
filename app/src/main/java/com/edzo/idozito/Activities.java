@@ -1160,7 +1160,12 @@ public final class Activities {
         }
         s = new String(q);
         for (String w : new String[]{"nem ", "kihagytam", "kimaradt", "elmarad",
-                "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet"}) {
+                "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
+                // A pihenőnap nem edzés. Megnevezett napok mellett ez különösen
+                // fontos: a „szombaton túráztam 4 órát, vasárnap pihentem" két
+                // NAPOT nevez meg, és eddig mindkettőre bekerült a négyórás
+                // túra – vagyis nyolc óra mozgás abból, ami négy volt.
+                "pihentem", "pihentunk", "pihenonap", "pihi"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));

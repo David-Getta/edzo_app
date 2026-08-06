@@ -232,6 +232,29 @@ public class ActivitiesTest {
         }
     }
 
+    @Test public void aRestDayDoesNotDuplicateTheWorkout() {
+        // „Szombaton túráztam 4 órát, vasárnap pihentem": KÉT napot nevez meg,
+        // és eddig mindkettőre bekerült a négyórás túra – nyolc óra mozgás
+        // abból, ami négy volt.
+        long now = System.currentTimeMillis();
+        Activities.Parsed p = Activities.parse("szombaton túráztam 4 órát, vasárnap pihentem",
+                now);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(240, p.plans.get(0).minutes);
+        assertEquals(1, Activities.parse("hétfőn futottam, kedden pihentem", now)
+                .plans.get(0).count);
+        // Két VALÓDI edzésnap viszont továbbra is kettő.
+        assertEquals(2, Activities.parse("hétfőn futottam, kedden is futottam", now)
+                .plans.get(0).count);
+        // A puszta pihenőnapból nincs bejegyzés.
+        assertTrue(Activities.parse("vasárnap pihentem", now).isEmpty());
+        assertTrue(Activities.parse("pihenőnap volt", now).isEmpty());
+        // A pihenés az edzés UTÁN nem viszi el az edzést.
+        assertEquals(30, Activities.parse("futottam 30 percet, aztán pihentem", now)
+                .plans.get(0).minutes);
+    }
+
     @Test public void aConjunctionOpensANewStatement() {
         // A kötőszó után ÚJ állítás jön, vessző nélkül is. Eddig a vásárlás,
         // a lemondás és a meccsnézés magával vitte a mondat másik felét –
