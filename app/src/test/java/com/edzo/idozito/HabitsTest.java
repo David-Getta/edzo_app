@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -132,5 +133,30 @@ public class HabitsTest {
         // Eltérő hosszú tömbök: a rövidebb dönt.
         assertNull(Habits.usualSportOn(new int[]{1, 1, 1}, new String[]{"uszas"},
                 new int[]{7}, 1));
+    }
+
+    @Test public void aTieIsBrokenByRecency() {
+        // Két összeállítás ugyanannyiszor: eddig a tárolási sorrend döntött,
+        // vagyis véletlenszerűen. Egy rossz „szokásos reggeli" egy
+        // koppintással rossz kalóriát ír a naplóba.
+        java.util.List<java.util.List<String>> meals = new java.util.ArrayList<>();
+        java.util.List<Integer> hours = new java.util.ArrayList<>();
+        java.util.List<Integer> ago = new java.util.ArrayList<>();
+        // A RÉGEBBI összeállítás háromszor, 20–22 napja.
+        for (int d : new int[]{20, 21, 22}) {
+            meals.add(java.util.Arrays.asList("Zabpehely", "Banán"));
+            hours.add(8); ago.add(d);
+        }
+        // Az ÚJABB ugyanannyiszor, 1–3 napja.
+        for (int d : new int[]{1, 2, 3}) {
+            meals.add(java.util.Arrays.asList("Tojás", "Kenyér"));
+            hours.add(8); ago.add(d);
+        }
+        int[] h = new int[hours.size()], a = new int[ago.size()];
+        for (int i = 0; i < h.length; i++) { h[i] = hours.get(i); a[i] = ago.get(i); }
+        Habits.Usual u = Habits.usual(meals, h, a, Habits.REGGEL);
+        assertNotNull(u);
+        assertEquals(3, u.count);
+        assertTrue("a frissebb szokás nyer: " + u.foods, u.foods.contains("Tojás"));
     }
 }

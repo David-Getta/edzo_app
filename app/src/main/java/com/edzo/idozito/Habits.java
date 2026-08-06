@@ -164,13 +164,25 @@ public final class Habits {
             for (String f : sorted) key.append(Foods.norm(f)).append('|');
             String k = key.toString();
             int[] c = counts.get(k);
-            if (c == null) { counts.put(k, c = new int[1]); sample.put(k, norm); }
+            // [0] = hányszor volt, [1] = hány napja a legutóbbi.
+            if (c == null) {
+                counts.put(k, c = new int[]{0, Integer.MAX_VALUE});
+                sample.put(k, norm);
+            }
             c[0]++;
+            c[1] = Math.min(c[1], daysAgo[i]);
         }
         String bestKey = null;
-        int best = 0;
-        for (Map.Entry<String, int[]> e : counts.entrySet())
-            if (e.getValue()[0] > best) { best = e.getValue()[0]; bestKey = e.getKey(); }
+        int best = 0, bestFresh = Integer.MAX_VALUE;
+        for (Map.Entry<String, int[]> e : counts.entrySet()) {
+            int cnt = e.getValue()[0], fresh = e.getValue()[1];
+            // Azonos gyakoriságnál a FRISSEBB nyer. Enélkül a tárolási sorrend
+            // döntött, vagyis véletlenszerűen – és egy rossz „szokásos reggeli"
+            // egy koppintással rossz kalóriát ír a naplóba.
+            if (cnt > best || (cnt == best && fresh < bestFresh)) {
+                best = cnt; bestFresh = fresh; bestKey = e.getKey();
+            }
+        }
         if (bestKey == null || best < MIN_COUNT) return null;
         return new Usual(sample.get(bestKey), best);
     }
