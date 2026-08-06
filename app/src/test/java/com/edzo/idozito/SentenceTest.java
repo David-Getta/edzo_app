@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -67,6 +68,22 @@ public class SentenceTest {
         for (String q : new String[]{"jó napom volt", "asdfgh", "ma nem edzettem",
                 "holnap majd", "köszönöm szépen", "hm", ""})
             assertEquals(q, Sentence.Kind.NONE, of(q));
+    }
+
+    /**
+     * A hétköznapi mondat nem lesz étkezés.
+     *
+     * A söprés mindegyiket élesben fogta meg: a „szeretek futni" retket, a
+     * „fogás" fogast (egy halat), a „levesszük" levest, a „bőrrel" bort
+     * naplózott. Itt a MONDAT szintjén nézzük ugyanezt: ha egy ilyen szó
+     * bekerül egy jelentéktelen mondatba, semmi nem történhet.
+     */
+    @Test public void everydayTalkIsNotAMeal() {
+        for (String q : new String[]{"szeretek futni és úszni", "jó fogás volt",
+                "levesszük a súlyt a rúdról", "bőrrel vagy anélkül",
+                "a főképernyőn nézem", "hüvelykujjszabály", "ez a szokásaim része",
+                "adatmezők a kijelzőn", "beszédbuborék"})
+            assertNotEquals(q, Sentence.Kind.MEAL, of(q));
     }
 
     /**

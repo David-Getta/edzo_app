@@ -789,8 +789,8 @@ public final class Foods {
             "szeret", "stadi", "szokas", "levesz", "levessz", "vizilabda",
     };
 
-    /** Összetétel utótagjaként is maszkolandó szavak. */
-    private static final String[] ENDS_BAD = {"buborek", "kepernyo", "szabaly"};
+    /** Összetétel BÁRMELYIK tagjaként maszkolandó szavak. */
+    private static final String[] INSIDE_BAD = {"buborek", "kepernyo", "szabaly"};
 
     /**
      * Maszkolandó-e a szó – igekötővel együtt is.
@@ -806,8 +806,10 @@ public final class Foods {
         if (startsWithBad(tok)) return true;
         // Összetétel MÁSODIK tagjaként is előfordulnak: a beszédbuborékban és
         // a szappanbuborékban a bor, a főképernyőn és a kezdőképernyőn az
-        // eper. Az előtagot nem lehet felsorolni, a végét viszont igen.
-        for (String e : ENDS_BAD) if (tok.length() > e.length() && tok.endsWith(e)) return true;
+        // eper, a hüvelykujjszabályban a zab. Az előtagot nem lehet felsorolni,
+        // a szót magát viszont igen – és ragozva is ott van („főképernyőN"),
+        // ezért nem a szó végét, hanem a benne állást nézzük.
+        for (String e : INSIDE_BAD) if (tok.indexOf(e) > 0) return true;
         for (String v : VERB_PREFIX)
             if (tok.length() > v.length() + 2 && tok.startsWith(v)
                     && startsWithBad(tok.substring(v.length()))) return true;
