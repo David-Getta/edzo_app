@@ -41,11 +41,22 @@ public final class Kcal {
      * jelenti. Ezeket inkább kihagyjuk: a hamis bejegyzés rosszabb, mint a
      * kimaradó.
      */
-    private static final String[] NOT_EATEN = {
+    private static final String[] GOAL = {
             "cel", "celom", "celt", "celja", "celig", "keret", "keretbe", "keretem",
             "limit", "maradt", "marad", "fer", "ferek", "hianyzik", "hianyzo",
-            "egettem", "egetem", "elegettem", "elhasznaltam", "alatt", "felett",
-            "folott", "szeretnek", "akarok", "legyen", "napi",
+            "szeretnek", "akarok", "legyen", "napi",
+    };
+
+    /**
+     * Csak az ETT kalóriánál tiltó szavak.
+     *
+     * Az „elégettem 400 kcal-t" nem étkezés – az edzésnél viszont pont az a
+     * mondat, amit keresünk. Az „50 perc alatt 700 kcal" ugyanígy: az étrend
+     * mezőjében gyanús, az edzés-mondatban hétköznapi.
+     */
+    private static final String[] NOT_EATEN = {
+            "egettem", "egetem", "elegettem", "elegetem", "elhasznaltam",
+            "alatt", "felett", "folott",
     };
 
     /**
@@ -55,9 +66,25 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
+        return amount(q, NOT_EATEN);
+    }
+
+    /**
+     * A mondatban kimondott ELÉGETETT kalória, vagy -1.
+     *
+     * Az óra pontosabban tudja, mint mi: aki leírja, hogy „futás 45 perc 520
+     * kcal", annak a számát nem illik a saját becslésünkre cserélni.
+     */
+    public static int burned(String q) {
+        return amount(q, new String[0]);
+    }
+
+    private static int amount(String q, String[] block) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
-        for (String w : NOT_EATEN)
+        for (String w : GOAL)
+            if (Pattern.compile("(?<![a-z])" + w + "(?![a-z])").matcher(s).find()) return -1;
+        for (String w : block)
             if (Pattern.compile("(?<![a-z])" + w + "(?![a-z])").matcher(s).find()) return -1;
         double sum = 0;
         Matcher m = NUM.matcher(s);

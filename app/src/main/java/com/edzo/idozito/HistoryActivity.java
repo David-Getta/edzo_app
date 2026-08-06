@@ -752,15 +752,24 @@ public class HistoryActivity extends Activity {
                 : p.days > 1 ? "\nAz elmúlt " + p.days + " napra elosztva."
                 : p.offset == 0 ? "\nMai dátummal."
                 : "\n" + p.offset + " nappal ezelőttre.");
+        // Ha az óra számát vesszük át a becslésünk helyett, azt lássa is.
+        if (p.total() == 1 && Kcal.burned(text) > 0)
+            sb.append("\nA megadott ").append(Kcal.burned(text))
+              .append(" kcal-lal (nem becsüljük felül).");
         new Sheet(this, p.total() + " edzés mentése", sb.toString())
-                .addPrimary("Mentés", () -> saveBulk(p))
+                .addPrimary("Mentés", () -> saveBulk(p, text))
                 .addNeutral("Átírom", () -> bulkSheet(text))
                 .addCancel()
                 .show();
     }
 
-    void saveBulk(Activities.Parsed p) {
+    void saveBulk(Activities.Parsed p, String sentence) {
         long[] ts = Activities.timestamps(p, System.currentTimeMillis());
+        // Ha az óra már megmondta („futás 45 perc 520 kcal"), az ő száma a
+        // pontos – a saját becslésünk csak addig ér valamit, amíg nincs jobb.
+        // Csak egyetlen bejegyzésnél: több edzés közt szétosztani a kimondott
+        // összeget találgatás lenne.
+        int said = p.total() == 1 ? Kcal.burned(sentence) : -1;
         int i = 0;
         for (Activities.Plan pl : p.plans) {
             // A mondatban megadott táv is bekerül – az átlagtempó ugyanazzal a
@@ -769,7 +778,8 @@ public class HistoryActivity extends Activity {
             double avg = (TimerService.isRun(distM) && pl.minutes > 0)
                     ? distM / (pl.minutes * 60.0) * 3.6 : -1;
             for (int n = 0; n < pl.count; n++) {
-                double kcal = Activities.calories(pl.kind, Profile.lastWeight(this), pl.minutes);
+                double kcal = said > 0 ? said
+                        : Activities.calories(pl.kind, Profile.lastWeight(this), pl.minutes);
                 long t = ts[i++];
                 History.addManual(this, t, pl.minutes * 60, distM,
                         kcal, avg, pl.kind.title(), pl.kind.id);

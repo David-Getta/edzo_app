@@ -235,7 +235,10 @@ public class DietActivity extends Activity {
             StringBuilder det = new StringBuilder();
             for (MealLog.Item it : m.items) {
                 if (det.length() > 0) det.append("  ·  ");
-                det.append(it.food).append(" ").append(Math.round(it.grams)).append(" g");
+                det.append(it.food);
+                // A kimondott kalóriás bejegyzésnél nincs gramm – a „0 g"
+                // csak zaj lenne, hiszen soha nem is mértük meg.
+                if (it.grams > 0) det.append(" ").append(Math.round(it.grams)).append(" g");
             }
             TextView dt = text(det.toString(), 12.5f, MUTED, false);
             dt.setPadding(0, dp(4), 0, 0);
@@ -246,7 +249,8 @@ public class DietActivity extends Activity {
             c.setClickable(true);
             c.setOnClickListener(v -> {
                 Sheet sh = new Sheet(this, title,
-                        Math.round(m.kcal()) + " kcal · " + Math.round(m.grams()) + " g"
+                        Math.round(m.kcal()) + " kcal"
+                        + (m.grams() > 0 ? " · " + Math.round(m.grams()) + " g" : "")
                         + (m.protein() > 0 ? " · " + Math.round(m.protein()) + " g fehérje" : ""));
                 // Nagy fotó a részleteknél – segít utólag pontosítani az arányokat.
                 if (!m.photo.isEmpty()) {

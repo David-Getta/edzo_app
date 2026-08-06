@@ -43,6 +43,21 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("elégettem 400 kcal-t"));
     }
 
+    /**
+     * Az elégetett kalória más szavakat tűr, mint a megevett.
+     *
+     * Az „elégettem 400 kcal-t" étkezésként hamis lenne, edzésként viszont
+     * pont az, amit az óra mond. A cél-mondat viszont egyikként sem az.
+     */
+    @Test public void burnedIsLooserThanEaten() {
+        assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
+        assertEquals(700, Kcal.burned("10 km futás 50 perc alatt 700 kcal"));
+        assertEquals(400, Kcal.burned("elégettem 400 kcal-t"));
+        assertEquals(-1, Kcal.stated("10 km futás 50 perc alatt 700 kcal"));
+        assertEquals(-1, Kcal.burned("napi cél 2000 kcal"));
+        assertEquals(-1, Kcal.burned("futás 45 perc"));
+    }
+
     /** Mértékegység nélkül nincs szám, és az életszerűtlen érték sem kell. */
     @Test public void needsTheUnitAndAPlausibleValue() {
         assertEquals(-1, Kcal.stated("vacsora 650"));
@@ -80,6 +95,17 @@ public class KcalTest {
     @Test public void routedToTheDiet() {
         assertEquals(Sentence.Kind.MEAL,
                 Sentence.of("vacsora 650 kcal", Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+    }
+
+    /**
+     * A hirdetett edzés-példák egyikében sincs kimondott égetés.
+     *
+     * Ha volna, a mentés a saját becslésünk helyett egy oda nem illő számot
+     * írna a naplóba – csendben, mert a felület ugyanúgy néz ki.
+     */
+    @Test public void bulkExamplesHaveNoStatedBurn() {
+        for (String q : Examples.BULK)
+            assertEquals("égetésnek látszik: " + q, -1, Kcal.burned(q));
     }
 
     /**
