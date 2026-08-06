@@ -315,4 +315,24 @@ public class FoodsQuantityTest {
         assertEquals(75, h.get(0).grams, 0.01);
         assertEquals(35, h.get(1).grams, 0.01);
     }
+
+    /**
+     * A „szem" darabszó: „tíz szem mandula”, „öt szem szőlő”.
+     *
+     * Magyarul a szemes ételeket így mondjuk – az app viszont nem ismerte a
+     * szót, így a szám elveszett, és a szokásos adag ment be: tíz mandula
+     * helyett egy egész marék, háromszoros kalóriával.
+     */
+    @Test public void aPieceIsCountedWhenSaidAsSzem() {
+        assertEquals(10, grams("10 szem mandula"), 0.01);
+        assertEquals(20, grams("20 szem mandula"), 0.01);
+        assertEquals(25, grams("5 szem szőlő"), 0.01);
+        assertEquals(15, grams("3 szem dió"), 0.01);
+        // Szám nélkül továbbra is a szokásos adag (0 = nincs kimondva).
+        assertEquals(0, grams("mandula"), 0.01);
+        // A marék viszont kimondott mennyiség: egy marék harminc gramm.
+        assertEquals(30, grams("egy marék mandula"), 0.01);
+        // A kimondott gramm erősebb marad.
+        assertEquals(30, grams("30 g mandula"), 0.01);
+    }
 }

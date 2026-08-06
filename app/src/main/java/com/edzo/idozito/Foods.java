@@ -980,6 +980,13 @@ public final class Foods {
             {"Tej", "200"}, {"Üdítő (cukros)", "330"}, {"Energiaital", "250"},
             {"Kávé (fekete)", "200"}, {"Tejeskávé / cappuccino", "250"},
             {"Tea (cukrozatlan)", "250"},
+            // Amit szemenként mondunk: „tíz szem mandula", „öt szem szőlő".
+            // Enélkül a szám elveszett, és a szokásos adag ment be – tíz
+            // mandula helyett egy egész marék.
+            {"Mandula", "1"}, {"Dió", "5"}, {"Mogyoró", "1"}, {"Kesudió", "2"},
+            {"Pisztácia", "1"}, {"Szőlő", "5"}, {"Cseresznye / meggy", "8"},
+            {"Eper", "12"}, {"Olajbogyó / olívabogyó", "4"}, {"Málna", "4"},
+            {"Áfonya", "2"},
     };
 
     /**
@@ -1074,7 +1081,11 @@ public final class Foods {
     private static final String[] COUNT_WORDS =
             {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár",
              "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg",
-             "kupica", "stampedli", "korty", "kortyot", "kancso", "kancsó"};
+             "kupica", "stampedli", "korty", "kortyot", "kancso", "kancsó",
+             // A „szem" a magyar konyhában darabszó: „tíz szem mandula",
+             // „öt szem szőlő". Enélkül a szám elveszett, és a szokásos adag
+             // ment be – tíz mandula helyett egy egész marék.
+             "szem", "szemet", "szemnyi"};
 
     /**
      * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag
