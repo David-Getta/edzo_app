@@ -782,10 +782,15 @@ public final class Foods {
             // eper, a felraKÁSÁban a (zab)kása.
             "buborek", "dombor", "buktat", "durumbuza", "oriz", "ellenoriz",
             "fogalm", "felrak",
+            // A söprés második átnézése: a SZERETek retket, a STÁDIÓban diót, a
+            // SZOKÁSaimban (zab)kását, a LEVESSZÜKben levest, a VÍZILABDÁban
+            // vizet naplózott. A „szeretek futni" a leggyakoribb mondatkezdés,
+            // amit egy edzésappba be lehet írni.
+            "szeret", "stadi", "szokas", "levesz", "levessz", "vizilabda",
     };
 
     /** Összetétel utótagjaként is maszkolandó szavak. */
-    private static final String[] ENDS_BAD = {"buborek", "kepernyo"};
+    private static final String[] ENDS_BAD = {"buborek", "kepernyo", "szabaly"};
 
     /**
      * Maszkolandó-e a szó – igekötővel együtt is.

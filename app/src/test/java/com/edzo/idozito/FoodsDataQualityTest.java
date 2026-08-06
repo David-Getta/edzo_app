@@ -168,7 +168,8 @@ public class FoodsDataQualityTest {
         String[] notFood = {"adatmezők", "falkavezér", "csonkolás", "estéjéről", "bőrrel",
                 "fogás", "fogások", "fogásnak", "beszédbuborék", "szappanbuborék",
                 "főképernyő", "kezdőképernyő", "domborítsd", "buktató", "ellenőrizzük",
-                "fogalmaz", "durumbúza"};
+                "fogalmaz", "durumbúza", "szeretek futni", "szeretem", "stádió",
+                "szokásaim", "levesszük", "hüvelykujjszabály", "vízilabda"};
         for (String q : notFood)
             assertTrue("ételt talált benne: " + q + " -> " + names(Foods.parse(all, q)),
                     Foods.parse(all, q).isEmpty());
