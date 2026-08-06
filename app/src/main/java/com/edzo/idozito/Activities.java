@@ -122,6 +122,9 @@ public final class Activities {
                     "lapatol",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
+                    // A „kardió" edzés-szó: enélkül a „45 perc kardió" semmi
+                    // volt. (Az étel-oldalon ugyanez a szó a diót hozta.)
+                    "kardio",
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
@@ -537,7 +540,7 @@ public final class Activities {
             // takarítás, a légKONDI nem kondi.
             "olvas", "megtakarit", "legkondi",
             // A naGYMama közepén a „gym", az aKARATErőben a „karate".
-            "nagymama", "nagymami", "akarat",
+            "nagymama", "nagymami", "akarat", "tortura", "kardiolog",
     };
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */

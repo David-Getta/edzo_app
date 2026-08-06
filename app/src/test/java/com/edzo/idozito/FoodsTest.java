@@ -306,6 +306,16 @@ public class FoodsTest {
             "immunrendszer", "vérnyomás", "izomláz", "rehabilitáció", "mező",
             "hatalmas", "unalmas", "nyugalmas", "fájdalmas", "halogatás",
             "borostyán", "sörény",
+            // Negyedik söprés: nevek, helynevek és a „kardió". A „dió" három
+            // betű, és rengeteg szó közepén ott van – a kardió ráadásul
+            // EDZÉS-szó, tehát minden ilyen bejegyzéshez járt harminc gramm
+            // dió, kétszáz kalória.
+            // (A „kardió" szándékosan hiányzik: az EDZÉS-szó, és a listát az
+            // edzés-felismerő is futtatja. Az étel-oldali fedezete a
+            // FoodsIntegrationTest-ben van.)
+            "stúdió", "rádió", "audio", "periódus",
+            "kardiológus", "stadion", "Gábor", "Boróka", "borúlátó", "bőrönd",
+            "Salgótarján", "tortúra", "borotválkozás", "laboratórium",
     };
 
     @Test public void noEverydayWordEverBecomesFood() {

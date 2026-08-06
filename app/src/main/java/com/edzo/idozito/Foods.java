@@ -651,6 +651,13 @@ public final class Foods {
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",
+            // A „dió" három betű, és rengeteg szó közepén ott van: karDIÓ,
+            // stáDIÓ, ráDIÓ, staDIOn, karDIOlógus. A kardió ráadásul EDZÉS-szó:
+            // minden ilyen bejegyzéshez járt harminc gramm dió, kétszáz
+            // kalória. A Gáborban és a Borókában a bor, a Salgótarjánban a
+            // tarja, a tortúrában a túra.
+            "kardio", "stadion", "radio", "studio", "audio", "periodus", "melodi",
+            "gabor", "boroka", "borul", "borond", "tarjan", "salgotarjan",
             "vajon", "hallott", "hallom", "halk", "halad", "halott", "halvany",
             "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",
