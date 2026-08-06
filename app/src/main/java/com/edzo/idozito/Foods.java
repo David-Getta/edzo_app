@@ -580,7 +580,10 @@ public final class Foods {
                 // A töltelék benne van a kalóriában: a „diós bejgli" ne
                 // számoljon még egy adag diót is mellé.
                 "dios bejgli", "makos bejgli", "makos tekercs", "dios tekercs"),
-        new Food("Almás pite", 240, 3, 120, "almas pite", "almaspite"),
+        // A puszta „pite" is süteménynyi: a „meggyes pite" eddig kilencven
+        // kalóriás meggy volt, mert csak a gyümölcs töve illeszkedett rá.
+        new Food("Pite (almás/gyümölcsös)", 240, 3, 120, "almas pite", "almaspite",
+                "pite"),
         new Food("Krumplisaláta", 150, 2.5, 200, "krumplisalata", "krumpli salata",
                 "burgonyasalata", "burgonya salata"),
         new Food("Frankfurti leves", 90, 4, 350, "frankfurti leves", "frankfurti"),
@@ -1696,7 +1699,7 @@ public final class Foods {
             if (!covered) out.add(m);
         }
         out = oneFoodPerWord(q, out);
-        out = dropRedundantBase(out);
+        out = dropRedundantBase(q, out);
         applyCombos(list, q, out);
         out = dropNegated(q, out);
         // Rendezés a szövegbeli előfordulás szerint.
@@ -1706,6 +1709,22 @@ public final class Foods {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
         return out;
+    }
+
+    /**
+     * Külön tételként van-e felsorolva a két találat?
+     *
+     * A jelzős szerkezet („csokis müzliszelet") EGY ételt jelent, a kötőszós
+     * felsorolás („csoki és müzliszelet") kettőt. A különbség csak a köztük
+     * álló szövegben látszik.
+     */
+    private static boolean listedSeparately(String q, Match a, Match b) {
+        int from = Math.min(a.pos + a.len, b.pos + b.len);
+        int to = Math.max(a.pos, b.pos);
+        if (from >= to || to > q.length()) return false;
+        String gap = q.substring(from, to);
+        return gap.contains(",") || gap.contains(";") || gap.contains(" es ")
+                || gap.contains(" meg ") || gap.contains(" plusz ");
     }
 
     /**
@@ -1763,6 +1782,13 @@ public final class Foods {
             {"Pita / lepénykenyér", "Gyros", "Kebab"},
             // A pizza feltétje benne van a pizza kalóriájában: a „négy sajtos
             // pizza" egy pizza, nem pizza PLUSZ egy adag sajt (1212 kcal!).
+            // A csokoládé a szelet és a muffin kalóriájában benne van: a
+            // „csokis müzliszelet" nem szelet PLUSZ egy tábla csoki.
+            {"Csokoládé", "Müzliszelet", "Proteinszelet", "Muffin / brownie"},
+            // A pite tölteléke benne van a pite kalóriájában: a „meggyes pite"
+            // nem pite PLUSZ egy adag meggy.
+            {"Cseresznye / meggy", "Pite (almás/gyümölcsös)"},
+            {"Alma", "Pite (almás/gyümölcsös)"},
             {"Sajt (trappista)", "Pizza"},
             {"Sonka", "Pizza"},
             {"Szalámi", "Pizza"},
@@ -1775,17 +1801,20 @@ public final class Foods {
                     "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)"},
     };
 
-    private static List<Match> dropRedundantBase(List<Match> in) {
+    private static List<Match> dropRedundantBase(String q, List<Match> in) {
         if (in.size() < 2) return in;
         List<Match> out = new ArrayList<>(in);
         for (String[] row : BASE_INCLUDED) {
-            Match base = null;
-            boolean dish = false;
+            Match base = null, dishAt = null;
             for (Match m : out) {
                 if (m.food.name.equals(row[0])) base = m;
                 for (int i = 1; i < row.length; i++)
-                    if (m.food.name.equals(row[i])) { dish = true; break; }
+                    if (m.food.name.equals(row[i])) { dishAt = m; break; }
             }
+            boolean dish = dishAt != null;
+            // Kötőszóval FELSOROLVA két külön tétel: a „csoki és müzliszelet"
+            // csoki PLUSZ szelet, a „csokis müzliszelet" viszont egy szelet.
+            if (base != null && dish && listedSeparately(q, base, dishAt)) continue;
             if (base != null && dish) out.remove(base);
         }
         return out;

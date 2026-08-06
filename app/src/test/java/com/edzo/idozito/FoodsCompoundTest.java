@@ -113,4 +113,35 @@ public class FoodsCompoundTest {
         assertEquals("pontosan egy ételt vártam ebben: " + q, 1, hs.size());
         return hs.get(0).grams;
     }
+    /**
+     * A jelzős szerkezet egy étel, a kötőszós felsorolás kettő.
+     *
+     * A „csokis müzliszelet" csokoládéja a szelet kalóriájában van, a „csoki
+     * és müzliszelet" viszont két külön tétel. Eddig a kész fogás mellől
+     * MINDIG eltűnt az alapanyag – akkor is, ha az ember külön sorolta fel.
+     */
+    @Test public void aConjunctionKeepsBothItems() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(1, Foods.parse(all, "csokis müzliszelet").size());
+        assertEquals(2, Foods.parse(all, "csoki és müzliszelet").size());
+        assertEquals(1, Foods.parse(all, "sajtos pizza").size());
+        assertEquals(2, Foods.parse(all, "pizza és sajt").size());
+        assertEquals(1, Foods.parse(all, "zöldséges wok").size());
+        assertEquals(2, Foods.parse(all, "wok és zöldség").size());
+        assertEquals(1, Foods.parse(all, "meggyes pite").size());
+        assertEquals(2, Foods.parse(all, "pite és meggy").size());
+    }
+
+    /**
+     * A „meggyes pite" pite, nem kilencven kalóriás meggy.
+     *
+     * A puszta „pite" nem volt szótő, csak az „almás pite" – a többi
+     * gyümölcsös pitéből így csak a gyümölcs maradt.
+     */
+    @Test public void aFruitPieIsAPie() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.List<Foods.Hit> h = Foods.parse(all, "meggyes pite");
+        assertEquals(1, h.size());
+        assertEquals("Pite (almás/gyümölcsös)", h.get(0).food.name);
+    }
 }

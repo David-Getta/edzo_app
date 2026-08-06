@@ -342,7 +342,7 @@ public class FoodsIntegrationTest {
         assertEquals("Kebab 700g", summary("két kebab"));
         assertEquals("Kebab 175g", summary("fél kebab"));
         assertEquals("Csirkés wrap 500g", summary("két csirkés wrap"));
-        assertEquals("Almás pite 240g", summary("két almás pite"));
+        assertEquals("Pite (almás/gyümölcsös) 240g", summary("két almás pite"));
         assertEquals("Gyümölcslé 500g", summary("két pohár narancslé"));
         // A szótő a szó BELSEJÉBEN is lehet: a „görögdinnye" dinnye-töve elé
         // került a „görög", és a kettes elveszett.

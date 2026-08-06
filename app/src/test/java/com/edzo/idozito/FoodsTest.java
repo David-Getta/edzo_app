@@ -154,7 +154,7 @@ public class FoodsTest {
         assertEquals(Arrays.asList("Kürtőskalács"), names("kürtőskalács"));
         assertEquals(Arrays.asList("Kalács / bejgli"), names("kalács"));
         // Az almás pite ne számítson almának is.
-        assertEquals(Arrays.asList("Almás pite"), names("almás pite"));
+        assertEquals(Arrays.asList("Pite (almás/gyümölcsös)"), names("almás pite"));
         assertEquals(Arrays.asList("Alma"), names("alma"));
         // A növényi tej ne legyen tej + mandula.
         assertEquals(Arrays.asList("Növényi tej (mandula/zab)", "Müzli"),
