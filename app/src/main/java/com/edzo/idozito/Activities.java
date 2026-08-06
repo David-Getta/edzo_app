@@ -68,9 +68,11 @@ public final class Activities {
                     "bringatura", "biciklitura", "kerekpartura"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
-                    "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi"),
+                    "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi",
+                    "barlangasz", "via ferrata"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
-                    "evezes", "evezo", "evezt", "kajak", "sup deszka"),
+                    "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
+                    "raftin"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
@@ -100,7 +102,7 @@ public final class Activities {
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
-                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett"),
+                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
@@ -134,7 +136,11 @@ public final class Activities {
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
-                    "ugralo kotel", "hulahopp", "kotelugras"),
+                    "ugralo kotel", "hulahopp", "kotelugras",
+                    "buvarkod", "buvark", "szankoz", "parkour", "szanko",
+                    // A taposógép ugyanaz a gép, mint a lépcsőzőgép: kardió,
+                    // nem súlyzós edzés.
+                    "taposogep", "taposo gep"),
     };
 
     /** A mozgásforma azonosító alapján, vagy null, ha nem ismerjük. */
@@ -776,12 +782,21 @@ public final class Activities {
             }
         }
         // A hosszabb találatba eső rövidebbet eldobjuk („kézi” a „kézilabda”-ban).
+        //
+        // Az ÁTFEDÉS is ide tartozik, nem csak a teljes tartalmazás: a
+        // „hegyMÁSZÁS" elején a hegymászás (túra), a végén a mászás
+        // (falmászás) – a két tő ugyanazokon a betűkön osztozik, mégsem esik
+        // egyik a másikba. Így a mondatból KÉT edzés lett: négy óra falmászás
+        // ÉS másfél óra túra, ugyanabból a szóból.
         List<int[]> keep = new ArrayList<>();
         for (int[] h : hits) {
             boolean covered = false;
             for (int[] o : hits) {
                 if (o == h) continue;
-                if (o[0] <= h[0] && o[0] + o[1] >= h[0] + h[1] && o[1] > h[1]) { covered = true; break; }
+                boolean overlap = o[0] < h[0] + h[1] && h[0] < o[0] + o[1];
+                if (!overlap) continue;
+                // A hosszabb tő nyer; egyenlő hossznál a korábbi.
+                if (o[1] > h[1] || (o[1] == h[1] && o[0] < h[0])) { covered = true; break; }
             }
             if (!covered) keep.add(h);
         }

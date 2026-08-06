@@ -683,4 +683,40 @@ public class ActivitiesTest {
         assertTrue(!Activities.parse("kézilabda meccs", now).isEmpty());
         assertTrue(!Activities.parse("gyógytorna 20 perc", now).isEmpty());
     }
+
+    /**
+     * Egy szó – egy edzés, akkor is, ha két szótő osztozik a betűin.
+     *
+     * A „hegyMÁSZÁS" elején a hegymászás (túra), a végén a mászás
+     * (falmászás). A két tő átfed, de egyik sem esik a másikba – így a
+     * mondatból KÉT edzés lett: négy óra falmászás ÉS másfél óra túra,
+     * ugyanabból a szóból, ugyanarra a napra.
+     */
+    @Test public void twoOverlappingStemsInOneWordMeanOneWorkout() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse("hegymászás 4 óra", now);
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(240, p.plans.get(0).minutes);
+        // A többi összetett sportszó sem esik szét.
+        for (String q : new String[]{"falmászás 1 óra", "sífutás 2 óra",
+                "vízitorna 45 perc", "strandröplabda 1 óra", "tornaterem 1 óra",
+                "kerékpártúra 2 óra"})
+            assertEquals(q, 1, Activities.parse(q, now).plans.size());
+    }
+
+    /** A frissen felvett mozgásformák a megfelelő MET-hez kerülnek. */
+    @Test public void theNewlyAddedActivitiesLandInTheRightKind() {
+        long now = 1_753_869_600_000L;
+        String[][] cases = {{"kenu 2 óra", "evezes"}, {"rafting 2 óra", "evezes"},
+                {"búvárkodás 1 óra", "egyeb"}, {"szánkózás 1 óra", "egyeb"},
+                {"parkour 1 óra", "egyeb"}, {"salsa 1 óra", "tanc"},
+                {"barlangászat 2 óra", "tura"}, {"via ferrata 3 óra", "tura"},
+                {"taposógép 20 perc", "egyeb"}};
+        for (String[] c : cases) {
+            Activities.Parsed p = Activities.parse(c[0], now);
+            assertEquals(c[0], 1, p.plans.size());
+            assertEquals(c[0], c[1], p.plans.get(0).kind.id);
+        }
+    }
 }

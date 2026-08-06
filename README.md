@@ -34,7 +34,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 
 ### 📝 Kézi edzés-felvétel
 - **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
-  kondi, foci, tenisz, jóga… – 19 mozgásforma, sportág szerinti
+  kondi, foci, tenisz, jóga, kenu, búvárkodás, salsa, barlangászat… –
+  19 mozgásforma, sportág szerinti
   kalóriabecsléssel (MET × testsúly × idő)
 - **Egy mondatból akár többet is**: „az elmúlt 3 nap alatt 3 futó edzés és
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
