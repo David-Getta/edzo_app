@@ -454,4 +454,50 @@ public class ActivitiesTest {
         assertEquals(52, Activities.parse("10 km futás 52 perc 5:30-as tempóval", now)
                 .plans.get(0).minutes);
     }
+    /**
+     * Két napszak, két kimondott idő, egy mozgásforma: két edzés volt.
+     *
+     * A „reggel 30 perc futás, este 45 perc futás" második futása eddig
+     * kiesett – egy mozgásforma egyszer szerepel –, a „délelőtt 1 óra,
+     * délután fél óra kondi" második ideje pedig gazdátlanul maradt.
+     * Mindkét mondatban a nap fele hiányzott a naplóból.
+     */
+    @Test public void twoDayPartsMeanTwoSessions() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse("délelőtt 1 óra, délután fél óra kondi", now);
+        assertEquals(1, p.plans.size());
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(45, p.plans.get(0).minutes);      // 60 + 30 = 90 összesen
+        Activities.Parsed q = Activities.parse("reggel 30 perc futás, este 45 perc futás", now);
+        assertEquals(2, q.plans.get(0).count);
+        assertEquals(37, q.plans.get(0).minutes);      // 30 + 45 = 75 összesen
+        // Két KÜLÖNBÖZŐ mozgás nem esik ebbe: mindegyik a sajátját kapja.
+        Activities.Parsed r = Activities.parse("reggel 30 perc futás, este 45 perc kondi", now);
+        assertEquals(2, r.plans.size());
+        assertEquals(30, r.plans.get(0).minutes);
+        assertEquals(45, r.plans.get(1).minutes);
+        // Egy napszak, egy idő: változatlan.
+        assertEquals(1, Activities.parse("este 45 perc kondi", now).plans.get(0).count);
+    }
+
+    /**
+     * Az „és" néha két mozgást választ el, nem egy időtartam két felét.
+     *
+     * A „kondi 1 óra és 30 perc futás" hatvan perc kondi és harminc perc
+     * futás – eddig a kondi kapott kilencven percet, a futás meg a szokásos
+     * hosszát. A jel az, hogy az első szám ELŐTT is, a második UTÁN is áll
+     * mozgásforma.
+     */
+    @Test public void theWordAndCanSeparateTwoSports() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse("délelőtt kondi 1 óra és 30 perc futás", now);
+        assertEquals(2, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes);
+        assertEquals(30, p.plans.get(1).minutes);
+        // Mozgás nélkül elöl az összevonás marad: ez tényleg másfél óra futás.
+        assertEquals(90, Activities.parse("1 óra és 30 perc futás", now)
+                .plans.get(0).minutes);
+        assertEquals(90, Activities.parse("futás 1 óra és 30 perc", now)
+                .plans.get(0).minutes);
+    }
 }

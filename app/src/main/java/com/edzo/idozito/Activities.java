@@ -900,6 +900,20 @@ public final class Activities {
             out.add(new Plan(kind, count, minutes, kmOf[i]));
         }
 
+        // Két napszak, két kimondott idő, EGY mozgásforma: két edzés volt.
+        //
+        // A „reggel 30 perc futás, este 45 perc futás" második futása eddig
+        // kiesett (egy mozgásforma egyszer szerepel), a „délelőtt 1 óra,
+        // délután fél óra kondi" második ideje pedig gazdátlanul maradt.
+        // Mindkét esetben a nap fele hiányzott a naplóból.
+        if (out.size() == 1 && mins.size() == 2 && out.get(0).count == 1
+                && dayParts(s) >= 2) {
+            Plan p = out.get(0);
+            int total = mins.get(0)[1] + mins.get(1)[1];
+            if (total >= 2 && total <= 24 * 60)
+                out.set(0, new Plan(p.kind, 2, Math.max(1, total / 2), p.km));
+        }
+
         // Ha nincs felismert mozgás, de van táv, az futás: a „nyomtam egy
         // 5 km-t" magyarul futást jelent.
         if (out.isEmpty() && !kms.isEmpty()) {
@@ -2064,10 +2078,32 @@ public final class Activities {
             if (a[3] != 1 || b[3] != 0 || a[2] > b[0]) continue;
             String gap = s.substring(a[2], b[0]).trim();
             if (!gap.isEmpty() && !gap.equals("es")) continue;
+            // „Kondi 1 óra és 30 perc futás": itt az „és" KÉT MOZGÁST választ
+            // el, nem egy időtartam két felét. A jel az, hogy az első szám
+            // ELŐTT is, a második UTÁN is áll mozgásforma – az „1 óra és 30
+            // perc futás" előtt nem áll semmi, az tényleg másfél óra futás.
+            if (kindWordIn(s, 0, a[0]) && kindWordIn(s, b[2], s.length())) continue;
             out.set(i, new int[]{a[0], a[1] + b[1], b[2], 0});
             out.remove(i + 1);
         }
         return out;
+    }
+
+    /** Van-e ismert mozgásforma-szó a szöveg megadott szakaszában? */
+    private static boolean kindWordIn(String s, int from, int to) {
+        if (from < 0 || to > s.length() || from >= to) return false;
+        String part = s.substring(from, to);
+        for (Kind k : ALL) for (String w : k.words) if (part.contains(w)) return true;
+        return false;
+    }
+
+    /** Hányféle napszakot említ a mondat? */
+    private static int dayParts(String s) {
+        int n = 0;
+        for (String w : new String[]{"hajnal", "reggel", "delelott", "delben",
+                "delutan", "este", "ejjel"})
+            if (s.contains(w)) n++;
+        return n;
     }
 
     /**
