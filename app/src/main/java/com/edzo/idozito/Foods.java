@@ -1599,7 +1599,8 @@ public final class Foods {
         // tagmondatba tette, és így bekerült a naplóba. Az írásjel viszont
         // igen: a „nem ettem semmit, de ittam kávét" kávéja megmarad.
         for (String w : new String[]{"nem ettem", "nem eszem", "nem ittam",
-                "nem iszom", "nem kertem", "kihagytam"}) {
+                "nem iszom", "nem kertem", "nem kerek", "kihagytam",
+                "elutasitottam", "visszautasitottam"}) {
             int p = q.indexOf(w);
             while (p >= 0) {
                 int stop = q.length();
@@ -1629,10 +1630,42 @@ public final class Foods {
                 p = q.indexOf(w, p + 1);
             }
         }
+        // Visszafelé mutató elutasítás: „megkínáltak tortával, de nem kértem".
+        // Csak a KÉRÉS-tagadásra, és csak ha a tagmondatnak nincs saját étele –
+        // az „ettem egy almát, aztán nem ettem semmit" almáját nem vesszük el.
+        for (String w : new String[]{"nem kertem", "nem kerek", "elutasitottam",
+                "visszautasitottam"}) {
+            int p = q.indexOf(w);
+            while (p >= 0) {
+                int cs = p, ce = p;
+                while (cs > 0 && !isBreak(q.charAt(cs - 1))) cs--;
+                while (ce < q.length() && !isBreak(q.charAt(ce))) ce++;
+                // A tagmondatban a tagadáson és néhány kötőszón kívül SEMMI
+                // más nem állhat. Az étel-felismerés nem tud mindent (a
+                // „cukrot" ragozott alakját például nem), ezért az „ittam
+                // kávét, de cukrot nem kértem" nem veheti el a kávét: ott a
+                // tagmondatnak van saját tárgya, csak nem ismerjük fel.
+                String clause = q.substring(cs, ce).replace(w, " ");
+                for (String f : new String[]{"de", "es", "viszont", "azonban",
+                        "sajnos", "inkabb", "vegul", "persze", "en", "azt", "ezt"})
+                    clause = clause.replaceAll("(?<![a-z])" + f + "(?![a-z])", " ");
+                if (clause.trim().isEmpty()) {
+                    int ps = Math.max(0, cs - 1);
+                    while (ps > 0 && !isBreak(q.charAt(ps - 1))) ps--;
+                    for (Match m : in) if (m.pos >= ps && m.pos < cs) dead.add(m);
+                }
+                p = q.indexOf(w, p + 1);
+            }
+        }
         if (dead.isEmpty()) return in;
         List<Match> out = new ArrayList<>();
         for (Match m : in) if (!dead.contains(m)) out.add(m);
         return out;
+    }
+
+    /** Tagmondat-határ: a mondat itt új állítást kezd. */
+    private static boolean isBreak(char c) {
+        return c == ',' || c == ';' || c == '.' || c == '+';
     }
 
     /**

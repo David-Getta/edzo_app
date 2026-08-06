@@ -314,6 +314,24 @@ public class FoodsTest {
         assertEquals("Tökmag / napraforgómag", Foods.find("magvak").name);
     }
 
+    @Test public void aDeclineAfterTheFoodStillCounts() {
+        // „Megkínáltak tortával, de nem kértem" – a tortát nem ette meg, eddig
+        // mégis bekerült. A tagadás eddig csak ELŐRE hatott.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"megkínáltak tortával, de nem kértem",
+                "hoztak sütit, nem kértem", "kínáltak pizzával, visszautasítottam",
+                "elutasítottam a tortát"})
+            assertTrue("ez nem került a tányérra: " + q, Foods.parse(all, q).isEmpty());
+        // A visszafelé hatás SZŰK: csak akkor, ha az elutasító tagmondatban a
+        // kötőszón kívül semmi más nincs. Az étel-felismerés nem tud mindent
+        // (a ragozott „cukrot" alakot például nem), ezért itt marad a kávé.
+        assertEquals(1, Foods.parse(all, "ittam kávét, de cukrot nem kértem").size());
+        assertEquals(1, Foods.parse(all, "ittam kávét, de nem kértem cukrot").size());
+        // És a máshogy fogalmazott tagadás sem viszi el a korábbi ételt.
+        assertEquals(1, Foods.parse(all, "ettem egy almát, aztán nem ettem semmit").size());
+        assertEquals(1, Foods.parse(all, "nem kértem sültkrumplit a hamburger mellé").size());
+    }
+
     @Test public void aContrastiveConjunctionEndsTheNegation() {
         // A „de" ellentétet nyit: ami utána jön, azt megette az ember. Az „és"
         // viszont folytatja a tagadást – ott mindkét tétel kimarad.
