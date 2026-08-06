@@ -165,4 +165,17 @@ public class FoodsQuantityTest {
         assertEquals(0, two.get(0).grams, 0.01);
         assertEquals(200, two.get(1).grams, 0.01);
     }
+
+    @Test public void wholeAndEntireAreJustAdjectives() {
+        // Az „egy EGÉSZ tábla csoki" egy tábla (100 g), nem egy adag (25 g).
+        // A jelző elszakította a számot a mérőszótól – pont annál a mondatnál,
+        // amit akkor ír le az ember, amikor sokat evett.
+        assertEquals(100, grams("egy egész tábla csoki"), 0.01);
+        assertEquals(100, grams("egy tábla csoki"), 0.01);
+        assertEquals(50, grams("fél tábla csoki"), 0.01);
+        assertEquals(400, grams("egy teljes adag gulyás"), 0.01);
+        // A jelző nélküli alakok változatlanok.
+        assertEquals(150, grams("egy nagy alma"), 0.01);
+        assertEquals(110, grams("két egész tojás"), 0.01);
+    }
 }

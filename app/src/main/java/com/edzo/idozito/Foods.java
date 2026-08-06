@@ -935,9 +935,17 @@ public final class Foods {
              "kanal", "kanalnyi", "evokanal", "evokanalnyi", "teaskanal",
              "teaskanalnyi", "marek", "mareknyi", "csomag", "zacsko", "tal"};
 
-    /** Méret-jelzők: nem mérőszavak, csak közéállnak („2 nagy alma"). */
+    /**
+     * Méret-jelzők: nem mérőszavak, csak közéállnak („2 nagy alma").
+     *
+     * Az „egész" és a „teljes" is ide tartozik: az „egy EGÉSZ tábla csoki"
+     * egy tábla, nem egy adag. Enélkül a jelző elszakította a számot a
+     * mérőszótól, és a tipikus adag (25 g) ment be a száz gramm helyett –
+     * pont annál a mondatnál, amit akkor ír le az ember, amikor sokat evett.
+     */
     private static final String[] SIZE_WORDS =
-            {"nagy", "kis", "kicsi", "kozepes", "szep", "hatalmas", "apro"};
+            {"nagy", "kis", "kicsi", "kozepes", "szep", "hatalmas", "apro",
+             "egesz", "teljes"};
 
     /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
