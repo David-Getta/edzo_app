@@ -156,7 +156,8 @@ open(dst + 'StrengthLog.java', 'w').write(
     "            for (SetEntry x : sets) r2 += x.reps; return r2; } }\n"
     "    " + common + "\n"
     "    public static int dayDiff(long a, long b) { return (int) ((b - a) / 86400000L); }\n"
-    "    " + grab(sl, 'public static String setLabel(') + "\n}\n")
+    "    " + grab(sl, 'public static String setLabel(') + "\n"
+    "    " + grab(sl, 'public static String sentence(') + "\n}\n")
 PY
 
 # 4) Azok a tesztek, amiknek a fentiek elegendők.

@@ -21,6 +21,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „8 rounds 20 sec work 10 sec rest” (az internetről másolt angol terv),
   „négyszer negyven másodperc munka húsz másodperc pihenő” – a teremben kapott edzésterv szövegként érkezik, nem
   csúszkaállásként; egy koppintással sablonként is elmenthető
+- 📤 **Bejegyzés megosztása**: az erősítő napló egy bejegyzése („guggolás
+  3x10 60 kg") és az időzítő-sablon is küldhető szövegként – a másik telefonon
+  ugyanez a felismerő teszi a helyére
 - 📤 **Sablon megosztása**: a mentett sablon szövegként küldhető tovább
   („Tabata: 8 kör 20 mp munka 10 mp pihenő"), és a másik telefonon ugyanez a
   felismerő állítja vissza – a Grit ott van a megosztás-listában

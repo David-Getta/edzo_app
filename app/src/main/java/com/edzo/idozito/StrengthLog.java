@@ -52,6 +52,38 @@ public final class StrengthLog {
         return StrengthParse.isTimed(name) ? StrengthParse.hold(s.reps) : s.reps + " ism.";
     }
 
+    /**
+     * A bejegyzés MONDATKÉNT – ugyanabban az alakban, amit a felismerő ért.
+     *
+     * Ez a megosztás formája: aki megkapja, a Grit megosztás-listáján át egy
+     * koppintással a saját naplójába teheti. Ezért nem díszes – a szöveget
+     * vissza kell tudni olvasni (a teszt oda-vissza futtatja).
+     *
+     * Egyforma sorozatoknál a teremben szokásos „3x10" alak, eltérőknél a
+     * sorozatonkénti felsorolás („12-10-8"). A súly csak akkor kerül ki, ha
+     * van: a testsúlyos sorozathoz nem írunk nulla kilót.
+     */
+    public static String sentence(String name, List<SetEntry> sets) {
+        if (name == null || sets == null || sets.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder(name.toLowerCase(Hu.LOCALE));
+        boolean same = true;
+        for (SetEntry s : sets) if (s.reps != sets.get(0).reps) { same = false; break; }
+        sb.append(' ');
+        if (same && sets.size() > 1) sb.append(sets.size()).append('x').append(sets.get(0).reps);
+        else if (same) sb.append(sets.get(0).reps);
+        else {
+            for (int i = 0; i < sets.size(); i++) {
+                if (i > 0) sb.append('-');
+                sb.append(sets.get(i).reps);
+            }
+        }
+        if (StrengthParse.isTimed(name)) sb.append(" mp");
+        double w = 0;
+        for (SetEntry s : sets) w = Math.max(w, s.weight);
+        if (w > 0) sb.append(' ').append(Hu.kg(w)).append(" kg");
+        return sb.toString();
+    }
+
     /** Egy naplóbejegyzés: időpont + gyakorlat + sorozatok. */
     public static final class Entry {
         public final long ts;

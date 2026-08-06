@@ -625,4 +625,39 @@ public class StrengthParseTest {
             assertEquals(q, kg, s.weight, 0.01);
         }
     }
+
+    /**
+     * A megosztott bejegyzés visszaolvasható – ez a megosztás értelme.
+     *
+     * A sorozat szövegként megy tovább (üzenetben, edzőnek), a másik
+     * telefonon pedig ugyanez a felismerő teszi a naplóba. Ha a két oldal
+     * elcsúszna, a kapott sorozat csendben MÁS lenne, mint a küldött:
+     * más súllyal, más ismétléssel, esetleg más gyakorlat néven.
+     */
+    @Test public void everySharedEntryReadsBackTheSame() {
+        double[] ws = {0, 20, 42.5, 60, 100, 140};
+        int[][] repSets = {{10, 10, 10}, {8}, {12, 10, 8}, {5, 5, 5, 5, 5}, {20, 20},
+                {60, 60, 60}};
+        StringBuilder bad = new StringBuilder();
+        int n = 0;
+        for (String m : StrengthParse.names())
+            for (double w : ws)
+                for (int[] rs : repSets) {
+                    java.util.List<StrengthLog.SetEntry> sets = new java.util.ArrayList<>();
+                    for (int r : rs) sets.add(new StrengthLog.SetEntry(r, w));
+                    String q = StrengthLog.sentence(m, sets);
+                    n++;
+                    List<StrengthParse.Item> it = StrengthParse.parse(q);
+                    if (it.size() != 1) { bad.append("\n  „").append(q).append("” -> ")
+                            .append(it.size()).append(" gyakorlat"); continue; }
+                    StrengthParse.Item i2 = it.get(0);
+                    if (!i2.name.equals(m)) bad.append("\n  „").append(q).append("” -> ").append(i2.name);
+                    else if (i2.sets.size() != rs.length)
+                        bad.append("\n  „").append(q).append("” -> ").append(i2.sets.size()).append(" sorozat");
+                    else if (Math.abs(i2.topWeight() - w) > 0.01)
+                        bad.append("\n  „").append(q).append("” -> ").append(i2.topWeight()).append(" kg");
+                }
+        assertTrue("legalább ezer bejegyzést néztünk", n > 1000);
+        assertEquals("oda-vissza eltérés:" + bad, 0, bad.length());
+    }
 }

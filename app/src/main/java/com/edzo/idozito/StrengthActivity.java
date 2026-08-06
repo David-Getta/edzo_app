@@ -409,8 +409,9 @@ public class StrengthActivity extends Activity {
 
             card.addView(inner);
             card.setClickable(true);
-            card.setOnClickListener(v -> new Sheet(this, e.name, "Szerkesztés vagy törlés?")
+            card.setOnClickListener(v -> new Sheet(this, e.name, "Szerkesztés, megosztás vagy törlés?")
                     .addNeutral("✏️  Szerkesztés", () -> addEntryDialog(e))
+                    .addNeutral("📤  Megosztás", () -> shareEntry(e))
                     .addDestructive("Törlés",
                             () -> {
                                 StrengthLog.removeByTs(this, e.ts);
@@ -515,6 +516,30 @@ public class StrengthActivity extends Activity {
                 .addPrimary("Tovább", () -> sentencePreview(et.getText().toString()))
                 .addCancel()
                 .show();
+    }
+
+    /**
+     * Bejegyzés megosztása szövegként.
+     *
+     * A szöveg ugyanabban az alakban megy, amit a felismerő ért („guggolás
+     * 3x10 60 kg"): aki megkapja, a Grit megosztás-listáján át egy
+     * koppintással a saját naplójába teheti. Edzőnek-edzőtársnak küldött
+     * sorozat így nem gépelős feladat a másik oldalon.
+     */
+    void shareEntry(StrengthLog.Entry e) {
+        String text = StrengthLog.sentence(e.name, e.sets);
+        if (text.isEmpty()) return;
+        if (e.rpe > 0) text += " rpe " + e.rpe;
+        try {
+            android.content.Intent i =
+                    new android.content.Intent(android.content.Intent.ACTION_SEND)
+                            .setType("text/plain");
+            i.putExtra(android.content.Intent.EXTRA_TEXT, text);
+            startActivity(android.content.Intent.createChooser(i, "Bejegyzés megosztása"));
+        } catch (Exception ignored) {
+            android.widget.Toast.makeText(this, "Nem sikerült megosztani.",
+                    android.widget.Toast.LENGTH_SHORT).show();
+        }
     }
 
     /** Előnézet mentés előtt: kitalált sorozat a rekordokba is bekerülne. */
