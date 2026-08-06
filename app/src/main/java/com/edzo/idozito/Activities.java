@@ -558,8 +558,10 @@ public final class Activities {
             "csatorna", "assistance", "importance",
             // A kézisúlyzó nem kézilabda: a „kezi" tő a nevében is ott van.
             "kezisulyzo", "kezisuly",
-            // A „részleTEKÉRT" végén a tekerés, a MEGERŐSÍTésben az erősítés.
-            "reszlet", "megerosit",
+            // A „részleTEKÉRT" végén a tekerés, a MEGERŐSÍTésben az erősítés,
+            // a TÖLTEKEZÜNKben a tekézés, a KÖRGYŰRŰben (az app saját sávja)
+            // a gyűrű.
+            "reszlet", "megerosit", "toltekez", "korgyuru",
     };
 
     /** Maszkolandó-e a szó – igekötővel együtt is. */

@@ -740,6 +740,9 @@ public final class Foods {
             "zsireget", "zsirtartalm",
             // A vízszintes és a víztiszta nem ital; a vízcél az app szava.
             "vizszint", "viztiszta", "vizcel", "vizbevitel", "vizkovet",
+            // A fALMAszásban alma, a COMBhajlításban (egy lábgép!) csirkecomb.
+            "falmasz", "combhajlit", "combnyujt", "combfeszit", "combtavolit",
+            "combkozelit",
     };
 
     /**
