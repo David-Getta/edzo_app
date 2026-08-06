@@ -308,5 +308,11 @@ public class FoodsQuantityTest {
         // A név utáni EGÉSZ szám továbbra sem adagszorzó (mértékegység nélkül
         // nem tudjuk, mit jelent), tehát a tipikus adaggal megy tovább.
         assertEquals(0, grams("csirkemell 150"), 0.01);
+        // A tört a saját tagmondatát is zárhatja.
+        java.util.List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "az alma fele és egy szelet kenyér");
+        assertEquals(2, h.size());
+        assertEquals(75, h.get(0).grams, 0.01);
+        assertEquals(35, h.get(1).grams, 0.01);
     }
 }

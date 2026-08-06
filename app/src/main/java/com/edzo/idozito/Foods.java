@@ -1562,7 +1562,10 @@ public final class Foods {
             // Tört a név UTÁN, mértékegység nélkül: „az alma fele", „a pizza
             // fele". Csak törtre él: a „csirkemell 150" százötven grammot
             // jelent, nem százötven adagot.
-            boolean fractionAtEnd = unit.isEmpty() && count < 1;
+            // A tört a saját tagmondatát is zárhatja: „az alma fele ÉS egy
+            // szelet kenyér" – ott a fél alma ugyanúgy fél.
+            boolean fractionAtEnd = count < 1
+                    && (unit.isEmpty() || unit.equals("es") || unit.equals("meg"));
             if (!portionWord && !fractionAtEnd && !isCountWord(unit)
                     && !isPortionWord(unit)) continue;
             int best = -1;
