@@ -51,7 +51,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „10 km-t futottam 5:30-as tempóval" (a kimondott tempó pontosabb, mint a
   becslés), „futás 1:05:23" (óra-kijelző alak), „kondi és futás, összesen
   másfél óra" (az összesen OSZTJA az időt), „10-15 perc futás" és „5-8 km
-  futás" (a tartomány közepe), „reggel és este 30-30 perc kondi" (két edzés)
+  futás" (a tartomány közepe), „reggel és este 30-30 perc kondi" (két edzés),
+  „futás és úszás 30-30 perc" (mindkettő harminc perc – órában is: „2-2 óra")
   – mentés előtt megmutatja, mit értett; a tervekre („jövő
   héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
   is érti („ma nem futottam", „kondi helyett futás"; a „nem futottam és

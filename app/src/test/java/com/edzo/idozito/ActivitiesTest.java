@@ -719,4 +719,35 @@ public class ActivitiesTest {
             assertEquals(c[0], c[1], p.plans.get(0).kind.id);
         }
     }
+
+    /**
+     * Az osztó számpár mindkét mozgásra vonatkozik – órában is.
+     *
+     * A „futás és úszás 30-30 perc" futása eddig a szokásos negyvenöt perccel
+     * került be: az osztó időtartamot csak a hozzá közelebbi mozgás kapta meg.
+     * Az órás alak („2-2 óra") ráadásul sehol nem működött, még egyetlen
+     * mozgásnál sem: mire a felismerés odáig ér, a számpár egyik tagja már
+     * ki van fehérítve a munkapéldányban, és csak a maradék szám látszik.
+     */
+    @Test public void aDistributiveAmountReachesEveryMovement() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse("futás és úszás 30-30 perc", now);
+        assertEquals(2, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(30, p.plans.get(1).minutes);
+        Activities.Parsed h = Activities.parse("futás és úszás 2-2 óra", now);
+        assertEquals(120, h.plans.get(0).minutes);
+        assertEquals(120, h.plans.get(1).minutes);
+        // Egy mozgás, két napszak: órában is két alkalom.
+        Activities.Parsed d = Activities.parse("reggel és este 1-1 órát futottam", now);
+        assertEquals(1, d.plans.size());
+        assertEquals(2, d.plans.get(0).count);
+        assertEquals(60, d.plans.get(0).minutes);
+        // A tartomány NEM osztó alak: annak a közepe megy be.
+        assertEquals(13, Activities.parse("10-15 perc futás", now).plans.get(0).minutes);
+        // Az „összesen" pedig oszt, nem sokszoroz.
+        Activities.Parsed t = Activities.parse("kondi és futás, összesen másfél óra", now);
+        assertEquals(45, t.plans.get(0).minutes);
+        assertEquals(45, t.plans.get(1).minutes);
+    }
 }

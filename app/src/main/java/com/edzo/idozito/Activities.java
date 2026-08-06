@@ -654,6 +654,11 @@ public final class Activities {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0, 12);
         char[] q = Foods.norm(text).toCharArray();
+        // A nyers, még semmilyen kimaszkolás előtti alak. Az osztó számpár
+        // („2-2 óra") felismeréséhez kell: mire a mozgásokhoz érünk, a pár
+        // egyik tagja már kifehérítve áll a munkapéldányban – így csak a
+        // maradék szám látszik, az osztó jelentés nem.
+        final String rawText = new String(q);
         // A jövő nem napló: a „jövő héten 3 futás" vagy a „holnap futok"
         // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
         // a szándék máris bekerülne a szériába és az XP-be.
@@ -984,11 +989,27 @@ public final class Activities {
                 int total = mins.get(0)[1] + mins.get(1)[1];
                 if (total >= 2 && total <= 24 * 60)
                     out.set(0, new Plan(p.kind, 2, Math.max(1, total / 2), p.km));
-            } else if (mins.size() == 1 && distributiveBefore(beforeBlank, mins.get(0))) {
+            } else if (mins.size() == 1 && distributiveBefore(rawText, mins.get(0))) {
                 // „reggel és este is futottam 20-20 percet": az osztó alak
                 // ALKALMANKÉNT húsz percet jelent, nem összesen annyit.
                 out.set(0, new Plan(p.kind, 2, mins.get(0)[1], p.km));
             }
+        }
+
+        // Osztó időtartam TÖBB mozgásformára: „futás és úszás 30-30 perc".
+        //
+        // Az osztó alak alkalmanként értendő, és itt az „alkalom" a két
+        // különböző mozgás. Eddig csak a hozzá közelebbi kapta meg a harminc
+        // percet, a másik a szokásos hosszával került be – a „futás és úszás
+        // 30-30 perc" futása negyvenöt perc lett, mert annyi a futás alapja.
+        if (out.size() >= 2 && mins.size() == 1
+                && distributiveBefore(rawText, mins.get(0))) {
+            int each = mins.get(0)[1];
+            if (each >= 1 && each <= 24 * 60)
+                for (int i = 0; i < out.size(); i++) {
+                    Plan p = out.get(i);
+                    if (p.count == 1) out.set(i, new Plan(p.kind, 1, each, p.km));
+                }
         }
 
         // Ha nincs felismert mozgás, de van táv, az futás: a „nyomtam egy
@@ -2309,11 +2330,25 @@ public final class Activities {
         while (e < s.length() && Character.isDigit(s.charAt(e))) e++;
         if (e == b) return false;
         String num = s.substring(b, e);
+        // Előre nézve: „30-30 perc" – az időtartam a MÁSODIK tagra van kötve.
         int dash = b - 1;
-        if (dash < 0 || s.charAt(dash) != '-') return false;
-        int start = dash - num.length();
-        return start >= 0 && s.substring(start, dash).equals(num)
-                && (start == 0 || !Character.isDigit(s.charAt(start - 1)));
+        if (dash >= 0 && s.charAt(dash) == '-') {
+            int start = dash - num.length();
+            if (start >= 0 && s.substring(start, dash).equals(num)
+                    && (start == 0 || !Character.isDigit(s.charAt(start - 1)))) return true;
+        }
+        // …és hátra nézve: az óránál („2-2 óra") a MÁSODIK tag tűnik el
+        // korábban, és az időtartam az elsőre marad kötve. Csak visszafelé
+        // nézve az osztó alak ilyenkor láthatatlan volt – a „futás és úszás
+        // 2-2 óra" futása a szokásos negyvenöt perccel került be.
+        if (e < s.length() && s.charAt(e) == '-') {
+            int after = e + 1;
+            int ae = after;
+            while (ae < s.length() && Character.isDigit(s.charAt(ae))) ae++;
+            if (ae > after && s.substring(after, ae).equals(num)
+                    && (ae >= s.length() || !Character.isDigit(s.charAt(ae)))) return true;
+        }
+        return false;
     }
 
     /** Hányféle napszakot említ a mondat? */
