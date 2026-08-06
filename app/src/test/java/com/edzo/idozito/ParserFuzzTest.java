@@ -55,6 +55,12 @@ public class ParserFuzzTest {
             "10x30s", "on", "off", "amrap", "swing", "kettlebell swing",
             "step up", "alkartámasz", "lábtávolítás", "russian twist",
             "másodperc", "munka", "pihenő", "rpe 9",
+            // Tartások és óra:perc:másodperc alak. Az utóbbi négyelemű
+            // időtartam-sorral él a többi mellett; háromelemű bejegyzésként
+            // a mondat feldolgozása kivétellel szállt el.
+            "plank", "fal ülés", "holt függés", "3x60", "1 perc", "1:05:23",
+            "0:45:00", "18:00", "99:59:59", "bemelegítés", "levezetés",
+            "összesen", "futóverseny", "kirándultunk", "negyed", "dupla",
     };
 
     @Test public void randomSentencesNeverCrashTheParsers() {

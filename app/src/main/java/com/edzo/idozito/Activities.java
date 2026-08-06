@@ -75,7 +75,7 @@ public final class Activities {
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
-                    "crossfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
@@ -670,8 +670,10 @@ public final class Activities {
         // különben a „10 km futás” tíz külön futássá válna.
         List<double[]> kms = findKms(q);            // {pos, km, vég}
         for (double[] t : kms) blank(q, (int) t[0], (int) t[2]);
+        String beforeBlank = new String(q);
         List<int[]> mins = findMinutes(q);          // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
+        dropWarmupTimes(beforeBlank, mins);
 
         // 3) Mozgásformák a maradék szövegben.
         String s = new String(q);
@@ -794,6 +796,15 @@ public final class Activities {
             }
             if (best >= 0) minsOf[best] = m[1];
         }
+        // Ugyanaz a mozgás kétszer megnevezve („crossfit wod 20 perc"): a
+        // második említés kiesik a listából, de a hozzá tapadt idő nem veszhet
+        // el vele – eddig a bejegyzés a mozgásforma szokásos hosszával ment
+        // tovább, vagyis a kimondott húsz percből hatvan lett. A távnál ez a
+        // szabály már megvolt.
+        for (int i = 0; i < keep.size(); i++)
+            for (int j = i + 1; j < keep.size(); j++)
+                if (keep.get(i)[2] == keep.get(j)[2] && minsOf[i] == 0 && minsOf[j] > 0)
+                    minsOf[i] = minsOf[j];
         // „Az elmúlt héten 3 futás és 2 úszás, 40 perc": az EGYETLEN időtartam
         // mindenkire vonatkozik – de csak akkor, ha a felsorolás UTÁN áll,
         // összefoglalásként. Az elöl álló szám az első mozgáshoz tartozik: a
@@ -1805,6 +1816,69 @@ public final class Activities {
     }
 
     /**
+     * A bemelegítés és a levezetés ideje nem a sport ideje.
+     *
+     * A „20 perc bemelegítés + 40 perc foci" húsz perce a bemelegítésé – a
+     * foci mégis ezt kapta, a negyven meg elveszett. Ha viszont ez az EGYETLEN
+     * kimondott idő, marad: egy közelítő hossz jobb, mint semmi.
+     */
+    private static void dropWarmupTimes(String s, List<int[]> mins) {
+        if (mins.size() < 2) return;
+        List<int[]> keep = new ArrayList<>();
+        for (int[] m : mins) if (!warmupWordAt(s, m)) keep.add(m);
+        if (!keep.isEmpty() && keep.size() < mins.size()) {
+            mins.clear();
+            mins.addAll(keep);
+        }
+    }
+
+    /**
+     * A megnevezett idő SZOMSZÉDJA bemelegítés vagy levezetés-e?
+     *
+     * Szándékosan a szomszéd szót nézzük, nem egy karakter-ablakot: a
+     * „20 perc bemelegítés + 40 perc foci" mondatban a negyven mögé is
+     * beleért volna a bemelegítés szava, és akkor MINDKÉT idő kiesett volna.
+     */
+    private static boolean warmupWordAt(String s, int[] m) {
+        int b = m[0];
+        while (b > 0 && s.charAt(b - 1) == ' ') b--;
+        int a = b;
+        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+        if (a < b && isWarmupWord(s.substring(a, b))) return true;
+        int i = m[2];
+        for (int w = 0; w < 2 && i < s.length(); w++) {
+            while (i < s.length() && !Character.isLetter(s.charAt(i))) i++;
+            int e = i;
+            while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
+            if (e == i) break;
+            if (isWarmupWord(s.substring(i, e))) return true;
+            i = e;
+        }
+        return false;
+    }
+
+    private static boolean isWarmupWord(String w) {
+        return w.startsWith("bemelegit") || w.startsWith("levezet");
+    }
+
+    /**
+     * Óra:perc:másodperc alak: „futás 1:05:23".
+     *
+     * Ezt másolja ki az ember az órája kijelzőjéről. A KÉTRÉSZŰ alak
+     * szándékosan kimarad: a „18:00" időpont, nem tizennyolc perc – és egy
+     * időpontból számolt edzéshossz csendben rossz lenne.
+     */
+    private static void findClockTimes(String s, List<int[]> out) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d:])(\\d{1,2}):([0-5]\\d):([0-5]\\d)(?![\\d:])").matcher(s);
+        while (m.find()) {
+            int min = Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
+            if (Integer.parseInt(m.group(3)) >= 30) min++;
+            if (min >= 1 && min <= 24 * 60) out.add(new int[]{m.start(), min, m.end(), 0});
+        }
+    }
+
+    /**
      * Rövidített időtartam-jelölés: „1h20", „2h", „1h30m", „45p".
      *
      * Az órák-appok és a sportórák így írják, és chatben is így gépeli az
@@ -1865,6 +1939,7 @@ public final class Activities {
     private static List<int[]> findMinutes(char[] q) {
         String s = new String(q);
         List<int[]> out = new ArrayList<>();
+        findClockTimes(s, out);
         findShortTimes(s, out);
         for (String unit : new String[]{"perc", "ora"}) {
             int from = 0;
