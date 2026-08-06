@@ -552,4 +552,19 @@ public class StrengthParseTest {
                 "toltam 3x10 60 kg", "emeltem 3x10 60 kg"})
             assertTrue(q, StrengthParse.parse(q).isEmpty());
     }
+    /**
+     * A „helyett" előtti gyakorlat nem történt meg.
+     *
+     * A „guggolás 3x10 helyett fekvenyomás 3x8" mondatból eddig MINDKÉT
+     * gyakorlat bekerült a naplóba – az is, amit az ember épp kihagyott. Az
+     * étkezés-oldalon ez a szabály régóta megvolt.
+     */
+    @Test public void whatComesBeforeInsteadOfDidNotHappen() {
+        List<StrengthParse.Item> it =
+                StrengthParse.parse("guggolás 3x10 helyett fekvenyomás 3x8");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        // Kötőszóval felsorolva továbbra is mindkettő megvan.
+        assertEquals(2, StrengthParse.parse("guggolás 3x10, fekvenyomás 3x8").size());
+    }
 }

@@ -173,7 +173,7 @@ public final class StrengthParse {
     public static List<Item> parse(String text) {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
-        String whole = sets(Foods.norm(text));
+        String whole = stripInsteadOf(sets(Foods.norm(text)));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
@@ -340,6 +340,25 @@ public final class StrengthParse {
                 // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent. A szám a
                 // két oldalon köti a mintát, így a „korcsolya" nem kör.
                 .replaceAll("(\\d{1,2})\\s?kor\\s+(\\d{1,3})", "$1x$2");
+    }
+
+    /**
+     * „Guggolás 3x10 HELYETT fekvenyomás 3x8": ami a helyett ELŐTT áll, az
+     * nem történt meg. Enélkül mindkét gyakorlat bekerült a naplóba – az is,
+     * amit az ember épp kihagyott.
+     */
+    private static String stripInsteadOf(String s) {
+        int h = s.indexOf("helyett");
+        while (h >= 0) {
+            int a = h;
+            while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != ';'
+                    && s.charAt(a - 1) != '.') a--;
+            char[] c = s.toCharArray();
+            for (int i = a; i < h + 7 && i < c.length; i++) c[i] = ' ';
+            s = new String(c);
+            h = s.indexOf("helyett", h + 1);
+        }
+        return s;
     }
 
     /**
