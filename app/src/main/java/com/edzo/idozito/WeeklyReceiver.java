@@ -273,6 +273,14 @@ public class WeeklyReceiver extends BroadcastReceiver {
                     text += String.format(Hu.LOCALE, "\n⚖️ Testsúly: %+.2f kg/hét (6 hét trendje).",
                             per);
             }
+            // Ha rég volt mérés, a trend már nem tendencia, csak két régi pont.
+            // Ezt mondjuk is ki – a heti összefoglaló az a hely, ahol a
+            // felhasználó úgyis a számokat nézi.
+            int measAgo = Profile.daysSinceMeasurement(c, System.currentTimeMillis());
+            String nudge = Profile.measureNudge(measAgo);
+            // Csak annak szólunk, aki már mért egyszer: aki sosem használta a
+            // mérleget, annak ez heti szemrehányás lenne, nem segítség.
+            if (measAgo >= 0 && !nudge.isEmpty()) text += "\n" + nudge;
         } catch (Exception ignored) {}
         // Víz-átlag a hétből (csak azok a napok, ahol ment a számláló).
         try {
