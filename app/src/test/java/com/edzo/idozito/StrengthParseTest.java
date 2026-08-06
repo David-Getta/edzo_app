@@ -357,6 +357,14 @@ public class StrengthParseTest {
         // futás" továbbra sem sorozat.
         assertEquals(3, StrengthParse.parse("guggolás 3x10, majd 20 perc futás")
                 .get(0).sets.size());
+        // És nem nyeli el a KÖVETKEZŐ gyakorlatot, ha az is súllyal kezdődik.
+        List<StrengthParse.Item> two =
+                StrengthParse.parse("60 kg guggolás 3x8, 50 kg fekvenyomás 3x8");
+        assertEquals(2, two.size());
+        assertEquals("Guggolás", two.get(0).name);
+        assertEquals(60.0, two.get(0).topWeight(), 0.001);
+        assertEquals("Fekvenyomás", two.get(1).name);
+        assertEquals(50.0, two.get(1).topWeight(), 0.001);
     }
 
     @Test public void aMaxLiftIsASingle() {

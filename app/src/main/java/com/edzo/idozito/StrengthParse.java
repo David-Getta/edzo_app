@@ -219,7 +219,10 @@ public final class StrengthParse {
             // 100 kg”. A darabok külön-külön értelmetlenek – a sorozatszámhoz
             // nincs ismétlés, az ismétléshez nincs gyakorlat –, ezért eddig az
             // EGÉSZ mondatból nem lett bejegyzés. Együtt viszont teljes.
-            if (!out.isEmpty() && p.matches(
+            // Csak akkor folytatás, ha NINCS benne saját gyakorlatnév: a
+            // „60 kg guggolás 3x8, 50 kg fekvenyomás 3x8" második fele önálló
+            // gyakorlat, nem az előző adata – összeolvasztva mindkettő elveszett.
+            if (!out.isEmpty() && moveIn(p) == null && p.matches(
                     "^\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")) {
                 out.set(out.size() - 1, out.get(out.size() - 1) + " " + p);
                 continue;
