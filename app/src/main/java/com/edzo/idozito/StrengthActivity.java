@@ -582,6 +582,11 @@ public class StrengthActivity extends Activity {
     void sentencePreview(String textIn) {
         final List<StrengthParse.Item> items = StrengthParse.parse(textIn);
         if (items.isEmpty()) {
+            // Edzésnap-lista („Lábnap: guggolás, lábtolás…"): ez ugyanezen a
+            // képernyőn van otthon, csak nem sorozatként – ne küldjük körbe
+            // az útbaigazítón, amiből ide jutna vissza.
+            Routines.Routine sharedDay = Routines.parseShared(textIn);
+            if (sharedDay != null) { sharedRoutineSheet(sharedDay); return; }
             // Lehet, hogy nem sorozat: a „30 perc futás" is mondat, csak az
             // Előzményeké. A mondat megy vele, nem kell újragépelni.
             final Sentence.Kind k =
