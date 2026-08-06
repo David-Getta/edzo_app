@@ -56,6 +56,9 @@ public final class Sentence {
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;
         if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
+        // Kimondott kalória étel nélkül („vacsora 650 kcal"): ez is étkezés,
+        // csak épp nincs benne olyan szó, amit az adatbázis ismerne.
+        if (Kcal.stated(q) > 0) return Kind.MEAL;
         // A mérés a legvégén: a kilogramm a legterheltebb mértékegység az
         // appban, ezért a testsúly csak arra a maradékra jelentkezik, amit
         // senki más nem kért magának.

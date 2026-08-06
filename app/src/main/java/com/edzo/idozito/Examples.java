@@ -40,6 +40,9 @@ public final class Examples {
             "tábla csoki",
             "10 szem mandula",
             "2 karéj kenyér",
+            // Ami a dobozon áll, azt elhisszük – étel-felismerés nélkül is.
+            "vacsora 650 kcal",
+            "müzliszelet 180 kcal",
     };
 
     /** Több edzés egy mondatból – az előzmények tömeges felvitelénél. */

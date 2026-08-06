@@ -950,6 +950,13 @@ public class DietActivity extends Activity {
                         reco.setOnClickListener(v -> Ux.openFor(DietActivity.this, k, q));
                         return;
                     }
+                    // Ha a mondat kimondja a kalóriát, nincs mit felismerni:
+                    // a szám maga a bejegyzés („vacsora 650 kcal").
+                    int kc = Kcal.stated(q);
+                    if (kc > 0) {
+                        reco.setText("✔ " + kc + " kcal – " + Kcal.label(q) + " néven naplózom.");
+                        return;
+                    }
                     reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");
                     reco.setClickable(true);
                     reco.setOnClickListener(v -> addCustomFoodSheet(q));
@@ -1083,7 +1090,11 @@ public class DietActivity extends Activity {
                 resolved.add(h.food);
             }
         }
-        if (foods.isEmpty()) {
+        // A dobozon írt kalória: ha a mondat kimondja, az a szám a pontos – és
+        // önmagában is elég egy bejegyzéshez („vacsora 650 kcal").
+        final String rawName = nameEt.getText().toString();
+        final int stated = Kcal.stated(rawName);
+        if (foods.isEmpty() && stated <= 0) {
             Toast.makeText(this, "Adj meg legalább egy összetevőt, vagy írd a névbe, "
                     + "mit ettél (pl. rántott hús rizzsel).", Toast.LENGTH_LONG).show();
             return;
@@ -1115,6 +1126,26 @@ public class DietActivity extends Activity {
             else { kcal100 = 150; prot100 = 0; label = foods.get(i); estimated = true; } // becslés
             double g = grams.get(i);
             items.add(new MealLog.Item(label, g, kcal100 * g / 100.0, prot100 * g / 100.0));
+        }
+        if (stated > 0) {
+            if (items.isEmpty()) {
+                // Csak a kalória van meg: gramm nélkül, a mondat saját szavaival.
+                items.add(new MealLog.Item(Kcal.label(rawName), 0, stated, 0));
+                estimated = false;
+            } else {
+                // Az adatbázis becslését a kimondott összegre igazítjuk. A
+                // fehérje marad: a doboz a kalóriát mondta ki, nem a fehérjét.
+                double est = 0;
+                for (MealLog.Item it : items) est += it.kcal;
+                double f = Kcal.scale(est, stated);
+                if (Math.abs(f - 1) > 0.001) {
+                    List<MealLog.Item> fixed = new ArrayList<>();
+                    for (MealLog.Item it : items)
+                        fixed.add(new MealLog.Item(it.food, it.grams, it.kcal * f, it.protein));
+                    items = fixed;
+                    estimated = false;
+                }
+            }
         }
         // Szerkesztésnél az eredeti időpont és fotó megmarad.
         long ts = existing != null ? existing.ts : System.currentTimeMillis();

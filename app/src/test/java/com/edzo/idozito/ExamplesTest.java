@@ -31,7 +31,10 @@ public class ExamplesTest {
     @Test public void everyMealExampleIsRecognised() {
         for (String q : Examples.MEAL) {
             List<Foods.Hit> hits = Foods.parse(Arrays.asList(Foods.ALL), q);
-            assertTrue("nem ismeri fel a saját példáját: " + q, !hits.isEmpty());
+            // A kimondott kalória („vacsora 650 kcal") étel-felismerés nélkül
+            // is teljes értékű bejegyzés – a példa akkor is működik.
+            assertTrue("nem ismeri fel a saját példáját: " + q,
+                    !hits.isEmpty() || Kcal.stated(q) > 0);
             for (Foods.Hit h : hits) {
                 double g = h.grams > 0 ? h.grams : h.food.portion;
                 double kcal = g * h.food.kcal100 / 100.0;
@@ -134,7 +137,8 @@ public class ExamplesTest {
         // működne, pont a mintamondat járatná le a felismerést.
         java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
         for (String s : Examples.MEAL)
-            assertTrue("étel-minta nem érthető: " + s, !Foods.parse(all, s).isEmpty());
+            assertTrue("étel-minta nem érthető: " + s,
+                    !Foods.parse(all, s).isEmpty() || Kcal.stated(s) > 0);
         for (String s : Examples.SET)
             assertTrue("sorozat-minta nem érthető: " + s, !StrengthParse.parse(s).isEmpty());
         for (String s : Examples.INTERVAL)
