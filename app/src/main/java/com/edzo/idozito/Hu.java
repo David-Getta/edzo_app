@@ -54,9 +54,14 @@ public final class Hu {
             int p = out.indexOf(w[0]);
             while (p >= 0) {
                 int e = p + w[0].length();
+                // A „-szor/-szer" toldalék a számhoz tapad, tehát ott nem
+                // számít összeragadásnak – de csak akkor, ha a szó ott VÉGET is
+                // ér. Az „egyszerű" különben „1szeru" lett, a „kétszeres"
+                // pedig „2szeres": egyik sem szám, csak véletlenül úgy néz ki.
+                boolean mult = (out.startsWith("szor", e) || out.startsWith("szer", e))
+                        && (e + 4 >= out.length() || !Character.isLetter(out.charAt(e + 4)));
                 boolean glued = (p > 0 && Character.isLetter(out.charAt(p - 1)))
-                        || (e < out.length() && Character.isLetter(out.charAt(e))
-                            && !out.startsWith("szor", e) && !out.startsWith("szer", e));
+                        || (e < out.length() && Character.isLetter(out.charAt(e)) && !mult);
                 if (glued) {
                     p = out.indexOf(w[0], p + 1);
                 } else {

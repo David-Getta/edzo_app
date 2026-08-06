@@ -161,4 +161,17 @@ public class HuTest {
             assertTrue("nem hossz szerint csökkenő a tábla",
                     t[i - 1][0].length() >= t[i][0].length());
     }
+
+    @Test public void theMultiplicativeSuffixMustEndTheWord() {
+        // Az „egyszerű" nem egy, a „kétszeres" nem kettő: a „-szor/-szer"
+        // toldalék csak akkor tapad a számhoz, ha a szó ott véget is ér.
+        assertEquals("egyszeru", Hu.digits("egyszeru"));
+        assertEquals("ketszeres", Hu.digits("ketszeres"));
+        assertEquals("haromszoros", Hu.digits("haromszoros"));
+        assertEquals("egyszeruen jo volt", Hu.digits("egyszeruen jo volt"));
+        // A valódi szorzószám viszont továbbra is szám lesz.
+        assertEquals("2szer", Hu.digits("ketszer"));
+        assertEquals("3szor a heten", Hu.digits("haromszor a heten"));
+        assertEquals("5szor 5", Hu.digits("otszor otot"));
+    }
 }

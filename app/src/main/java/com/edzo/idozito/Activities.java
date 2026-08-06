@@ -716,15 +716,15 @@ public final class Activities {
                 if (keep.get(i)[2] == keep.get(j)[2] && kmOf[i] == 0 && kmOf[j] > 0)
                     kmOf[i] = kmOf[j];
 
-        // 5) Minden találathoz darabszám (előtte) és időtartam (előtte vagy utána).
+        // 5) Időtartamok hozzárendelése – ugyanaz az elv, mint a távoknál: a
+        // legkisebb KÖZ nyer, és amelyik mozgás már kapott időt, az kiesik. A
+        // „kondi 1 óra futás 40 perc" órája így a kondié marad, a futásnak
+        // pedig a negyven perc jut.
+        //
+        // Időtartamonként keressük a gazdát, nem mozgásonként az első szabad
+        // időt: az utóbbi mohó lenne, és a „futás és 30 perc kondi" harmincát a
+        // futás vinné el, pedig az a kondihoz van közelebb.
         boolean[] used = new boolean[ALL.length];
-        // Egy időtartamot csak EGY mozgás vihet el: a „kondi 1 óra futás 40
-        // perc" órája a kondié, tehát a futásnak már csak a negyven perc marad.
-        // Időtartamok hozzárendelése – ugyanaz az elv, mint a távoknál: a
-        // legkisebb KÖZ nyer, és amelyik mozgás már kapott időt, az kiesik.
-        // Nem a mozgások sorrendjében osztunk (az mohó lenne: a „futás és 30
-        // perc kondi" harmincát a futás vinné el, pedig a kondihoz van közel),
-        // hanem időtartamonként keressük a legjobb gazdát.
         int[] minsOf = new int[keep.size()];
         for (int[] m : mins) {
             int best = -1, bestD = Integer.MAX_VALUE, bestPre = 2;
