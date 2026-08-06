@@ -642,6 +642,15 @@ public final class Activities {
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
         int days = 1, offset = 0;
         java.util.List<int[]> wdBacks = null;
+        // „Vasárnap KIVÉTELÉVEL minden nap": a megnevezett nap itt épp az,
+        // amelyiken NEM volt edzés. A napnevet ilyenkor kitakarjuk, hogy ne
+        // arra a napra kerüljön a bejegyzés – a kizárt nap kibontását nem
+        // vállaljuk, de rossz napot írni rosszabb, mint nem tudni a napot.
+        {
+            String pre = new String(q);
+            if (pre.contains("kivetel") || pre.contains("kiveve"))
+                for (int[] w : findWeekdays(q, now)) blank(q, w[0], w[1]);
+        }
         int[] span = findSpan(q, now);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {

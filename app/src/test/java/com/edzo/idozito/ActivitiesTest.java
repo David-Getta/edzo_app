@@ -630,4 +630,20 @@ public class ActivitiesTest {
         }
         assertEquals("elcsúszott igealak:" + bad, 0, bad.length());
     }
+    /**
+     * A kizárt nap nem a bejegyzés napja.
+     *
+     * A „vasárnap kivételével minden nap kondi" mondatban a vasárnap épp az
+     * a nap, amelyiken NEM volt edzés – a bejegyzés mégis oda került. A kizárt
+     * napok kibontását nem vállaljuk, de rossz napra írni rosszabb, mint nem
+     * tudni a napot.
+     */
+    @Test public void anExcludedDayIsNotTheDayOfTheEntry() {
+        long now = 1_753_869_600_000L;                 // szerda
+        Activities.Parsed p = Activities.parse("vasárnap kivételével minden nap kondi", now);
+        assertEquals(1, p.plans.size());
+        assertEquals(0, p.offset);
+        // A kizárás nélküli alak változatlan: az a legutóbbi vasárnap.
+        assertEquals(3, Activities.parse("vasárnap kondi", now).offset);
+    }
 }
