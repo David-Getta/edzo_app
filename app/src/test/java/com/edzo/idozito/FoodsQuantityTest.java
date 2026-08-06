@@ -210,4 +210,55 @@ public class FoodsQuantityTest {
             }
         assertEquals("elcsúszott a mennyiség:" + bad, 0, bad.length());
     }
+    /**
+     * A negyed valódi mennyiség.
+     *
+     * A darabszámos ág fél alatt nem számolt: a „negyed pizza" némán kiesett,
+     * és az EGÉSZ adag ment a naplóba – négyszer annyi. A fél és a
+     * háromnegyed közben végig működött, ezért a hiba nem tűnt fel.
+     */
+    @Test public void aQuarterCounts() {
+        assertEquals(75, grams("negyed pizza"), 0.01);
+        assertEquals(50, grams("negyed adag rizs"), 0.01);
+        assertEquals(25, grams("negyed tábla csoki"), 0.01);
+        // A fél és a háromnegyed nem romolhatott el.
+        assertEquals(150, grams("fél pizza"), 0.01);
+        assertEquals(225, grams("háromnegyed pizza"), 0.01);
+    }
+
+    /** A „dupla adag" két adag, a „tripla" három. */
+    @Test public void doubleAndTripleAreNumbers() {
+        assertEquals(400, grams("dupla adag rizs"), 0.01);
+        assertEquals(600, grams("tripla adag rizs"), 0.01);
+        assertEquals(200, grams("adag rizs"), 0.01);
+    }
+
+    /**
+     * Az egész és a tört a DARABSZÁMOS ágon is egy szám.
+     *
+     * A mértékegységes ág ezt már értette („két és fél deci"), a darabszámos
+     * nem: a kettes és a fél két külön számként került a listába, és a fél ért
+     * oda előbb – a két és fél szeletből fél szelet lett, vagyis ötödannyi.
+     */
+    @Test public void wholeAndFractionCombineInPieceCounts() {
+        assertEquals(87.5, grams("két és fél szelet kenyér"), 0.01);
+        assertEquals(87.5, grams("2,5 szelet kenyér"), 0.01);
+        assertEquals(350, grams("három és fél szelet pizza"), 0.01);
+    }
+
+    /**
+     * Mérőszó szám nélkül: a „tábla csoki" egy tábla.
+     *
+     * Enélkül a tipikus adag ment be – csokinál huszonöt gramm száz helyett,
+     * vagyis negyedannyi, mint amit az ember megevett.
+     */
+    @Test public void aMeasureWordWithoutANumberMeansOne() {
+        assertEquals(100, grams("tábla csoki"), 0.01);
+        assertEquals(100, grams("tábla étcsoki"), 0.01);
+        assertEquals(35, grams("szelet kenyér"), 0.01);
+        assertEquals(30, grams("marék dió"), 0.01);
+        // A számos alakok változatlanok.
+        assertEquals(50, grams("fél tábla csoki"), 0.01);
+        assertEquals(70, grams("két szelet kenyér"), 0.01);
+    }
 }

@@ -852,6 +852,10 @@ public final class Foods {
                         {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"},
                         {"husz", "20"}, {"fel", "0.5"}, {"masfel", "1.5"},
                         {"negyed", "0.25"}, {"haromnegyed", "0.75"},
+                        // A „dupla adag" és a „tripla eszpresszó" is szám: a
+                        // szorzó nélkül a tipikus adag ment be, vagyis fele
+                        // vagy harmada annak, amit az ember megevett.
+                        {"dupla", "2"}, {"tripla", "3"},
                 }));
         String[][] tens = {{"tizen", "10"}, {"huszon", "20"}, {"harminc", "30"},
                 {"negyven", "40"}, {"otven", "50"}, {"hatvan", "60"},
@@ -961,6 +965,13 @@ public final class Foods {
              "egesz", "teljes"};
 
     /**
+     * Ennél kisebb darabszámmal nem számolunk. A negyed pizza valódi mennyiség
+     * – korábban a fél volt a határ, így a „negyed" némán kiesett, és az egész
+     * adag ment a naplóba: négyszer annyi.
+     */
+    private static final double MIN_COUNT = 0.25;
+
+    /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
      * közte? A visszatérés a közbeékelt szó ("" ha nincs), vagy null, ha ott
      * valami más áll – akkor a szám nem ehhez az ételhez tartozik.
@@ -1005,6 +1016,35 @@ public final class Foods {
                 if (w.equals(head)) return head;
         }
         return null;
+    }
+
+    /**
+     * „Két és fél szelet kenyér": az egész és a tört EGY szám.
+     *
+     * A mértékegységes ág ezt már értette („két és fél deci"), a darabszámos
+     * nem: a kettes és a fél két külön számként került a listába, és a fél
+     * ért oda előbb – a két és fél szeletből fél szelet lett. A bejegyzés
+     * létrejött, csak ötödannyival.
+     */
+    private static void mergeAndHalf(String q, List<Integer> pos, List<Double> val,
+                                     List<Integer> len) {
+        for (int a = 0; a < pos.size(); a++) {
+            int end = pos.get(a) + len.get(a);
+            int e1 = end;
+            while (e1 < q.length() && q.charAt(e1) == ' ') e1++;
+            if (!q.startsWith("es", e1)) continue;
+            if (e1 + 2 < q.length() && Character.isLetter(q.charAt(e1 + 2))) continue;
+            int e2 = e1 + 2;
+            while (e2 < q.length() && q.charAt(e2) == ' ') e2++;
+            for (int b = 0; b < pos.size(); b++) {
+                if (b == a || pos.get(b) != e2 || val.get(b) >= 1) continue;
+                val.set(a, val.get(a) + val.get(b));
+                len.set(a, pos.get(b) + len.get(b) - pos.get(a));
+                pos.remove(b); val.remove(b); len.remove(b);
+                if (b < a) a--;
+                break;
+            }
+        }
     }
 
     /**
@@ -1322,12 +1362,13 @@ public final class Foods {
                 }
             }
         }
+        mergeAndHalf(q, bareNumPos, bareNumVal, bareNumLen);
         // Darabszámok: „2 tojás" = 2 × egy tojás súlya. Csak akkor számít, ha a
         // szám közvetlenül egy darabra számolható étel előtt áll, az étel még nem
         // kapott grammot, és a darabszám életszerű (legfeljebb 20).
         for (int n = 0; n < bareNumPos.size(); n++) {
             double count = bareNumVal.get(n);
-            if (count < 0.5 || count > 20) continue;
+            if (count < MIN_COUNT || count > 20) continue;
             int numEnd = bareNumPos.get(n) + bareNumLen.get(n);
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
@@ -1348,14 +1389,7 @@ public final class Foods {
                 if (between == null) continue;
                 // Az „adag" bármely ételre megy: egy adag a tipikus adag.
                 // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
-                double piece = waterMl(foods.get(k), between) > 0
-                        ? waterMl(foods.get(k), between)
-                        : between.equals("tabla") ? 100      // egy tábla csoki
-                        : between.equals("szelet") && sliceGrams(foods.get(k)) > 0
-                        ? sliceGrams(foods.get(k))
-                        : between.startsWith("adag") || between.equals("porcio")
-                                || isPortionWord(between)
-                        ? foods.get(k).portion : pieceGrams(foods.get(k));
+                double piece = pieceFor(foods.get(k), between);
                 // Aminek nincs természetes darabmérete, ott a tipikus adag a
                 // darab: a „két kebab" eddig egyetlen kebabnak számított, mert
                 // a számláló egyszerűen elveszett. Ez 267 ételt érintett.
@@ -1374,7 +1408,7 @@ public final class Foods {
         // saját tagmondatán belül.
         for (int n = 0; n < bareNumPos.size(); n++) {
             double count = bareNumVal.get(n);
-            if (count < 0.5 || count > 20) continue;
+            if (count < MIN_COUNT || count > 20) continue;
             int numStart = bareNumPos.get(n);
             int numEnd = numStart + bareNumLen.get(n);
             String after = numEnd < q.length() ? q.substring(numEnd).trim() : "";
@@ -1396,18 +1430,55 @@ public final class Foods {
                 if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
             }
             if (best < 0) continue;
-            double piece = portionWord || isPortionWord(unit)
-                    ? foods.get(best).portion
-                    : waterMl(foods.get(best), unit) > 0 ? waterMl(foods.get(best), unit)
-                    : unit.equals("tabla") ? 100
-                    : unit.equals("szelet") && sliceGrams(foods.get(best)) > 0
-                    ? sliceGrams(foods.get(best)) : pieceGrams(foods.get(best));
+            double piece = pieceFor(foods.get(best), unit);
             if (piece <= 0 && count <= 6) piece = foods.get(best).portion;
             if (piece <= 0) continue;
             grams[best] = count * piece;
         }
+        // Mérőszó szám nélkül: a „tábla csoki" egy tábla, a „szelet kenyér"
+        // egy szelet. Szám híján eddig a tipikus adag ment be – csokinál ez
+        // negyedannyi, mint amit az ember megevett.
+        for (int k = 0; k < foods.size(); k++) {
+            if (grams[k] > 0 || foodPos.get(k) < 0) continue;
+            String unit = unitBefore(q, foodPos.get(k));
+            if (unit.isEmpty()) continue;
+            if (!unit.equals("tabla") && !unit.startsWith("adag") && !unit.equals("porcio")
+                    && !isCountWord(unit) && !isPortionWord(unit)) continue;
+            double piece = pieceFor(foods.get(k), unit);
+            if (piece > 0) grams[k] = piece;
+        }
         for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
         return out;
+    }
+
+    /**
+     * Egy mérőszónyi étel grammban: egy tábla csoki száz gramm, egy szelet
+     * pizza száz, egy tányér leves egy adag, egy tojás egy darab.
+     */
+    private static double pieceFor(Food f, String unit) {
+        if (waterMl(f, unit) > 0) return waterMl(f, unit);
+        if (unit.equals("tabla")) return 100;                // egy tábla csoki
+        if (unit.equals("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
+        if (unit.startsWith("adag") || unit.equals("porcio") || isPortionWord(unit))
+            return f.portion;
+        return pieceGrams(f);
+    }
+
+    /**
+     * Az étel SZAVA előtt közvetlenül álló szó, vagy üres.
+     *
+     * A szótő a szó belsejében is állhat („tábla étcsoki"), ezért előbb a szó
+     * elejére lépünk vissza, és csak onnan nézzük a megelőző szót.
+     */
+    private static String unitBefore(String q, int foodPos) {
+        int w = foodPos;
+        while (w > 0 && Character.isLetterOrDigit(q.charAt(w - 1))) w--;
+        int e = w;
+        while (e > 0 && q.charAt(e - 1) == ' ') e--;
+        if (e == 0 || e == w) return "";
+        int b = e;
+        while (b > 0 && Character.isLetter(q.charAt(b - 1))) b--;
+        return q.substring(b, e);
     }
 
     /** Az összes étel, ami a szövegben felismerhető (a szöveg sorrendjében, ismétlés nélkül). */
