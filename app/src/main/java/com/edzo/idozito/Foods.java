@@ -44,6 +44,8 @@ public final class Foods {
         new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek",
                 "rostelyos", "ozgerinc"),
         new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt", "stefania"),
+        // Vadas: marhahús tejfölös-zöldséges mártásban, jellemzően zsemlegombóccal.
+        new Food("Vadas hús", 150, 14, 350, "vadas", "vadas hus", "vadashus"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
         new Food("Kolbász", 350, 15, 100, "kolbasz", "kolbassz",
                 // A magyar kolbászfajták neve önmagában is kolbászt jelent.
@@ -88,13 +90,14 @@ public final class Foods {
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
                 "brios", "molnark"),
         new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
-                "protein zabkasa"),
+                "protein zabkasa", "overnight oats", "oats"),
         new Food("Müzli", 380, 9, 60, "muzli", "granola"),
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
                 "protein palacsinta", "feherje palacsinta"),
-        new Food("Pizza", 260, 11, 300, "pizza", "calzone"),
+        new Food("Pizza", 260, 11, 300, "pizza", "calzone", "quattro formaggi",
+                "quattro stagioni"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
                 "whopper"),
         new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal", "mekis menu"),
@@ -220,7 +223,8 @@ public final class Foods {
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta", "baklava",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
                 "flodni", "macaron", "suti", "eszterhazy", "dobostorta",
-                "dobos torta", "somloi kocka"),
+                "dobos torta", "somloi kocka", "eclair", "ekler", "profiterol",
+                "rakoczi turos", "rakoczi"),
         new Food("Muffin / brownie", 380, 5, 80, "muffin", "cupcake", "brownie"),
         new Food("Gofri", 350, 6, 100, "gofri", "waffle", "protein gofri"),
         new Food("Energiagolyó", 420, 8, 25,
@@ -529,7 +533,8 @@ public final class Foods {
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
         // A „durum" a tekercsbe csavart kebab, nem durumbúza tészta – tésztaként
         // számolva a kalória harmada veszett el.
-        new Food("Kebab", 250, 13, 350, "kebab", "durum", "durum tekercs"),
+        new Food("Kebab", 250, 13, 350, "kebab", "durum", "durum tekercs", "doner",
+                "doner kebab"),
         new Food("Kuszkusz (főtt)", 115, 4, 200, "kuszkussz", "kuszkusz", "couscous"),
         // A puszta „köles" korábban azért maradt ki, mert a szótő-illesztés a
         // „koleszterin" és a „koleszban" szó belsejében is talált volna. A
@@ -743,6 +748,9 @@ public final class Foods {
             // A fALMAszásban alma, a COMBhajlításban (egy lábgép!) csirkecomb.
             "falmasz", "combhajlit", "combnyujt", "combfeszit", "combtavolit",
             "combkozelit",
+            // Az OLVADásban ott a vadas (hús). Az „olvasztott sajt" nem
+            // érintett: az más szó (olvaszt, nem olvad).
+            "olvad",
     };
 
     /**
