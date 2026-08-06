@@ -206,4 +206,57 @@ public class AlarmsTest {
                 show(Alarms.nextWeekly(Calendar.SUNDAY, 19, 0,
                         stamp(2026, Calendar.AUGUST, 2, 18, 59), BP)));
     }
+
+    /**
+     * Egy éven át, minden órában: a következő riasztás mindig JÖVŐBELI, a
+     * kimondott időpontban, és a kért napon.
+     *
+     * Az emlékeztető az a funkció, amit a felhasználó nem tud ellenőrizni –
+     * csak akkor veszi észre a hibát, ha hajnali háromkor csörög, vagy ha
+     * elmarad. Az óraátállás két napja is benne van a söprésben.
+     */
+    @Test public void everyScheduledAlarmLandsWhereItShould() {
+        java.util.TimeZone tz = java.util.TimeZone.getTimeZone("Europe/Budapest");
+        java.util.Calendar c = java.util.Calendar.getInstance(tz);
+        StringBuilder bad = new StringBuilder();
+        int n = 0;
+        long base = 1_735_686_000_000L;           // 2025 eleje
+        for (int day = 0; day < 366 && bad.length() == 0; day += 7)
+            for (int hour = 0; hour < 24; hour += 3) {
+                long now = base + day * 86_400_000L + hour * 3_600_000L;
+                for (int h = 0; h < 24; h += 6)
+                    for (int m : new int[]{0, 30}) {
+                        n++;
+                        long t = Alarms.nextDaily(h, m, now, tz);
+                        c.setTimeInMillis(t);
+                        if (t <= now || t - now > 25L * 3_600_000
+                                || c.get(java.util.Calendar.HOUR_OF_DAY) != h
+                                || c.get(java.util.Calendar.MINUTE) != m)
+                            bad.append("\n  napi ").append(h).append(':').append(m)
+                               .append(" -> ").append(new java.util.Date(t));
+                        for (int dow = 1; dow <= 7; dow++) {
+                            long w = Alarms.nextWeekly(dow, h, m, now, tz);
+                            n++;
+                            c.setTimeInMillis(w);
+                            if (w <= now || w - now > 8L * 24 * 3_600_000
+                                    || c.get(java.util.Calendar.DAY_OF_WEEK) != dow
+                                    || c.get(java.util.Calendar.HOUR_OF_DAY) != h)
+                                bad.append("\n  heti ").append(dow).append(' ').append(h)
+                                   .append(':').append(m).append(" -> ").append(new java.util.Date(w));
+                        }
+                        int mask = 1 | (1 << 2) | (1 << 4);      // H, Sze, P
+                        long d = Alarms.nextOnDays(mask, h, m, now, tz);
+                        n++;
+                        c.setTimeInMillis(d);
+                        int idx = (c.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+                        if (d <= now || d - now > 8L * 24 * 3_600_000
+                                || ((mask >> idx) & 1) == 0
+                                || c.get(java.util.Calendar.HOUR_OF_DAY) != h)
+                            bad.append("\n  maszk ").append(h).append(':').append(m)
+                               .append(" -> ").append(new java.util.Date(d));
+                    }
+            }
+        assertTrue("legalább tízezer esetet néztünk", n > 10_000);
+        assertEquals("rossz időpont:" + bad, 0, bad.length());
+    }
 }
