@@ -1,5 +1,6 @@
 package com.edzo.idozito;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -84,5 +85,57 @@ public class FoodsDataQualityTest {
             int g = Integer.parseInt(row[1]);
             assertTrue("életszerűtlen szelet: " + row[0], g >= 20 && g <= 300);
         }
+    }
+
+    /**
+     * Minden szótő ÖNMAGÁRA esik – és csak arra.
+     *
+     * Ez a rövid tövek csapdája: a „chia" a macchiato közepén, a „rizs" a
+     * párizsiban. Ilyenkor a bejegyzés csendben létrejön, csak épp más
+     * ételről vagy egy fölös adaggal. Egy új szótő pontosan ezt szokta
+     * elrontani, ezért a teljes szótő-készletet átfuttatjuk.
+     */
+    @Test public void everyStemMeansExactlyItsOwnFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL)
+            for (String st : f.stems) {
+                java.util.List<Foods.Hit> h = Foods.parse(all, st);
+                if (h.size() == 1 && h.get(0).food.name.equals(f.name)) continue;
+                bad.append("\n  ").append(f.name).append(" / \"").append(st)
+                   .append("\" -> ").append(names(h));
+            }
+        assertEquals("ütköző szótő:" + bad, 0, bad.length());
+    }
+
+    /**
+     * Ugyanaz KÉT szótővel egymás mellett: „párizsi felvágott".
+     *
+     * Ételenként csak a leghosszabb szótő helyét jegyezzük meg. A párizsi a
+     * hosszabb „felvágott" tövön került be, és a szó elején álló „párizsi"
+     * szabadon hagyta a benne rejlő „rizs"-t: kétszáz gramm rizs a felvágott
+     * mellé. Egyetlen tő önmagában nem hozta elő – csak a párja.
+     */
+    @Test public void twoStemsOfTheSameFoodStillMeanOneFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL)
+            for (int i = 0; i < f.stems.length; i++)
+                for (int j = 0; j < f.stems.length; j++) {
+                    if (i == j) continue;
+                    String q = f.stems[i] + " " + f.stems[j];
+                    java.util.List<Foods.Hit> h = Foods.parse(all, q);
+                    if (h.size() == 1 && h.get(0).food.name.equals(f.name)) continue;
+                    bad.append("\n  ").append(f.name).append(" / \"").append(q)
+                       .append("\" -> ").append(names(h));
+                }
+        assertEquals("ütköző szótőpár:" + bad, 0, bad.length());
+    }
+
+    private static String names(java.util.List<Foods.Hit> h) {
+        if (h.isEmpty()) return "—";
+        StringBuilder sb = new StringBuilder();
+        for (Foods.Hit x : h) sb.append(sb.length() > 0 ? ", " : "").append(x.food.name);
+        return sb.toString();
     }
 }
