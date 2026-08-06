@@ -75,7 +75,8 @@ public class FoodsIntegrationTest {
                 summary("sali csirkével"));
         assertEquals("Paradicsom 100g + Uborka 100g + Saláta (zöld) 50g",
                 summary("pari ubi saláta"));
-        assertEquals("Szendvics 150g + Sonka 50g", summary("egy szendó sonkával"));
+        // A „szendó sonkával" a feltétet nevezi meg, nem egy külön adag sonkát.
+        assertEquals("Szendvics 150g", summary("egy szendó sonkával"));
         assertEquals("Szilvás gombóc 250g", summary("szilvás gombóc"));
         assertEquals("Káposztás tészta 330g", summary("káposztás cvekedli"));
         assertEquals("Húsleves 400g", summary("grízgaluska leves"));
@@ -278,7 +279,7 @@ public class FoodsIntegrationTest {
         assertEquals("Vaj", Foods.parse(Arrays.asList(Foods.ALL),
                 "vajas kenyér").get(0).food.name);
         assertEquals("Sajt (trappista)", Foods.parse(Arrays.asList(Foods.ALL),
-                "sajtos szendvics").get(0).food.name);
+                "sajtos rántotta").get(0).food.name);
         assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL),
                 "halat sütöttem").get(0).food.name);
     }
@@ -386,10 +387,13 @@ public class FoodsIntegrationTest {
     @Test public void aHyphenBetweenAdjectivesSeparatesIngredients() {
         // Magyarul a „sonkás-sajtos" két hozzávaló. Eddig egy szónak számított,
         // és a nehezebbik étel elnyomta a másikat: eltűnt a sonka.
-        assertEquals("Sonka 50g + Sajt (trappista) 30g + Szendvics 150g",
-                summary("sonkás-sajtos szendvics"));
-        assertEquals("Sonka 50g + Sajt (trappista) 30g + Szendvics 150g",
-                summary("sonkás sajtos szendvics"));
+        assertEquals("Sonka 50g + Sajt (trappista) 30g + Rántotta 150g",
+                summary("sonkás-sajtos rántotta"));
+        assertEquals("Sonka 50g + Sajt (trappista) 30g + Rántotta 150g",
+                summary("sonkás sajtos rántotta"));
+        // A szendvicsben viszont a feltét már benne van az adagban – a
+        // kettéválasztás megtörténik, csak nem ad hozzá még egy adagot.
+        assertEquals("Szendvics 150g", summary("sonkás-sajtos szendvics"));
         assertEquals("Tejföl 30g + Rakott krumpli 350g",
                 summary("húsos-tejfölös rakott krumpli"));
         // Ahol a kötőjel egy nevet tagol, ott marad egy étel.

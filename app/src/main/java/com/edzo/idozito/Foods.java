@@ -1846,9 +1846,13 @@ public final class Foods {
             // nem pite PLUSZ egy adag meggy.
             {"Cseresznye / meggy", "Pite (almás/gyümölcsös)"},
             {"Alma", "Pite (almás/gyümölcsös)"},
-            {"Sajt (trappista)", "Pizza"},
-            {"Sonka", "Pizza"},
-            {"Szalámi", "Pizza"},
+            // A szendvics és a hamburger adagja is a feltéttel együtt értendő:
+            // a „sonkás-sajtos melegszendvics" egy szendvics, nem szendvics
+            // PLUSZ egy adag sonka PLUSZ egy adag sajt – az együtt már két
+            // szendvicsnyi kalória.
+            {"Sajt (trappista)", "Pizza", "Szendvics", "Hamburger"},
+            {"Sonka", "Pizza", "Szendvics"},
+            {"Szalámi", "Pizza", "Szendvics"},
             {"Gomba", "Pizza"},
             // A wok adagja a zöldséget is tartalmazza: a „zöldséges wok" egy
             // wok, nem wok PLUSZ egy adag párolt zöldség.

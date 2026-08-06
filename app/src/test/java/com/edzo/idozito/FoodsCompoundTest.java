@@ -159,4 +159,21 @@ public class FoodsCompoundTest {
         assertEquals(1, h.size());
         assertEquals("Pite (almás/gyümölcsös)", h.get(0).food.name);
     }
+
+    /**
+     * A „sonkás-sajtos melegszendvics" EGY szendvics.
+     *
+     * A szendvics adagja a feltéttel együtt értendő, mint a pizzáé. Külön
+     * hozzáadva a sonka és a sajt együtt még egy szendvicsnyi kalória: a
+     * naplóban 375 helyett közel 600 jelent meg egyetlen melegszendvicsért.
+     */
+    @Test public void aSandwichFillingIsPartOfTheSandwich() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"sonkás-sajtos melegszendvics", "sajtos szendvics",
+                "sonkás szendvics", "szalámis szendvics", "sajtburger", "sajtos hamburger"})
+            assertEquals(q, 1, Foods.parse(all, q).size());
+        // Felsorolva viszont két külön adag marad.
+        assertEquals(2, Foods.parse(all, "szendvics és sonka").size());
+        assertEquals(2, Foods.parse(all, "hamburger és sajt").size());
+    }
 }
