@@ -17,9 +17,40 @@ public final class Days {
 
     private static final double DAY_MS = 24 * 3600 * 1000.0;
 
+    /**
+     * Újrahasznált naptár szálanként.
+     *
+     * A {@code Calendar.getInstance()} meglepően drága (területi és
+     * időzóna-keresés): a nap-számítás viszont ciklusban fut – a rekordoknál,
+     * a szériáknál, a diagramoknál minden bejegyzésre egyszer. Két év
+     * naplójánál ez már tized másodperc, a kezdőlap megnyitásakor.
+     *
+     * Szálanként külön példány, mert a Calendar nem szálbiztos, és a
+     * háttér-vevők (heti összegzés, emlékeztető) más szálon futnak.
+     */
+    private static final ThreadLocal<Calendar> CAL = new ThreadLocal<Calendar>() {
+        @Override protected Calendar initialValue() { return Calendar.getInstance(); }
+    };
+
+    /**
+     * A szál naptára – frissítve, ha közben időzónát váltott a telefon.
+     *
+     * Utazásnál vagy kézi átállításnál a gyorsított naptár különben a RÉGI
+     * zónában számolna tovább, amíg a folyamat él: a nap határa csúszna el,
+     * és vele a széria meg a napi összesítő.
+     */
+    private static Calendar cal() {
+        Calendar c = CAL.get();
+        if (!c.getTimeZone().getID().equals(java.util.TimeZone.getDefault().getID())) {
+            c = Calendar.getInstance();
+            CAL.set(c);
+        }
+        return c;
+    }
+
     /** Az időbélyeg helyi napjának kezdete (éjfél). */
     public static long startOf(long ts) {
-        Calendar c = Calendar.getInstance();
+        Calendar c = cal();
         c.setTimeInMillis(ts);
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
