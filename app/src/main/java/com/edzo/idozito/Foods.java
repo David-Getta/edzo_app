@@ -648,8 +648,9 @@ public final class Foods {
             // maszk a szó ELEJÉT nézi, és a „sajtos" ugyanígy kezdődik – egy
             // ritka szó kedvéért nem áldozzuk fel a sajtos tésztát.
             "halogat", "borostyan", "soreny", "soret",
-            // A figyelMEZtetésben a méz, a memoRIZálásban a rizs.
-            "figyelmeztet", "memorizal",
+            // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
+            // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
+            "figyelmeztet", "memorizal", "mezo",
             "vajon", "hallott", "hallom", "halk", "halad", "halott", "halvany",
             "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",

@@ -276,6 +276,36 @@ public class FoodsTest {
             "teátrum", "centrum", "album", "vajúdik", "tábor", "labor",
             "zabál", "kombájn", "olimpia", "kabát", "borotva", "terapeuta",
             "kultúra", "struktúra", "tekercs", "tornacipő", "kézitáska",
+            // Harmadik söprés (háromszáz szó, három menetben). Mind csendes
+            // ütközés volt: a felismerés sikeresnek LÁTSZOTT.
+            "megbeszélés", "értekezlet", "prezentáció", "határidő", "szerződés",
+            "számla", "bankkártya", "átutalás", "biztosítás", "albérlet",
+            // (A költözés, a takarítás, a kertészkedés és a fűnyírás
+            // szándékosan hiányzik: azok valódi fizikai munkák, és a listát
+            // az edzés-felismerő is használja.)
+            "szekrény", "függöny", "szőnyeg", "porszívó", "mosogatás",
+            "barkácsolás", "autópálya", "benzinkút",
+            "parkolás", "parkoló", "forgalom", "villamos", "vonatjegy", "repülőtér",
+            "poggyász", "szállás", "nyaralás", "strandolás", "napozás", "olvasás",
+            "színház", "koncert", "kiállítás", "múzeum", "fényképezés", "zongora",
+            "kártyázás", "videojáték", "telefonálás", "értesítés", "jelszó",
+            "fogorvos", "gyógyszer", "beutaló", "megfázás", "influenza", "allergia",
+            "álmatlanság", "ébresztő", "szabadság", "karácsony", "húsvét",
+            "ballagás", "vizsgaidőszak", "gyakornok", "önéletrajz", "állásinterjú",
+            "felmondás", "nyugdíj", "megvalósítás", "szervezés", "irányítás",
+            "szavazás", "bizottság", "beszámoló", "elemzés", "fejlesztés",
+            "hibajavítás", "megtakarítás", "befektetés", "árfolyam", "infláció",
+            "figyelmeztetés", "rendőrség", "tűzoltó", "tanterem", "memorizálás",
+            "vonalzó", "számológép", "billentyűzet", "akkumulátor", "légkondi",
+            "ventilátor", "kandalló", "kilincs", "riasztó", "erkély", "garázs",
+            "lépcsőház", "postaláda", "bevásárlás", "kosár", "pénztár",
+            "nagymama", "nagypapa", "szomszéd", "veszekedés", "bocsánatkérés",
+            "meglepetés", "vendégség", "tengerpart", "barlang", "villámlás",
+            "olvadás", "naplemente", "szorongás", "szomorúság", "akaraterő",
+            "lustaság", "kimerültség", "súlygyarapodás", "anyagcsere", "emésztés",
+            "immunrendszer", "vérnyomás", "izomláz", "rehabilitáció", "mező",
+            "hatalmas", "unalmas", "nyugalmas", "fájdalmas", "halogatás",
+            "borostyán", "sörény",
     };
 
     @Test public void noEverydayWordEverBecomesFood() {

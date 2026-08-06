@@ -536,6 +536,8 @@ public final class Activities {
             // eddig kerti munkaként került a naplóba. A megTAKARÍTás nem
             // takarítás, a légKONDI nem kondi.
             "olvas", "megtakarit", "legkondi",
+            // A naGYMama közepén a „gym", az aKARATErőben a „karate".
+            "nagymama", "nagymami", "akarat",
     };
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
