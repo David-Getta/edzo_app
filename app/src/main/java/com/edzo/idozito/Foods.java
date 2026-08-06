@@ -658,6 +658,9 @@ public final class Foods {
             // tarja, a tortúrában a túra.
             "kardio", "stadion", "radio", "studio", "audio", "periodus", "melodi",
             "gabor", "boroka", "borul", "borond", "tarjan", "salgotarjan",
+            // A testZSÍR és a ZSÍRbevitel nem konyhai zsír: az egyik testérték,
+            // a másik a napi összegzés szava.
+            "testzsir", "zsirbevitel",
             "vajon", "hallott", "hallom", "halk", "halad", "halott", "halvany",
             "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",

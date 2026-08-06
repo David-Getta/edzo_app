@@ -316,6 +316,9 @@ public class FoodsTest {
             "stúdió", "rádió", "audio", "periódus",
             "kardiológus", "stadion", "Gábor", "Boróka", "borúlátó", "bőrönd",
             "Salgótarján", "tortúra", "borotválkozás", "laboratórium",
+            // Ötödik söprés: termi és táplálkozási szakszavak.
+            "testzsír", "zsírbevitel", "edzésterv", "edzésnapló", "izomtömeg",
+            "kalóriadeficit", "szálkásítás", "makró", "mikrotápanyag",
     };
 
     @Test public void noEverydayWordEverBecomesFood() {

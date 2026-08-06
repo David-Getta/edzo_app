@@ -541,6 +541,9 @@ public final class Activities {
             "olvas", "megtakarit", "legkondi",
             // A naGYMama közepén a „gym", az aKARATErőben a „karate".
             "nagymama", "nagymami", "akarat", "tortura", "kardiolog",
+            // Az edzésTERV és az edzésNAPLÓ nem edzés: a megírásuk nem
+            // negyvenöt perc mozgás.
+            "edzesterv", "edzesnaplo",
     };
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
