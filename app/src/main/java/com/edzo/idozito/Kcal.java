@@ -66,7 +66,7 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
-        return amount(q, NOT_EATEN);
+        return amount(q, NOT_EATEN_P);
     }
 
     /**
@@ -76,16 +76,30 @@ public final class Kcal {
      * kcal", annak a számát nem illik a saját becslésünkre cserélni.
      */
     public static int burned(String q) {
-        return amount(q, new String[0]);
+        return amount(q, NONE_P);
     }
 
-    private static int amount(String q, String[] block) {
+    /**
+     * A tiltó szavak előre lefordítva.
+     *
+     * Az étkezés-mező minden LEÜTÉSRE újrakérdezi a felismerőt: huszonhat
+     * mintát fordítani karakterenként fölösleges munka a telefonon.
+     */
+    private static final Pattern[] GOAL_P = words(GOAL), NOT_EATEN_P = words(NOT_EATEN),
+            NONE_P = new Pattern[0];
+
+    private static Pattern[] words(String[] ws) {
+        Pattern[] out = new Pattern[ws.length];
+        for (int i = 0; i < ws.length; i++)
+            out[i] = Pattern.compile("(?<![a-z])" + ws[i] + "(?![a-z])");
+        return out;
+    }
+
+    private static int amount(String q, Pattern[] block) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
-        for (String w : GOAL)
-            if (Pattern.compile("(?<![a-z])" + w + "(?![a-z])").matcher(s).find()) return -1;
-        for (String w : block)
-            if (Pattern.compile("(?<![a-z])" + w + "(?![a-z])").matcher(s).find()) return -1;
+        for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
+        for (Pattern w : block) if (w.matcher(s).find()) return -1;
         double sum = 0;
         Matcher m = NUM.matcher(s);
         while (m.find()) {
@@ -122,8 +136,7 @@ public final class Kcal {
     public static int protein(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
-        for (String w : GOAL)
-            if (Pattern.compile("(?<![a-z])" + w + "(?![a-z])").matcher(s).find()) return -1;
+        for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
         double sum = 0;
         Matcher m = PROT_AFTER.matcher(s);
         while (m.find()) sum += num(m.group(1));
