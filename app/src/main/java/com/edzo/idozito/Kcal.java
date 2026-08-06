@@ -98,6 +98,48 @@ public final class Kcal {
         return r >= MIN && r <= MAX ? r : -1;
     }
 
+    /** A dobozon a fehérje is ott áll – ennél kevesebb/több nem egy étkezésé. */
+    static final int MIN_PROT = 1, MAX_PROT = 300;
+
+    /**
+     * A szám és a fehérje-szó: „12 g fehérje", „fehérje 12 g", „25 g protein".
+     *
+     * A lookbehind a „tojásfehérje" miatt kell: abban is ott a szó, de az egy
+     * ÉTEL neve, nem a tápérték-táblázat sora.
+     */
+    private static final Pattern PROT_AFTER = Pattern.compile(
+            "(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?\\s*(?<![a-z])(feherje|feherjet|protein|proteint)(?![a-z])");
+    private static final Pattern PROT_BEFORE = Pattern.compile(
+            "(?<![a-z])(?:feherje|protein)(?![a-z])\\s*:?\\s*(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?(?![a-z])");
+
+    /**
+     * A mondatban kimondott fehérje grammban, vagy -1.
+     *
+     * Aki a dobozról másolja a kalóriát, a fehérjét is onnan másolja – és a
+     * fehérje-célnál pont ez a szám számít. A cél-mondatot ugyanúgy kihagyjuk,
+     * mint a kalóriánál.
+     */
+    public static int protein(String q) {
+        if (q == null) return -1;
+        String s = Hu.digits(Foods.norm(q));
+        for (String w : GOAL)
+            if (Pattern.compile("(?<![a-z])" + w + "(?![a-z])").matcher(s).find()) return -1;
+        double sum = 0;
+        Matcher m = PROT_AFTER.matcher(s);
+        while (m.find()) sum += num(m.group(1));
+        if (sum <= 0) {
+            m = PROT_BEFORE.matcher(s);
+            while (m.find()) sum += num(m.group(1));
+        }
+        int r = (int) Math.round(sum);
+        return r >= MIN_PROT && r <= MAX_PROT ? r : -1;
+    }
+
+    private static double num(String s) {
+        try { return Double.parseDouble(s.replace(',', '.')); }
+        catch (NumberFormatException e) { return 0; }
+    }
+
     /**
      * Az étel neve a kalória nélkül – „vacsora 650 kcal" → „Vacsora".
      *
@@ -107,6 +149,8 @@ public final class Kcal {
     public static String label(String q) {
         if (q == null) return "Étel";
         String s = q.replaceAll("(?i)\\d+(?:[.,]\\d+)?\\s*(kcal|kkal|kalóri\\w*|kalori\\w*|cal)(?![\\p{L}])", " ");
+        // A tápérték-sor másik fele is a számokhoz tartozik, nem a névhez.
+        s = s.replaceAll("(?i)\\d+(?:[.,]\\d+)?\\s*(g|gr|gramm)?\\s*(?<![\\p{L}])(fehérj\\w*|feherj\\w*|protein\\w*)(?![\\p{L}])", " ");
         // A megmaradt kötőszavak és írásjelek a szám helyén lógva maradnának.
         s = s.replaceAll("(?i)(^|\\s)(kb\\.?|kb|körülbelül|nagyjából|volt|van|kb)(\\s|$)", " ");
         s = s.replaceAll("[\\s,;:.\\-–]+$", "").replaceAll("^[\\s,;:.\\-–]+", "");

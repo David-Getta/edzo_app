@@ -83,6 +83,36 @@ public class KcalTest {
         assertEquals("Étel", Kcal.label(null));
     }
 
+    /** A dobozon a fehérje is ott áll. */
+    @Test public void readsTheStatedProtein() {
+        assertEquals(12, Kcal.protein("müzliszelet 180 kcal 12 g fehérje"));
+        assertEquals(25, Kcal.protein("fehérjeszelet 25 g protein"));
+        assertEquals(30, Kcal.protein("vacsora 650 kcal, fehérje: 30 g"));
+        assertEquals(20, Kcal.protein("turmix 20 g fehérjét"));
+    }
+
+    /**
+     * A „tojásfehérje" étel, nem tápérték-sor.
+     *
+     * A szó ott van benne, a szám is előtte – pont az a csapda, amibe a
+     * rövid szótövek szoktak beleesni.
+     */
+    @Test public void eggWhiteIsNotAProteinDeclaration() {
+        assertEquals(-1, Kcal.protein("3 tojásfehérje"));
+        assertEquals(-1, Kcal.protein("100 g tojásfehérje"));
+        assertEquals("Túró", Kcal.label("túró 250 kcal 40 g fehérje").trim());
+    }
+
+    /** Fehérje-szám sincs ott, ahol nem mondták ki. */
+    @Test public void noProteinWhereNoneWasStated() {
+        assertEquals(-1, Kcal.protein("vacsora 650 kcal"));
+        assertEquals(-1, Kcal.protein("150 g csirkemell"));
+        assertEquals(-1, Kcal.protein("napi cél 150 g fehérje"));
+        assertEquals(-1, Kcal.protein(null));
+        for (String q : Examples.MEAL)
+            if (!q.contains("fehérje")) assertEquals("fehérjének látszik: " + q, -1, Kcal.protein(q));
+    }
+
     /** A becslést a kimondott összegre igazítjuk. */
     @Test public void scaleHitsTheStatedTotal() {
         assertEquals(2.0, Kcal.scale(100, 200), 0.001);

@@ -958,7 +958,10 @@ public class DietActivity extends Activity {
                     // a szám maga a bejegyzés („vacsora 650 kcal").
                     int kc = Kcal.stated(q);
                     if (kc > 0) {
-                        reco.setText("✔ " + kc + " kcal – " + Kcal.label(q) + " néven naplózom.");
+                        int pr = Kcal.protein(q);
+                        reco.setText("✔ " + kc + " kcal"
+                                + (pr > 0 ? " · " + pr + " g fehérje" : "")
+                                + " – " + Kcal.label(q) + " néven naplózom.");
                         return;
                     }
                     reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");
@@ -1131,10 +1134,12 @@ public class DietActivity extends Activity {
             double g = grams.get(i);
             items.add(new MealLog.Item(label, g, kcal100 * g / 100.0, prot100 * g / 100.0));
         }
+        // A dobozon a fehérje is ott áll – ha kimondták, az a szám a pontos.
+        final int prot = Kcal.protein(rawName);
         if (stated > 0) {
             if (items.isEmpty()) {
                 // Csak a kalória van meg: gramm nélkül, a mondat saját szavaival.
-                items.add(new MealLog.Item(Kcal.label(rawName), 0, stated, 0));
+                items.add(new MealLog.Item(Kcal.label(rawName), 0, stated, Math.max(0, prot)));
                 estimated = false;
             } else {
                 // Az adatbázis becslését a kimondott összegre igazítjuk. A
@@ -1150,6 +1155,24 @@ public class DietActivity extends Activity {
                     estimated = false;
                 }
             }
+        }
+        if (prot > 0 && !items.isEmpty()) {
+            // A kimondott fehérje ugyanúgy felülírja a becslést, mint a kalória.
+            double est = 0;
+            for (MealLog.Item it : items) est += it.protein;
+            double f = Kcal.scale(est, prot);
+            List<MealLog.Item> fixed = new ArrayList<>();
+            if (est > 0) {
+                for (MealLog.Item it : items)
+                    fixed.add(new MealLog.Item(it.food, it.grams, it.kcal, it.protein * f));
+            } else {
+                // Nincs mit skálázni (ismeretlen étel): az elsőre írjuk rá.
+                for (int i = 0; i < items.size(); i++) {
+                    MealLog.Item it = items.get(i);
+                    fixed.add(new MealLog.Item(it.food, it.grams, it.kcal, i == 0 ? prot : 0));
+                }
+            }
+            items = fixed;
         }
         // Szerkesztésnél az eredeti időpont és fotó megmarad.
         long ts = existing != null ? existing.ts : System.currentTimeMillis();
