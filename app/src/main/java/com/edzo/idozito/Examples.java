@@ -76,6 +76,12 @@ public final class Examples {
             "fekvenyomás 60x10, 70x8, 80x6",
             "guggolás 5x5 hetvenöt kiló",
             "3 kör 10 fekvőtámasz",
+            // Az újabb alakok is szerepeljenek: amit ért, azt hirdesse is.
+            "fekvenyomás 60x10 70x8 80x6",
+            "guggolás 5,5,5 @ 100",
+            "fekvenyomás max 120 kg",
+            "ma guggoltam, 5 sorozat, 5 ismétlés, 100 kg",
+            "kettlebell swing 5x20 24 kg",
     };
 
     /** Intervallum-beállítás egy mondatból. */
@@ -92,6 +98,9 @@ public final class Examples {
             "40 mp / 20 mp, 10 kör",
             "10x(40s/20s)",
             "emom 12",
+            "amrap 20 perc",
+            "kör: 6, munka: 40mp, pihenő: 20mp",
+            "8 kör: 20 mp sprint, 40 mp séta",
     };
 
     /** Percenként másik példa, hogy ne egyetlen formát tanuljon meg a szem. */
