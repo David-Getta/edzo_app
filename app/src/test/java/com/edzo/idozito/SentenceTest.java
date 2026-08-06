@@ -92,6 +92,67 @@ public class SentenceTest {
         }
     }
 
+    /**
+     * Az étkezés-mondatból ne legyen fantom-edzés.
+     *
+     * Ez a rosszabbik irány: egy kitalált edzés bekerül a szériába, az XP-be,
+     * a jelvényekbe és a statisztikába is – és a felhasználó a naplóban látja
+     * viszont, hogy „ma edzett", pedig csak vacsorázott.
+     */
+    @Test public void aMealNeverBecomesAWorkout() {
+        StringBuilder bad = new StringBuilder();
+        for (String q : MEALS) {
+            if (!StrengthParse.parse(q).isEmpty()) bad.append("\n  sorozat: ").append(q);
+            if (!Activities.parse(q, NOW).isEmpty()) bad.append("\n  edzés: ").append(q);
+            if (IntervalParse.parse(q) != null) bad.append("\n  időzítő: ").append(q);
+            if (!BodyParse.parse(q).isEmpty()) bad.append("\n  mérés: ").append(q);
+        }
+        assertEquals("fantom bejegyzés:" + bad, 0, bad.length());
+    }
+
+    /** …és az edzés-mondatból se legyen véletlen étkezés. */
+    @Test public void aWorkoutNeverBecomesAMeal() {
+        StringBuilder bad = new StringBuilder();
+        for (String q : WORKOUTS) {
+            java.util.List<Foods.Hit> h = Foods.parse(FOODS, q);
+            if (!h.isEmpty()) bad.append("\n  ").append(q).append(" -> ").append(h.get(0).food.name);
+        }
+        assertEquals("kitalált étel:" + bad, 0, bad.length());
+    }
+
+    /** Életszerű étkezés-mondatok – a felismerés MÁSIK oldalának határa. */
+    private static final String[] MEALS = {
+            "reggelire zabkása", "ebédre csirkemell rizzsel", "vacsorára rántotta két tojásból",
+            "uzsonnára egy alma", "ettem egy szendvicset", "ittam egy kávét tejjel",
+            "gyros tál", "hekk sültkrumplival", "tojásos nokedli", "grillcsirke saláta",
+            "túró rudi", "egy tábla csoki", "kaptam egy szelet tortát", "ettem egy adag lecsót",
+            "vettem egy kiflit", "kolbászos rántotta", "krumplifőzelék fasírttal",
+            "sonkás-sajtos melegszendvics", "egy marék mandula", "reggeli: kefir és banán",
+            "hamburger menü", "tejbegríz", "zsemle vajjal", "csirkepaprikás nokedlivel",
+            "vegyes saláta olívaolajjal", "150 g csirkemell 200 g rizs", "2 tojás",
+            "fél alma", "két szelet kenyér", "3 dl tej", "tegnap este pizzát ettem",
+            "ma reggel müzli joghurttal", "1 kg alma", "20 dkg sajt", "fél adag gyros",
+            "banán 2 db", "tojás (3 db)", "5 dl narancslé", "egy pohár bor",
+            "két korsó sör", "10 szem mandula",
+    };
+
+    /** Életszerű mozgás-mondatok, mind a négy másik felismerőből. */
+    private static final String[] WORKOUTS = {
+            "30 perc futás", "10 km-t bicikliztem", "tegnap este kondi", "1 óra jóga",
+            "reggel elmentem futni fél órát", "ma edzettem egy órát a teremben",
+            "délután gyalogoltam egy órát", "egy óra spinning", "45 perces edzés",
+            "csináltam egy 20 perces kocogást", "10000 lépés", "ma sokat sétáltam",
+            "húsz perc nyújtás", "két óra foci meccs", "reggeli torna 15 perc",
+            "este 30 perc szobabicikli", "1 óra 20 perc futás", "futottam 8 km-t 45 perc alatt",
+            "úsztam 1000 métert", "korcsolyáztam egy órát", "3x10 fekvenyomás 60 kg",
+            "guggolás 5x5 80 kg", "húzódzkodás 3x8", "plank 3x1 perc",
+            "4 sorozat 8 fekvenyomás", "100 fekvőtámasz", "bicepsz 12-10-8 15 kg",
+            "lábtolás 3x12 120 kg", "evezés 4x10 50 kg", "3 kör 40 mp munka 20 mp pihenő",
+            "8x20/10", "tabata", "emom 10 perc", "ma reggel 78,4 kg", "78 kiló vagyok",
+            "mérleg: 81,2", "18% testzsír", "kézilabda meccs", "teniszeztem egy órát",
+            "asztalitenisz 40 perc", "boxoltam 30 percet", "sí 3 óra",
+    };
+
     /** Ételek nélkül (null) is működik – a hívónak nem kell listát adnia. */
     @Test public void foodsAreOptional() {
         assertEquals(Sentence.Kind.WORKOUT, Sentence.of("30 perc futás", null, NOW));
