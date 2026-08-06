@@ -46,7 +46,12 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   (a kimondott óra pontosabb a napszaknál), „július 28-án
   futottam", „100 fekvőtámasz", „júl. 28-án 6x1 km", „napi 20 perc jóga
   egész héten", „1h20 futás", „45p nyújtás", „hetvenöt perc kondi",
-  „száz fekvőtámasz", „huszonöt kilométer bringa" – mentés előtt megmutatja, mit értett; a tervekre („jövő
+  „száz fekvőtámasz", „huszonöt kilométer bringa",
+  „10 km-t futottam 5:30-as tempóval" (a kimondott tempó pontosabb, mint a
+  becslés), „futás 1:05:23" (óra-kijelző alak), „kondi és futás, összesen
+  másfél óra" (az összesen OSZTJA az időt), „10-15 perc futás" és „5-8 km
+  futás" (a tartomány közepe), „reggel és este 30-30 perc kondi" (két edzés)
+  – mentés előtt megmutatja, mit értett; a tervekre („jövő
   héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
   is érti („ma nem futottam", „kondi helyett futás"; a „nem futottam és
   kondiztam" és a „nem futottam a kondi mellett" kondija viszont
@@ -71,7 +76,11 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „negyvenöt gramm", „százhuszonöt gramm", „nyolcvanöt kiló",
   „két és fél deci"),
   a poharas/korsós italokat, a mérőszavakat (tányér, bögre, kanál,
-  marék, tábla, szelet, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag")
+  marék, tábla, szelet, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag").
+  A **negyed** és a **dupla adag** is számít, a mérőszó szám nélkül egy
+  darabot jelent („tábla csoki" = egy tábla), a **tartomány** közepe megy be
+  („2-3 szelet kenyér" = két és fél), és a birtokos „fele" is fél
+  („az alma fele", „a fele adag rizs")
 - **A mennyiség a név után is állhat**: „banán 2 db", „tojás (3 db)",
   „kenyér (2 szelet)" – a bevásárlólista-szórend legalább olyan gyakori,
   mint a fordítottja
@@ -140,8 +149,16 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   mindegyik lépcső **felrakható** súlyon (2,5 kg-os osztás), a tárcsabontással
   együtt – a rámpát fejben is ki lehet számolni, csak a végén nem kerek szám
   jön ki, amit rá lehetne rakni a rúdra
+- ⏱ **Tartások másodpercben**: a plank, a fal-ülés és a holt függés nem
+  ismétlés, hanem idő. A napló „1:00"-t ír „0 kg × 60" helyett, a mondat is
+  érti („plank 3x1 perc", „alkartámasz 3x60", „fal ülés 3x40 mp"), a
+  progresszió pedig tíz másodperccel lép, két percnél megáll, és onnan a
+  sorozatszám, majd a nehezebb változat visz tovább. Testsúlyos sorozatnál
+  nem kerül nulla kiló a súlymezőbe
 - **Rekordok**: max súly és becsült **1RM** (Epley), **súly-fejlődési grafikon**,
-  heti és összesített volumen
+  heti és összesített volumen. Testsúlyra is: **legtöbb ismétlés** és
+  **leghosszabb tartás** – aki csak fekvőtámaszozik és plankol, annak eddig
+  egyetlen erő-rekordja sem volt
 - **Progresszió-javaslat**: mit nyomj ma? Dupla progresszió szerint előbb az
   ismétlésszám kúszik fel a sáv tetejéig (8–12), utána lép a súly (20 kg alatt
   1,25 kg, felette 2,5 kg). A tempót a leggyengébb sorozat szabja meg, a
