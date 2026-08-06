@@ -1178,9 +1178,27 @@ public final class Activities {
     public static boolean looksLikeFuture(String text) {
         if (text == null) return false;
         String s = Foods.norm(text);
+        // A magyar jelen idő gyakran jövőt jelent: az „este megyek edzeni" és a
+        // „ha lesz időm, futok" SZÁNDÉK, nem megtörtént edzés – eddig mindkettő
+        // bekerült a naplóba, a szériába és az XP-be. A múlt idő ragja más
+        // („futottam"), így ezek a szótövek nem ütköznek vele.
         for (String w : new String[]{"holnap", "jovo het", "jovo hon", "fogok",
-                "tervez", "szeretne"})
+                "tervez", "szeretne", "megyek", "lesz idom", "majd lesz"})
             if (s.contains(w)) return true;
+        // Egyes szám első személyű jelen idő. A „futok" és az „edzek"
+        // SZÁNDÉKOSAN kimarad: az előbbi a futás szótöve (a „három kört futok"
+        // is futás), az utóbbi pedig szinte mindig tagadásban áll („nem
+        // edzek"), amit a pihenőnap-ág amúgy is kezel.
+        for (String w : new String[]{"uszok", "biciklizek", "gyurok",
+                "sportolok", "mozgok"}) {
+            int p = s.indexOf(w);
+            while (p >= 0) {
+                int e = p + w.length();
+                if ((p == 0 || !Character.isLetter(s.charAt(p - 1)))
+                        && (e >= s.length() || !Character.isLetter(s.charAt(e)))) return true;
+                p = s.indexOf(w, p + 1);
+            }
+        }
         return false;
     }
 

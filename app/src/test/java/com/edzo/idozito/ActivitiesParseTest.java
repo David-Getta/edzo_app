@@ -347,6 +347,21 @@ public class ActivitiesParseTest {
         assertEquals("elcsúszott az idő:" + bad, 0, bad.length());
     }
 
+    @Test public void thePresentTenseIsUsuallyAPlan() {
+        // A magyar jelen idő gyakran jövőt jelent: az „este megyek edzeni" és
+        // a „ha lesz időm, futok" SZÁNDÉK. Eddig mindkettő bekerült a naplóba,
+        // a szériába és az XP-be – egy meg sem történt edzés.
+        for (String q : new String[]{"ma még megyek futni", "este megyek edzeni",
+                "ha lesz időm, futok", "holnap kondi", "jövő héten 3 futás"})
+            assertTrue("tervből bejegyzés lett: " + q, Activities.parse(q).isEmpty());
+        // A múlt idő ragja más, azt nem érinti.
+        assertEquals("1d+0: 1×futas/45", summary("futottam"));
+        assertEquals("1d+0: 1×egyeb/45", summary("elmentem edzeni"));
+        // A „futok" szándékosan marad futás: a „három kört futok" is futás,
+        // és a szótő-teszt is ezt őrzi.
+        assertEquals("1d+0: 1×futas/45", summary("majd futok"));
+    }
+
     @Test public void theLoneDurationOnlyAppliesToAllWhenItSumsUp() {
         // Az összefoglaló idő külön tagmondat a felsorolás UTÁN: az mindenkire
         // vonatkozik. A mozgás mögé közvetlenül írt idő viszont csak az övé,
