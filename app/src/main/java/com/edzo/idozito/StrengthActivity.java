@@ -518,6 +518,42 @@ public class StrengthActivity extends Activity {
                 .show();
     }
 
+    /** Edzésnap megosztása szövegként („Lábnap: Guggolás, Lábtolás…"). */
+    void shareRoutine(Routines.Routine r) {
+        String text = Routines.sentence(r);
+        if (text.isEmpty()) return;
+        try {
+            android.content.Intent i =
+                    new android.content.Intent(android.content.Intent.ACTION_SEND)
+                            .setType("text/plain");
+            i.putExtra(android.content.Intent.EXTRA_TEXT, text);
+            startActivity(android.content.Intent.createChooser(i, "Edzésnap megosztása"));
+        } catch (Exception ignored) {
+            Toast.makeText(this, "Nem sikerült megosztani.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Kapott edzésnap: előnézet, majd mentés a saját napok közé.
+     *
+     * Az edzőtől vagy edzőtárstól kapott nap eddig gépelős feladat volt: a
+     * gyakorlatokat egyenként kellett kikeresni. A mentés itt is a
+     * felhasználóé – az azonos nevű nap cserélődik, nem duplázódik.
+     */
+    void sharedRoutineSheet(Routines.Routine r) {
+        StringBuilder sb = new StringBuilder();
+        for (String m : r.moves) sb.append("•  ").append(m).append('\n');
+        new Sheet(this, "Kapott edzésnap 📅", "„" + r.name + "”\n\n" + sb)
+                .addPrimary("Mentés az edzésnapok közé", () -> {
+                    Theme.setStr(this, Routines.KEY,
+                            Routines.add(Theme.getStr(this, Routines.KEY, ""), r.name, r.moves));
+                    Toast.makeText(this, "Edzésnap mentve ✔", Toast.LENGTH_SHORT).show();
+                    routineSheet();      // a friss lista rögtön látszik
+                })
+                .addCancel()
+                .show();
+    }
+
     /**
      * Bejegyzés megosztása szövegként.
      *
@@ -1178,6 +1214,11 @@ public class StrengthActivity extends Activity {
                     + "a másolat elnyomja a beépítettet.", false, true,
                     () -> newRoutineSheet(r.name, moves));
         }
+        // Megosztás: a nap szövegként megy tovább, és a másik telefonon
+        // ugyanez a felismerő teszi a helyére.
+        sh.addRow("📤", "Megosztás", "Elküldöm szövegként – a másik oldalon "
+                + "egy koppintással felvehető.", false, true,
+                () -> shareRoutine(r));
         if (own)
             sh.addRow("🗑", "Törlöm ezt az edzésnapot", "A beépített változat marad.",
                     false, true, () -> {
@@ -1585,7 +1626,14 @@ public class StrengthActivity extends Activity {
         final String sent = intent.getStringExtra(Sentence.EXTRA);
         if (sent == null || sent.trim().isEmpty()) return;
         intent.removeExtra(Sentence.EXTRA);
-        getWindow().getDecorView().post(() -> { if (!isFinishing()) sentenceSheet(sent); });
+        // Megosztott EDZÉSNAP („Lábnap: guggolás, lábtolás…"): azt nem
+        // sorozatként vesszük fel, hanem felajánljuk mentésre a napok közé.
+        final Routines.Routine shared = Routines.parseShared(sent);
+        getWindow().getDecorView().post(() -> {
+            if (isFinishing()) return;
+            if (shared != null) sharedRoutineSheet(shared);
+            else sentenceSheet(sent);
+        });
     }
 
     @Override

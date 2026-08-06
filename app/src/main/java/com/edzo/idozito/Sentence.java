@@ -20,7 +20,7 @@ public final class Sentence {
     private Sentence() {}
 
     /** Hova való a mondat. NONE = egyik felismerő sem tud vele mit kezdeni. */
-    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY }
+    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE }
 
     /** Az átirányított mondat Intent-kulcsa: a cél-képernyő ezzel nyílik meg. */
     public static final String EXTRA = "sentence";
@@ -48,6 +48,10 @@ public final class Sentence {
         // egy sportszó („Zsírégető HIIT", „Kondi kör"), és attól a mondat
         // megtörtént edzésnek látszott.
         if (iv != null && iv.rest > 0 && iv.rounds >= 2) return Kind.INTERVAL;
+        // Edzésnap-lista (sorozatok NÉLKÜL felsorolt gyakorlatok, névvel):
+        // ez az edzés-felismerő elé kell, mert a nap neve gyakran maga is
+        // sportszó („Lábnap", „Tolónap") – attól megtörtént edzésnek látszana.
+        if (Routines.parseShared(q) != null) return Kind.ROUTINE;
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;
@@ -67,6 +71,7 @@ public final class Sentence {
             case STRENGTH: return "Erősítő napló";
             case INTERVAL: return "Időzítő";
             case BODY: return "Profil";
+            case ROUTINE: return "Edzésnapok";
             default: return "";
         }
     }
@@ -84,6 +89,7 @@ public final class Sentence {
             case STRENGTH: return "🏋️ Ez erősítő sorozatnak tűnik – koppints, és az Erősítő naplóba viszem.";
             case INTERVAL: return "⏱️ Ez időzítő-tervnek tűnik – koppints, és beállítom.";
             case BODY: return "⚖️ Ez mérésnek tűnik – koppints, és a Profilba viszem.";
+            case ROUTINE: return "📅 Ez edzésnapnak tűnik – koppints, és felveszem.";
             default: return "";
         }
     }

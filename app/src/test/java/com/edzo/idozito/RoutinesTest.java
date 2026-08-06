@@ -246,4 +246,34 @@ public class RoutinesTest {
         assertNull(Routines.nextUp(null, ts, names, now));
         assertNull(Routines.nextUp(all, null, null, now));
     }
+
+    /**
+     * A megosztott edzésnap visszaolvasható – és csak az.
+     *
+     * Az edzőtől kapott nap eddig gépelős feladat volt: a gyakorlatokat
+     * egyenként kellett kikeresni. A felismerés szándékosan szűk: névvel
+     * legalább kettő, név nélkül legalább három gyakorlat kell – különben a
+     * „ma guggolás és fekvenyomás volt" mondatból is edzésnap-ajánlat lenne,
+     * pedig az egy megtörtént edzés.
+     */
+    @Test public void everySharedRoutineReadsBackTheSame() {
+        for (Routines.Routine r : Routines.builtIn()) {
+            Routines.Routine back = Routines.parseShared(Routines.sentence(r));
+            assertTrue(r.name, back != null);
+            assertEquals(r.name, back.name);
+            assertEquals(r.moves, back.moves);
+        }
+        // Kézzel írt alak is megy, kisbetűvel.
+        Routines.Routine r = Routines.parseShared("Tolónap: fekvenyomás, vállból nyomás, tricepsz");
+        assertEquals("Tolónap", r.name);
+        assertEquals(3, r.moves.size());
+        assertEquals("Fekvenyomás", r.moves.get(0));
+        // Név nélkül három gyakorlattól.
+        assertTrue(Routines.parseShared("guggolás, fekvenyomás, felhúzás") != null);
+        // …de ami nem edzésnap, abból ne legyen az.
+        for (String q : new String[]{"ma guggolás és fekvenyomás volt",
+                "guggolás 3x10, fekvenyomás 3x8", "csak guggolás",
+                "Reggeli: zabkása, banán, kávé", ""})
+            assertTrue(q, Routines.parseShared(q) == null);
+    }
 }

@@ -597,6 +597,16 @@ public final class StrengthParse {
         return 0;
     }
 
+    /**
+     * A szövegben felismert gyakorlat szép neve, vagy null.
+     *
+     * Nyers (még nem normalizált) szöveget vár – a megosztott edzésnapok
+     * felolvasásához kell, ahol a gyakorlatok sorozat nélkül állnak.
+     */
+    public static String nameIn(String raw) {
+        return raw == null ? null : moveIn(Foods.norm(raw));
+    }
+
     /** A leghosszabb illeszkedő gyakorlat-tő szép neve, vagy null. */
     private static String moveIn(String s) {
         String best = null;

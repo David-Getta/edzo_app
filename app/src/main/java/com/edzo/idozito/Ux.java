@@ -463,7 +463,7 @@ public final class Ux {
         switch (kind) {
             case MEAL: target = DietActivity.class; break;
             case WORKOUT: target = HistoryActivity.class; break;
-            case STRENGTH: target = StrengthActivity.class; break;
+            case STRENGTH: case ROUTINE: target = StrengthActivity.class; break;
             case INTERVAL: target = MainActivity.class; break;
             case BODY: target = ProfileActivity.class; break;
             default: return;

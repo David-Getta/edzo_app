@@ -178,6 +178,53 @@ public final class Routines {
         return format(list);
     }
 
+    /**
+     * Egy edzésnap MONDATKÉNT – megosztáshoz.
+     *
+     * „Lábnap: Guggolás, Lábtolás, Kitörés, Vádliemelés”. Ugyanaz az alak,
+     * amit a felismerő vissza tud olvasni: aki megkapja, egy koppintással a
+     * saját edzésnapjai közé teheti.
+     */
+    public static String sentence(Routine r) {
+        if (r == null || r.moves == null || r.moves.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder(r.name).append(": ");
+        for (int i = 0; i < r.moves.size(); i++) {
+            if (i > 0) sb.append(", ");
+            sb.append(r.moves.get(i));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Megosztott edzésnap felolvasása, vagy null.
+     *
+     * A kapott szöveg „Név: gyakorlat, gyakorlat…” alakú. Szándékosan szűk a
+     * feltétel: névvel legalább kettő, név nélkül legalább három gyakorlat
+     * kell. Enélkül a „ma guggolás és fekvenyomás volt" mondatból is
+     * edzésnap-ajánlat lenne, pedig az egy megtörtént edzés.
+     */
+    public static Routine parseShared(String text) {
+        if (text == null) return null;
+        String t = text.trim();
+        if (t.isEmpty()) return null;
+        String name = null, body = t;
+        int c = t.indexOf(':');
+        if (c > 0 && c <= MAX_NAME + 6) {
+            name = clean(t.substring(0, c));
+            body = t.substring(c + 1);
+        }
+        List<String> moves = new ArrayList<>();
+        for (String part : body.split("[,;\n]| és | meg | majd ")) {
+            String m = StrengthParse.nameIn(part);
+            if (m != null && !moves.contains(m) && moves.size() < MAX_MOVES) moves.add(m);
+        }
+        int need = name != null && !name.isEmpty() ? 2 : 3;
+        if (moves.size() < need) return null;
+        if (name == null || name.isEmpty()) name = "Kapott edzésnap";
+        if (name.length() > MAX_NAME) name = name.substring(0, MAX_NAME).trim();
+        return new Routine(name, moves);
+    }
+
     /** Edzésnap törlése név szerint. */
     public static String remove(String stored, String name) {
         String n = clean(name);

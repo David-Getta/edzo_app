@@ -21,6 +21,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „8 rounds 20 sec work 10 sec rest” (az internetről másolt angol terv),
   „négyszer negyven másodperc munka húsz másodperc pihenő” – a teremben kapott edzésterv szövegként érkezik, nem
   csúszkaállásként; egy koppintással sablonként is elmenthető
+- 📅 **Edzésnap megosztása**: „Lábnap: Guggolás, Lábtolás, Kitörés" – az
+  edzőtől kapott nap egy koppintással bekerül a saját edzésnapjaid közé
 - 📤 **Bejegyzés megosztása**: az erősítő napló egy bejegyzése („guggolás
   3x10 60 kg") és az időzítő-sablon is küldhető szövegként – a másik telefonon
   ugyanez a felismerő teszi a helyére
