@@ -133,11 +133,7 @@ public class StrengthActivity extends Activity {
         refresh();
         // Máshonnan ideirányított mondat („3x10 fekvenyomás" az étkezés-mezőből):
         // nyissuk meg vele a felvételi lapot, ne kelljen újragépelni.
-        String sent = getIntent().getStringExtra(Sentence.EXTRA);
-        if (sent != null && !sent.trim().isEmpty()) {
-            getIntent().removeExtra(Sentence.EXTRA);
-            col.post(() -> sentenceSheet(sent));
-        }
+        handleSentenceIntent(getIntent());
     }
 
     /** Súly formázása: egész kg-nál tizedes nélkül. */
@@ -1551,4 +1547,26 @@ public class StrengthActivity extends Activity {
     }
 
     int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }
+
+    /**
+     * Máshonnan ideirányított mondat: nyissuk meg vele a felvételi lapot.
+     *
+     * Az onNewIntent is ide fut: ha a képernyő már a veremben volt, az
+     * átirányítás előrehozza (nem hoz létre másodikat), és a mondat ezen az
+     * úton érkezik – az onCreate ilyenkor le sem futna.
+     */
+    void handleSentenceIntent(android.content.Intent intent) {
+        if (intent == null) return;
+        final String sent = intent.getStringExtra(Sentence.EXTRA);
+        if (sent == null || sent.trim().isEmpty()) return;
+        intent.removeExtra(Sentence.EXTRA);
+        getWindow().getDecorView().post(() -> { if (!isFinishing()) sentenceSheet(sent); });
+    }
+
+    @Override
+    protected void onNewIntent(android.content.Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleSentenceIntent(intent);
+    }
 }

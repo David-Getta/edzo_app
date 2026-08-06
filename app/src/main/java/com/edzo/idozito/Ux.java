@@ -468,6 +468,15 @@ public final class Ux {
             case BODY: target = ProfileActivity.class; break;
             default: return;
         }
-        a.startActivity(new Intent(a, target).putExtra(Sentence.EXTRA, sentence));
+        Intent it = new Intent(a, target).putExtra(Sentence.EXTRA, sentence);
+        // Ugyanazok a zászlók, mint az alsó navigációban: ha a képernyő már a
+        // veremben van, előrehozzuk, nem hozunk létre másodikat belőle. A
+        // mondat így az onNewIntent-en át érkezik – ezért fogadja mind a négy
+        // cél-képernyő ott is, nem csak az onCreate-ben.
+        if (target == MainActivity.class)
+            it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        else
+            it.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        a.startActivity(it);
     }
 }

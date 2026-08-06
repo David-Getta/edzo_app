@@ -142,11 +142,7 @@ public class HistoryActivity extends Activity {
         }
         // Máshonnan ideirányított mondat („30 perc futás" az étkezés-mezőből):
         // nyissuk meg vele a felvételi lapot, ne kelljen újragépelni.
-        String sent = getIntent().getStringExtra(Sentence.EXTRA);
-        if (sent != null && !sent.trim().isEmpty()) {
-            getIntent().removeExtra(Sentence.EXTRA);
-            col.post(() -> bulkSheet(sent));
-        }
+        handleSentenceIntent(getIntent());
     }
 
     @Override
@@ -942,4 +938,26 @@ public class HistoryActivity extends Activity {
     View gap(int h) { View v = new View(this); v.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(h))); return v; }
 
     int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density + 0.5f); }
+
+    /**
+     * Máshonnan ideirányított mondat: nyissuk meg vele a felvételi lapot.
+     *
+     * Az onNewIntent is ide fut: ha a képernyő már a veremben volt, az
+     * átirányítás előrehozza (nem hoz létre másodikat), és a mondat ezen az
+     * úton érkezik – az onCreate ilyenkor le sem futna.
+     */
+    void handleSentenceIntent(android.content.Intent intent) {
+        if (intent == null) return;
+        final String sent = intent.getStringExtra(Sentence.EXTRA);
+        if (sent == null || sent.trim().isEmpty()) return;
+        intent.removeExtra(Sentence.EXTRA);
+        getWindow().getDecorView().post(() -> { if (!isFinishing()) bulkSheet(sent); });
+    }
+
+    @Override
+    protected void onNewIntent(android.content.Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleSentenceIntent(intent);
+    }
 }

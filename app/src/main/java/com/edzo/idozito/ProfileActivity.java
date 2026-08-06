@@ -185,11 +185,7 @@ public class ProfileActivity extends Activity {
         // Máshonnan ideirányított mérés-mondat („ma reggel 78,4 kg”): a
         // számokat beírjuk a mezőkbe, a mentést viszont a felhasználó nyomja
         // meg – a saját súlya nem kerülhet a naplóba az ő tudta nélkül.
-        String sent = getIntent().getStringExtra(Sentence.EXTRA);
-        if (sent != null && !sent.trim().isEmpty()) {
-            getIntent().removeExtra(Sentence.EXTRA);
-            col.post(() -> measurementSheet(sent));
-        }
+        handleSentenceIntent(getIntent());
     }
 
     /**
@@ -701,5 +697,27 @@ public class ProfileActivity extends Activity {
             if (Math.abs(v - Math.round(v)) < 0.05) return String.valueOf(Math.round(v));
             return String.format(Hu.LOCALE, "%.1f", v);
         }
+    }
+
+    /**
+     * Máshonnan ideirányított mondat: nyissuk meg vele a felvételi lapot.
+     *
+     * Az onNewIntent is ide fut: ha a képernyő már a veremben volt, az
+     * átirányítás előrehozza (nem hoz létre másodikat), és a mondat ezen az
+     * úton érkezik – az onCreate ilyenkor le sem futna.
+     */
+    void handleSentenceIntent(android.content.Intent intent) {
+        if (intent == null) return;
+        final String sent = intent.getStringExtra(Sentence.EXTRA);
+        if (sent == null || sent.trim().isEmpty()) return;
+        intent.removeExtra(Sentence.EXTRA);
+        getWindow().getDecorView().post(() -> { if (!isFinishing()) measurementSheet(sent); });
+    }
+
+    @Override
+    protected void onNewIntent(android.content.Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleSentenceIntent(intent);
     }
 }
