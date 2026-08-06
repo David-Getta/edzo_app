@@ -305,7 +305,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - Edzés / haladás / jelvények / statisztika / hőtérkép / napi étrend megosztása
 - **Biztonsági mentés / visszaállítás** fájlba – a GPS-útvonalakkal együtt;
   az étkezés-fotók a telefonon maradnak –,
-  **CSV export** (előzmények, erősítő napló RPE-vel, étrend a vízzel együtt)
+  **CSV export** (előzmények, erősítő napló RPE-vel, étrend a vízzel együtt,
+  testsúly-mérések BMI-vel)
 
 ## Automatikus frissítés (ajánlott) — Obtainium
 

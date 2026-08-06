@@ -240,6 +240,11 @@ public class SettingsActivity extends Activity {
         col.addView(exportMeals);
         col.addView(gap(10));
 
+        Button exportMeas = ghost("⚖️  Mérések exportálása (CSV)");
+        exportMeas.setOnClickListener(v -> exportMeasurementsCsv());
+        col.addView(exportMeas);
+        col.addView(gap(10));
+
         col.addView(text("☁️  Automatikus mentés (Google-fiók)", 15.5f, TXT, true));
         col.addView(gap(4));
         col.addView(text("Az adataid (előzmények, erősítő napló, beállítások, programok) "
@@ -422,6 +427,36 @@ public class SettingsActivity extends Activity {
             }
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_etrend.csv", "text/csv");
+    }
+
+    /**
+     * Testsúly-mérések CSV-be.
+     *
+     * A másik három napló exportálható volt, a mérések nem – pedig ez az az
+     * adat, amit a legtöbben más eszközben (táblázatban, orvosnál) is látni
+     * akarnak. A BMI-t is kiírjuk, de csak ha van hozzá magasság.
+     */
+    void exportMeasurementsCsv() {
+        org.json.JSONArray a = Profile.measurements(this);
+        if (a.length() == 0) {
+            Toast.makeText(this, "Nincs mentett mérés.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("datum;testsuly_kg;testzsir_szazalek;bmi\n");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        // A legrégebbi elöl: táblázatban így rajzol egyenesen a görbe.
+        for (int i = a.length() - 1; i >= 0; i--) {
+            org.json.JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            double w = o.optDouble("w", -1), bf = o.optDouble("bf", -1),
+                    bmi = o.optDouble("bmi", -1);
+            sb.append(df.format(new Date(o.optLong("ts")))).append(';')
+              .append(w > 0 ? String.format(Locale.US, "%.1f", w) : "").append(';')
+              .append(bf > 0 ? String.format(Locale.US, "%.1f", bf) : "").append(';')
+              .append(bmi > 0 ? String.format(Locale.US, "%.1f", bmi) : "").append('\n');
+        }
+        ShareProvider.shareTextFile(this, sb.toString(), "grit_meresek.csv", "text/csv");
     }
 
     void exportStrengthCsv() {
