@@ -341,9 +341,18 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~515 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~657 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
+bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
+                              # ellen: melyikben lakik egy rövid szótő
 ```
+
+A **szósöprés** a leghalkabb hibafajtát keresi: amikor egy rövid szótő
+beleakad egy hétköznapi szóba, és a bejegyzés létrejön – csak épp nem arról,
+amit az ember írt (a KÉPERNYŐben az eper, a TARTALMAzban az alma, a „150
+graMMAl"-ban a harcművészet). Korpuszt csinál a forrás magyar kommentjeiből,
+és mind az öt felismerőn átfuttatja; a találatokat végig kell nézni, mert a
+java részük jogos.
 
 Tiszta natív Android app (Java, `Activity` + programozott felület), külső
 függőségek nélkül (a JUnit csak teszthez). `minSdk 24`, `targetSdk 33`.
