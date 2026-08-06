@@ -320,6 +320,73 @@ public class ActivitiesParseTest {
         assertEquals(q, km2, p.get(1).km, 0.001);
     }
 
+    @Test public void twoSportsNeverSwapTheirNumbers() {
+        // Generatív őrszem: bármelyik két sportág, bármelyik szórend, és a
+        // szám mindig a SAJÁT mozgásához tartozik. Az éjszaka két ilyen hibája
+        // is előkerült (idő és táv is cserélődött), és mindkettő csendes volt:
+        // a bejegyzés létrejött, csak rossz értékkel.
+        String[][] sports = {{"futás", "futas"}, {"kondi", "kondi"},
+                {"úszás", "uszas"}, {"kézilabda", "kezilabda"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] a : sports)
+            for (String[] b : sports) {
+                if (a[1].equals(b[1])) continue;
+                String[] forms = {
+                        "30 perc " + a[0] + ", 20 perc " + b[0],
+                        a[0] + " 30 perc, " + b[0] + " 20 perc",
+                        "30 perc " + a[0] + " és 20 perc " + b[0],
+                        a[0] + " 30 perc és " + b[0] + " 20 perc"};
+                for (String q : forms) {
+                    java.util.List<Activities.Plan> p = Activities.parse(q).plans;
+                    if (p.size() != 2 || !p.get(0).kind.id.equals(a[1])
+                            || !p.get(1).kind.id.equals(b[1])
+                            || p.get(0).minutes != 30 || p.get(1).minutes != 20)
+                        bad.append("\n  ").append(q).append(" -> ").append(dump(p));
+                }
+            }
+        assertEquals("elcsúszott az idő:" + bad, 0, bad.length());
+    }
+
+    @Test public void twoSportsNeverSwapTheirDistances() {
+        // Ugyanaz a táv-oldalon: a „bicikli 20 km, futás 5 km" húsz
+        // kilométerét a futás vitte el, az ötöt pedig eldobtuk.
+        String[][] sports = {{"futás", "futas"}, {"úszás", "uszas"},
+                {"bicikli", "kerekpar"}, {"séta", "tura"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] a : sports)
+            for (String[] b : sports) {
+                if (a[1].equals(b[1])) continue;
+                String[] forms = {
+                        "10 km " + a[0] + ", 4 km " + b[0],
+                        a[0] + " 10 km, " + b[0] + " 4 km",
+                        "10 km " + a[0] + " és 4 km " + b[0],
+                        a[0] + " 10 km és " + b[0] + " 4 km"};
+                for (String q : forms) {
+                    java.util.List<Activities.Plan> p = Activities.parse(q).plans;
+                    if (p.size() != 2 || !p.get(0).kind.id.equals(a[1])
+                            || !p.get(1).kind.id.equals(b[1])
+                            || Math.abs(p.get(0).km - 10) > 0.001
+                            || Math.abs(p.get(1).km - 4) > 0.001)
+                        bad.append("\n  ").append(q).append(" -> ").append(dumpKm(p));
+                }
+            }
+        assertEquals("elcsúszott a táv:" + bad, 0, bad.length());
+    }
+
+    private static String dumpKm(java.util.List<Activities.Plan> p) {
+        StringBuilder sb = new StringBuilder();
+        for (Activities.Plan pl : p)
+            sb.append(pl.kind.id).append("/").append(pl.km).append("km ");
+        return sb.toString();
+    }
+
+    private static String dump(java.util.List<Activities.Plan> p) {
+        StringBuilder sb = new StringBuilder();
+        for (Activities.Plan pl : p)
+            sb.append(pl.kind.id).append("/").append(pl.minutes).append(" ");
+        return sb.toString();
+    }
+
     @Test public void manyWorkoutsNeedManyDays() {
         // Húsz edzés EGY napon tizenöt óra mozgás: a napi percek, a széria és
         // a terhelés-figyelés is elszállna tőle. Időszakot nem találunk ki a
