@@ -661,6 +661,8 @@ public final class Foods {
             // A testZSÍR és a ZSÍRbevitel nem konyhai zsír: az egyik testérték,
             // a másik a napi összegzés szava.
             "testzsir", "zsirbevitel",
+            // Az elMAJSZoltamban a máj: a nassolás mellé egy adag csirkemáj.
+            "majszol", "elmajszol", "felmajszol", "megmajszol",
             "vajon", "hallott", "hallom", "halk", "halad", "halott", "halvany",
             "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",

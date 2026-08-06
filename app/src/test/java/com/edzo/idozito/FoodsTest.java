@@ -319,6 +319,7 @@ public class FoodsTest {
             // Ötödik söprés: termi és táplálkozási szakszavak.
             "testzsír", "zsírbevitel", "edzésterv", "edzésnapló", "izomtömeg",
             "kalóriadeficit", "szálkásítás", "makró", "mikrotápanyag",
+            "elmajszoltam", "majszolgat",
     };
 
     @Test public void noEverydayWordEverBecomesFood() {
