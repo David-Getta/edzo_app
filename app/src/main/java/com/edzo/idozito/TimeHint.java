@@ -80,6 +80,8 @@ public final class TimeHint {
      *         mondatban (vagy kívül esik a pótlás ablakán)
      */
     static int monthDayBack(String s, long now) {
+        int num = numericDateBack(s, now);
+        if (num > 0) return num;
         for (int mi = 0; mi < 12; mi++) {
             int p = s.indexOf(MONTHS[mi]);
             int len = MONTHS[mi].length();
@@ -107,6 +109,47 @@ public final class TimeHint {
             // A jövőbe eső dátum tavalyi: december 30-át január 2-án írva a
             // múlt évre gondolt az ember.
             if (t.getTimeInMillis() > now) t.add(Calendar.YEAR, -1);
+            int back = Days.ago(t.getTimeInMillis(), now);
+            if (back >= 1 && back <= MAX_BACK) return back;
+        }
+        return 0;
+    }
+
+    /**
+     * Számmal írt dátum: „2026.07.28", „07.28.", „07.28-án".
+     *
+     * A hónapnevet már értettük, a számalakot nem – pedig a naptárból és a
+     * telefonról ez másolódik ki. A csupasz „07.28" szándékosan NEM elég:
+     * pont így néz ki egy tizedes szám is („1.5 kg"), és egy félreolvasott
+     * dátum két napi összesítőt ront el. Kell mellé záró pont, ragozás vagy
+     * évszám.
+     */
+    static int numericDateBack(String s, long now) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![\\d.])(?:(\\d{4})[.] ?(\\d{1,2})[.] ?(\\d{1,2})[.]?(?![\\d])"
+                        + "|(\\d{1,2})[.] ?(\\d{1,2})(?:[.](?![\\d])|-(?:a|e)n))")
+                .matcher(s);
+        while (m.find()) {
+            boolean withYear = m.group(1) != null;
+            int mon, day, year = 0;
+            try {
+                mon = Integer.parseInt(m.group(withYear ? 2 : 4));
+                day = Integer.parseInt(m.group(withYear ? 3 : 5));
+                if (withYear) year = Integer.parseInt(m.group(1));
+            } catch (NumberFormatException e) { continue; }
+            if (mon < 1 || mon > 12 || day < 1 || day > 31) continue;
+            Calendar t = Calendar.getInstance();
+            t.setTimeInMillis(now);
+            if (withYear) t.set(Calendar.YEAR, year);
+            t.set(Calendar.MONTH, mon - 1);
+            t.set(Calendar.DAY_OF_MONTH, day);
+            t.set(Calendar.HOUR_OF_DAY, 12);
+            t.set(Calendar.MINUTE, 0);
+            t.set(Calendar.SECOND, 0);
+            t.set(Calendar.MILLISECOND, 0);
+            // Évszám nélkül a jövőbe eső dátum tavalyi: december 30-át
+            // január 2-án írva a múlt évre gondolt az ember.
+            if (!withYear && t.getTimeInMillis() > now) t.add(Calendar.YEAR, -1);
             int back = Days.ago(t.getTimeInMillis(), now);
             if (back >= 1 && back <= MAX_BACK) return back;
         }
@@ -158,6 +201,11 @@ public final class TimeHint {
             if (hasWord(s, "mult") && back + 7 <= MAX_BACK) back += 7;
             return back;
         }
+        // Napnév nélküli „múlt héten", „előző héten": a hét távolabbi vége.
+        // Közelítés – de a MAI dátum biztosan rossz, és egy rossz nap két
+        // napi összesítőt ront el: ahonnan elveszi, és ahová beteszi.
+        if ((hasWord(s, "mult") || has(s, "elmult") || has(s, "elozo")) && has(s, "het"))
+            return 7;
         return 0;
     }
 

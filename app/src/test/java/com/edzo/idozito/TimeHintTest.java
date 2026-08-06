@@ -172,4 +172,41 @@ public class TimeHintTest {
         c.setTimeInMillis(TimeHint.from(q, now));
         return c.get(java.util.Calendar.HOUR_OF_DAY);
     }
+    /**
+     * Számmal írt dátum – ezt másolja ki az ember a naptárból.
+     *
+     * A csupasz „07.28" szándékosan NEM elég: pont így néz ki egy tizedes
+     * szám is („1.5 kg"), és egy félreolvasott dátum két napi összesítőt ront
+     * el – ahonnan elveszi, és ahová beteszi.
+     */
+    @Test public void numericDatesAreUnderstood() {
+        long now = 1_753_869_600_000L;         // 2025. július 30., szerda 12:00
+        assertEquals(2, Days.ago(TimeHint.from("07.28. tortát ettem", now), now));
+        assertEquals(2, Days.ago(TimeHint.from("07.28-án tortát ettem", now), now));
+        assertEquals(2, Days.ago(TimeHint.from("2025.07.28 tortát ettem", now), now));
+        assertEquals(2, Days.ago(TimeHint.from("2025.07.28. tortát ettem", now), now));
+        // A hónapnevet eddig is értette.
+        assertEquals(2, Days.ago(TimeHint.from("július 28-án tortát ettem", now), now));
+    }
+
+    @Test public void decimalNumbersAreNotDates() {
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"1.5 kg csirkemell", "0.5 l tej", "2.5 dl tej",
+                "60.5 kg guggolás", "3.5 km futás", "12.10.8 ismétlés", "07.28 valami"})
+            assertEquals(q, now, TimeHint.from(q, now));
+    }
+
+    /**
+     * „Múlt héten": napnév nélkül is a múlt hétre kerül.
+     *
+     * Közelítés – hét nappal ezelőtt –, de a MAI dátum biztosan rossz.
+     */
+    @Test public void lastWeekIsNotToday() {
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"múlt héten ettem egy pizzát", "előző héten kondi",
+                "múlt heti edzés"})
+            assertEquals(q, 7, Days.ago(TimeHint.from(q, now), now));
+        // A napnév erősebb: a „múlt kedden" a múlt hét keddje.
+        assertEquals(8, Days.ago(TimeHint.from("múlt kedden", now), now));
+    }
 }
