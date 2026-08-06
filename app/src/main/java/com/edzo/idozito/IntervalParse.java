@@ -182,6 +182,13 @@ public final class IntervalParse {
         int work = secondsBefore(s, WORK_WORDS, REST_WORDS);
         int rest = secondsBefore(s, REST_WORDS, WORK_WORDS);
         if (rest <= 0) rest = bareSecondsBefore(s, REST_WORDS, spokenUnit(s));
+        // Vesszővel tagolt mezőlista kettőspont nélkül: „kör 8, munka 30,
+        // pihenő 30". A tagmondatban a szón és a számon KÍVÜL nincs semmi,
+        // tehát nincs mit félreérteni – kettőspont nélkül eddig mégis
+        // kimaradt az egész terv.
+        if (work <= 0) work = fieldNumber(s, WORK_WORDS);
+        if (rest <= 0) rest = fieldNumber(s, REST_WORDS);
+        if (rounds <= 0) rounds = fieldNumber(s, new String[]{"kor", "round", "sorozat"});
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka. De
         // megnevezetlenül csak életszerű munkaidőt fogadunk el: a „minden
         // percben 1 kör, 15 percig” 15 perce nem egyetlen szakasz hossza.
@@ -326,6 +333,30 @@ public final class IntervalParse {
                     if (v >= MIN_SEC && v <= MAX_SEC) return v;
                 }
                 p = s.indexOf(w, p + 1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Szám a szó után, ha a TAGMONDAT csak ebből a kettőből áll: „munka 30".
+     *
+     * Ez a táblára írt terv alakja. Kettősponttal már értettük; anélkül
+     * viszont nem találgatunk általánosan (a „kör 40 mp munka" negyvene
+     * munkaidő, nem negyven kör) – itt a tagmondat üressége a garancia.
+     */
+    private static int fieldNumber(String s, String[] words) {
+        for (String part : s.split("[,;]")) {
+            String t = part.trim();
+            for (String w : words) {
+                if (!t.startsWith(w)) continue;
+                java.util.regex.Matcher m = java.util.regex.Pattern
+                        .compile("^\\w*\\s*:?\\s*(\\d{1,3})$").matcher(t.substring(w.length()));
+                if (!m.find()) continue;
+                try {
+                    int v = Integer.parseInt(m.group(1));
+                    if (v >= 1 && v <= MAX_SEC) return v;
+                } catch (NumberFormatException ignored) { }
             }
         }
         return 0;

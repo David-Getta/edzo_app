@@ -355,4 +355,29 @@ public class IntervalParseTest {
         assertEquals(20, p.work);
         assertEquals(10, p.rest);
     }
+    /**
+     * Vesszővel tagolt mezőlista kettőspont nélkül: „kör 8, munka 30,
+     * pihenő 30".
+     *
+     * Ez a táblára írt terv alakja. Kettősponttal már értettük; anélkül
+     * viszont kimaradt az EGÉSZ terv. Általánosan nem találgatunk (a
+     * „kör 40 mp munka" negyvene munkaidő, nem negyven kör) – itt az a
+     * garancia, hogy a tagmondatban a szón és a számon kívül nincs semmi.
+     */
+    @Test public void aCommaSeparatedFieldListWorksWithoutColons() {
+        IntervalParse.Plan p = IntervalParse.parse("kör 8, munka 30, pihenő 30");
+        assertNotNull(p);
+        assertEquals(8, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+        IntervalParse.Plan q = IntervalParse.parse("munka 45, pihenő 15, kör 10");
+        assertEquals(10, q.rounds);
+        assertEquals(45, q.work);
+        assertEquals(15, q.rest);
+        // A kettőspontos alak és a mondatszerű alak nem romolhatott el.
+        assertEquals(6, IntervalParse.parse("kör: 6, munka: 40mp, pihenő: 20mp").rounds);
+        assertEquals(40, IntervalParse.parse("3 kör 40 mp munka 20 mp pihenő").work);
+        // Tagmondat nélküli mezőnév továbbra sem elég: itt a negyven munkaidő.
+        assertEquals(40, IntervalParse.parse("kör 40 mp munka").work);
+    }
 }
