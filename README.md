@@ -86,7 +86,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „negyvenöt gramm", „százhuszonöt gramm", „nyolcvanöt kiló",
   „két és fél deci"),
   a poharas/korsós italokat, a mérőszavakat (tányér, bögre, kanál,
-  marék, tábla, szelet, szem, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag").
+  marék, tábla, szelet, szem, karéj, szál, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag").
   A **negyed** és a **dupla adag** is számít, a mérőszó szám nélkül egy
   darabot jelent („tábla csoki" = egy tábla), a **tartomány** közepe megy be
   („2-3 szelet kenyér" = két és fél), és a birtokos „fele" is fél

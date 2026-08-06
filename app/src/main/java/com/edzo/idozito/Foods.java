@@ -983,6 +983,7 @@ public final class Foods {
             // Amit szemenként mondunk: „tíz szem mandula", „öt szem szőlő".
             // Enélkül a szám elveszett, és a szokásos adag ment be – tíz
             // mandula helyett egy egész marék.
+            {"Kolbász", "80"},
             {"Mandula", "1"}, {"Dió", "5"}, {"Mogyoró", "1"}, {"Kesudió", "2"},
             {"Pisztácia", "1"}, {"Szőlő", "5"}, {"Cseresznye / meggy", "8"},
             {"Eper", "12"}, {"Olajbogyó / olívabogyó", "4"}, {"Málna", "4"},
@@ -1085,7 +1086,10 @@ public final class Foods {
              // A „szem" a magyar konyhában darabszó: „tíz szem mandula",
              // „öt szem szőlő". Enélkül a szám elveszett, és a szokásos adag
              // ment be – tíz mandula helyett egy egész marék.
-             "szem", "szemet", "szemnyi"};
+             "szem", "szemet", "szemnyi",
+             // A kenyér KARÉJ, a virsli és a kolbász SZÁL: mindkettő darabszó.
+             // A „2 karéj kenyér" eddig ugyanannyi volt, mint az egy karéj.
+             "karej", "karéj", "szal", "szál"};
 
     /**
      * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag

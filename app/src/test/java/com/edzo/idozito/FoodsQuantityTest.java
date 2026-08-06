@@ -335,4 +335,12 @@ public class FoodsQuantityTest {
         // A kimondott gramm erősebb marad.
         assertEquals(30, grams("30 g mandula"), 0.01);
     }
+
+    /** A kenyér KARÉJ, a virsli és a kolbász SZÁL – mindkettő darabszó. */
+    @Test public void breadIsSlicedAndSausageComesInLinks() {
+        assertEquals(35, grams("egy karéj kenyér"), 0.01);
+        assertEquals(70, grams("2 karéj kenyér"), 0.01);
+        assertEquals(100, grams("2 szál virsli"), 0.01);
+        assertEquals(240, grams("3 szál kolbász"), 0.01);
+    }
 }
