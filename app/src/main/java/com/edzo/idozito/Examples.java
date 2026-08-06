@@ -33,6 +33,11 @@ public final class Examples {
             "százhúsz gramm csirkemell",
             "sonkás-sajtos szendvics",
             "július 30-án tortát ettem",
+            // A mennyiség-alakok is: amit ért, azt hirdesse is.
+            "2-3 szelet kenyér",
+            "negyed pizza",
+            "dupla adag rizs",
+            "tábla csoki",
     };
 
     /** Több edzés egy mondatból – az előzmények tömeges felvitelénél. */
@@ -58,6 +63,10 @@ public final class Examples {
             "reggel 5 km futás, este 8 km futás",
             "ma reggel 6-kor futottam",
             "huszonöt kilométer bringa",
+            "kondi és futás, összesen másfél óra",
+            "10 km-t futottam 5:30-as tempóval",
+            "futás 1:05:23",
+            "kirándultunk 5 órát",
     };
 
     /** Erősítő sorozatok egy mondatból. */
@@ -82,6 +91,10 @@ public final class Examples {
             "fekvenyomás max 120 kg",
             "ma guggoltam, 5 sorozat, 5 ismétlés, 100 kg",
             "kettlebell swing 5x20 24 kg",
+            // Tartás: a szám másodperc, nem ismétlés.
+            "plank 3x1 perc",
+            "alkartámasz 3x60",
+            "fal ülés 3x40 mp",
     };
 
     /** Intervallum-beállítás egy mondatból. */
@@ -101,6 +114,7 @@ public final class Examples {
             "amrap 20 perc",
             "kör: 6, munka: 40mp, pihenő: 20mp",
             "8 kör: 20 mp sprint, 40 mp séta",
+            "45 másodperc munka 15 pihenő nyolcszor",
     };
 
     /** Percenként másik példa, hogy ne egyetlen formát tanuljon meg a szem. */
