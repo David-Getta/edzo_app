@@ -2051,6 +2051,13 @@ public final class Foods {
                 to = Math.max(to, p + combo[i].length());
             }
             if (!all) continue;
+            // Kötőszóval FELSOROLVA két külön étel: a „csirkemellből rántott
+            // hús" egy fogás, a „csirkemell ÉS rántott hús" viszont kettő –
+            // eddig az utóbbiból is egy lett, vagyis eltűnt egy adag.
+            String between = q.substring(from, Math.min(to, q.length()));
+            if (between.contains(",") || between.contains(";")
+                    || between.contains(" es ") || between.contains(" meg ")
+                    || between.contains(" plusz ")) continue;
             Food target = null;
             for (Food f : list) if (f.name.equals(combo[0])) { target = f; break; }
             if (target == null) continue;

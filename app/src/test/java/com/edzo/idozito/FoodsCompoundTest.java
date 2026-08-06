@@ -133,6 +133,21 @@ public class FoodsCompoundTest {
     }
 
     /**
+     * Az összevont fogásnál is számít a kötőszó.
+     *
+     * A „csirkemellből rántott hús" EGY fogás, a „csirkemell és rántott hús"
+     * viszont kettő – eddig az utóbbiból is egy lett, vagyis eltűnt egy adag
+     * a naplóból.
+     */
+    @Test public void aConjunctionAlsoSplitsCompoundDishes() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(1, Foods.parse(all, "csirkemellből rántott hús").size());
+        assertEquals(2, Foods.parse(all, "csirkemell és rántott hús").size());
+        assertEquals(1, Foods.parse(all, "tojásból rántotta").size());
+        assertEquals(2, Foods.parse(all, "tojás és rántotta").size());
+    }
+
+    /**
      * A „meggyes pite" pite, nem kilencven kalóriás meggy.
      *
      * A puszta „pite" nem volt szótő, csak az „almás pite" – a többi
