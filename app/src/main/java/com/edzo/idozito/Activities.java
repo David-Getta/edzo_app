@@ -1373,6 +1373,7 @@ public final class Activities {
      * a „ma nem futottam, csak sétáltam" sétája bekerül.
      */
     private static void stripNegated(char[] q) {
+        stripBackwardNegation(q);
         String s = new String(q);
         int h = s.indexOf("helyett");
         while (h >= 0) {
@@ -2204,6 +2205,45 @@ public final class Activities {
             blank(q, st, dash + 1);
             if (lo == hi || lo > hi || hi > lo * 3) continue;
             t[1] = t[1] * (lo + hi) / (2 * hi);
+        }
+    }
+
+    /**
+     * Hátravetett tagadás: „futni nem voltam", „úszni nem mentem".
+     *
+     * A „nem" előre töröl – ez a „nem futottam" alakra jó. Magyarul viszont
+     * ugyanolyan gyakori a fordított szórend, és ott a mozgás a tagadás
+     * ELŐTT áll: eddig minden ilyen mondat bejegyzést csinált abból, amit az
+     * ember épp NEM csinált meg.
+     *
+     * Csak akkor lép működésbe, ha a „nem" után a megvalósulást tagadó ige
+     * áll – a „nem szeretek futni" nem erről szól. A visszafelé törlés a
+     * tagmondat elején és a kötőszónál megáll, hogy a „…kondi, de futni nem
+     * voltam" kondija megmaradjon.
+     */
+    private static void stripBackwardNegation(char[] q) {
+        String s = new String(q);
+        int p = s.indexOf("nem ");
+        while (p >= 0) {
+            if (p == 0 || !Character.isLetter(s.charAt(p - 1))) {
+                boolean undone = false;
+                for (String v : new String[]{"voltam", "volt", "mentem", "ment",
+                        "jutottam", "sikerult", "tudtam", "birtam", "ertem ra",
+                        "jott ossze", "lett belole"})
+                    if (s.startsWith(v, p + 4)) { undone = true; break; }
+                if (undone) {
+                    int a = p;
+                    while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.'
+                            && s.charAt(a - 1) != ';') a--;
+                    for (String c : new String[]{" de ", " viszont ", " azonban ",
+                            " majd ", " aztan ", " utana ", " es "}) {
+                        int k = s.lastIndexOf(c, p);
+                        if (k >= 0 && k >= a) a = k + c.length();
+                    }
+                    if (a < p) blank(q, a, p);
+                }
+            }
+            p = s.indexOf("nem ", p + 1);
         }
     }
 

@@ -179,6 +179,8 @@ public class SentenceBatteryTest {
                 {"body pump 45 perc", "kondi×1 45p [1d+0]"},
                 {"este megyek edzeni", "— [1d+0]"},
                 {"holnap futok 10 km-t", "— [1d+0]"},
+                {"futni nem voltam", "— [1d+0]"},
+                {"úszni nem mentem", "— [1d+0]"},
                 {"vasárnap pihentem", "— [1d+0]"},
         };
         check(cases, "edzés");

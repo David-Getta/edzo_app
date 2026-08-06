@@ -103,4 +103,30 @@ public class ActivitiesMissedSportTest {
         });
         assertEquals("⚽ Foci: 10 napja kimaradt – ideje újra!", line);
     }
+    /**
+     * Hátravetett tagadás: „futni nem voltam".
+     *
+     * A „nem" előre töröl – ez a „nem futottam" alakra jó. Magyarul viszont
+     * ugyanolyan gyakori a fordított szórend, és ott a mozgás a tagadás ELŐTT
+     * áll: minden ilyen mondat bejegyzést csinált abból, amit az ember épp NEM
+     * csinált meg.
+     */
+    @Test public void aTrailingNegationAlsoCancelsTheWorkout() {
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"futni nem voltam", "kondizni nem voltam",
+                "úszni nem mentem", "futni nem mentem", "edzeni nem voltam",
+                "nem voltam futni", "nem mentem úszni"})
+            assertTrue(q + " -> " + Activities.parse(q, now).plans,
+                    Activities.parse(q, now).plans.isEmpty());
+        // Az állító alakok érintetlenek.
+        for (String q : new String[]{"futni voltam", "voltam futni", "futás"})
+            assertEquals(q, "futas", Activities.parse(q, now).plans.get(0).kind.id);
+        // A tagadás nem eszi meg az előtte álló, MEGTÖRTÉNT edzést.
+        Activities.Parsed p =
+                Activities.parse("reggel és este 30-30 perc kondi, de futni nem voltam", now);
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(30, p.plans.get(0).minutes);
+    }
 }
