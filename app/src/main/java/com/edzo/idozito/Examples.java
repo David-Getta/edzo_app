@@ -38,6 +38,8 @@ public final class Examples {
             "negyed pizza",
             "dupla adag rizs",
             "tábla csoki",
+            "10 szem mandula",
+            "2 karéj kenyér",
     };
 
     /** Több edzés egy mondatból – az előzmények tömeges felvitelénél. */
@@ -67,6 +69,8 @@ public final class Examples {
             "10 km-t futottam 5:30-as tempóval",
             "futás 1:05:23",
             "kirándultunk 5 órát",
+            "futás és úszás 30-30 perc",
+            "hegymászás 4 óra",
     };
 
     /** Erősítő sorozatok egy mondatból. */
@@ -95,6 +99,8 @@ public final class Examples {
             "plank 3x1 perc",
             "alkartámasz 3x60",
             "fal ülés 3x40 mp",
+            "4 sorozat 8 fekvenyomás",
+            "román felhúzás 3x8 80 kg",
     };
 
     /** Intervallum-beállítás egy mondatból. */
