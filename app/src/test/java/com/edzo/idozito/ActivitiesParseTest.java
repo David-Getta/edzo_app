@@ -298,6 +298,28 @@ public class ActivitiesParseTest {
                 summary("az elmúlt héten 3 futás és 2 úszás, 40 perc"));
     }
 
+    @Test public void eachSportKeepsItsOwnDistance() {
+        // A „bicikli 20 km, futás 5 km" húsz kilométerét a FUTÁS vitte el, az
+        // ötöt pedig eldobtuk – két rossz bejegyzés egy mondatból.
+        assertDistances("bicikli 20 km, futás 5 km", "kerekpar", 20, "futas", 5);
+        assertDistances("5 km futás, 20 km bicikli", "futas", 5, "kerekpar", 20);
+        // Ragozott igékkel is: itt a szótő rövidebb a szónál („úsztam"), és
+        // emiatt cserélődött fel a két táv.
+        assertDistances("úsztam 1 km-t, futottam 5 km-t", "uszas", 1, "futas", 5);
+        // Ugyanaz a sport kétszer, külön távval: két külön edzés.
+        assertDistances("reggel 5 km futás, este 8 km futás", "futas", 5, "futas", 8);
+    }
+
+    private static void assertDistances(String q, String k1, double km1,
+                                        String k2, double km2) {
+        java.util.List<Activities.Plan> p = Activities.parse(q).plans;
+        assertEquals(q, 2, p.size());
+        assertEquals(q, k1, p.get(0).kind.id);
+        assertEquals(q, km1, p.get(0).km, 0.001);
+        assertEquals(q, k2, p.get(1).kind.id);
+        assertEquals(q, km2, p.get(1).km, 0.001);
+    }
+
     @Test public void manyWorkoutsNeedManyDays() {
         // Húsz edzés EGY napon tizenöt óra mozgás: a napi percek, a széria és
         // a terhelés-figyelés is elszállna tőle. Időszakot nem találunk ki a

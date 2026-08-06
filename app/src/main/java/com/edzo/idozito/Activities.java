@@ -681,14 +681,33 @@ public final class Activities {
         //    távot – ott a szám nem jelent útvonalat.
         double[] kmOf = new double[keep.size()];
         for (double[] t : kms) {
-            int best = -1;
-            double bestD = Double.MAX_VALUE;
+            int best = -1, bestD = Integer.MAX_VALUE, bestPre = 2;
             for (int i = 0; i < keep.size(); i++) {
                 if (!ALL[keep.get(i)[2]].distance) continue;
-                double d = Math.abs(keep.get(i)[0] - t[0]);
-                if (d < bestD) { bestD = d; best = i; }
+                // Amelyik mozgás már kapott távot, az kiesik a versenyből –
+                // különben a „bicikli 20 km, futás 5 km" húsz kilométerét a
+                // futás vitte el, az ötöt pedig eldobtuk, mert a futásnak már
+                // volt távja. Két rossz bejegyzés egy mondatból.
+                if (kmOf[i] != 0) continue;
+                // A TELJES szó számít, nem csak a szótő: az „úsztam" úszás-töve
+                // három betű, a szó hat – a köz különben a következő mozgáshoz
+                // tűnt közelebbinek, és a két táv helyet cserélt.
+                int a = wordStart(s, keep.get(i)[0]);
+                int ae = wordEnd(s, keep.get(i)[0] + keep.get(i)[1] - 1);
+                int ts = (int) t[0], te = (int) t[2];
+                // A KÖZ számít, nem a szavak közepe – ugyanaz az elv, mint az
+                // időtartamnál.
+                int d = te <= a ? a - te : ts >= ae ? ts - ae : 0;
+                // Egyenlő köznél az ELŐTTE álló mozgás nyer: magyarul a szám a
+                // már kimondott mozgáshoz tapad („úsztam 1 km-t, futottam 5
+                // km-t"), és egy karakternyi különbségen nem múlhat, hogy
+                // melyik edzés kapja a másik távját.
+                int pre = ae <= ts ? 0 : 1;
+                if (d < bestD || (d == bestD && pre < bestPre)) {
+                    bestD = d; bestPre = pre; best = i;
+                }
             }
-            if (best >= 0 && kmOf[best] == 0) kmOf[best] = t[1];
+            if (best >= 0) kmOf[best] = t[1];
         }
         // Ha ugyanaz a mozgás kétszer szerepel („leFUTOTTAM a MARATONT"), a táv
         // a második találathoz is tapadhat – a terv viszont az elsőből készül.
@@ -748,7 +767,8 @@ public final class Activities {
             }
             int next = nextHit;
             int prevHit = i > 0 ? keep.get(i - 1)[0] : -1;
-            int minutes = minutesFor(mins, minsUsed, h[0], h[0] + h[1], prevHit, next, 0);
+            int minutes = minutesFor(mins, minsUsed, wordStart(s, h[0]),
+                    wordEnd(s, h[0] + h[1] - 1), prevHit, next, 0);
             // Ismétlés-alapú tételnél a mondat TÁVOLI (más mozgáshoz írt)
             // időtartama nem érvényes: a „10 km futás 50 perc alatt és 100
             // fekvőtámasz" fekvőtámasza nem 50 perc – az ismétlésből becsülünk.
@@ -1486,6 +1506,20 @@ public final class Activities {
             int val = Math.max(1, Math.min(365, n[2] * mult));
             return new int[]{n[0], end, val};
         }
+    }
+
+    /** A szótövet tartalmazó szó eleje. */
+    private static int wordStart(String s, int p) {
+        int a = Math.max(0, Math.min(p, s.length()));
+        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+        return a;
+    }
+
+    /** A szótövet tartalmazó szó vége (kizárólagos). */
+    private static int wordEnd(String s, int p) {
+        int b = Math.max(0, Math.min(p, s.length() - 1));
+        while (b < s.length() && Character.isLetter(s.charAt(b))) b++;
+        return b;
     }
 
     /** A teljes szó a megadott pozíció körül. */
