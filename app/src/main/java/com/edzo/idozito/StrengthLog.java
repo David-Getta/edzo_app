@@ -28,7 +28,7 @@ public final class StrengthLog {
     public static final String[] COMMON = {
             "Guggolás", "Fekvenyomás", "Felhúzás", "Húzódzkodás", "Vállból nyomás",
             "Evezés", "Bicepsz", "Tricepsz", "Kitörés", "Lábtolás", "Lehúzás",
-            "Vádliemelés", "Fekvőtámasz", "Plank"
+            "Vádliemelés", "Fekvőtámasz", "Plank", "Fal-ülés", "Holt függés"
     };
 
     /** Egy sorozat: ismétlésszám + súly (kg). */
