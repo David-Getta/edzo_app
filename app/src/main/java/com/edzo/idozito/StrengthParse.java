@@ -104,7 +104,9 @@ public final class StrengthParse {
             // Csak a teljes szó: az „alkartámasz" plank, nem alkarhajlítás.
             {"Alkarhajlítás", "alkarhajlit", "csuklohajlit"},
             {"Orosz csavarás", "orosz csav", "oroszcsav", "russian twist"},
-            {"Fal ülés", "fal ules", "falules", "wall sit", "wallsit"},
+            // A név a beépített programokét követi („Fal-ülés"), hogy a
+            // mondatból és a programból felvett gyakorlat egy néven éljen.
+            {"Fal-ülés", "fal ules", "fal-ules", "falules", "wall sit", "wallsit"},
             {"Holt függés", "holt fugges", "holtfugges", "dead hang", "deadhang",
                     "holtakasztas"},
     };
@@ -124,7 +126,7 @@ public final class StrengthParse {
      */
     private static final String[] TIMED = {
             "plank", "deszka", "oldaltamasz", "alkartamasz",
-            "falules", "fal ules", "wallsit", "wall sit",
+            "falules", "fal ules", "fal-ules", "wallsit", "wall sit",
             "holtfugges", "holt fugges", "deadhang", "dead hang", "holtakasztas",
             "hollow", "izometri", "statikus", "vakuum",
     };

@@ -39,7 +39,7 @@ public class HoldsTest {
     @Test public void theOrdinaryExercisesAreNotHolds() {
         // Minden ismert gyakorlat, ami NEM tartás – itt egy téves találat
         // rögtön rossz progresszió-javaslatot adna.
-        List<String> holds = Arrays.asList("Plank", "Fal ülés", "Holt függés");
+        List<String> holds = Arrays.asList("Plank", "Fal-ülés", "Holt függés");
         for (String n : StrengthParse.names()) {
             if (holds.contains(n)) continue;
             assertFalse(n, StrengthParse.isTimed(n));

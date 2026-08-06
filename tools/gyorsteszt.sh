@@ -120,6 +120,21 @@ open(dst + 'SessionStore.java', 'w').write(
     '    static final String PREFIX = "s_", SUFFIX = ".json";\n    '
     + grab(ss, 'static long tsOfFile(') + "\n    " + grab(ss, 'static long[] timestampsOf(') + "\n}\n")
 
+# A programok gyakorlat-leírásai: a CI-ben egy hiányzó leírás bukik, itt eddig
+# nem látszott – pedig egy új gyakorlat felvétele PONT ezt felejti el.
+pg = open(src_dir + 'Programs.java').read()
+built = re.search(r'(public static final P\[\] BUILT_IN\s*=\s*\{.*?\n    \};)', pg, re.S).group(1)
+open(dst + 'Programs.java', 'w').write(
+    "package com.edzo.idozito;\npublic final class Programs {\n"
+    "    public static final class P { public final String name; public final String emoji;\n"
+    "        public final String[] ex; public final boolean custom;\n"
+    "        public P(String n, String e, String[] x, boolean c) { name = n; emoji = e;\n"
+    "            ex = x; custom = c; }\n"
+    "        public String title() { return emoji + \" \" + name; } }\n    "
+    + built + "\n    "
+    + grab(pg, 'public static String[] knownExercises(') + "\n    "
+    + grab(pg, 'public static String descOf(') + "\n}\n")
+
 sl = open(src_dir + 'StrengthLog.java').read()
 common = re.search(r'(public static final String\[\] COMMON\s*=\s*\{.*?\};)', sl, re.S).group(1)
 open(dst + 'StrengthLog.java', 'w').write(
@@ -146,7 +161,7 @@ PY
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
-       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest"
+       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest"
 CLASSES=""
 for t in $TESTS; do
   if [ -f "$TST/$t.java" ]; then cp "$TST/$t.java" "$PKG/"; CLASSES="$CLASSES com.edzo.idozito.$t"; fi

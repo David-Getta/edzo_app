@@ -201,6 +201,7 @@ public final class Programs {
             case "Lábközelítés": return "Csípőből zárj, ne a térddel. A végén egy pillanat megállás, és kontrollálva engedd szét.";
             case "Fellépés": return "Stabil pad vagy lépcső, a teljes talp fenn. A felső lábbal nyomd fel magad – ne a lentivel rugaszkodj.";
             case "Alkarhajlítás": return "Alkar a combodon vagy a padon, csak a csukló mozog. Kis súly, teljes tartomány, lefelé lassíts.";
+            case "Holt függés": return "Vállszéles fogás, lógj lazán, a váll ne csússzon a füledhez. Időre megy: a fogás fárad el előbb, mint a hát.";
             default: return "";
         }
     }
