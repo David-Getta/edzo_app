@@ -394,4 +394,42 @@ public class ActivitiesTest {
         assertEquals(kedd + 7,
                 Activities.parse("múlt kedden 60 perc kondi", now).offset);
     }
+    /**
+     * Az „összesen" a TELJES időt mondja ki, nem fejenként annyit.
+     *
+     * A „kondi és futás, összesen másfél óra" mindkét mozgásnak kilencven
+     * percet adott: a nap háromszor annyi mozgással zárult, mint amennyi volt –
+     * és pont abban a mondatban, amivel az ember összegez.
+     */
+    @Test public void theWordTotalSplitsTheTime() {
+        Activities.Parsed p = Activities.parse("kondi + futás, összesen másfél óra", 1_753_869_600_000L);
+        assertEquals(2, p.plans.size());
+        assertEquals(45, p.plans.get(0).minutes);
+        assertEquals(45, p.plans.get(1).minutes);
+        // Vessző nélkül is: az „összesen" a szóban áll, nem a központozásban.
+        Activities.Parsed q = Activities.parse("kondi és futás összesen 90 perc", 1_753_869_600_000L);
+        assertEquals(45, q.plans.get(0).minutes);
+        assertEquals(45, q.plans.get(1).minutes);
+        // Az összesen nélküli összefoglaló idő továbbra is mindenkire vonatkozik.
+        Activities.Parsed r = Activities.parse("kondi és futás, 90 perc", 1_753_869_600_000L);
+        assertEquals(90, r.plans.get(0).minutes);
+        assertEquals(90, r.plans.get(1).minutes);
+    }
+
+    /** A verseny neve is kimondja a sportot, a kirándulás pedig ragozódik. */
+    @Test public void racesAndHikesAreRecognised() {
+        assertEquals("futas", Activities.parse("futóverseny 52 perc", 1_753_869_600_000L)
+                .plans.get(0).kind.id);
+        assertEquals(52, Activities.parse("futóverseny 52 perc", 1_753_869_600_000L).plans.get(0).minutes);
+        assertEquals("uszas", Activities.parse("úszóverseny 30 perc", 1_753_869_600_000L)
+                .plans.get(0).kind.id);
+        // A „kirándulás" töve eddig a főnév volt, így az igealak elveszett.
+        for (String q : new String[]{"kirándultunk 5 órát", "kirándulás 5 óra",
+                "kirándulni voltam 5 órát"}) {
+            Activities.Parsed p = Activities.parse(q, 1_753_869_600_000L);
+            assertEquals(q, 1, p.plans.size());
+            assertEquals(q, "tura", p.plans.get(0).kind.id);
+            assertEquals(q, 300, p.plans.get(0).minutes);
+        }
+    }
 }

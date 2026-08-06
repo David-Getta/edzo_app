@@ -50,9 +50,12 @@ public final class Activities {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
                     "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep",
-                    "spartan", "parkrun"),
+                    // A verseny neve is a sportot mondja ki – a puszta „futó"
+                    // viszont nem lehet tő, mert túl sok szóban benne van.
+                    "futoverseny", "terepfutas", "spartan", "parkrun"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
+                    "uszoverseny",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
                     "vizilabda", "aquafit", "vizitorna"),
@@ -64,7 +67,7 @@ public final class Activities {
                     // A „bringatúra" egyben fedi a „bringa" és a „túra" tövet is.
                     "bringatura", "biciklitura", "kerekpartura"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
-                    "tura", "gyaloglas", "seta", "setalas", "kirandulas", "nordic",
+                    "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
                     "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka"),
@@ -796,7 +799,15 @@ public final class Activities {
         // összefoglalásként. Az elöl álló szám az első mozgáshoz tartozik: a
         // „30 perc futás és kondi" kondija a saját szokásos hosszát kapja.
         int loneAfterAll = 0;
-        if (mins.size() == 1 && keep.size() > 1) {
+        // „Kondi és futás, összesen másfél óra": az ÖSSZESEN a teljes időt
+        // mondja ki, nem fejenként annyit. Enélkül mindkét mozgás megkapta a
+        // teljes időt, és a nap kétszer annyi mozgással zárult, mint amennyi
+        // volt – ráadásul pont abban a mondatban, amivel az ember összegez.
+        if (mins.size() == 1 && keep.size() > 1
+                && (s.contains("osszesen") || s.contains("osszessegeben"))) {
+            java.util.Arrays.fill(minsOf, 0);
+            loneAfterAll = Math.max(1, mins.get(0)[1] / keep.size());
+        } else if (mins.size() == 1 && keep.size() > 1) {
             int[] last = keep.get(keep.size() - 1);
             int lastEnd = wordEnd(s, last[0] + last[1] - 1);
             int m0 = mins.get(0)[0];
