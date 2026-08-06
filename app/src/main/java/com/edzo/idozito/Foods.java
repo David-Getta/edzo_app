@@ -1126,6 +1126,22 @@ public final class Foods {
     private static final double MIN_COUNT = 0.25;
 
     /**
+     * Ennél több ADAG már nem egy étkezés.
+     *
+     * A darabszám mehet húszig („húsz szem mandula"), az adag viszont egész
+     * fogás: kettő-három életszerű, tizennyolc nem. A fuzz találta meg, ahol
+     * egy százalékjel száma csúszott az adag helyére.
+     */
+    private static final double MAX_PORTIONS = 6;
+
+    /** A szám után – szóközöket átugorva – százalékjel áll? */
+    private static boolean percentAfter(String q, int numEnd) {
+        int i = numEnd;
+        while (i < q.length() && q.charAt(i) == ' ') i++;
+        return i < q.length() && q.charAt(i) == '%';
+    }
+
+    /**
      * A szám közvetlenül az étel előtt áll-e – legfeljebb egy számlálószóval
      * közte? A visszatérés a közbeékelt szó ("" ha nincs), vagy null, ha ott
      * valami más áll – akkor a szám nem ehhez az ételhez tartozik.
@@ -1609,6 +1625,10 @@ public final class Foods {
             double count = bareNumVal.get(n);
             if (count < MIN_COUNT || count > 20) continue;
             int numEnd = bareNumPos.get(n) + bareNumLen.get(n);
+            // Százalék nem darabszám: a „18% testzsír" tizennyolcasa nem
+            // tizennyolc adag. (A fuzz találta: „disznótoros 18% adag" öt és
+            // fél kiló disznótoros lett.)
+            if (percentAfter(q, numEnd)) continue;
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
                 String between = countWordAt(q, numEnd, foodPos.get(k));
@@ -1638,6 +1658,10 @@ public final class Foods {
                 // és három kiló rizst írni a naplóba rosszabb, mint egy adagot.
                 if (piece <= 0 && count <= 6) piece = foods.get(k).portion;
                 if (piece <= 0) continue;
+                // Az ADAG egész fogás: kettő-három életszerű, tizennyolc nem.
+                // A darabszám (szem, szelet) mehet húszig, az adag nem.
+                if (between != null && (between.startsWith("adag") || between.equals("porcio"))
+                        && count > MAX_PORTIONS) continue;
                 grams[k] = count * piece;
                 break;
             }
@@ -1650,6 +1674,7 @@ public final class Foods {
             if (count < MIN_COUNT || count > 20) continue;
             int numStart = bareNumPos.get(n);
             int numEnd = numStart + bareNumLen.get(n);
+            if (percentAfter(q, numEnd)) continue;
             String after = numEnd < q.length() ? q.substring(numEnd).trim() : "";
             // Mérőszó a szám után: „grillcsirke fél adag", „banán 2 db",
             // „tojás (3 db)", „kenyér 2 szelet". A bevásárlólista-szórend
@@ -1657,6 +1682,7 @@ public final class Foods {
             // eddig mégis csak az adag/porció ment át, a többiből egy adag lett.
             String unit = firstWord(after);
             boolean portionWord = unit.startsWith("adag") || unit.equals("porcio");
+            if (portionWord && count > MAX_PORTIONS) continue;
             // Tört a név UTÁN, mértékegység nélkül: „az alma fele", „a pizza
             // fele". Csak törtre él: a „csirkemell 150" százötven grammot
             // jelent, nem százötven adagot.
