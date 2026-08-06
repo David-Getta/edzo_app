@@ -79,6 +79,9 @@ public final class Activities {
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
+                    // Termi óranevek és gépek: enélkül a bejegyzés elveszett.
+                    // (Az elliptikus és a crosstrainer az „egyéb" alatt van.)
+                    "body pump", "bodypump", "stepper",
                     "kettlebell"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
@@ -92,7 +95,8 @@ public final class Activities {
                     "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong",
                     "ping pong", "asztalitenisz", "padel"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
-                    "harcmuvesz", "kickbox", "box", "karate", "judo", "birkozas", "birkoz", "mma",
+                    "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
+                    "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett"),
@@ -100,7 +104,8 @@ public final class Activities {
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
-                    "meditac", "atmozgat", "mobiliz", "legzogyakorlat", "legzo gyakorlat"),
+                    "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
+                    "legzo gyakorlat"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
