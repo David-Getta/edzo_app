@@ -552,8 +552,27 @@ public final class Activities {
             // Az „mma" három betű, és magyar szavak közepén is ott ül:
             // dileMMA, EMMA, geMMA. Egy név vagy egy dilemma eddig harcművész
             // edzést vitt a naplóba.
-            "emma", "gemma", "dilemma", "gamma", "summa", "komma",
+            // A „csatorna" végén ott a torna, az „olvasás"-ban az ásás. Az
+            // előbbi maszk kell, mert a gyógytorna és a szobatorna miatt a
+            // „torna" tövet nem korlátozhatjuk szó elejére.
+            "csatorna", "assistance", "importance",
+            // A kézisúlyzó nem kézilabda: a „kezi" tő a nevében is ott van.
+            "kezisulyzo", "kezisuly",
     };
+
+    /** Maszkolandó-e a szó – igekötővel együtt is. */
+    private static boolean maskedWord(String tok) {
+        if (startsWithNotSport(tok)) return true;
+        for (String v : Foods.VERB_PREFIX)
+            if (tok.length() > v.length() + 2 && tok.startsWith(v)
+                    && startsWithNotSport(tok.substring(v.length()))) return true;
+        return false;
+    }
+
+    private static boolean startsWithNotSport(String tok) {
+        for (String bad : NOT_SPORT) if (tok.startsWith(bad)) return true;
+        return false;
+    }
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
     private static void maskNotSport(char[] q) {
@@ -564,8 +583,10 @@ public final class Activities {
             int j = i;
             while (j < s.length() && Character.isLetter(s.charAt(j))) j++;
             String tok = s.substring(i, j);
-            for (String bad : NOT_SPORT)
-                if (tok.startsWith(bad)) { blank(q, i, j); break; }
+            // Igekötővel együtt is: a „beolvasás" ugyanaz a szó, mint az
+            // „olvasás" – prefix-egyezéssel viszont átcsúszott, és kerti
+            // ásásként került a naplóba.
+            if (maskedWord(tok)) blank(q, i, j);
             i = j;
         }
     }
@@ -729,15 +750,7 @@ public final class Activities {
                     // ilyen érzékeny tövek szó belsejében csak igekötő után
                     // érvényesek (kieveztem). Az összetett sportszavak
                     // (strandröplabda, gerincjóga) másik tövekkel mennek.
-                    if (p > 0 && Character.isLetter(s.charAt(p - 1)) && w.startsWith("evez")) {
-                        int a = p;
-                        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
-                        if (!isVerbPrefix(s.substring(a, p))) continue;
-                    }
-                    // Az „úsz" tő ugyanilyen érzékeny: benne van az
-                    // aug-USZ-tusban és a b-USZ-ban is. Szó belsejében csak
-                    // igekötő után érvényes (leúsztam, átúsztam).
-                    if (p > 0 && Character.isLetter(s.charAt(p - 1)) && w.startsWith("usz")) {
+                    if (p > 0 && Character.isLetter(s.charAt(p - 1)) && isFragileStem(w)) {
                         int a = p;
                         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
                         if (!isVerbPrefix(s.substring(a, p))) continue;
@@ -1338,6 +1351,19 @@ public final class Activities {
             }
         }
         return false;
+    }
+
+    /**
+     * Szó belsejében csak igekötő után érvényes szótövek.
+     *
+     * Mind rövid, és mind ott lakik hétköznapi szavak közepén: az „evez" a
+     * beNEVEZTemben, az „úsz" az augUSZtusban és a bUSZban, a „gym" az
+     * EGYMÁSban, az „mma" pedig MINDEN -mmal ragos szóban (alkaloMMAl,
+     * szá­MMAl, dátuMMAl). Igekötő után viszont valódi: leúsztam, kieveztem.
+     */
+    private static boolean isFragileStem(String w) {
+        return w.startsWith("evez") || w.startsWith("usz")
+                || w.equals("gym") || w.equals("mma") || w.equals("kezi");
     }
 
     /** Magyar igekötők: ami utánuk áll, az az ige töve (ki-eveztem). */

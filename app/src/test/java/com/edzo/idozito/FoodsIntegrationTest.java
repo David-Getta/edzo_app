@@ -289,10 +289,22 @@ public class FoodsIntegrationTest {
                 "halmoz", "halandzsa", "original", "meztelen"})
             assertEquals("étel lett belőle: " + q, 0,
                     Foods.parse(Arrays.asList(Foods.ALL), q).size());
+        // Igekötős és összetett alakok: a maszk eddig csak a szó ELEJÉT
+        // nézte, így a „felsorolás" sört, a „beolvasás" ásást, az
+        // „elhallgat" halat vitt a naplóba. A „nincs kifogás" pedig épp egy
+        // edzős mondat – benne a fogassal.
+        for (String q : new String[]{"felsorolás", "besorolás", "elhallgatta",
+                "nincs kifogás", "a képernyőn láttam", "a hónaphoz képest",
+                "meghallgatáshoz", "visszaolvasása"})
+            assertEquals("étel lett belőle: " + q, 0,
+                    Foods.parse(Arrays.asList(Foods.ALL), q).size());
         // …de a valódi ételek maradnak.
         assertEquals("Méz", Foods.parse(Arrays.asList(Foods.ALL), "méz").get(0).food.name);
         assertEquals("Halászlé", Foods.parse(Arrays.asList(Foods.ALL), "halászlé").get(0).food.name);
         assertEquals("Zabpehely", Foods.parse(Arrays.asList(Foods.ALL), "zabkása").get(0).food.name);
+        assertEquals("Eper", Foods.parse(Arrays.asList(Foods.ALL), "eper").get(0).food.name);
+        assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL), "fogas").get(0).food.name);
+        assertEquals("Ramen", Foods.parse(Arrays.asList(Foods.ALL), "pho leves").get(0).food.name);
         assertEquals("Hal (fehér)", Foods.parse(Arrays.asList(Foods.ALL),
                 "halat sütöttem").get(0).food.name);
     }

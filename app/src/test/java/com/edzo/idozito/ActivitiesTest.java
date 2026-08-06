@@ -661,4 +661,26 @@ public class ActivitiesTest {
         // A valódi harcművészet marad.
         assertTrue(!Activities.parse("mma edzés 1 óra", now).isEmpty());
     }
+
+    /**
+     * A rövid tövek szó belsejében csak igekötő után élnek.
+     *
+     * Az „mma" MINDEN -mmal ragos szóban ott van (alkaloMMAl, száMMAl,
+     * graMMAl), a „gym" az EGYMÁSban, a „kezi" a jelentKEZIkben. Mind
+     * harcművész, kondi és kézilabda edzést vitt a naplóba – megtörtént
+     * edzésként, a szériába és az XP-be is beleszámítva.
+     */
+    @Test public void shortStemsInsideWordsNeedAVerbPrefix() {
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"150 grammal több", "egymás után 3 kör",
+                "dátummal együtt", "számmal jelölve", "jelentkezik",
+                "kézisúlyzóval 3x12", "csatornán néztem", "beolvasása"})
+            assertTrue("edzés lett belőle: " + q, Activities.parse(q, now).isEmpty());
+        // Igekötő után viszont valódi, és a szó elején is.
+        assertTrue(!Activities.parse("leúsztam 1000 métert", now).isEmpty());
+        assertTrue(!Activities.parse("kieveztem a tóra", now).isEmpty());
+        assertTrue(!Activities.parse("gym-ben edzettem", now).isEmpty());
+        assertTrue(!Activities.parse("kézilabda meccs", now).isEmpty());
+        assertTrue(!Activities.parse("gyógytorna 20 perc", now).isEmpty());
+    }
 }

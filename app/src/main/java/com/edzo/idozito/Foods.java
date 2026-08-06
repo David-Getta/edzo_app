@@ -716,7 +716,38 @@ public final class Foods {
             "origin", "virgin", "regina", "reggina", "gingiv",
             "meztelen", "mezben", "mezt", "halmoz", "halandzsa", "halovany",
             "hodmezo", "szazhalom", "heviz",
+            // A KÉPERNYŐben az eper, a KIFOGÁSban a fogas (egy hal!), a
+            // „hónapHOZ"-ban a pho. Mind gyakori szó – a „nincs kifogás"
+            // pedig épp egy edzős mondat.
+            "kepernyo", "kifogas", "naphoz", "honap", "hetkoznap", "kezisulyzo",
     };
+
+    /**
+     * Maszkolandó-e a szó – igekötővel együtt is.
+     *
+     * A maszk a szó ELEJÉT nézi, különben a ragozott igazi ételek („sajtos",
+     * „vajas") is elvesznének. Csakhogy a magyar igekötő elé áll a tőnek: a
+     * „felsorolás" és a „besorolás" ugyanaz a szó, mint a „sorolás", a
+     * „beolvasás" mint az „olvasás", az „elhallgat" mint a „hallgat" – ezeket
+     * a puszta prefix-egyezés sorra elszalasztotta, és sört, halat, ásást
+     * írtak a naplóba.
+     */
+    private static boolean masked(String tok) {
+        if (startsWithBad(tok)) return true;
+        for (String v : VERB_PREFIX)
+            if (tok.length() > v.length() + 2 && tok.startsWith(v)
+                    && startsWithBad(tok.substring(v.length()))) return true;
+        return false;
+    }
+
+    private static boolean startsWithBad(String tok) {
+        for (String bad : NOT_FOOD) if (tok.startsWith(bad)) return true;
+        return false;
+    }
+
+    /** Magyar igekötők: ami utánuk áll, az a szó töve (fel-sorolás). */
+    static final String[] VERB_PREFIX = {"meg", "el", "fel", "be", "ki", "le",
+            "at", "ra", "ossze", "szet", "vissza", "vegig", "oda", "korbe", "elo"};
 
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
     static String mask(String q) {
@@ -727,12 +758,7 @@ public final class Foods {
             int j = i;
             while (j < sb.length() && Character.isLetter(sb.charAt(j))) j++;
             String tok = sb.substring(i, j);
-            for (String bad : NOT_FOOD) {
-                if (tok.startsWith(bad)) {
-                    for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
-                    break;
-                }
-            }
+            if (masked(tok)) for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
             i = j;
         }
         return sb.toString();
