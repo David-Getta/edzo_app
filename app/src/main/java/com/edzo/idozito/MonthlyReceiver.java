@@ -146,18 +146,21 @@ public class MonthlyReceiver extends BroadcastReceiver {
                 long[] rts = new long[sn];
                 String[] rnames = new String[sn];
                 double[] rw = new double[sn];
+                int[] rr = new int[sn];
                 int ri = 0;
                 for (StrengthLog.Entry e : all)
                     for (StrengthLog.SetEntry st : e.sets) {
                         // A hónap UTÁNI bejegyzés nem tartozik ide: a
                         // visszatekintő a lezárt hónapról szól.
                         if (e.ts >= to) continue;
-                        rts[ri] = e.ts; rnames[ri] = e.name; rw[ri] = st.weight; ri++;
+                        rts[ri] = e.ts; rnames[ri] = e.name; rw[ri] = st.weight;
+                        rr[ri] = st.reps; ri++;
                     }
                 long[] cts = java.util.Arrays.copyOf(rts, ri);
                 String[] cnames = java.util.Arrays.copyOf(rnames, ri);
                 double[] cw = java.util.Arrays.copyOf(rw, ri);
-                java.util.List<String> recs = Bests.newRecordsSince(from, cts, cnames, cw);
+                int[] cr = java.util.Arrays.copyOf(rr, ri);
+                java.util.List<String> recs = Bests.newRecordsSince(from, cts, cnames, cw, cr);
                 if (!recs.isEmpty()) {
                     String line = "\n🏆 Új csúcs: " + recs.get(0);
                     for (int i = 1; i < recs.size() && i < 3; i++)

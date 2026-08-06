@@ -184,12 +184,14 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 long[] rts = new long[sn];
                 String[] rnames = new String[sn];
                 double[] rw = new double[sn];
+                int[] rr = new int[sn];
                 int ri = 0;
                 for (StrengthLog.Entry e : all)
                     for (StrengthLog.SetEntry st : e.sets) {
-                        rts[ri] = e.ts; rnames[ri] = e.name; rw[ri] = st.weight; ri++;
+                        rts[ri] = e.ts; rnames[ri] = e.name; rw[ri] = st.weight;
+                        rr[ri] = st.reps; ri++;
                     }
-                java.util.List<String> recs = Bests.newRecordsSince(from, rts, rnames, rw);
+                java.util.List<String> recs = Bests.newRecordsSince(from, rts, rnames, rw, rr);
                 if (!recs.isEmpty()) {
                     String line = "\n🏆 Új csúcs: " + recs.get(0);
                     if (recs.size() > 1) line += "  ·  " + recs.get(1);

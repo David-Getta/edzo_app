@@ -159,4 +159,33 @@ public class HoldsTest {
         assertTrue(b.get(1).label.startsWith("Legjobb becsült 1RM"));
         assertEquals("40 db", b.get(2).value);
     }
+
+    /**
+     * A heti és havi összegzés is lássa a testsúlyos csúcsot: aki csak
+     * fekvőtámaszozik és plankol, annak eddig egyetlen új rekordja sem jelent
+     * meg, mert a rekordok kiló alatt indultak.
+     */
+    @Test public void theSummaryNoticesBodyweightRecords() {
+        java.util.List<String> r = Bests.newRecordsSince(100,
+                new long[]{1, 1, 1, 200, 200, 200},
+                new String[]{"Guggolás", "Fekvőtámasz", "Plank",
+                        "Guggolás", "Fekvőtámasz", "Plank"},
+                new double[]{100, 0, 0, 110, 0, 0},
+                new int[]{5, 40, 60, 5, 45, 90});
+        assertEquals(3, r.size());
+        assertEquals("Guggolás 110 kg", r.get(0));
+        assertEquals("Fekvőtámasz 45 db", r.get(1));
+        assertEquals("Plank 1:30", r.get(2));
+    }
+
+    @Test public void theSummaryStillNeedsSomethingToBeat() {
+        // Első alkalom nem rekord, és a megismételt szám sem az.
+        assertTrue(Bests.newRecordsSince(100, new long[]{200, 1, 200},
+                new String[]{"Fekvőtámasz", "Plank", "Plank"},
+                new double[]{0, 0, 0}, new int[]{40, 60, 60}).isEmpty());
+        // Ismétlésszám nélkül hívva a régi viselkedés marad.
+        assertTrue(Bests.newRecordsSince(100, new long[]{1, 200},
+                new String[]{"Fekvőtámasz", "Fekvőtámasz"},
+                new double[]{0, 0}).isEmpty());
+    }
 }

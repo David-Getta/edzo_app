@@ -132,38 +132,84 @@ public final class Bests {
      */
     public static List<String> newRecordsSince(long since, long[] ts, String[] names,
                                                double[] weights) {
+        return newRecordsSince(since, ts, names, weights, null);
+    }
+
+    /**
+     * Ugyanaz, de az ismétlésszámmal együtt – így a testsúlyos csúcsok is
+     * előkerülnek.
+     *
+     * Aki fekvőtámaszozik és plankol, annak eddig egyetlen új csúcsa sem
+     * jelent meg az összegzésben: a rekordok kiló alatt indultak, a testsúlyos
+     * sorozatnak meg nincs kilója. Pedig a negyvenről negyvenötre lépő
+     * fekvőtámasz ugyanúgy rekord.
+     *
+     * @param reps sorozatonként az ismétlésszám (tartásnál másodperc); null =
+     *             csak a súlyos rekordok, mint korábban
+     */
+    public static List<String> newRecordsSince(long since, long[] ts, String[] names,
+                                               double[] weights, int[] reps) {
         List<String> out = new ArrayList<>();
         if (ts == null || names == null || weights == null) return out;
         int n = Math.min(ts.length, Math.min(names.length, weights.length));
+        if (reps != null) n = Math.min(n, reps.length);
+
+        double[] kg = new double[n], bw = new double[n], hold = new double[n];
+        for (int i = 0; i < n; i++) {
+            double w = weights[i];
+            if (w >= MIN_LIFT_KG && w <= 1000) { kg[i] = w; continue; }
+            if (reps == null || w > 0) continue;
+            int r = reps[i];
+            if (StrengthParse.isTimed(names[i])) {
+                if (r >= MIN_HOLD_SEC && r <= 3600) hold[i] = r;
+            } else if (r >= MIN_BW_REPS && r <= 1000) {
+                bw[i] = r;
+            }
+        }
+        // Sorrend: a kilós csúcsok elöl, aztán az ismétlés, végül a tartás –
+        // ezek nem hasonlíthatók össze egymással, ezért nem is keverjük őket.
+        for (Object[] r : improvedSince(since, ts, names, kg, n))
+            out.add(r[0] + " " + Hu.kg((Double) r[1]) + " kg");
+        for (Object[] r : improvedSince(since, ts, names, bw, n))
+            out.add(r[0] + " " + (int) (double) (Double) r[1] + " db");
+        for (Object[] r : improvedSince(since, ts, names, hold, n))
+            out.add(r[0] + " " + StrengthParse.hold((int) (double) (Double) r[1]));
+        return out;
+    }
+
+    /**
+     * Névre bontva: melyik érték javult a határidő óta? A legnagyobb elöl.
+     *
+     * A nulla érték nem játszik: a hívó azzal jelzi, hogy az adott sorozat
+     * ebbe a fajta rekordba nem tartozik bele.
+     *
+     * @return {név, érték} párok
+     */
+    private static List<Object[]> improvedSince(long since, long[] ts, String[] names,
+                                                double[] vals, int n) {
         java.util.LinkedHashMap<String, double[]> before = new java.util.LinkedHashMap<>();
         java.util.LinkedHashMap<String, double[]> after = new java.util.LinkedHashMap<>();
         for (int i = 0; i < n; i++) {
             String name = names[i];
-            double w = weights[i];
-            if (name == null || name.trim().isEmpty()) continue;
-            if (w < MIN_LIFT_KG || w > 1000) continue;
+            double v = vals[i];
+            if (name == null || name.trim().isEmpty() || v <= 0) continue;
             java.util.LinkedHashMap<String, double[]> m = ts[i] >= since ? after : before;
             double[] cur = m.get(name);
-            if (cur == null) m.put(name, new double[]{w});
-            else if (w > cur[0]) cur[0] = w;
+            if (cur == null) m.put(name, new double[]{v});
+            else if (v > cur[0]) cur[0] = v;
         }
-        List<double[]> vals = new ArrayList<>();
-        List<String> keys = new ArrayList<>();
+        List<Object[]> out = new ArrayList<>();
         for (java.util.Map.Entry<String, double[]> e : after.entrySet()) {
             double[] old = before.get(e.getKey());
             if (old == null || e.getValue()[0] <= old[0]) continue;
-            keys.add(e.getKey());
-            vals.add(e.getValue());
+            out.add(new Object[]{e.getKey(), e.getValue()[0]});
         }
-        // A legnehezebb elöl: ha több rekord is született, az a beszédesebb.
-        for (int i = 0; i < keys.size(); i++)
-            for (int j = i + 1; j < keys.size(); j++)
-                if (vals.get(j)[0] > vals.get(i)[0]) {
-                    double[] tv = vals.get(i); vals.set(i, vals.get(j)); vals.set(j, tv);
-                    String tk = keys.get(i); keys.set(i, keys.get(j)); keys.set(j, tk);
+        // A legnagyobb elöl: ha több rekord is született, az a beszédesebb.
+        for (int i = 0; i < out.size(); i++)
+            for (int j = i + 1; j < out.size(); j++)
+                if ((Double) out.get(j)[1] > (Double) out.get(i)[1]) {
+                    Object[] t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
-        for (int i = 0; i < keys.size(); i++)
-            out.add(keys.get(i) + " " + Hu.kg(vals.get(i)[0]) + " kg");
         return out;
     }
 
