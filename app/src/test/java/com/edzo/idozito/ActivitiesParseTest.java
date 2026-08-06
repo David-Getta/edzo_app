@@ -347,6 +347,19 @@ public class ActivitiesParseTest {
         assertEquals("elcsúszott az idő:" + bad, 0, bad.length());
     }
 
+    @Test public void theLoneDurationOnlyAppliesToAllWhenItSumsUp() {
+        // Az összefoglaló idő külön tagmondat a felsorolás UTÁN: az mindenkire
+        // vonatkozik. A mozgás mögé közvetlenül írt idő viszont csak az övé,
+        // és az ELÖL álló szám az első mozgáshoz tartozik.
+        assertEquals("7d+0: 3×futas/40, 2×uszas/40",
+                summary("az elmúlt héten 3 futás és 2 úszás, 40 perc"));
+        // A kondi a saját szokásos hosszát kapja, nem a futásét.
+        assertEquals("1d+0: 1×futas/30, 1×kondi/60", summary("30 perc futás és kondi"));
+        // És fordítva: a szám a hozzá KÖZELEBBI mozgásé, nem a soron
+        // következőé – a futás így az alapértelmezettet kapja.
+        assertEquals("1d+0: 1×futas/45, 1×kondi/30", summary("futás és 30 perc kondi"));
+    }
+
     @Test public void twoSportsNeverSwapTheirDistances() {
         // Ugyanaz a táv-oldalon: a „bicikli 20 km, futás 5 km" húsz
         // kilométerét a futás vitte el, az ötöt pedig eldobtuk.
