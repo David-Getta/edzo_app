@@ -179,9 +179,9 @@ public final class IntervalParse {
         // Az „on" NEM szerepel: szó belsejében is előfordul („huszonöt"),
         // és a secondsBefore nem néz szóhatárt. Az „off" mellett a munkaidő
         // úgyis az első kimondott időből jön.
-        int work = secondsBefore(s, new String[]{"munka", "aktiv", "terheles", "gyakorlat",
-                "work"});
-        int rest = secondsBefore(s, REST_WORDS);
+        int work = secondsBefore(s, WORK_WORDS, REST_WORDS);
+        int rest = secondsBefore(s, REST_WORDS, WORK_WORDS);
+        if (rest <= 0) rest = bareSecondsBefore(s, REST_WORDS, spokenUnit(s));
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka. De
         // megnevezetlenül csak életszerű munkaidőt fogadunk el: a „minden
         // percben 1 kör, 15 percig” 15 perce nem egyetlen szakasz hossza.
@@ -263,6 +263,19 @@ public final class IntervalParse {
      * („40 mp munka”) és utána is („munka 40 mp”) – mindkettőt így mondják.
      */
     private static int secondsBefore(String s, String[] words) {
+        return secondsBefore(s, words, new String[0]);
+    }
+
+    /**
+     * Ugyanaz, de a MÁSIK szakasz neve is határ.
+     *
+     * A vessző eddig egyedül jelölte a szakaszhatárt, márpedig sokan nem
+     * tesznek vesszőt: a „45 másodperc munka 15 pihenő” mondatban a pihenő elé
+     * eső egyetlen kimondott idő a negyvenöt volt – vagyis a pihenő is
+     * negyvenöt másodperc lett. A terv létrejött, csak háromszor hosszabb
+     * szünettel, mint amit az ember kért.
+     */
+    private static int secondsBefore(String s, String[] words, String[] stops) {
         for (String w : words) {
             int p = s.indexOf(w);
             while (p >= 0) {
@@ -271,18 +284,65 @@ public final class IntervalParse {
                 int from = Math.max(0, p - 22);
                 for (int i = p - 1; i >= from; i--)
                     if (isBreak(s, i)) { from = i + 1; break; }
+                for (String st : stops) {
+                    int q = s.lastIndexOf(st, p - 1);
+                    if (q >= from && q + st.length() <= p) from = q + st.length();
+                }
                 int before = timeIn(s, from, p, true);
                 if (before > 0) return before;
                 int end = p + w.length();
                 int to = Math.min(s.length(), end + 22);
                 for (int i = end; i < to; i++)
                     if (isBreak(s, i)) { to = i; break; }
+                for (String st : stops) {
+                    int q = s.indexOf(st, end);
+                    if (q >= 0 && q < to) to = q;
+                }
                 int after = timeIn(s, end, to, false);
                 if (after > 0) return after;
                 p = s.indexOf(w, p + 1);
             }
         }
         return 0;
+    }
+
+    /**
+     * Mértékegység nélküli szám a szakasz-szó előtt: „45 mp munka 15 pihenő”.
+     *
+     * A mértékegységet a mondatban ELSŐKÉNT kimondott időtől örökli, mert így
+     * beszél az ember: ha az első szám másodperc, a többi is az. Enélkül a
+     * szakasz üresen maradt, és a terv szünet nélkül indult.
+     */
+    private static int bareSecondsBefore(String s, String[] words, int unitSec) {
+        if (unitSec <= 0) return 0;
+        java.util.regex.Pattern pat = java.util.regex.Pattern.compile("(\\d{1,3}) ?$");
+        for (String w : words) {
+            int p = s.indexOf(w);
+            while (p >= 0) {
+                java.util.regex.Matcher m =
+                        pat.matcher(s.substring(Math.max(0, p - 5), p));
+                if (m.find()) {
+                    int v = Integer.parseInt(m.group(1)) * unitSec;
+                    if (v >= MIN_SEC && v <= MAX_SEC) return v;
+                }
+                p = s.indexOf(w, p + 1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * A mondatban elsőként kimondott idő MÉRTÉKEGYSÉGE másodpercben: 60, ha
+     * percben beszél, 1, ha másodpercben, 0, ha egyáltalán nem mondott
+     * mértékegységet.
+     */
+    private static int spokenUnit(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "\\d{1,4}(?:[.,]\\d{1,2})? ?(masodperc|mperc|mp\\b|sec\\b|s\\b|perc|min\\b)")
+                .matcher(s);
+        if (!m.find()) return 0;
+        String u = m.group(1);
+        return u.startsWith("perc") || u.startsWith("min") ? 60 : 1;
     }
 
     /**
@@ -298,7 +358,24 @@ public final class IntervalParse {
 
     /** Az első időtartam a mondatban, mértékegységgel együtt. */
     private static int firstSeconds(String s) {
-        return timeIn(s, 0, s.length(), false);
+        // A bemelegítés és a levezetés tagmondata kimarad: a „bemelegítés 5
+        // perc, 10 kör 1/1, levezetés 5 perc" munkaideje nem öt perc – eddig
+        // viszont pont az lett, vagyis a kör ugyanolyan hosszú volt, mint a
+        // bemelegítés.
+        int from = 0;
+        for (int i = 0; i <= s.length(); i++) {
+            if (i < s.length() && s.charAt(i) != ',' && s.charAt(i) != ';') continue;
+            String part = s.substring(from, i);
+            from = i + 1;
+            boolean edge = false;
+            for (String w : new String[]{"bemelegit", "warmup", "warm up", "levezet",
+                    "nyujtas", "cooldown", "cool down"})
+                if (part.contains(w)) { edge = true; break; }
+            if (edge) continue;
+            int v = timeIn(part, 0, part.length(), false);
+            if (v > 0) return v;
+        }
+        return 0;
     }
 
     /**
@@ -372,6 +449,10 @@ public final class IntervalParse {
      */
     private static final String[] REST_WORDS = {"piheno", "pihenes", "szunet",
             "lazitas", "seta", "rest", "off"};
+
+    /** A munkaszakaszt jelölő szavak – a pihenőnek ez a határa, és fordítva. */
+    private static final String[] WORK_WORDS = {"munka", "aktiv", "terheles",
+            "gyakorlat", "work"};
 
     /** Perjellel elválasztott második idő: „3 perc / 1 perc” → 60. */
     private static int secondsAfterSlash(String s, int from) {

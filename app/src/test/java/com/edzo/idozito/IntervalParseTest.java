@@ -292,4 +292,48 @@ public class IntervalParseTest {
         assertEquals(180, d.work);
         assertEquals(60, d.rest);
     }
+    /**
+     * A szakasz neve is határ, nem csak a vessző.
+     *
+     * Sokan nem tesznek vesszőt: a „45 másodperc munka 15 pihenő" mondatban a
+     * pihenő elé eső egyetlen KIMONDOTT idő a negyvenöt volt, így a pihenő is
+     * negyvenöt lett – a terv létrejött, csak háromszor hosszabb szünettel.
+     */
+    @Test public void thePhaseNameSeparatesTheTwoTimes() {
+        IntervalParse.Plan p = IntervalParse.parse("45 másodperc munka 15 mp pihenő 8 kör");
+        assertEquals(45, p.work);
+        assertEquals(15, p.rest);
+    }
+
+    /**
+     * Mértékegység nélküli pihenő: a mértékegységet az első kimondott időtől
+     * örökli, mert így beszél az ember.
+     */
+    @Test public void theRestInheritsTheUnit() {
+        IntervalParse.Plan a = IntervalParse.parse("45 másodperc munka 15 pihenő nyolcszor");
+        assertEquals(8, a.rounds);
+        assertEquals(45, a.work);
+        assertEquals(15, a.rest);
+        IntervalParse.Plan b = IntervalParse.parse("2 perc munka 1 pihenő 5 kör");
+        assertEquals(120, b.work);
+        assertEquals(60, b.rest);
+    }
+
+    /**
+     * A bemelegítés ideje sosem a munkaidő.
+     *
+     * A „bemelegítés 5 perc, 10 kör 1/1, levezetés 5 perc" munkaideje eddig öt
+     * perc lett – vagyis egy kör pontosan olyan hosszú, mint a bemelegítés.
+     * A „1/1" mértékegység nélkül nem eldönthető, ezért inkább nem találgatunk.
+     */
+    @Test public void theWarmupIsNeverTheWorkTime() {
+        assertNull(IntervalParse.parse("bemelegítés 5 perc, 10 kör 1/1, levezetés 5 perc"));
+        // Ami egyértelmű, az változatlanul átmegy.
+        IntervalParse.Plan p =
+                IntervalParse.parse("2 perc bemelegítés 6 kör 45/15 3 perc levezetés");
+        assertEquals(45, p.work);
+        assertEquals(15, p.rest);
+        assertEquals(120, p.warm);
+        assertEquals(180, p.cool);
+    }
 }

@@ -104,6 +104,9 @@ public class SentenceBatteryTest {
                 {"négyszer negyven másodperc munka húsz másodperc pihenő", "4k 40/20 w0 c0"},
                 {"20 perc alatt 40/20", "20k 40/20 w0 c0"},
                 {"guggolás 3x10", "—"},
+                {"45 másodperc munka 15 pihenő nyolcszor", "8k 45/15 w0 c0"},
+                {"2 perc munka 1 pihenő 5 kör", "5k 120/60 w0 c0"},
+                {"munka 30 mp, pihenő 10 mp", "1k 30/10 w0 c0"},
                 {"minden percben 1 kör, 15 percig", "—"},
         };
         check(cases, "intervallum");
