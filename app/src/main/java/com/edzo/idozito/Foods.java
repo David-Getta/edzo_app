@@ -262,6 +262,8 @@ public final class Foods {
                 "cukor nelkul", "cukor nelkuli", "cukrozatlan", "edesitovel", "edesito"),
         new Food("Rántott sajt", 330, 18, 120, "rantott sajt"),
         new Food("Nokedli / galuska", 170, 5, 200, "nokedli", "galuska", "knedli"),
+        // Krumplis tészta zsírban sütve, tejföllel – nem könnyű köret.
+        new Food("Dödölle", 200, 4, 300, "dodolle", "dodolye"),
         new Food("Sztrapacska", 160, 7, 400, "sztrapacska", "haluska",
                 "juhturos sztrapacska"),
         new Food("Tarhonya", 150, 5, 200, "tarhonya"),
@@ -384,6 +386,9 @@ public final class Foods {
         new Food("Seitan", 140, 25, 100, "seitan", "szejtan"),
         new Food("Tempeh", 190, 19, 100, "tempeh"),
         new Food("Kókusztej", 190, 2, 100, "kokusztej"),
+        // A reszelt kókusz sűrű, mint a magvak: egy evőkanálnyi is számít.
+        new Food("Kókuszreszelék", 660, 7, 20, "kokuszreszelek", "reszelt kokusz",
+                "kokuszreszel", "kokuszliszt"),
         new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "cezar salata", "cezar", "caesar"),
         new Food("Sushi", 150, 6, 250, "sushi", "maki", "nigiri", "sashimi",
                 "sushi tekercs"),
@@ -565,6 +570,7 @@ public final class Foods {
         new Food("Bogyós gyümölcs", 50, 1, 100, "bogyos", "szeder", "ribizli",
                 "egres", "josta", "homoktovis", "licsi"),
         new Food("Mangó", 60, 0.8, 200, "mango"),
+        new Food("Papaya", 45, 0.5, 150, "papaya", "papaja"),
         new Food("Datolyaszilva", 70, 0.6, 150, "datolyaszilva", "hurma"),
         new Food("Füge", 74, 0.8, 100, "fuge"),
         new Food("Befőtt / kompót", 70, 0.4, 150, "befott", "kompot"),
