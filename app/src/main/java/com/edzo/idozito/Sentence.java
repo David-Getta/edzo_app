@@ -41,9 +41,16 @@ public final class Sentence {
     public static Kind of(String q, List<Foods.Food> foods, long now) {
         if (q == null || q.trim().length() < 3) return Kind.NONE;
         if (!StrengthParse.parse(q).isEmpty()) return Kind.STRENGTH;
+        IntervalParse.Plan iv = IntervalParse.parse(q);
+        // A PIHENŐT is kimondó, többköros terv egyértelműen időzítő: a
+        // megtörtént edzésről senki nem írja le, hogy „20 mp pihenő". Ez a
+        // kivétel a megosztott sablonok miatt kell – azok nevében gyakran ott
+        // egy sportszó („Zsírégető HIIT", „Kondi kör"), és attól a mondat
+        // megtörtént edzésnek látszott.
+        if (iv != null && iv.rest > 0 && iv.rounds >= 2) return Kind.INTERVAL;
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
-        if (IntervalParse.parse(q) != null) return Kind.INTERVAL;
+        if (iv != null) return Kind.INTERVAL;
         if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
         // A mérés a legvégén: a kilogramm a legterheltebb mértékegység az
         // appban, ezért a testsúly csak arra a maradékra jelentkezik, amit

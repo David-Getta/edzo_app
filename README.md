@@ -21,6 +21,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „8 rounds 20 sec work 10 sec rest” (az internetről másolt angol terv),
   „négyszer negyven másodperc munka húsz másodperc pihenő” – a teremben kapott edzésterv szövegként érkezik, nem
   csúszkaállásként; egy koppintással sablonként is elmenthető
+- 📤 **Sablon megosztása**: a mentett sablon szövegként küldhető tovább
+  („Tabata: 8 kör 20 mp munka 10 mp pihenő"), és a másik telefonon ugyanez a
+  felismerő állítja vissza – a Grit ott van a megosztás-listában
 - Gyors sablonok (**HIIT / Tempó / Tabata**) és **10 beépített program**
   (törzs, teljes test, láb, kar, zsírégető HIIT, 7 perces edzés…), saját
   programokkal és gyakorlat-leírásokkal – a saját programhoz a gyakorlatok

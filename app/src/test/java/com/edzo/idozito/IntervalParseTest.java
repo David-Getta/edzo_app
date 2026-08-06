@@ -380,4 +380,37 @@ public class IntervalParseTest {
         // Tagmondat nélküli mezőnév továbbra sem elég: itt a negyven munkaidő.
         assertEquals(40, IntervalParse.parse("kör 40 mp munka").work);
     }
+
+    /**
+     * A megosztott terv visszaolvasható – ez a megosztás egész értelme.
+     *
+     * A sablon szövegként megy tovább (üzenetben, jegyzetben), a másik
+     * telefonon pedig ugyanez a felismerő állítja vissza. Ha a két oldal
+     * elcsúszna, a kapott edzés csendben MÁS lenne, mint a küldött.
+     */
+    @Test public void everySharedPlanReadsBackTheSame() {
+        int[] works = {20, 30, 40, 45, 60, 90, 120, 180};
+        int[] rests = {0, 10, 15, 20, 30, 60};
+        int[] rounds = {1, 3, 6, 8, 10, 20};
+        int[] warms = {0, 60, 120, 300};
+        int[] cools = {0, 60, 180};
+        StringBuilder bad = new StringBuilder();
+        int n = 0;
+        for (int w : works) for (int r : rests) for (int c : rounds)
+            for (int wa : warms) for (int co : cools) {
+                IntervalParse.Plan p = IntervalParse.parse(
+                        (wa > 0 ? (wa / 60) + " perc bemelegítés, " : "")
+                        + c + " kör " + w + " mp munka" + (r > 0 ? " " + r + " mp pihenő" : "")
+                        + (co > 0 ? ", " + (co / 60) + " perc levezetés" : ""));
+                if (p == null) continue;
+                n++;
+                IntervalParse.Plan q = IntervalParse.parse(p.sentence());
+                if (q == null) { bad.append("\n  nem olvasható: ").append(p.sentence()); continue; }
+                if (q.rounds != p.rounds || q.work != p.work || q.rest != p.rest
+                        || q.warm != p.warm || q.cool != p.cool)
+                    bad.append("\n  ").append(p.sentence()).append(" -> ").append(q.label());
+            }
+        assertTrue("legalább ezer tervet néztünk", n > 1000);
+        assertEquals("oda-vissza eltérés:" + bad, 0, bad.length());
+    }
 }

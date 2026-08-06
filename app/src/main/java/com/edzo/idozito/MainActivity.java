@@ -1305,6 +1305,15 @@ public class MainActivity extends Activity {
             if (w.cool > 0) sub += " · lev. " + w.cool + " mp";
             left.addView(text(sub, 12, MUTED, false));
             row.addView(left, new LinearLayout.LayoutParams(0, -2, 1f));
+            // Megosztás: a terv szövegként megy tovább, és a másik telefonon
+            // ugyanez a felismerő állítja vissza – a Grit a megosztás-listán
+            // is ott van.
+            Button share = new Button(this);
+            share.setText("📤"); share.setAllCaps(false); share.setTextSize(15);
+            share.setBackground(null); share.setStateListAnimator(null);
+            share.setTextColor(MUTED);
+            share.setOnClickListener(v -> shareTemplate(w));
+            row.addView(share);
             Button del = new Button(this);
             del.setText("🗑"); del.setAllCaps(false); del.setTextSize(16);
             del.setBackground(null); del.setStateListAnimator(null); del.setTextColor(MUTED);
@@ -1317,6 +1326,26 @@ public class MainActivity extends Activity {
         }
         templatesBox.addView(cardT, new LinearLayout.LayoutParams(-1, -2));
         templatesBox.addView(gap(10));
+    }
+
+    /**
+     * Sablon megosztása szövegként.
+     *
+     * A szöveg ugyanabban az alakban megy, amit a felismerő ért: aki
+     * megkapja, a Grit megosztás-listáján át egy koppintással beállíthatja
+     * ugyanezt. Ha nincs telepítve nála, akkor is olvasható marad.
+     */
+    void shareTemplate(Workouts.W w) {
+        IntervalParse.Plan p = new IntervalParse.Plan(w.rounds, w.work, w.rest, w.warm, w.cool);
+        String text = w.name + ": " + p.sentence()
+                + "  (összesen " + (p.totalSec() / 60) + " perc)";
+        try {
+            Intent i = new Intent(Intent.ACTION_SEND).setType("text/plain");
+            i.putExtra(Intent.EXTRA_TEXT, text);
+            startActivity(Intent.createChooser(i, "Sablon megosztása"));
+        } catch (Exception ignored) {
+            Toast.makeText(this, "Nem sikerült megosztani.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     void loadTemplate(Workouts.W w) {

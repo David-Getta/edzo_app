@@ -48,6 +48,22 @@ public final class IntervalParse {
             return s;
         }
 
+        /**
+         * A terv MONDATKÉNT – ugyanabban az alakban, amit a felismerő ért.
+         *
+         * Ez a megosztás formája: aki megkapja, a Grit megosztás-listáján át
+         * egy koppintással beállíthatja ugyanezt. Ezért nem díszes: a
+         * szöveget vissza kell tudni olvasni (a teszt oda-vissza futtatja).
+         */
+        public String sentence() {
+            StringBuilder sb = new StringBuilder();
+            if (warm > 0) sb.append(sec(warm)).append(" bemelegítés, ");
+            sb.append(rounds).append(" kör ").append(sec(work)).append(" munka");
+            if (rest > 0) sb.append(" ").append(sec(rest)).append(" pihenő");
+            if (cool > 0) sb.append(", ").append(sec(cool)).append(" levezetés");
+            return sb.toString();
+        }
+
         /** A teljes edzés hossza másodpercben (az utolsó pihenő is beleszámít). */
         public int totalSec() {
             return warm + rounds * (work + rest) + cool;

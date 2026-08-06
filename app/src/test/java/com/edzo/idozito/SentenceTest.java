@@ -153,6 +153,27 @@ public class SentenceTest {
             "asztalitenisz 40 perc", "boxoltam 30 percet", "sí 3 óra",
     };
 
+    /**
+     * A megosztott sablon neve ne térítse el a tervet.
+     *
+     * A sablonok nevében gyakran ott egy sportszó („Zsírégető HIIT", „Kondi
+     * kör", „Futó intervall"), és attól a megosztott szöveg megtörtént
+     * edzésnek látszott – a beállítás helyett egy edzés-bejegyzést kínált.
+     * A PIHENŐT is kimondó, többköros terv viszont egyértelműen időzítő.
+     */
+    @Test public void aSharedTemplateStaysATimerPlan() {
+        for (String q : new String[]{
+                "Zsírégető HIIT: 8 kör 40 mp munka 20 mp pihenő  (összesen 8 perc)",
+                "Tabata: 8 kör 20 mp munka 10 mp pihenő  (összesen 4 perc)",
+                "Futó intervall: 6 kör 2 perc munka 1 perc pihenő  (összesen 18 perc)",
+                "Kondi kör: 10 kör 45 mp munka 15 mp pihenő  (összesen 10 perc)"})
+            assertEquals(q, Sentence.Kind.INTERVAL, of(q));
+        // A megtörtént edzés viszont marad edzés.
+        assertEquals(Sentence.Kind.WORKOUT, of("45 perc kondi"));
+        assertEquals(Sentence.Kind.WORKOUT, of("30 perc futás"));
+        assertEquals(Sentence.Kind.WORKOUT, of("ma 1 óra hiit edzés"));
+    }
+
     /** Ételek nélkül (null) is működik – a hívónak nem kell listát adnia. */
     @Test public void foodsAreOptional() {
         assertEquals(Sentence.Kind.WORKOUT, Sentence.of("30 perc futás", null, NOW));
