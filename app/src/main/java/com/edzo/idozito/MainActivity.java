@@ -2670,16 +2670,35 @@ public class MainActivity extends Activity {
         box.addView(et);
         box.addView(preview);
         final IntervalParse.Plan[] plan = {null};
+        // Egyszer töltjük be: az ételek listája minden leütésre újra
+        // felépülne, pedig egy lapnyitás alatt nem változik.
+        final java.util.List<Foods.Food> foods = Foods.all(this);
         et.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void afterTextChanged(android.text.Editable e) {
                 plan[0] = IntervalParse.parse(e.toString());
-                preview.setText(plan[0] == null
-                        ? "Írd le a kört és a munkaidőt – abból lesz beállítás."
-                        : "→  " + plan[0].label() + "   ·   összesen "
-                                + (plan[0].totalSec() / 60) + " perc");
-                preview.setTextColor(plan[0] == null ? MUTED : tAccent);
+                preview.setOnClickListener(null);
+                preview.setClickable(false);
+                if (plan[0] != null) {
+                    preview.setText("→  " + plan[0].label() + "   ·   összesen "
+                            + (plan[0].totalSec() / 60) + " perc");
+                    preview.setTextColor(tAccent);
+                    return;
+                }
+                // Lehet, hogy nem terv, hanem megtörtént edzés vagy étkezés –
+                // az „írd le a kört" ilyenkor nem segít, csak elutasít.
+                final String q = e.toString();
+                final Sentence.Kind k = Sentence.of(q, foods, System.currentTimeMillis());
+                if (k != Sentence.Kind.NONE && k != Sentence.Kind.INTERVAL) {
+                    preview.setText(Sentence.hint(k));
+                    preview.setTextColor(tAccent);
+                    preview.setClickable(true);
+                    preview.setOnClickListener(v -> Ux.openFor(MainActivity.this, k, q));
+                    return;
+                }
+                preview.setText("Írd le a kört és a munkaidőt – abból lesz beállítás.");
+                preview.setTextColor(MUTED);
             }
         });
         // A kész mondat a figyelő UTÁN kerül be, hogy az előnézet rögtön

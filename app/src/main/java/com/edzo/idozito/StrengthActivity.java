@@ -525,6 +525,20 @@ public class StrengthActivity extends Activity {
     void sentencePreview(String textIn) {
         final List<StrengthParse.Item> items = StrengthParse.parse(textIn);
         if (items.isEmpty()) {
+            // Lehet, hogy nem sorozat: a „30 perc futás" is mondat, csak az
+            // Előzményeké. A mondat megy vele, nem kell újragépelni.
+            final Sentence.Kind k =
+                    Sentence.of(textIn, Foods.all(this), System.currentTimeMillis());
+            if (k != Sentence.Kind.NONE && k != Sentence.Kind.STRENGTH) {
+                new Sheet(this, "Ez máshova való 🧭",
+                        "Ezt a mondatot a(z) " + Sentence.where(k) + " érti meg – "
+                                + "és megy veled, nem kell újra begépelni.")
+                        .addPrimary(Sentence.where(k), () -> Ux.openFor(this, k, textIn))
+                        .addNeutral("Átírom", () -> sentenceSheet(textIn))
+                        .addCancel()
+                        .show();
+                return;
+            }
             new Sheet(this, "Ebből nem lettem okos 🤔",
                     "Ismétlésszám nélkül nem mentek – próbáld így: „3x10 fekvenyomás 60 kg”.")
                     .addPrimary("Újra", () -> sentenceSheet(textIn))
