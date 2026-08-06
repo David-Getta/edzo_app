@@ -673,6 +673,7 @@ public final class Activities {
         String beforeBlank = new String(q);
         List<double[]> kms = findKms(q);            // {pos, km, vég}
         for (double[] t : kms) blank(q, (int) t[0], (int) t[2]);
+        mergeKmRanges(beforeBlank, kms, q);
         List<int[]> mins = findMinutes(q);          // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
         mergeTimeRanges(beforeBlank, mins, q);
@@ -2135,6 +2136,40 @@ public final class Activities {
             blank(q, st, dash + 1);
             if (lo == hi || lo > hi || hi > lo * 3) continue;
             m[1] = Math.max(1, (int) Math.round(m[1] * (lo + hi) / (2 * hi)));
+        }
+    }
+
+    /**
+     * Ugyanaz a távra: „5-8 km futás", „5-5 km".
+     *
+     * A kötőjel előtti szám itt is bennmaradt a szövegben, és darabszámnak
+     * látszott: az „5-8 km futás" ÖT külön futás lett, egyenként nyolc
+     * kilométerrel.
+     */
+    private static void mergeKmRanges(String s, List<double[]> kms, char[] q) {
+        for (double[] t : kms) {
+            int b = (int) t[0], e = b;
+            while (e < s.length() && (Character.isDigit(s.charAt(e))
+                    || ((s.charAt(e) == ',' || s.charAt(e) == '.')
+                        && e + 1 < s.length() && Character.isDigit(s.charAt(e + 1))))) e++;
+            if (e == b) continue;
+            double hi;
+            try { hi = Double.parseDouble(s.substring(b, e).replace(',', '.')); }
+            catch (NumberFormatException ex) { continue; }
+            int dash = b - 1;
+            if (dash < 0 || s.charAt(dash) != '-') continue;
+            int st = dash;
+            while (st > 0 && (Character.isDigit(s.charAt(st - 1))
+                    || ((s.charAt(st - 1) == ',' || s.charAt(st - 1) == '.')
+                        && st - 2 >= 0 && Character.isDigit(s.charAt(st - 2))))) st--;
+            if (st == dash) continue;
+            double lo;
+            try { lo = Double.parseDouble(s.substring(st, dash).replace(',', '.')); }
+            catch (NumberFormatException ex) { continue; }
+            if (lo <= 0 || hi <= 0) continue;
+            blank(q, st, dash + 1);
+            if (lo == hi || lo > hi || hi > lo * 3) continue;
+            t[1] = t[1] * (lo + hi) / (2 * hi);
         }
     }
 

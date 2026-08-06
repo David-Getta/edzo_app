@@ -544,6 +544,20 @@ public class ActivitiesTest {
         assertEquals(20, b.plans.get(0).minutes);
     }
 
+    /** Ugyanez a távra: az „5-8 km futás" egy futás, nem öt. */
+    @Test public void aHyphenatedNumberBeforeTheDistanceIsNotACount() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse("5-8 km futás", now);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(6.5, p.plans.get(0).km, 0.001);   // a tartomány közepe
+        Activities.Parsed q = Activities.parse("10-12 km bringa", now);
+        assertEquals(1, q.plans.get(0).count);
+        assertEquals(11, q.plans.get(0).km, 0.001);
+        // Az egyszerű táv nem változott.
+        assertEquals(10, Activities.parse("10 km futás", now).plans.get(0).km, 0.001);
+    }
+
     /**
      * Az osztó alak alkalmanként értendő: „reggel és este 30-30 perc kondi"
      * két harmincperces edzés.

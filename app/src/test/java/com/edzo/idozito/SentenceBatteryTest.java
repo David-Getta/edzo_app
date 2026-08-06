@@ -170,6 +170,7 @@ public class SentenceBatteryTest {
                         "kondi×1 60p | futas×1 30p [1d+0]"},
                 {"1 óra és 30 perc futás", "futas×1 90p [1d+0]"},
                 {"10-15 perc futás", "futas×1 13p [1d+0]"},
+                {"5-8 km futás", "futas×1 39p/6,5km [1d+0]"},
                 {"reggel és este 30-30 perc kondi", "kondi×2 30p [1d+0]"},
                 {"este megyek edzeni", "— [1d+0]"},
                 {"holnap futok 10 km-t", "— [1d+0]"},
