@@ -94,7 +94,7 @@ public final class Foods {
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
                 "protein palacsinta", "feherje palacsinta"),
-        new Food("Pizza", 260, 11, 300, "pizza"),
+        new Food("Pizza", 260, 11, 300, "pizza", "calzone"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
                 "whopper"),
         new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal", "mekis menu"),
@@ -217,7 +217,7 @@ public final class Foods {
                 // tételként, kétszeres kalóriával került a naplóba.
                 "zabpelyhes keksz", "csokis keksz", "csokis kekssz",
                 "haztartasi keksz"),
-        new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta",
+        new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta", "baklava",
                 "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
                 "flodni", "macaron", "suti", "eszterhazy", "dobostorta",
                 "dobos torta", "somloi kocka"),
@@ -402,8 +402,8 @@ public final class Foods {
                 "hortobagyi palacsinta", "hortobagyi"),
         new Food("Görög saláta", 90, 4, 250, "gorog salata"),
         new Food("Tonhalsaláta", 150, 14, 250, "tonhalsalata", "tonhal salata"),
-        new Food("Curry", 150, 10, 300, "curry"),
-        new Food("Ramen", 120, 6, 500, "ramen", "ramen leves", "pho leves"),
+        new Food("Curry", 150, 10, 300, "curry", "tikka masala", "masala"),
+        new Food("Ramen", 120, 6, 500, "ramen", "ramen leves", "pho leves", "pho"),
         new Food("Pad thai", 170, 8, 350, "pad thai", "padthai", "pad see"),
         new Food("Burrito", 190, 10, 300, "burrito"),
         new Food("Taco", 220, 10, 120, "taco", "enchilada", "fajita"),
