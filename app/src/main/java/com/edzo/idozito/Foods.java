@@ -598,7 +598,9 @@ public final class Foods {
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
         // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.
         new Food("Víz / ásványvíz", 0, 0, 250, "viz", "asvanyviz", "szoda"),
-        new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor"),
+        // A rizling BOR, nem rizs – a hosszabb tő menti meg a „rizs"-től.
+        new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor",
+                "rizling", "furmint", "kekfrankos", "cabernet", "chardonnay"),
         // A „borssal" nem egy pohár bor: a „bor" szótő beleesett, és minden
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
         // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.
@@ -633,6 +635,19 @@ public final class Foods {
             // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,
             // ezért a ragozott igazi ételek („sajtos", „vajas", „sört")
             // érintetlenek maradnak.
+            // A „parkolás" közepén a „kola", az „álmatlanság" elején az „alma".
+            "parkol", "almatlan",
+            // A magyar „-almas" melléknevek MIND tartalmazzák az almát:
+            // hatALMAs, unALMAs, alkALMAs. A „hatalmas" ráadásul a saját
+            // méret-jelzőink között is szerepel („hatalmas adag rizs"), tehát
+            // minden ilyen mondathoz járt egy fantom alma – nyolcvan kalória.
+            "hatalmas", "unalmas", "nyugalmas", "fajdalmas", "alkalmas", "alkalmaz",
+            "irgalmas", "diadalmas", "aggodalmas", "siralmas", "jutalmaz", "jutalmas",
+            "forradalmas", "hatalmaskod",
+            // A halogatás nem hal, a borostyán nem bor. A „sajtó" kimarad: a
+            // maszk a szó ELEJÉT nézi, és a „sajtos" ugyanígy kezdődik – egy
+            // ritka szó kedvéért nem áldozzuk fel a sajtos tésztát.
+            "halogat", "borostyan", "soreny", "soret",
             "vajon", "hallott", "hallom", "halk", "halad", "halott", "halvany",
             "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",

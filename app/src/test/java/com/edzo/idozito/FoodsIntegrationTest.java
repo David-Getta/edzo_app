@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -543,5 +544,35 @@ public class FoodsIntegrationTest {
         assertEquals("Tökmag / napraforgómag 30g", summary("tökmag"));
         assertEquals("Tökfőzelék 350g", summary("tökfőzelék"));
         assertEquals("Krémleves (zöldség) 350g", summary("sütőtök krémleves"));
+    }
+    /**
+     * A magyar „-almas" melléknevek MIND tartalmazzák az almát.
+     *
+     * A „hatalmas" ráadásul a saját méret-jelzőink között is szerepel, tehát
+     * a „hatalmas adag rizs" mondathoz járt egy fantom alma – nyolcvan
+     * kalória, minden alkalommal, csendben.
+     */
+    @Test public void adjectivesHidingAnAppleAreNotApples() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"unalmas nap", "alkalmas", "fájdalmas edzés után",
+                "nyugalmas vacsora", "álmatlanság", "parkolás", "halogatás",
+                "borostyán", "sörény"})
+            assertTrue(q + " -> " + Foods.parse(all, q),
+                    Foods.parse(all, q).isEmpty());
+        // A méret-jelző nem viheti el az ételt, és fantomot sem tehet mellé.
+        java.util.List<Foods.Hit> h = Foods.parse(all, "hatalmas adag rizs");
+        assertEquals(1, h.size());
+        assertEquals("Rizs (főtt)", h.get(0).food.name);
+        // Az alma magától továbbra is alma.
+        assertEquals("Alma", Foods.parse(all, "hatalmas alma").get(0).food.name);
+        assertEquals("Alma", Foods.parse(all, "vadalma").get(0).food.name);
+    }
+
+    /** A rizling bor, nem rizs. */
+    @Test public void aRieslingIsWineNotRice() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Bor (vörös/fehér)",
+                Foods.parse(all, "egy pohár rizling").get(0).food.name);
+        assertEquals("Rizs (főtt)", Foods.parse(all, "rizs").get(0).food.name);
     }
 }

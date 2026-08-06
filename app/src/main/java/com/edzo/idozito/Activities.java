@@ -531,6 +531,9 @@ public final class Activities {
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             "boxutca", "tancsics", "kosarka",
+            // Az „olvasás" közepén ott az „ásás": a fotelban töltött este
+            // eddig kerti munkaként került a naplóba.
+            "olvas",
     };
 
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
