@@ -367,6 +367,37 @@ public class StrengthParseTest {
         assertEquals(50.0, two.get(1).topWeight(), 0.001);
     }
 
+    @Test public void twoExercisesNeverSwapTheirWeights() {
+        // Generatív őrszem: bármelyik két gyakorlat, öt szórendben, és a súly
+        // mindig a SAJÁT gyakorlatához tartozik. Az edzés-felismerőben pont
+        // ilyen csúszás fordult elő (idő és táv is), és ott is csendes volt.
+        String[][] moves = {{"guggolás", "Guggolás"}, {"fekvenyomás", "Fekvenyomás"},
+                {"evezés", "Evezés"}, {"bicepsz", "Bicepsz"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] x : moves)
+            for (String[] y : moves) {
+                if (x[1].equals(y[1])) continue;
+                String[] forms = {
+                        x[0] + " 3x8 80 kg, " + y[0] + " 3x10 40 kg",
+                        "80 kg " + x[0] + " 3x8, 40 kg " + y[0] + " 3x10",
+                        "3x8 " + x[0] + " 80 kg, 3x10 " + y[0] + " 40 kg",
+                        x[0] + " 3x8 80 kg és " + y[0] + " 3x10 40 kg",
+                        x[0] + " 80x8, " + y[0] + " 40x10"};
+                for (String q : forms) {
+                    List<StrengthParse.Item> p = StrengthParse.parse(q);
+                    if (p.size() != 2 || !p.get(0).name.equals(x[1])
+                            || !p.get(1).name.equals(y[1])
+                            || Math.abs(p.get(0).topWeight() - 80) > 0.001
+                            || Math.abs(p.get(1).topWeight() - 40) > 0.001) {
+                        bad.append("\n  ").append(q).append(" -> ");
+                        for (StrengthParse.Item i : p)
+                            bad.append(i.name).append("/").append(i.topWeight()).append(" ");
+                    }
+                }
+            }
+        assertEquals("elcsúszott a súly:" + bad, 0, bad.length());
+    }
+
     @Test public void aMaxLiftIsASingle() {
         // „fekvenyomás max 120 kg”: a legnehezebb, amit egyszer megnyomott.
         List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás max 120 kg");

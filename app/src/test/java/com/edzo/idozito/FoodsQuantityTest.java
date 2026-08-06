@@ -178,4 +178,36 @@ public class FoodsQuantityTest {
         assertEquals(150, grams("egy nagy alma"), 0.01);
         assertEquals(110, grams("két egész tojás"), 0.01);
     }
+
+    @Test public void twoFoodsNeverSwapTheirQuantities() {
+        // Generatív őrszem, ugyanaz, mint az edzés- és a súlyzós oldalon: négy
+        // étel minden párosítása, négy szórendben. A mennyiség nem
+        // vándorolhat át a szomszéd ételhez – az elcsúszott gramm csendben
+        // rossz kalóriát ír a napi összegbe.
+        String[][] foods = {{"csirkemell", "Csirkemell (sült/grill)"},
+                {"rizs", "Rizs (főtt)"}, {"sajt", "Sajt (trappista)"}, {"túró", "Túró"}};
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (String[] x : foods)
+            for (String[] y : foods) {
+                if (x[1].equals(y[1])) continue;
+                String[] forms = {
+                        "150 g " + x[0] + ", 200 g " + y[0],
+                        x[0] + " 150 g, " + y[0] + " 200 g",
+                        "150 g " + x[0] + " és 200 g " + y[0],
+                        x[0] + " 150 g és " + y[0] + " 200 g"};
+                for (String q : forms) {
+                    List<Foods.Hit> h = Foods.parse(all, q);
+                    if (h.size() != 2 || !h.get(0).food.name.equals(x[1])
+                            || !h.get(1).food.name.equals(y[1])
+                            || Math.abs(h.get(0).grams - 150) > 0.001
+                            || Math.abs(h.get(1).grams - 200) > 0.001) {
+                        bad.append("\n  ").append(q).append(" -> ");
+                        for (Foods.Hit i : h)
+                            bad.append(i.food.name).append("/").append(i.grams).append(" ");
+                    }
+                }
+            }
+        assertEquals("elcsúszott a mennyiség:" + bad, 0, bad.length());
+    }
 }
