@@ -197,6 +197,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   edzés-előzmény, erősítő sorozat, időzítő) friss példákkal, és technikai tipp
   minden beépített és felismert gyakorlathoz – a súlyzós alapoktól a gépekig –,
   valamint az összes felismert sportág a szokásos alkalom-hosszal
+- 🧭 **A mondat megtalálja a helyét**: ha az étkezés-mezőbe írod, hogy „30 perc
+  futás", vagy az edzés-mezőbe, hogy „ebédre rántott hús", az app nem azt
+  mondja, hogy nem érti – megmondja, melyik napló érti, és **átviszi oda a
+  mondatot** is, hogy ne kelljen újragépelni
 
 ### 🐺 Blaze, a kabalafigura
 - **Heti szokás**: „kedd van – ilyenkor általában úszás szokott lenni" (csak

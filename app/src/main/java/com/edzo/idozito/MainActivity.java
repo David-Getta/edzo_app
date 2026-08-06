@@ -232,6 +232,7 @@ public class MainActivity extends Activity {
         handleRoutineIntent(getIntent());
         handleRepeatIntent(getIntent());
         handleQuickStartIntent(getIntent());
+        handleSentenceIntent(getIntent());
         maybeShowWelcome();
     }
 
@@ -2653,6 +2654,13 @@ public class MainActivity extends Activity {
      * – eddig fejben kellett átváltani három beállításra.
      */
     void intervalSentenceSheet() {
+        intervalSentenceSheet(null);
+    }
+
+    /**
+     * @param prefill kész mondat (másik képernyőről átirányítva), vagy null
+     */
+    void intervalSentenceSheet(String prefill) {
         final EditText et = sheetInput(
                 Examples.hint(Examples.INTERVAL, System.currentTimeMillis()), false);
         final TextView preview = text("", 13, MUTED, false);
@@ -2674,6 +2682,12 @@ public class MainActivity extends Activity {
                 preview.setTextColor(plan[0] == null ? MUTED : tAccent);
             }
         });
+        // A kész mondat a figyelő UTÁN kerül be, hogy az előnézet rögtön
+        // látszódjon – különben üres marad, amíg hozzá nem nyúlnak.
+        if (prefill != null && !prefill.isEmpty()) {
+            et.setText(prefill);
+            et.setSelection(prefill.length());
+        }
         new Sheet(this, "Beállítás mondatból ✍️",
                 "Ismeri a „tabata”, az „emom” és a „8x20/10” alakot is.")
                 .addCustom(box)
@@ -3614,6 +3628,24 @@ public class MainActivity extends Activity {
         handleRoutineIntent(intent);
         handleRepeatIntent(intent);
         handleQuickStartIntent(intent);
+        handleSentenceIntent(intent);
+    }
+
+    /**
+     * Máshonnan ideirányított mondat: nyissuk meg vele a beállító lapot.
+     *
+     * Aki az étkezés-mezőbe írta be, hogy „3 kör 40 mp munka 20 mp pihenő",
+     * annak a mondata jó volt – csak egy képernyővel odébb. Újragépeltetni
+     * ilyenkor a legrosszabb válasz.
+     */
+    void handleSentenceIntent(Intent intent) {
+        if (intent == null) return;
+        String s = intent.getStringExtra(Sentence.EXTRA);
+        if (s == null || s.trim().isEmpty()) return;
+        intent.removeExtra(Sentence.EXTRA);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isFinishing()) intervalSentenceSheet(s);
+        }, 350);
     }
 
     void cmd(String action) {

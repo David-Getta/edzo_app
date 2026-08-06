@@ -103,6 +103,13 @@ public class DietActivity extends Activity {
         cleanupOldWaterKeys();
         MealLog.cleanupOrphanPhotos(this);
         refresh();
+        // Máshonnan ideirányított mondat („tegnap este pizzát ettem" az
+        // edzés-mezőből): nyissuk meg vele a felvételi lapot.
+        String sent = getIntent().getStringExtra(Sentence.EXTRA);
+        if (sent != null && !sent.trim().isEmpty()) {
+            getIntent().removeExtra(Sentence.EXTRA);
+            col.post(() -> addMealDialogPrefilled(sent));
+        }
     }
 
     /** 30 napnál régebbi napi víz-kulcsok törlése, hogy ne gyűljenek a beállítások közt. */
@@ -935,6 +942,16 @@ public class DietActivity extends Activity {
                     if (Foods.looksNegated(q)) {
                         // A „ma nem ettem csokit" nem ismeretlen étel.
                         reco.setText("😌 Ha nem etted meg, nem is számoljuk – nincs mit naplózni.");
+                        return;
+                    }
+                    // Lehet, hogy nem is étel: a „30 perc futás" tökéletesen
+                    // érthető mondat, csak egy képernyővel odébb. Ilyenkor az
+                    // „ezt még nem ismerem" egyszerűen valótlan.
+                    Sentence.Kind k = Sentence.of(q, null, System.currentTimeMillis());
+                    if (k != Sentence.Kind.NONE && k != Sentence.Kind.MEAL) {
+                        reco.setText(Sentence.hint(k));
+                        reco.setClickable(true);
+                        reco.setOnClickListener(v -> Ux.openFor(DietActivity.this, k, q));
                         return;
                     }
                     reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");

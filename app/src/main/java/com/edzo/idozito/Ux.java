@@ -448,4 +448,25 @@ public final class Ux {
         sld.addState(new int[]{}, new android.graphics.drawable.ColorDrawable(0x00000000));
         return sld;
     }
+
+    /**
+     * Egy máshova való mondat átadása a megfelelő képernyőnek.
+     *
+     * A mondat megy vele: a cél-képernyő kész szöveggel nyitja a felvételi
+     * lapot. Újragépeltetni azt, amit az app egyszer már elolvasott, a
+     * legbosszantóbb válasz – a felhasználó nem hibázott, csak egy ajtóval
+     * odébb van, amit keres.
+     */
+    public static void openFor(Activity a, Sentence.Kind kind, String sentence) {
+        if (a == null || kind == null || sentence == null) return;
+        Class<?> target;
+        switch (kind) {
+            case MEAL: target = DietActivity.class; break;
+            case WORKOUT: target = HistoryActivity.class; break;
+            case STRENGTH: target = StrengthActivity.class; break;
+            case INTERVAL: target = MainActivity.class; break;
+            default: return;
+        }
+        a.startActivity(new Intent(a, target).putExtra(Sentence.EXTRA, sentence));
+    }
 }

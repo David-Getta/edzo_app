@@ -140,6 +140,13 @@ public class HistoryActivity extends Activity {
             getIntent().removeExtra("add_manual");
             col.post(this::manualPickSheet);
         }
+        // Máshonnan ideirányított mondat („30 perc futás" az étkezés-mezőből):
+        // nyissuk meg vele a felvételi lapot, ne kelljen újragépelni.
+        String sent = getIntent().getStringExtra(Sentence.EXTRA);
+        if (sent != null && !sent.trim().isEmpty()) {
+            getIntent().removeExtra(Sentence.EXTRA);
+            col.post(() -> bulkSheet(sent));
+        }
     }
 
     @Override
@@ -709,6 +716,20 @@ public class HistoryActivity extends Activity {
             // Ha terv vagy pihenőnap volt, mondjuk is meg: nem értetlenség az oka.
             boolean future = Activities.looksLikeFuture(text);
             boolean rest = !future && Activities.looksLikeRest(text);
+            // Lehet, hogy nem is edzés: az „ebédre rántott hús" is mondat, csak
+            // az Étrendé. Ilyenkor az „ebből nem lettem okos" félrevezet.
+            Sentence.Kind k = future || rest ? Sentence.Kind.NONE
+                    : Sentence.of(text, Foods.all(this), System.currentTimeMillis());
+            if (k != Sentence.Kind.NONE && k != Sentence.Kind.WORKOUT) {
+                new Sheet(this, "Ez máshova való 🧭",
+                        "Ezt a mondatot a(z) " + Sentence.where(k) + " érti meg – "
+                                + "és megy veled, nem kell újra begépelni.")
+                        .addPrimary(Sentence.where(k), () -> Ux.openFor(this, k, text))
+                        .addNeutral("Átírom", () -> bulkSheet(text))
+                        .addCancel()
+                        .show();
+                return;
+            }
             new Sheet(this,
                     future ? "Ez tervnek hangzik 📅"
                             : rest ? "Pihenőnap? Az is számít 😌"

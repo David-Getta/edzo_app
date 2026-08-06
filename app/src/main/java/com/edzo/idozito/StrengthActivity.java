@@ -131,6 +131,13 @@ public class StrengthActivity extends Activity {
         setContentView(rootFl);
         col.post(() -> Ux.enterChildren(col, 30, 45));
         refresh();
+        // Máshonnan ideirányított mondat („3x10 fekvenyomás" az étkezés-mezőből):
+        // nyissuk meg vele a felvételi lapot, ne kelljen újragépelni.
+        String sent = getIntent().getStringExtra(Sentence.EXTRA);
+        if (sent != null && !sent.trim().isEmpty()) {
+            getIntent().removeExtra(Sentence.EXTRA);
+            col.post(() -> sentenceSheet(sent));
+        }
     }
 
     /** Súly formázása: egész kg-nál tizedes nélkül. */
