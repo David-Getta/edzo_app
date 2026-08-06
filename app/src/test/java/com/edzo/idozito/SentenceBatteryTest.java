@@ -44,8 +44,7 @@ public class SentenceBatteryTest {
         return sb.length() == 0 ? "—" : sb.toString();
     }
 
-    @Test public void theStrengthSentencesStayAsTheyAre() {
-        String[][] cases = {
+    private static final String[][] STRENGTH = {
                 {"3x10 fekvenyomás 60 kg", "Fekvenyomás 10@60/10@60/10@60"},
                 {"guggolás 5x5 80 kg", "Guggolás 5@80/5@80/5@80/5@80/5@80"},
                 {"fekvenyomás 60x10, 70x8, 80x6", "Fekvenyomás 10@60/8@70/6@80"},
@@ -79,8 +78,10 @@ public class SentenceBatteryTest {
                 {"plank másfél perc", "Plank 90@0"},
                 {"fal ülés 3x40 mp", "Fal-ülés 40@0/40@0/40@0"},
                 {"plank 3 sorozat 60 másodperc", "Plank 60@0/60@0/60@0"},
-        };
-        check(cases, "súlyzós");
+    };
+
+    @Test public void theStrengthSentencesStayAsTheyAre() {
+        check(STRENGTH, "súlyzós");
     }
 
     // ---------- Intervallum ----------
@@ -91,8 +92,7 @@ public class SentenceBatteryTest {
                 + " w" + p.warm + " c" + p.cool;
     }
 
-    @Test public void theIntervalSentencesStayAsTheyAre() {
-        String[][] cases = {
+    private static final String[][] INTERVAL = {
                 {"3 kör 40 mp munka 20 mp pihenő", "3k 40/20 w0 c0"},
                 {"tabata", "8k 20/10 w0 c0"},
                 {"8x20/10", "8k 20/10 w0 c0"},
@@ -114,8 +114,10 @@ public class SentenceBatteryTest {
                 {"2 perc munka 1 pihenő 5 kör", "5k 120/60 w0 c0"},
                 {"munka 30 mp, pihenő 10 mp", "1k 30/10 w0 c0"},
                 {"minden percben 1 kör, 15 percig", "—"},
-        };
-        check(cases, "intervallum");
+    };
+
+    @Test public void theIntervalSentencesStayAsTheyAre() {
+        check(INTERVAL, "intervallum");
     }
 
     // ---------- Edzés-mondatok ----------
@@ -133,8 +135,7 @@ public class SentenceBatteryTest {
         return sb + " [" + p.days + "d+" + p.offset + "]";
     }
 
-    @Test public void theWorkoutSentencesStayAsTheyAre() {
-        String[][] cases = {
+    private static final String[][] WORKOUT = {
                 {"tegnap 45 perc futás", "futas×1 45p [1d+1]"},
                 {"1h20 futás", "futas×1 80p [1d+0]"},
                 {"hetvenöt perc kondi", "kondi×1 75p [1d+0]"},
@@ -182,8 +183,10 @@ public class SentenceBatteryTest {
                 {"futni nem voltam", "— [1d+0]"},
                 {"úszni nem mentem", "— [1d+0]"},
                 {"vasárnap pihentem", "— [1d+0]"},
-        };
-        check(cases, "edzés");
+    };
+
+    @Test public void theWorkoutSentencesStayAsTheyAre() {
+        check(WORKOUT, "edzés");
     }
 
     // ---------- Étkezés ----------
@@ -199,8 +202,7 @@ public class SentenceBatteryTest {
         return sb.length() == 0 ? "—" : sb.toString();
     }
 
-    @Test public void theMealSentencesStayAsTheyAre() {
-        String[][] cases = {
+    private static final String[][] MEAL = {
                 {"150 g csirkemell rizzsel", "Csirkemell (sült/grill) 150g | Rizs (főtt) 200g"},
                 {"két tojás és egy szelet kenyér", "Tojás 110g | Kenyér 35g"},
                 {"egy egész tábla csoki", "Csokoládé 100g"},
@@ -231,8 +233,10 @@ public class SentenceBatteryTest {
                 {"majd", "—"},
                 {"iskolában", "—"},
                 {"tábor", "—"},
-        };
-        check(cases, "étkezés");
+    };
+
+    @Test public void theMealSentencesStayAsTheyAre() {
+        check(MEAL, "étkezés");
     }
 
     // ---------- Közös futtató ----------
@@ -249,5 +253,34 @@ public class SentenceBatteryTest {
                    .append("\n     kapott: ").append(got);
         }
         assertEquals("elcsúszott " + kind + " mondat:" + bad, 0, bad.length());
+    }
+    /**
+     * Ugyanaz a mondat másképp GÉPELVE ugyanazt jelenti.
+     *
+     * Nagybetű, dupla szóköz, felkiáltójel, gondolatjel – a telefonon
+     * mindegyik előfordul, és egyik sem szabad, hogy megváltoztassa az
+     * eredményt. A négy felismerő ugyanazon a normalizáláson osztozik, tehát
+     * egy elrontott lépés MIND a négyet érinti.
+     */
+    @Test public void theSameSentenceTypedDifferentlyMeansTheSame() {
+        StringBuilder bad = new StringBuilder();
+        for (String[][] cases : new String[][][]{STRENGTH, INTERVAL, WORKOUT, MEAL})
+            for (String[] c : cases) {
+                String base = all(c[0]);
+                for (String v : new String[]{c[0].toUpperCase(new java.util.Locale("hu")),
+                        "  " + c[0].replace(" ", "  ") + "  ", c[0] + "!", c[0] + "…"}) {
+                    String got = all(v);
+                    if (!got.equals(base))
+                        bad.append("\n  ").append(v)
+                           .append("\n     eredeti: ").append(base)
+                           .append("\n     kapott:  ").append(got);
+                }
+            }
+        assertEquals("másképp gépelve mást jelent:" + bad, 0, bad.length());
+    }
+
+    /** Mind a négy felismerő eredménye egyetlen szövegként. */
+    private static String all(String q) {
+        return lift(q) + " ‖ " + iv(q) + " ‖ " + act(q) + " ‖ " + meal(q);
     }
 }

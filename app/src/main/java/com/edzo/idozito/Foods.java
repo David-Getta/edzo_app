@@ -733,6 +733,10 @@ public final class Foods {
     static String norm(String s) {
         if (s == null) return "";
         s = s.toLowerCase(new Locale("hu"));
+        // A mondatvégi írásjel és a dupla szóköz nem jelentés – a telefonon
+        // viszont mindkettő gyakori, és a szabályok szóközre illesztenek.
+        // Enélkül egy felkiáltójel egész sorozatot vitt el a naplóból.
+        s = s.replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
         // Az ä nem magyar ékezet, de márkanevekben előfordul (Jägermeister).
         return s.replace('á','a').replace('é','e').replace('í','i').replace('ó','o')
                 .replace('ö','o').replace('ő','o').replace('ú','u').replace('ü','u')
