@@ -513,12 +513,22 @@ public final class StrengthParse {
             // Tartásnál a másodperc a „hányat", nem a súly.
             if (reps <= 0 && timed) reps = numberBefore(s, "mp");
             if (reps <= 0 && timed) reps = numberBefore(s, "masodperc");
-            int series = numberBefore(s, "sorozat");
-            if (series <= 0) series = numberBefore(s, "szett");
-            if (series <= 0) series = numberBefore(s, "set");
-            // A „3 kör 10 fekvőtámasz" köre is sorozat. Szóközzel, hogy a
-            // „korcsolya" ne legyen kör.
-            if (series <= 0) series = numberBefore(s, "kor ");
+            // A „3 kör 10 fekvőtámasz" köre is sorozat. A „kör" szóközzel, hogy
+            // a „korcsolya" ne legyen kör.
+            int series = 0;
+            String seriesWord = null;
+            for (String w : new String[]{"sorozat", "szett", "set", "kor "}) {
+                series = numberBefore(s, w);
+                if (series > 0) { seriesWord = w; break; }
+            }
+            // „4 sorozat 8 fekvenyomás”: az „ismétlés" szó kimarad – a teremben
+            // senki nem mondja ki –, a szám mégis ott van a sorozatszám után.
+            // Eddig ez a mondat NEM veszett el félig: egyáltalán nem lett
+            // belőle bejegyzés, mert a sorozatszám ismétlés nélkül kiszállt.
+            if (reps <= 0 && series > 0 && series <= 20 && seriesWord != null) {
+                int after = numberAfter(s, seriesWord);
+                if (after > 0 && after <= maxRep) reps = after;
+            }
             if (reps > 0 && reps <= maxRep) {
                 int n = series > 0 && series <= 20 ? series : 1;
                 for (int i = 0; i < n; i++) sets.add(new Set(reps, weight));
@@ -655,6 +665,35 @@ public final class StrengthParse {
             if (b < e) {
                 try { return Integer.parseInt(s.substring(b, e)); }
                 catch (NumberFormatException ignored) {}
+            }
+            p = s.indexOf(word, p + 1);
+        }
+        return 0;
+    }
+
+    /**
+     * A megadott szó UTÁN álló szám („4 sorozat 8”). Csak akkor, ha a szám
+     * tényleg ismétlés lehet: a mértékegységgel folytatódó számok (60 kg,
+     * 2 perc pihenő) és a „3x8" szorzata nem az.
+     */
+    private static int numberAfter(String s, String word) {
+        int p = s.indexOf(word);
+        while (p >= 0) {
+            int e = p + word.length();
+            while (e < s.length() && Character.isLetter(s.charAt(e))) e++;   // ragozott alak
+            while (e < s.length() && (s.charAt(e) == ' ' || s.charAt(e) == '-')) e++;
+            int b = e;
+            while (e < s.length() && Character.isDigit(s.charAt(e))) e++;
+            if (b < e) {
+                String rest = s.substring(e).trim();
+                boolean unit = rest.startsWith("kg") || rest.startsWith("kilo")
+                        || rest.startsWith("perc") || rest.startsWith("mp")
+                        || rest.startsWith("masodperc") || rest.startsWith("x")
+                        || rest.startsWith("×") || rest.startsWith(",");
+                if (!unit) {
+                    try { return Integer.parseInt(s.substring(b, e)); }
+                    catch (NumberFormatException ignored) {}
+                }
             }
             p = s.indexOf(word, p + 1);
         }

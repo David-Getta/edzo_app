@@ -567,4 +567,50 @@ public class StrengthParseTest {
         // Kötőszóval felsorolva továbbra is mindkettő megvan.
         assertEquals(2, StrengthParse.parse("guggolás 3x10, fekvenyomás 3x8").size());
     }
+
+    /**
+     * „4 sorozat 8 fekvenyomás” – az „ismétlés" szó kimondatlan marad.
+     *
+     * A teremben senki nem mondja ki: a sorozatszám után álló szám maga az
+     * ismétlés. Eddig ebből a mondatból SEMMI nem lett – a felismerő látta a
+     * sorozatszámot, ismétlést nem talált hozzá, és inkább kiszállt. A „3x8"
+     * alak működött, a szavakkal kimondott ugyanaz nem.
+     */
+    @Test public void setCountFollowedByRepsNeedsNoRepWord() {
+        assertSets("4 sorozat 8 fekvenyomás", "Fekvenyomás", 4, 8, 0);
+        assertSets("négy sorozat nyolc fekvenyomás", "Fekvenyomás", 4, 8, 0);
+        assertSets("3 szett 12 bicepsz", "Bicepsz", 3, 12, 0);
+        assertSets("5 sorozat 5 felhúzás 100 kg", "Felhúzás", 5, 5, 100);
+        assertSets("3 kör 10 fekvőtámasz", "Fekvőtámasz", 3, 10, 0);
+        // Két gyakorlat egy mondatban, mindkettő ilyen alakban.
+        assertEquals(2, StrengthParse.parse(
+                "3 sorozat 10 guggolás, 4 sorozat 8 fekvenyomás").size());
+    }
+
+    /**
+     * …de a sorozatszám után álló szám nem mindig ismétlés.
+     *
+     * Ha súly vagy időtartam következik, akkor az ismétlésszám továbbra is
+     * ismeretlen – és egy kitalált nyolcas rosszabb, mint a felismerés
+     * elmaradása.
+     */
+    @Test public void aWeightAfterTheSetCountIsNotARepCount() {
+        for (String q : new String[]{"3 sorozat guggolás", "3 sorozat 60 kg guggolás",
+                "3 szett maximumig fekvenyomás", "3 sorozat 2 perc pihenő guggolás"})
+            assertTrue(q, StrengthParse.parse(q).isEmpty());
+        // Tartásnál viszont a másodperc az ismétlés helyén áll: az marad.
+        assertSets("3 sorozat 45 mp plank", "Plank", 3, 45, 0);
+        assertSets("3 sorozat 1 perc plank", "Plank", 3, 60, 0);
+    }
+
+    private static void assertSets(String q, String name, int sets, int reps, double kg) {
+        List<StrengthParse.Item> it = StrengthParse.parse(q);
+        assertEquals(q, 1, it.size());
+        assertEquals(q, name, it.get(0).name);
+        assertEquals(q, sets, it.get(0).sets.size());
+        for (StrengthParse.Set s : it.get(0).sets) {
+            assertEquals(q, reps, s.reps);
+            assertEquals(q, kg, s.weight, 0.01);
+        }
+    }
 }
