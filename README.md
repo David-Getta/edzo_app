@@ -206,7 +206,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   javaslatot ad a legutóbbi sorozatod ismétlésszámából – nehéz sorozathoz
   hosszabb, tömegépítő sávhoz rövidebb pihenő
 - 🧮 súlytárcsa-kalkulátor, 📈 1RM & százalék kalkulátor
-- **Könyvtár**: egy helyen az összes mondat-forma, amit az app ért (étrend,
+- **Könyvtár**: egy helyen az összes mondat-forma, amit az app ért, és amit
+  megosztani lehet (étrend,
   edzés-előzmény, erősítő sorozat, időzítő) friss példákkal, és technikai tipp
   minden beépített és felismert gyakorlathoz – a súlyzós alapoktól a gépekig –,
   valamint az összes felismert sportág a szokásos alkalom-hosszal

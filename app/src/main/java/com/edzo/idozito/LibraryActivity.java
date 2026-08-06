@@ -44,6 +44,13 @@ public class LibraryActivity extends Activity {
         col.addView(sentenceCard(accent), lp());
         col.addView(gap(18));
 
+        // Megosztás: a mondat-felismerés másik oldala. Ezt semmi nem árulja
+        // el a képernyőkön – a gomb ott van, de csak az találja meg, aki
+        // véletlenül rákoppint.
+        col.addView(sectionHead("📤  Megosztás", "3 dolog"), lp());
+        col.addView(shareCard(accent), lp());
+        col.addView(gap(18));
+
         // Egyedi (nem duplikált) gyakorlatnevek programonként, leírással
         for (Programs.P p : Programs.BUILT_IN) {
             col.addView(sectionHead(p.emoji + "  " + p.name, p.ex.length + " gyakorlat"), lp());
@@ -118,6 +125,53 @@ public class LibraryActivity extends Activity {
                 card.addView(dv);
             }
         }
+        return card;
+    }
+
+    /**
+     * Mit lehet megosztani – és mi történik a másik oldalon.
+     *
+     * Mindhárom szövegként megy, ugyanabban az alakban, amit a felismerő
+     * ért: a másik telefonon egy koppintás, és a helyére kerül. A Grit a
+     * megosztás-listában is ott van, tehát bárhonnan ide küldhető egy
+     * mondat.
+     */
+    LinearLayout shareCard(int accent) {
+        LinearLayout card = card();
+        String[][] rows = {
+                {"⏱  Időzítő-sablon", "„Tabata: 8 kör 20 mp munka 10 mp pihenő”",
+                        "A sablon melletti 📤 gombbal."},
+                {"🏋️  Erősítő bejegyzés", "„guggolás 3x10 60 kg”",
+                        "A naplóbejegyzésre koppintva, Megosztás."},
+                {"📅  Edzésnap", "„Lábnap: Guggolás, Lábtolás, Kitörés”",
+                        "Az edzésnap lapján, Megosztás."},
+        };
+        for (int i = 0; i < rows.length; i++) {
+            LinearLayout box = vbox();
+            box.setPadding(dp(14), dp(12), dp(14), dp(12));
+            box.addView(text(rows[i][0], 15.5f, TXT, true));
+            TextView ex = text(rows[i][1], 13, accent, false);
+            ex.setPadding(0, dp(4), 0, 0);
+            box.addView(ex);
+            TextView how = text(rows[i][2], 12.5f, MUTED, false);
+            how.setPadding(0, dp(3), 0, 0);
+            box.addView(how);
+            card.addView(box);
+            if (i < rows.length - 1) {
+                View dv = new View(this);
+                LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+                dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);
+                dv.setLayoutParams(dvp);
+                dv.setBackgroundColor(LINE);
+                card.addView(dv);
+            }
+        }
+        LinearLayout foot = vbox();
+        foot.setPadding(dp(14), dp(4), dp(14), dp(12));
+        foot.addView(text("A Grit a telefon megosztás-listájában is ott van: bármelyik "
+                + "appból ide küldhetsz egy szöveget, és a megfelelő naplóba viszem.",
+                12.5f, MUTED, false));
+        card.addView(foot);
         return card;
     }
 
