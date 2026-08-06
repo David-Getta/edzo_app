@@ -45,6 +45,13 @@ public final class Bests {
     static final double MIN_LIFT_KG = 30;
 
     /**
+     * Testsúlyos rekordhoz ennyi kell: öt fekvőtámasz nem rekord, húsz
+     * másodperces plank sem. A küszöb nélkül az első próbálkozás beülne a
+     * kártyára, és onnan csak sokára mozdulna ki.
+     */
+    static final int MIN_BW_REPS = 10, MIN_HOLD_SEC = 30;
+
+    /**
      * A legnehezebb valaha felemelt sorozat és a legjobb becsült 1RM.
      *
      * A napi volumen a munka MENNYISÉGÉT méri – ez a kettő az ERŐT, és a
@@ -65,12 +72,27 @@ public final class Bests {
         long bestKgTs = 0, bestOrmTs = 0;
         String bestKgName = null, bestOrmName = null;
         int bestKgReps = 0;
+        int bestBw = 0, bestHold = 0;
+        long bestBwTs = 0, bestHoldTs = 0;
+        String bestBwName = null, bestHoldName = null;
         for (int i = 0; i < n; i++) {
             double w = weights[i];
             int r = reps[i];
             String name = names[i];
-            if (w < MIN_LIFT_KG || w > 1000 || r < 1 || r > 100) continue;
             if (name == null || name.trim().isEmpty()) continue;
+            // Testsúlyos sorozat: nincs kilója, ezért a súlyrekordokból kiesne –
+            // pedig aki fekvőtámaszozik és húzódzkodik, annak PONT ez a rekordja.
+            if (w <= 0) {
+                if (StrengthParse.isTimed(name)) {
+                    if (r >= MIN_HOLD_SEC && r <= 3600 && r > bestHold) {
+                        bestHold = r; bestHoldTs = ts[i]; bestHoldName = name;
+                    }
+                } else if (r >= MIN_BW_REPS && r <= 1000 && r > bestBw) {
+                    bestBw = r; bestBwTs = ts[i]; bestBwName = name;
+                }
+                continue;
+            }
+            if (w < MIN_LIFT_KG || w > 1000 || r < 1 || r > 100) continue;
             if (w > bestKg) {
                 bestKg = w; bestKgTs = ts[i]; bestKgName = name; bestKgReps = r;
             }
@@ -86,6 +108,12 @@ public final class Bests {
         if (bestOrm > 0)
             out.add(new Best("📊", "Legjobb becsült 1RM  ·  " + bestOrmName,
                     Math.round(bestOrm) + " kg", bestOrmTs));
+        if (bestBw > 0)
+            out.add(new Best("🤸", "Legtöbb ismétlés  ·  " + bestBwName,
+                    bestBw + " db", bestBwTs));
+        if (bestHold > 0)
+            out.add(new Best("🧘", "Leghosszabb tartás  ·  " + bestHoldName,
+                    StrengthParse.hold(bestHold), bestHoldTs));
         return out;
     }
 

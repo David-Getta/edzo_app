@@ -31,22 +31,36 @@ public final class Progression {
     /** Ennél több sorozatot nem javasolunk: onnan a gyakorlat nehezítése visz előre. */
     static final int BW_MAX_SETS = 6;
 
+    /** Tartásnál ennyi másodperccel lépünk, és eddig érdemes nyújtani. */
+    static final int HOLD_STEP = 10, HOLD_MAX = 120;
+
     public static final class Suggestion {
         public final int sets;
         public final int reps;
         public final double weight;
         /** Testsúlyos gyakorlat: nincs értelmes súlylépés, ismétlésben haladunk. */
         public final boolean bodyweight;
+        /**
+         * Tartás: a {@link #reps} mező MÁSODPERCET jelent, nem ismétlést.
+         * A plank javaslata így nem „egy ismétlés”, hanem tíz másodperc.
+         */
+        public final boolean timed;
         /** Egymondatos indoklás – a felhasználó lássa, miért ezt kapja. */
         public final String why;
 
         Suggestion(int sets, int reps, double weight, boolean bodyweight, String why) {
+            this(sets, reps, weight, bodyweight, false, why);
+        }
+
+        Suggestion(int sets, int reps, double weight, boolean bodyweight, boolean timed,
+                   String why) {
             this.sets = sets; this.reps = reps; this.weight = weight;
-            this.bodyweight = bodyweight; this.why = why;
+            this.bodyweight = bodyweight; this.timed = timed; this.why = why;
         }
 
         /** Rövid, kártyára való összefoglaló, pl. „3 × 8 · 42,5 kg". */
         public String headline() {
+            if (timed) return sets + " × " + StrengthParse.hold(reps);
             if (bodyweight) return sets + " × " + reps + " ismétlés";
             return sets + " × " + reps + " · " + kg(weight) + " kg";
         }
@@ -83,6 +97,7 @@ public final class Progression {
         boolean bw = lastW <= 0;
 
         int rpe = last.rpe;
+        if (bw && StrengthParse.isTimed(name)) return hold(setCount, lastHard, sameCount);
         if (bw) return bodyweight(setCount, lastHard, sameCount);
 
         // Az érzett terhelés (RPE) többet tud, mint a szám: ugyanaz a 3×8
@@ -146,6 +161,32 @@ public final class Progression {
                 "Ebből a gyakorlatból elérted a hasznos ismétlés- és sorozatszámot. Innen a "
                         + "nehezebb változat visz előre: lassabb levitel, megemelt láb, "
                         + "egy karral vagy lábbal.");
+    }
+
+    /**
+     * Tartás javaslata: itt másodpercben haladunk.
+     *
+     * A testsúlyos ág egy ismétlést lépne – plankban ez egy másodperc, ami
+     * nem tanács, hanem zaj. Két perc fölött pedig már nem a törzs erősödik,
+     * hanem az unalom nő: onnan a sorozatszám, majd a nehezebb változat visz
+     * tovább.
+     */
+    private static Suggestion hold(int setCount, int sec, int sameCount) {
+        if (sec < HOLD_MAX && sameCount < STALL_SESSIONS)
+            return new Suggestion(setCount, sec + HOLD_STEP, 0, true, true,
+                    "Tartás: told meg a leggyengébb sorozatodat " + HOLD_STEP
+                            + " másodperccel.");
+        if (setCount < BW_MAX_SETS)
+            return new Suggestion(setCount + 1, sec, 0, true, true,
+                    sec >= HOLD_MAX
+                            ? "Két perc tartás fölött már nem az erő nő. Maradj ennyinél, "
+                                    + "és tegyél hozzá még egy sorozatot."
+                            : sameCount + " alkalom óta ugyanennyi. Adj hozzá még egy "
+                                    + "sorozatot.");
+        return new Suggestion(setCount, sec, 0, true, true,
+                "Ebből a tartásból elérted a hasznos hosszt és sorozatszámot. Innen a "
+                        + "nehezebb változat visz előre: megemelt láb vagy kar, egy "
+                        + "lábon, súllyal a háton.");
     }
 
     /** A munkasúly: az alkalom legnehezebb sorozata. */
@@ -248,6 +289,22 @@ public final class Progression {
         if (reps <= 0) return 90;
         int base = reps <= 5 ? 180 : reps <= 8 ? 150 : reps <= 12 ? 90 : 60;
         return bodyweight ? Math.max(45, base - 30) : base;
+    }
+
+    /**
+     * Ugyanaz, tartásra is felkészítve: ott a szám másodperc, nem ismétlés,
+     * ezért a sávos táblázat nem alkalmazható – egy perc pihenő a szokásos.
+     */
+    public static int restSeconds(int reps, boolean bodyweight, boolean timed) {
+        return timed ? 60 : restSeconds(reps, bodyweight);
+    }
+
+    /** Egymondatos indoklás a pihenő-javaslathoz. */
+    public static String restWhy(int reps, boolean timed) {
+        if (timed) return reps > 0
+                ? "Tartás után egy perc alatt visszaáll a törzs – utána jöhet a következő."
+                : "";
+        return restWhy(reps);
     }
 
     /** Egymondatos indoklás a pihenő-javaslathoz. */

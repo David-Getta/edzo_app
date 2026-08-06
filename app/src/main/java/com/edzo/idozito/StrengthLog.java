@@ -38,6 +38,20 @@ public final class StrengthLog {
         public SetEntry(int reps, double weight) { this.reps = reps; this.weight = weight; }
     }
 
+    /**
+     * Egy sorozat emberi alakja: „60 kg × 8”, testsúlynál „12 ism.”, tartásnál
+     * „1:00”.
+     *
+     * A napló korábban mindent súlyos sorozatként írt ki, így a fekvőtámasz
+     * „0 kg × 12” lett, a plank meg „0 kg × 60” – utóbbiban a 60 ráadásul
+     * másodperc. A nulla kiló nem információ, csak zaj.
+     */
+    public static String setLabel(String name, SetEntry s) {
+        if (s == null) return "";
+        if (s.weight > 0) return Hu.kg(s.weight) + " kg × " + s.reps;
+        return StrengthParse.isTimed(name) ? StrengthParse.hold(s.reps) : s.reps + " ism.";
+    }
+
     /** Egy naplóbejegyzés: időpont + gyakorlat + sorozatok. */
     public static final class Entry {
         public final long ts;

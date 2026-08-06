@@ -49,6 +49,8 @@ public final class StrengthParse {
                     sb.append(sets.get(i).reps);
                 }
             }
+            // Tartásnál a szám másodperc – enélkül a „3×60" ismétlésnek látszik.
+            if (isTimed(name)) sb.append(" mp");
             double w = topWeight();
             if (w > 0) sb.append("  ·  ").append(Progression.kg(w)).append(" kg");
             else sb.append("  ·  saját testsúly");
@@ -103,6 +105,49 @@ public final class StrengthParse {
             {"Alkarhajlítás", "alkarhajlit", "csuklohajlit"},
             {"Orosz csavarás", "orosz csav", "oroszcsav", "russian twist"},
     };
+
+    /**
+     * Tartások: itt az „ismétlés” valójában MÁSODPERC.
+     *
+     * A plank sosem ismétlés – aki beírja, hogy 3 × 60, az három egyperces
+     * tartásra gondol. A napló eddig mindenhol ismétlésként kezelte: „0 kg ×
+     * 60”-at írt ki, a progresszió pedig egy ismétlést („61 másodpercet”)
+     * javasolt, és húsz fölött már azt mondta, hogy ennyi ismétlésnél az
+     * állóképesség fejlődik. Egy perc plank után ez értelmetlen tanács.
+     *
+     * Csak az egyértelműen tartásos mozdulatok szerepelnek itt. A „superman”
+     * például kimaradt: azt sokan ismétlésre csinálják, és egy rossz besorolás
+     * itt csendben rossz javaslatot adna.
+     */
+    private static final String[] TIMED = {
+            "plank", "deszka", "oldaltamasz", "alkartamasz",
+            "falules", "fal ules", "wallsit", "wall sit",
+            "holtfugges", "holt fugges", "deadhang", "dead hang", "holtakasztas",
+            "hollow", "izometri", "statikus", "vakuum",
+    };
+
+    /**
+     * Tartásos gyakorlat-e a név? A napló bármilyen saját nevet elfogad, ezért
+     * a szép neveken túl a szótöveket is nézzük.
+     */
+    public static boolean isTimed(String name) {
+        if (name == null) return false;
+        String q = Foods.norm(name);
+        for (String t : TIMED) if (q.contains(t)) return true;
+        return false;
+    }
+
+    /** „mp” tartásnál, „ismétlés” minden másnál – kiíráshoz. */
+    public static String unit(String name) {
+        return isTimed(name) ? "mp" : "ismétlés";
+    }
+
+    /** Tartás hossza emberi alakban: „45 mp”, „1:30”. */
+    public static String hold(int sec) {
+        if (sec < 60) return sec + " mp";
+        int s = sec % 60;
+        return (sec / 60) + ":" + (s < 10 ? "0" : "") + s;
+    }
 
     /** A felismerhető gyakorlatok szép nevei (teszthez és súgóhoz). */
     public static String[] names() {

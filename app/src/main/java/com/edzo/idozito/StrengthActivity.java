@@ -400,7 +400,7 @@ public class StrengthActivity extends Activity {
             StringBuilder sb = new StringBuilder();
             for (StrengthLog.SetEntry s : e.sets) {
                 if (sb.length() > 0) sb.append("    ·    ");
-                sb.append(fmtKg(s.weight)).append(" kg × ").append(s.reps);
+                sb.append(StrengthLog.setLabel(e.name, s));
             }
             inner.addView(text(sb.toString(), 13.5f, TXT, false));
 
@@ -567,7 +567,7 @@ public class StrengthActivity extends Activity {
             return "↳ múltkor " + kg(then) + " kg  ·  " + arrow + when;
         }
         int nr = it.totalReps(), tr = last.totalReps();
-        if (nr != tr) return "↳ múltkor " + tr + " ismétlés  ·  "
+        if (nr != tr) return "↳ múltkor " + tr + " " + StrengthParse.unit(it.name) + "  ·  "
                 + (nr > tr ? "▲ +" + (nr - tr) : "▼ −" + (tr - nr)) + when;
         return "↳ múltkor ugyanennyi" + when;
     }
@@ -631,6 +631,12 @@ public class StrengthActivity extends Activity {
         // a régi alkalmat nézzük, ott félrevezető lenne a „mai" javaslat).
         final LinearLayout suggestBox = vbox();
 
+        // Tartásnál (plank) a bal oldali mező másodperc, nem ismétlés – a
+        // felirat és a mezők súgója ezért a névtől függ, és a névvel együtt
+        // változik.
+        final String startName = edit != null ? edit.name : preset == null ? "" : preset;
+        final TextView setsLabel = text(setsCaption(startName), 13, MUTED, true);
+
         // Gyors nevek vízszintes chip-sávban
         box.addView(gap(8));
         LinearLayout chips = hbox();
@@ -660,25 +666,29 @@ public class StrengthActivity extends Activity {
                 public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
                 public void onTextChanged(CharSequence s, int a, int b2, int c) {}
                 public void afterTextChanged(android.text.Editable e) {
-                    showSuggestion(e.toString().trim(), suggestBox, setsBox, repsList, wList);
+                    String n = e.toString().trim();
+                    showSuggestion(n, suggestBox, setsBox, repsList, wList);
+                    setsLabel.setText(setsCaption(n));
+                    for (EditText r : repsList) r.setHint(repsHint(n));
                 }
             });
         }
 
         box.addView(gap(12));
-        box.addView(text("Sorozatok (ismétlés × súly kg)", 13, MUTED, true));
+        box.addView(setsLabel);
         box.addView(gap(4));
 
         box.addView(setsBox);
         if (edit != null && !edit.sets.isEmpty()) {
             for (StrengthLog.SetEntry s : edit.sets) {
-                addSetRow(setsBox, repsList, wList);
+                addSetRow(setsBox, repsList, wList, repsHint(startName));
                 int idx = repsList.size() - 1;
                 repsList.get(idx).setText(String.valueOf(s.reps));
                 wList.get(idx).setText(fmtKg(s.weight));
             }
         } else {
-            for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
+            for (int i = 0; i < 3; i++)
+                addSetRow(setsBox, repsList, wList, repsHint(startName));
         }
         // Edzésnap-sablonból nyitva: a név már megvan, a legutóbbi alkalom és a
         // javaslat is jöjjön magától – a figyelő beállítása UTÁN, hogy lásson.
@@ -690,7 +700,8 @@ public class StrengthActivity extends Activity {
 
         Button more = ghost("＋  Sorozat");
         more.setTextSize(13.5f);
-        more.setOnClickListener(v -> addSetRow(setsBox, repsList, wList));
+        more.setOnClickListener(v -> addSetRow(setsBox, repsList, wList,
+                repsHint(nameEt.getText().toString())));
         box.addView(gap(4));
         box.addView(more);
 
@@ -848,7 +859,7 @@ public class StrengthActivity extends Activity {
         repsList.clear();
         wList.clear();
         for (int i = 0; i < s.sets; i++) {
-            addSetRow(setsBox, repsList, wList);
+            addSetRow(setsBox, repsList, wList, s.timed ? "mp" : "ism.");
             repsList.get(i).setText(String.valueOf(s.reps));
             // Testsúlyosnál a súlymezőt hagyjuk üresen, ne írjunk oda 0-t.
             // Progression.kg (2 tizedes), hogy az 1,25-ös lépés se kerekedjen el.
@@ -867,22 +878,38 @@ public class StrengthActivity extends Activity {
         repsList.clear();
         wList.clear();
         if (last == null || last.sets.isEmpty()) {
-            for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList);
+            for (int i = 0; i < 3; i++) addSetRow(setsBox, repsList, wList, repsHint(name));
             return;
         }
         for (StrengthLog.SetEntry s : last.sets) {
-            addSetRow(setsBox, repsList, wList);
+            addSetRow(setsBox, repsList, wList, repsHint(name));
             int idx = repsList.size() - 1;
             repsList.get(idx).setText(String.valueOf(s.reps));
             wList.get(idx).setText(fmtKg(s.weight));
         }
     }
 
+    /** A sorozat-blokk felirata: tartásnál másodperc áll az ismétlés helyén. */
+    static String setsCaption(String name) {
+        return StrengthParse.isTimed(name)
+                ? "Sorozatok (másodperc × súly kg)" : "Sorozatok (ismétlés × súly kg)";
+    }
+
+    /** A bal oldali mező súgója ugyanezért. */
+    static String repsHint(String name) {
+        return StrengthParse.isTimed(name) ? "mp" : "ism.";
+    }
+
     void addSetRow(LinearLayout setsBox, List<EditText> repsList, List<EditText> wList) {
+        addSetRow(setsBox, repsList, wList, "ism.");
+    }
+
+    void addSetRow(LinearLayout setsBox, List<EditText> repsList, List<EditText> wList,
+                   String hint) {
         LinearLayout row = hbox();
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(0, dp(4), 0, dp(4));
-        EditText reps = numEt("ism.");
+        EditText reps = numEt(hint);
         reps.setInputType(InputType.TYPE_CLASS_NUMBER);
         EditText w = numEt("kg");
         w.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -1068,7 +1095,8 @@ public class StrengthActivity extends Activity {
         for (final String m : r.moves) {
             StrengthLog.Entry d = doneToday.get(m);
             if (d != null) {
-                String what = d.sets.size() + " sorozat  ·  " + d.totalReps() + " ismétlés";
+                String what = d.sets.size() + " sorozat  ·  " + d.totalReps() + " "
+                        + StrengthParse.unit(m);
                 if (d.topWeight() > 0) what += "  ·  " + Hu.kg(d.topWeight()) + " kg";
                 sh.addRow("✔", m, "Ma: " + what, false, true, () -> {
                     openRoutine = r.name;
@@ -1353,10 +1381,11 @@ public class StrengthActivity extends Activity {
         List<StrengthLog.Entry> log = StrengthLog.load(this);
         if (!log.isEmpty() && log.get(0).sets != null && !log.get(0).sets.isEmpty()) {
             StrengthLog.SetEntry lastSet = log.get(0).sets.get(log.get(0).sets.size() - 1);
-            int sug = Progression.restSeconds(lastSet.reps, lastSet.weight <= 0);
+            boolean timed = StrengthParse.isTimed(log.get(0).name);
+            int sug = Progression.restSeconds(lastSet.reps, lastSet.weight <= 0, timed);
             TextView hint = text("Javaslat a legutóbbi sorozatod alapján: "
                     + (sug / 60) + ":" + String.format(Locale.US, "%02d", sug % 60)
-                    + "  ·  " + Progression.restWhy(lastSet.reps), 11.5f, MUTED, false);
+                    + "  ·  " + Progression.restWhy(lastSet.reps, timed), 11.5f, MUTED, false);
             hint.setPadding(0, dp(8), 0, 0);
             hint.setClickable(true);
             hint.setOnClickListener(v -> startRest(sug));
