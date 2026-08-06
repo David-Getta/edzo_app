@@ -508,6 +508,39 @@ public final class Activities {
     }
 
     /**
+     * Szavak, amikben egy sportág-szótő lakik, de semmi közük a mozgáshoz.
+     *
+     * A hosszú szótövek nem tévednek, a rövidek viszont igen: a kul-TÚRA nem
+     * túra, a te-KER-cs nem kerékpár, a TORNA-cipő nem torna. A hiba csendes –
+     * a bejegyzés létrejön, csak egy meg nem történt edzésről.
+     *
+     * Álcázás a szótő-illesztés ELŐTT, ugyanaz a megoldás, mint az ételeknél.
+     * Így az összetett sportnevek (gerinctorna, hegyitúra, strandröplabda)
+     * érintetlenek maradnak – azokat egy szóhatár-szabály elvágná.
+     */
+    private static final String[] NOT_SPORT = {
+            "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
+            "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
+            "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
+            "boxutca", "tancsics", "kosarka",
+    };
+
+    /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
+    private static void maskNotSport(char[] q) {
+        String s = new String(q);
+        int i = 0;
+        while (i < s.length()) {
+            if (!Character.isLetter(s.charAt(i))) { i++; continue; }
+            int j = i;
+            while (j < s.length() && Character.isLetter(s.charAt(j))) j++;
+            String tok = s.substring(i, j);
+            for (String bad : NOT_SPORT)
+                if (tok.startsWith(bad)) { blank(q, i, j); break; }
+            i = j;
+        }
+    }
+
+    /**
      * Ezek a szavak a „nap"/„hét" szótövet tartalmazzák, de nem időszakot
      * jelentenek. Nélkülük a „hétfőn futottam" egy hetes időszaknak látszana.
      */
@@ -564,6 +597,9 @@ public final class Activities {
         // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
         // a szándék máris bekerülne a szériába és az XP-be.
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
+        // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
+        // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.
+        maskNotSport(q);
         // Ami nem történt meg, az nem kerül a naplóba: a „nem futottam", a
         // „kihagytam", az „elmaradt" és az „X helyett" edzése kitakarva.
         stripNegated(q);

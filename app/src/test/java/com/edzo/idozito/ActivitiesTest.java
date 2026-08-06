@@ -266,6 +266,30 @@ public class ActivitiesTest {
         assertEquals("hétköznapi szó torzította az edzést:" + bad, 0, bad.length());
     }
 
+    @Test public void everydayWordsHidingSportStemsAreNotSports() {
+        // A rövid szótövek beleesnek hétköznapi szavakba: a kul-TÚRA nem túra,
+        // a te-KER-cs nem kerékpár, a TORNA-cipő nem torna. A hiba csendes –
+        // a bejegyzés létrejön, csak egy meg nem történt edzésről.
+        long now = System.currentTimeMillis();
+        for (String q : new String[]{"kultúra 30 perc kondi", "struktúra 30 perc kondi",
+                "tornacipőben futottam 5 km-t", "tekercset ettem, 30 perc kondi",
+                "bevásárlókosár, 30 perc kondi", "kézitáska, 30 perc kondi"}) {
+            java.util.List<Activities.Plan> p = Activities.parse(q, now).plans;
+            assertEquals("álca-szóból sport lett: " + q, 1, p.size());
+        }
+        // Az összetett sportnevek viszont épek maradnak – ezeket egy
+        // szóhatár-szabály elvágta volna, az álcázás nem.
+        String[][] ok = {{"gerinctorna 30 perc", "joga"}, {"gyógytorna 30 perc", "joga"},
+                {"hegyitúra 3 óra", "tura"}, {"tornaterem 1 óra", "kondi"},
+                {"strandröplabda 60 perc", "roplabda"}, {"vízitorna 45 perc", "uszas"},
+                {"tekertem 20 km-t", "kerekpar"}, {"kosárlabda 60 perc", "kosarlabda"}};
+        for (String[] c : ok) {
+            java.util.List<Activities.Plan> p = Activities.parse(c[0], now).plans;
+            assertEquals(c[0], 1, p.size());
+            assertEquals(c[0], c[1], p.get(0).kind.id);
+        }
+    }
+
     @Test public void aMonthNameIsNotAlwaysADate() {
         // A szám MÉRTÉKEGYSÉGE elárulja, hogy nem a hónap napja: a „január 30
         // perc kondi" harminc perc, nem január 30-a. Eddig a fél éves
