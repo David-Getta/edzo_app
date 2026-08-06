@@ -353,7 +353,9 @@ public final class Foods {
         // gyümölcs ne számolódjon külön tételként mellé.
         new Food("Rétes", 300, 5, 100, "almas retes", "meggyes retes", "turos retes",
                 "makos retes", "kapros retes", "retes"),
-        new Food("Piskóta / kevert süti", 350, 6, 80, "piskota", "kevert"),
+        // A „kevert süti" a fogás NEVE: a „süti" tő különben egy külön adag
+        // süteményt tett mellé.
+        new Food("Piskóta / kevert süti", 350, 6, 80, "piskota", "kevert suti", "kevert"),
         new Food("Popcorn", 400, 12, 40, "popcorn", "pattogatott",
                 "pattogatott kukorica"),
         new Food("Energiaital", 45, 0, 250, "energiaital", "energia ital",
@@ -1640,7 +1642,10 @@ public final class Foods {
             for (Match o : found) {
                 if (o == m) continue;
                 boolean inside = o.pos <= m.pos && o.pos + o.len >= m.pos + m.len;
-                if (inside && o.len > m.len) { covered = true; break; }
+                if ((inside && o.len > m.len) || coveredByStem(q, m, o.food)) {
+                    covered = true;
+                    break;
+                }
             }
             if (!covered) out.add(m);
         }
@@ -1655,6 +1660,28 @@ public final class Foods {
                     Match t = out.get(i); out.set(i, out.get(j)); out.set(j, t);
                 }
         return out;
+    }
+
+    /**
+     * Beleesik-e a rövidebb találat a másik étel VALAMELYIK szótövébe?
+     *
+     * Ételenként csak a LEGHOSSZABB szótő helyét jegyezzük meg, és eddig a
+     * takarás-vizsgálat is csak azt nézte. A „párizsi felvágott" párizsija így
+     * a hosszabb „felvágott" tövön került be, a szó elején álló „párizsi"
+     * pedig szabadon hagyta a benne rejlő „rizs"-t: kétszáz gramm rizs került
+     * a felvágott mellé, csendben.
+     */
+    private static boolean coveredByStem(String q, Match m, Food other) {
+        for (String st : other.stems) {
+            String ns = norm(st);
+            if (ns.length() <= m.len) continue;
+            int p = q.indexOf(ns);
+            while (p >= 0) {
+                if (p <= m.pos && p + ns.length() >= m.pos + m.len) return true;
+                p = q.indexOf(ns, p + 1);
+            }
+        }
+        return false;
     }
 
     /**
@@ -1694,6 +1721,9 @@ public final class Foods {
             {"Sonka", "Pizza"},
             {"Szalámi", "Pizza"},
             {"Gomba", "Pizza"},
+            // A wok adagja a zöldséget is tartalmazza: a „zöldséges wok" egy
+            // wok, nem wok PLUSZ egy adag párolt zöldség.
+            {"Zöldség (vegyes / párolt)", "Wok (zöldséges-húsos)"},
             {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
                     "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
                     "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)"},

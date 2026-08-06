@@ -363,4 +363,39 @@ public class FoodsTest {
         assertEquals("Chia / lenmag", Foods.parse(java.util.Arrays.asList(Foods.ALL),
                 "chia puding").get(0).food.name);
     }
+    /**
+     * A „párizsi felvágott" nem tartalmaz rizst.
+     *
+     * Ételenként csak a LEGHOSSZABB szótő helyét jegyezzük meg: a párizsi a
+     * hosszabb „felvágott" tövön került be, a szó elején álló „párizsi" pedig
+     * szabadon hagyta a benne rejlő „rizs"-t – kétszáz gramm rizs került a
+     * felvágott mellé, csendben.
+     */
+    @Test public void aShorterStemHidingInsideALongerOneIsDropped() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"párizsi", "párizsi felvágott", "kevert süti"}) {
+            java.util.List<Foods.Hit> h = Foods.parse(all, q);
+            assertEquals(q + " -> " + names(h), 1, h.size());
+        }
+        assertEquals("Párizsi / felvágott", Foods.parse(all, "párizsi felvágott")
+                .get(0).food.name);
+        assertEquals("Piskóta / kevert süti", Foods.parse(all, "kevert süti")
+                .get(0).food.name);
+        // A rizs magától továbbra is rizs.
+        assertEquals("Rizs (főtt)", Foods.parse(all, "rizs").get(0).food.name);
+    }
+
+    /** A wok adagjában benne van a zöldség: nem jár mellé külön adag. */
+    @Test public void theWokAlreadyContainsItsVegetables() {
+        java.util.List<Foods.Hit> h =
+                Foods.parse(java.util.Arrays.asList(Foods.ALL), "zöldséges wok");
+        assertEquals(names(h), 1, h.size());
+        assertEquals("Wok (zöldséges-húsos)", h.get(0).food.name);
+    }
+
+    private static String names(java.util.List<Foods.Hit> h) {
+        StringBuilder sb = new StringBuilder();
+        for (Foods.Hit x : h) sb.append(sb.length() > 0 ? ", " : "").append(x.food.name);
+        return sb.toString();
+    }
 }
