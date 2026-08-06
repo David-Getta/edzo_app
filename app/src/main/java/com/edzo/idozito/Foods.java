@@ -273,7 +273,8 @@ public final class Foods {
                 // „cukor" szótő beleesett, és 40 kcal cukrot adott hozzá.
                 "cukor nelkul", "cukor nelkuli", "cukrozatlan", "edesitovel", "edesito"),
         new Food("Rántott sajt", 330, 18, 120, "rantott sajt"),
-        new Food("Nokedli / galuska", 170, 5, 200, "nokedli", "galuska", "knedli"),
+        new Food("Nokedli / galuska", 170, 5, 200, "nokedli", "galuska", "knedli",
+                "zsemlegomboc", "zsemle gomboc"),
         // Krumplis tészta zsírban sütve, tejföllel – nem könnyű köret.
         new Food("Dödölle", 200, 4, 300, "dodolle", "dodolye"),
         new Food("Sztrapacska", 160, 7, 400, "sztrapacska", "haluska",
@@ -767,6 +768,11 @@ public final class Foods {
             // Az OLVADásban ott a vadas (hús). Az „olvasztott sajt" nem
             // érintett: az más szó (olvaszt, nem olvad).
             "olvad",
+            // Az ELSŐre szóban a sör, a FORMÁjában a máj, a MASZKOLásban a
+            // kóla. A „formáj" szándékosan ilyen szűk: a puszta „forma"
+            // kiütné a „quattro formaggi" pizzát is – a saját adatminőség-
+            // teszt fogta meg, két perccel a bővebb változat után.
+            "elso", "formaj", "maszkol",
     };
 
     /**
