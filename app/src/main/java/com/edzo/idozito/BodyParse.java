@@ -57,7 +57,12 @@ public final class BodyParse {
      * „hús”) a legmegbízhatóbb módja annak, hogy egy jó mondat elvesszen.
      */
     private static final String[] NOT_BODY = {
-            "nyomtam", "emeltem", "huztam", "toltam", "vettem", "vasaroltam", "hoztam"
+            "nyomtam", "emeltem", "huztam", "toltam", "vettem", "vasaroltam", "hoztam",
+            // Célok és becslések: a „70 kg alatt vagyok" nem hetven kiló, a
+            // „szeretnék 75 lenni" meg egyáltalán nem mérés. Egy vágyból
+            // csinált bejegyzés a trendet is, a BMI-t is elrontaná.
+            "alatt", "felett", "folott", "korul", "korulbelul", "kb", "kozel",
+            "szeretnek", "akarok", "cel", "celom", "lenni"
     };
 
     /** A mondatban rejlő mérés, vagy egy üres Body. */
@@ -115,9 +120,12 @@ public final class BodyParse {
             if (fat > 0 && Math.abs(v - fat) < 0.001) continue;
             // Százalékjel után álló szám sosem kiló – még akkor sem, ha
             // testzsírnak túl nagy volt („80% testzsír”). Az elgépelt
-            // százalékból nyolcvan kiló lenne.
+            // százalékból nyolcvan kiló lenne. A centiméter ugyanígy: a
+            // „180 cm és 80 kg vagyok" mondatban a magasság áll elöl, és a
+            // testsúly sávjába is beleesik.
             String rest = s.substring(m.end()).trim();
             if (rest.startsWith("%") || rest.startsWith("szazalek")) continue;
+            if (rest.startsWith("cm") || rest.startsWith("centi")) continue;
             return v;
         }
         return 0;
@@ -143,7 +151,11 @@ public final class BodyParse {
         String rest = s.replaceAll("\\d+([.,]\\d+)?", " ")
                 .replaceAll("(?<![a-z])(kg|kilo|kila|szazalek|testzsir\\w*|ma|reggel|"
                         + "este|delben|delelott|delutan|ejjel|hajnalban|tegnap|most|"
-                        + "eppen|epp|ebredes|felkeles|utan|kor|orakor|volt|voltam)"
+                        + "eppen|epp|ebredes|felkeles|utan|kor|orakor|volt|voltam|"
+                        // A megnevezett nap ugyanolyan időpont, mint a napszak:
+                        // a „kedden 80 kg voltam" ugyanaz a mérés, mint a „ma".
+                        + "hetfon|kedden|szerdan|csutortokon|penteken|szombaton|"
+                        + "vasarnap|hetfo|kedd|szerda|csutortok|pentek|szombat)"
                         + "(?![a-z])", " ")
                 .replaceAll("[^a-z]", " ").trim();
         return rest.isEmpty();

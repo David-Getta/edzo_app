@@ -90,6 +90,48 @@ public class BodyParseTest {
         none("asdfgh");
     }
 
+    /**
+     * A cél, a becslés és a magasság nem mérés.
+     *
+     * A „70 kg alatt vagyok” nem hetven kiló, a „szeretnék 70 kg lenni” meg
+     * egyáltalán nem adat – egy vágyból csinált bejegyzés a súlytrendet is
+     * elrontaná. A magasság ráadásul beleesik a testsúly sávjába: a
+     * „180 cm és 80 kg vagyok” mondatban a 180 áll elöl.
+     */
+    @Test public void goalsGuessesAndHeightsAreNotMeasurements() {
+        none("70 kg alatt vagyok");
+        none("szeretnék 70 kg lenni");
+        none("kb 80 kg vagyok");
+        none("78 kg körül vagyok");
+        kg("180 cm és 80 kg vagyok", 80);
+        kg("80 kg vagyok és 180 cm", 80);
+    }
+
+    /** A megnevezett nap ugyanolyan időpont, mint a napszak. */
+    @Test public void aNamedDayIsJustATimestampToo() {
+        kg("kedden 80 kg voltam", 80);
+        kg("szombaton 79 kg", 79);
+        kg("ma 80 kg voltam", 80);
+    }
+
+    /**
+     * Az app ÖSSZES többi példamondata közül egy se legyen mérés.
+     *
+     * A mérés-felismerő a lánc végén áll, de a Profil képernyőn magában is
+     * dolgozik – ott nincs ki elé álljon. Ez a söprés azt őrzi, hogy egy
+     * étkezés vagy egy sorozat sose csapódjon be testsúlyként.
+     */
+    @Test public void noOtherExampleSentenceLooksLikeAMeasurement() {
+        StringBuilder bad = new StringBuilder();
+        for (String[] list : new String[][]{Examples.MEAL, Examples.BULK, Examples.SET,
+                Examples.INTERVAL})
+            for (String q : list) {
+                BodyParse.Body b = BodyParse.parse(q);
+                if (!b.isEmpty()) bad.append("\n  ").append(q).append(" -> ").append(b.label());
+            }
+        assertEquals("mérésnek nézett mondat:" + bad, 0, bad.length());
+    }
+
     /** A mérés-mondat az útbaigazítóban is a Profilra mutat. */
     @Test public void theRouterSendsMeasurementsToTheProfile() {
         java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
