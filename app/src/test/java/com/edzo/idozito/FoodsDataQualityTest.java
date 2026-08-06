@@ -132,6 +132,29 @@ public class FoodsDataQualityTest {
         assertEquals("ütköző szótőpár:" + bad, 0, bad.length());
     }
 
+    /**
+     * A SÖR és a SOR: ékezet nélkül ugyanaz a szó.
+     *
+     * A magyar bőven gyárt „-sor" végű összetételeket (névsor, címsor,
+     * gyakorlatsor, munkasorozat), és mindegyik sört írt a naplóba. Tiltólista
+     * nem old meg egy végtelen szóosztályt – szó belsejében ezért az ékezet
+     * dönt. Szó elején viszont marad a régi viselkedés: aki ékezet nélkül
+     * gépel, attól nem vesszük el a sörét.
+     */
+    @Test public void beerNeedsItsAccentInsideAWord() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[] beer = {"két korsó sör", "sört ittam", "sör", "búzasör", "barna sör",
+                "alkoholmentes sör", "2 üveg sör", "két korso sor"};
+        for (String q : beer)
+            assertEquals("elveszett a sör: " + q, "Sör",
+                    Foods.parse(all, q).isEmpty() ? "—" : Foods.parse(all, q).get(0).food.name);
+        String[] notBeer = {"névsora", "gyakorlatsorok", "címsorban", "fejsor", "csipsor",
+                "munkasorozatokra", "3 sorozat 10 fekvenyomás", "egysoros",
+                "ábécésorrendben", "sorból", "soronként", "sorompó", "idősor"};
+        for (String q : notBeer)
+            assertTrue("sör lett belőle: " + q, Foods.parse(all, q).isEmpty());
+    }
+
     private static String names(java.util.List<Foods.Hit> h) {
         if (h.isEmpty()) return "—";
         StringBuilder sb = new StringBuilder();

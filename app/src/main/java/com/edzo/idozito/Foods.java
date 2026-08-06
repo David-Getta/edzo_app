@@ -513,7 +513,9 @@ public final class Foods {
                 "orosz salata", "tojassalata", "kaszinotojas", "majonezes salata"),
         new Food("Savanyúság", 25, 1, 100, "savanyusag", "savanyu kaposzta", "kimchi",
                 // Tengeri alga: kalóriában a savanyúsághoz áll a legközelebb.
-                "wakame", "nori", "hinar", "tengeri alga"),
+                "wakame", "nori", "hinar", "tengeri alga",
+                // A csalamádé is savanyúság – eddig egyetlen tő sem fogta.
+                "csalamade", "vegyes savanyusag"),
         new Food("Spárga", 20, 2.2, 150, "sparga"),
         new Food("Karalábé", 27, 1.7, 150, "karalabe"),
         new Food("Retek", 16, 0.7, 50, "retek", "jegcsapretek"),
@@ -746,7 +748,8 @@ public final class Foods {
             // leggyakoribb SOR-os szavak viszont nem: „a nap során", „sorban
             // álltam", „sorrend", „sorszám", „sortörés".
             "soran", "sorban", "sorrend", "sorszam", "sorok", "sora", "sorra",
-            "sortores", "soros",
+            "sortores", "soros", "sorozat", "sorol", "sorakoz", "sorbol",
+            "soronkent", "sorvad",
             // A KÖZÉPértékben az eper, a ruGALMASban az alma, a PRÓBÁban a bab,
             // a rosSZABBban a zab.
             "kozep", "rugalmas", "proba", "rossz", "szabhat", "szakasz",
@@ -832,6 +835,54 @@ public final class Foods {
         return s.replace('á','a').replace('é','e').replace('í','i').replace('ó','o')
                 .replace('ö','o').replace('ő','o').replace('ú','u').replace('ü','u')
                 .replace('ű','u').replace('ä','a');
+    }
+
+    /**
+     * Ugyanaz, mint a norm(), de az „ö/ő" megmarad.
+     *
+     * Minden lépése karakter-helyes (egy betűből egy betű lesz), ezért a
+     * két szöveg INDEXEI megegyeznek: a norm()-ban talált pozíción itt is
+     * ugyanaz a szó áll, csak ékezettel.
+     */
+    static String normO(String s) {
+        if (s == null) return "";
+        s = s.toLowerCase(new Locale("hu"));
+        s = s.replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
+        return s.replace('á','a').replace('é','e').replace('í','i').replace('ó','o')
+                .replace('ú','u').replace('ü','u').replace('ű','u').replace('ä','a');
+    }
+
+    /**
+     * Ékezettel megkülönböztetett szótövek: a SÖR és a SOR.
+     *
+     * Ékezet nélkül a kettő ugyanaz a szó, és a magyar bőven gyárt olyan
+     * összetételeket, amiknek a VÉGE „-sor": névsor, címsor, gyakorlatsor,
+     * munkasorozat, ábécésorrend. Ezek mind sört írtak a naplóba.
+     *
+     * A megoldás nem tiltólista (végtelen sok ilyen összetétel van), hanem az
+     * ékezet: szó BELSEJÉBEN csak akkor fogadjuk el a tövet, ha tényleg úgy
+     * írták, ahogy az ital nevét („búzasör"). Szó elején marad a régi
+     * viselkedés, hogy az ékezet nélkül gépelőktől ne vegyük el a sört.
+     */
+    private static final String[][] ACCENTED_STEM = {{"sor", "sör"}};
+
+    /**
+     * A szótő első ELFOGADHATÓ előfordulása, vagy -1.
+     *
+     * @param q    ékezet nélküli, maszkolt szöveg
+     * @param qAcc ugyanaz, de „ö/ő"-vel – ugyanazokkal az indexekkel
+     */
+    static int stemIndex(String q, String qAcc, String ns) {
+        String acc = null;
+        for (String[] a : ACCENTED_STEM) if (a[0].equals(ns)) { acc = a[1]; break; }
+        if (acc == null) return q.indexOf(ns);
+        for (int p = q.indexOf(ns); p >= 0; p = q.indexOf(ns, p + 1)) {
+            boolean wordStart = p == 0 || !Character.isLetter(q.charAt(p - 1));
+            if (wordStart) return p;
+            if (p + acc.length() <= qAcc.length()
+                    && qAcc.regionMatches(p, acc, 0, acc.length())) return p;
+        }
+        return -1;
     }
 
     // ---------- Saját ételek (felhasználó által felvéve) ----------
@@ -1819,13 +1870,17 @@ public final class Foods {
         int qe = q.length();
         while (qe > 0 && !Character.isLetterOrDigit(q.charAt(qe - 1))) qe--;
         q = q.substring(0, qe);
+        // Az ékezetes párja ugyanolyan hosszú és ugyanúgy indexelhető: az
+        // ékezettel megkülönböztetett tövek (sör/sor) ebből döntenek.
+        String qAcc = normO(query);
+        if (qAcc.length() > qe) qAcc = qAcc.substring(0, qe);
         List<Match> found = new ArrayList<>();
         for (Food f : list) {
             int bestPos = -1, bestLen = 0;
             for (String st : f.stems) {
                 String ns = norm(st);
                 if (ns.isEmpty()) continue;
-                int p = q.indexOf(ns);
+                int p = stemIndex(q, qAcc, ns);
                 // A leghosszabb illeszkedő szótő dönt; azonos hossznál a korábbi.
                 if (p >= 0 && (ns.length() > bestLen || (ns.length() == bestLen && p < bestPos))) {
                     bestPos = p; bestLen = ns.length();
