@@ -277,7 +277,19 @@ public class FoodsQuantityTest {
         // A sima darabszám nem változott.
         assertEquals(70, grams("2 szelet kenyér"), 0.01);
         assertEquals(105, grams("3 szelet kenyér"), 0.01);
-        // Nagy ugrás nem tartomány, hanem két külön adat: marad a régi olvasat.
-        assertEquals(150, grams("100-150 g rizs"), 0.01);
+    }
+
+    /** Ugyanez, ha a felső tag viseli a mértékegységet. */
+    @Test public void aRangeWithAUnitAlsoMeansItsMiddle() {
+        assertEquals(35, grams("3-4 dkg sajt"), 0.01);
+        assertEquals(125, grams("100-150 g rizs"), 0.01);
+        assertEquals(250, grams("2-3 dl tej"), 0.01);
+        // Háromszorosnál nagyobb ugrás nem tartomány, hanem két külön adat –
+        // a harminc darab pedig életszerűtlen, így mennyiség nélkül marad
+        // (a tipikus adaggal megy tovább).
+        assertEquals(0, grams("2-30 alma"), 0.01);
+        // Az egyszerű mennyiségek nem változtak.
+        assertEquals(150, grams("150 g csirkemell"), 0.01);
+        assertEquals(500, grams("fél liter tej"), 0.01);
     }
 }

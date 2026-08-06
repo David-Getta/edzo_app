@@ -1054,9 +1054,8 @@ public final class Foods {
      * bizonytalanul megadott mennyiség RENDSZERESEN felfelé csúszott.
      * A középérték elfogulatlan: két és fél szelet.
      *
-     * Csak a mértékegység nélküli párokra él („2-3 alma", „1-2 tojás"). A
-     * „3-4 dkg" felső értéke marad, mert ott a két szám külön ágon van, és
-     * egy félig átírt mennyiség rosszabb, mint egy következetes.
+     * Ez a darabszámos pár („2-3 alma"); a mértékegységes a következő
+     * metódusban, mert ott a két szám külön listába kerül.
      */
     private static void averageRanges(String q, List<Integer> pos, List<Double> val,
                                       List<Integer> len) {
@@ -1064,9 +1063,8 @@ public final class Foods {
             int end = pos.get(i) + len.get(i);
             if (end >= q.length() || q.charAt(end) != '-') continue;
             for (int j = 0; j < pos.size(); j++) {
-                if (j == i || pos.get(j) != end + 1 || val.get(j) < val.get(i)) continue;
-                // Öt darabnál nagyobb ugrás nem tartomány, hanem két adat.
-                if (val.get(j) - val.get(i) > 5) break;
+                if (j == i || pos.get(j) != end + 1) continue;
+                if (!isRange(val.get(i), val.get(j))) break;
                 val.set(j, (val.get(i) + val.get(j)) / 2);
                 len.set(j, pos.get(j) + len.get(j) - pos.get(i));
                 pos.set(j, pos.get(i));
@@ -1075,6 +1073,55 @@ public final class Foods {
                 break;
             }
         }
+    }
+
+    /**
+     * Tartomány-e a két szám? A felső legfeljebb a háromszorosa az alsónak.
+     *
+     * A „2-3" és a „100-150" tartomány, a „2-30" viszont inkább két külön
+     * adat – ott az átlagolás találgatás lenne.
+     */
+    private static boolean isRange(double lo, double hi) {
+        return lo > 0 && hi >= lo && hi <= lo * 3;
+    }
+
+    /**
+     * Ugyanez, ha a tartomány FELSŐ tagja visel mértékegységet: „3-4 dkg
+     * sajt", „100-150 g rizs".
+     *
+     * Az alsó tag mértékegység nélkül a darabszám-listába kerül, a felső a
+     * mennyiség-listába, már grammra váltva – ezért az arányt a nyers
+     * számokból számoljuk, és a kész grammértéket igazítjuk hozzá.
+     */
+    private static void averageUnitRanges(String q, List<Integer> bPos, List<Double> bVal,
+                                          List<Integer> bLen, List<Integer> uPos,
+                                          List<Double> uVal) {
+        for (int i = bPos.size() - 1; i >= 0; i--) {
+            int end = bPos.get(i) + bLen.get(i);
+            if (end >= q.length() || q.charAt(end) != '-') continue;
+            for (int j = 0; j < uPos.size(); j++) {
+                if (uPos.get(j) != end + 1) continue;
+                double raw = leadingNumber(q, uPos.get(j));
+                if (!isRange(bVal.get(i), raw)) break;
+                uVal.set(j, uVal.get(j) * (bVal.get(i) + raw) / (2 * raw));
+                bPos.remove(i); bVal.remove(i); bLen.remove(i);
+                break;
+            }
+        }
+    }
+
+    /** A megadott helyen kezdődő szám (tizedesvesszővel is), vagy 0. */
+    private static double leadingNumber(String q, int at) {
+        int i = at;
+        while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+        if (i == at) return 0;
+        if (i + 1 < q.length() && (q.charAt(i) == ',' || q.charAt(i) == '.')
+                && Character.isDigit(q.charAt(i + 1))) {
+            i++;
+            while (i < q.length() && Character.isDigit(q.charAt(i))) i++;
+        }
+        try { return Double.parseDouble(q.substring(at, i).replace(',', '.')); }
+        catch (NumberFormatException e) { return 0; }
     }
 
     /**
@@ -1347,6 +1394,10 @@ public final class Foods {
                 bareNumLen.add(i - start);
             }
         }
+        // A tartomány felső tagja viselheti a mértékegységet („3-4 dkg"): ezt
+        // a mennyiségek szétosztása ELŐTT kell rendezni, különben a felső
+        // érték már a tányéron van.
+        averageUnitRanges(q, bareNumPos, bareNumVal, bareNumLen, numPos, numVal);
         // Mennyiség-plafon: 50 kg fölött a szám elgépelés, nem adag. Egy
         // „9999999999 g" alakú elütés különben milliárd-kalóriás étkezésként
         // mérgezné meg a napi összesítőt, a statisztikát és a diagramokat –
