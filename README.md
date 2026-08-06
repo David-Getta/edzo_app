@@ -86,7 +86,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   mint a fordítottja
 - **A kötőjel is számít**: a „sonkás-sajtos szendvics" három tétel (a magyar
   melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy
-- **338 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **342 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -139,7 +139,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „3 kör 10 fekvőtámasz" – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
-  29 gyakorlat és gép, a jelzős változatokkal
+  38 gyakorlat és gép, a jelzős változatokkal
   („román felhúzás", „bolgár kitörés", „kábeles tricepsz"). Mentés előtt
   megmutatja, mit értett, és **odaírja a legutóbbi alkalmat is**
   („↳ múltkor 57,5 kg · ▲ +2,5 kg · 3 napja")
