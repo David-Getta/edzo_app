@@ -106,6 +106,12 @@ public class FoodsCompoundTest {
         assertEquals(250, grams("250 g rizs"), 0.01);
         assertEquals(200, grams("2 dl tej"), 0.01);
         assertEquals(1000, grams("1 l tej"), 0.01);
+        // …de öt kiló fölött már nem étkezés, hanem elgépelés vagy
+        // bevásárlás. A „10 kg alma" (a „10 dkg" mellényúlása) ötezer
+        // kalória lenne – ilyenkor a mennyiség marad üres, és a szokásos
+        // adaggal számol tovább a napló.
+        assertEquals(0, grams("10 kg alma"), 0.01);
+        assertEquals(0, grams("50 kiló alma"), 0.01);
     }
 
     private static double grams(String q) {
