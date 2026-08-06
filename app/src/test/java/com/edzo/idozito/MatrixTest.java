@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -109,5 +110,43 @@ public class MatrixTest {
                     bad.append("\n  ").append(q).append(" -> ").append(pl.minutes).append(" perc");
             }
         assertEquals("mozgás-mátrix:" + bad, 0, bad.length());
+    }
+
+    /**
+     * A mennyiség ARÁNYOSAN skálázódik – minden ételnél.
+     *
+     * Nem azt méri, hogy egy adag hány gramm (az ételenként más), hanem hogy
+     * a kétszerese tényleg kétszer annyi, a fele meg fele annyi. Ez fogta meg
+     * azt a két tételt, ahol a darabszám némán elveszett: a „2 sült oldalas"
+     * és a „2 kínai bundás csirke" ugyanannyi volt, mint egy adag – mert a
+     * szám és a felismert szótő közé beékelődött a név első szava.
+     */
+    @Test public void quantitiesScaleProportionallyForEveryFood() {
+        StringBuilder bad = new StringBuilder();
+        int n = 0;
+        for (Foods.Food f : Foods.ALL) {
+            String name = f.name.replaceAll("\\(.*?\\)", "").replaceAll("/.*", "")
+                    .trim().toLowerCase(HU);
+            double g1 = grams("1 " + name);
+            if (g1 <= 0) continue;
+            n++;
+            double g2 = grams("2 " + name), g3 = grams("3 " + name), gh = grams("fél " + name);
+            if (g2 > 0 && Math.abs(g2 - 2 * g1) > 0.51)
+                bad.append("\n  2 ").append(name).append(" = ").append(g2)
+                   .append(" g (egy adag ").append(g1).append(" g)");
+            if (g3 > 0 && Math.abs(g3 - 3 * g1) > 0.51)
+                bad.append("\n  3 ").append(name).append(" = ").append(g3);
+            if (gh > 0 && Math.abs(gh - 0.5 * g1) > 0.51)
+                bad.append("\n  fél ").append(name).append(" = ").append(gh);
+        }
+        assertTrue("legalább száz ételt néztünk", n > 100);
+        assertEquals("aránytalan mennyiség:" + bad, 0, bad.length());
+    }
+
+    /** Egy tétel grammja, vagy a szokásos adag, ha nincs kimondva. */
+    private static double grams(String q) {
+        List<Foods.Hit> h = Foods.parse(Arrays.asList(Foods.ALL), q);
+        if (h.size() != 1) return -1;
+        return h.get(0).grams > 0 ? h.get(0).grams : h.get(0).food.portion;
     }
 }

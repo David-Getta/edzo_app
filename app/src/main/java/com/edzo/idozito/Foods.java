@@ -417,7 +417,11 @@ public final class Foods {
                 "tavaszi tekercs", "spring roll", "gyoza", "dim sum"),
         new Food("Wok (zöldséges-húsos)", 120, 10, 350, "wok", "bibimbap"),
         // Kínai büfé: a bundázott, szószos csirke messze nem a wok kalóriája.
-        new Food("Kínai bundás csirke", 250, 14, 250, "kinai csirke", "bundas csirke",
+        // A TELJES név is szótő, nem csak a rövidebb alakjai: a darabszám
+        // közvetlenül a felismert tő elé kell essen, és a „2 kínai bundás
+        // csirke" számát a köztes szó különben elvágta a tőtől.
+        new Food("Kínai bundás csirke", 250, 14, 250, "kinai bundas csirke",
+                "kinai csirke", "bundas csirke",
                 "szechuan", "szecsuani", "kung pao", "edes-savanyu csirke",
                 "edes savanyu csirke"),
         new Food("Quesadilla", 250, 11, 200, "quesadilla"),
@@ -482,7 +486,7 @@ public final class Foods {
         new Food("Májkrém / kenőmájas", 330, 12, 30,
                 "majkrem", "kenomajas", "majas", "pastetom"),
         new Food("Pacalpörkölt", 120, 12, 400, "pacalporkolt", "pacal"),
-        new Food("Sült oldalas", 290, 20, 200, "oldalas"),
+        new Food("Sült oldalas", 290, 20, 200, "sult oldalas", "oldalas"),
         new Food("Csülök", 280, 22, 200, "csulok"),
         new Food("Kacsa / liba", 300, 19, 180, "kacsa", "liba"),
         new Food("Mustár", 60, 4, 10, "mustar"),
