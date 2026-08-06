@@ -137,6 +137,55 @@ open(dst + 'Programs.java', 'w').write(
     + grab(pg, 'public static String[] knownExercises(') + "\n    "
     + grab(pg, 'public static String descOf(') + "\n}\n")
 
+# A szint-rendszer matematikája tiszta: a Context-es és JSON-os burkolók
+# nélkül a küszöbök és az XP-számítás helyben is ellenőrizhető.
+lv = open(src_dir + 'Levels.java').read()
+open(dst + 'Levels.java', 'w').write(
+    "package com.edzo.idozito;\npublic final class Levels {\n"
+    "    static final int XP_PER_SET = 2, MAX_STRENGTH_DAY_XP = 40;\n"
+    + "    " + re.search(r'(static final String\[\] TITLES\s*=\s*\{.*?\};)', lv, re.S).group(1) + "\n    "
+    + grab(lv, 'public static long xpForSession(') + "\n    "
+    + grab(lv, 'public static long strengthXp(') + "\n    "
+    + grab(lv, 'public static int levelForXp(') + "\n    "
+    + grab(lv, 'public static long xpForLevel(') + "\n    "
+    + grab(lv, 'public static String title(') + "\n    "
+    + grab(lv, 'public static float progress(') + "\n    "
+    + grab(lv, 'public static long xpToNext(') + "\n}\n")
+
+# A széria-számítás magja tiszta (nyers időbélyeg-tömb + terv-tábla), a
+# Context-es burkolók nélkül helyben is fut.
+st = open(src_dir + 'Streaks.java').read()
+open(dst + 'Streaks.java', 'w').write(
+    "package com.edzo.idozito;\nimport java.util.Calendar;\nimport java.util.HashSet;\n"
+    "public final class Streaks {\n    "
+    + grab(st, 'static int count(boolean[] plan, long[] ts, boolean includeToday)') + "\n    "
+    + grab(st, 'private static HashSet<Long> daySet(long[] ts)') + "\n    "
+    + grab(st, 'private static void zero(') + "\n}\n")
+
+# A vízszámláló nap-kulcsai és mértékegységei szintén tiszták.
+wt = open(src_dir + 'Water.java').read()
+open(dst + 'Water.java', 'w').write(
+    "package com.edzo.idozito;\nimport java.util.Calendar;\npublic final class Water {\n"
+    "    public static final int GLASS_CL = 25;\n"
+    "    public static final int DEFAULT_GOAL_CL = 200;\n"
+    + "    " + re.search(r'(static final String DAY_PREFIX\s*=\s*"[^"]*";)', wt).group(1) + "\n    "
+    + grab(wt, 'public static int dayNumber(') + "\n    "
+    + grab(wt, 'public static String dayKey(Calendar cal)') + "\n    "
+    + grab(wt, 'public static String dayKey(long ts)') + "\n    "
+    + grab(wt, 'public static boolean isDayKey(') + "\n    "
+    + grab(wt, 'public static int dayOf(') + "\n    "
+    + grab(wt, 'public static String liters(') + "\n    "
+    + grab(wt, 'public static int suggestedGoalCl(') + "\n}\n")
+
+# A tárcsa- és 1RM-kalkulátor egy Activityben lakik, de maga a számolás
+# tiszta: két statikus metódus. Csonkkal helyben is ellenőrizhető.
+sa = open(src_dir + 'StrengthActivity.java').read()
+open(dst + 'StrengthActivity.java', 'w').write(
+    "package com.edzo.idozito;\npublic class StrengthActivity {\n    "
+    + grab(sa, 'static String fmtKg(') + "\n    "
+    + grab(sa, 'static String platePlan(') + "\n    "
+    + grab(sa, 'static String oneRmPlan(') + "\n}\n")
+
 sl = open(src_dir + 'StrengthLog.java').read()
 common = re.search(r'(public static final String\[\] COMMON\s*=\s*\{.*?\};)', sl, re.S).group(1)
 open(dst + 'StrengthLog.java', 'w').write(
@@ -164,7 +213,7 @@ PY
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
-       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest"
+       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest LevelsTest StreaksTest WaterTest PlateCalcTest"
 CLASSES=""
 for t in $TESTS; do
   if [ -f "$TST/$t.java" ]; then cp "$TST/$t.java" "$PKG/"; CLASSES="$CLASSES com.edzo.idozito.$t"; fi
