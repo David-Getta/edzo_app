@@ -38,7 +38,7 @@ public final class Foods {
                 "egeszben sult csirke"),
         new Food("Pulykamell", 105, 23, 150, "pulyka"),
         new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes", "tarja",
-                "naturszelet", "natur szelet"),
+                "naturszelet", "natur szelet", "szuzerme", "szuzpecsenye", "flekken"),
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
         new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek",
@@ -101,7 +101,7 @@ public final class Foods {
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
                 "whopper"),
         new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal", "mekis menu"),
-        new Food("Gyros", 220, 15, 350, "gyros"),
+        new Food("Gyros", 220, 15, 350, "gyros", "souvlaki"),
         new Food("Lángos", 320, 7, 200, "langos"),
         new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves", "gulyas"),
         new Food("Pörkölt", 180, 15, 300, "porkolt"),
@@ -114,11 +114,19 @@ public final class Foods {
         // A „zöldségleves" teljes alakja szótő, különben zöldség + leves
         // kettőnek számolna.
         new Food("Leves (átlag)", 50, 3, 400, "leves", "zoldsegleves",
-                "tarhonyaleves", "tarhonya leves"),
+                "tarhonyaleves", "tarhonya leves", "minestrone", "gazpacho",
+                "tom yum", "laksa", "harira"),
         // A „vacsorára túró és zöldség" zöldsége eddig eltűnt: vegyes köret.
         new Food("Zöldség (vegyes / párolt)", 40, 2, 200, "zoldseg", "vitaminsalata",
                 "pak choi", "pakchoi", "mangold", "articsoka", "edeskomeny"),
-        new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott"),
+        new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott", "moussaka"),
+        // Disznótoros: hurka, kolbász és sült hús egy tányéron – a magyar
+        // konyha egyik legnehezebb fogása, egy adag közel ezer kalória.
+        new Food("Disznótoros", 330, 16, 300, "disznotoros", "disznotor"),
+        // Tócsni (lapcsánka, tócsi): olajban sült reszelt krumpli.
+        new Food("Tócsni / lapcsánka", 250, 4, 150, "tocsni", "lapcsanka", "tocsi",
+                "krumplilangos", "berthake"),
+        new Food("Töltött dagadó", 330, 18, 200, "toltott dagado", "dagado"),
         new Food("Rakott zöldbab", 110, 5, 350, "rakott zoldbab", "rakott zoldseg"),
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
@@ -298,8 +306,10 @@ public final class Foods {
         new Food("Csirkepaprikás", 160, 14, 300, "paprikas", "harcsapaprikas"),
         new Food("Milánói makaróni", 180, 7, 350, "milanoi", "makaroni"),
         new Food("Lasagne", 160, 9, 350, "lasagne", "lazanya"),
-        new Food("Tészta carbonara", 180, 8, 350, "teszta carbonara", "carbonara"),
-        new Food("Töltött tészta (tortellini)", 180, 8, 300, "toltott teszta", "tortellini", "ravioli"),
+        new Food("Tészta carbonara", 180, 8, 350, "teszta carbonara", "carbonara",
+                "fettuccine alfredo", "alfredo"),
+        new Food("Töltött tészta (tortellini)", 180, 8, 300, "toltott teszta", "tortellini",
+                "ravioli", "cannelloni"),
         // A puszta „turmix" magyarul gyümölcsös: nem fehérjeturmix. A teljes
         // „protein turmix" alak szótő, így az egyben marad.
         new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake",
@@ -412,7 +422,8 @@ public final class Foods {
         new Food("Burrito", 190, 10, 300, "burrito"),
         new Food("Taco", 220, 10, 120, "taco", "enchilada", "fajita"),
         new Food("Chilis bab (con carne)", 120, 8, 400,
-                "chilis bab", "chili con carne", "con carne"),
+                "chilis bab", "chili con carne", "con carne", "chili sin carne",
+                "sin carne"),
         new Food("Tavaszi tekercs / gyoza", 200, 7, 150,
                 "tavaszi tekercs", "spring roll", "gyoza", "dim sum"),
         new Food("Wok (zöldséges-húsos)", 120, 10, 350, "wok", "bibimbap"),
@@ -448,9 +459,10 @@ public final class Foods {
         new Food("Paprikás krumpli", 120, 4, 350, "paprikas krumpli"),
         new Food("Rizses hús", 160, 8, 350, "rizses hus"),
         new Food("Bolognai spagetti", 170, 8, 350, "bolognai spagetti", "spagetti bolognai", "bolognai"),
-        new Food("Sajtos tészta", 220, 8, 300, "sajtos teszta"),
+        new Food("Sajtos tészta", 220, 8, 300, "sajtos teszta", "mac and cheese",
+                "macaroni and cheese"),
         new Food("Tojásos nokedli", 190, 7, 300, "tojasos nokedli"),
-        new Food("Rizottó", 150, 5, 300, "rizotto", "risotto", "rizsotto"),
+        new Food("Rizottó", 150, 5, 300, "rizotto", "risotto", "rizsotto", "paella"),
         new Food("Túrógombóc", 210, 9, 200, "turogomboc"),
         new Food("Szilvás gombóc", 190, 3, 250, "szilvas gomboc", "szilvasgomboc"),
         new Food("Káposztás tészta", 150, 4, 330, "kaposztas teszta", "kaposztasteszta",
