@@ -153,7 +153,10 @@ public final class Foods {
         new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali",
                 // A „rukkola" vége „kola" – a hosszabb tő elfedi az üdítőt.
                 "rukkola", "endivia", "radicchio"),
-        new Food("Sajt (trappista)", 360, 25, 30, "sajt", "trappista", "parenyica"),
+        new Food("Sajt (trappista)", 360, 25, 30, "sajt", "trappista", "parenyica",
+                // A gouda ugyanabban a sávban van, és a boltok polcán ott a
+                // trappista mellett – eddig egyetlen tő sem fogta.
+                "gouda", "eidami", "edami"),
         new Food("Mozzarella", 280, 22, 50, "mozzarella"),
         // A „parmezán" MÉZNEK számított (a „mez" tő beleesett a szóba).
         new Food("Parmezán", 400, 35, 20, "parmezan"),
@@ -240,7 +243,9 @@ public final class Foods {
         new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt", "jegkrem",
                 "protein jegkrem"),
         new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
-                "protein chips"),
+                // A „tortilla chips" eddig KÉT tétel volt (tortilla + chips):
+                // egy lapos kenyér kalóriája a nassolnivaló mellé.
+                "protein chips", "tortilla chips", "tortillachips", "nacho"),
         // Nassolás-kör: a hagymakarika hagymának (20 kcal!), a szaloncukor
         // kanál cukornak, a mézeskalács kalácsnak számított.
         new Food("Hagymakarika (rántott)", 280, 4, 100, "hagymakarika"),
@@ -502,7 +507,7 @@ public final class Foods {
         new Food("Sült oldalas", 290, 20, 200, "sult oldalas", "oldalas"),
         new Food("Csülök", 280, 22, 200, "csulok"),
         new Food("Kacsa / liba", 300, 19, 180, "kacsa", "liba"),
-        new Food("Mustár", 60, 4, 10, "mustar"),
+        new Food("Mustár", 60, 4, 10, "mustar", "wasabi", "vaszabi"),
         new Food("Uborkasaláta", 40, 0.7, 150, "uborkasalata"),
         new Food("Céklasaláta", 45, 1.3, 100, "ceklasalata", "cekla salata", "cekla"),
         // A franciasaláta majonézes: nem 8 kcal-os zöldsaláta.
