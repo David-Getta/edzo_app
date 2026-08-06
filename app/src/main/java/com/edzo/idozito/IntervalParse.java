@@ -347,7 +347,12 @@ public final class IntervalParse {
      */
     private static int fieldNumber(String s, String[] words) {
         for (String part : s.split("[,;]")) {
+            // A mondatzáró jel is lekerül: a „pihenő 30." ugyanaz, mint a
+            // „pihenő 30" – a minta viszont a tagmondat VÉGÉHEZ van kötve.
             String t = part.trim();
+            int e = t.length();
+            while (e > 0 && !Character.isLetterOrDigit(t.charAt(e - 1))) e--;
+            t = t.substring(0, e);
             for (String w : words) {
                 if (!t.startsWith(w)) continue;
                 java.util.regex.Matcher m = java.util.regex.Pattern

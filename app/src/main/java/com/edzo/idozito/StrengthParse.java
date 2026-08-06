@@ -224,7 +224,7 @@ public final class StrengthParse {
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")
-                .matcher(s.trim());
+                .matcher(trimPunct(s));
         if (!m.matches()) return null;
         double a;
         try { a = Double.parseDouble(m.group(1).replace(',', '.')); }
@@ -340,6 +340,19 @@ public final class StrengthParse {
                 // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent. A szám a
                 // két oldalon köti a mintát, így a „korcsolya" nem kör.
                 .replaceAll("(\\d{1,2})\\s?kor\\s+(\\d{1,3})", "$1x$2");
+    }
+
+    /**
+     * A tagmondat végéről a mondatzáró jelek le: a „80x6 :)" és a „80x6."
+     * ugyanaz a sorozat. A minta a tagmondat VÉGÉHEZ van kötve, tehát egy
+     * hangulatjel eddig elvitte az utolsó sorozatot.
+     */
+    private static String trimPunct(String s) {
+        int e = s.length();
+        while (e > 0 && !Character.isLetterOrDigit(s.charAt(e - 1))) e--;
+        int b = 0;
+        while (b < e && s.charAt(b) == ' ') b++;
+        return s.substring(b, e);
     }
 
     /**

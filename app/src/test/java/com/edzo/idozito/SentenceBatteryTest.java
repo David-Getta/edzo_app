@@ -268,7 +268,8 @@ public class SentenceBatteryTest {
             for (String[] c : cases) {
                 String base = all(c[0]);
                 for (String v : new String[]{c[0].toUpperCase(new java.util.Locale("hu")),
-                        "  " + c[0].replace(" ", "  ") + "  ", c[0] + "!", c[0] + "…"}) {
+                        "  " + c[0].replace(" ", "  ") + "  ", c[0] + "!", c[0] + "…",
+                        c[0] + ".", c[0] + " :)"}) {
                     String got = all(v);
                     if (!got.equals(base))
                         bad.append("\n  ").append(v)

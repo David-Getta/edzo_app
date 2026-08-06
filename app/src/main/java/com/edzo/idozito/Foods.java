@@ -1676,7 +1676,14 @@ public final class Foods {
      * kerülne be, és dupla kalóriát számolnánk.
      */
     static List<Match> matches(List<Food> list, String query) {
+        // A mondat végi írásjel és hangulatjel nem tartozik a szöveghez: a
+        // tagadás-szabályok a tagmondat VÉGÉT nézik, és egy „:)" miatt eddig
+        // bekerült az, amit az ember épp nem evett meg. A levágás csak a
+        // végéről történik, tehát a találatok helye nem csúszik el.
         String q = mask(norm(query));
+        int qe = q.length();
+        while (qe > 0 && !Character.isLetterOrDigit(q.charAt(qe - 1))) qe--;
+        q = q.substring(0, qe);
         List<Match> found = new ArrayList<>();
         for (Food f : list) {
             int bestPos = -1, bestLen = 0;
