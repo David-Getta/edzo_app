@@ -119,4 +119,43 @@ public class ExamplesTest {
             assertTrue("edzés-minta nem érthető: " + s, !Activities.parse(s).isEmpty());
         }
     }
+    /**
+     * A hirdetett példamondatok másképp GÉPELVE is ugyanazt jelentik.
+     *
+     * A tipp-szöveget az ember bemásolja vagy utánagépeli – nagybetűvel,
+     * dupla szóközzel, a végén ponttal. Ha bármelyik alak mást ad, akkor az
+     * app a saját példáját sem érti következetesen.
+     */
+    @Test public void everyExampleSurvivesADifferentTyping() {
+        StringBuilder bad = new StringBuilder();
+        for (String[] list : new String[][]{Examples.MEAL, Examples.BULK,
+                Examples.SET, Examples.INTERVAL})
+            for (String q : list) {
+                String base = allFour(q);
+                for (String v : new String[]{q.toUpperCase(new java.util.Locale("hu")),
+                        "  " + q.replace(" ", "  ") + "  ", q + "!", q + "…",
+                        q + ".", q + " :)"})
+                    if (!allFour(v).equals(base))
+                        bad.append("\n  ").append(v)
+                           .append("\n     eredeti: ").append(base)
+                           .append("\n     kapott:  ").append(allFour(v));
+            }
+        assertEquals("másképp gépelve mást jelent:" + bad, 0, bad.length());
+    }
+
+    /** Mind a négy felismerő eredménye egyetlen szövegként. */
+    private static String allFour(String q) {
+        StringBuilder s = new StringBuilder();
+        for (StrengthParse.Item i : StrengthParse.parse(q)) s.append(i.label()).append(';');
+        s.append('|');
+        IntervalParse.Plan p = IntervalParse.parse(q);
+        s.append(p == null ? "-" : p.rounds + "/" + p.work + "/" + p.rest).append('|');
+        Activities.Parsed a = Activities.parse(q, friday());
+        for (Activities.Plan x : a.plans)
+            s.append(x.kind.id).append(x.count).append('/').append(x.minutes).append(';');
+        s.append(a.days).append('+').append(a.offset).append('|');
+        for (Foods.Hit h : Foods.parse(java.util.Arrays.asList(Foods.ALL), q))
+            s.append(h.food.name).append('=').append(Math.round(h.grams)).append(';');
+        return s.toString();
+    }
 }
