@@ -35,7 +35,10 @@ public final class Muscles {
                     "fellepes", "fellepo", "labtavolit", "combtavolit", "abduktor",
                     "labkozelit", "combkozelit", "adduktor",
                     // A kettlebell-lendítés csípőből megy: far- és combhajlító.
-                    "kettlebell", "swing"},
+                    "kettlebell", "swing",
+                    // A súlyemelő fogások és a farmerjárás is csípőből mennek.
+                    "good morning", "gudmorning", "szakitas", "snatch", "lokes",
+                    "clean and jerk", "farmerjaras", "farmer jaras", "farmers walk"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
                     "hatizom", "hatgep", "gerincnyujt", "hiperextenzi", "hatfeszit",
                     "szuperman", "superman",

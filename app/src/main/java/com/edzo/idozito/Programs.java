@@ -195,6 +195,10 @@ public final class Programs {
             case "Arnold nyomás": return "Tenyér elöl indul, nyomás közben fordul kifelé. Feszes has, ne told előre a bordáidat.";
             case "Fordított tárogatás": return "Törzs döntve, könyök enyhén hajlítva, a lapockákat húzd össze. Hátsó vállra megy, nem a hátra.";
             case "Csuklyás emelés": return "Csak vállvonás, felfelé – nem körzés. Fent egy pillanat, lefelé lassíts.";
+            case "Good morning": return "Enyhén hajlított térd, a csípő megy hátra, a hát végig egyenes. Kis súllyal kezdd – a comb hátulja adja a jelet, hol állj meg.";
+            case "Farmerjárás": return "Két nehéz súly a kézben, váll hátra, has feszes. Kis lépések, egyenes vonal – a fogásod fárad el először.";
+            case "Szakítás": return "Egy mozdulatban a földről a fej fölé. Technikás fogás: könnyű súllyal tanuld, és csak pihenten csináld.";
+            case "Lökés": return "Földről a vállra, onnan a fej fölé. Két külön mozdulat, két külön ritmus – ne told össze őket.";
             case "Hátfeszítés": return "Csípő a párnán, a hát egyenes: csak addig emelkedj, "
                     + "amíg a törzsed vonalba ér – ne feszítsd hátra.";
             case "Hátizom gép": return "Mellkas a párnán, a könyököd húzd hátra a bordáid mellé, lapockák össze.";

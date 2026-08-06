@@ -660,4 +660,26 @@ public class StrengthParseTest {
         assertTrue("legalább ezer bejegyzést néztünk", n > 1000);
         assertEquals("oda-vissza eltérés:" + bad, 0, bad.length());
     }
+
+    /**
+     * A hatvan mindennapi gyakorlatnévvel végigpróbált hiánylista.
+     *
+     * Ez a hat teljesen hiányzott, a többi négy csak más néven volt meg. Aki
+     * ezeket írja be, eddig „nem ismerem" választ kapott – pedig a mondat
+     * tökéletes volt.
+     */
+    @Test public void theNewlyAddedNamesAreUnderstood() {
+        String[][] cases = {{"good morning 3x10 40 kg", "Good morning"},
+                {"farmerjárás 3x30", "Farmerjárás"}, {"szakítás 5x3 60 kg", "Szakítás"},
+                {"lökés 3x2 80 kg", "Lökés"}, {"mellrepülés 3x12 20 kg", "Mellgép"},
+                {"pullover 3x12", "Lehúzás"}, {"áthúzás 3x12 25 kg", "Lehúzás"},
+                {"elülső vállemelés 3x12 8 kg", "Oldalemelés"},
+                {"hyperextension 3x15", "Hátfeszítés"},
+                {"medence emelés 3x10 60 kg", "Csípőemelés"}};
+        for (String[] c : cases) {
+            java.util.List<StrengthParse.Item> it = StrengthParse.parse(c[0]);
+            assertEquals(c[0], 1, it.size());
+            assertEquals(c[0], c[1], it.get(0).name);
+        }
+    }
 }

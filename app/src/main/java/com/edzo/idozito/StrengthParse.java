@@ -90,8 +90,9 @@ public final class StrengthParse {
             {"Vádliemelés", "vadliemel", "vadli"},
             {"Fekvőtámasz", "fekvotamasz", "push up", "pushup"},
             {"Tolódzkodás", "tolodzkod", "dipp", "dips"},
-            {"Lehúzás", "lehuzas", "latpull", "lat pull", "lat huzas"},
-            {"Oldalemelés", "oldalemel", "eloreemel"},
+            {"Lehúzás", "lehuzas", "latpull", "lat pull", "lat huzas", "athuzas", "pullover",
+                    "pulover"},
+            {"Oldalemelés", "oldalemel", "eloreemel", "vallemel", "elulso vall"},
             {"Plank", "plank", "deszka", "oldaltamasz", "alkartamasz"},
             {"Felülés", "felules", "crunch", "felult"},
             {"Hasprés", "haspres", "hasizom", "hasgep"},
@@ -99,15 +100,16 @@ public final class StrengthParse {
             {"Combhajlítás", "labhajlit", "combhajlit"},
             {"Lábnyújtás", "labnyujt", "combfeszit", "labgep"},
             {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok",
-                    "farizom"},
+                    "medenceemel", "medence emel", "farizom"},
             {"Arnold nyomás", "arnold"},
             {"Fordított tárogatás", "forditott tarogat", "hatso vall", "hatso deltoid",
                     "face pull", "facepull"},
             {"Csuklyás emelés", "csuklyas", "shrug"},
             {"Hátizom gép", "hatizom", "hatgep"},
-            {"Mellgép", "mellgep", "tarogat", "pillango", "mellnyom"},
+            {"Mellgép", "mellgep", "tarogat", "pillango", "mellnyom", "mellrepul", "butterfly"},
             {"Hegymászó", "hegymaszo"},
-            {"Hátfeszítés", "hiperextenzi", "hatfeszit", "back extension"},
+            {"Hátfeszítés", "hiperextenzi", "hiperextension", "hyperextension", "hatfeszit",
+                    "back extension"},
             // A „kettlebell" magában nem elég: a kettlebell-guggolás guggolás.
             {"Kettlebell lendítés", "kettlebell swing", "kettlebell lendit", "kb swing",
                     "swing"},
@@ -123,6 +125,14 @@ public final class StrengthParse {
             {"Holt függés", "holt fugges", "holtfugges", "dead hang", "deadhang",
                     "holtakasztas", "holt akasztas"},
             {"Szuperman", "szuperman", "superman"},
+            // Hatvan mindennapi gyakorlatnévvel végigpróbálva ez a hat hiányzott
+            // teljesen. A súlyemelő fogások („szakítás", „lökés") azért külön
+            // tételek, mert a súlyuk semmilyen más gyakorlatéval nem
+            // összemérhető – egy kalap alatt a rekord és a haladás is hazudna.
+            {"Good morning", "good morning", "gudmorning"},
+            {"Farmerjárás", "farmerjaras", "farmer jaras", "farmers walk", "farmer walk"},
+            {"Szakítás", "szakitas", "snatch"},
+            {"Lökés", "lokes", "clean and jerk", "clean & jerk", "clean es jerk"},
     };
 
     /**
