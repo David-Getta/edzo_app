@@ -534,4 +534,22 @@ public class StrengthParseTest {
             }
         assertEquals("ütköző gyakorlatnév:" + bad, 0, bad.length());
     }
+    /**
+     * A gyakorlatok IGEALAKJAI is felismerhetők, ha egyértelműek.
+     *
+     * A „nyomtam", a „húztam" és a „toltam" szándékosan NEM: azokból nem
+     * derül ki, melyik gyakorlatról van szó, és egy találgatott gyakorlatnév
+     * rosszabb, mint a hiány. Az „eveztem" viszont egyértelmű.
+     */
+    @Test public void unambiguousVerbFormsAreUnderstood() {
+        assertEquals("Evezés", StrengthParse.parse("eveztem 3x10 50 kg").get(0).name);
+        assertEquals("Felülés", StrengthParse.parse("felültem 3x20").get(0).name);
+        assertEquals("Kitörés", StrengthParse.parse("kitörtem 3x12").get(0).name);
+        assertEquals("Fekvenyomás",
+                StrengthParse.parse("mellet nyomtam 3x10 60 kg").get(0).name);
+        // A többértelmű igék továbbra sem találgatnak.
+        for (String q : new String[]{"nyomtam 3x10 60 kg", "húztam 3x10 60 kg",
+                "toltam 3x10 60 kg", "emeltem 3x10 60 kg"})
+            assertTrue(q, StrengthParse.parse(q).isEmpty());
+    }
 }
