@@ -20,7 +20,7 @@ public final class Sentence {
     private Sentence() {}
 
     /** Hova való a mondat. NONE = egyik felismerő sem tud vele mit kezdeni. */
-    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL }
+    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY }
 
     /** Az átirányított mondat Intent-kulcsa: a cél-képernyő ezzel nyílik meg. */
     public static final String EXTRA = "sentence";
@@ -45,6 +45,10 @@ public final class Sentence {
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (IntervalParse.parse(q) != null) return Kind.INTERVAL;
         if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
+        // A mérés a legvégén: a kilogramm a legterheltebb mértékegység az
+        // appban, ezért a testsúly csak arra a maradékra jelentkezik, amit
+        // senki más nem kért magának.
+        if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
         return Kind.NONE;
     }
 
@@ -55,6 +59,7 @@ public final class Sentence {
             case WORKOUT: return "Edzés-előzmények";
             case STRENGTH: return "Erősítő napló";
             case INTERVAL: return "Időzítő";
+            case BODY: return "Profil";
             default: return "";
         }
     }
@@ -71,6 +76,7 @@ public final class Sentence {
             case WORKOUT: return "🏃 Ez inkább edzésnek tűnik – koppints, és az Előzményekbe viszem.";
             case STRENGTH: return "🏋️ Ez erősítő sorozatnak tűnik – koppints, és az Erősítő naplóba viszem.";
             case INTERVAL: return "⏱️ Ez időzítő-tervnek tűnik – koppints, és beállítom.";
+            case BODY: return "⚖️ Ez mérésnek tűnik – koppints, és a Profilba viszem.";
             default: return "";
         }
     }

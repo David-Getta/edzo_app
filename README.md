@@ -270,6 +270,12 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Profil / BMI / BMR**, testadatok és változás-diagram **testsúly-tendenciával**
   (kg/hét, lineáris illesztéssel az összes mérésre) és a fogyási célhoz mért
   becsléssel: „a célig még 3,2 kg (~7 hét ezzel az ütemmel)"
+- ⚖️ **Mérés mondatból**: „ma reggel 78,4 kg", „78 kiló vagyok", „mérleg: 81,2",
+  „78,4 kg és 18% testzsír" – a számokat beírja a mezőkbe, a mentést te nyomod
+  meg. A kiló a legterheltebb mértékegység az appban, ezért csak akkor mérés,
+  ha a mondat kimondja („vagyok", „mérleg", „testsúly"), vagy ha a számon és
+  egy napszakon kívül nincs is más benne: a „fekvenyomás 80 kg" és a „vettem
+  2 kg almát" nem testsúly
 
 ### 📋 Heti terv
 - **Edzésnapok** kijelölése (Blaze csak ezeken emlékeztet)

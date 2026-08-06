@@ -177,6 +177,34 @@ public class ProfileActivity extends Activity {
         loadValues();
         recompute();
         selectSeries(0);
+        // Máshonnan ideirányított mérés-mondat („ma reggel 78,4 kg”): a
+        // számokat beírjuk a mezőkbe, a mentést viszont a felhasználó nyomja
+        // meg – a saját súlya nem kerülhet a naplóba az ő tudta nélkül.
+        String sent = getIntent().getStringExtra(Sentence.EXTRA);
+        if (sent != null && !sent.trim().isEmpty()) {
+            getIntent().removeExtra(Sentence.EXTRA);
+            col.post(() -> measurementSheet(sent));
+        }
+    }
+
+    /**
+     * Mérés mondatból: előnézet, majd egy koppintással mentés.
+     *
+     * A mezőket rögtön kitöltjük, hogy látszódjon, mit értett az app – és
+     * hogy egy elgépelt szám még mentés előtt javítható legyen.
+     */
+    void measurementSheet(String sentence) {
+        BodyParse.Body b = BodyParse.parse(sentence);
+        if (b.isEmpty()) return;
+        if (b.kg > 0) weightEt.setText(trim(b.kg));
+        if (b.fatPct > 0) bodyFatEt.setText(trim(b.fatPct));
+        recompute();
+        new Sheet(this, "Mérés a mondatból ⚖️",
+                "„" + sentence.trim() + "”\n\n→  " + b.label()
+                        + "\n\nA mezőkbe már beírtam – ha stimmel, mentheted.")
+                .addPrimary("Mentés", this::saveMeasurement)
+                .addCancel()
+                .show();
     }
 
     // ---------------- Adatmezők ----------------
