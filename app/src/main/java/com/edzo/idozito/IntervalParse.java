@@ -417,7 +417,10 @@ public final class IntervalParse {
      * szorzószám itt körszámot jelent: „20/10 nyolcszor” nyolc kör.
      */
     static String digits(String s) {
-        return Hu.digits(s).replaceAll("(\\d+)\\s?(szor|szer)\\b", "$1 kor");
+        // A kötőjel is odatartozik: a „10-szer" ugyanazt jelenti, mint a
+        // „tízszer". Nélküle a terv egyszer futott le tíz helyett – a szám
+        // ott volt a mondatban, csak nem jutott el a körszámig.
+        return Hu.digits(s).replaceAll("(\\d+)\\s?-?\\s?(szor|szer)\\b", "$1 kor");
     }
 
     /** Az első szám a szó után: „emom 12” → 12. */
@@ -448,7 +451,7 @@ public final class IntervalParse {
      * pedig szünet nélküli lett.
      */
     private static final String[] REST_WORDS = {"piheno", "pihenes", "szunet",
-            "lazitas", "seta", "rest", "off"};
+            "lazitas", "seta", "lassu", "rest", "off"};
 
     /** A munkaszakaszt jelölő szavak – a pihenőnek ez a határa, és fordítva. */
     private static final String[] WORK_WORDS = {"munka", "aktiv", "terheles",

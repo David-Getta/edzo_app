@@ -105,6 +105,8 @@ public class SentenceBatteryTest {
                 {"2 perc bemelegítés 6 kör 45/15 3 perc levezetés", "6k 45/15 w120 c180"},
                 {"négyszer negyven másodperc munka húsz másodperc pihenő", "4k 40/20 w0 c0"},
                 {"20 perc alatt 40/20", "20k 40/20 w0 c0"},
+                {"1 perc munka és 1 perc pihenő 10-szer", "10k 60/60 w0 c0"},
+                {"20 mp gyors 10 mp lassú 8-szor", "8k 20/10 w0 c0"},
                 {"guggolás 3x10", "—"},
                 {"45 másodperc munka 15 pihenő nyolcszor", "8k 45/15 w0 c0"},
                 {"2 perc munka 1 pihenő 5 kör", "5k 120/60 w0 c0"},

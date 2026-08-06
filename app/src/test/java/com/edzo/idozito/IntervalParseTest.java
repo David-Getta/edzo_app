@@ -336,4 +336,23 @@ public class IntervalParseTest {
         assertEquals(120, p.warm);
         assertEquals(180, p.cool);
     }
+    /**
+     * A kötőjeles szorzó is körszám: a „10-szer" ugyanaz, mint a „tízszer".
+     *
+     * Nélküle a terv EGYSZER futott le tíz helyett – a szám ott volt a
+     * mondatban, csak nem jutott el a körszámig.
+     */
+    @Test public void theHyphenatedMultiplierIsARoundCount() {
+        assertEquals(10, IntervalParse.parse("1 perc munka és 1 perc pihenő 10-szer").rounds);
+        assertEquals(8, IntervalParse.parse("20 mp gyors 10 mp lassú 8-szor").rounds);
+        // A kötőjel nélküli alak nem romolhatott el.
+        assertEquals(5, IntervalParse.parse("négy perc munka egy perc pihenő ötször").rounds);
+    }
+
+    /** A „lassú" is pihenő: a váltott tempójú futásban ez a szünet. */
+    @Test public void theSlowPartIsTheRest() {
+        IntervalParse.Plan p = IntervalParse.parse("20 mp gyors 10 mp lassú 8-szor");
+        assertEquals(20, p.work);
+        assertEquals(10, p.rest);
+    }
 }
