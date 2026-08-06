@@ -869,6 +869,14 @@ public final class Activities {
                 return new Parsed(out, maxB - minB + 1, minB, findHour(s), arr);
             }
         }
+        // Sok alkalom, időszak nélkül: „20 edzés", „tavaly 200 futás". Egyetlen
+        // napra ennyi bejegyzés képtelen – a napi mozgáspercek, a széria és a
+        // terhelés-figyelés is elszállna tőle (húsz edzés MA: tizenöt óra).
+        // Nem találunk ki időszakot a semmiből: a minimális feltevés az, hogy
+        // naponta legfeljebb egy volt, tehát annyi napra osztjuk, ahány
+        // alkalom. Az előnézet ki is írja, hány napra kerül.
+        if (days <= 1 && offset == 0 && out.size() == 1 && out.get(0).count > 3)
+            days = Math.min(365, out.get(0).count);
         return new Parsed(out, days, offset, findHour(s));
     }
 
@@ -1238,7 +1246,11 @@ public final class Activities {
     /** „Minden nap", „naponta", „napi 20 perc": a darabszám naponta értendő. */
     private static boolean stripDaily(char[] q) {
         String s = new String(q);
-        for (String w : new String[]{"minden nap", "mindennap", "naponta"}) {
+        // A napszakos alak ugyanezt jelenti: a „minden reggel 20 perc jóga a
+        // héten" hét jógát jelent, nem egyet. Eddig a napszak elnyelte a
+        // „minden"-t, és a heti ismétlődés elveszett.
+        for (String w : new String[]{"minden nap", "mindennap", "naponta",
+                "minden reggel", "minden este", "minden delutan", "minden delelott"}) {
             int p = s.indexOf(w);
             if (p >= 0) { blank(q, p, p + w.length()); return true; }
         }

@@ -232,6 +232,19 @@ public class ActivitiesTest {
         }
     }
 
+    @Test public void everyMorningMeansEveryDay() {
+        // A „minden reggel 20 perc jóga a héten" hét jógát jelent, nem egyet:
+        // eddig a napszak elnyelte a „minden"-t, és a heti ismétlődés elveszett.
+        long now = System.currentTimeMillis();
+        assertEquals(7, Activities.parse("minden reggel 20 perc jóga a héten", now)
+                .plans.get(0).count);
+        assertEquals(7, Activities.parse("minden este 30 perc séta a héten", now)
+                .plans.get(0).count);
+        // Időszak nélkül továbbra is egy alkalom.
+        assertEquals(1, Activities.parse("minden nap 20 perc jóga", now)
+                .plans.get(0).count);
+    }
+
     @Test public void aRestDayDoesNotDuplicateTheWorkout() {
         // „Szombaton túráztam 4 órát, vasárnap pihentem": KÉT napot nevez meg,
         // és eddig mindkettőre bekerült a négyórás túra – nyolc óra mozgás

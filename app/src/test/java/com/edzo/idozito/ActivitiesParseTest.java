@@ -265,7 +265,9 @@ public class ActivitiesParseTest {
     }
 
     @Test public void theDurationCanBeGivenPerActivity() {
-        assertEquals("1d+0: 5×futas/30", summary("5 futás 30 perc"));
+        // A napok száma itt mellékes: háromnál több alkalom időszak nélkül
+        // annyi napra oszlik, ahány alkalom (lásd manyWorkoutsNeedManyDays).
+        assertEquals("5d+0: 5×futas/30", summary("5 futás 30 perc"));
         assertEquals("1d+0: 3×kondi/90, 2×futas/40", summary("3 kondi 90 perc és 2 futás 40 perc"));
         assertEquals("1d+0: 1×joga/60", summary("egy óra jóga"));
         assertEquals("1d+0: 2×tenisz/60", summary("2 tenisz 1 óra"));
@@ -274,11 +276,25 @@ public class ActivitiesParseTest {
     }
 
     @Test public void colloquialNamesAreUnderstood() {
-        assertEquals("1d+0: 6×kezilabda/90", summary("6 kézi"));
+        assertEquals("6d+0: 6×kezilabda/90", summary("6 kézi"));
         assertEquals("1d+0: 1×kerekpar/60", summary("bringa"));
         assertEquals("1d+0: 2×kondi/60", summary("2 konditerem"));
         assertEquals("1d+0: 1×kosarlabda/60", summary("kosaraztam"));
         assertEquals("1d+0: 2×tura/90", summary("2 séta"));
+    }
+
+    @Test public void manyWorkoutsNeedManyDays() {
+        // Húsz edzés EGY napon tizenöt óra mozgás: a napi percek, a széria és
+        // a terhelés-figyelés is elszállna tőle. Időszakot nem találunk ki a
+        // semmiből – a minimális feltevés az, hogy naponta legfeljebb egy volt.
+        assertEquals("20d+0: 20×egyeb/45", summary("20 edzés"));
+        assertEquals("10d+0: 10×egyeb/45", summary("10 edzés"));
+        // Háromig viszont életszerű egy napon belül is (reggel-este).
+        assertEquals("1d+0: 2×egyeb/45", summary("2 edzés"));
+        assertEquals("1d+0: 3×egyeb/45", summary("3 edzés"));
+        // A kimondott időszak mindig erősebb.
+        assertEquals("30d+0: 10×egyeb/45", summary("egy hónap alatt 10 edzés"));
+        assertEquals("7d+0: 5×futas/45", summary("5 futás a héten"));
     }
 
     @Test public void oneWordCannotBecomeTwoActivities() {
