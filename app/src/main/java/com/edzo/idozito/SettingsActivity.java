@@ -341,6 +341,7 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
+            {"😴", "Alvás-napló", "„Aludtam 8 órát” – egy koppintás vagy egy mondat a Profilban. Heti átlag, két hét görbe, és a vasárnapi összefoglalóban is ott van."},
             {"📏", "Körfogatok", "Derék, csípő, mellkas, comb, kar – mondatból is („derék 84 cm”). A derék saját görbét kapott, derék/magasság aránnyal."},
             {"🔢", "A dobozon írt kalória", "„vacsora 650 kcal”, „müzliszelet 180 kcal 12 g fehérje” – a kimondott szám felülírja a becslést. Külön gyorsgomb is: Csak kalória."},
             {"⌚", "Az óra száma számít", "„futás 45 perc 520 kcal” – ha az órád megmérte, azt mentjük, nem a saját becslésünket."},
@@ -354,7 +355,6 @@ public class SettingsActivity extends Activity {
             {"📈", "A legnehezebb napod", "A havi étrend-kártya kiírja, melyik hétköznapon eszel a legtöbbet – a havi átlag ezt elrejtené."},
             {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát”). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
             {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
-            {"🍳", "A szokásos étkezésed", "Ha egy napszakban háromszor ugyanazt naplóztad, az app magától felajánlja – egy koppintás."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
         for (String[] it : items)

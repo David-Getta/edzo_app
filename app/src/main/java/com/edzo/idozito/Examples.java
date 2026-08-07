@@ -170,7 +170,7 @@ public final class Examples {
             {"📝  Edzés-előzmény", "Több edzés egy mondatból", "BULK"},
             {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
             {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
-            {"⚖️  Mérés", "Testsúly, testzsír, körfogat", "BODY"},
+            {"⚖️  Mérés és pihenés", "Testsúly, testzsír, körfogat, alvás", "BODY"},
             {"📅  Edzésnap", "Név és gyakorlatok, vesszővel", "ROUTINE"},
     };
 
