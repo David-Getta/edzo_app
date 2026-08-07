@@ -166,6 +166,7 @@ public final class Examples {
             "golfkönyök fájdalom",
             "húzódik a combom",
             "sajog a térdem",
+            "fáj a talpam",
             // A cél-alak is: nem kell megvárni, hogy fájjon.
             "boka stabilitás",
             "váll mobilizálás",

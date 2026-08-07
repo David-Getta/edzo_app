@@ -90,7 +90,13 @@ public class RemindersActivity extends Activity {
         col.addView(text("Gyors javaslatok", 15.5f, TXT, true));
         col.addView(gap(10));
         LinearLayout sug = vbox();
-        for (String s : SUGGESTIONS) {
+        // A kitűzött rehab-fókusz a legszemélyesebb javaslat – az kerül előre.
+        java.util.List<String> suggestions =
+                new java.util.ArrayList<>(java.util.Arrays.asList(SUGGESTIONS));
+        String rfid = RehabLog.focusId(this);
+        Rehab.Area rfa = rfid == null ? null : Rehab.byId(rfid);
+        if (rfa != null) suggestions.add(0, "🩹 " + rfa.name + " – 10 perc megelőzés");
+        for (String s : suggestions) {
             Button chip = ghost(s);
             chip.setOnClickListener(v -> addOrEdit(null, s));
             sug.addView(chip);

@@ -88,6 +88,11 @@ public class RehabTest {
         assertEquals("boka", Rehab.forComplaint("megrándult a bokám").id);
         assertEquals("terd", Rehab.forComplaint("sajog a térdem").id);
         assertEquals("konyok-kulso", Rehab.forComplaint("fáj a csuklóm").id);
+        // Az új futó-területek: talp és sípcsont.
+        assertEquals("talp", Rehab.forComplaint("fáj a talpam reggelente").id);
+        assertEquals("sipcsont", Rehab.forComplaint("fáj a sípcsontom futás után").id);
+        // A sarok továbbra is az Achilles-sor felé megy.
+        assertEquals("achilles", Rehab.forComplaint("fáj a sarkam").id);
         // A zsibbadás piros zászló: arra nem sort ajánlunk, hanem hallgatunk.
         assertNull(Rehab.forComplaint("zsibbad a karom"));
         // A tagadott panasz jó hír, nem kérés.

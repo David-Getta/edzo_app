@@ -342,7 +342,7 @@ public class SettingsActivity extends Activity {
     void whatsNewSheet() {
         String[][] items = {
             {"⭐", "Heti rehab-fókusz", "A rehab-lapon kitűzhetsz egy testtájat heti fókusznak: az app heti 3 alkalmat számol, az állás a kezdőlap csempéjén is látszik."},
-            {"🩹", "Megelőzés és rehab", "Boka-stabilitás, térd, derék, váll, golf- és teniszkönyök, nyak, csípő, Achilles – kész, 10–15 perces gyógytornász-ihletésű sorok a Nyújtás & mobilitás lapon."},
+            {"🩹", "Megelőzés és rehab", "Boka-stabilitás, térd, derék, váll, golf- és teniszkönyök, nyak, csípő, talp, sípcsont, Achilles – kész, 10–15 perces gyógytornász-ihletésű sorok a Nyújtás & mobilitás lapon."},
             {"😴", "Alvás-napló", "„Aludtam 8 órát” – egy koppintás vagy egy mondat a Profilban. Heti átlag, két hét görbe, és a vasárnapi összefoglalóban is ott van."},
             {"📏", "Körfogatok", "Derék, csípő, mellkas, comb, kar – mondatból is („derék 84 cm”). A derék saját görbét kapott, derék/magasság aránnyal."},
             {"🔢", "A dobozon írt kalória", "„vacsora 650 kcal”, „müzliszelet 180 kcal 12 g fehérje” – a kimondott szám felülírja a becslést. Külön gyorsgomb is: Csak kalória."},

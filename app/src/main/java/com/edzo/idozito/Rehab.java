@@ -145,6 +145,30 @@ public final class Rehab {
                     ex("Jó reggelt (good morning) könnyű súllyal", "3×10", "Csípőből dőlj, egyenes háttal – a comb hátulja adja a jelet, hol állj meg.", "good morning gyakorlat könnyű súly"),
                     ex("Combhajlító nyújtás", "2×30 mp / láb", "Sarok előre, hajolj a csípőből – edzés után.", "combhajlító nyújtás álló")),
 
+            new Area("talp", "👣", "Talp (talpfájás ellen)",
+                    "Talpfájás (plantar fasciitis) megelőzésére: a talpi ín "
+                            + "tehermentesítése, a lábboltozat erősítése és a vádli-lánc "
+                            + "nyújtása – a reggeli első lépések fájdalmának klasszikus ellenszere.",
+                    RED_FLAG + " Makacs, hetek óta tartó talpfájásnál gyógytornász kell, "
+                            + "nem több gyakorlat.",
+                    ex("Talp-görgetés labdán", "2×60 mp / talp", "Teniszlabda vagy görgő a talp alatt, lassú, nyomott körökkel.", "plantar fascia labda görgetés"),
+                    ex("Törölköző-húzás lábujjakkal", "3×10 / láb", "Ülve, a leterített törölközőt a lábujjaiddal gyűrd magad felé.", "towel curl láb gyakorlat"),
+                    ex("Talpi fascia nyújtás", "2×30 mp / láb", "Kézzel feszítsd hátra a lábujjaid, a talp íve nyúljon.", "plantar fascia nyújtás gyakorlat"),
+                    ex("Vádlinyújtás falnál", "2×30 mp / láb", "Hátsó láb nyújtva, sarok végig a földön – a feszes vádli húzza a talpat.", "vádlinyújtás falnál"),
+                    ex("Emelt lábujjas vádliemelés", "3×12", "Feltekert törölköző a lábujjak alatt, úgy emelkedj lábujjhegyre – a talpi ín is dolgozik.", "heel raise emelt lábujj plantar gyakorlat")),
+
+            new Area("sipcsont", "🦴", "Sípcsont (futó-sípcsont ellen)",
+                    "Sípcsonti fájdalom (shin splint) megelőzésére futóknak: az elülső "
+                            + "sípcsonti izom és a lábboltozat erősítése, nyújtott vádli – és "
+                            + "fokozatosan emelt futóterhelés.",
+                    RED_FLAG + " Pontszerű, csontos fájdalomnál állj le a futással – az "
+                            + "fáradásos törés is lehet, azt orvos lássa.",
+                    ex("Lábfej-emelés (sípcsonti izom)", "3×15", "Sarkon állva emeld a lábfejed ütemesen – elöl, a sípcsont mellett égjen.", "tibialis anterior lábfej emelés gyakorlat"),
+                    ex("Sarkon járás", "3×30 mp", "Járj a sarkadon, lábujjak fent – ugyanaz az izom, más szögből.", "sarkon járás gyakorlat"),
+                    ex("Vádlinyújtás falnál", "2×30 mp / láb", "Hátsó láb nyújtva, sarok a földön.", "vádlinyújtás falnál"),
+                    ex("Egylábas vádliemelés", "3×10 / láb", "Teljes mozgástartomány, lassú leengedés.", "egylábas vádliemelés gyakorlat"),
+                    ex("Talpboltozat-erősítés (short foot)", "3×10 / láb", "Húzd össze a talpad ívét a lábujjak begörbítése nélkül – kicsi, pontos mozgás.", "short foot gyakorlat talpboltozat")),
+
             new Area("achilles", "🩹", "Achilles és vádli",
                     "Achilles-panaszok megelőzése futóknak: a klasszikus excentrikus "
                             + "sarok-leengedés (Alfredson-protokoll szelleme) – lassan, sokat.",
@@ -246,6 +270,8 @@ public final class Rehab {
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
                 {"csipo", "csipom", "csipoje", "csipo"},
                 {"achilles", "achilles", "vadlim", "sarkam", "sarok faj"},
+                {"talp", "talpam", "talpa", "talp"},
+                {"sipcsont", "sipcsontom", "sipcsontja", "sipcsont"},
                 {"comb", "combom", "combhajlito", "hatso comb", "comb hatulja"},
         };
         for (String[] m : map)
@@ -281,7 +307,8 @@ public final class Rehab {
         java.util.ArrayList<String> out = new java.util.ArrayList<>();
         for (Ex e : a.moves) {
             boolean sided = e.dose.contains("/ láb") || e.dose.contains("/ oldal")
-                    || e.dose.contains("/ kar") || e.dose.contains("/ irány");
+                    || e.dose.contains("/ kar") || e.dose.contains("/ irány")
+                    || e.dose.contains("/ talp");
             if (sided) {
                 out.add(e.name + " – bal");
                 out.add(e.name + " – jobb");
