@@ -51,6 +51,30 @@ public class LibraryActivity extends Activity {
         col.addView(shareCard(accent), lp());
         col.addView(gap(18));
 
+        // Megelőzés: a rehab-sorok a Nyújtás & rehab lapon élnek, de aki a
+        // Könyvtárban keresi a gyakorlatokat, innen is odataláljon.
+        col.addView(sectionHead("🩹  Megelőzés és rehab",
+                Rehab.AREAS.length + " testtáj"), lp());
+        LinearLayout rc = card();
+        rc.setPadding(dp(16), dp(12), dp(16), dp(12));
+        StringBuilder rl = new StringBuilder();
+        for (Rehab.Area ar : Rehab.AREAS) {
+            if (rl.length() > 0) rl.append("  ·  ");
+            rl.append(ar.emoji).append(" ").append(ar.name);
+        }
+        rc.addView(text(rl.toString(), 13, TXT, false));
+        TextView rh = text("Kész, 10–15 perces gyógytornász-ihletésű sorok, vezetett "
+                + "móddal – koppints, és a Nyújtás & rehab lapra viszlek.",
+                12, MUTED, false);
+        rh.setPadding(0, dp(6), 0, 0);
+        rc.addView(rh);
+        rc.setClickable(true);
+        rc.setOnClickListener(v -> startActivity(
+                new android.content.Intent(this, MobilityActivity.class)
+                        .putExtra("open_rehab", true)));
+        col.addView(rc, lp());
+        col.addView(gap(18));
+
         // Egyedi (nem duplikált) gyakorlatnevek programonként, leírással
         for (Programs.P p : Programs.BUILT_IN) {
             col.addView(sectionHead(p.emoji + "  " + p.name, p.ex.length + " gyakorlat"), lp());

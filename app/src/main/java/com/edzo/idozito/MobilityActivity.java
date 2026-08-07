@@ -75,6 +75,11 @@ public class MobilityActivity extends Activity {
                 body.post(() -> areaSheet(hit));
             }
         }
+        // A Könyvtár rehab-kártyája testtáj nélkül nyitja a fület.
+        if (getIntent().getBooleanExtra("open_rehab", false)) {
+            getIntent().removeExtra("open_rehab");
+            section = 3;
+        }
         render();
     }
 
