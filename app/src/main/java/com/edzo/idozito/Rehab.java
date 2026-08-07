@@ -227,4 +227,43 @@ public final class Rehab {
         // Gyakorlatonként nagyjából két perc a sorozatokkal és pihenőkkel.
         return Math.max(10, Math.min(20, a.moves.length * 2));
     }
+
+    // ---------- Heti fókusz ----------
+
+    /**
+     * Ennyi alkalom egy hét megelőző adagja.
+     *
+     * A területek leírásai heti 3–4 alkalmat mondanak; a fókusz-számláló a
+     * hármat veszi célnak – ami fölötte van, az már ráadás, nem tartozás.
+     */
+    public static final int WEEKLY_GOAL = 3;
+
+    /**
+     * Hány időbélyeg esik a mostani naptári hétre (hétfő 0:00-tól máig)?
+     *
+     * A jövőbeli bélyeg nem számít – elrontott óra vagy kézi dátum ne
+     * írjon jóvá előre alkalmakat.
+     */
+    public static int weekCount(long[] ts, long now) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        // Calendar-ban a vasárnap az 1 – a magyar hét hétfőn kezdődik.
+        int back = (cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7;
+        cal.add(java.util.Calendar.DAY_OF_MONTH, -back);
+        long monday = cal.getTimeInMillis();
+        int n = 0;
+        if (ts != null) for (long t : ts) if (t >= monday && t <= now) n++;
+        return n;
+    }
+
+    /** A fókusz-kártya sora: hol tartasz a héten. */
+    public static String focusLine(Area a, int done) {
+        if (done >= WEEKLY_GOAL)
+            return a.name + " – e heti " + WEEKLY_GOAL + " alkalom megvan ✔";
+        return a.name + " – a héten " + done + "/" + WEEKLY_GOAL + " alkalom";
+    }
 }

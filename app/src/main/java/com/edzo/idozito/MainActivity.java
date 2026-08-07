@@ -1058,7 +1058,17 @@ public class MainActivity extends Activity {
                 ? "Profil · 😴 " + Hu.kg(sleptToday) + " h" : "Profil / BMI",
                 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
         t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
-        t.add(new TileDef("mobility", "🧘", "Nyújtás & rehab", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
+        // A kitűzött rehab-fókusz heti állása a csempén is látszik – a
+        // megelőzés attól működik, hogy szem előtt van.
+        String mobLabel = "Nyújtás & rehab";
+        String rfid = RehabLog.focusId(this);
+        Rehab.Area rfa = rfid == null ? null : Rehab.byId(rfid);
+        if (rfa != null) {
+            int rdone = Rehab.weekCount(RehabLog.doneOf(this, rfid), System.currentTimeMillis());
+            mobLabel = rdone >= Rehab.WEEKLY_GOAL ? "Nyújtás & rehab · 🩹 ✔"
+                    : "Nyújtás & rehab · 🩹 " + rdone + "/" + Rehab.WEEKLY_GOAL;
+        }
+        t.add(new TileDef("mobility", "🧘", mobLabel, 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
         t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
         // Az Étrend-csempéhez hasonlóan a heti erősítő-aktivitás is látszik,
         // hogy a kezdőlapról is kiderüljön, ha rég volt súlyzós edzés.

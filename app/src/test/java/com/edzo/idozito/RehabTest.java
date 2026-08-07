@@ -109,4 +109,36 @@ public class RehabTest {
                 Sentence.of("húzódik a combom",
                         java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
     }
+
+    /**
+     * A heti fókusz számlálója csak a mostani hetet számolja.
+     *
+     * Hétfő 0:00 a határ: a vasárnapi alkalom nem hozható át, a jövőbeli
+     * időbélyeg (elállított óra) pedig nem ír jóvá előre semmit.
+     */
+    @Test public void theWeekCounterCountsOnlyThisWeek() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(2026, java.util.Calendar.AUGUST, 7, 12, 0, 0); // péntek dél
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long now = c.getTimeInMillis();
+        long day = 24L * 3600 * 1000;
+        // Szerda és hétfő számít; a múlt vasárnap és a holnap nem.
+        assertEquals(2, Rehab.weekCount(
+                new long[]{now - 2 * day, now - 4 * day, now - 5 * day, now + day}, now));
+        assertEquals(0, Rehab.weekCount(new long[]{}, now));
+        assertEquals(0, Rehab.weekCount(null, now));
+        // Hétfő délben a hajnali alkalom már e heti.
+        long monday = now - 4 * day;
+        assertEquals(1, Rehab.weekCount(new long[]{monday - 6 * 3600 * 1000}, monday));
+    }
+
+    /** A fókusz-sor kimondja az állást, és a kész hétre pipát tesz. */
+    @Test public void theFocusLineShowsProgress() {
+        Rehab.Area a = Rehab.byId("boka");
+        assertTrue(Rehab.focusLine(a, 0).contains("0/" + Rehab.WEEKLY_GOAL));
+        assertTrue(Rehab.focusLine(a, 1).contains("1/" + Rehab.WEEKLY_GOAL));
+        assertTrue(Rehab.focusLine(a, 1).contains(a.name));
+        assertTrue(Rehab.focusLine(a, Rehab.WEEKLY_GOAL).contains("✔"));
+        assertTrue(Rehab.focusLine(a, Rehab.WEEKLY_GOAL + 2).contains("✔"));
+    }
 }

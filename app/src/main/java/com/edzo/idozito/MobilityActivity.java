@@ -144,6 +144,27 @@ public class MobilityActivity extends Activity {
         body.addView(text("Válassz testtájat – kész, 10–15 perces megelőző sort kapsz: "
                 + "gyakorlat, adagolás, technikai tipp.", 12.5f, MUTED, false));
         body.addView(gap(12));
+        // Heti fókusz: a kitűzött terület és a hétfőnként nullázódó számláló.
+        String fid = RehabLog.focusId(this);
+        Rehab.Area focus = fid == null ? null : Rehab.byId(fid);
+        if (focus != null) {
+            int done = Rehab.weekCount(RehabLog.doneOf(this, fid), System.currentTimeMillis());
+            LinearLayout fc = card();
+            fc.setPadding(dp(14), dp(12), dp(14), dp(12));
+            fc.addView(text("⭐ Heti fókusz", 11.5f, MUTED, true));
+            fc.addView(text(focus.emoji + " " + Rehab.focusLine(focus, done), 15, TXT, true));
+            TextView fh = text(done >= Rehab.WEEKLY_GOAL
+                    ? "Szép hét – ami ezután jön, az ráadás."
+                    : "Koppints, és folytasd – a rendszeresség véd, nem az egyszeri sor.",
+                    12, MUTED, false);
+            fh.setPadding(0, dp(2), 0, 0);
+            fc.addView(fh);
+            final Rehab.Area fa = focus;
+            fc.setClickable(true);
+            fc.setOnClickListener(v -> areaSheet(fa));
+            body.addView(fc, lp());
+            body.addView(gap(12));
+        }
         LinearLayout card = card();
         for (int i = 0; i < Rehab.AREAS.length; i++) {
             final Rehab.Area area = Rehab.AREAS[i];
@@ -198,6 +219,7 @@ public class MobilityActivity extends Activity {
         TextView warn = text("⚠️ " + area.warn, 11.5f, MUTED, false);
         warn.setPadding(0, dp(8), 0, 0);
         box.addView(warn);
+        final boolean isFocus = area.id.equals(RehabLog.focusId(this));
         new Sheet(this, area.emoji + " " + area.name, area.goal)
                 .addCustom(box)
                 // Vezetett mód: az időzítő 40 mp-es körökben, három körben
@@ -216,16 +238,36 @@ public class MobilityActivity extends Activity {
                     gi.putExtra("r_prep", 5);
                     startActivity(gi);
                 })
+                // A fókusz kitűzése: heti számláló, hétfőnként nullázódik. A
+                // rendszeresség a megelőzés lelke, nem az egyszeri lelkesedés.
+                .addNeutral(isFocus ? "★ Fókusz levétele"
+                        : "⭐ Legyen a heti fókusz (" + Rehab.WEEKLY_GOAL + " alkalom/hét)", () -> {
+                    RehabLog.setFocus(this, isFocus ? null : area.id);
+                    Toast.makeText(this, isFocus ? "Fókusz levéve."
+                            : "⭐ " + area.name + " a heti fókusz.", Toast.LENGTH_SHORT).show();
+                    if (section == 3) render();
+                })
                 .addPrimary("✅ Elvégeztem (~" + Rehab.minutesOf(area) + " perc)", () -> {
                     // A naplóba mobilitásként kerül: a széria, az XP és a heti
                     // összegzés is látja – a megelőzés is edzés.
-                    History.addManual(this, System.currentTimeMillis(),
+                    long now = System.currentTimeMillis();
+                    History.addManual(this, now,
                             Rehab.minutesOf(area) * 60, -1,
                             Activities.calories(Activities.byId("joga"),
                                     Profile.lastWeight(this), Rehab.minutesOf(area)),
                             -1, area.name, "joga");
+                    RehabLog.addDone(this, area.id, now);
                     BlazeWidget.refresh(this);
-                    Ux.blazeCard(this, "🩹 " + area.name + " elvégezve ✔");
+                    // A fókusz-területnél a heti állás is odafér a nyugtára.
+                    String msg = "🩹 " + area.name + " elvégezve ✔";
+                    if (area.id.equals(RehabLog.focusId(this))) {
+                        int done = Rehab.weekCount(RehabLog.doneOf(this, area.id), now);
+                        msg = done >= Rehab.WEEKLY_GOAL
+                                ? "🩹 " + area.name + " ✔ – e heti " + Rehab.WEEKLY_GOAL + " alkalom megvan! ⭐"
+                                : "🩹 " + area.name + " ✔ – a héten " + done + "/" + Rehab.WEEKLY_GOAL;
+                    }
+                    Ux.blazeCard(this, msg);
+                    if (section == 3) render();
                 })
                 .addCancel()
                 .show();
