@@ -90,6 +90,10 @@ public class RehabTest {
         assertEquals("konyok-kulso", Rehab.forComplaint("fáj a csuklóm").id);
         // A zsibbadás piros zászló: arra nem sort ajánlunk, hanem hallgatunk.
         assertNull(Rehab.forComplaint("zsibbad a karom"));
+        // A tagadott panasz jó hír, nem kérés.
+        assertNull(Rehab.forComplaint("nem fáj a vállam"));
+        assertNull(Rehab.forComplaint("már nem fáj a térdem"));
+        assertNull(Rehab.forComplaint("nem fájt a bokám edzés után"));
     }
 
     /** Az útbaigazító is a rehabhoz küldi – az edzés-felismerő előtt. */

@@ -183,6 +183,11 @@ public final class Rehab {
             if (pain) break;
         }
         if (!pain) return null;
+        // A tagadott vagy elmúlt panasz jó hír, nem kérés: a „nem fáj a
+        // vállam" és a „már nem fáj" után nincs mit ajánlani.
+        for (String neg : new String[]{"nem faj", "mar nem", "elmult", "meggyogyult",
+                "nem fajt"})
+            if (s.contains(neg)) return null;
         // A zsibbadás piros zászló, nem torna-ügy: arra nem sort ajánlunk,
         // hanem hallgatunk – a figyelmeztetés a lapokon úgyis ott van, de
         // ide el sem visszük.
