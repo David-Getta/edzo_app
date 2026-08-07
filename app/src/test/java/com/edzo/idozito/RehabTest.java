@@ -111,6 +111,34 @@ public class RehabTest {
     }
 
     /**
+     * A cél-mondat is ajtó: „boka stabilitás" – nem kell megvárni, hogy fájjon.
+     *
+     * Szándék-szó ÉS testtáj kell hozzá; az „erősítés" szándékosan nem
+     * szándék-szó, mert a „váll erősítés" a konditerem mondata.
+     */
+    @Test public void goalSentencesFindTheirArea() {
+        assertEquals("boka", Rehab.forGoal("boka stabilitás").id);
+        assertEquals("boka", Rehab.forGoal("bokastabilitásra szeretnék edzeni").id);
+        assertEquals("vall", Rehab.forGoal("váll mobilizálás").id);
+        assertEquals("derek", Rehab.forGoal("derék rehab").id);
+        assertEquals("derek", Rehab.forGoal("gerinc mobilizálás").id);
+        assertEquals("nyak", Rehab.forGoal("nyak gyógytorna").id);
+        assertEquals("achilles", Rehab.forGoal("achilles megelőzés").id);
+        assertNull(Rehab.forGoal("core stabilitás"));   // nincs testtáj
+        assertNull(Rehab.forGoal("váll erősítés"));     // konditermi mondat
+        assertNull(Rehab.forGoal("boka 3x10"));         // nincs szándék-szó
+        assertNull(Rehab.forGoal("30 perc futás"));
+        assertNull(Rehab.forGoal(""));
+        assertNull(Rehab.forGoal(null));
+        // Az útbaigazító is idehozza.
+        assertEquals(Sentence.Kind.REHAB,
+                Sentence.of("boka stabilitás", null, 1_753_869_600_000L));
+        assertEquals(Sentence.Kind.REHAB,
+                Sentence.of("váll mobilizálás",
+                        java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+    }
+
+    /**
      * A heti fókusz számlálója csak a mostani hetet számolja.
      *
      * Hétfő 0:00 a határ: a vasárnapi alkalom nem hozható át, a jövőbeli

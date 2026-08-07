@@ -55,7 +55,8 @@ public final class Sentence {
         // A panasz az edzés-felismerő ELÉ kerül: a „fáj a térdem futás után"
         // és a „golfkönyök fájdalom" nem edzés – hiába van benne sportszó, a
         // fájdalom-szó mást mond. Kimondott fájdalom nélkül ez az ág nem él.
-        if (Rehab.forComplaint(q) != null) return Kind.REHAB;
+        // A cél-mondat („boka stabilitás") ugyanide fut: az is a rehab ajtaja.
+        if (Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null) return Kind.REHAB;
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;

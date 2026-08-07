@@ -158,7 +158,7 @@ public final class Examples {
             "guggolás, fekvenyomás, felhúzás",
     };
 
-    /** Panasz egy mondatban – a rehab-sorok ajtaja. */
+    /** Panasz vagy megelőző cél egy mondatban – a rehab-sorok ajtaja. */
     public static final String[] REHAB = {
             "fáj a vállam",
             "beállt a derekam",
@@ -166,6 +166,10 @@ public final class Examples {
             "golfkönyök fájdalom",
             "húzódik a combom",
             "sajog a térdem",
+            // A cél-alak is: nem kell megvárni, hogy fájjon.
+            "boka stabilitás",
+            "váll mobilizálás",
+            "nyak gyógytorna",
     };
 
     /**
@@ -182,7 +186,7 @@ public final class Examples {
             {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
             {"⚖️  Mérés és pihenés", "Testsúly, testzsír, körfogat, alvás", "BODY"},
             {"📅  Edzésnap", "Név és gyakorlatok, vesszővel", "ROUTINE"},
-            {"🩹  Panasz", "Írd le, mi fáj – kész sort ajánlok", "REHAB"},
+            {"🩹  Panasz és megelőzés", "Mi fáj – vagy mit erősítenél? Kész sort ajánlok", "REHAB"},
     };
 
     /** A könyvtár csoportjai névvel hivatkoznak a listákra. */

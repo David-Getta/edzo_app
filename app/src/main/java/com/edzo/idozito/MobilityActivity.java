@@ -70,6 +70,7 @@ public class MobilityActivity extends Activity {
         if (sent != null && !sent.trim().isEmpty()) {
             getIntent().removeExtra(Sentence.EXTRA);
             Rehab.Area hit = Rehab.forComplaint(sent);
+            if (hit == null) hit = Rehab.forGoal(sent);
             if (hit != null) {
                 section = 3;
                 body.post(() -> areaSheet(hit));

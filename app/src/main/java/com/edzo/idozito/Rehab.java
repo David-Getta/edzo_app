@@ -192,10 +192,35 @@ public final class Rehab {
         // hanem hallgatunk – a figyelmeztetés a lapokon úgyis ott van, de
         // ide el sem visszük.
         if (s.contains("zsibbad")) return null;
+        return areaOf(s);
+    }
+
+    /**
+     * Cél-mondatból testtáj: „boka stabilitás", „váll mobilizálás".
+     *
+     * A rehab másik ajtaja: nemcsak az jön ide, akinek fáj valamije, hanem
+     * az is, aki megelőzni akar – erre való az egész. Kimondott szándék-szó
+     * kell (stabilitás, mobilizálás, rehab, gyógytorna, megelőzés) ÉS egy
+     * testtájnév. Az „erősítés" szándékosan hiányzik: a „váll erősítés" a
+     * konditerem szava, arra a súlyzós oldal a jó válasz.
+     */
+    public static Area forGoal(String q) {
+        if (q == null) return null;
+        String s = Foods.norm(q);
+        boolean want = false;
+        for (String w : new String[]{"stabilit", "mobiliz", "mobilit", "rehab",
+                "gyogytorna", "megeloz", "prevenc"})
+            if (s.contains(w)) { want = true; break; }
+        return want ? areaOf(s) : null;
+    }
+
+    /** A normalizált mondatban megnevezett testtáj sora, vagy null. */
+    private static Area areaOf(String s) {
         String[][] map = {
                 {"boka", "bokam", "bokaja", "boka"},
                 {"terd", "terdem", "terde", "terd"},
-                {"derek", "derekam", "dereka", "derek", "hatam faj", "also hat"},
+                {"derek", "derekam", "dereka", "derek", "hatam faj", "also hat",
+                        "gerincem", "gerinc"},
                 {"vall", "vallam", "valla", "vall"},
                 {"konyok-belso", "konyokom belso", "belso konyok", "golfkonyok"},
                 {"konyok-kulso", "kulso konyok", "teniszkonyok"},

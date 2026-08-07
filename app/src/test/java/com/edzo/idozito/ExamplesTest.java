@@ -105,10 +105,11 @@ public class ExamplesTest {
         }
     }
 
-    /** A panasz-példák mind találnak testtájat – és a router is oda küldi őket. */
+    /** A panasz- és cél-példák mind találnak testtájat – és a router is oda küldi őket. */
     @Test public void everyRehabExampleFindsAnArea() {
         for (String q : Examples.REHAB) {
-            assertTrue("nem talál testtájat: " + q, Rehab.forComplaint(q) != null);
+            assertTrue("nem talál testtájat: " + q,
+                    Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null);
             assertEquals("nem a rehabhoz fut be: " + q, Sentence.Kind.REHAB,
                     Sentence.of(q, Arrays.asList(Foods.ALL), friday()));
         }
