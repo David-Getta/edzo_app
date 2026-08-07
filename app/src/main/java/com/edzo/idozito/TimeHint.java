@@ -42,6 +42,7 @@ public final class TimeHint {
         String s = Hu.digits(Foods.norm(text == null ? "" : text));
         int back = daysBack(s, now);
         int hour = hourOf(s);
+        int minute = minuteOf(s);
         if (back == 0 && hour < 0) return now;
 
         Calendar c = Calendar.getInstance();
@@ -51,7 +52,7 @@ public final class TimeHint {
         // nap delet kap – nem a mostani órát, mert az azt sugallná, hogy pont
         // most, csak három napja.
         c.set(Calendar.HOUR_OF_DAY, hour >= 0 ? hour : 12);
-        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.MINUTE, hour >= 0 && minute >= 0 ? minute : 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         // A kimondott napszak akkor is érvényes, ha még nem járunk ott: aki
@@ -245,6 +246,24 @@ public final class TimeHint {
         return has(head, "delutan") || has(head, "este") || has(head, "esti")
                 || has(head, "vacsora") || has(head, "uzsonna")
                 || has(head, "ejjel") || has(head, "ejszaka");
+    }
+
+    /**
+     * A kimondott perc az óra mellől („19:30-kor" → 30), vagy -1.
+     *
+     * Eddig minden időpont egész órára kerekült – a fél nyolcas vacsora
+     * nyolcra csúszott a naplóban. A perc csak a kettőspontos alaknál
+     * biztos; a napszak-szavaknál nincs mit kiolvasni.
+     */
+    static int minuteOf(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{1,2}):([0-5]\\d)\\s?(?:ora(?:kor)?|-kor|kor)")
+                .matcher(s);
+        if (m.find()) {
+            try { return Integer.parseInt(m.group(2)); }
+            catch (NumberFormatException ignored) { }
+        }
+        return -1;
     }
 
     /** A kimondott napszak órája, vagy -1, ha nincs. */

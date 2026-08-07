@@ -246,4 +246,18 @@ public class TimeHintTest {
         assertEquals(7, TimeHint.hourOf(Hu.digits(Foods.norm("háromnegyed 8-kor"))));
         assertEquals(-1, TimeHint.hourOf(Hu.digits(Foods.norm("negyed pizza"))));
     }
+
+    /** A kettőspontos időpont perce is megmarad: „19:30-kor" nem 19:00. */
+    @Test public void minutesSurviveTheClockForm() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(2026, java.util.Calendar.AUGUST, 7, 12, 0, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long now = c.getTimeInMillis();
+        java.util.Calendar r = java.util.Calendar.getInstance();
+        r.setTimeInMillis(TimeHint.from("19:30-kor vacsora", now));
+        assertEquals(19, r.get(java.util.Calendar.HOUR_OF_DAY));
+        assertEquals(30, r.get(java.util.Calendar.MINUTE));
+        // A „futás 45:30" nem időpont, hanem időtartam – marad a mostani idő.
+        assertEquals(now, TimeHint.from("futás 45:30", now));
+    }
 }
