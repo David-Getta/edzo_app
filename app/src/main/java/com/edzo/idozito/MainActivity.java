@@ -737,12 +737,31 @@ public class MainActivity extends Activity {
         "Naponta ugyanannyit aludni ugyanolyan fontos, mint eleget aludni. 🕘",
         "Nehéz nap? Egy 5 perces rövid edzés is fenntartja a lendületet. ⚡",
         "Lélegezz ki az erőkifejtésnél, vegyél levegőt a leengedésnél. 🌬️",
-        "Deload hét: 4-6 hetente vegyél vissza kicsit, hogy a tested utolérje magát. 🔧"
+        "Deload hét: 4-6 hetente vegyél vissza kicsit, hogy a tested utolérje magát. 🔧",
+        "A reggeli nyugalmi pulzus a legolcsóbb edzettség-mérő: mérd ébredés után, és írd be – „nyugalmi pulzus 52”. ❤️"
     };
 
     View dailyTipCard() {
         final LinearLayout c = card();
         c.setPadding(dp(16), dp(14), dp(16), dp(14));
+        // A MAI, a szokásosnál jóval magasabb nyugalmi pulzus többet ér minden
+        // körbejáró tippnél: az a túlterhelés vagy kezdődő betegség korai
+        // jele – ilyenkor a napi tipp helyén ez a figyelmeztetés áll.
+        org.json.JSONObject lastP = Pulse.load(this).optJSONObject(0);
+        double p30 = Pulse.avg(this, System.currentTimeMillis(), 30);
+        if (lastP != null && p30 > 0
+                && Days.index(lastP.optLong("ts")) == Days.index(System.currentTimeMillis())
+                && lastP.optInt("b", -1) >= p30 + 8) {
+            TextView h = text("❤️ Ma figyelj magadra", 12, tAccent, true);
+            TextView b2 = text("A reggeli pulzusod (" + lastP.optInt("b")
+                    + " bpm) jóval a szokásos átlagod (" + Math.round(p30)
+                    + ") fölött van – kímélő nap, sok víz, korai lefekvés javasolt.",
+                    13.5f, TXT, false);
+            b2.setPadding(0, dp(6), 0, 0);
+            c.addView(h);
+            c.addView(b2);
+            return c;
+        }
         final TextView head = text("💡 Napi tipp  ·  koppints az újért", 12, tAccent, true);
         int doy = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
         final int[] idx = { ((doy % TIPS.length) + TIPS.length) % TIPS.length };
