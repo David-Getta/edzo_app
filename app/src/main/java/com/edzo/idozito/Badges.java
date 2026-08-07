@@ -56,6 +56,9 @@ public final class Badges {
         new Badge("bal4",    "🧩", "Kiegyensúlyozott", "4 izomcsoport egy héten belül"),
         new Badge("move1",   "🎽", "Heti cél",     "A heti mozgás-cél teljesítve"),
         new Badge("move4",   "🏅", "Négy hét egyben","A heti mozgás-cél négy hete sorban"),
+        new Badge("rehab5",  "🩹", "Megelőző",     "5 elvégzett rehab-sor"),
+        new Badge("sleep7",  "😴", "Pihenés-napló","Alvás bejegyezve 7 különböző napon"),
+        new Badge("pulse7",  "❤️", "Pulzusfigyelő","Reggeli pulzus 7 különböző napon"),
     };
 
     /** Visszafelé kompatibilis változat (kihívás-számláló nélkül). */
@@ -94,6 +97,14 @@ public final class Badges {
             int groups = 0;
             for (int v : bal.values()) if (v > 0) groups++;
             if (groups >= 4) out.add("bal4");
+        } catch (Exception ignored) {}
+        // A pihenés-oldal mérföldkövei: rehab-alkalmak, alvás- és pulzus-napok.
+        try {
+            int rehabDone = 0;
+            for (Rehab.Area a : Rehab.AREAS) rehabDone += RehabLog.doneOf(ctx, a.id).length;
+            if (rehabDone >= 5) out.add("rehab5");
+            if (Sleep.load(ctx).length() >= 7) out.add("sleep7");
+            if (Pulse.load(ctx).length() >= 7) out.add("pulse7");
         } catch (Exception ignored) {}
         // Heti mozgás-cél: a teljesítés egyszer is jelvény, de a négy hét
         // sorban a valódi eredmény – a szokás ott kezdődik.
