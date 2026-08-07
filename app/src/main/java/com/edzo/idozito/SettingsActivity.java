@@ -243,6 +243,9 @@ public class SettingsActivity extends Activity {
         Button exportMeas = ghost("⚖️  Mérések exportálása (CSV)");
         exportMeas.setOnClickListener(v -> exportMeasurementsCsv());
         col.addView(exportMeas);
+        Button exportSleep = ghost("😴  Alvás-napló exportálása (CSV)");
+        exportSleep.setOnClickListener(v -> exportSleepCsv());
+        col.addView(exportSleep);
         col.addView(gap(10));
 
         col.addView(text("☁️  Automatikus mentés (Google-fiók)", 15.5f, TXT, true));
@@ -473,6 +476,26 @@ public class SettingsActivity extends Activity {
             sb.append('\n');
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_meresek.csv", "text/csv");
+    }
+
+    /** Alvás-napló CSV-be: dátum és órák – a többi naplóval azonos formában. */
+    void exportSleepCsv() {
+        org.json.JSONArray a = Sleep.load(this);
+        if (a.length() == 0) {
+            Toast.makeText(this, "Nincs mentett alvás.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder("datum;alvas_ora\n");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        for (int i = a.length() - 1; i >= 0; i--) {
+            org.json.JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            double h = o.optDouble("h", -1);
+            if (h <= 0) continue;
+            sb.append(df.format(new Date(o.optLong("ts")))).append(';')
+              .append(String.format(Locale.US, "%.1f", h)).append('\n');
+        }
+        ShareProvider.shareTextFile(this, sb.toString(), "grit_alvas.csv", "text/csv");
     }
 
     void exportStrengthCsv() {

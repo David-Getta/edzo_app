@@ -293,6 +293,11 @@ public class WeeklyReceiver extends BroadcastReceiver {
             if (wDays > 0)
                 text += "\n💧 Víz: átlag "
                         + Water.liters((int) Math.round(wSum / (double) wDays)) + "/nap.";
+            // Alvás-átlag ugyanígy: csak annak, aki naplózza.
+            double sleepAvg = Sleep.avg(c, now, 7);
+            if (sleepAvg > 0)
+                text += "\n😴 Alvás: átlag " + Hu.kg(sleepAvg) + " óra"
+                        + (sleepAvg < 7 ? " – a regeneráció a hét óra fölött kezdődik." : ".");
         } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
