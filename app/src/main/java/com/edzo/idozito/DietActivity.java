@@ -734,6 +734,33 @@ public class DietActivity extends Activity {
             }
             weekCard.addView(row, rl);
         }
+        // Napszak-megoszlás: hova esik a hét kalóriája? A napi összeg
+        // elrejti, hogy valaki reggel koplal és este eszik dupla vacsorát –
+        // pedig a mintázat az, amin változtatni lehet.
+        if (!weekProtein && weekSum > 0) {
+            double morning = 0, noon = 0, evening = 0;
+            for (MealLog.Meal m : meals()) {
+                int k2 = Days.between(m.ts, today0);
+                if (k2 < 0 || k2 >= 7) continue;
+                Calendar mc = Calendar.getInstance();
+                mc.setTimeInMillis(m.ts);
+                int h = mc.get(Calendar.HOUR_OF_DAY);
+                if (h < 11) morning += m.kcal();
+                else if (h < 16) noon += m.kcal();
+                else evening += m.kcal();
+            }
+            double tot = morning + noon + evening;
+            if (tot > 0) {
+                int mo = (int) Math.round(morning * 100 / tot);
+                int no = (int) Math.round(noon * 100 / tot);
+                int ev = 100 - mo - no;
+                String line = "🌅 " + mo + "%   ·   ☀️ " + no + "%   ·   🌙 " + ev + "%";
+                if (ev >= 55) line += "   –  a java estére csúszik";
+                TextView td = text(line, 11.5f, MUTED, false);
+                td.setPadding(0, dp(8), 0, 0);
+                weekCard.addView(td);
+            }
+        }
     }
 
     long dayStartOf(long ts) {
