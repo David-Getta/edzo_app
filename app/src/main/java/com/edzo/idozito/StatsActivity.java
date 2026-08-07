@@ -149,6 +149,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View sleep = sleepCard(System.currentTimeMillis());
+        if (sleep != null) {
+            col.addView(sectionTitle("Alvás és edzés · elmúlt 30 nap"));
+            col.addView(sleep, lp());
+            col.addView(gap(16));
+        }
+
         int[] moodCounts = moodCounts();
         int moodTotal = moodCounts[1] + moodCounts[2] + moodCounts[3] + moodCounts[4];
         if (moodTotal > 0) {
@@ -1814,6 +1821,63 @@ public class StatsActivity extends Activity {
     LinearLayout vbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
     LinearLayout hbox() { LinearLayout l = new LinearLayout(this); l.setOrientation(LinearLayout.HORIZONTAL); return l; }
     LinearLayout.LayoutParams lp() { return new LinearLayout.LayoutParams(-1, -2); }
+
+    /**
+     * Alvás és edzés egymás mellett: mennyit alszol edzésnap előtt és után?
+     *
+     * A legegyszerűbb kérdés, amit az alvás-napló megválaszolhat: az
+     * edzésnapokon mért alvás átlaga a pihenőnapokéhoz képest. Nem
+     * tudomány – de ha a kettő tartósan szétcsúszik, az már mond valamit.
+     * Csak akkor jelenik meg, ha legalább öt éjszaka van mindkét oldalon
+     * elég adat nélkül is értelmetlen átlagot mutatni.
+     */
+    View sleepCard(long now) {
+        org.json.JSONArray sl = Sleep.load(this);
+        if (sl.length() < 5) return null;
+        // Az edzett napok halmaza a naplóból (kézi és mért egyaránt).
+        java.util.HashSet<Long> trained = new java.util.HashSet<>();
+        org.json.JSONArray hist = History.load(this);
+        for (int i = 0; i < hist.length(); i++) {
+            org.json.JSONObject o = hist.optJSONObject(i);
+            if (o != null) trained.add(Days.index(o.optLong("ts")));
+        }
+        for (StrengthLog.Entry e : StrengthLog.load(this)) trained.add(Days.index(e.ts));
+        double tSum = 0, rSum = 0;
+        int tN = 0, rN = 0;
+        for (int i = 0; i < sl.length(); i++) {
+            org.json.JSONObject o = sl.optJSONObject(i);
+            if (o == null) continue;
+            int ago = Days.ago(o.optLong("ts"), now);
+            if (ago < 0 || ago >= 30) continue;
+            double hrs = o.optDouble("h", -1);
+            if (hrs <= 0) continue;
+            if (trained.contains(Days.index(o.optLong("ts")))) { tSum += hrs; tN++; }
+            else { rSum += hrs; rN++; }
+        }
+        if (tN + rN < 5) return null;
+        LinearLayout c = card();
+        c.setPadding(dp(16), dp(12), dp(16), dp(12));
+        double avgAll = (tSum + rSum) / (tN + rN);
+        c.addView(text("😴 Átlag: " + Hu.kg(avgAll) + " óra / éjszaka", 15, TXT, true));
+        StringBuilder line = new StringBuilder();
+        if (tN > 0) line.append("Edzésnapokon: ").append(Hu.kg(tSum / tN)).append(" óra (")
+                .append(tN).append(" éj)");
+        if (rN > 0) {
+            if (line.length() > 0) line.append("  ·  ");
+            line.append("Pihenőnapokon: ").append(Hu.kg(rSum / rN)).append(" óra (")
+                .append(rN).append(" éj)");
+        }
+        TextView lt = text(line.toString(), 12.5f, MUTED, false);
+        lt.setPadding(0, dp(4), 0, 0);
+        c.addView(lt);
+        if (tN > 0 && rN > 0 && tSum / tN + 0.75 < rSum / rN) {
+            TextView warn = text("Edzésnap előtt-után láthatóan kevesebbet alszol – "
+                    + "a fejlődés fele ott történik.", 12, MUTED, false);
+            warn.setPadding(0, dp(4), 0, 0);
+            c.addView(warn);
+        }
+        return c;
+    }
 
     LinearLayout card() {
         LinearLayout c = vbox();
