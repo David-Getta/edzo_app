@@ -84,7 +84,8 @@ public final class Activities {
                     // Termi óranevek és gépek: enélkül a bejegyzés elveszett.
                     // (Az elliptikus és a crosstrainer az „egyéb" alatt van.)
                     "body pump", "bodypump", "stepper",
-                    "kettlebell"),
+                    "kettlebell", "funkcionalis edzes", "funkcionalis trening",
+                    "bootcamp", "boot camp"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,

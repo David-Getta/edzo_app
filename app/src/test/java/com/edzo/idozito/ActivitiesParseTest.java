@@ -598,6 +598,8 @@ public class ActivitiesParseTest {
     @Test public void gymAndFitnessSynonymsMapToTheRightSport() {
         assertEquals("kondi", Activities.parse("crossfit").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("trx edzés").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("funkcionális edzés 1 óra").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("bootcamp 45 perc").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("erősítő edzés").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("fekvőtámaszok").plans.get(0).kind.id);
         assertEquals("foci", Activities.parse("futballoztam").plans.get(0).kind.id);
