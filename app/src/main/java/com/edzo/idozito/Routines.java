@@ -214,6 +214,10 @@ public final class Routines {
             body = t.substring(c + 1);
         }
         List<String> moves = new ArrayList<>();
+        // Sorszámozott lista is elválasztó: az „1. guggolás 2. fekvenyomás"
+        // ugyanaz a felsorolás, csak vessző nélkül. A minta szóhatárhoz kötött,
+        // hogy a „3x10" és a „2,5 kg" ne essen szét tőle.
+        body = body.replaceAll("(?<=^|\\s)\\d{1,2}[.)]\\s+", ", ");
         for (String part : body.split("[,;\n]| és | meg | majd ")) {
             String m = StrengthParse.nameIn(part);
             if (m != null && !moves.contains(m) && moves.size() < MAX_MOVES) moves.add(m);

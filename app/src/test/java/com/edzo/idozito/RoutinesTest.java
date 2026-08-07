@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -275,5 +276,17 @@ public class RoutinesTest {
                 "guggolás 3x10, fekvenyomás 3x8", "csak guggolás",
                 "Reggeli: zabkása, banán, kávé", ""})
             assertTrue(q, Routines.parseShared(q) == null);
+    }
+
+    /** A sorszámozott lista is felsorolás: „1. guggolás 2. fekvenyomás 3. evezés”. */
+    @Test public void numberedListsAreListsToo() {
+        Routines.Routine r = Routines.parseShared("1. guggolás 2. fekvenyomás 3. evezés");
+        assertNotNull(r);
+        assertEquals(3, r.moves.size());
+        assertEquals("Guggolás", r.moves.get(0));
+        // A sorozat-jelölés viszont nem eshet szét tőle.
+        Routines.Routine x = Routines.parseShared("Edzés: 3x10 fekvenyomás, 3x10 guggolás");
+        assertNotNull(x);
+        assertEquals(2, x.moves.size());
     }
 }
