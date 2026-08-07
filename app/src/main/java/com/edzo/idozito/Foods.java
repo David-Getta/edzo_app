@@ -1272,7 +1272,9 @@ public final class Foods {
              // A „2 karéj kenyér" eddig ugyanannyi volt, mint az egy karéj.
              "karej", "karéj", "szal", "szál",
              // A csokoládé SORban törik: a „két sor csoki" két sor, nem egy.
-             "sor"};
+             "sor",
+             // A kulacs az edzőterem palackja.
+             "kulacs", "kulaccsal"};
 
     /**
      * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag
@@ -1285,6 +1287,8 @@ public final class Foods {
     static final String[][] WATER_ML = {
             {"korty", "40"}, {"kortyot", "40"},
             {"uveg", "500"}, {"üveg", "500"},
+            // A kulacs az edzőtermi alapfelszerelés – fél literrel számolunk.
+            {"kulacs", "500"}, {"kulaccsal", "500"},
             {"kancso", "1000"}, {"kancsó", "1000"},
     };
 
@@ -2220,6 +2224,9 @@ public final class Foods {
             {"Üdítő (cukros)", "Cukormentes / light"},
             {"Energiaital", "Cukormentes / light"},
             {"Szörp (hígítva)", "Cukormentes / light"},
+            // Az „egy shaker turmix" egy ital: a shaker a proteinesé, a
+            // gyümölcsös mellette nem külön pohár.
+            {"Gyümölcsturmix / smoothie", "Protein turmix"},
             // A pite tölteléke benne van a pite kalóriájában: a „meggyes pite"
             // nem pite PLUSZ egy adag meggy.
             {"Cseresznye / meggy", "Pite (almás/gyümölcsös)"},

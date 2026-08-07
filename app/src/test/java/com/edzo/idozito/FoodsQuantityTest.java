@@ -362,4 +362,13 @@ public class FoodsQuantityTest {
         // Az elöl álló tört marad a mennyiség-felismerőé.
         assertEquals(150, Foods.parse(all, "fél pizza").get(0).grams, 0.5);
     }
+
+    /** A kulacs fél liter – és a „fél kulacs" a fele. */
+    @Test public void aBottleIsHalfALiter() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(500, Foods.parse(all, "egy kulacs víz").get(0).grams, 0.5);
+        assertEquals(250, Foods.parse(all, "fél kulacs víz").get(0).grams, 0.5);
+        // Az „egy shaker turmix" egy ital, nem kettő.
+        assertEquals(1, Foods.parse(all, "egy shaker turmix").size());
+    }
 }
