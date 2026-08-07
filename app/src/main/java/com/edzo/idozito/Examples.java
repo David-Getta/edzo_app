@@ -40,6 +40,7 @@ public final class Examples {
             "tábla csoki",
             "10 szem mandula",
             "2 karéj kenyér",
+            "egy evőkanál méz",
             // Ami a dobozon áll, azt elhisszük – étel-felismerés nélkül is.
             "vacsora 650 kcal",
             "müzliszelet 180 kcal",
@@ -106,6 +107,9 @@ public final class Examples {
             "fal ülés 3x40 mp",
             "4 sorozat 8 fekvenyomás",
             "román felhúzás 3x8 80 kg",
+            // Az érzett terhelés rövidítései: RIR és a kg utáni @szám.
+            "guggolás 3x10 100 kg rir 2",
+            "fekvenyomás 5x5 90 kg @8",
     };
 
     /** Intervallum-beállítás egy mondatból. */
