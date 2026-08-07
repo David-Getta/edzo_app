@@ -64,7 +64,8 @@ public class LibraryActivity extends Activity {
         }
         rc.addView(text(rl.toString(), 13, TXT, false));
         TextView rh = text("Kész, 10–15 perces gyógytornász-ihletésű sorok, vezetett "
-                + "móddal – koppints, és a Nyújtás & rehab lapra viszlek.",
+                + "móddal – koppints, és a Nyújtás & rehab lapra viszlek. A beviteli "
+                + "mezők is értik: „fáj a vállam” vagy „boka stabilitás”.",
                 12, MUTED, false);
         rh.setPadding(0, dp(6), 0, 0);
         rc.addView(rh);

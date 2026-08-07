@@ -221,6 +221,16 @@ public class MobilityActivity extends Activity {
         TextView warn = text("⚠️ " + area.warn, 11.5f, MUTED, false);
         warn.setPadding(0, dp(8), 0, 0);
         box.addView(warn);
+        // A fokozatosság a rehab-oldalon is elv: aki már sokszor elvégezte a
+        // sort, annak az adagolás emelése a következő lépés – ezt ki is mondjuk.
+        int doneAll = RehabLog.doneOf(this, area.id).length;
+        if (doneAll >= 6) {
+            TextView lvl = text("📈 Már " + doneAll + " alkalmon vagy túl ezen a soron – "
+                    + "ha könnyűnek érzed, emelj az adagoláson: +2–3 ismétlés vagy "
+                    + "+10 mp tartás gyakorlatonként.", 11.5f, MUTED, false);
+            lvl.setPadding(0, dp(6), 0, 0);
+            box.addView(lvl);
+        }
         final boolean isFocus = area.id.equals(RehabLog.focusId(this));
         new Sheet(this, area.emoji + " " + area.name, area.goal)
                 .addCustom(box)
