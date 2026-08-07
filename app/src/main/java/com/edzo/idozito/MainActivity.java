@@ -1056,7 +1056,7 @@ public class MainActivity extends Activity {
                 ? "Profil · 😴 " + Hu.kg(sleptToday) + " h" : "Profil / BMI",
                 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
         t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
-        t.add(new TileDef("mobility", "🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
+        t.add(new TileDef("mobility", "🧘", "Nyújtás & rehab", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
         t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
         // Az Étrend-csempéhez hasonlóan a heti erősítő-aktivitás is látszik,
         // hogy a kezdőlapról is kiderüljön, ha rég volt súlyzós edzés.

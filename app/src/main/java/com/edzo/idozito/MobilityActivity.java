@@ -24,9 +24,9 @@ public class MobilityActivity extends Activity {
     static int TXT, MUTED, GLASS, GLASS_LINE, LINE, CARD2;
 
     int accent;
-    int section = 0; // 0 bemelegítés, 1 nyújtás, 2 hengerezés
+    int section = 0; // 0 bemelegítés, 1 nyújtás, 2 hengerezés, 3 rehab
     LinearLayout body;
-    Button[] chips = new Button[3];
+    Button[] chips = new Button[4];
 
     @Override
     protected void onCreate(Bundle b) {
@@ -46,8 +46,8 @@ public class MobilityActivity extends Activity {
         col.addView(gap(16));
 
         LinearLayout chipRow = hbox();
-        String[] labels = {"🔥 Bemelegítés", "🧘 Nyújtás", "🧻 Hengerezés"};
-        for (int i = 0; i < 3; i++) {
+        String[] labels = {"🔥 Melegítés", "🧘 Nyújtás", "🧻 Henger", "🩹 Rehab"};
+        for (int i = 0; i < labels.length; i++) {
             final int idx = i;
             Button c = chip(labels[i], i == section);
             c.setOnClickListener(v -> { section = idx; render(); });
@@ -68,8 +68,9 @@ public class MobilityActivity extends Activity {
     }
 
     void render() {
-        for (int i = 0; i < 3; i++) styleChip(chips[i], i == section, sectionColor(i));
+        for (int i = 0; i < chips.length; i++) styleChip(chips[i], i == section, sectionColor(i));
         body.removeAllViews();
+        if (section == 3) { renderRehab(); return; }
 
         Button start = startBtn("▶  Vezetett " + sectionLabel() + " indítása");
         start.setOnClickListener(v -> chooseHold());
@@ -116,6 +117,88 @@ public class MobilityActivity extends Activity {
         body.post(() -> Ux.enterChildren(body, 20, 35));
     }
 
+    /**
+     * Megelőzés és rehab: testtájat választasz, kész gyakorlatsort kapsz.
+     *
+     * A lista szándékosan nem „edzésprogram"-nak hívja magát: gyógytornász-
+     * ihletésű megelőző sorok ezek, és a lap alján ki is mondjuk, hogy éles
+     * panasznál nem app kell, hanem szakember.
+     */
+    void renderRehab() {
+        body.addView(text("Válassz testtájat – kész, 10–15 perces megelőző sort kapsz: "
+                + "gyakorlat, adagolás, technikai tipp.", 12.5f, MUTED, false));
+        body.addView(gap(12));
+        LinearLayout card = card();
+        for (int i = 0; i < Rehab.AREAS.length; i++) {
+            final Rehab.Area area = Rehab.AREAS[i];
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dp(14), dp(12), dp(12), dp(12));
+            TextView em = text(area.emoji, 20, TXT, false);
+            em.setPadding(0, 0, dp(12), 0);
+            row.addView(em);
+            LinearLayout mid = vbox();
+            mid.addView(text(area.name, 15.5f, TXT, true));
+            mid.addView(text(area.moves.length + " gyakorlat · ~" + Rehab.minutesOf(area)
+                    + " perc", 12, MUTED, false));
+            row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
+            TextView arrow = text("›", 22, MUTED, false);
+            row.addView(arrow);
+            row.setClickable(true);
+            row.setOnClickListener(v -> areaSheet(area));
+            card.addView(row);
+            if (i < Rehab.AREAS.length - 1) {
+                View dv = new View(this);
+                LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+                dvp.leftMargin = dp(14); dvp.rightMargin = dp(14);
+                dv.setLayoutParams(dvp);
+                dv.setBackgroundColor(LINE);
+                card.addView(dv);
+            }
+        }
+        body.addView(card, lp());
+        body.addView(gap(12));
+        body.addView(text("⚠️ " + Rehab.RED_FLAG, 12, MUTED, false));
+        body.post(() -> Ux.enterChildren(body, 20, 35));
+    }
+
+    /** Egy testtáj kész sora: gyakorlatok, videók, és egy koppintásos naplózás. */
+    void areaSheet(final Rehab.Area area) {
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        for (Rehab.Ex e : area.moves) {
+            LinearLayout row = hbox();
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(8), 0, dp(8));
+            LinearLayout mid = vbox();
+            mid.addView(text(e.name + "   ·   " + e.dose, 14.5f, TXT, true));
+            TextView cue = text(e.cue, 12, MUTED, false);
+            cue.setPadding(0, dp(2), 0, 0);
+            mid.addView(cue);
+            row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
+            row.addView(videoBtn(e.video));
+            box.addView(row, lp());
+        }
+        TextView warn = text("⚠️ " + area.warn, 11.5f, MUTED, false);
+        warn.setPadding(0, dp(8), 0, 0);
+        box.addView(warn);
+        new Sheet(this, area.emoji + " " + area.name, area.goal)
+                .addCustom(box)
+                .addPrimary("✅ Elvégeztem (~" + Rehab.minutesOf(area) + " perc)", () -> {
+                    // A naplóba mobilitásként kerül: a széria, az XP és a heti
+                    // összegzés is látja – a megelőzés is edzés.
+                    History.addManual(this, System.currentTimeMillis(),
+                            Rehab.minutesOf(area) * 60, -1,
+                            Activities.calories(Activities.byId("joga"),
+                                    Profile.lastWeight(this), Rehab.minutesOf(area)),
+                            -1, area.name, "joga");
+                    BlazeWidget.refresh(this);
+                    Ux.blazeCard(this, "🩹 " + area.name + " elvégezve ✔");
+                })
+                .addCancel()
+                .show();
+    }
+
     View videoBtn(final String query) {
         Button b = new Button(this);
         b.setText("▶ Videó");
@@ -145,8 +228,8 @@ public class MobilityActivity extends Activity {
 
     // Szekciónkénti akcentszínek: bemelegítés = meleg narancs, nyújtás = cián,
     // hengerezés = magenta – így vizuálisan is elkülönül a három terület.
-    int sectionColor(int s) { return s == 0 ? 0xFFFF7A2F : s == 1 ? accent : Theme.accent2(this); }
-    int sectionColor2(int s) { return s == 0 ? 0xFFFFB259 : s == 1 ? Theme.accent2(this) : accent; }
+    int sectionColor(int s) { return s == 0 ? 0xFFFF7A2F : s == 1 ? accent : s == 2 ? Theme.accent2(this) : 0xFF6FE3C2; }
+    int sectionColor2(int s) { return s == 0 ? 0xFFFFB259 : s == 1 ? Theme.accent2(this) : s == 2 ? accent : 0xFF3EC9A7; }
 
     String[] sectionNames() {
         Mobility.Group[] groups = section == 0 ? Mobility.WARMUP

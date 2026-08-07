@@ -45,7 +45,7 @@ if command -v python3 >/dev/null 2>&1; then
 fi
 
 # 1) Teljesen tiszta osztályok: mehetnek egy az egyben.
-for f in Kcal BodyParse Sentence Days Hu Progression Muscles Mobility Alarms Activities StrengthParse Examples Load MealIdeas IntervalParse Weekplan Bests TimeHint Habits Warmup Routines; do
+for f in Rehab Kcal BodyParse Sentence Days Hu Progression Muscles Mobility Alarms Activities StrengthParse Examples Load MealIdeas IntervalParse Weekplan Bests TimeHint Habits Warmup Routines; do
   [ -f "$SRC/$f.java" ] && cp "$SRC/$f.java" "$PKG/"
 done
 # Az Alarms Android-része (egyszeri riasztás beállítása) nem kell a teszthez.
@@ -233,7 +233,7 @@ PY
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
-       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest LevelsTest StreaksTest WaterTest PlateCalcTest KcalTest SleepTest"
+       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest LevelsTest StreaksTest WaterTest PlateCalcTest KcalTest SleepTest RehabTest"
 CLASSES=""
 for t in $TESTS; do
   if [ -f "$TST/$t.java" ]; then cp "$TST/$t.java" "$PKG/"; CLASSES="$CLASSES com.edzo.idozito.$t"; fi
