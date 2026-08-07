@@ -2713,8 +2713,11 @@ public class MainActivity extends Activity {
                 preview.setOnClickListener(null);
                 preview.setClickable(false);
                 if (plan[0] != null) {
+                    // A „javasolt" jelzés őszinteség: a „hiit 20 perc" ritmusa
+                    // a mi ajánlásunk, nem a felhasználó száma.
                     preview.setText("→  " + plan[0].label() + "   ·   összesen "
-                            + (plan[0].totalSec() / 60) + " perc");
+                            + (plan[0].totalSec() / 60) + " perc"
+                            + (plan[0].guessed ? "   ·   javasolt ritmus" : ""));
                     preview.setTextColor(tAccent);
                     return;
                 }
