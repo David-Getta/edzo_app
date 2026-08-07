@@ -118,14 +118,14 @@ public final class Foods {
         new Food("Zsemle", 280, 9, 55, "zsemle"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
-                "brios", "molnark"),
+                "brios", "molnark", "bagel"),
         new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
                 "protein zabkasa", "overnight oats", "oats"),
         new Food("Müzli", 380, 9, 60, "muzli", "granola"),
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
-                "protein palacsinta", "feherje palacsinta"),
+                "protein palacsinta", "feherje palacsinta", "pancake"),
         new Food("Pizza", 260, 11, 300, "pizza", "calzone", "quattro formaggi",
                 "quattro stagioni"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
