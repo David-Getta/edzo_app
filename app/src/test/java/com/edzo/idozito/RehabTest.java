@@ -124,6 +124,10 @@ public class RehabTest {
         assertEquals("derek", Rehab.forGoal("gerinc mobilizálás").id);
         assertEquals("nyak", Rehab.forGoal("nyak gyógytorna").id);
         assertEquals("achilles", Rehab.forGoal("achilles megelőzés").id);
+        assertEquals("terd", Rehab.forGoal("térd stabilizálás").id);
+        assertEquals("comb", Rehab.forGoal("comb rehab").id);
+        // A csirkecomb cél-mondatban sem testtáj.
+        assertNull(Rehab.forGoal("csirkecomb rehab"));
         assertNull(Rehab.forGoal("core stabilitás"));   // nincs testtáj
         assertNull(Rehab.forGoal("váll erősítés"));     // konditermi mondat
         assertNull(Rehab.forGoal("boka 3x10"));         // nincs szándék-szó

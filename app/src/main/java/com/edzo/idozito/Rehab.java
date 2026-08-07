@@ -208,10 +208,19 @@ public final class Rehab {
         if (q == null) return null;
         String s = Foods.norm(q);
         boolean want = false;
-        for (String w : new String[]{"stabilit", "mobiliz", "mobilit", "rehab",
-                "gyogytorna", "megeloz", "prevenc"})
+        for (String w : new String[]{"stabilit", "stabiliz", "mobiliz", "mobilit",
+                "rehab", "gyogytorna", "megeloz", "prevenc"})
             if (s.contains(w)) { want = true; break; }
-        return want ? areaOf(s) : null;
+        if (!want) return null;
+        Area a = areaOf(s);
+        // A puszta „comb" a panasz-oldalon szándékosan nem tő (csirkecomb!),
+        // de cél-mondatban („comb rehab") a szó eleji találat félreérthetetlen.
+        if (a == null) {
+            int i = s.indexOf("comb");
+            if (i >= 0 && (i == 0 || !Character.isLetter(s.charAt(i - 1))))
+                a = byId("comb");
+        }
+        return a;
     }
 
     /** A normalizált mondatban megnevezett testtáj sora, vagy null. */
