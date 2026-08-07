@@ -1044,7 +1044,17 @@ public class MainActivity extends Activity {
                 () -> startActivity(new Intent(this, HistoryActivity.class)
                         .putExtra("add_manual", true))));
         t.add(new TileDef("stats", "📈", "Statisztika", 0xFF5FD0FF, () -> startActivity(new Intent(this, StatsActivity.class))));
-        t.add(new TileDef("profile", "📊", "Profil / BMI", 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
+        // A csempe felirata él: ha ma van már alvás-bejegyzés, azt mutatja –
+        // az Étrend-csempe kcal-kiírásának mintájára.
+        double sleptToday = Sleep.last(this);
+        boolean sleptIsToday = false;
+        org.json.JSONObject lastSleep = Sleep.load(this).optJSONObject(0);
+        if (lastSleep != null)
+            sleptIsToday = Days.index(lastSleep.optLong("ts"))
+                    == Days.index(System.currentTimeMillis());
+        t.add(new TileDef("profile", "📊", sleptIsToday && sleptToday > 0
+                ? "Profil · 😴 " + Hu.kg(sleptToday) + " h" : "Profil / BMI",
+                0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
         t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
         t.add(new TileDef("mobility", "🧘", "Nyújtás & mobilitás", 0xFFB98CFF, () -> startActivity(new Intent(this, MobilityActivity.class))));
         t.add(new TileDef("library", "📖", "Gyakorlatok", 0xFFFF9A8B, () -> startActivity(new Intent(this, LibraryActivity.class))));
