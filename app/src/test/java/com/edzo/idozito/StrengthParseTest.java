@@ -270,6 +270,18 @@ public class StrengthParseTest {
         // Ami nincs a 6–10 sávban, az nem RPE.
         assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rpe 3").get(0).rpe);
         assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg").get(0).rpe);
+        // A termi anglicizmusok a magyar nevükre futnak be.
+        assertEquals("Combhajlítás", StrengthParse.parse("leg curl 3x12 40 kg").get(0).name);
+        assertEquals("Lábnyújtás", StrengthParse.parse("leg extension 3x12 45 kg").get(0).name);
+        assertEquals("Mellgép", StrengthParse.parse("chest press 3x10 60 kg").get(0).name);
+        assertEquals("Mellgép", StrengthParse.parse("pec deck 3x12 50 kg").get(0).name);
+        assertEquals("Vállból nyomás",
+                StrengthParse.parse("shoulder press 3x10 40 kg").get(0).name);
+        assertEquals("Evezés", StrengthParse.parse("cable row 3x10 55 kg").get(0).name);
+        assertEquals("Evezés", StrengthParse.parse("pendlay row 5x5 70 kg").get(0).name);
+        assertEquals("Tricepsz", StrengthParse.parse("skull crusher 3x10 25 kg").get(0).name);
+        assertEquals("Bicepsz", StrengthParse.parse("hammer curl 3x12 14 kg").get(0).name);
+        assertEquals("Tolódzkodás", StrengthParse.parse("dip 3x10").get(0).name);
         // A RIR a tartalék-ismétlés: RIR 2 = RPE 8. Az öt fölötti szám nem RIR.
         assertEquals(8, StrengthParse.parse("guggolás 3x10 100 kg rir 2").get(0).rpe);
         assertEquals(10, StrengthParse.parse("felhúzás 1x1 180 kg rir 0").get(0).rpe);
