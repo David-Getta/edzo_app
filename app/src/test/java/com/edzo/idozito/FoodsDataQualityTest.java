@@ -200,6 +200,27 @@ public class FoodsDataQualityTest {
         }
     }
 
+    /**
+     * „Egy sor csoki”: a mértékszó nem étel.
+     *
+     * Az ékezet nélkül írt tő közvetlenül egy másik étel előtt a mennyiséget
+     * mondja meg, nem egy második fogást – eddig egy fél liter sör került a
+     * csokoládé mellé. Ha viszont a mondatban tényleg van sör, azt nem
+     * veszítjük el: a találat odébb kerül.
+     */
+    @Test public void aMeasureWordIsNotAFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Csokoládé", names(Foods.parse(all, "egy sor csoki")));
+        assertEquals("Csokoládé", names(Foods.parse(all, "két sor csokoládé")));
+        assertEquals("Csokoládé, Sör", names(Foods.parse(all, "egy sor csoki és egy sör")));
+        // A sör magában marad sör – ékezet nélkül is.
+        assertEquals("Sör", names(Foods.parse(all, "sor")));
+        assertEquals("Sör", names(Foods.parse(all, "sört ittam")));
+        // És a sor mint darabszó szoroz: két sor kétszer annyi.
+        assertEquals(2 * Foods.parse(all, "egy sor csoki").get(0).grams,
+                Foods.parse(all, "két sor csoki").get(0).grams, 0.01);
+    }
+
     private static String names(java.util.List<Foods.Hit> h) {
         if (h.isEmpty()) return "—";
         StringBuilder sb = new StringBuilder();

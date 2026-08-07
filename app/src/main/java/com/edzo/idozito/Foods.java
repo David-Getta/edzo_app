@@ -900,14 +900,56 @@ public final class Foods {
     };
 
     /**
+     * Ékezet nélkül írt, MÉRTÉKSZÓKÉNT álló tövek kidobása.
+     *
+     * A minta mindig ugyanaz: „egy SOR csoki”, ahol a szó a mennyiséget
+     * mondja meg, nem az ételt. Csak akkor lép működésbe, ha a tövet ékezet
+     * nélkül írták (tehát nem „sör”), ÉS közvetlenül utána egy másik felismert
+     * étel kezdődik.
+     */
+    private static List<Match> dropMeasureWords(String q, String qAcc, List<Match> in) {
+        List<Match> out = new ArrayList<>();
+        for (Match m : in) {
+            boolean drop = false;
+            if (m.pos + m.len <= q.length()) {
+                String acc = accentedOf(q.substring(m.pos, m.pos + m.len));
+                if (acc != null && !acc.equals(q.substring(m.pos, m.pos + m.len))
+                        && !qAcc.regionMatches(m.pos, acc, 0, acc.length()))
+                    for (Match o : in)
+                        if (o != m && o.pos > m.pos + m.len && o.pos <= m.pos + m.len + 2)
+                            drop = true;
+                if (drop) {
+                    // „egy sor csoki és egy sör”: a mértékszó után máshol
+                    // OTT LEHET a valódi ital – ilyenkor nem eldobjuk a
+                    // találatot, hanem odébb tesszük.
+                    String stem = q.substring(m.pos, m.pos + m.len);
+                    for (int p2 = q.indexOf(stem, m.pos + 1); p2 >= 0;
+                         p2 = q.indexOf(stem, p2 + 1))
+                        if (qAcc.regionMatches(p2, acc, 0, acc.length())) {
+                            out.add(new Match(m.food, p2, m.len));
+                            break;
+                        }
+                }
+            }
+            if (!drop) out.add(m);
+        }
+        return out;
+    }
+
+    /** A szótő igazi írásmódja, ha ékezettel megkülönböztetett – különben null. */
+    private static String accentedOf(String ns) {
+        for (String[] a : ACCENTED_STEM) if (a[0].equals(ns)) return a[1];
+        return null;
+    }
+
+    /**
      * A szótő első ELFOGADHATÓ előfordulása, vagy -1.
      *
      * @param q    ékezet nélküli, maszkolt szöveg
      * @param qAcc ugyanaz, de „ö/ő"-vel – ugyanazokkal az indexekkel
      */
     static int stemIndex(String q, String qAcc, String ns) {
-        String acc = null;
-        for (String[] a : ACCENTED_STEM) if (a[0].equals(ns)) { acc = a[1]; break; }
+        String acc = accentedOf(ns);
         if (acc == null) return q.indexOf(ns);
         // Ékezetes igazi alaknál a szó eleje kivétel (ott az ékezet nélkül
         // gépelő is a valódi szót írja); ékezet nélkülinél nincs kivétel.
@@ -1175,7 +1217,9 @@ public final class Foods {
              "szem", "szemet", "szemnyi",
              // A kenyér KARÉJ, a virsli és a kolbász SZÁL: mindkettő darabszó.
              // A „2 karéj kenyér" eddig ugyanannyi volt, mint az egy karéj.
-             "karej", "karéj", "szal", "szál"};
+             "karej", "karéj", "szal", "szál",
+             // A csokoládé SORban törik: a „két sor csoki" két sor, nem egy.
+             "sor"};
 
     /**
      * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag
@@ -1923,6 +1967,12 @@ public final class Foods {
             }
             if (bestPos >= 0) found.add(new Match(f, bestPos, bestLen));
         }
+        // „egy sor csoki”: az ékezet nélkül írt tő KÖZVETLENÜL egy másik étel
+        // előtt mértékszó, nem étel. (A csokoládé mennyiségét amúgy is ez adja:
+        // egy sor huszonöt gramm.) A sör ettől nem sérül: az ital nem szokott
+        // egy másik étel neve előtt állni, és ékezettel írva úgyis átmegy.
+        found = dropMeasureWords(q, qAcc, found);
+
         // A hosszabb találatba beleeső rövidebbeket eldobjuk.
         List<Match> out = new ArrayList<>();
         for (Match m : found) {
