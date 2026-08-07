@@ -143,4 +143,44 @@ public class BodyParseTest {
         assertEquals(Sentence.Kind.MEAL, Sentence.of("150 g csirkemell", all, 0));
         assertEquals(Sentence.Kind.WORKOUT, Sentence.of("30 perc futás", all, 0));
     }
+
+    /**
+     * Huszonhat valós mérés-mondattal végigpróbálva ez az öt maradt ki.
+     *
+     * Az igekötő miatt a „lefogytam" nem ugyanaz a szó, mint a „fogytam”; a
+     * „kilogramm” kiírva sem volt mértékegység; a „súly” önmagában nem
+     * számított kimondásnak; a százalékban megadott zsír pedig egyáltalán
+     * nem – pedig aki így ír, magáról beszél.
+     */
+    @Test public void everydayPhrasingsAreUnderstood() {
+        assertEquals(76, BodyParse.parse("lefogytam 76 kilóra").kg, 0.01);
+        assertEquals(85, BodyParse.parse("felmentem 85-re").kg, 0.01);
+        assertEquals(80, BodyParse.parse("80 kilogramm").kg, 0.01);
+        assertEquals(77, BodyParse.parse("reggeli súly 77").kg, 0.01);
+        BodyParse.Body b = BodyParse.parse("78 kg 18% zsír");
+        assertEquals(78, b.kg, 0.01);
+        assertEquals(18, b.fatPct, 0.01);
+    }
+
+    /** Amitől eddig sem lett mérés, attól ezután sem lesz. */
+    @Test public void theseStillAreNotMeasurements() {
+        for (String q : new String[]{"fekvenyomás 80 kg", "100 g zsír", "2 kg krumpli",
+                "nyomtam 100 kg-ot", "70 kg alatt szeretnék lenni", "80 kg-os súlyzó",
+                "zsírégető edzés 40 perc", "vettem 2 kg almát"})
+            assertTrue("mérés lett belőle: " + q, BodyParse.parse(q).isEmpty());
+    }
+
+    /**
+     * A súlyt ÉS a zsírt is kimondó mondat a Profilé, nem az Étrendé.
+     *
+     * A „zsír” szót az ételadatbázis is ismeri (konyhai zsír), ezért a
+     * mondat étkezésként indult volna el.
+     */
+    @Test public void weightAndFatTogetherGoToTheProfile() {
+        assertEquals(Sentence.Kind.BODY, Sentence.of("78 kg 18% zsír",
+                java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+        // A konyhai zsír viszont marad étel.
+        assertEquals(Sentence.Kind.MEAL, Sentence.of("100 g zsír",
+                java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+    }
 }

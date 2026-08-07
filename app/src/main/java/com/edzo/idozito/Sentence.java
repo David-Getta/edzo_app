@@ -55,6 +55,12 @@ public final class Sentence {
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;
+        // A súlyt ÉS a testzsírt is kimondó mondat félreérthetetlenül mérés:
+        // a „78 kg 18% zsír"-ban a zsír nem a konyhai zsír, hiába ismeri fel
+        // az étel-oldal is. Csak ez a kettős alak előzi meg az étkezést; a
+        // puszta kiló továbbra is a lista végén dől el.
+        BodyParse.Body body = BodyParse.parse(q);
+        if (body.kg > 0 && body.fatPct > 0) return Kind.BODY;
         if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
         // Kimondott kalória étel nélkül („vacsora 650 kcal"): ez is étkezés,
         // csak épp nincs benne olyan szó, amit az adatbázis ismerne.
@@ -62,7 +68,7 @@ public final class Sentence {
         // A mérés a legvégén: a kilogramm a legterheltebb mértékegység az
         // appban, ezért a testsúly csak arra a maradékra jelentkezik, amit
         // senki más nem kért magának.
-        if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
+        if (!body.isEmpty()) return Kind.BODY;
         return Kind.NONE;
     }
 

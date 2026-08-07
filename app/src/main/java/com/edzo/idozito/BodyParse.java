@@ -46,8 +46,12 @@ public final class BodyParse {
 
     /** Szavak, amelyek kimondják, hogy a saját testsúlyáról van szó. */
     private static final String[] BODY_WORDS = {
-            "testsuly", "testsulyom", "sulyom", "merleg", "merlegen", "merlegre",
-            "vagyok", "lettem", "nyomok", "fogytam", "hiztam", "leadtam", "testzsir"
+            "testsuly", "testsulyom", "sulyom", "suly", "merleg", "merlegen", "merlegre",
+            "vagyok", "lettem", "nyomok", "fogytam", "hiztam", "leadtam", "testzsir",
+            // Az igekötős alakok külön: a szóhatáros keresés miatt a
+            // „lefogytam" nem ugyanaz, mint a „fogytam". Huszonhat valós
+            // mérés-mondattal próbálva ezek maradtak ki.
+            "lefogytam", "felmentem", "lementem", "felszedtem"
     };
 
     /**
@@ -75,9 +79,13 @@ public final class BodyParse {
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
         boolean said = hasBodyWord(s);
-        if (!said && !onlyNumbersLeft(s)) return new Body(0, 0);
 
         double fat = bodyFat(s);
+        // A kimondott testzsír-százalék maga is testről szóló mondat: a
+        // „78 kg 18% zsír" mondatban egyik szó sem szerepelt a listán, pedig
+        // aki százalékban zsírt ír, az magáról beszél.
+        if (!said && fat > 0 && (word(s, "zsir") || word(s, "zsirom"))) said = true;
+        if (!said && !onlyNumbersLeft(s)) return new Body(0, 0);
         double kg = weight(s, fat);
         return new Body(kg, fat);
     }
@@ -113,7 +121,7 @@ public final class BodyParse {
      */
     private static double weight(String s, double fat) {
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,3}([.,]\\d{1,2})?)\\s?-?\\s?(kg|kilo|kila)?").matcher(s);
+                .compile("(\\d{1,3}([.,]\\d{1,2})?)\\s?-?\\s?(kg|kilogramm|kilo|kila)?").matcher(s);
         while (m.find()) {
             double v = num(m.group(1));
             if (v < MIN_KG || v > MAX_KG) continue;
@@ -149,7 +157,7 @@ public final class BodyParse {
         // szomszédos szó („ma reggel”) közül a második különben bennmaradna,
         // mert az elsőt kereső minta elvinné a köztük álló szóközt.
         String rest = s.replaceAll("\\d+([.,]\\d+)?", " ")
-                .replaceAll("(?<![a-z])(kg|kilo|kila|szazalek|testzsir\\w*|ma|reggel|"
+                .replaceAll("(?<![a-z])(kg|kilogramm|kilo|kila|szazalek|testzsir\\w*|ma|reggel|"
                         + "este|delben|delelott|delutan|ejjel|hajnalban|tegnap|most|"
                         + "eppen|epp|ebredes|felkeles|utan|kor|orakor|volt|voltam|"
                         // A megnevezett nap ugyanolyan időpont, mint a napszak:
