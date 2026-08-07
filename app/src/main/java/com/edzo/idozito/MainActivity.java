@@ -718,6 +718,8 @@ public class MainActivity extends Activity {
         "A folyamatos haladás titka a türelem – ne add fel! 🌱",
         "Jegyzeteld fel, hogy érezted magad – így látod majd a mintázatokat. 📝",
         "A törzsizom minden mozgás alapja – ne hagyd ki a plankeket. 🧱",
+        "Heti kétszer 10 perc boka- és vállstabilizálás a legolcsóbb sérülés-biztosítás – a Nyújtás & rehab lapon kész sorokat találsz. 🩹",
+        "A golfkönyök és a teniszkönyök lassan alakul ki és lassan gyógyul – az excentrikus csukló-munka a megelőzés kulcsa. 🥎",
         "Kis lépések, nagy eredmény: heti 1% javulás egy év alatt hatalmas. 📊",
         "A magnézium és a kálium segít az izomgörcsök megelőzésében. 🍌",
         "Ne edz üres gyomorral hosszú kardiót – legyen egy kis energia. 🍎",
