@@ -844,6 +844,8 @@ public final class Foods {
             // vizet naplózott. A „szeretek futni" a leggyakoribb mondatkezdés,
             // amit egy edzésappba be lehet írni.
             "szeret", "stadi", "szokas", "levesz", "levessz", "vizilabda",
+            // A birtokos comb a SAJÁT láb, nem csirkecomb: „húzódik a combom".
+            "combom", "combod", "combja",
             // A BIRKÓzás sport, nem birkahús – az új bárány-tétel miatt kell.
             "birkoz",
     };

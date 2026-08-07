@@ -133,6 +133,18 @@ public final class Rehab {
                     ex("Csípőhajlító nyújtás", "2×30 mp / oldal", "Fél térden, farizom feszítve told előre a csípőd.", "csípőhajlító nyújtás térdelő"),
                     ex("Mély guggolás tartás", "3×20 mp", "Kapaszkodva ereszkedj mély guggolásba, sarok a földön.", "mély guggolás tartás mobilitás")),
 
+            new Area("comb", "🍗", "Combhajlító (meghúzódás ellen)",
+                    "A hátsó comb meghúzódása a sprintelők és focisták klasszikusa – a "
+                            + "megelőzés kulcsa az excentrikus erő (nordic curl) és a "
+                            + "fokozatos sprint-terhelés.",
+                    RED_FLAG + " Friss húzódásra ne erősíts: az első napokban kímélet, utána "
+                            + "fokozatosan – ha nem javul, gyógytornász.",
+                    ex("Nordic curl (rész-tartomány)", "3×5", "Térdelve, bokát rögzítve dőlj előre lassan, ameddig tartani tudod – kézzel told vissza magad.", "nordic hamstring curl gyakorlat"),
+                    ex("Csúszó sarok-kihúzás (slider)", "3×8 / láb", "Hanyatt, sarok törölközőn: hídból csúsztasd ki lassan a lábad.", "hamstring slider gyakorlat"),
+                    ex("Egylábas híd", "3×10 / láb", "Sarok a földön, told fel a csípőd – a comb hátulja dolgozzon, ne a derék.", "single leg bridge gyakorlat"),
+                    ex("Jó reggelt (good morning) könnyű súllyal", "3×10", "Csípőből dőlj, egyenes háttal – a comb hátulja adja a jelet, hol állj meg.", "good morning gyakorlat könnyű súly"),
+                    ex("Combhajlító nyújtás", "2×30 mp / láb", "Sarok előre, hajolj a csípőből – edzés után.", "combhajlító nyújtás álló")),
+
             new Area("achilles", "🩹", "Achilles és vádli",
                     "Achilles-panaszok megelőzése futóknak: a klasszikus excentrikus "
                             + "sarok-leengedés (Alfredson-protokoll szelleme) – lassan, sokat.",
@@ -143,6 +155,51 @@ public final class Rehab {
                     ex("Vádlinyújtás falnál", "2×30 mp / láb", "Hátsó láb nyújtva, sarok végig a földön.", "vádlinyújtás falnál"),
                     ex("Egylábas vádliemelés", "3×10 / láb", "Teljes mozgástartomány, fent egy pillanat tartás.", "egylábas vádliemelés gyakorlat")),
     };
+
+    /**
+     * Panaszból testtáj: „fáj a vállam" → a váll-sor.
+     *
+     * Az app mondat-elvű: ha a felhasználó bármelyik mezőbe beírja, hogy mi
+     * fáj, a legjobb válasz nem a „nem értem", hanem a megfelelő megelőző
+     * sor felajánlása. Kimondott fájdalom-szó kell hozzá („fáj",
+     * „fájdalom", „húzódik") ÉS egy testtájnév – e nélkül a „vállból
+     * nyomás" is panasznak látszana.
+     */
+    public static Area forComplaint(String q) {
+        if (q == null) return null;
+        String s = Foods.norm(q);
+        boolean pain = false;
+        for (String w : new String[]{"faj", "fajdalom", "fajdalmas", "huzodik", "huzodas",
+                "serules", "megserult", "kificamodott", "ficam", "gyullad"}) {
+            int i = s.indexOf(w);
+            while (i >= 0) {
+                boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
+                if (l) { pain = true; break; }
+                i = s.indexOf(w, i + 1);
+            }
+            if (pain) break;
+        }
+        if (!pain) return null;
+        String[][] map = {
+                {"boka", "bokam", "bokaja", "boka"},
+                {"terd", "terdem", "terde", "terd"},
+                {"derek", "derekam", "dereka", "derek", "hatam faj", "also hat"},
+                {"vall", "vallam", "valla", "vall"},
+                {"konyok-belso", "konyokom belso", "belso konyok", "golfkonyok"},
+                {"konyok-kulso", "kulso konyok", "teniszkonyok"},
+                // A puszta „könyök" a gyakoribb külsőre megy – a lap tetejéről
+                // egy koppintás a belső.
+                {"konyok-kulso", "konyokom", "konyoke", "konyok"},
+                {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
+                {"csipo", "csipom", "csipoje", "csipo"},
+                {"achilles", "achilles", "vadlim", "sarkam", "sarok faj"},
+                {"comb", "combom", "combhajlito", "hatso comb", "comb hatulja"},
+        };
+        for (String[] m : map)
+            for (int i = 1; i < m.length; i++)
+                if (s.contains(m[i])) return byId(m[0]);
+        return null;
+    }
 
     /** Terület azonosító alapján, vagy null. */
     public static Area byId(String id) {

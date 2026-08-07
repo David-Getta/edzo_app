@@ -64,6 +64,17 @@ public class MobilityActivity extends Activity {
 
         sv.addView(col, new android.widget.FrameLayout.LayoutParams(-1, -2));
         setContentView(Ux.scaffoldNav(this, sv, "bg_mobility", -1));
+        // Máshonnan ideirányított panasz-mondat („fáj a vállam"): rögtön a
+        // rehab fület nyitjuk, és ha a testtáj is kiderül, a sorát is.
+        String sent = getIntent().getStringExtra(Sentence.EXTRA);
+        if (sent != null && !sent.trim().isEmpty()) {
+            getIntent().removeExtra(Sentence.EXTRA);
+            Rehab.Area hit = Rehab.forComplaint(sent);
+            if (hit != null) {
+                section = 3;
+                body.post(() -> areaSheet(hit));
+            }
+        }
         render();
     }
 

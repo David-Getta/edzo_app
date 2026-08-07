@@ -20,7 +20,7 @@ public final class Sentence {
     private Sentence() {}
 
     /** Hova való a mondat. NONE = egyik felismerő sem tud vele mit kezdeni. */
-    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE, SLEEP }
+    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE, SLEEP, REHAB }
 
     /** Az átirányított mondat Intent-kulcsa: a cél-képernyő ezzel nyílik meg. */
     public static final String EXTRA = "sentence";
@@ -52,6 +52,10 @@ public final class Sentence {
         // ez az edzés-felismerő elé kell, mert a nap neve gyakran maga is
         // sportszó („Lábnap", „Tolónap") – attól megtörtént edzésnek látszana.
         if (Routines.parseShared(q) != null) return Kind.ROUTINE;
+        // A panasz az edzés-felismerő ELÉ kerül: a „fáj a térdem futás után"
+        // és a „golfkönyök fájdalom" nem edzés – hiába van benne sportszó, a
+        // fájdalom-szó mást mond. Kimondott fájdalom nélkül ez az ág nem él.
+        if (Rehab.forComplaint(q) != null) return Kind.REHAB;
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;
@@ -85,6 +89,7 @@ public final class Sentence {
             case BODY: return "Profil";
             case ROUTINE: return "Edzésnapok";
             case SLEEP: return "Profil";
+            case REHAB: return "Nyújtás & rehab";
             default: return "";
         }
     }
@@ -104,6 +109,7 @@ public final class Sentence {
             case BODY: return "⚖️ Ez mérésnek tűnik – koppints, és a Profilba viszem.";
             case ROUTINE: return "📅 Ez edzésnapnak tűnik – koppints, és felveszem.";
             case SLEEP: return "😴 Ez alvásnak tűnik – koppints, és a Profilba jegyzem.";
+            case REHAB: return "🩹 Erre van egy megelőző gyakorlatsorom – koppints, és mutatom.";
             default: return "";
         }
     }

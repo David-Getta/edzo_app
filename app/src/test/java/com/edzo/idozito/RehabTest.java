@@ -60,4 +60,42 @@ public class RehabTest {
             if (e.name.toLowerCase(new java.util.Locale("hu")).contains("excentrikus")) ecc = true;
         assertTrue("excentrikus gyakorlat a golfkönyöknél", ecc);
     }
+
+    /**
+     * Panaszból testtáj: a „fáj a vállam" a váll-sort kapja.
+     *
+     * A panasz az edzés-felismerő ELÉ kerül az útbaigazítóban: a „fáj a
+     * térdem futás után" és a „golfkönyök fájdalom" nem edzés – hiába van
+     * benne sportszó. Fájdalom-szó nélkül viszont az ág nem élhet: a
+     * „vállból nyomás" gyakorlat, a „vállnap volt" edzés.
+     */
+    @Test public void complaintsFindTheirArea() {
+        assertEquals("vall", Rehab.forComplaint("fáj a vállam").id);
+        assertEquals("terd", Rehab.forComplaint("fáj a térdem futás után").id);
+        assertEquals("boka", Rehab.forComplaint("kificamodott a bokám").id);
+        assertEquals("konyok-belso", Rehab.forComplaint("golfkönyök fájdalom").id);
+        assertEquals("konyok-kulso", Rehab.forComplaint("fáj a könyököm").id);
+        assertEquals("derek", Rehab.forComplaint("derekam fáj reggel").id);
+        assertEquals("comb", Rehab.forComplaint("húzódik a combom").id);
+        assertEquals("achilles", Rehab.forComplaint("gyulladt az achilles inam").id);
+        assertNull(Rehab.forComplaint("vállból nyomás 3x10"));
+        assertNull(Rehab.forComplaint("vállnap volt"));
+        assertNull(Rehab.forComplaint("30 perc futás"));
+        assertNull(Rehab.forComplaint("fáj a fejem"));
+        assertNull(Rehab.forComplaint(null));
+    }
+
+    /** Az útbaigazító is a rehabhoz küldi – az edzés-felismerő előtt. */
+    @Test public void theRouterPrefersTheComplaint() {
+        assertEquals(Sentence.Kind.REHAB,
+                Sentence.of("fáj a térdem futás után", null, 1_753_869_600_000L));
+        assertEquals(Sentence.Kind.REHAB,
+                Sentence.of("golfkönyök fájdalom", null, 1_753_869_600_000L));
+        assertEquals(Sentence.Kind.WORKOUT,
+                Sentence.of("30 perc futás", null, 1_753_869_600_000L));
+        // A birtokos comb a saját láb, nem csirkecomb.
+        assertEquals(Sentence.Kind.REHAB,
+                Sentence.of("húzódik a combom",
+                        java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+    }
 }
