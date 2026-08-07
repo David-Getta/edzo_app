@@ -78,9 +78,15 @@ public final class Foods {
         new Food("Szalámi", 400, 22, 30, "szalami"),
         new Food("Bacon", 500, 13, 30, "bacon", "szalonna"),
         new Food("Hal (fehér)", 120, 22, 150, "hal", "pisztrang", "ponty", "harcsa",
-                "keszeg", "fogas"),
+                // A boltok pultjának többi gyakori fehér hala is.
+                // Az „amur" szándékosan hiányzik: a szaMURáj-szerű szavak
+                // belsejébe esne. Aki amurt eszik, írja körül („fehér hal").
+                "keszeg", "fogas", "sullo", "busa", "tilapia", "pangasius", "tokehal"),
         new Food("Tenger gyümölcsei", 90, 18, 150, "garnela", "kagylo", "polip",
-                "tenger gyumolcsei", "rakkoktel", "rak koktel", "kaviar"),
+                "tenger gyumolcsei", "rakkoktel", "rak koktel", "kaviar",
+                // A „rák" magában is étel – a hosszabb tövek (rákkoktél)
+                // továbbra is elsőbbséget kapnak.
+                "rakhus", "garnelarak", "scampi"),
         new Food("Tonhal", 130, 24, 100, "tonhal"),
         new Food("Lazac", 210, 20, 150, "lazac"),
         new Food("Makréla / szardínia", 220, 20, 100, "makrela", "szardinia", "sprotni"),

@@ -242,4 +242,14 @@ public class FoodsDataQualityTest {
         for (Foods.Hit x : h) sb.append(sb.length() > 0 ? ", " : "").append(x.food.name);
         return sb.toString();
     }
+
+    /** Az új hal-tövek nem esnek bele hétköznapi szavakba. */
+    @Test public void fishStemsStayOutOfEverydayWords() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"autóbusszal mentem", "buszon ettem", "szamuráj",
+                "pangásból", "sülve"})
+            assertTrue("halat talált benne: " + q, Foods.parse(all, q).isEmpty());
+        assertEquals("Hal (fehér)", Foods.parse(all, "süllő roston").get(0).food.name);
+        assertEquals("Hal (fehér)", Foods.parse(all, "tilápia filé").get(0).food.name);
+    }
 }
