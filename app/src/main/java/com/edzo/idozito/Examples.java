@@ -75,6 +75,7 @@ public final class Examples {
             "futás és úszás 30-30 perc",
             "hegymászás 4 óra",
             "leúsztam ezerötszáz métert",
+            "triatlon 2 óra",
     };
 
     /** Erősítő sorozatok egy mondatból. */
