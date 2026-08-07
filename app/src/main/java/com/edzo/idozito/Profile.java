@@ -182,6 +182,18 @@ public final class Profile {
 
     /** Új mérés a napló elejére: testsúly (kg), testzsír (%), BMI. Bármelyik < 0 = nincs adat. */
     public static void addMeasurement(Context c, long ts, double weight, double bodyFat, double bmi) {
+        addMeasurement(c, ts, weight, bodyFat, bmi, null);
+    }
+
+    /**
+     * Ugyanaz, körfogatokkal – a BodyParse.PART_KEYS sorrendjében, centiben.
+     *
+     * A körfogat ugyanabba a bejegyzésbe kerül, mint a súly: aki reggel
+     * mérlegre áll és mérőszalagot fog, az EGY mérést végez. Külön idősorként
+     * a két adat sosem állna egymás mellett a listában.
+     */
+    public static void addMeasurement(Context c, long ts, double weight, double bodyFat,
+                                      double bmi, double[] cm) {
         SharedPreferences p = prefs(c);
         JSONArray arr = measurements(c);
         try {
@@ -190,6 +202,9 @@ public final class Profile {
             o.put("w", weight);
             o.put("bf", bodyFat);
             o.put("bmi", bmi);
+            if (cm != null)
+                for (int i = 0; i < cm.length && i < BodyParse.PART_KEYS.length; i++)
+                    if (cm[i] > 0) o.put(BodyParse.PART_KEYS[i], cm[i]);
             JSONArray out = new JSONArray();
             out.put(o);
             for (int i = 0; i < arr.length() && out.length() < MAX; i++) out.put(arr.get(i));
@@ -267,6 +282,39 @@ public final class Profile {
     }
 
     public static double lastBodyFat(Context c) { return lastOf(measurements(c), "bf"); }
+
+    /** A legutóbb mentett körfogatok centiben (0 = nincs), PART_KEYS sorrendben. */
+    public static double[] lastCm(Context c) {
+        JSONArray a = measurements(c);
+        double[] out = new double[BodyParse.PART_KEYS.length];
+        for (int i = 0; i < out.length; i++) {
+            double v = lastOf(a, BodyParse.PART_KEYS[i]);
+            out[i] = v > 0 ? v : 0;
+        }
+        return out;
+    }
+
+    /**
+     * Derék/magasság arány – az egyetlen körfogat, aminek önmagában is van
+     * egészség-jelentése.
+     *
+     * A szakirodalom hüvelykujjszabálya egyszerű: a derékbőség legyen a
+     * testmagasság felénél kisebb. Ezért nem BMI-t közlünk mellé (azt a
+     * súlyból már látja), hanem ezt az egy arányt.
+     */
+    public static double waistToHeight(double waistCm, int heightCm) {
+        if (waistCm <= 0 || heightCm <= 0) return -1;
+        return waistCm / heightCm;
+    }
+
+    /** Egysoros értékelés a derék/magasság arányhoz, vagy üres. */
+    public static String waistVerdict(double ratio) {
+        if (ratio < 0) return "";
+        if (ratio < 0.4) return "a szokásosnál karcsúbb";
+        if (ratio < 0.5) return "egészséges sávban";
+        if (ratio < 0.6) return "érdemes figyelni rá";
+        return "kockázati sávban";
+    }
 
     /**
      * A legfrissebb mérés, amiben egyáltalán VAN ilyen adat (a lista legújabb

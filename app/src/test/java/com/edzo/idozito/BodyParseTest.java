@@ -183,4 +183,49 @@ public class BodyParseTest {
         assertEquals(Sentence.Kind.MEAL, Sentence.of("100 g zsír",
                 java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
     }
+
+    /**
+     * Körfogat a mondatból: „derék 84 cm”, „csípő: 96”, „84 cm derék”.
+     *
+     * A testrész neve kötelező – centiméterből magasság is lehet, meg a
+     * konyhapult hossza is. Ugyanezért nem lesz körfogat abból, hogy
+     * „180 cm magas vagyok”.
+     */
+    @Test public void tapeMeasurementsAreUnderstood() {
+        assertEquals(84, BodyParse.parse("derék 84 cm").cm[0], 0.01);
+        assertEquals(84, BodyParse.parse("derék: 84").cm[0], 0.01);
+        assertEquals(84, BodyParse.parse("84 cm derék").cm[0], 0.01);
+        assertEquals(96, BodyParse.parse("csípő 96 cm").cm[1], 0.01);
+        assertEquals(102, BodyParse.parse("mellkas 102 cm").cm[2], 0.01);
+        assertEquals(58, BodyParse.parse("comb 58 cm").cm[3], 0.01);
+        assertEquals(40, BodyParse.parse("bicepszem 40 cm").cm[4], 0.01);
+        assertEquals(90, BodyParse.parse("hasam 90 cm").cm[0], 0.01);
+
+        // Súly, zsír és körfogat EGY mondatban, egy mérésben.
+        BodyParse.Body b = BodyParse.parse("78 kg, 18% testzsír, derék 84 cm");
+        assertEquals(78, b.kg, 0.01);
+        assertEquals(18, b.fatPct, 0.01);
+        assertEquals(84, b.cm[0], 0.01);
+
+        // A körfogatként elhasznált szám nem lehet másodszor kiló.
+        assertEquals(0, BodyParse.parse("derék 84 cm").kg, 0.01);
+    }
+
+    /** Ami nem körfogat, abból ne legyen az. */
+    @Test public void notEveryCentimeterIsACircumference() {
+        for (String q : new String[]{"180 cm magas vagyok", "magasság 180 cm",
+                "derék 300 cm", "combhajlítás 3x12", "fekvenyomás 80 kg"})
+            assertTrue("körfogat lett belőle: " + q, !BodyParse.parse(q).hasCm());
+    }
+
+    /** A derék/magasság arány a szakirodalom hüvelykujjszabálya. */
+    @Test public void waistToHeightRatio() {
+        assertEquals(0.47, Profile.waistToHeight(84, 178), 0.005);
+        assertEquals(-1, Profile.waistToHeight(0, 178), 0.001);
+        assertEquals(-1, Profile.waistToHeight(84, 0), 0.001);
+        assertEquals("egészséges sávban", Profile.waistVerdict(0.47));
+        assertEquals("érdemes figyelni rá", Profile.waistVerdict(0.55));
+        assertEquals("kockázati sávban", Profile.waistVerdict(0.62));
+        assertEquals("", Profile.waistVerdict(-1));
+    }
 }

@@ -445,7 +445,12 @@ public class SettingsActivity extends Activity {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("datum;testsuly_kg;testzsir_szazalek;bmi\n");
+        sb.append("datum;testsuly_kg;testzsir_szazalek;bmi");
+        // A mérőszalag adatai is: aki táblázatban nézi a görbéjét, ezeket is
+        // ott akarja látni, nem külön exportban.
+        for (String n : BodyParse.PART_NAMES) sb.append(';').append(n.toLowerCase(new Locale("hu")))
+                .append("_cm");
+        sb.append('\n');
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
         // A legrégebbi elöl: táblázatban így rajzol egyenesen a görbe.
         for (int i = a.length() - 1; i >= 0; i--) {
@@ -456,7 +461,12 @@ public class SettingsActivity extends Activity {
             sb.append(df.format(new Date(o.optLong("ts")))).append(';')
               .append(w > 0 ? String.format(Locale.US, "%.1f", w) : "").append(';')
               .append(bf > 0 ? String.format(Locale.US, "%.1f", bf) : "").append(';')
-              .append(bmi > 0 ? String.format(Locale.US, "%.1f", bmi) : "").append('\n');
+              .append(bmi > 0 ? String.format(Locale.US, "%.1f", bmi) : "");
+            for (String k : BodyParse.PART_KEYS) {
+                double v = o.optDouble(k, -1);
+                sb.append(';').append(v > 0 ? String.format(Locale.US, "%.1f", v) : "");
+            }
+            sb.append('\n');
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_meresek.csv", "text/csv");
     }

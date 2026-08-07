@@ -24,15 +24,50 @@ public final class BodyParse {
     /** Életszerű testzsír-határok százalékban. */
     static final double MIN_FAT = 3, MAX_FAT = 60;
 
+    /**
+     * Körfogatok – a mérőszalag adatai.
+     *
+     * A derék az egyetlen, aminek önmagában is egészség-jelentése van (a
+     * derék/magasság arány), a többit azért mérik, hogy lássák: ami fogy, az
+     * a has, ami nő, az a kar. A sorrend a képernyőn és a CSV-ben is ez.
+     */
+    public static final String[] PART_KEYS = {"waist", "hip", "chest", "thigh", "arm"};
+    /** Ugyanaz magyarul, a képernyőre. */
+    public static final String[] PART_NAMES = {"Derék", "Csípő", "Mellkas", "Comb", "Kar"};
+    /** A mondatban keresett szótövek részenként. */
+    private static final String[][] PART_STEMS = {
+            {"derek", "derekam", "derekbosege", "has", "hasam", "hasbosege"},
+            {"csipo", "csipom", "csipobosege", "fenek"},
+            {"mellkas", "mell", "mellbosege"},
+            {"comb", "combom", "combbosege"},
+            {"kar", "karom", "bicepszem", "felkar"},
+    };
+    /** Életszerű körfogat-határok centiben. */
+    static final double MIN_CM = 15, MAX_CM = 200;
+
     /** Egy mérés a mondatból. A hiányzó adat 0. */
     public static final class Body {
         public final double kg;
         public final double fatPct;
-        Body(double kg, double fatPct) { this.kg = kg; this.fatPct = fatPct; }
+        /** Körfogatok centiben, a PART_KEYS sorrendjében (0 = nincs). */
+        public final double[] cm;
 
-        public boolean isEmpty() { return kg <= 0 && fatPct <= 0; }
+        Body(double kg, double fatPct) { this(kg, fatPct, new double[PART_KEYS.length]); }
 
-        /** „78,4 kg  ·  18% testzsír” – az előnézethez. */
+        Body(double kg, double fatPct, double[] cm) {
+            this.kg = kg; this.fatPct = fatPct;
+            this.cm = cm == null ? new double[PART_KEYS.length] : cm;
+        }
+
+        public boolean isEmpty() { return kg <= 0 && fatPct <= 0 && !hasCm(); }
+
+        /** Van-e legalább egy körfogat. */
+        public boolean hasCm() {
+            for (double v : cm) if (v > 0) return true;
+            return false;
+        }
+
+        /** „78,4 kg  ·  18% testzsír  ·  Derék 84 cm” – az előnézethez. */
         public String label() {
             StringBuilder sb = new StringBuilder();
             if (kg > 0) sb.append(Hu.kg(kg)).append(" kg");
@@ -40,6 +75,11 @@ public final class BodyParse {
                 if (sb.length() > 0) sb.append("  ·  ");
                 sb.append(Hu.kg(fatPct)).append("% testzsír");
             }
+            for (int i = 0; i < cm.length; i++)
+                if (cm[i] > 0) {
+                    if (sb.length() > 0) sb.append("  ·  ");
+                    sb.append(PART_NAMES[i]).append(" ").append(Hu.kg(cm[i])).append(" cm");
+                }
             return sb.toString();
         }
     }
@@ -80,14 +120,20 @@ public final class BodyParse {
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
         boolean said = hasBodyWord(s);
 
+        double[] cm = circumferences(s);
         double fat = bodyFat(s);
         // A kimondott testzsír-százalék maga is testről szóló mondat: a
         // „78 kg 18% zsír" mondatban egyik szó sem szerepelt a listán, pedig
         // aki százalékban zsírt ír, az magáról beszél.
         if (!said && fat > 0 && (word(s, "zsir") || word(s, "zsirom"))) said = true;
+        // A megnevezett testrész is kimondás: „derék 84 cm" ugyanolyan mérés,
+        // mint a „78 kg vagyok" – csak mérőszalaggal.
+        boolean anyCm = false;
+        for (double v : cm) if (v > 0) anyCm = true;
+        if (!said && anyCm) said = true;
         if (!said && !onlyNumbersLeft(s)) return new Body(0, 0);
-        double kg = weight(s, fat);
-        return new Body(kg, fat);
+        double kg = weight(s, fat, cm);
+        return new Body(kg, fat, cm);
     }
 
     /**
@@ -119,13 +165,18 @@ public final class BodyParse {
      * a sáv (30–250) ezt magától is kizárja, de a fordított sorrendű mondat
      * („18% testzsír, 78,4”) miatt a kihagyás akkor is kell.
      */
-    private static double weight(String s, double fat) {
+    private static double weight(String s, double fat, double[] cm) {
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(\\d{1,3}([.,]\\d{1,2})?)\\s?-?\\s?(kg|kilogramm|kilo|kila)?").matcher(s);
         while (m.find()) {
             double v = num(m.group(1));
             if (v < MIN_KG || v > MAX_KG) continue;
             if (fat > 0 && Math.abs(v - fat) < 0.001) continue;
+            // A körfogatként már elhasznált szám nem lehet másodszor kiló:
+            // a „derék 84" nyolcvannégy centi, nem nyolcvannégy kiló.
+            boolean used = false;
+            for (double c : cm) if (c > 0 && Math.abs(v - c) < 0.001) used = true;
+            if (used) continue;
             // Százalékjel után álló szám sosem kiló – még akkor sem, ha
             // testzsírnak túl nagy volt („80% testzsír”). Az elgépelt
             // százalékból nyolcvan kiló lenne. A centiméter ugyanígy: a
@@ -137,6 +188,38 @@ public final class BodyParse {
             return v;
         }
         return 0;
+    }
+
+    /**
+     * Körfogatok: „derék 84 cm”, „csípő: 96”, „84 cm derék”.
+     *
+     * A testrész neve KÖTELEZŐ – centiméterből magasság is lehet, meg a
+     * konyhapult hossza is. A szám a név után vagy előtte állhat, de csak
+     * közvetlenül: a köztük álló szó (a mértékegységen és a kettősponton
+     * kívül) már más állítás.
+     */
+    private static double[] circumferences(String s) {
+        double[] out = new double[PART_KEYS.length];
+        for (int i = 0; i < PART_STEMS.length; i++)
+            for (String stem : PART_STEMS[i]) {
+                if (out[i] > 0) break;
+                java.util.regex.Matcher m = java.util.regex.Pattern
+                        .compile("(?<![a-z])" + stem + "(?![a-z])\\s?:?\\s?"
+                                + "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)?").matcher(s);
+                if (m.find()) { out[i] = inRange(num(m.group(1))); continue; }
+                // Fordított szórend, de csak mértékegységgel: a „84 cm derék"
+                // egyértelmű, a puszta „84 derék" nem mondat.
+                m = java.util.regex.Pattern
+                        .compile("(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
+                                + "(?<![a-z])" + stem + "(?![a-z])").matcher(s);
+                if (m.find()) out[i] = inRange(num(m.group(1)));
+            }
+        return out;
+    }
+
+    /** Életszerű körfogat, vagy 0. */
+    private static double inRange(double v) {
+        return v >= MIN_CM && v <= MAX_CM ? v : 0;
     }
 
     /** Kimondott testsúly-szó a mondatban (egész szóként). */

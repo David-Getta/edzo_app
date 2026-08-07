@@ -139,6 +139,9 @@ public final class Examples {
             "18% testzsír",
             "reggel 79",
             "85 kiló lettem",
+            // A mérőszalag is: derék, csípő, mellkas, comb, kar.
+            "derék 84 cm",
+            "78 kg, 18% testzsír, derék 84 cm",
     };
 
     /** Edzésnap egy sorban – megosztáshoz és felvételhez. */
@@ -163,7 +166,7 @@ public final class Examples {
             {"📝  Edzés-előzmény", "Több edzés egy mondatból", "BULK"},
             {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
             {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
-            {"⚖️  Mérés", "Testsúly és testzsír", "BODY"},
+            {"⚖️  Mérés", "Testsúly, testzsír, körfogat", "BODY"},
             {"📅  Edzésnap", "Név és gyakorlatok, vesszővel", "ROUTINE"},
     };
 

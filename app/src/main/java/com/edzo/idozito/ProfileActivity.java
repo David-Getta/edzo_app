@@ -147,6 +147,12 @@ public class ProfileActivity extends Activity {
         Button bySentence = ghost("✍️  Mérés mondatból");
         bySentence.setOnClickListener(v -> measurementInputSheet());
         col.addView(bySentence);
+        col.addView(gap(8));
+        // A mérőszalag külön lapon: öt mező a főképernyőn elnyomná a mérleget,
+        // pedig a körfogatot a legtöbben csak havonta veszik elő.
+        Button tape = ghost("📏  Körfogatok");
+        tape.setOnClickListener(v -> circumferenceSheet());
+        col.addView(tape);
         col.addView(gap(24));
 
         // --- Diagram ---
@@ -265,6 +271,7 @@ public class ProfileActivity extends Activity {
         }
         if (b.kg > 0) weightEt.setText(trim(b.kg));
         if (b.fatPct > 0) bodyFatEt.setText(trim(b.fatPct));
+        pendingCm = b.hasCm() ? b.cm : null;
         recompute();
         new Sheet(this, "Mérés a mondatból ⚖️",
                 "„" + sentence.trim() + "”\n\n→  " + b.label()
@@ -461,18 +468,92 @@ public class ProfileActivity extends Activity {
         b.setBackground(bg);
     }
 
+    /**
+     * A mondatból érkezett körfogatok, amíg a mentés el nem viszi őket.
+     *
+     * A képernyőn nincs öt mezőjük (a mérőszalag külön lapon van), a
+     * „derék 84 cm"-es mondat viszont ugyanabba a bejegyzésbe való, mint a
+     * mérleg száma – enélkül némán elveszne.
+     */
+    double[] pendingCm;
+
     void saveMeasurement() {
         double w = doubleOf(weightEt);
         double bf = doubleOf(bodyFatEt);
         double bmi = Profile.bmi(intOf(heightEt), w);
-        if (w <= 0 && bf <= 0) {
+        boolean anyCm = false;
+        if (pendingCm != null) for (double v : pendingCm) if (v > 0) anyCm = true;
+        if (w <= 0 && bf <= 0 && !anyCm) {
             Toast.makeText(this, "Adj meg legalább testsúlyt vagy testzsírt.", Toast.LENGTH_SHORT).show();
             return;
         }
-        Profile.addMeasurement(this, System.currentTimeMillis(), w > 0 ? w : -1, bf > 0 ? bf : -1, bmi);
+        Profile.addMeasurement(this, System.currentTimeMillis(), w > 0 ? w : -1,
+                bf > 0 ? bf : -1, bmi, pendingCm);
+        pendingCm = null;
         Toast.makeText(this, "Mérés elmentve ✔", Toast.LENGTH_SHORT).show();
         refreshChart();
         refreshMeasList();
+    }
+
+    /**
+     * Mérőszalag-lap: öt körfogat, mind elhagyható.
+     *
+     * A legutóbbi értékekkel indul, mert a körfogat lassan változik – így
+     * elég azt átírni, ami tényleg más lett. A derékhez odaírjuk a
+     * derék/magasság arányt is: ez az egyetlen körfogat, aminek önmagában is
+     * van egészség-jelentése.
+     */
+    void circumferenceSheet() {
+        final LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        final double[] last = Profile.lastCm(this);
+        final EditText[] fields = new EditText[BodyParse.PART_KEYS.length];
+        for (int i = 0; i < fields.length; i++) {
+            EditText et = new EditText(this);
+            et.setHint(BodyParse.PART_NAMES[i] + " (cm)");
+            et.setHintTextColor(MUTED);
+            et.setTextColor(TXT);
+            et.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            if (last[i] > 0) et.setText(trim(last[i]));
+            LinearLayout.LayoutParams flp = lp();
+            flp.topMargin = dp(6);
+            box.addView(et, flp);
+            fields[i] = et;
+        }
+        final int height = intOf(heightEt);
+        String sub = "Csak azt töltsd ki, amit megmértél.";
+        double r = Profile.waistToHeight(last[0], height);
+        // Két tizedes: az arány a második jegyen dől el (0,49 és 0,51 más
+        // üzenet), egy tizedessel mindkettő „0,5" lenne.
+        if (r > 0) sub += "  Derék/magasság most: "
+                + String.format(new Locale("hu"), "%.2f", r)
+                + " – " + Profile.waistVerdict(r) + ".";
+        new Sheet(this, "Körfogatok 📏", sub)
+                .addCustom(box)
+                .addPrimary("Mentés", () -> {
+                    double[] cm = new double[fields.length];
+                    boolean any = false;
+                    for (int i = 0; i < fields.length; i++) {
+                        cm[i] = doubleOf(fields[i]);
+                        if (cm[i] < BodyParse.MIN_CM || cm[i] > BodyParse.MAX_CM) cm[i] = 0;
+                        if (cm[i] > 0) any = true;
+                    }
+                    if (!any) {
+                        Toast.makeText(this, "Adj meg legalább egy körfogatot.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    // A mérleg száma is bekerül, ha épp ki van töltve: egy
+                    // reggel egy bejegyzés.
+                    double w = doubleOf(weightEt), bf = doubleOf(bodyFatEt);
+                    Profile.addMeasurement(this, System.currentTimeMillis(),
+                            w > 0 ? w : -1, bf > 0 ? bf : -1,
+                            Profile.bmi(intOf(heightEt), w), cm);
+                    Toast.makeText(this, "Körfogatok elmentve ✔", Toast.LENGTH_SHORT).show();
+                    refreshMeasList();
+                })
+                .addCancel()
+                .show();
     }
 
     // ---------------- Diagram ----------------
@@ -587,6 +668,13 @@ public class ProfileActivity extends Activity {
             StringBuilder val = new StringBuilder();
             if (w > 0) val.append(trim(w)).append(" kg");
             if (bf > 0) val.append(val.length() > 0 ? "  ·  " : "").append(trim(bf)).append("%");
+            // A mérőszalag adatai ugyanabban a sorban: aki reggel mérlegre áll
+            // és körbeméri magát, EGY mérést végzett.
+            for (int c2 = 0; c2 < BodyParse.PART_KEYS.length; c2++) {
+                double v = o.optDouble(BodyParse.PART_KEYS[c2], -1);
+                if (v > 0) val.append(val.length() > 0 ? "  ·  " : "")
+                        .append(BodyParse.PART_NAMES[c2]).append(" ").append(trim(v));
+            }
             if (val.length() == 0) continue;
             if (shown > 0) card.addView(divider());
             LinearLayout row = hbox();

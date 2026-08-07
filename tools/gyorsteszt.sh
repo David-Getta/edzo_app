@@ -114,7 +114,9 @@ open(dst + 'Profile.java', 'w').write(
     + "\n    " + grab(pr, 'public static double weeklyTrend(')
     + "\n    " + grab(pr, 'public static double weeksToGoal(')
     + "\n    public static final int MEASURE_REMIND_DAYS = 10;"
-    + "\n    " + grab(pr, 'public static String measureNudge(') + "\n}\n")
+    + "\n    " + grab(pr, 'public static String measureNudge(')
+    + "\n    " + grab(pr, 'public static double waistToHeight(')
+    + "\n    " + grab(pr, 'public static String waistVerdict(') + "\n}\n")
 
 ss = open(src_dir + 'SessionStore.java').read()
 open(dst + 'SessionStore.java', 'w').write(
