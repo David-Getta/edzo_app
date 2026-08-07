@@ -14,7 +14,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Élő folyamatsáv**, világító körgyűrű, 3-2-1 visszaszámlálás, ünneplő pipa,
   egygombos újraindítás ugyanarra az edzésre
 - **Beállítás mondatból**: „3 kör 40 mp munka 20 mp pihenő”, „8x20/10",
-  „tabata”, „emom 10 perc”, „20 perc alatt 40/20”, „négy kör 30 másodperc”,
+  „tabata”, „emom 10 perc”, „norvég 4x4”, „20 perc alatt 40/20”, „négy kör 30 másodperc”,
   „20/10 nyolcszor”, „2 perc bemelegítés, 6 kör 40/20”,
   „1:30 munka 0:30 pihenő 6 kör” (edzőtermi tábla-írásmód),
   „40 mp / 20 mp, 10 kör”, „emom 12”, „10x(40s/20s)”,
@@ -43,7 +43,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 📝 Kézi edzés-felvétel
 - **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
   kondi, foci, tenisz, jóga, kenu, búvárkodás, salsa, barlangászat… –
-  19 mozgásforma, sportág szerinti
+  20 mozgásforma, sportág szerinti
   kalóriabecsléssel (MET × testsúly × idő)
 - **Egy mondatból akár többet is**: „az elmúlt 3 nap alatt 3 futó edzés és
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
@@ -96,7 +96,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   mint a fordítottja
 - **A kötőjel is számít**: a „sonkás-sajtos szendvics" három tétel (a magyar
   melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy
-- **346 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **351 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket
@@ -134,13 +134,46 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   az a vízcélba is beszámít
 - Heti átlag a statisztikákban és a heti összefoglalóban
 
+### 🩹 Megelőzés & rehab
+- **12 testtáj, 62 gyógytornász-ihletésű gyakorlat** adagolással, technikai
+  tippel és videóval: boka-stabilitás, térd, derék (McGill-hármas), váll,
+  golf- és teniszkönyök, nyak, csípő, combhajlító, talp (plantar fasciitis),
+  sípcsont, Achilles – kész, 10–20 perces megelőző sorok
+- **A panasz-mondat is ajtó**: a „fáj a vállam", a „beállt a derekam" vagy a
+  „kificamodott a bokám" bármelyik beviteli mezőből a megfelelő sorhoz visz.
+  A tagadott panasz („már nem fáj") és a zsibbadás (piros zászló) nem –
+  utóbbinál orvos kell, nem app
+- **A cél-mondat is**: „boka stabilitás", „váll mobilizálás", „derék rehab" –
+  nem kell megvárni, hogy fájjon
+- **Vezetett mód**: a telefon időzíti és bemondja a gyakorlatokat, a
+  kétoldalasokat bal/jobb bontásban, a kör-szám a 10–20 perces kerethez áll be
+- **Heti fókusz**: kitűzhetsz egy testtájat, az app heti 3 alkalmat számol
+  (hétfőnként nulláz), sorozat-számlálóval („🔥 3 hete sorban") – az állás a
+  kezdőlap csempéjén, a Statisztikában és a heti összegzésben is látszik
+- **Fokozatosság**: hat elvégzett sor után a lap kimondja a következő lépést
+  (+2–3 ismétlés vagy +10 mp); a sor szövegként **megosztható**
+- Minden lapon ott a figyelmeztetés: ez megelőzés, nem orvoslás
+
+### 😴 Alvás & nyugalmi pulzus
+- **„Aludtam 8 órát"** – egy mondat vagy egy koppintás a Profilban: napi egy
+  érték, heti átlag, két hét görbe, minősítés; a vasárnapi összegzésben is
+- **„Nyugalmi pulzus 52"** – ugyanígy: napi egy érték, heti átlag, görbe és
+  léptetős gyorsbevitel; az edzés-adat („átlagpulzus 165") nem téveszti meg
+- **A szokásosnál jóval magasabb reggeli pulzusnál** a kezdőlap szól:
+  kímélő nap, sok víz, korai lefekvés – a pihenőpulzus a túlterhelés és a
+  kezdődő betegség legkorábbi jele
+- **Alvás ↔ edzés és alvás ↔ pulzus a saját adatból**: a Statisztika kimondja,
+  ha edzésnapokon kevesebbet alszol, és hogy a rövid éjszakák utáni reggeleken
+  mennyivel magasabb a pulzusod
+- Mindkét napló **CSV-be exportálható**, és jelvény is jár értük
+
 ### 🏋️ Erősítő edzésnapló
 - **Sorozatok rögzítése** gyakorlatonként (ismétlés × súly), a legutóbbi alkalom
   automatikus előtöltésével, kereséssel a naplóban
 - **Érzett terhelés (RPE 6–10)**, elhagyható: a súly és az ismétlés nem mondja
   meg, mennyi maradt a tankban. Könnyű napnál (≤7) a javaslat rögtön súlyt
   emel, a határon (10) pedig megismételteti ugyanazt. Mondatból is megy
-  („guggolás 3x10 100 kg rpe 8"), és a CSV exportban is szerepel
+  („guggolás 3x10 100 kg rpe 8", „rir 2" – RIR 2 = RPE 8 –, „90 kg @8"), és a CSV exportban is szerepel
 - **Sorozatok mondatból**: „3x10 fekvenyomás 60 kg", „guggolás 5x5 80 kg",
   „húzódzkodás 3x8" (saját testsúly), „bicepsz 12-10-8 15 kg"
   (sorozatonként más ismétlés, per-jellel is: „5/5/5"), „guggolás 3x10x60", „vállból nyomás
@@ -243,7 +276,7 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   km, ismétlés, étkezés, fehérje-cél, vízcél, lépésgyűjtés, kalóriaégetés, súlyzós volumen)
 - **Gyűjthető jelvények** (edzésszám, táv, széria, kihívás, étrend, víz és
   súlyzós mérföldkövek: 10 gyakorlat, 10 tonna volumen, 4 izomcsoport egy
-  héten), napi és heti sorozat (óraátállás-biztos, terv-tudatos:
+  héten; rehab-, alvás- és pulzus-mérföldkövek), napi és heti sorozat (óraátállás-biztos, terv-tudatos:
   a pihenőnap nem töri meg), konfetti, hangulat-napló
 
 ### 📊 Statisztika & előzmények
@@ -356,7 +389,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~701 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~776 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő
@@ -366,7 +399,7 @@ A **szósöprés** a leghalkabb hibafajtát keresi: amikor egy rövid szótő
 beleakad egy hétköznapi szóba, és a bejegyzés létrejön – csak épp nem arról,
 amit az ember írt (a KÉPERNYŐben az eper, a TARTALMAzban az alma, a „150
 graMMAl"-ban a harcművészet). Korpuszt csinál a forrás magyar kommentjeiből,
-és mind az öt felismerőn átfuttatja; a találatokat végig kell nézni, mert a
+és az összes felismerőn átfuttatja; a találatokat végig kell nézni, mert a
 java részük jogos.
 
 Tiszta natív Android app (Java, `Activity` + programozott felület), külső
