@@ -129,7 +129,9 @@ public final class StrengthParse {
             // teljesen. A súlyemelő fogások („szakítás", „lökés") azért külön
             // tételek, mert a súlyuk semmilyen más gyakorlatéval nem
             // összemérhető – egy kalap alatt a rekord és a haladás is hazudna.
-            {"Good morning", "good morning", "gudmorning"},
+            // A magyar terem „jó reggelt"-nek hívja – köszönésnek hangzik, de
+            // sorozat-számok nélkül úgysem lesz belőle bejegyzés.
+            {"Good morning", "good morning", "gudmorning", "jo reggelt"},
             {"Farmerjárás", "farmerjaras", "farmer jaras", "farmers walk", "farmer walk"},
             {"Szakítás", "szakitas", "snatch"},
             {"Lökés", "lokes", "clean and jerk", "clean & jerk", "clean es jerk"},
