@@ -199,4 +199,26 @@ public class FoodsCompoundTest {
         assertEquals(2, Foods.parse(all, "gombás rizottó").size());
         assertEquals(2, Foods.parse(all, "gyros és sajt").size());
     }
+
+    /**
+     * A jelzőként elé írt hús nem külön adag: a „marha pörkölt" egy pörkölt.
+     *
+     * Egybeírva („marhapörkölt") eddig is egy tétel volt – különírva viszont
+     * a hús adagja is bement, plusz három-négyszáz kalória, csendben. Az
+     * ÉS-sel felsorolt hús és pörkölt viszont KÉT étel marad.
+     */
+    @Test public void meatBeforeAStewIsAnAdjective() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[][] one = {{"marha pörkölt", "Pörkölt"}, {"birka gulyás", "Gulyásleves"},
+                {"szarvashús pörkölt", "Pörkölt"}, {"bárány pörkölt", "Pörkölt"},
+                {"vadas marha", "Vadas hús"}};
+        for (String[] c : one) {
+            java.util.List<Foods.Hit> h = Foods.parse(all, c[0]);
+            assertEquals(c[0], 1, h.size());
+            assertEquals(c[0], c[1], h.get(0).food.name);
+        }
+        assertEquals("marhahús és pörkölt", 2, Foods.parse(all, "marhahús és pörkölt").size());
+        assertEquals("külön mondva külön étel", 2,
+                Foods.parse(all, "ettem marhát, meg egy pörköltet").size());
+    }
 }

@@ -2190,6 +2190,15 @@ public final class Foods {
             // jelző pontosan azt mondja, hogy ez ugyanaz, csak nulla
             // kalóriával. Fordítva áll a takarásban: a jelző (light) marad,
             // az alap (üdítő, energiaital, szörp) esik.
+            // A pörkölt, a gulyás, a paprikás és a vadas HÚSÉTEL: a jelzőként
+            // elé írt hús („marha pörkölt", „birka gulyás", „vadas marha") nem
+            // külön adag hús a tál mellé. Egybeírva eddig is egy tétel volt –
+            // különírva viszont a hús adagja is bement, plusz háromszáz-
+            // négyszáz kalória, csendben.
+            {"Marhahús", "Pörkölt", "Gulyásleves", "Csirkepaprikás", "Vadas hús", "Tokány"},
+            {"Bárány / birka", "Pörkölt", "Gulyásleves", "Csirkepaprikás", "Tokány"},
+            {"Vadhús (szarvas, vaddisznó, nyúl)", "Pörkölt", "Gulyásleves",
+                    "Csirkepaprikás", "Vadas hús", "Tokány"},
             {"Üdítő (cukros)", "Cukormentes / light"},
             {"Energiaital", "Cukormentes / light"},
             {"Szörp (hígítva)", "Cukormentes / light"},
