@@ -233,6 +233,18 @@ public class SentenceBatteryTest {
                 {"majd", "—"},
                 {"iskolában", "—"},
                 {"tábor", "—"},
+                // A mai nap termése: mértékszó, hátravetett tört, zéró üdítő,
+                // jelzős húsétel, levestészta, kanálnyi gyömbér.
+                {"egy sor csoki", "Csokoládé 25g"},
+                {"egy sor csoki és egy sör", "Csokoládé 25g | Sör 500g"},
+                {"egy pizza, de csak a felét ettem meg", "Pizza 150g"},
+                {"coke zero", "Cukormentes / light 330g"},
+                {"cukormentes energiaital", "Cukormentes / light 330g"},
+                {"marha pörkölt", "Pörkölt 300g"},
+                {"birka gulyás", "Gulyásleves 400g"},
+                {"húsleves cérnametélttel", "Húsleves 400g | Levestészta 50g"},
+                {"gyömbéres tea", "Torma / gyömbér 10g | Tea (cukrozatlan) 250g"},
+                {"süllő roston", "Hal (fehér) 150g"},
     };
 
     @Test public void theMealSentencesStayAsTheyAre() {
