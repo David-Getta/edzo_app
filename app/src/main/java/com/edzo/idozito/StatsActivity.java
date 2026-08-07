@@ -1883,6 +1883,38 @@ public class StatsActivity extends Activity {
             warn.setPadding(0, dp(4), 0, 0);
             c.addView(warn);
         }
+        // Alvás ↔ pulzus: aki mindkettőt naplózza, annál a rövid éjszaka
+        // meg is látszik a reggeli számon – ezt érdemes kimondani, mert a
+        // saját adat százszor meggyőzőbb bármelyik tanácsnál.
+        java.util.HashMap<Long, Double> sleepByDay = new java.util.HashMap<>();
+        for (int i = 0; i < sl.length(); i++) {
+            org.json.JSONObject o = sl.optJSONObject(i);
+            if (o != null) sleepByDay.put(Days.index(o.optLong("ts")), o.optDouble("h", -1));
+        }
+        org.json.JSONArray pa = Pulse.load(this);
+        double shortSum = 0, okSum = 0;
+        int shortN = 0, okN = 0;
+        for (int i = 0; i < pa.length(); i++) {
+            org.json.JSONObject o = pa.optJSONObject(i);
+            if (o == null) continue;
+            int ago = Days.ago(o.optLong("ts"), now);
+            if (ago < 0 || ago >= 60) continue;
+            Double h = sleepByDay.get(Days.index(o.optLong("ts")));
+            int b = o.optInt("b", -1);
+            if (h == null || h <= 0 || b <= 0) continue;
+            if (h < 7) { shortSum += b; shortN++; }
+            else { okSum += b; okN++; }
+        }
+        if (shortN >= 3 && okN >= 3) {
+            double diff = shortSum / shortN - okSum / okN;
+            if (diff >= 2) {
+                TextView pt = text("❤️ A hét óránál rövidebb éjszakák utáni reggeleken "
+                        + "a pulzusod átlag +" + Math.round(diff)
+                        + " bpm – a kevés alvás nálad mérhető.", 12, MUTED, false);
+                pt.setPadding(0, dp(4), 0, 0);
+                c.addView(pt);
+            }
+        }
         return c;
     }
 
