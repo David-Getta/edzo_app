@@ -982,6 +982,10 @@ public class DietActivity extends Activity {
                     if (g.get(i).grams > 0)
                         sb.append(" ").append(Math.round(g.get(i).grams)).append(" g");
                 }
+                // Ha a mondat a kalóriát is kimondja, azt vesszük át – és ezt
+                // már az előnézet is mondja ki, ne a mentés után derüljön ki.
+                int said = Kcal.stated(q);
+                if (said > 0) sb.append("  ·  a kiírt ").append(said).append(" kcal-ra igazítva");
                 reco.setText(sb.toString());
             }
         });
