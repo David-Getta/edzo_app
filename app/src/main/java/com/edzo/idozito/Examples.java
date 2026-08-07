@@ -74,6 +74,7 @@ public final class Examples {
             "kirándultunk 5 órát",
             "futás és úszás 30-30 perc",
             "hegymászás 4 óra",
+            "leúsztam ezerötszáz métert",
     };
 
     /** Erősítő sorozatok egy mondatból. */

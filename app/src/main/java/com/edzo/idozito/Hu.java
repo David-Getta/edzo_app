@@ -160,6 +160,26 @@ public final class Hu {
                         String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(b[1]))});
         }
 
+        // Ezresek: „ezer lépés", „leúsztam ezerötszáz métert", „tízezer lépés".
+        // A napi lépésszám és az úszástáv magyarul kimondva mindig ezres, és
+        // eddig egyetlen ilyen alak sem került át számmá.
+        String[][] thousands = {{"ezer", "1000"}, {"ketezer", "2000"},
+                {"haromezer", "3000"}, {"negyezer", "4000"}, {"otezer", "5000"},
+                {"hatezer", "6000"}, {"hetezer", "7000"}, {"nyolcezer", "8000"},
+                {"kilencezer", "9000"}, {"tizezer", "10000"}, {"tizenotezer", "15000"},
+                {"huszezer", "20000"}, {"harmincezer", "30000"}, {"szazezer", "100000"}};
+        for (String[] t : thousands) {
+            out.add(t);
+            // Csak a százasokat fűzzük hozzá: az „ezerötszáz" gyakori, az
+            // „ezerötszázhuszonhárom" nem – és minden felvett alak lassítja a
+            // felismerést, mert mindegyiket végigkeressük.
+            for (String[] h : hundreds) {
+                if (h[0].endsWith("at")) continue;
+                out.add(new String[]{t[0] + h[0],
+                        String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(h[1]))});
+            }
+        }
+
         // Hossz szerint csökkenő: a hosszabb alak mindig előbb illeszkedjen.
         String[][] arr = out.toArray(new String[0][]);
         java.util.Arrays.sort(arr, new java.util.Comparator<String[]>() {

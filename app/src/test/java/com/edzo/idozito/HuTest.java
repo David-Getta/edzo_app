@@ -193,4 +193,22 @@ public class HuTest {
             assertTrue(out, out.indexOf(',') < 0 && out.indexOf('.') < 0);
         }
     }
+
+    /**
+     * Ezresek kimondva: „ezerötszáz", „tízezer".
+     *
+     * Az úszástáv és a napi lépésszám magyarul mindig ezres, és eddig
+     * egyetlen ilyen alak sem lett szám – az „ezerötszáz méter" bejegyzése
+     * létrejött, csak épp táv nélkül.
+     */
+    @Test public void thousandsAreNumbersToo() {
+        assertEquals("1000", Hu.digits("ezer"));
+        assertEquals("1500", Hu.digits("ezerotszaz"));
+        assertEquals("2000", Hu.digits("ketezer"));
+        assertEquals("10000", Hu.digits("tizezer"));
+        assertEquals("100000", Hu.digits("szazezer"));
+        // Szó belsejében viszont nem szám: az „ezermester" nem 1000 mester.
+        assertEquals("ezermester", Hu.digits("ezermester"));
+        assertEquals("ezerjo", Hu.digits("ezerjo"));
+    }
 }

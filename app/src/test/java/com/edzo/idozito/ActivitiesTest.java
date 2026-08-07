@@ -776,4 +776,13 @@ public class ActivitiesTest {
         assertEquals(30, p.plans.get(0).minutes);
         assertEquals(20, p.plans.get(1).minutes);
     }
+
+    /** A kimondott ezres táv is táv: „leúsztam ezerötszáz métert". */
+    @Test public void spelledThousandsCarryTheDistance() {
+        Activities.Parsed p = Activities.parse("leúsztam ezerötszáz métert");
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(1.5, p.plans.get(0).km, 0.01);
+        assertEquals(2.0, Activities.parse("kétezer méter úszás").plans.get(0).km, 0.01);
+    }
 }

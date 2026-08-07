@@ -532,6 +532,19 @@ public final class Activities {
                 out.add(new String[]{h[0] + b[0],
                         String.valueOf(Integer.parseInt(h[1]) + Integer.parseInt(b[1]))});
         }
+        // Ezresek: az úszástáv magyarul kimondva mindig ezres („leúsztam
+        // ezerötszáz métert"), és eddig a táv némán elveszett – a bejegyzés
+        // létrejött, csak épp táv nélkül.
+        String[][] thousands = {{"ezer", "1000"}, {"ketezer", "2000"},
+                {"haromezer", "3000"}, {"negyezer", "4000"}, {"otezer", "5000"},
+                {"tizezer", "10000"}};
+        for (String[] t : thousands) {
+            out.add(t);
+            for (String[] h : hundreds)
+                out.add(new String[]{t[0] + h[0],
+                        String.valueOf(Integer.parseInt(t[1]) + Integer.parseInt(h[1]))});
+        }
+
         // A HOSSZABB alak elöl: különben a „szazotven" szaz + otven lenne.
         String[][] arr = out.toArray(new String[0][]);
         java.util.Arrays.sort(arr, new java.util.Comparator<String[]>() {
