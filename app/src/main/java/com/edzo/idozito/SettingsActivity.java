@@ -344,7 +344,9 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
-            {"❤️", "Nyugalmi pulzus", "A „nyugalmi pulzus 52” mondat a Profilba kerül: napi egy érték, heti átlag és görbe – a legolcsóbb edzettség- és túlterhelés-jelző."},
+            {"❤️", "Nyugalmi pulzus", "A „nyugalmi pulzus 52” mondat a Profilba kerül: napi egy érték, heti átlag, görbe és léptetős gyorsbevitel. Ha a reggeli érték jóval a szokásos fölött van, a kezdőlap szól, hogy ma kímélj magadon."},
+            {"📤", "Rehab-sor küldése", "A testtáj lapjáról a teljes sor (gyakorlat, adagolás, tipp) szövegként elküldhető – annak, akinek épp fáj."},
+            {"😮‍💨", "RIR és @8", "A „guggolás 3x10 100 kg rir 2” és a „90 kg @8” is érzett terhelésként kerül a naplóba (RIR 2 = RPE 8)."},
             {"⭐", "Heti rehab-fókusz", "A rehab-lapon kitűzhetsz egy testtájat heti fókusznak: az app heti 3 alkalmat számol, az állás a kezdőlap csempéjén is látszik."},
             {"🩹", "Megelőzés és rehab", "Boka-stabilitás, térd, derék, váll, golf- és teniszkönyök, nyak, csípő, talp, sípcsont, Achilles – kész, 10–15 perces gyógytornász-ihletésű sorok a Nyújtás & mobilitás lapon."},
             {"😴", "Alvás-napló", "„Aludtam 8 órát” – egy koppintás vagy egy mondat a Profilban. Heti átlag, két hét görbe, és a vasárnapi összefoglalóban is ott van."},
@@ -360,7 +362,6 @@ public class SettingsActivity extends Activity {
             {"✍️", "Pontosabb mondatértés", "„1h20 futás”, „fekvenyomás 60x10, 70x8, 80x6”, „1:30 munka 0:30 pihenő”, „száz gramm rizs”, „csirke rizzsel” – és a kimondott óra is számít („ma reggel 6-kor futottam”)."},
             {"📈", "A legnehezebb napod", "A havi étrend-kártya kiírja, melyik hétköznapon eszel a legtöbbet – a havi átlag ezt elrejtené."},
             {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát”). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
-            {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
         for (String[] it : items)
