@@ -195,6 +195,22 @@ public class MobilityActivity extends Activity {
         box.addView(warn);
         new Sheet(this, area.emoji + " " + area.name, area.goal)
                 .addCustom(box)
+                // Vezetett mód: az időzítő 40 mp-es körökben, három körben
+                // mondja a gyakorlatokat – az ismétlésszámos adagolás durvább
+                // közelítése, de kézbe veszi azt, aki csak sodródna a listán.
+                .addNeutral("▶ Vezetett indítás (3 kör, 40 mp)", () -> {
+                    java.util.ArrayList<String> names = new java.util.ArrayList<>();
+                    for (int r = 0; r < 3; r++)
+                        for (Rehab.Ex e : area.moves) names.add(e.name);
+                    Intent gi = new Intent(this, MainActivity.class);
+                    gi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    gi.putExtra("r_names", names.toArray(new String[0]));
+                    gi.putExtra("r_label", area.name);
+                    gi.putExtra("r_work", 40);
+                    gi.putExtra("r_rest", 8);
+                    gi.putExtra("r_prep", 5);
+                    startActivity(gi);
+                })
                 .addPrimary("✅ Elvégeztem (~" + Rehab.minutesOf(area) + " perc)", () -> {
                     // A naplóba mobilitásként kerül: a széria, az XP és a heti
                     // összegzés is látja – a megelőzés is edzés.
