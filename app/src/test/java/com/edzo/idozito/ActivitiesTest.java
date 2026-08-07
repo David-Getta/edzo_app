@@ -750,4 +750,30 @@ public class ActivitiesTest {
         assertEquals(45, t.plans.get(0).minutes);
         assertEquals(45, t.plans.get(1).minutes);
     }
+
+    /**
+     * A vélemény nem edzés: „szeretek futni”, „utálok futni”, „jó lenne egy
+     * futás”, „el kellene menni futni”.
+     *
+     * Mind naplóba került, negyvenöt perces alapértelmezett hosszal – és a
+     * szériába, az XP-be, a heti összesítőbe is. A szándék-szűrő eddig csak a
+     * jövő időt fogta („holnap futok”), a vélemény és a feltételes mód
+     * kimaradt belőle.
+     */
+    @Test public void opinionsAndWishesAreNotWorkouts() {
+        for (String q : new String[]{"szeretek futni és úszni", "utálok futni",
+                "imádok úszni", "jó lenne egy futás", "el kellene menni futni",
+                "nincs kedvem futni", "majd kondizok"})
+            assertTrue("edzés lett belőle: " + q, Activities.parse(q).isEmpty());
+    }
+
+    /**
+     * A „majd" viszont NEM jelzőszó magában: két megtörtént edzést köt össze.
+     */
+    @Test public void thenStillJoinsTwoWorkouts() {
+        Activities.Parsed p = Activities.parse("30 perc futás majd 20 perc úszás");
+        assertEquals(2, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(20, p.plans.get(1).minutes);
+    }
 }

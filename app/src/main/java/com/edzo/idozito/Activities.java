@@ -1386,14 +1386,24 @@ public final class Activities {
         // bekerült a naplóba, a szériába és az XP-be. A múlt idő ragja más
         // („futottam"), így ezek a szótövek nem ütköznek vele.
         for (String w : new String[]{"holnap", "jovo het", "jovo hon", "fogok",
-                "tervez", "szeretne", "megyek", "lesz idom", "majd lesz"})
+                "tervez", "szeretne", "megyek", "lesz idom", "majd lesz",
+                // Szándék és VÉLEMÉNY: a „szeretek futni" nem egy futás, a
+                // „jó lenne egy futás" pláne nem, és az „el kellene menni"
+                // pont az ellenkezője. Mind a naplóba került, negyvenöt
+                // perces alapértelmezett hosszal.
+                "szeretek", "szeretem", "imadok", "utalok", "utalom",
+                "kellene", "jo lenne", "jol esne", "kedvem"})
             if (s.contains(w)) return true;
         // Egyes szám első személyű jelen idő. A „futok" és az „edzek"
         // SZÁNDÉKOSAN kimarad: az előbbi a futás szótöve (a „három kört futok"
         // is futás), az utóbbi pedig szinte mindig tagadásban áll („nem
         // edzek"), amit a pihenőnap-ág amúgy is kezel.
         for (String w : new String[]{"uszok", "biciklizek", "gyurok",
-                "sportolok", "mozgok"}) {
+                "sportolok", "mozgok",
+                // A „majd kondizok" ugyanolyan szándék, mint a „majd úszok".
+                // (A puszta „majd" NEM lehet jelzőszó: a „futottam, majd
+                // úsztam" két megtörtént edzés.)
+                "kondizok", "kondizom", "uszom", "biciklizem", "sportolok"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 int e = p + w.length();
