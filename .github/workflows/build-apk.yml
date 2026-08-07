@@ -104,6 +104,11 @@ jobs:
           path: out/My-Trainer.apk
           if-no-files-found: error
 
+      # A release szövegébe a commit címsora kerül: az Obtainium-értesítésben
+      # így rögtön látszik, MI változott – nem kell hozzá a git-történet.
+      - name: Commit subject for release notes
+        run: echo "COMMIT_SUBJECT=$(git log -1 --pretty=%s)" >> "$GITHUB_ENV"
+
       - name: Publish APK to Release
         if: >-
           github.ref == 'refs/heads/claude/busy-cori-yjd6to' ||
@@ -118,7 +123,9 @@ jobs:
           name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            Grit automatikus build (v72.40, build ${{ github.run_number }}).
+            Grit automatikus build (v72.41, build ${{ github.run_number }}).
+
+            **Mi változott:** ${{ env.COMMIT_SUBJECT }}
 
             Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
             **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"
