@@ -188,6 +188,9 @@ public final class Foods {
         new Food("Brokkoli", 35, 2.8, 150, "brokkoli"),
         new Food("Karfiol", 25, 2, 150, "karfiol"),
         new Food("Paradicsom", 18, 0.9, 100, "paradicsom", "pari"),
+        // Külön sor, hogy a koktél-ital rövidebb töve ne nyerje el, ÉS mert a
+        // szeme hatoda a nagy paradicsoménak – a „10 szem" csak így ad jó számot.
+        new Food("Koktélparadicsom", 18, 0.9, 100, "koktelparadicsom", "koktel paradicsom"),
         new Food("Uborka", 15, 0.7, 100, "uborka", "ubi"),
         new Food("Paprika", 25, 1, 100, "paprika"),
         // A „gyümölcssaláta" korábban zöld salátára esett: 200 grammból 30
@@ -606,7 +609,7 @@ public final class Foods {
         new Food("Ananász", 50, 0.5, 150, "ananassz", "ananasz"),
         new Food("Málna", 52, 1.2, 100, "malna"),
         new Food("Áfonya", 57, 0.7, 100, "afonya"),
-        new Food("Szilva", 46, 0.7, 100, "szilva"),
+        new Food("Szilva", 46, 0.7, 100, "szilva", "ringlo"),
         new Food("Cseresznye / meggy", 60, 1, 150, "cseresznye", "meggy"),
         new Food("Datolya", 280, 2.5, 30, "datolya"),
         new Food("Tökmag / napraforgómag", 570, 22, 30, "tokmag", "napraforgomag",
@@ -1153,6 +1156,7 @@ public final class Foods {
             // Amit a próbafuttatás szerint természetes darabra mondani, de eddig
             // a tipikus adaggal számolt („3 keksz", „2 tortilla", „2 paradicsom").
             {"Keksz", "12"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
+            {"Koktélparadicsom", "20"},
             {"Paprika", "120"}, {"Fagylalt", "50"}, {"Proteinszelet", "60"},
             {"Péksütemény", "60"}, {"Tojásfehérje", "33"},
             // Egészben fogyasztott fogások és poharas italok: a „2 burrito"

@@ -334,6 +334,14 @@ public class FoodsQuantityTest {
         assertEquals(30, grams("egy marék mandula"), 0.01);
         // A kimondott gramm erősebb marad.
         assertEquals(30, grams("30 g mandula"), 0.01);
+        // A koktélparadicsom szeme hatoda a nagyénak – és nem koktél-ital.
+        assertEquals(200, grams("koktélparadicsom 10 szem"), 0.01);
+        assertEquals("Koktélparadicsom",
+                Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                        "koktélparadicsom 10 szem").get(0).food.name);
+        // A ringló szilvaként számít.
+        assertEquals("Szilva", Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "két ringló").get(0).food.name);
     }
 
     /** A kenyér KARÉJ, a virsli és a kolbász SZÁL – mindkettő darabszó. */
