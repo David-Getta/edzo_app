@@ -1476,6 +1476,13 @@ public class DietActivity extends Activity {
         box.setPadding(dp(4), 0, dp(4), 0);
         final EditText search = input("Keresés (pl. csirke)");
         box.addView(search, lp());
+        // Rendezés: név szerint (alap), vagy a legfehérjésebbek elöl – aki a
+        // fehérje-célját tölti, annak ez a lista a bevásárlólistája.
+        final boolean[] byProtein = {false};
+        final TextView sortChip = text("↕ Név szerint", 12, MUTED, false);
+        sortChip.setPadding(dp(2), dp(6), dp(8), dp(2));
+        sortChip.setClickable(true);
+        box.addView(sortChip);
         final LinearLayout listV = vbox();
         LinearLayout.LayoutParams llp = lp();
         llp.topMargin = dp(8);
@@ -1502,6 +1509,9 @@ public class DietActivity extends Activity {
                 }
                 hits.add(f);
             }
+            if (byProtein[0])
+                java.util.Collections.sort(hits,
+                        (x, y) -> Double.compare(y.prot100, x.prot100));
             int shown = 0;
             for (Foods.Food f : hits) {
                 if (shown >= limit[0]) break;
@@ -1546,6 +1556,12 @@ public class DietActivity extends Activity {
             }
         };
         renderRef[0] = render;
+        sortChip.setOnClickListener(v -> {
+            byProtein[0] = !byProtein[0];
+            sortChip.setText(byProtein[0] ? "↕ Fehérje szerint" : "↕ Név szerint");
+            limit[0] = 25;
+            render.run();
+        });
         search.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b2, int c) {}
