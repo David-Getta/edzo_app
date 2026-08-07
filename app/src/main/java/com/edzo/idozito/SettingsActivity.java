@@ -338,6 +338,11 @@ public class SettingsActivity extends Activity {
      */
     void whatsNewSheet() {
         String[][] items = {
+            {"📏", "Körfogatok", "Derék, csípő, mellkas, comb, kar – mondatból is („derék 84 cm”). A derék saját görbét kapott, derék/magasság aránnyal."},
+            {"🔢", "A dobozon írt kalória", "„vacsora 650 kcal”, „müzliszelet 180 kcal 12 g fehérje” – a kimondott szám felülírja a becslést. Külön gyorsgomb is: Csak kalória."},
+            {"⌚", "Az óra száma számít", "„futás 45 perc 520 kcal” – ha az órád megmérte, azt mentjük, nem a saját becslésünket."},
+            {"🍽", "Okosabb étel-értés", "„egy sor csoki”, „…de csak a felét ettem meg”, zéró üdítők egy tételként, vad- és bárányhús, levestészta. És tízszer gyorsabb felismerés."},
+            {"⏱", "Idő-vezérelt formák", "„hiit 20 perc”, „fartlek fél óra”, „e2mom 20” – a hosszból kijön a körszám. A „fél 8-kor” pedig hét óra, ahogy magyarul értjük."},
             {"📅", "Edzésnapok", "Tolónap, Húzónap, Lábnap… – hat beépített nap, és sajátot is felvehetsz. A nap megnyitva gyakorlatonként ott a mai javaslat és a bemelegítés, ami megvan, az ki van pipálva."},
             {"🔥", "Bemelegítő rámpa", "A mai munkasúlyhoz üres rúd → 50% → 70% → 85%, felrakható súlyokon. Ott van a mai javaslat mellett és külön kalkulátorként is, a tárcsabontással."},
             {"💪", "Erő-csúcsok", "A Csúcsaid közt ott a legnehezebb emelésed és a legjobb becsült 1RM-ed, a gyakorlat nevével. A heti összegzés pedig külön szól, ha mindenkori rekord dőlt meg."},
@@ -347,7 +352,6 @@ public class SettingsActivity extends Activity {
             {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát”). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
             {"😮‍💨", "Érzett terhelés (RPE)", "Elhagyható 6–10 érték a bejegyzéshez. Könnyű napnál a javaslat rögtön súlyt emel, a határon megismételteti ugyanazt."},
             {"🍳", "A szokásos étkezésed", "Ha egy napszakban háromszor ugyanazt naplóztad, az app magától felajánlja – egy koppintás."},
-            {"⚠️", "Terhelés-figyelés", "Az e heti edzésmennyiség a megelőző négy hét átlagához mérve – a sérülések többsége nem a sok edzésből jön, hanem a hirtelen többől."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
         for (String[] it : items)
