@@ -228,4 +228,18 @@ public class TimeHintTest {
         r.setTimeInMillis(TimeHint.from("ma délelőtt", now));
         assertEquals(10, r.get(java.util.Calendar.HOUR_OF_DAY));
     }
+
+    /**
+     * „Fél 8-kor": magyarul ez fél órával nyolc ELŐTT van, tehát hét óra.
+     *
+     * Eddig nyolcnak számított – egy órával odébb, mint amit az ember mondott.
+     * A „fél adag" és a „fél liter" viszont mennyiség, nem időpont.
+     */
+    @Test public void halfPastSevenIsCalledHalfEight() {
+        assertEquals(7, TimeHint.hourOf(Hu.digits(Foods.norm("fél 8-kor"))));
+        assertEquals(20, TimeHint.hourOf(Hu.digits(Foods.norm("este fél 9-kor"))));
+        assertEquals(11, TimeHint.hourOf(Hu.digits(Foods.norm("fél 12-kor ebéd"))));
+        assertEquals(-1, TimeHint.hourOf(Hu.digits(Foods.norm("fél adag gyros"))));
+        assertEquals(-1, TimeHint.hourOf(Hu.digits(Foods.norm("fél liter víz"))));
+    }
 }
