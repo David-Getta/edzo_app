@@ -224,13 +224,16 @@ public class MobilityActivity extends Activity {
         final boolean isFocus = area.id.equals(RehabLog.focusId(this));
         new Sheet(this, area.emoji + " " + area.name, area.goal)
                 .addCustom(box)
-                // Vezetett mód: az időzítő 40 mp-es körökben, három körben
-                // mondja a gyakorlatokat – az ismétlésszámos adagolás durvább
-                // közelítése, de kézbe veszi azt, aki csak sodródna a listán.
-                .addNeutral("▶ Vezetett indítás (3 kör, 40 mp)", () -> {
+                // Vezetett mód: az időzítő 40 mp-es ablakokban mondja a
+                // gyakorlatokat – a kétoldalasokat bal/jobb bontásban, és a
+                // kör-szám úgy áll be, hogy a sor a 10–20 perces keretben
+                // maradjon. Az ismétlésszámos adagolás durvább közelítése, de
+                // kézbe veszi azt, aki csak sodródna a listán.
+                .addNeutral("▶ Vezetett indítás (" + Rehab.guidedRounds(area)
+                        + " kör, 40 mp)", () -> {
+                    java.util.List<String> one = Rehab.guidedNames(area);
                     java.util.ArrayList<String> names = new java.util.ArrayList<>();
-                    for (int r = 0; r < 3; r++)
-                        for (Rehab.Ex e : area.moves) names.add(e.name);
+                    for (int r = 0; r < Rehab.guidedRounds(area); r++) names.addAll(one);
                     Intent gi = new Intent(this, MainActivity.class);
                     gi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     gi.putExtra("r_names", names.toArray(new String[0]));

@@ -257,6 +257,37 @@ public final class Rehab {
         return Math.max(10, Math.min(20, a.moves.length * 2));
     }
 
+    // ---------- Vezetett sor ----------
+
+    /**
+     * A vezetett sor nevei egy körre: a kétoldalas gyakorlat bal/jobb
+     * bontásban.
+     *
+     * Az adagolásban a „/ láb", „/ oldal", „/ kar" azt jelenti, hogy a
+     * gyakorlatot mindkét oldalra el kell végezni – a vezetett módban ez
+     * eddig egyetlen 40 mp-es ablakba volt gyömöszölve. Külön ablakot kap
+     * a két oldal, a bemondás pedig ki is mondja, melyik jön.
+     */
+    public static java.util.List<String> guidedNames(Area a) {
+        java.util.ArrayList<String> out = new java.util.ArrayList<>();
+        for (Ex e : a.moves) {
+            boolean sided = e.dose.contains("/ láb") || e.dose.contains("/ oldal")
+                    || e.dose.contains("/ kar") || e.dose.contains("/ irány");
+            if (sided) {
+                out.add(e.name + " – bal");
+                out.add(e.name + " – jobb");
+            } else {
+                out.add(e.name);
+            }
+        }
+        return out;
+    }
+
+    /** Ennyi kör fér a 10–20 perces keretbe: bontott sornál kettő. */
+    public static int guidedRounds(Area a) {
+        return guidedNames(a).size() > a.moves.length ? 2 : 3;
+    }
+
     // ---------- Heti fókusz ----------
 
     /**

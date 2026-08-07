@@ -166,6 +166,32 @@ public class RehabTest {
         assertEquals(1, Rehab.weekCount(new long[]{monday - 6 * 3600 * 1000}, monday));
     }
 
+    /**
+     * A vezetett sor a kétoldalas gyakorlatot bal/jobb bontásban mondja,
+     * és a kör-szám úgy áll be, hogy a sor a keretben maradjon.
+     */
+    @Test public void theGuidedListSplitsSidedExercisesAndFitsTheFrame() {
+        for (Rehab.Area a : Rehab.AREAS) {
+            java.util.List<String> names = Rehab.guidedNames(a);
+            int rounds = Rehab.guidedRounds(a);
+            assertTrue("kevés név: " + a.id, names.size() >= a.moves.length);
+            assertTrue("kör-szám: " + a.id, rounds == 2 || rounds == 3);
+            // 40 mp munka + 8 mp pihenő ablakonként: 8 és 25 perc között.
+            int total = rounds * names.size() * 48;
+            assertTrue("kicsúszik a keretből: " + a.id + " → " + total / 60 + " perc",
+                    total >= 8 * 60 && total <= 25 * 60);
+            // A bontott nevek párban járnak, és kimondják az oldalt.
+            for (String n : names)
+                if (n.endsWith(" – bal"))
+                    assertTrue("hiányzó pár: " + n, names.contains(
+                            n.substring(0, n.length() - 6) + " – jobb"));
+        }
+        // A boka-sor egylábas gyakorlatai tényleg bontva mennek.
+        java.util.List<String> boka = Rehab.guidedNames(Rehab.byId("boka"));
+        assertTrue(boka.contains("Egylábas állás – bal"));
+        assertTrue(boka.contains("Egylábas állás – jobb"));
+    }
+
     /** A fókusz-sor kimondja az állást, és a kész hétre pipát tesz. */
     @Test public void theFocusLineShowsProgress() {
         Rehab.Area a = Rehab.byId("boka");
