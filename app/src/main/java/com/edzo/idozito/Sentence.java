@@ -20,7 +20,7 @@ public final class Sentence {
     private Sentence() {}
 
     /** Hova való a mondat. NONE = egyik felismerő sem tud vele mit kezdeni. */
-    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE }
+    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE, SLEEP }
 
     /** Az átirányított mondat Intent-kulcsa: a cél-képernyő ezzel nyílik meg. */
     public static final String EXTRA = "sentence";
@@ -69,6 +69,9 @@ public final class Sentence {
         // appban, ezért a testsúly csak arra a maradékra jelentkezik, amit
         // senki más nem kért magának.
         if (!body.isEmpty()) return Kind.BODY;
+        // Az alvás a legvégén: kimondott alvás-szó kell hozzá, tehát nem
+        // veszélyes – de ami eddig bármi másnak elment, az maradjon az.
+        if (Sleep.parse(q) > 0) return Kind.SLEEP;
         return Kind.NONE;
     }
 
@@ -81,6 +84,7 @@ public final class Sentence {
             case INTERVAL: return "Időzítő";
             case BODY: return "Profil";
             case ROUTINE: return "Edzésnapok";
+            case SLEEP: return "Profil";
             default: return "";
         }
     }
@@ -99,6 +103,7 @@ public final class Sentence {
             case INTERVAL: return "⏱️ Ez időzítő-tervnek tűnik – koppints, és beállítom.";
             case BODY: return "⚖️ Ez mérésnek tűnik – koppints, és a Profilba viszem.";
             case ROUTINE: return "📅 Ez edzésnapnak tűnik – koppints, és felveszem.";
+            case SLEEP: return "😴 Ez alvásnak tűnik – koppints, és a Profilba jegyzem.";
             default: return "";
         }
     }

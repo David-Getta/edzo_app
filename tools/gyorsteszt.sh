@@ -77,6 +77,24 @@ while i < len(lines):
 open(sys.argv[2], 'w').write('\n'.join(out))
 PY
 
+# A Sleep tárolása Context-es; a tesztekhez csak a tiszta rész kell.
+python3 - "$SRC/Sleep.java" "$PKG/Sleep.java" <<'PY'
+import sys
+lines = open(sys.argv[1]).read().split('\n')
+out = []; i = 0
+while i < len(lines):
+    if 'android.content.Context' in lines[i] and 'static' in lines[i]:
+        seen = False; depth = 0
+        while i < len(lines):
+            depth += lines[i].count('{') - lines[i].count('}')
+            if '{' in lines[i]: seen = True
+            i += 1
+            if seen and depth <= 0: break
+        continue
+    out.append(lines[i]); i += 1
+open(sys.argv[2], 'w').write('\n'.join(out))
+PY
+
 # 3) Nagy, Android-függő osztályokból csak a tesztelt, statikus számítások.
 python3 - "$SRC" "$PKG" <<'PY'
 import sys, re
@@ -215,7 +233,7 @@ PY
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest
        MusclesTest MusclesNamesTest ProgressionTest ProgressionBodyweightTest
-       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest LevelsTest StreaksTest WaterTest PlateCalcTest KcalTest"
+       DaysTest HuTest AlarmsTest MobilityTest StrengthParseTest ExamplesTest LoadTest MealIdeasTest IntervalParseTest WeekplanTest BestsTest TimeHintTest HabitsTest WarmupTest RoutinesTest SentenceBatteryTest HoldsTest ProgramsTest SentenceTest BodyParseTest MatrixTest LevelsTest StreaksTest WaterTest PlateCalcTest KcalTest SleepTest"
 CLASSES=""
 for t in $TESTS; do
   if [ -f "$TST/$t.java" ]; then cp "$TST/$t.java" "$PKG/"; CLASSES="$CLASSES com.edzo.idozito.$t"; fi

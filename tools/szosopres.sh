@@ -134,6 +134,24 @@ open(sys.argv[2], 'w').write(
     "    " + grab(sl, 'public static String setLabel(') + "\n}\n")
 PY2
 
+# A Sleep tárolása Context-es; ide csak a tiszta rész kell.
+python3 - "$SRC/Sleep.java" "$PKG/Sleep.java" <<'PYS'
+import sys
+lines = open(sys.argv[1]).read().split('\n')
+out = []; i = 0
+while i < len(lines):
+    if 'android.content.Context' in lines[i] and 'static' in lines[i]:
+        seen = False; depth = 0
+        while i < len(lines):
+            depth += lines[i].count('{') - lines[i].count('}')
+            if '{' in lines[i]: seen = True
+            i += 1
+            if seen and depth <= 0: break
+        continue
+    out.append(lines[i]); i += 1
+open(sys.argv[2], 'w').write('\n'.join(out))
+PYS
+
 javac -d "$OUT" "$PKG"/*.java 2>&1 | grep -v '^Note:' || true
 if [ ! -f "$OUT/com/edzo/idozito/Sopres.class" ]; then
   echo "A fordítás nem sikerült."; rm -rf "$WORK"; exit 1

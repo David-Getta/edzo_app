@@ -85,7 +85,11 @@ public class ExamplesTest {
     @Test public void everyBodyExampleIsRecognised() {
         for (String q : Examples.BODY) {
             BodyParse.Body b = BodyParse.parse(q);
-            assertTrue("nem ismeri fel a saját példáját: " + q, !b.isEmpty());
+            // Az alvás-példa is a Profil mezőjében él – azt a saját
+            // felismerője érti.
+            assertTrue("nem ismeri fel a saját példáját: " + q,
+                    !b.isEmpty() || Sleep.parse(q) > 0);
+            if (b.isEmpty()) continue;
             assertTrue("életszerűtlen mérés: " + q,
                     (b.kg == 0 || (b.kg >= 30 && b.kg <= 250))
                             && (b.fatPct == 0 || (b.fatPct >= 3 && b.fatPct <= 60)));

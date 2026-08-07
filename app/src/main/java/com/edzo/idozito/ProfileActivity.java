@@ -180,6 +180,13 @@ public class ProfileActivity extends Activity {
         col.addView(chartCard, lp());
         col.addView(gap(14));
 
+        // Alvás: az edzés másik fele. Egy szám naponta, heti átlaggal.
+        sleepCard = card();
+        sleepCard.setPadding(dp(16), dp(12), dp(16), dp(12));
+        col.addView(sleepCard, lp());
+        refreshSleepCard();
+        col.addView(gap(14));
+
         // Mentett mérések listája: egyetlen elgépelt adat is javítható, nem
         // kell hozzá az egész görbét feláldozni.
         measList = vbox();
@@ -254,6 +261,22 @@ public class ProfileActivity extends Activity {
      * hogy egy elgépelt szám még mentés előtt javítható legyen.
      */
     void measurementSheet(final String sentence) {
+        // Az alvás-mondat is ide érkezik („aludtam 8 órát"): a Profil a
+        // pihenés naplója is, nem csak a mérlegé.
+        double slept = Sleep.parse(sentence);
+        if (slept > 0) {
+            new Sheet(this, "Alvás a mondatból 😴",
+                    "„" + sentence.trim() + "”\n\n→  " + Hu.kg(slept) + " óra – "
+                            + Sleep.verdict(slept))
+                    .addPrimary("Mentés a mai napra", () -> {
+                        Sleep.add(this, System.currentTimeMillis(), slept);
+                        refreshSleepCard();
+                        Ux.blazeCard(this, "😴 Alvás mentve ✔  " + Hu.kg(slept) + " óra");
+                    })
+                    .addCancel()
+                    .show();
+            return;
+        }
         BodyParse.Body b = BodyParse.parse(sentence);
         if (b.isEmpty()) {
             // Lehet, hogy nem is mérés: a mondat itt is megtalálhatja a helyét.
@@ -720,6 +743,48 @@ public class ProfileActivity extends Activity {
             shown++;
         }
         measList.addView(card, lp());
+    }
+
+    LinearLayout sleepCard;
+
+    /**
+     * Az alvás-kártya: a legutóbbi éjszaka és a heti átlag, gyorsgombokkal.
+     *
+     * A bevitel egy koppintás: hat gomb a szokásos órákra, a fél órákat a
+     * mondat-bevitel tudja („aludtam hét és fél órát").
+     */
+    void refreshSleepCard() {
+        if (sleepCard == null) return;
+        sleepCard.removeAllViews();
+        sleepCard.addView(text("😴 Alvás", 15.5f, TXT, true));
+        double last = Sleep.last(this);
+        double avg = Sleep.avg(this, System.currentTimeMillis(), 7);
+        String line = last > 0
+                ? "Legutóbb: " + Hu.kg(last) + " óra – " + Sleep.verdict(last)
+                : "Hány órát aludtál? Egy koppintás – vagy írd le: „aludtam 8 órát”.";
+        TextView lt = text(line, 12.5f, MUTED, false);
+        lt.setPadding(0, dp(4), 0, 0);
+        sleepCard.addView(lt);
+        if (avg > 0) {
+            TextView at = text("Heti átlag: " + Hu.kg(avg) + " óra", 12.5f, MUTED, false);
+            at.setPadding(0, dp(2), 0, 0);
+            sleepCard.addView(at);
+        }
+        LinearLayout row = hbox();
+        row.setPadding(0, dp(8), 0, 0);
+        for (final double h : new double[]{5, 6, 7, 8, 9, 10}) {
+            Button b = ghost(Math.round(h) + "h");
+            b.setTextSize(13);
+            b.setOnClickListener(v -> {
+                Sleep.add(this, System.currentTimeMillis(), h);
+                refreshSleepCard();
+                Ux.blazeCard(this, "😴 Alvás mentve ✔  " + Math.round(h) + " óra");
+            });
+            LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(0, -2, 1f);
+            blp.leftMargin = dp(2); blp.rightMargin = dp(2);
+            row.addView(b, blp);
+        }
+        sleepCard.addView(row);
     }
 
     /**

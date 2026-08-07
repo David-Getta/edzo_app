@@ -466,6 +466,7 @@ public final class Ux {
             case STRENGTH: case ROUTINE: target = StrengthActivity.class; break;
             case INTERVAL: target = MainActivity.class; break;
             case BODY: target = ProfileActivity.class; break;
+            case SLEEP: target = ProfileActivity.class; break;
             default: return;
         }
         Intent it = new Intent(a, target).putExtra(Sentence.EXTRA, sentence);
