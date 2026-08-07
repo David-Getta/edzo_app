@@ -262,6 +262,23 @@ public class MobilityActivity extends Activity {
                             : "⭐ " + area.name + " a heti fókusz.", Toast.LENGTH_SHORT).show();
                     if (section == 3) render();
                 })
+                // Megosztás sima szövegként: elküldhető annak, akinek épp fáj –
+                // vagy a gyógytornásznak, hogy ránézzen.
+                .addNeutral("📤 Sor küldése szövegként", () -> {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(area.emoji).append(' ').append(area.name).append('\n')
+                            .append(area.goal).append("\n\n");
+                    for (Rehab.Ex e : area.moves)
+                        sb.append("• ").append(e.name).append("  –  ").append(e.dose)
+                                .append('\n').append("   ").append(e.cue).append('\n');
+                    sb.append('\n').append("⚠️ ").append(area.warn);
+                    Intent sh = new Intent(Intent.ACTION_SEND).setType("text/plain")
+                            .putExtra(Intent.EXTRA_TEXT, sb.toString());
+                    try {
+                        startActivity(Intent.createChooser(sh, area.name));
+                    } catch (Exception ignored) {
+                    }
+                })
                 .addPrimary("✅ Elvégeztem (~" + Rehab.minutesOf(area) + " perc)", () -> {
                     // A naplóba mobilitásként kerül: a széria, az XP és a heti
                     // összegzés is látja – a megelőzés is edzés.
