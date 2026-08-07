@@ -270,6 +270,15 @@ public class StrengthParseTest {
         // Ami nincs a 6–10 sávban, az nem RPE.
         assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rpe 3").get(0).rpe);
         assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg").get(0).rpe);
+        // A RIR a tartalék-ismétlés: RIR 2 = RPE 8. Az öt fölötti szám nem RIR.
+        assertEquals(8, StrengthParse.parse("guggolás 3x10 100 kg rir 2").get(0).rpe);
+        assertEquals(10, StrengthParse.parse("felhúzás 1x1 180 kg rir 0").get(0).rpe);
+        assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rir 7").get(0).rpe);
+        // A kg utáni @szám a 6–10 sávban RPE; a kg nélküli „@ 100" súly marad.
+        assertEquals(8, StrengthParse.parse("fekvenyomás 5x5 90 kg @8").get(0).rpe);
+        StrengthParse.Item at = StrengthParse.parse("guggolás 5,5,5 @ 100").get(0);
+        assertEquals(0, at.rpe);
+        assertEquals(100.0, at.sets.get(0).weight, 0.01);
         // Gyakorlatonként külön: a második mondatrész saját értéket kap.
         java.util.List<StrengthParse.Item> two =
                 StrengthParse.parse("guggolás 3x10 100 kg rpe 8, fekvenyomás 3x8 60 kg rpe 10");

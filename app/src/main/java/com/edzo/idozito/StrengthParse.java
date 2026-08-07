@@ -609,6 +609,20 @@ public final class StrengthParse {
             } catch (NumberFormatException ignored) {
             }
         }
+        // RIR („reps in reserve"): a tartalék-ismétlés jelölése, RPE-re
+        // váltva – RIR 2 = RPE 8. Csak a 0–4 sáv életszerű.
+        m = java.util.regex.Pattern.compile("rir\\s*-?\\s*(\\d)").matcher(s);
+        if (m.find()) {
+            int v = Integer.parseInt(m.group(1));
+            if (v <= 4) return 10 - v;
+        }
+        // A „90 kg @8" rövidítés: a kg UTÁN álló @szám a 6–10 sávban RPE.
+        // A kg nélküli „@ 100" súly marad, aminek eddig is olvastuk.
+        m = java.util.regex.Pattern.compile("kg\\s*@\\s*(\\d{1,2})(?![0-9,.])").matcher(s);
+        if (m.find()) {
+            int v = Integer.parseInt(m.group(1));
+            if (v >= 6 && v <= 10) return v;
+        }
         return 0;
     }
 
