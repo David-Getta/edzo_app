@@ -183,8 +183,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „3 kör 10 fekvőtámasz" – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
-  41 gyakorlat és gép, a jelzős változatokkal
-  („kábeles tricepsz", „elöl guggolás"). Ahol a súly nagyságrendben más, ott
+  45 gyakorlat és gép, a jelzős változatokkal
+  („kábeles tricepsz", „elöl guggolás") és a termi anglicizmusokkal
+  („leg curl", „chest press", „skull crusher", „hammer curl"). Ahol a súly nagyságrendben más, ott
   külön gyakorlat: a „román felhúzás", a „bolgár kitörés" és a „ferde
   fekvenyomás" saját néven él, saját rekorddal és progresszióval – egy
   vödörben a nehezebbik súlya kerülne a könnyebbik javaslatába. Mentés előtt
