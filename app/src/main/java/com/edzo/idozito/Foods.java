@@ -41,7 +41,10 @@ public final class Foods {
     public static final Food[] ALL = {
         new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "becsi",
                 "rantott szelet", "rantottszelet"),
-        new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke"),
+        new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke",
+                // A gyorséttermi csíkok is bundásak – nem grillmell. (A
+                // „csirkefalat" a nuggeté.)
+                "csirkecsik", "csirke csik", "kfc csirke"),
         new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell", "csirke",
                 "grillcsirke", "teriyaki"),
         new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb", "csirkeszarny"),
@@ -127,7 +130,12 @@ public final class Foods {
                 "quattro stagioni"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
                 "whopper"),
-        new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal", "mekis menu"),
+        new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal",
+                // Ahogy a magyar mondja: „mekis kaja", „kfc kosár". A puszta
+                // márkanév is menüt jelent – aki csak a helyet írja le, az a
+                // szokásos tálcára gondol.
+                "mekis menu", "mekis kaja", "mcdonalds", "mcdonald's", "meki",
+                "kfc kosar", "kfc menu", "burger king menu"),
         new Food("Gyros", 220, 15, 350, "gyros", "souvlaki"),
         new Food("Lángos", 320, 7, 200, "langos"),
         new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves", "gulyas"),

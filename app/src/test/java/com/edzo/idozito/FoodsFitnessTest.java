@@ -601,4 +601,13 @@ public class FoodsFitnessTest {
         assertEquals("Dió", names("dió"));
         assertEquals("Gyros", names("gyros"));
     }
+
+    /** A márkanév is menü: „mekis kaja", „mcdonalds", „kfc kosár". */
+    @Test public void brandNamesMeanTheUsualTray() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"mekis kaja", "mcdonalds", "kfc kosár"})
+            assertEquals(q, "Gyorséttermi menü", Foods.parse(all, q).get(0).food.name);
+        assertEquals("Rántott csirkemell",
+                Foods.parse(all, "kfc csirkecsíkok").get(0).food.name);
+    }
 }
