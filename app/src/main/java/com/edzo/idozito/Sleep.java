@@ -29,9 +29,11 @@ public final class Sleep {
      * „szunyókáltam" szándékosan nincs itt – az nem éjszakai alvás.
      */
     private static final java.util.regex.Pattern[] FORMS = {
-            // „aludtam 8 órát", „aludtam 7,5 órát", „ma éjjel aludtam 8-at"
+            // „aludtam 8 órát", „aludtam kb 6,5 órát", „aludtam vagy 7 órát" –
+            // a szám és az ige közé pár rövid szó beférhet, de csak kevés:
+            // messzebbről a szám már másról szólhat.
             java.util.regex.Pattern.compile(
-                    "aludtam\\s?(\\d{1,2}([.,]\\d)?)"),
+                    "aludtam[^0-9]{0,12}?(\\d{1,2}([.,]\\d)?)"),
             // „8 óra alvás", „7,5 óra alvás"
             java.util.regex.Pattern.compile(
                     "(\\d{1,2}([.,]\\d)?)\\s?ora(?:t)?\\s?alvas"),
@@ -49,6 +51,10 @@ public final class Sleep {
     public static double parse(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
+        // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
+        if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
+            return -1;
         for (java.util.regex.Pattern p : FORMS) {
             java.util.regex.Matcher m = p.matcher(s);
             if (!m.find()) continue;

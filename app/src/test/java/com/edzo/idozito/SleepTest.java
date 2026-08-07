@@ -51,4 +51,19 @@ public class SleepTest {
         assertEquals(Sentence.Kind.WORKOUT,
                 Sentence.of("8 óra kondi", null, 1_753_869_600_000L));
     }
+
+    /**
+     * A töltelékszó belefér, a feltételes mód nem.
+     *
+     * Az „aludtam kb 6,5 órát" hétköznapi mondat; az „aludtam volna nyolc
+     * órát" viszont egy rossz éjszaka panasza – abból bejegyzést csinálni
+     * pont a fordítottját rögzítené annak, ami történt.
+     */
+    @Test public void fillerWordsYesConditionalNo() {
+        assertEquals(6.5, Sleep.parse("aludtam kb 6,5 órát"), 0.01);
+        assertEquals(7, Sleep.parse("aludtam vagy 7 órát"), 0.01);
+        assertEquals(6.5, Sleep.parse("jól aludtam, kb 6 és fél órát"), 0.01);
+        assertEquals(-1, Sleep.parse("aludtam volna nyolc órát"), 0.01);
+        assertEquals(-1, Sleep.parse("bárcsak aludtam volna 9 órát"), 0.01);
+    }
 }
