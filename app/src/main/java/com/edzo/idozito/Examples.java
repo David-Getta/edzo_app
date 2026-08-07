@@ -158,6 +158,16 @@ public final class Examples {
             "guggolás, fekvenyomás, felhúzás",
     };
 
+    /** Panasz egy mondatban – a rehab-sorok ajtaja. */
+    public static final String[] REHAB = {
+            "fáj a vállam",
+            "beállt a derekam",
+            "kificamodott a bokám",
+            "golfkönyök fájdalom",
+            "húzódik a combom",
+            "sajog a térdem",
+    };
+
     /**
      * A könyvtár mondat-csoportjai: cím, alcím, lista-kulcs.
      *
@@ -172,6 +182,7 @@ public final class Examples {
             {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
             {"⚖️  Mérés és pihenés", "Testsúly, testzsír, körfogat, alvás", "BODY"},
             {"📅  Edzésnap", "Név és gyakorlatok, vesszővel", "ROUTINE"},
+            {"🩹  Panasz", "Írd le, mi fáj – kész sort ajánlok", "REHAB"},
     };
 
     /** A könyvtár csoportjai névvel hivatkoznak a listákra. */
@@ -181,6 +192,7 @@ public final class Examples {
         if ("SET".equals(key)) return SET;
         if ("BODY".equals(key)) return BODY;
         if ("ROUTINE".equals(key)) return ROUTINE;
+        if ("REHAB".equals(key)) return REHAB;
         return INTERVAL;
     }
 

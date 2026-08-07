@@ -105,6 +105,15 @@ public class ExamplesTest {
         }
     }
 
+    /** A panasz-példák mind találnak testtájat – és a router is oda küldi őket. */
+    @Test public void everyRehabExampleFindsAnArea() {
+        for (String q : Examples.REHAB) {
+            assertTrue("nem talál testtájat: " + q, Rehab.forComplaint(q) != null);
+            assertEquals("nem a rehabhoz fut be: " + q, Sentence.Kind.REHAB,
+                    Sentence.of(q, Arrays.asList(Foods.ALL), friday()));
+        }
+    }
+
     /** A könyvtár minden csoportjához tartozik valódi példalista. */
     @Test public void everyLibraryGroupHasExamples() {
         for (String[] g : Examples.GROUPS) {
