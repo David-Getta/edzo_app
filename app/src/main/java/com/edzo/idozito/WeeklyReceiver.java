@@ -298,6 +298,15 @@ public class WeeklyReceiver extends BroadcastReceiver {
             if (sleepAvg > 0)
                 text += "\n😴 Alvás: átlag " + Hu.kg(sleepAvg) + " óra"
                         + (sleepAvg < 7 ? " – a regeneráció a hét óra fölött kezdődik." : ".");
+            // A kitűzött rehab-fókusz heti állása – csak annak, aki kitűzte.
+            String rfid = RehabLog.focusId(c);
+            Rehab.Area rfa = rfid == null ? null : Rehab.byId(rfid);
+            if (rfa != null) {
+                int rdone = Rehab.weekCount(RehabLog.doneOf(c, rfid), now);
+                text += "\n🩹 " + rfa.name + ": " + rdone + "/" + Rehab.WEEKLY_GOAL
+                        + " alkalom" + (rdone >= Rehab.WEEKLY_GOAL ? "  ✔"
+                        : " – a megelőzés a rendszerességen múlik.");
+            }
         } catch (Exception ignored) {}
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);

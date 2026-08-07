@@ -130,6 +130,12 @@ public class RehabTest {
         assertNull(Rehab.forGoal("30 perc futás"));
         assertNull(Rehab.forGoal(""));
         assertNull(Rehab.forGoal(null));
+        // A „csípős" étel és a „vállal" ige nem testtáj.
+        assertNull(Rehab.forComplaint("fáj a hasam a csípős kajától"));
+        assertNull(Rehab.forComplaint("sokat vállaltam és fáj a fejem"));
+        assertEquals(Sentence.Kind.MEAL,
+                Sentence.of("csípős csirkeszárny sült krumplival",
+                        java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
         // Az útbaigazító is idehozza.
         assertEquals(Sentence.Kind.REHAB,
                 Sentence.of("boka stabilitás", null, 1_753_869_600_000L));

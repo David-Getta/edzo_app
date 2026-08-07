@@ -216,6 +216,10 @@ public final class Rehab {
 
     /** A normalizált mondatban megnevezett testtáj sora, vagy null. */
     private static Area areaOf(String s) {
+        // A „csípős" étel és a „vállal" ige nem testtáj – kitakarjuk, mielőtt
+        // a rövid tövek („csipo", „vall") beleakadnának. A „fáj a hasam a
+        // csípős kajától" panasz, de nem csípő-ügy.
+        s = s.replace("csipos", "#").replace("vallal", "#");
         String[][] map = {
                 {"boka", "bokam", "bokaja", "boka"},
                 {"terd", "terdem", "terde", "terd"},
