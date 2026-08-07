@@ -1895,8 +1895,45 @@ public final class Foods {
             if (piece > 0) grams[k] = piece;
         }
         for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
+        // „…de csak a felét ettem meg": a hátravetett tört az egész étkezésre
+        // vonatkozik. Csak egyetlen ételnél merjük alkalmazni – többnél nem
+        // tudni, melyikre gondolt.
+        if (out.size() == 1) {
+            double f = eatenFraction(q);
+            if (f > 0 && f < 1) {
+                Hit h = out.get(0);
+                double base = h.grams > 0 ? h.grams : h.food.portion;
+                out.set(0, new Hit(h.food, base * f));
+            }
+        }
         return out;
     }
+
+    /**
+     * A megevett hányad a tagmondat végéről: „a felét ettem meg" = 0,5,
+     * „a negyedét hagytam ott" = 0,75. 0, ha nincs ilyen a mondatban.
+     *
+     * Az evés és a meghagyás egymás tükörképei: amit otthagyott, azt NEM ette
+     * meg. A „fél pizza" elöl álló törtje nem ide tartozik – azt a
+     * mennyiség-felismerő már elvitte, mielőtt ide jutnánk.
+     */
+    static double eatenFraction(String q) {
+        java.util.regex.Matcher m = FRACTION_CLAUSE.matcher(q);
+        if (!m.find()) return 0;
+        double f = m.group(1).startsWith("felet") ? 0.5
+                : m.group(1).startsWith("ketharmad") ? 2 / 3.0
+                : m.group(1).startsWith("harmad") ? 1 / 3.0
+                : 0.25;
+        boolean left = m.group(2).startsWith("hagy") || m.group(2).startsWith("otthagy")
+                || m.group(2).startsWith("meghagy");
+        return left ? 1 - f : f;
+    }
+
+    /** „a felét ettem meg" / „a negyedét otthagytam" – előre lefordítva. */
+    private static final java.util.regex.Pattern FRACTION_CLAUSE =
+            java.util.regex.Pattern.compile(
+                    "(?<![a-z])(felet|harmadat|ketharmadat|negyedet)\\s"
+                    + "(ettem|megettem|hagytam|otthagytam|meghagytam)(?![a-z])");
 
     /**
      * Egy mérőszónyi étel grammban: egy tábla csoki száz gramm, egy szelet

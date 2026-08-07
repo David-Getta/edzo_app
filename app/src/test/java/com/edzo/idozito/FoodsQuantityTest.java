@@ -343,4 +343,23 @@ public class FoodsQuantityTest {
         assertEquals(100, grams("2 szál virsli"), 0.01);
         assertEquals(240, grams("3 szál kolbász"), 0.01);
     }
+
+    /**
+     * „…de csak a felét ettem meg”: a hátravetett tört az étkezésre vonatkozik.
+     *
+     * Eddig a teljes adag ment a naplóba – pont a duplája annak, amit az
+     * ember mondott. A tükörkép is működik: amit otthagyott, azt NEM ette meg.
+     */
+    @Test public void trailingFractionScalesTheMeal() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(150, Foods.parse(all, "egy pizza, de csak a felét ettem meg").get(0).grams, 0.5);
+        assertEquals(200, Foods.parse(all, "a gulyás felét ettem meg").get(0).grams, 0.5);
+        assertEquals(125, Foods.parse(all, "egy hamburger, a felét otthagytam").get(0).grams, 0.5);
+        // Két ételnél nem találgatunk: nem tudni, melyikre gondolt.
+        java.util.List<Foods.Hit> two = Foods.parse(all, "pizza és kóla, a felét ettem meg");
+        for (Foods.Hit h : two)
+            assertEquals("két ételnél nem skálázunk: " + h.food.name, 0, h.grams, 0.001);
+        // Az elöl álló tört marad a mennyiség-felismerőé.
+        assertEquals(150, Foods.parse(all, "fél pizza").get(0).grams, 0.5);
+    }
 }
