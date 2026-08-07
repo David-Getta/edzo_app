@@ -1918,6 +1918,13 @@ public final class Activities {
                 from = p + 1;
                 // A „km” ne egy szó belsejéből jöjjön.
                 if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
+                // A „km/h" SEBESSÉG, nem táv: a „futás 28 km/h" huszonnyolc
+                // kilométeres futásnak számított – majdnem három óra a
+                // naplóban egy tempó-adat miatt.
+                int ue = p + unit.length();
+                if (ue < s.length() && s.charAt(ue) == '/' ) continue;
+                if (s.startsWith(" per ora", ue) || s.startsWith("h", ue)
+                        && unit.equals("km")) continue;
                 // A puszta „m" ne egy szó ELEJE legyen („3 meccs” nem 3 méter).
                 if (unit.equals("m") && p + 1 < s.length()
                         && Character.isLetter(s.charAt(p + 1))) continue;

@@ -1054,4 +1054,22 @@ public class ActivitiesParseTest {
         assertEquals(150, Activities.parse("triatlon 51,5 km").plans.get(0).minutes, 5);
         assertTrue(Activities.parse("darts a kocsmában").isEmpty());
     }
+
+    /**
+     * A „km/h" sebesség, nem táv.
+     *
+     * A „futás 28 km/h" huszonnyolc kilométeres futásnak számított – majdnem
+     * három óra került volna a naplóba egy tempó-adat miatt. A valódi táv
+     * mellett álló sebesség viszont nem zavarhatja a távot.
+     */
+    @Test public void speedIsNotDistance() {
+        Activities.Parsed p = Activities.parse("futás 28 km/h");
+        assertEquals(1, p.plans.size());
+        assertEquals(0, p.plans.get(0).km, 0.01);
+        assertEquals(0, Activities.parse("bringáztam 25 km/h átlaggal").plans.get(0).km, 0.01);
+        assertEquals(0, Activities.parse("futás 28 kmh").plans.get(0).km, 0.01);
+        // A táv marad, ha tényleg ott van.
+        assertEquals(45, Activities.parse("bringa 45 km 27 km/h átlaggal").plans.get(0).km, 0.01);
+        assertEquals(20, Activities.parse("20 km bringa").plans.get(0).km, 0.01);
+    }
 }
