@@ -170,7 +170,10 @@ public final class Rehab {
         String s = Foods.norm(q);
         boolean pain = false;
         for (String w : new String[]{"faj", "fajdalom", "fajdalmas", "huzodik", "huzodas",
-                "serules", "megserult", "kificamodott", "ficam", "gyullad"}) {
+                "serules", "megserult", "kificamodott", "ficam", "gyullad",
+                // A magyar bőven tud panaszt mondani fájdalom-szó nélkül is.
+                "beallt", "megrandult", "randult", "nyilallik", "nyilall", "sajog",
+                "meghuztam", "becsipodott", "belovellt", "lumbago", "merev"}) {
             int i = s.indexOf(w);
             while (i >= 0) {
                 boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
@@ -180,6 +183,10 @@ public final class Rehab {
             if (pain) break;
         }
         if (!pain) return null;
+        // A zsibbadás piros zászló, nem torna-ügy: arra nem sort ajánlunk,
+        // hanem hallgatunk – a figyelmeztetés a lapokon úgyis ott van, de
+        // ide el sem visszük.
+        if (s.contains("zsibbad")) return null;
         String[][] map = {
                 {"boka", "bokam", "bokaja", "boka"},
                 {"terd", "terdem", "terde", "terd"},
@@ -190,6 +197,9 @@ public final class Rehab {
                 // A puszta „könyök" a gyakoribb külsőre megy – a lap tetejéről
                 // egy koppintás a belső.
                 {"konyok-kulso", "konyokom", "konyoke", "konyok"},
+                // A csukló-panasz mögött legtöbbször az alkar-feszítők
+                // túlterhelése áll – a külső könyök sora pont őket erősíti.
+                {"konyok-kulso", "csuklom", "csukloja", "csuklo faj"},
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
                 {"csipo", "csipom", "csipoje", "csipo"},
                 {"achilles", "achilles", "vadlim", "sarkam", "sarok faj"},

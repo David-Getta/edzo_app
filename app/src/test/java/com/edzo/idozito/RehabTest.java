@@ -83,6 +83,13 @@ public class RehabTest {
         assertNull(Rehab.forComplaint("30 perc futás"));
         assertNull(Rehab.forComplaint("fáj a fejem"));
         assertNull(Rehab.forComplaint(null));
+        // A fájdalom-szó nélküli panasz-igék is: beállt, megrándult, sajog.
+        assertEquals("derek", Rehab.forComplaint("beállt a derekam").id);
+        assertEquals("boka", Rehab.forComplaint("megrándult a bokám").id);
+        assertEquals("terd", Rehab.forComplaint("sajog a térdem").id);
+        assertEquals("konyok-kulso", Rehab.forComplaint("fáj a csuklóm").id);
+        // A zsibbadás piros zászló: arra nem sort ajánlunk, hanem hallgatunk.
+        assertNull(Rehab.forComplaint("zsibbad a karom"));
     }
 
     /** Az útbaigazító is a rehabhoz küldi – az edzés-felismerő előtt. */
