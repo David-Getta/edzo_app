@@ -221,6 +221,21 @@ public class FoodsDataQualityTest {
                 Foods.parse(all, "két sor csoki").get(0).grams, 0.01);
     }
 
+    /**
+     * Az előre normalizált szótövek megegyeznek az eredetivel.
+     *
+     * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
+     * készül el, az ételek betöltésekor. Ha ez elcsúszna az eredetitől, a
+     * hiba néma lenne: a felismerés egyszerűen nem találna meg valamit.
+     */
+    @Test public void precomputedStemsMatchTheOriginals() {
+        for (Foods.Food f : Foods.ALL) {
+            assertEquals(f.name, f.stems.length, f.nstems.length);
+            for (int i = 0; i < f.stems.length; i++)
+                assertEquals(f.name, Foods.norm(f.stems[i]), f.nstems[i]);
+        }
+    }
+
     private static String names(java.util.List<Foods.Hit> h) {
         if (h.isEmpty()) return "—";
         StringBuilder sb = new StringBuilder();

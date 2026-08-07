@@ -19,9 +19,22 @@ public final class Foods {
         public final double prot100;
         public final int portion; // tipikus adag grammban
         final String[] stems;
+        /**
+         * A szótövek ékezet nélküli alakja, EGYSZER kiszámolva.
+         *
+         * A felismerő minden leütésre végigmegy az egész adatbázison – ezer
+         * fölötti szótövön –, és eddig mindegyiket ott helyben normalizálta:
+         * kisbetű, ékezet, írásjel. Ez tette a felismerést negyvenszer
+         * lassabbá a többi felismerőnél; a mérés szerint a hatszázhúsz
+         * mikroszekundum java része ez volt.
+         */
+        final String[] nstems;
+
         Food(String name, int kcal100, double prot100, int portion, String... stems) {
             this.name = name; this.kcal100 = kcal100; this.prot100 = prot100;
             this.portion = portion; this.stems = stems;
+            this.nstems = new String[stems.length];
+            for (int i = 0; i < stems.length; i++) this.nstems[i] = norm(stems[i]);
         }
     }
 
@@ -1035,15 +1048,13 @@ public final class Foods {
         if (q.isEmpty()) return null;
         // 1) teljes kifejezés-egyezés a szótövekkel
         for (Food f : list)
-            for (String st : f.stems)
-                if (q.equals(norm(st))) return f;
+            for (String ns : f.nstems)
+                if (q.equals(ns)) return f;
         // 2) a lekérdezés tartalmazza a szótövet (pl. "csirkemellbol" ⊃ "csirkemell")
         Food best = null; int bestLen = 0;
         for (Food f : list)
-            for (String st : f.stems) {
-                String ns = norm(st);
+            for (String ns : f.nstems)
                 if (ns.length() > bestLen && q.contains(ns)) { best = f; bestLen = ns.length(); }
-            }
         if (best != null) return best;
         // 3) Szavankénti egyezés, ha a 2. fázis nem talált semmit: ragozott alak
         // (a szó a szótővel kezdődik, pl. "rizzsel" → "riz"), vagy gépelés közbeni
@@ -1056,8 +1067,7 @@ public final class Foods {
             if (tok.isEmpty()) continue;
             Food byTok = null; int tokLen = 0;
             for (Food f : list)
-                for (String st : f.stems) {
-                    String ns = norm(st);
+                for (String ns : f.nstems) {
                     if (ns.isEmpty()) continue;
                     boolean hit = tok.startsWith(ns)
                             || (tok.length() >= 4 && ns.startsWith(tok));
@@ -1781,8 +1791,7 @@ public final class Foods {
                 // („sörözés: 3 korsó sör" – az étel tárolt pozíciója az első
                 // említésé, a szám mégis a másodikhoz tartozik).
                 if (between == null) {
-                    for (String st : foods.get(k).stems) {
-                        String ns = norm(st);
+                    for (String ns : foods.get(k).nstems) {
                         if (ns.isEmpty()) continue;
                         int p2 = q.indexOf(ns, numEnd);
                         if (p2 < 0) continue;
@@ -1956,8 +1965,7 @@ public final class Foods {
         List<Match> found = new ArrayList<>();
         for (Food f : list) {
             int bestPos = -1, bestLen = 0;
-            for (String st : f.stems) {
-                String ns = norm(st);
+            for (String ns : f.nstems) {
                 if (ns.isEmpty()) continue;
                 int p = stemIndex(q, qAcc, ns);
                 // A leghosszabb illeszkedő szótő dönt; azonos hossznál a korábbi.
@@ -2069,8 +2077,7 @@ public final class Foods {
      * a felvágott mellé, csendben.
      */
     private static boolean coveredByStem(String q, Match m, Food other) {
-        for (String st : other.stems) {
-            String ns = norm(st);
+        for (String ns : other.nstems) {
             if (ns.length() <= m.len) continue;
             int p = q.indexOf(ns);
             while (p >= 0) {
