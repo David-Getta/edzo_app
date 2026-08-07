@@ -246,6 +246,9 @@ public class SettingsActivity extends Activity {
         Button exportSleep = ghost("😴  Alvás-napló exportálása (CSV)");
         exportSleep.setOnClickListener(v -> exportSleepCsv());
         col.addView(exportSleep);
+        Button exportPulse = ghost("❤️  Pulzus-napló exportálása (CSV)");
+        exportPulse.setOnClickListener(v -> exportPulseCsv());
+        col.addView(exportPulse);
         col.addView(gap(10));
 
         col.addView(text("☁️  Automatikus mentés (Google-fiók)", 15.5f, TXT, true));
@@ -499,6 +502,25 @@ public class SettingsActivity extends Activity {
               .append(String.format(Locale.US, "%.1f", h)).append('\n');
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_alvas.csv", "text/csv");
+    }
+
+    void exportPulseCsv() {
+        org.json.JSONArray a = Pulse.load(this);
+        if (a.length() == 0) {
+            Toast.makeText(this, "Nincs mentett pulzus.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder("datum;nyugalmi_pulzus_bpm\n");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        for (int i = a.length() - 1; i >= 0; i--) {
+            org.json.JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            int b = o.optInt("b", -1);
+            if (b <= 0) continue;
+            sb.append(df.format(new Date(o.optLong("ts")))).append(';')
+              .append(b).append('\n');
+        }
+        ShareProvider.shareTextFile(this, sb.toString(), "grit_pulzus.csv", "text/csv");
     }
 
     void exportStrengthCsv() {

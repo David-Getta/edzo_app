@@ -298,6 +298,13 @@ public class WeeklyReceiver extends BroadcastReceiver {
             if (sleepAvg > 0)
                 text += "\n😴 Alvás: átlag " + Hu.kg(sleepAvg) + " óra"
                         + (sleepAvg < 7 ? " – a regeneráció a hét óra fölött kezdődik." : ".");
+            // Nyugalmi pulzus: a heti átlag, és ha a szokásosnál magasabb,
+            // az a túlterhelés korai jele – ezt itt érdemes kimondani.
+            double pw = Pulse.avg(c, now, 7), pm = Pulse.avg(c, now, 30);
+            if (pw > 0)
+                text += "\n❤️ Nyugalmi pulzus: átlag " + Math.round(pw) + " bpm"
+                        + (pm > 0 && pw >= pm + 5
+                        ? " – a szokásosnál magasabb, érdemes visszavenni." : ".");
             // A kitűzött rehab-fókusz heti állása – csak annak, aki kitűzte.
             String rfid = RehabLog.focusId(c);
             Rehab.Area rfa = rfid == null ? null : Rehab.byId(rfid);

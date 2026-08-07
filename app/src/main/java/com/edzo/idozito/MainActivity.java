@@ -1054,8 +1054,17 @@ public class MainActivity extends Activity {
         if (lastSleep != null)
             sleptIsToday = Days.index(lastSleep.optLong("ts"))
                     == Days.index(System.currentTimeMillis());
-        t.add(new TileDef("profile", "📊", sleptIsToday && sleptToday > 0
-                ? "Profil · 😴 " + Hu.kg(sleptToday) + " h" : "Profil / BMI",
+        // Ha ma nincs alvás-bejegyzés, a mai nyugalmi pulzus is jó életjel.
+        String profLabel = "Profil / BMI";
+        if (sleptIsToday && sleptToday > 0) {
+            profLabel = "Profil · 😴 " + Hu.kg(sleptToday) + " h";
+        } else {
+            org.json.JSONObject lastPulse = Pulse.load(this).optJSONObject(0);
+            if (lastPulse != null && Days.index(lastPulse.optLong("ts"))
+                    == Days.index(System.currentTimeMillis()))
+                profLabel = "Profil · ❤️ " + lastPulse.optInt("b") + " bpm";
+        }
+        t.add(new TileDef("profile", "📊", profLabel,
                 0xFF6FE3C2, () -> startActivity(new Intent(this, ProfileActivity.class))));
         t.add(new TileDef("reminders", "🔔", "Emlékeztetők", 0xFFFFD166, () -> startActivity(new Intent(this, RemindersActivity.class))));
         // A kitűzött rehab-fókusz heti állása a csempén is látszik – a
