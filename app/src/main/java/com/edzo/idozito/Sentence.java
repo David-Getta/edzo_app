@@ -20,7 +20,7 @@ public final class Sentence {
     private Sentence() {}
 
     /** Hova való a mondat. NONE = egyik felismerő sem tud vele mit kezdeni. */
-    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE, SLEEP, REHAB }
+    public enum Kind { NONE, MEAL, WORKOUT, STRENGTH, INTERVAL, BODY, ROUTINE, SLEEP, REHAB, PULSE }
 
     /** Az átirányított mondat Intent-kulcsa: a cél-képernyő ezzel nyílik meg. */
     public static final String EXTRA = "sentence";
@@ -77,6 +77,8 @@ public final class Sentence {
         // Az alvás a legvégén: kimondott alvás-szó kell hozzá, tehát nem
         // veszélyes – de ami eddig bármi másnak elment, az maradjon az.
         if (Sleep.parse(q) > 0) return Kind.SLEEP;
+        // A nyugalmi pulzus ugyanilyen biztonságos: kimondott pulzus-szó kell.
+        if (Pulse.parse(q) > 0) return Kind.PULSE;
         return Kind.NONE;
     }
 
@@ -90,6 +92,7 @@ public final class Sentence {
             case BODY: return "Profil";
             case ROUTINE: return "Edzésnapok";
             case SLEEP: return "Profil";
+            case PULSE: return "Profil";
             case REHAB: return "Nyújtás & rehab";
             default: return "";
         }
@@ -110,6 +113,7 @@ public final class Sentence {
             case BODY: return "⚖️ Ez mérésnek tűnik – koppints, és a Profilba viszem.";
             case ROUTINE: return "📅 Ez edzésnapnak tűnik – koppints, és felveszem.";
             case SLEEP: return "😴 Ez alvásnak tűnik – koppints, és a Profilba jegyzem.";
+            case PULSE: return "❤️ Ez nyugalmi pulzusnak tűnik – koppints, és a Profilba jegyzem.";
             case REHAB: return "🩹 Erre van egy megelőző gyakorlatsorom – koppints, és mutatom.";
             default: return "";
         }

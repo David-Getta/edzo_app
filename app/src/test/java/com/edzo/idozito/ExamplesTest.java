@@ -85,10 +85,10 @@ public class ExamplesTest {
     @Test public void everyBodyExampleIsRecognised() {
         for (String q : Examples.BODY) {
             BodyParse.Body b = BodyParse.parse(q);
-            // Az alvás-példa is a Profil mezőjében él – azt a saját
-            // felismerője érti.
+            // Az alvás- és pulzus-példa is a Profil mezőjében él – azokat a
+            // saját felismerőjük érti.
             assertTrue("nem ismeri fel a saját példáját: " + q,
-                    !b.isEmpty() || Sleep.parse(q) > 0);
+                    !b.isEmpty() || Sleep.parse(q) > 0 || Pulse.parse(q) > 0);
             if (b.isEmpty()) continue;
             assertTrue("életszerűtlen mérés: " + q,
                     (b.kg == 0 || (b.kg >= 30 && b.kg <= 250))
@@ -137,7 +137,8 @@ public class ExamplesTest {
                 Sentence.Kind got = Sentence.of(q, all, friday());
                 if (want == Sentence.Kind.WORKOUT && got == Sentence.Kind.STRENGTH) continue;
                 if (want == Sentence.Kind.INTERVAL && got == Sentence.Kind.WORKOUT) continue;
-                if (want == Sentence.Kind.BODY && got == Sentence.Kind.SLEEP) continue;
+                if (want == Sentence.Kind.BODY && (got == Sentence.Kind.SLEEP
+                        || got == Sentence.Kind.PULSE)) continue;
                 if (got != want) bad.append("\n  [").append(want).append("] ")
                         .append(q).append(" -> ").append(got);
             }

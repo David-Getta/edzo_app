@@ -144,8 +144,10 @@ public final class Examples {
             // A mérőszalag is: derék, csípő, mellkas, comb, kar.
             "derék 84 cm",
             "78 kg, 18% testzsír, derék 84 cm",
-            // A pihenés is idetartozik: az alvás a Profil naplója.
+            // A pihenés is idetartozik: az alvás és a reggeli pulzus a
+            // Profil naplója.
             "aludtam 8 órát",
+            "nyugalmi pulzus 52",
     };
 
     /** Edzésnap egy sorban – megosztáshoz és felvételhez. */

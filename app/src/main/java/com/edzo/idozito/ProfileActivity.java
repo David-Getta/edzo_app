@@ -277,6 +277,21 @@ public class ProfileActivity extends Activity {
                     .show();
             return;
         }
+        // A nyugalmi pulzus is a Profil naplója („nyugalmi pulzus 52").
+        final int bpm = Pulse.parse(sentence);
+        if (bpm > 0) {
+            new Sheet(this, "Nyugalmi pulzus ❤️",
+                    "„" + sentence.trim() + "”\n\n→  " + bpm + " bpm – "
+                            + Pulse.verdict(bpm))
+                    .addPrimary("Mentés a mai napra", () -> {
+                        Pulse.add(this, System.currentTimeMillis(), bpm);
+                        refreshSleepCard();
+                        Ux.blazeCard(this, "❤️ Pulzus mentve ✔  " + bpm + " bpm");
+                    })
+                    .addCancel()
+                    .show();
+            return;
+        }
         BodyParse.Body b = BodyParse.parse(sentence);
         if (b.isEmpty()) {
             // Lehet, hogy nem is mérés: a mondat itt is megtalálhatja a helyét.
@@ -795,6 +810,36 @@ public class ProfileActivity extends Activity {
             row.addView(b, blp);
         }
         sleepCard.addView(row);
+        // A nyugalmi pulzus ugyanitt lakik: a pihenés két száma egy kártyán.
+        View dv = new View(this);
+        LinearLayout.LayoutParams dvp = new LinearLayout.LayoutParams(-1, dp(1));
+        dvp.topMargin = dp(12); dvp.bottomMargin = dp(8);
+        dv.setLayoutParams(dvp);
+        dv.setBackgroundColor(MainActivity.LINE);
+        sleepCard.addView(dv);
+        sleepCard.addView(text("❤️ Nyugalmi pulzus", 15.5f, TXT, true));
+        int pl = Pulse.last(this);
+        double pavg = Pulse.avg(this, System.currentTimeMillis(), 7);
+        TextView plt = text(pl > 0
+                ? "Legutóbb: " + pl + " bpm – " + Pulse.verdict(pl)
+                : "Reggeli pihenőpulzus – írd a mezőbe: „nyugalmi pulzus 52”.",
+                12.5f, MUTED, false);
+        plt.setPadding(0, dp(4), 0, 0);
+        sleepCard.addView(plt);
+        if (pavg > 0) {
+            TextView pat = text("Heti átlag: " + Math.round(pavg) + " bpm",
+                    12.5f, MUTED, false);
+            pat.setPadding(0, dp(2), 0, 0);
+            sleepCard.addView(pat);
+        }
+        double[] pser = Pulse.series(this, System.currentTimeMillis(), 14);
+        if (pser.length >= 3) {
+            ChartView pch = new ChartView(this);
+            pch.setData(pser, 0xFFF87171, "bpm");
+            LinearLayout.LayoutParams pclp = new LinearLayout.LayoutParams(-1, dp(110));
+            pclp.topMargin = dp(8);
+            sleepCard.addView(pch, pclp);
+        }
     }
 
     /**
