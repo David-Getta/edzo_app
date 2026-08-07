@@ -156,6 +156,13 @@ public class StatsActivity extends Activity {
             col.addView(gap(16));
         }
 
+        View rehab = rehabCard(System.currentTimeMillis());
+        if (rehab != null) {
+            col.addView(sectionTitle("Megelőzés és rehab · elmúlt 4 hét"));
+            col.addView(rehab, lp());
+            col.addView(gap(16));
+        }
+
         int[] moodCounts = moodCounts();
         int moodTotal = moodCounts[1] + moodCounts[2] + moodCounts[3] + moodCounts[4];
         if (moodTotal > 0) {
@@ -1875,6 +1882,55 @@ public class StatsActivity extends Activity {
                     + "a fejlődés fele ott történik.", 12, MUTED, false);
             warn.setPadding(0, dp(4), 0, 0);
             c.addView(warn);
+        }
+        return c;
+    }
+
+    /**
+     * A rehab-alkalmak az elmúlt négy hétből: melyik testtájra hányszor.
+     *
+     * A megelőzésnél a darabszám maga a lényeg – a sor akkor véd, ha
+     * rendszeres. A naplóban ezek mobilitás-bejegyzésként élnek, a nevük
+     * pedig a testtáj neve, ezért innen olvashatók vissza.
+     */
+    View rehabCard(long now) {
+        java.util.HashSet<String> areaNames = new java.util.HashSet<>();
+        for (Rehab.Area a : Rehab.AREAS) areaNames.add(a.name);
+        java.util.LinkedHashMap<String, Integer> per = new java.util.LinkedHashMap<>();
+        int total = 0;
+        org.json.JSONArray hist = History.load(this);
+        for (int i = 0; i < hist.length(); i++) {
+            org.json.JSONObject o = hist.optJSONObject(i);
+            if (o == null) continue;
+            String n = o.optString("name", "");
+            if (!areaNames.contains(n)) continue;
+            int ago = Days.ago(o.optLong("ts"), now);
+            if (ago < 0 || ago >= 28) continue;
+            total++;
+            Integer prev = per.get(n);
+            per.put(n, prev == null ? 1 : prev + 1);
+        }
+        if (total == 0) return null;
+        LinearLayout c = card();
+        c.setPadding(dp(16), dp(12), dp(16), dp(12));
+        c.addView(text("🩹 " + total + " rehab-alkalom 4 hét alatt", 15, TXT, true));
+        StringBuilder line = new StringBuilder();
+        for (java.util.Map.Entry<String, Integer> e : per.entrySet()) {
+            if (line.length() > 0) line.append("  ·  ");
+            line.append(e.getKey()).append(" ×").append(e.getValue());
+        }
+        TextView lt = text(line.toString(), 12.5f, MUTED, false);
+        lt.setPadding(0, dp(4), 0, 0);
+        c.addView(lt);
+        // A kitűzött fókusz heti állása is ide tartozik.
+        String fid = RehabLog.focusId(this);
+        Rehab.Area fa = fid == null ? null : Rehab.byId(fid);
+        if (fa != null) {
+            int done = Rehab.weekCount(RehabLog.doneOf(this, fid), now);
+            TextView ft = text("⭐ Heti fókusz: " + Rehab.focusLine(fa, done),
+                    12.5f, MUTED, false);
+            ft.setPadding(0, dp(4), 0, 0);
+            c.addView(ft);
         }
         return c;
     }
