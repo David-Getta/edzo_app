@@ -245,6 +245,10 @@ public class SentenceBatteryTest {
                 {"húsleves cérnametélttel", "Húsleves 400g | Levestészta 50g"},
                 {"gyömbéres tea", "Torma / gyömbér 10g | Tea (cukrozatlan) 250g"},
                 {"süllő roston", "Hal (fehér) 150g"},
+                // Az éjszakai kör termése: apró paradicsom, ringló, kulacs.
+                {"koktélparadicsom 10 szem", "Koktélparadicsom 200g"},
+                {"két ringló", "Szilva 100g"},
+                {"megittam egy kulacs vizet", "Víz / ásványvíz 500g"},
     };
 
     @Test public void theMealSentencesStayAsTheyAre() {
@@ -312,6 +316,28 @@ public class SentenceBatteryTest {
                    .append(" (várt: ").append(row[1]).append(')');
         }
         assertEquals("elcsúszott mondat:" + bad, 0, bad.length());
+    }
+
+    /**
+     * A router-mondatok másképp gépelve is ugyanoda futnak be.
+     *
+     * Nagybetű, dupla szóköz, írásjel a végén – a felismerés elvileg
+     * normalizál, de pont a határmondatokat érdemes ezen is átküldeni.
+     */
+    @Test public void theRouterSurvivesDifferentTyping() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (String[] row : ROUTER)
+            for (String v : new String[]{
+                    row[0].toUpperCase(new java.util.Locale("hu")),
+                    "  " + row[0].replace(" ", "  ") + "  ",
+                    row[0] + "!", row[0] + "."}) {
+                String got = Sentence.of(v, all, NOW).name();
+                if (!row[1].equals(got))
+                    bad.append("\n  ").append(v).append(" -> ").append(got)
+                       .append(" (várt: ").append(row[1]).append(')');
+            }
+        assertEquals("gépelésre érzékeny mondat:" + bad, 0, bad.length());
     }
 
     @Test public void theSameSentenceTypedDifferentlyMeansTheSame() {
