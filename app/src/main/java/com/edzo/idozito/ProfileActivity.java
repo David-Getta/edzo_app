@@ -215,6 +215,9 @@ public class ProfileActivity extends Activity {
      * mezőben már ott van.
      */
     void measurementInputSheet() {
+        // Egy korábbi, mégsem mentett mondat körfogatai ne ragadjanak be:
+        // a következő kézi mentés némán hozzájuk csapódna.
+        pendingCm = null;
         final LinearLayout box = vbox();
         box.setPadding(dp(10), dp(6), dp(10), 0);
         final EditText et = new EditText(this);
