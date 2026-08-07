@@ -209,4 +209,23 @@ public class TimeHintTest {
         // A napnév erősebb: a „múlt kedden" a múlt hét keddje.
         assertEquals(8, Days.ago(TimeHint.from("múlt kedden", now), now));
     }
+
+    /**
+     * Huszonhét valós időjelölővel végigpróbálva ez a kettő hiányzott.
+     *
+     * Az „előző pénteken" ugyanaz, mint a „múlt pénteken" – a napnév nélküli
+     * „előző héten" már régóta ment, a napnévvel viszont a MOSTANI péntekre
+     * esett. A „délelőtt" pedig az egyetlen napszak volt, aminek nem volt órája.
+     */
+    @Test public void lastWeekdayAndLateMorning() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(2026, java.util.Calendar.AUGUST, 7, 12, 0, 0);   // péntek dél
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long now = c.getTimeInMillis();
+        assertEquals(7, Days.ago(TimeHint.from("előző pénteken", now), now));
+        assertEquals(7, Days.ago(TimeHint.from("múlt pénteken", now), now));
+        java.util.Calendar r = java.util.Calendar.getInstance();
+        r.setTimeInMillis(TimeHint.from("ma délelőtt", now));
+        assertEquals(10, r.get(java.util.Calendar.HOUR_OF_DAY));
+    }
 }

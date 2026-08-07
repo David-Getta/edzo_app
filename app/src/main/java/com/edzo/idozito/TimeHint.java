@@ -198,7 +198,7 @@ public final class TimeHint {
             int back = (todayIdx - i + 7) % 7;
             // A „múlt kedden" egy héttel korábbi keddet jelent, nem a mostanit.
             // Itt TELJES szó kell: a „multivitamin" nem múlt hét.
-            if (hasWord(s, "mult") && back + 7 <= MAX_BACK) back += 7;
+            if ((hasWord(s, "mult") || has(s, "elozo")) && back + 7 <= MAX_BACK) back += 7;
             return back;
         }
         // Napnév nélküli „múlt héten", „előző héten": a hét távolabbi vége.
@@ -269,7 +269,7 @@ public final class TimeHint {
         }
         if (has(s, "hajnal")) return 5;
         if (has(s, "reggel")) return 8;
-        if (has(s, "tizorai")) return 10;
+        if (has(s, "tizorai") || has(s, "delelott")) return 10;
         if (has(s, "ebed") || has(s, "delben")) return 13;
         if (has(s, "uzsonna") || has(s, "delutan")) return 16;
         if (has(s, "vacsora") || has(s, "este")) return 19;
