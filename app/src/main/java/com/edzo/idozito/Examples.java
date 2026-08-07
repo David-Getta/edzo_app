@@ -124,6 +124,9 @@ public final class Examples {
             "kör: 6, munka: 40mp, pihenő: 20mp",
             "8 kör: 20 mp sprint, 40 mp séta",
             "45 másodperc munka 15 pihenő nyolcszor",
+            // A forma neve is elég: a ritmust hozzáadjuk.
+            "hiit 20 perc",
+            "e2mom 20 perc",
     };
 
     /** Testsúly- és testzsír-mérés egy mondatból. */

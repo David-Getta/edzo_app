@@ -29,6 +29,15 @@ public final class IntervalParse {
         public final int warm;
         /** Levezetés másodpercben (0 = nincs). */
         public final int cool;
+        /**
+         * Kitalált ritmus: a mondat a forma NEVÉT mondta ki, nem a számokat.
+         *
+         * A „hiit 20 perc" harminc-harmincas ritmusa a mi javaslatunk, nem a
+         * felhasználó szava. Ezért gyengébb jel: a „ma 1 óra hiit edzés"
+         * megtörtént edzés, nem időzítő-terv – az útbaigazító ezt a mezőt
+         * nézve tudja megkülönböztetni a kettőt.
+         */
+        public boolean guessed;
 
         Plan(int rounds, int work, int rest) {
             this(rounds, work, rest, 0, 0);
@@ -205,6 +214,14 @@ public final class IntervalParse {
         if (work <= 0) work = fieldNumber(s, WORK_WORDS);
         if (rest <= 0) rest = fieldNumber(s, REST_WORDS);
         if (rounds <= 0) rounds = fieldNumber(s, new String[]{"kor", "round", "sorozat"});
+        // 5) Idő-vezérelt formák: a mondat a HOSSZT mondja ki, nem a
+        //    körszámot. Csak akkor jutunk ide, ha a kimondott számokból nem
+        //    jött ki se munka, se pihenő – az explicit alak mindig erősebb.
+        if (work <= 0 && rest <= 0) {
+            Plan t = timedForm(s, rounds);
+            if (t != null) return t;
+        }
+
         // „5 kör 30 másodperc” – ha csak egy időt mondanak, az a munka. De
         // megnevezetlenül csak életszerű munkaidőt fogadunk el: a „minden
         // percben 1 kör, 15 percig” 15 perce nem egyetlen szakasz hossza.
@@ -215,6 +232,67 @@ public final class IntervalParse {
             if (rest <= 0 && work > 600) return null;
         }
         return build(rounds, work, rest, warmIn(s), coolIn(s));
+    }
+
+    /**
+     * Idő-vezérelt formák: a HOSSZ van kimondva, a körszám nincs.
+     *
+     * A „hiit 20 perc”, a „fartlek fél óra” és az „e2mom 20 perc” ugyanolyan
+     * hétköznapi mondat, mint a „tabata” – csak épp nem fix körszámú forma,
+     * hanem fix RITMUSÚ: a hossz mondja meg, hányszor fut le. Eddig
+     * mindhárom üresen tért vissza, pedig egyikben sincs semmi kétértelmű.
+     *
+     * A szándékosan választott ritmusok: a HIIT a legelterjedtebb 30/30, a
+     * fartlek 1 perc gyors / 1 perc könnyű, az EnMOM pedig definíció szerint
+     * n percenként egy kör (pihenő nélkül, mert az a maradék idő).
+     */
+    private static Plan timedForm(String s, int rounds) {
+        int work = 0, rest = 0;
+        if (s.contains("hiit")) { work = 30; rest = 30; }
+        else if (s.contains("fartlek")) { work = 60; rest = 60; }
+        else {
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("(?<![a-z])e\\s?(\\d)\\s?mom(?![a-z])").matcher(s);
+            if (m.find()) work = Integer.parseInt(m.group(1)) * 60;
+            else {
+                // „2 percenként 10 kör”: ugyanaz magyarul kimondva.
+                m = java.util.regex.Pattern
+                        .compile("(\\d{1,2})\\s?perc(?:enkent|ente)").matcher(s);
+                if (m.find()) work = Integer.parseInt(m.group(1)) * 60;
+            }
+        }
+        if (work <= 0) return null;
+        int r = rounds;
+        if (r <= 0) {
+            int total = statedMinutes(s) * 60;
+            if (total >= work + rest) r = total / (work + rest);
+        }
+        if (r <= 0) r = 10;                       // kimondatlanul tíz kör
+        if (r > MAX_ROUNDS) r = MAX_ROUNDS;
+        Plan p = build(r, work, rest, warmIn(s), coolIn(s));
+        if (p != null) p.guessed = true;
+        return p;
+    }
+
+    /**
+     * A mondatban kimondott leghosszabb időtartam percben (0, ha nincs).
+     *
+     * A tizedes is számít: a „fél óra” a számmá alakítás után „0,5 óra”, és
+     * ha csak az egész részt néznénk, az öt óra lenne belőle – ötven kör egy
+     * félórás fartlekből.
+     */
+    private static int statedMinutes(String s) {
+        double best = 0;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(perc|ora)(?![a-z])").matcher(s);
+        while (m.find()) {
+            double v;
+            try { v = Double.parseDouble(m.group(1).replace(',', '.')); }
+            catch (NumberFormatException e) { continue; }
+            if (m.group(2).equals("ora")) v *= 60;
+            if (v > best && v <= 24 * 60) best = v;
+        }
+        return (int) Math.round(best);
     }
 
     /**

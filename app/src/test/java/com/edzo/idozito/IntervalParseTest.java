@@ -413,4 +413,39 @@ public class IntervalParseTest {
         assertTrue("legalább ezer tervet néztünk", n > 1000);
         assertEquals("oda-vissza eltérés:" + bad, 0, bad.length());
     }
+
+    /**
+     * Idő-vezérelt formák: a mondat a HOSSZT mondja ki, nem a körszámot.
+     *
+     * Huszonhat valós intervallum-mondattal végigpróbálva ez a négy fajta
+     * hiányzott. Mindegyik hétköznapi terem-mondat, és egyikben sincs semmi
+     * kétértelmű – csak a körszám nincs kimondva, azt a ritmus adja.
+     */
+    @Test public void timeDrivenFormsAreUnderstood() {
+        IntervalParse.Plan hiit = IntervalParse.parse("hiit 20 perc");
+        assertEquals(20, hiit.rounds);          // 20 perc / (30+30 mp)
+        assertEquals(30, hiit.work);
+        assertEquals(30, hiit.rest);
+        assertTrue("a ritmus a mi javaslatunk", hiit.guessed);
+
+        IntervalParse.Plan f = IntervalParse.parse("fartlek fél óra");
+        assertEquals(15, f.rounds);
+        assertEquals(60, f.work);
+
+        IntervalParse.Plan e = IntervalParse.parse("e2mom 20 perc");
+        assertEquals(10, e.rounds);
+        assertEquals(120, e.work);
+        assertEquals(0, e.rest);
+
+        IntervalParse.Plan p = IntervalParse.parse("2 percenként 10 kör");
+        assertEquals(10, p.rounds);
+        assertEquals(120, p.work);
+
+        // A kimondott számok mindig erősebbek a forma nevénél.
+        IntervalParse.Plan x = IntervalParse.parse("hiit 8 kör 45 mp munka 15 mp pihenő");
+        assertEquals(8, x.rounds);
+        assertEquals(45, x.work);
+        assertEquals(15, x.rest);
+        assertTrue("kimondott szám nem javaslat", !x.guessed);
+    }
 }
