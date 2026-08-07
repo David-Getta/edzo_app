@@ -42,6 +42,10 @@ public class IntervalParseTest {
         // A kimondott körszám erősebb, mint az alapérték.
         assertEquals("6×20/10", sum("tabata 6 kör"));
         assertEquals("10×60/0", sum("emom 10 perc"));
+        // A norvég 4x4: 4×4 perc erős, 3 perc pihenő.
+        assertEquals("4×240/180", sum("norvég 4x4"));
+        assertEquals("4×240/180", sum("norveg intervall"));
+        assertEquals("5×240/180", sum("norvég 4x4, 5 kör"));
     }
 
     @Test public void aSingleTimeIsTheWorkInterval() {

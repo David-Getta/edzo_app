@@ -93,6 +93,9 @@ public final class IntervalParse {
             {"tabata", "8", "20", "10"},
             {"emom", "10", "60", "0"},
             {"pomodoro", "1", "1500", "300"},
+            // A norvég 4x4: négyszer négy perc erős tempó, három perc pihenő –
+            // az állóképesség-kutatás legtöbbet idézett protokollja.
+            {"norveg", "4", "240", "180"},
     };
 
     /**

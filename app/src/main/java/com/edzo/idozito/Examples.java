@@ -133,6 +133,7 @@ public final class Examples {
             // A forma neve is elég: a ritmust hozzáadjuk.
             "hiit 20 perc",
             "e2mom 20 perc",
+            "norvég 4x4",
     };
 
     /** Testsúly- és testzsír-mérés egy mondatból. */
