@@ -1037,4 +1037,21 @@ public class ActivitiesParseTest {
         // A számjegyes alak változatlan.
         assertEquals(5.0, Activities.parse("5 km futás").plans.get(0).km, 0.001);
     }
+
+    /**
+     * Hetvennégy mindennapi sportnévvel végigpróbálva ez a három hiányzott.
+     *
+     * A triatlon szándékosan saját tétel: futásként a neve hazudna, egyéb
+     * mozgásként a terhelése. A darts viszont marad kocsmasport.
+     */
+    @Test public void theNewlyAddedSportsAreRecognized() {
+        assertEquals("egyeb", Activities.parse("íjászat 45 perc").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("sárkányhajó 1 óra").plans.get(0).kind.id);
+        assertEquals("triatlon", Activities.parse("triatlon 2 óra").plans.get(0).kind.id);
+        assertEquals("triatlon", Activities.parse("duatlon verseny").plans.get(0).kind.id);
+        assertEquals("triatlon", Activities.parse("ironman").plans.get(0).kind.id);
+        // A táv is számít: az olimpiai táv nagyjából két és fél óra.
+        assertEquals(150, Activities.parse("triatlon 51,5 km").plans.get(0).minutes, 5);
+        assertTrue(Activities.parse("darts a kocsmában").isEmpty());
+    }
 }

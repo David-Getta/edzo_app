@@ -72,7 +72,7 @@ public final class Activities {
                     "barlangasz", "via ferrata"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
-                    "raftin"),
+                    "raftin", "sarkanyhajo", "sarkany hajo"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
@@ -118,6 +118,11 @@ public final class Activities {
                     // lehet szótő (a HASIZOMban is benne van).
                     "siel", "sizes", "siztem", "sizni", "sizunk", "sizik", "sizel",
                     "snowboard", "sifutas", "sifut"),
+            // A triatlon és a duatlon NEM futás: a versenytáv órákig tart, és a
+            // három (két) sportág együtt más terhelés, mint bármelyik külön. A
+            // saját tétele nélkül vagy elveszne, vagy hamis névvel kerülne be.
+            new Kind("triatlon", "🏊", "Triatlon / duatlon", 9.0, true, 150,
+                    "triatlon", "duatlon", "ironman", "sprinttriatlon", "olimpiai tav"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "falmasz", "maszas", "sziklamasz",
                     "boulder", "maszofal"),
@@ -138,6 +143,10 @@ public final class Activities {
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
                     "ugralo kotel", "hulahopp", "kotelugras",
                     "buvarkod", "buvark", "szankoz", "parkour", "szanko",
+                    // Hetvennégy mindennapi sportnévvel végigpróbálva az
+                    // íjászat hiányzott. (A darts szándékosan marad kimaradva:
+                    // a kocsmasportok nem edzések – erről külön teszt szól.)
+                    "ijaszat", "ijasz",
                     // A taposógép ugyanaz a gép, mint a lépcsőzőgép: kardió,
                     // nem súlyzós edzés.
                     "taposogep", "taposo gep"),
@@ -359,6 +368,9 @@ public final class Activities {
             case "tura": return 12;
             case "evezes": return 5;
             case "si": return 5;    // sífutás: gyorsabb a gyaloglásnál
+            // A triatlon távjának java a bringa: az olimpiai táv 51,5 km-e
+            // két és fél óra körül van, ez nagyjából három perc kilométerenként.
+            case "triatlon": return 3;
             default: return 8;
         }
     }
