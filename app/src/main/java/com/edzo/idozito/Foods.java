@@ -54,6 +54,14 @@ public final class Foods {
                 "naturszelet", "natur szelet", "szuzerme", "szuzpecsenye", "flekken"),
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
+        // Vad és bárány: a magyar konyha rendszeres vendégei, de eddig
+        // egyetlen tő sem fogta őket. A vadhús soványabb a marhánál, a bárány
+        // zsírosabb – egy kalapba téve mindkettő hazudna.
+        new Food("Vadhús (szarvas, vaddisznó, nyúl)", 160, 30, 150,
+                "vadhus", "vad hus", "szarvashus", "szarvas hus", "ozhus", "oz hus",
+                "vaddiszno", "nyulhus", "nyul hus", "facan", "fogolyhus"),
+        new Food("Bárány / birka", 250, 25, 150, "barany", "baranyhus", "birka",
+                "birkahus", "birkaporkolt"),
         new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek",
                 "rostelyos", "ozgerinc"),
         new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt", "stefania"),
@@ -183,6 +191,7 @@ public final class Foods {
         new Food("Joghurt", 60, 4, 150, "joghurt"),
         new Food("Ivójoghurt", 75, 3, 200, "ivojoghurt", "joghurtital", "actimel"),
         new Food("Puding", 120, 3, 200, "puding", "csokipuding", "protein puding",
+                "vaniliasodo", "vanilias sodo", "madartejsodo",
                 "protein pudding", "pudding"),
         new Food("Madártej", 120, 4, 250, "madartej"),
         new Food("Tejszínhab", 300, 2, 30, "tejszinhab", "tejszin"),
@@ -377,7 +386,15 @@ public final class Foods {
         new Food("Grízes tészta", 200, 6, 300, "grizes teszta", "griz"),
         // Menza-kör: a mákos tészta mákja eddig eltűnt (csak főtt tészta lett),
         // a grenadírmars és a rántott zöldség pedig ismeretlen volt.
-        new Food("Mákos tészta", 250, 7, 300, "makos teszta"),
+        // A leves betétje is tészta – de nem egy adag köret: a „húsleves
+        // cérnametélttel" eddig csak leves volt, a főtt tészta adagjával
+        // viszont háromszáz kalóriát tett volna hozzá.
+        new Food("Levestészta", 150, 5, 50, "cernametelt", "levesteszta",
+                "leves teszta", "kockateszta"),
+        new Food("Mákos tészta", 250, 7, 300, "makos teszta",
+                // A diós tészta ugyanaz a fogás, más magvval: eddig két
+                // tételre esett szét (dió + főtt tészta).
+                "dios teszta", "diosteszta"),
         new Food("Tarhonyás hús", 160, 10, 400, "tarhonyas hus"),
         new Food("Grenadírmars (krumplis tészta)", 150, 4, 400,
                 "grenadir", "krumplis teszta"),
@@ -805,6 +822,8 @@ public final class Foods {
             // vizet naplózott. A „szeretek futni" a leggyakoribb mondatkezdés,
             // amit egy edzésappba be lehet írni.
             "szeret", "stadi", "szokas", "levesz", "levessz", "vizilabda",
+            // A BIRKÓzás sport, nem birkahús – az új bárány-tétel miatt kell.
+            "birkoz",
     };
 
     /** Összetétel BÁRMELYIK tagjaként maszkolandó szavak. */
