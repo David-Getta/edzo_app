@@ -201,19 +201,40 @@ public final class BodyParse {
     private static double[] circumferences(String s) {
         double[] out = new double[PART_KEYS.length];
         for (int i = 0; i < PART_STEMS.length; i++)
-            for (String stem : PART_STEMS[i]) {
+            for (int j = 0; j < PART_STEMS[i].length; j++) {
                 if (out[i] > 0) break;
-                java.util.regex.Matcher m = java.util.regex.Pattern
-                        .compile("(?<![a-z])" + stem + "(?![a-z])\\s?:?\\s?"
-                                + "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)?").matcher(s);
+                java.util.regex.Matcher m = PART_AFTER[i][j].matcher(s);
                 if (m.find()) { out[i] = inRange(num(m.group(1))); continue; }
                 // Fordított szórend, de csak mértékegységgel: a „84 cm derék"
                 // egyértelmű, a puszta „84 derék" nem mondat.
-                m = java.util.regex.Pattern
-                        .compile("(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
-                                + "(?<![a-z])" + stem + "(?![a-z])").matcher(s);
+                m = PART_BEFORE[i][j].matcher(s);
                 if (m.find()) out[i] = inRange(num(m.group(1)));
             }
+        return out;
+    }
+
+    /**
+     * A testrész-minták előre lefordítva.
+     *
+     * A mérés-mező is minden leütésre újrakérdezi a felismerőt, ötven
+     * reguláris kifejezést fordítani karakterenként fölösleges munka.
+     */
+    private static final java.util.regex.Pattern[][] PART_AFTER = compile(true),
+            PART_BEFORE = compile(false);
+
+    private static java.util.regex.Pattern[][] compile(boolean after) {
+        java.util.regex.Pattern[][] out = new java.util.regex.Pattern[PART_STEMS.length][];
+        for (int i = 0; i < PART_STEMS.length; i++) {
+            out[i] = new java.util.regex.Pattern[PART_STEMS[i].length];
+            for (int j = 0; j < PART_STEMS[i].length; j++) {
+                String stem = PART_STEMS[i][j];
+                out[i][j] = java.util.regex.Pattern.compile(after
+                        ? "(?<![a-z])" + stem + "(?![a-z])\\s?:?\\s?"
+                                + "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)?"
+                        : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
+                                + "(?<![a-z])" + stem + "(?![a-z])");
+            }
+        }
         return out;
     }
 
