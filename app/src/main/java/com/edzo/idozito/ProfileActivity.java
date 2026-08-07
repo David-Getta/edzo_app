@@ -240,10 +240,21 @@ public class ProfileActivity extends Activity {
             public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             public void onTextChanged(CharSequence s, int a, int b, int c) {}
             public void afterTextChanged(Editable e) {
+                // Az élő előnézet mindhárom mérést érti: mérleg, alvás, pulzus.
                 BodyParse.Body b = BodyParse.parse(e.toString());
-                reco.setText(b.isEmpty()
-                        ? "Írd le a mérleg számát – „78,4 kg” vagy „78 kiló vagyok”."
-                        : "✔ Felismerve:  " + b.label());
+                if (!b.isEmpty()) { reco.setText("✔ Felismerve:  " + b.label()); return; }
+                double sh = Sleep.parse(e.toString());
+                if (sh > 0) {
+                    reco.setText("✔ Felismerve:  😴 " + Hu.kg(sh) + " óra alvás");
+                    return;
+                }
+                int bp = Pulse.parse(e.toString());
+                if (bp > 0) {
+                    reco.setText("✔ Felismerve:  ❤️ " + bp + " bpm nyugalmi pulzus");
+                    return;
+                }
+                reco.setText("Írd le a mérleg számát – „78,4 kg”, „aludtam 8 órát”, "
+                        + "„nyugalmi pulzus 52”.");
             }
         });
         new Sheet(this, "Mérés mondatból ✍️",
@@ -840,6 +851,38 @@ public class ProfileActivity extends Activity {
             pclp.topMargin = dp(8);
             sleepCard.addView(pch, pclp);
         }
+        // Léptetős gyorsbevitel: a legutóbbi értékről indul, két koppintás az
+        // egész napi mérés. A mondat-bevitel persze ugyanúgy megy.
+        LinearLayout prow = hbox();
+        prow.setPadding(0, dp(8), 0, 0);
+        final int[] cur = {pl > 0 ? pl : 60};
+        final Button minus = ghost("−");
+        final Button save = ghost("Mentés: " + cur[0] + " bpm");
+        final Button plus = ghost("＋");
+        minus.setTextSize(15); plus.setTextSize(15); save.setTextSize(13);
+        minus.setOnClickListener(v -> {
+            if (cur[0] > Pulse.MIN_BPM) cur[0]--;
+            save.setText("Mentés: " + cur[0] + " bpm");
+        });
+        plus.setOnClickListener(v -> {
+            if (cur[0] < Pulse.MAX_BPM) cur[0]++;
+            save.setText("Mentés: " + cur[0] + " bpm");
+        });
+        save.setOnClickListener(v -> {
+            Pulse.add(this, System.currentTimeMillis(), cur[0]);
+            refreshSleepCard();
+            Ux.blazeCard(this, "❤️ Pulzus mentve ✔  " + cur[0] + " bpm");
+        });
+        LinearLayout.LayoutParams mlp = new LinearLayout.LayoutParams(0, -2, 0.7f);
+        LinearLayout.LayoutParams slp2 = new LinearLayout.LayoutParams(0, -2, 1.6f);
+        mlp.leftMargin = dp(2); mlp.rightMargin = dp(2);
+        slp2.leftMargin = dp(2); slp2.rightMargin = dp(2);
+        prow.addView(minus, mlp);
+        prow.addView(save, slp2);
+        LinearLayout.LayoutParams plp2 = new LinearLayout.LayoutParams(0, -2, 0.7f);
+        plp2.leftMargin = dp(2); plp2.rightMargin = dp(2);
+        prow.addView(plus, plp2);
+        sleepCard.addView(prow);
     }
 
     /**
