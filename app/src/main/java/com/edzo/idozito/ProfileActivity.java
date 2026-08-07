@@ -267,7 +267,8 @@ public class ProfileActivity extends Activity {
                 return;
             }
             new Sheet(this, "Ebből nem lettem okos 🤔",
-                    "A mérleg számát keresem – „78,4 kg”, „78 kiló vagyok”, „mérleg: 81,2”.")
+                    "A mérleg vagy a mérőszalag számát keresem – „78,4 kg”, "
+                            + "„78 kiló vagyok”, „mérleg: 81,2”, „derék 84 cm”.")
                     .addPrimary("Újra", this::measurementInputSheet)
                     .addCancel()
                     .show();

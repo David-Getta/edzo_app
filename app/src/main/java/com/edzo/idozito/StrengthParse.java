@@ -356,6 +356,9 @@ public final class StrengthParse {
      */
     static String sets(String s) {
         return Hu.digits(s)
+                // A csillag ugyanaz a szorzójel: a telefon billentyűzetén ez
+                // van kéznél, és a „3*10 60 kg" eddig három ISMÉTLÉS volt.
+                .replaceAll("(\\d)\\s?\\*\\s?(\\d)", "$1x$2")
                 .replaceAll("(\\d{1,2})\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2")
                 // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent. A szám a
                 // két oldalon köti a mintát, így a „korcsolya" nem kör.

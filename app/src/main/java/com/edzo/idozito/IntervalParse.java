@@ -108,6 +108,8 @@ public final class IntervalParse {
         s = clockToSeconds(s);
         // A zárójel csak tagolás: a „10x(40s/20s)" ugyanaz, mint a „10x40/20".
         s = s.replace('(', ' ').replace(')', ' ');
+        // A csillag ugyanaz a szorzójel, mint az x: „8*20/10".
+        s = s.replaceAll("(\\d)\\s?\\*\\s?(\\d)", "$1x$2");
 
         // 0) AMRAP: „amrap 20 perc” – annyi kör, amennyi belefér. Az időzítőnek
         //    ez EGY hosszú szakasz, nem több rövid; körszámot adni neki éppen

@@ -448,4 +448,12 @@ public class IntervalParseTest {
         assertEquals(15, x.rest);
         assertTrue("kimondott szám nem javaslat", !x.guessed);
     }
+
+    /** A csillag itt is szorzójel: „8*20/10”. */
+    @Test public void asteriskWorksInIntervalsToo() {
+        IntervalParse.Plan p = IntervalParse.parse("8*20/10");
+        assertEquals(8, p.rounds);
+        assertEquals(20, p.work);
+        assertEquals(10, p.rest);
+    }
 }

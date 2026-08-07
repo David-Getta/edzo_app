@@ -682,4 +682,20 @@ public class StrengthParseTest {
             assertEquals(c[0], c[1], it.get(0).name);
         }
     }
+
+    /**
+     * A csillag ugyanaz a szorzójel, mint az x.
+     *
+     * A telefon billentyűzetén a csillag van kéznél, az x-hez betűre kell
+     * váltani. A „3*10 60 kg" eddig három ISMÉTLÉS volt súly nélkül – nem
+     * hibaüzenet, csak csendben más.
+     */
+    @Test public void asteriskIsAMultiplicationSign() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse("fekvenyomás 3*10 60 kg");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(10, it.get(0).sets.get(0).reps);
+        assertEquals(60, it.get(0).topWeight(), 0.01);
+        assertEquals(3, StrengthParse.parse("fekvenyomás 3 * 10 60 kg").get(0).sets.size());
+    }
 }
