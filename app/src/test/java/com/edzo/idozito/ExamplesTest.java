@@ -114,6 +114,36 @@ public class ExamplesTest {
         }
     }
 
+    /**
+     * Minden hirdetett példa a SAJÁT naplójához fut be az útbaigazítón.
+     *
+     * Három dokumentált kivétellel: a BULK-beli súlyzós mondat az erősítőé
+     * (ez a jobb hely neki), a „hiit 20 perc" javasolt ritmusú terv edzésnek
+     * számít (a ritmus a mi szavunk, nem a felhasználóé), és az alvás-példa
+     * a mérés-mezőben lakik, de a saját felismerője viszi.
+     */
+    @Test public void everyAdvertisedExampleRoutesToItsOwnGroup() {
+        java.util.List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        Object[][] groups = {
+                {Examples.MEAL, Sentence.Kind.MEAL}, {Examples.BULK, Sentence.Kind.WORKOUT},
+                {Examples.SET, Sentence.Kind.STRENGTH}, {Examples.INTERVAL, Sentence.Kind.INTERVAL},
+                {Examples.BODY, Sentence.Kind.BODY}, {Examples.ROUTINE, Sentence.Kind.ROUTINE},
+                {Examples.REHAB, Sentence.Kind.REHAB}};
+        StringBuilder bad = new StringBuilder();
+        for (Object[] g : groups) {
+            Sentence.Kind want = (Sentence.Kind) g[1];
+            for (String q : (String[]) g[0]) {
+                Sentence.Kind got = Sentence.of(q, all, friday());
+                if (want == Sentence.Kind.WORKOUT && got == Sentence.Kind.STRENGTH) continue;
+                if (want == Sentence.Kind.INTERVAL && got == Sentence.Kind.WORKOUT) continue;
+                if (want == Sentence.Kind.BODY && got == Sentence.Kind.SLEEP) continue;
+                if (got != want) bad.append("\n  [").append(want).append("] ")
+                        .append(q).append(" -> ").append(got);
+            }
+        }
+        assertEquals("rossz ajtóhoz futó példa:" + bad, 0, bad.length());
+    }
+
     /** A könyvtár minden csoportjához tartozik valódi példalista. */
     @Test public void everyLibraryGroupHasExamples() {
         for (String[] g : Examples.GROUPS) {
