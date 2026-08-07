@@ -187,7 +187,7 @@ public final class Examples {
             {"📝  Edzés-előzmény", "Több edzés egy mondatból", "BULK"},
             {"🏋️  Erősítő sorozatok", "Gyakorlat, sorozat, súly", "SET"},
             {"⏱  Időzítő", "Kör, munka, pihenő", "INTERVAL"},
-            {"⚖️  Mérés és pihenés", "Testsúly, testzsír, körfogat, alvás", "BODY"},
+            {"⚖️  Mérés és pihenés", "Testsúly, testzsír, körfogat, alvás, pulzus", "BODY"},
             {"📅  Edzésnap", "Név és gyakorlatok, vesszővel", "ROUTINE"},
             {"🩹  Panasz és megelőzés", "Mi fáj – vagy mit erősítenél? Kész sort ajánlok", "REHAB"},
     };

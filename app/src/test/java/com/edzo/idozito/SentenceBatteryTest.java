@@ -274,6 +274,46 @@ public class SentenceBatteryTest {
      * eredményt. A négy felismerő ugyanazon a normalizáláson osztozik, tehát
      * egy elrontott lépés MIND a négyet érinti.
      */
+    // ---------- Útbaigazító ----------
+
+    /**
+     * A router-mátrix: a mondat és a napló, ahova befut.
+     *
+     * Ezek a mondatok szándékosan több felismerő határán állnak – pont ott
+     * szokott mellékhatásként elcsúszni egy szabály-módosítás. A jobb oldal
+     * a Sentence.Kind neve.
+     */
+    private static final String[][] ROUTER = {
+            {"nyugalmi pulzus 52", "PULSE"},
+            {"aludtam 8 órát", "SLEEP"},
+            {"futás 30 perc, átlagpulzus 150", "WORKOUT"},
+            {"fáj a talpam", "REHAB"},
+            {"fáj a sípcsontom futás után", "REHAB"},
+            {"boka stabilitás", "REHAB"},
+            {"váll mobilizálás", "REHAB"},
+            {"golfkönyök fájdalom", "REHAB"},
+            {"nem fáj már a vállam", "NONE"},
+            {"csípős csirkeszárny sült krumplival", "MEAL"},
+            {"vacsora 650 kcal", "MEAL"},
+            {"78 kg és 18% testzsír", "BODY"},
+            {"Lábnap: guggolás, lábtolás, kitörés", "ROUTINE"},
+            {"8x20/10", "INTERVAL"},
+            {"3x10 fekvenyomás 60 kg", "STRENGTH"},
+            {"30 perc futás", "WORKOUT"},
+    };
+
+    @Test public void theRouterSendsTheSentencesWhereTheyBelong() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (String[] row : ROUTER) {
+            String got = Sentence.of(row[0], all, NOW).name();
+            if (!row[1].equals(got))
+                bad.append("\n  ").append(row[0]).append(" -> ").append(got)
+                   .append(" (várt: ").append(row[1]).append(')');
+        }
+        assertEquals("elcsúszott mondat:" + bad, 0, bad.length());
+    }
+
     @Test public void theSameSentenceTypedDifferentlyMeansTheSame() {
         StringBuilder bad = new StringBuilder();
         for (String[][] cases : new String[][][]{STRENGTH, INTERVAL, WORKOUT, MEAL})
