@@ -298,7 +298,13 @@ public final class Foods {
                 "diet kola", "light kola", "light udito",
                 // A leggyakoribb magyar alak: „kávé cukor nélkül". Enélkül a
                 // „cukor" szótő beleesett, és 40 kcal cukrot adott hozzá.
-                "cukor nelkul", "cukor nelkuli", "cukrozatlan", "edesitovel", "edesito"),
+                "cukor nelkul", "cukor nelkuli", "cukrozatlan", "edesitovel", "edesito",
+                // A boltok polcán így írják: coke zero, pepsi max, diet coke,
+                // diétás kóla. A „zéró" ékezettel is gyakori. Az édesítőszerek
+                // (eritrit, stevia, xilit) szintén nulla kalória.
+                "coke zero", "zero coke", "pepsi max", "diet coke", "dietas kola",
+                "dietas udito", "zero cukros", "zero udito", "zero szorp",
+                "eritrit", "stevia", "xilit", "nyirfacukor"),
         new Food("Rántott sajt", 330, 18, 120, "rantott sajt"),
         new Food("Nokedli / galuska", 170, 5, 200, "nokedli", "galuska", "knedli",
                 "zsemlegomboc", "zsemle gomboc"),
@@ -2180,6 +2186,13 @@ public final class Foods {
             // A csokoládé a szelet és a muffin kalóriájában benne van: a
             // „csokis müzliszelet" nem szelet PLUSZ egy tábla csoki.
             {"Csokoládé", "Müzliszelet", "Proteinszelet", "Muffin / brownie"},
+            // A „cukormentes üdítő"-nél a cukros változat NEM külön ital: a
+            // jelző pontosan azt mondja, hogy ez ugyanaz, csak nulla
+            // kalóriával. Fordítva áll a takarásban: a jelző (light) marad,
+            // az alap (üdítő, energiaital, szörp) esik.
+            {"Üdítő (cukros)", "Cukormentes / light"},
+            {"Energiaital", "Cukormentes / light"},
+            {"Szörp (hígítva)", "Cukormentes / light"},
             // A pite tölteléke benne van a pite kalóriájában: a „meggyes pite"
             // nem pite PLUSZ egy adag meggy.
             {"Cseresznye / meggy", "Pite (almás/gyümölcsös)"},

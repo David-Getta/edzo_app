@@ -621,4 +621,23 @@ public class FoodsIntegrationTest {
                 Foods.parse(all, "egy pohár rizling").get(0).food.name);
         assertEquals("Rizs (főtt)", Foods.parse(all, "rizs").get(0).food.name);
     }
+
+    /**
+     * A zéró üdítő nulla kalória – és EGY tétel, nem kettő.
+     *
+     * A „cukormentes energiaital" eddig a nulla kalóriás jelölő MELLÉ a
+     * cukros energiaitalt is felvette: pont azt a 45 kcal/100 g-ot, amit a
+     * felhasználó kifejezetten elkerült.
+     */
+    @Test public void zeroDrinksAreOneZeroCalorieItem() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"zero kóla", "coke zero", "pepsi max", "diet coke",
+                "diétás kóla", "cukormentes energiaital", "zéró cukros üdítő", "zero szörp"}) {
+            java.util.List<Foods.Hit> h = Foods.parse(all, q);
+            assertEquals(q, 1, h.size());
+            assertEquals(q, 0, h.get(0).food.kcal100);
+        }
+        // A cukros változat magában marad cukros.
+        assertEquals(42, Foods.parse(all, "üdítő").get(0).food.kcal100);
+    }
 }
