@@ -145,7 +145,16 @@ public final class Foods {
                 "tom yum", "laksa", "harira"),
         // A „vacsorára túró és zöldség" zöldsége eddig eltűnt: vegyes köret.
         new Food("Zöldség (vegyes / párolt)", 40, 2, 200, "zoldseg", "vitaminsalata",
-                "pak choi", "pakchoi", "mangold", "articsoka", "edeskomeny"),
+                "pak choi", "pakchoi", "mangold", "articsoka", "edeskomeny",
+                // A ritkább kerti zöldségek is ebbe a sávba esnek. Az „okra"
+                // szándékosan hiányzik: a magyar -okra rag (sorozatOKRA,
+                // dolgOKRA) minden második mondatban ott van – a saját
+                // tesztünk fogta meg.
+                "csicsoka"),
+        // A torma és a gyömbér FŰSZERNYI mennyiség: kanálnyi adag, nem
+        // kétszáz grammos zöldség-köret. A „gyömbéres tea" zöldségadagként
+        // nyolcvan kalóriát tett volna a nulla kalóriás tea mellé.
+        new Food("Torma / gyömbér", 60, 1, 10, "torma", "gyomber"),
         new Food("Rakott krumpli", 160, 6, 350, "rakott krumpli", "rakott", "moussaka"),
         // Disznótoros: hurka, kolbász és sült hús egy tányéron – a magyar
         // konyha egyik legnehezebb fogása, egy adag közel ezer kalória.
@@ -179,7 +188,7 @@ public final class Foods {
                 "gyumolcs salata"),
         new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali",
                 // A „rukkola" vége „kola" – a hosszabb tő elfedi az üdítőt.
-                "rukkola", "endivia", "radicchio"),
+                "rukkola", "endivia", "radicchio", "lollo rosso", "cikoria"),
         new Food("Sajt (trappista)", 360, 25, 30, "sajt", "trappista", "parenyica",
                 // A gouda ugyanabban a sávban van, és a boltok polcán ott a
                 // trappista mellett – eddig egyetlen tő sem fogta.
@@ -639,7 +648,8 @@ public final class Foods {
                 "gyumolcspure", "almapure", "almaszosz", "bebietel"),
         new Food("Gránátalma", 83, 1, 150, "granatalma"),
         new Food("Bogyós gyümölcs", 50, 1, 100, "bogyos", "szeder", "ribizli",
-                "egres", "josta", "homoktovis", "licsi"),
+                "egres", "josta", "homoktovis", "licsi", "bodza", "kokeny",
+                "naspolya", "maracuja", "passiogyumolcs"),
         new Food("Mangó", 60, 0.8, 200, "mango"),
         new Food("Papaya", 45, 0.5, 150, "papaya", "papaja"),
         new Food("Datolyaszilva", 70, 0.6, 150, "datolyaszilva", "hurma"),
