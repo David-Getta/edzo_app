@@ -362,4 +362,40 @@ public final class Rehab {
             return a.name + " – e heti " + WEEKLY_GOAL + " alkalom megvan ✔";
         return a.name + " – a héten " + done + "/" + WEEKLY_GOAL + " alkalom";
     }
+
+    /**
+     * Hány egymást követő héten jött össze a heti adag?
+     *
+     * A mostani hét csak akkor számít bele, ha már megvan – amíg tart, a
+     * sorozatot az előző hetek adják. A hét itt fix hétnapos ablak a hétfő
+     * 0:00-tól visszafelé; az óraátállítás egy-egy óra csúszást okozhat a
+     * határon, ami egy heti darabszámnál nem oszt, nem szoroz.
+     */
+    public static int weekStreak(long[] ts, long now) {
+        if (ts == null || ts.length == 0) return 0;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        cal.add(java.util.Calendar.DAY_OF_MONTH,
+                -((cal.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7));
+        long monday = cal.getTimeInMillis();
+        long week = 7L * 24 * 3600 * 1000;
+        int streak = 0;
+        if (countIn(ts, monday, now + 1) >= WEEKLY_GOAL) streak++;
+        long s = monday - week;
+        while (streak < 520 && countIn(ts, s, s + week) >= WEEKLY_GOAL) {
+            streak++;
+            s -= week;
+        }
+        return streak;
+    }
+
+    private static int countIn(long[] ts, long from, long to) {
+        int n = 0;
+        for (long t : ts) if (t >= from && t < to) n++;
+        return n;
+    }
 }

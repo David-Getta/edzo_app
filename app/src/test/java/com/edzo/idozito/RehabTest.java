@@ -201,6 +201,41 @@ public class RehabTest {
         assertTrue(boka.contains("Egylábas állás – jobb"));
     }
 
+    /**
+     * A heti sorozat: hány egymást követő héten jött össze a heti adag.
+     *
+     * A folyamatban lévő hét csak készen számít bele; egy kihagyott hét
+     * megszakítja a sorozatot.
+     */
+    @Test public void theWeeklyStreakCountsCompleteWeeks() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(2026, java.util.Calendar.AUGUST, 7, 12, 0, 0); // péntek dél
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long now = c.getTimeInMillis();
+        long day = 24L * 3600 * 1000;
+        long week = 7 * day;
+        // Múlt hét: hétfő aug 3 előtti hét (júl 27–aug 2), 3 alkalom.
+        long lastMon = now - 4 * day - week; // júl 27, péntek délből számolva
+        long[] lastFull = {lastMon, lastMon + day, lastMon + 3 * day};
+        assertEquals(1, Rehab.weekStreak(lastFull, now));
+        // Két teljes hét egymás után.
+        long[] two = {lastMon, lastMon + day, lastMon + 3 * day,
+                lastMon - week, lastMon - week + day, lastMon - week + 2 * day};
+        assertEquals(2, Rehab.weekStreak(two, now));
+        // Az e heti kész adag hozzáadja a folyó hetet is.
+        long[] three = {now, now - day, now - 2 * day,
+                lastMon, lastMon + day, lastMon + 3 * day};
+        assertEquals(2, Rehab.weekStreak(three, now));
+        // Kihagyott hét megszakítja: a két héttel ezelőtti teljes hét nem számít.
+        long[] gap = {lastMon - 2 * week, lastMon - 2 * week + day,
+                lastMon - 2 * week + 2 * day};
+        assertEquals(0, Rehab.weekStreak(gap, now));
+        assertEquals(0, Rehab.weekStreak(new long[]{}, now));
+        assertEquals(0, Rehab.weekStreak(null, now));
+        // Két e heti alkalom még nem kész hét.
+        assertEquals(0, Rehab.weekStreak(new long[]{now, now - day}, now));
+    }
+
     /** A fókusz-sor kimondja az állást, és a kész hétre pipát tesz. */
     @Test public void theFocusLineShowsProgress() {
         Rehab.Area a = Rehab.byId("boka");

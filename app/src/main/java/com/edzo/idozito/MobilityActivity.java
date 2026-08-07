@@ -150,10 +150,13 @@ public class MobilityActivity extends Activity {
         String fid = RehabLog.focusId(this);
         Rehab.Area focus = fid == null ? null : Rehab.byId(fid);
         if (focus != null) {
-            int done = Rehab.weekCount(RehabLog.doneOf(this, fid), System.currentTimeMillis());
+            long[] doneTs = RehabLog.doneOf(this, fid);
+            int done = Rehab.weekCount(doneTs, System.currentTimeMillis());
+            int streak = Rehab.weekStreak(doneTs, System.currentTimeMillis());
             LinearLayout fc = card();
             fc.setPadding(dp(14), dp(12), dp(14), dp(12));
-            fc.addView(text("⭐ Heti fókusz", 11.5f, MUTED, true));
+            fc.addView(text("⭐ Heti fókusz" + (streak >= 2
+                    ? "   ·   🔥 " + streak + " hete sorban" : ""), 11.5f, MUTED, true));
             fc.addView(text(focus.emoji + " " + Rehab.focusLine(focus, done), 15, TXT, true));
             TextView fh = text(done >= Rehab.WEEKLY_GOAL
                     ? "Szép hét – ami ezután jön, az ráadás."
