@@ -249,10 +249,12 @@ public final class TimeHint {
 
     /** A kimondott napszak órája, vagy -1, ha nincs. */
     static int hourOf(String s) {
-        // „fél 8-kor": magyarul ez fél órával NYOLC ELŐTT van, tehát hét óra.
-        // A Hu.digits a „fél"-t 0,5-re váltja, ezért így néz ki a mondatban.
+        // „fél 8-kor", „negyed 8-kor", „háromnegyed 8-kor": magyarul mind a
+        // NYOLC FELÉ tartó óra – vagyis hét-valahány. Az órára kerekítve
+        // mindhárom hét (a perc az időpont-becslésben nem számít). A Hu.digits
+        // a „fél"-t 0,5-re váltja, ezért az is számként áll a mondatban.
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("0,5\\s(\\d{1,2})\\s?(?:ora(?:kor)?|-kor|kor)")
+                .compile("(?:0,5|negyed|haromnegyed)\\s(\\d{1,2})\\s?(?:ora(?:kor)?|-kor|kor)")
                 .matcher(s);
         if (m.find()) {
             try {

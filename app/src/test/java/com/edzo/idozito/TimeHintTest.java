@@ -241,5 +241,9 @@ public class TimeHintTest {
         assertEquals(11, TimeHint.hourOf(Hu.digits(Foods.norm("fél 12-kor ebéd"))));
         assertEquals(-1, TimeHint.hourOf(Hu.digits(Foods.norm("fél adag gyros"))));
         assertEquals(-1, TimeHint.hourOf(Hu.digits(Foods.norm("fél liter víz"))));
+        // A negyed és a háromnegyed ugyanígy a következő óra FELÉ tart.
+        assertEquals(7, TimeHint.hourOf(Hu.digits(Foods.norm("negyed 8-kor"))));
+        assertEquals(7, TimeHint.hourOf(Hu.digits(Foods.norm("háromnegyed 8-kor"))));
+        assertEquals(-1, TimeHint.hourOf(Hu.digits(Foods.norm("negyed pizza"))));
     }
 }
