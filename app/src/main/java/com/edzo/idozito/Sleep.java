@@ -117,6 +117,28 @@ public final class Sleep {
         return o == null ? -1 : o.optDouble("h", -1);
     }
 
+    /**
+     * Napi értékek időrendben (régi → új) az elmúlt N napból, a görbéhez.
+     *
+     * Csak a bejegyzett éjszakák kerülnek bele – a kihagyott nap nem nulla
+     * óra alvás, hanem ismeretlen, és egy nulla a görbét a padlóra rántaná.
+     */
+    public static double[] series(android.content.Context c, long now, int days) {
+        org.json.JSONArray a = load(c);
+        java.util.List<Double> vals = new java.util.ArrayList<>();
+        for (int i = a.length() - 1; i >= 0; i--) {
+            org.json.JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            int ago = Days.ago(o.optLong("ts"), now);
+            if (ago < 0 || ago >= days) continue;
+            double h = o.optDouble("h", -1);
+            if (h > 0) vals.add(h);
+        }
+        double[] out = new double[vals.size()];
+        for (int i = 0; i < out.length; i++) out[i] = vals.get(i);
+        return out;
+    }
+
     /** Átlag az elmúlt N napra (csak a bejegyzett éjszakákból), vagy -1. */
     public static double avg(android.content.Context c, long now, int days) {
         org.json.JSONArray a = load(c);

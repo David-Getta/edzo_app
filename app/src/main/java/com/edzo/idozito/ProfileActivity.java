@@ -770,6 +770,16 @@ public class ProfileActivity extends Activity {
             at.setPadding(0, dp(2), 0, 0);
             sleepCard.addView(at);
         }
+        // Két hét görbéje, ha van már mit kirajzolni: a szemnek az irány kell,
+        // nem a számok.
+        double[] series = Sleep.series(this, System.currentTimeMillis(), 14);
+        if (series.length >= 3) {
+            ChartView ch = new ChartView(this);
+            ch.setData(series, 0xFF8B5CF6, "h");
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-1, dp(110));
+            clp.topMargin = dp(8);
+            sleepCard.addView(ch, clp);
+        }
         LinearLayout row = hbox();
         row.setPadding(0, dp(8), 0, 0);
         for (final double h : new double[]{5, 6, 7, 8, 9, 10}) {
