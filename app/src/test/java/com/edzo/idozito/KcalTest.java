@@ -151,4 +151,18 @@ public class KcalTest {
                     && !q.toLowerCase(new java.util.Locale("hu")).contains("kalór"))
                 assertEquals("kalóriás bejegyzésnek látszik: " + q, -1, Kcal.stated(q));
     }
+
+    /**
+     * Kilojoule: az EU-s címke ezt írja első helyen. 4,184 kJ = 1 kcal.
+     *
+     * Ha a mondat kalóriát IS mond, a kJ nem adódik hozzá: a doboz mindkettőt
+     * írja, és a kettő ugyanaz az érték kétszer.
+     */
+    @Test public void kilojoulesConvert() {
+        assertEquals(287, Kcal.stated("szelet 1200 kJ"));
+        assertEquals(100, Kcal.stated("ital 418 kj"));
+        // Mindkettő kiírva: a kalória számít, a kJ nem duplázódik rá.
+        assertEquals(287, Kcal.stated("szelet 1200 kJ / 287 kcal"));
+        assertEquals("Szelet", Kcal.label("szelet 1200 kJ"));
+    }
 }

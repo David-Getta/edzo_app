@@ -34,6 +34,13 @@ public final class Kcal {
             "(\\d+(?:[.,]\\d+)?)\\s*(kcal|kkal|k cal|kalori[a-z]*|cal)(?![a-z])");
 
     /**
+     * Kilojoule: az EU-s címke ezt írja ELSŐ helyen, és van doboz, amin csak
+     * ez szerepel. 4,184 kJ = 1 kcal.
+     */
+    private static final Pattern NUM_KJ = Pattern.compile(
+            "(\\d+(?:[.,]\\d+)?)\\s*(kj|kilojoule)(?![a-z])");
+
+    /**
      * Célról szóló mondat – ott a szám nem az, amit MEGETTÜNK.
      *
      * A „még 500 kcal fér bele" és a „napi cél 2000 kcal" ugyanúgy tartalmaz
@@ -108,6 +115,17 @@ public final class Kcal {
             catch (NumberFormatException e) { continue; }
             sum += v;
         }
+        // Kilojoule csak akkor, ha kalória nincs: a doboz mindkettőt írja, és
+        // a kettő ugyanaz az érték kétszer – összeadni dupla ebéd lenne.
+        if (sum <= 0) {
+            m = NUM_KJ.matcher(s);
+            while (m.find()) {
+                double v;
+                try { v = Double.parseDouble(m.group(1).replace(',', '.')); }
+                catch (NumberFormatException e) { continue; }
+                sum += v / 4.184;
+            }
+        }
         int r = (int) Math.round(sum);
         return r >= MIN && r <= MAX ? r : -1;
     }
@@ -161,7 +179,7 @@ public final class Kcal {
      */
     public static String label(String q) {
         if (q == null) return "Étel";
-        String s = q.replaceAll("(?i)\\d+(?:[.,]\\d+)?\\s*(kcal|kkal|kalóri\\w*|kalori\\w*|cal)(?![\\p{L}])", " ");
+        String s = q.replaceAll("(?i)\\d+(?:[.,]\\d+)?\\s*(kcal|kkal|kalóri\\w*|kalori\\w*|cal|kj|kilojoule)(?![\\p{L}])", " ");
         // A tápérték-sor másik fele is a számokhoz tartozik, nem a névhez.
         s = s.replaceAll("(?i)\\d+(?:[.,]\\d+)?\\s*(g|gr|gramm)?\\s*(?<![\\p{L}])(fehérj\\w*|feherj\\w*|protein\\w*)(?![\\p{L}])", " ");
         // A megmaradt kötőszavak és írásjelek a szám helyén lógva maradnának.
