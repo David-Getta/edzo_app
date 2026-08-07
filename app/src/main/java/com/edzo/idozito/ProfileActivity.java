@@ -33,7 +33,8 @@ public class ProfileActivity extends Activity {
 
     static int BG, CARD, CARD2, TXT, MUTED, LINE;
     static final int ACCENT = MainActivity.ACCENT, INDIGO = MainActivity.INDIGO, VIOLET = MainActivity.VIOLET;
-    static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFFE11D2E, FAT_C = 0xFFF59E0B;
+    static final int WEIGHT_C = 0xFF34D399, BMI_C = 0xFFE11D2E, FAT_C = 0xFFF59E0B,
+            WAIST_C = 0xFF60A5FA;
 
     EditText heightEt, weightEt, bodyFatEt, byEt, bmEt, bdEt, goalLossEt;
     TextView bmiValue, bmiCat, ageLabel, bmrValue, goalInfo;
@@ -42,8 +43,8 @@ public class ProfileActivity extends Activity {
     ChartView chart;
     TextView chartInfo;
     LinearLayout measList;
-    Button[] seriesBtns = new Button[3];
-    int series = 0; // 0 testsúly, 1 BMI, 2 testzsír
+    Button[] seriesBtns = new Button[4];
+    int series = 0; // 0 testsúly, 1 BMI, 2 testzsír, 3 derék
 
     @Override
     protected void onCreate(Bundle b) {
@@ -162,6 +163,9 @@ public class ProfileActivity extends Activity {
         sel.addView(seriesBtn(0, "Testsúly"), selLp());
         sel.addView(seriesBtn(1, "BMI"), selLp());
         sel.addView(seriesBtn(2, "Testzsír"), selLp());
+        // A derék a negyedik görbe: fogyásnál ez változik előbb, mint a
+        // mérleg száma, és a mérőszalag adatai eddig csak listában látszottak.
+        sel.addView(seriesBtn(3, "Derék"), selLp());
         col.addView(sel, lp());
         col.addView(gap(12));
 
@@ -560,7 +564,10 @@ public class ProfileActivity extends Activity {
 
     Button seriesBtn(int idx, String label) {
         Button b = ghost(label);
-        b.setTextSize(14);
+        // Négy felirat fér el egy sorban: a „Testsúly" tizennégy ponttal a
+        // kis kijelzőkön már törne.
+        b.setTextSize(13);
+        b.setPadding(dp(2), b.getPaddingTop(), dp(2), b.getPaddingBottom());
         b.setOnClickListener(v -> selectSeries(idx));
         seriesBtns[idx] = b;
         return b;
@@ -568,7 +575,7 @@ public class ProfileActivity extends Activity {
 
     void selectSeries(int idx) {
         series = idx;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < seriesBtns.length; i++) {
             GradientDrawable bg = new GradientDrawable();
             bg.setCornerRadius(dp(13));
             if (i == idx) { bg.setColor(Theme.accent(this)); }
@@ -582,9 +589,11 @@ public class ProfileActivity extends Activity {
         JSONArray arr = Profile.measurements(this); // legfrissebb elöl
         int n = arr.length();
         // időrendben (régi -> új)
-        String key = series == 0 ? "w" : series == 1 ? "bmi" : "bf";
-        String unit = series == 0 ? "kg" : series == 1 ? "" : "%";
-        int color = series == 0 ? WEIGHT_C : series == 1 ? BMI_C : FAT_C;
+        String key = series == 0 ? "w" : series == 1 ? "bmi"
+                : series == 2 ? "bf" : BodyParse.PART_KEYS[0];
+        String unit = series == 0 ? "kg" : series == 1 ? "" : series == 2 ? "%" : "cm";
+        int color = series == 0 ? WEIGHT_C : series == 1 ? BMI_C
+                : series == 2 ? FAT_C : WAIST_C;
         java.util.ArrayList<Double> vals = new java.util.ArrayList<>();
         java.util.ArrayList<Double> daysOf = new java.util.ArrayList<>();   // a trendhez
         for (int i = n - 1; i >= 0; i--) {
@@ -634,6 +643,12 @@ public class ProfileActivity extends Activity {
                         info += "  ·  a fogyási célod megvan! 🎉";
                 }
             }
+        }
+        // A deréknél az arány a beszédes szám, nem a centi maga.
+        if (series == 3) {
+            double r = Profile.waistToHeight(last, intOf(heightEt));
+            if (r > 0) info += String.format(new Locale("hu"),
+                    "\n📏 Derék/magasság: %.2f – %s", r, Profile.waistVerdict(r));
         }
         if (!nudge.isEmpty()) info += "\n" + nudge;
         chartInfo.setText(info);
