@@ -1072,4 +1072,23 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("bringa 45 km 27 km/h átlaggal").plans.get(0).km, 0.01);
         assertEquals(20, Activities.parse("20 km bringa").plans.get(0).km, 0.01);
     }
+
+    /**
+     * Verseny-idő két taggal: „5 km 22:30", „félmaraton 1:58".
+     *
+     * A futók írásmódja: tíz alatti első tag óra:perc, fölötte perc:mp. Csak
+     * táv mellett él – e nélkül a kettőspontos szám a falon lévő órát
+     * jelentheti. A „-kor", a napszak és a tempó („5:30-as tempóval")
+     * továbbra sem időtartam.
+     */
+    @Test public void twoPartRaceTimesAreDurations() {
+        assertEquals(23, Activities.parse("5 km 22:30").plans.get(0).minutes);
+        assertEquals(42, Activities.parse("10 km PB 42:10").plans.get(0).minutes);
+        assertEquals(118, Activities.parse("félmaraton 1:58").plans.get(0).minutes);
+        assertEquals(33, Activities.parse("leúsztam 1500 m-t 32:40 alatt").plans.get(0).minutes);
+        // Óra a falon, nem időtartam:
+        assertEquals(60, Activities.parse("10 km-t futottam 18:30-kor").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("10 km reggel 7:30").plans.get(0).minutes);
+        assertEquals(55, Activities.parse("10 km-t futottam 5:30-as tempóval").plans.get(0).minutes);
+    }
 }

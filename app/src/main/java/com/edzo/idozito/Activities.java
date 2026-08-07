@@ -771,7 +771,7 @@ public final class Activities {
         List<double[]> kms = findKms(q);            // {pos, km, vég}
         for (double[] t : kms) blank(q, (int) t[0], (int) t[2]);
         mergeKmRanges(beforeBlank, kms, q);
-        List<int[]> mins = findMinutes(q);          // {pos, perc}
+        List<int[]> mins = findMinutes(q, beforeBlank); // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
         mergeTimeRanges(beforeBlank, mins, q);
         dropWarmupTimes(beforeBlank, mins);
@@ -1042,9 +1042,13 @@ public final class Activities {
         if (out.isEmpty() && !kms.isEmpty()) {
             Kind run = byId("futas");
             double km0 = kms.get(0)[1];
-            out.add(new Plan(run, 1,
-                    Math.min(24 * 60, Math.max(1, (int) Math.round(km0 * pace(beforeBlank, run)))),
-                    km0));
+            // A kimondott idő itt is erősebb a tempó-becslésnél: az „5 km
+            // 22:30" fél percre pontos, a hat perc/km csak közelítés.
+            int est = Math.min(24 * 60,
+                    Math.max(1, (int) Math.round(km0 * pace(beforeBlank, run))));
+            int said = minutesFor(mins, (int) kms.get(0)[0], (int) kms.get(0)[2],
+                    -1, Integer.MAX_VALUE, 0);
+            out.add(new Plan(run, 1, said > 0 ? said : est, km0));
         }
 
         // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még
@@ -2057,13 +2061,46 @@ public final class Activities {
      * szándékosan kimarad: a „18:00" időpont, nem tizennyolc perc – és egy
      * időpontból számolt edzéshossz csendben rossz lenne.
      */
-    private static void findClockTimes(String s, List<int[]> out) {
+    private static void findClockTimes(String s, String beforeBlank, List<int[]> out) {
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(?<![\\d:])(\\d{1,2}):([0-5]\\d):([0-5]\\d)(?![\\d:])").matcher(s);
         while (m.find()) {
             int min = Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
             if (Integer.parseInt(m.group(3)) >= 30) min++;
             if (min >= 1 && min <= 24 * 60) out.add(new int[]{m.start(), min, m.end(), 0});
+        }
+        // Verseny-idő két taggal: „5 km 22:30", „félmaraton 1:58". Csak táv
+        // mellett merjük időtartamnak venni – e nélkül a kettőspontos szám
+        // inkább órát jelent a falon. A futók írásmódja szerint a 10 alatti
+        // első tag óra:perc (1:58), a többi perc:mp (22:30, 42:10).
+        boolean race = beforeBlank.contains("km") || beforeBlank.contains("meter")
+                || beforeBlank.contains("maraton")
+                // A puszta „m" is táv, ha szám áll előtte („1500 m-t").
+                || java.util.regex.Pattern.compile("\\d\\s?m(?![a-z])")
+                        .matcher(beforeBlank).find();
+        if (!race) return;
+        m = java.util.regex.Pattern
+                .compile("(?<![\\d:])(\\d{1,2}):([0-5]\\d)(?![\\d:])").matcher(s);
+        while (m.find()) {
+            // A napszakos vagy -kor-os alak a NAP órája, nem időtartam:
+            // „10 km reggel 7:30", „10 km-t futottam 18:30-kor".
+            if (s.startsWith("-kor", m.end()) || s.startsWith(" kor", m.end())) continue;
+            // A tempó sem időtartam: „5:30-as tempóval", „4:45/km".
+            if (s.startsWith("-as", m.end()) || s.startsWith("-es", m.end())
+                    || s.startsWith("/km", m.end())
+                    || s.regionMatches(m.end(), " tempo", 0, 6)
+                    || (m.end() + 12 <= s.length()
+                        && s.substring(m.end(), m.end() + 12).contains("tempo"))) continue;
+            int first = Integer.parseInt(m.group(1));
+            boolean daypart = false;
+            for (String dw : new String[]{"reggel", "este", "delutan", "delelott",
+                    "hajnal", "ejjel"})
+                if (beforeBlank.contains(dw)) { daypart = true; break; }
+            if (first < 10 && daypart) continue;
+            int min = first < 10
+                    ? first * 60 + Integer.parseInt(m.group(2))
+                    : first + (Integer.parseInt(m.group(2)) >= 30 ? 1 : 0);
+            if (min >= 3 && min <= 24 * 60) out.add(new int[]{m.start(), min, m.end(), 0});
         }
     }
 
@@ -2125,10 +2162,13 @@ public final class Activities {
     }
 
     /** „45 perc”, „másfél óra” helyett egyszerűen: szám + perc/óra. */
-    private static List<int[]> findMinutes(char[] q) {
+    private static List<int[]> findMinutes(char[] q, String beforeBlank) {
         String s = new String(q);
         List<int[]> out = new ArrayList<>();
-        findClockTimes(s, out);
+        // A verseny-idő felismeréséhez az EREDETI szöveg kell: a távokat ekkor
+        // már kitakartuk, a „km" szó nélkül pedig nem tudnánk, hogy a
+        // kettőspontos szám időtartam.
+        findClockTimes(s, beforeBlank, out);
         findShortTimes(s, out);
         for (String unit : new String[]{"perc", "ora"}) {
             int from = 0;
