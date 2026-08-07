@@ -36,6 +36,7 @@ public class RemindersActivity extends Activity {
             "Menj egy sétára! 🚶",
             "Kihívás-idő! Nézd meg a mai célod 🎯",
             "Esti nyújtás – jobb alvás 🌙🧘",
+            "Reggeli pulzusmérés – ébredés után, felkelés előtt ❤️",
             "A falka számít rád – egy rövid kör? 🐺🔥",
     };
 

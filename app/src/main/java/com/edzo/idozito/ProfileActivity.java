@@ -871,7 +871,7 @@ public class ProfileActivity extends Activity {
         save.setOnClickListener(v -> {
             Pulse.add(this, System.currentTimeMillis(), cur[0]);
             refreshSleepCard();
-            Ux.blazeCard(this, "❤️ Pulzus mentve ✔  " + cur[0] + " bpm");
+            Ux.blazeCard(this, "❤️ " + cur[0] + " bpm mentve ✔  –  " + Pulse.verdict(cur[0]));
         });
         LinearLayout.LayoutParams mlp = new LinearLayout.LayoutParams(0, -2, 0.7f);
         LinearLayout.LayoutParams slp2 = new LinearLayout.LayoutParams(0, -2, 1.6f);
