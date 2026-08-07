@@ -73,7 +73,8 @@ public class MobilityActivity extends Activity {
             if (hit == null) hit = Rehab.forGoal(sent);
             if (hit != null) {
                 section = 3;
-                body.post(() -> areaSheet(hit));
+                final Rehab.Area fhit = hit;
+                body.post(() -> areaSheet(fhit));
             }
         }
         // A Könyvtár rehab-kártyája testtáj nélkül nyitja a fület.
