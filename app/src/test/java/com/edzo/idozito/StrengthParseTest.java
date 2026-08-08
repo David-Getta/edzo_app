@@ -120,6 +120,24 @@ public class StrengthParseTest {
         assertEquals("Guggolás 5×5/5/5/5/5@100", sum("tegnap guggolás 5x5 100 kg"));
     }
 
+    /**
+     * A kiírt kiló a szorzójel előtt: „60 kg x 10".
+     *
+     * A súly×ismétlés írásmódot az app régóta érti („fekvenyomás 60x10,
+     * 70x8"), csakhogy a legtöbb edzés-app ÍGY exportál, kiírt kilóval. A
+     * bemásolt sorból emiatt egyáltalán nem lett bejegyzés – se gyakorlat,
+     * se sorozat, pedig minden adat ott volt benne.
+     */
+    @Test public void theKilogramMayStandBeforeTheMultiplier() {
+        assertEquals("Fekvenyomás 3×10/8/6@80",
+                sum("Fekvenyomás 3 sorozat: 60kg x 10, 70kg x 8, 80kg x 6"));
+        assertEquals("Guggolás 3×5/5/5@100",
+                sum("Guggolás: 100 kg x 5, 100 kg x 5, 100 kg x 5"));
+        // A régi alakok változatlanok.
+        assertEquals("Fekvenyomás 3×10/8/6@80", sum("fekvenyomás 60x10, 70x8, 80x6"));
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60 kg"));
+    }
+
     @Test public void perSetRepsAreKept() {
         assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
         assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));

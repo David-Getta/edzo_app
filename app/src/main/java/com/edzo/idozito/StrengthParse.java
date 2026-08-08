@@ -214,6 +214,18 @@ public final class StrengthParse {
     }
 
     /**
+     * „60 kg x 10" → „60x10": a mértékegység a szorzójel elől kimarad.
+     *
+     * A súly×ismétlés írásmódot az app régóta érti („fekvenyomás 60x10,
+     * 70x8"), csakhogy a legtöbb edzés-app ÍGY exportál: kiírt kilóval. A
+     * bemásolt sorból emiatt egyáltalán nem lett bejegyzés – se gyakorlat,
+     * se sorozat, pedig minden adat ott volt benne.
+     */
+    static String kgBeforeMultiplier(String s) {
+        return s.replaceAll("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)\\s?([x\u00d7])", "$1$2");
+    }
+
+    /**
      * A mondat feldolgozása. Tagmondatonként (vessző, pontosvessző, „és”,
      * „majd”, „utána”) egy-egy gyakorlat; ami tagmondatban nincs felismert
      * gyakorlat VAGY nincs értelmes ismétlésszám, az kimarad.
@@ -227,7 +239,7 @@ public final class StrengthParse {
         // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
         if (Activities.looksLikeFuture(text)) return out;
-        String whole = stripInsteadOf(sets(stripListMarkers(Foods.norm(text))));
+        String whole = stripInsteadOf(sets(kgBeforeMultiplier(stripListMarkers(Foods.norm(text)))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
