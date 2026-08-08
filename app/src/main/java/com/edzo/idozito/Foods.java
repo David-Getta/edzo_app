@@ -788,6 +788,8 @@ public final class Foods {
             "hall", "halal", "halom", "halaszt", "szabad", "babon", "baber",
             "babu", "szobabicikli", "majom", "majus", "majalis", "tejut",
             "riziko", "sorsol", "alkalm", "borda",
+            // A hálózat és a hálószoba nem hal, a csúszás nem túrós csusza.
+            "haloz", "haloszob", "csuszas", "csuszik", "csuszo", "csuszd",
             // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
             "kolesz",
             // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, tea,
@@ -885,6 +887,22 @@ public final class Foods {
     private static final String[] START_BAD_EXTRA = {"zsirmentes", "zsirtalan"};
 
     /**
+     * Az „alma" a szó BELSEJÉBEN szinte sosem alma.
+     *
+     * A magyar „-alom" végű főnevek ragozva mind ALMÁ-vá válnak: fájdALMAt,
+     * birodALMAt, hatALMAt, jutALMAt, sokadALMAt – és ide tartozik a hALMAz
+     * is. Ezekből a szókezdet-vizsgálat egyet sem fogott meg, mert a tő a
+     * szó közepén ül: minden ilyen mondathoz járt egy fantom alma, nyolcvan
+     * kalória. Külön-külön felsorolni reménytelen (a szóképző osztály
+     * végtelen), a szabály viszont egyszerű.
+     *
+     * A kivételek a valódi összetett gyümölcsnevek – ott az alma tényleg
+     * alma, csak nem a szó elején áll.
+     */
+    private static final String[] ALMA_OK = {"granatalma", "birsalma", "vadalma",
+            "aranyalma", "csipkebogyoalma"};
+
+    /**
      * Maszkolandó-e a szó – igekötővel együtt is.
      *
      * A maszk a szó ELEJÉT nézi, különben a ragozott igazi ételek („sajtos",
@@ -896,6 +914,11 @@ public final class Foods {
      */
     private static boolean masked(String tok) {
         if (startsWithBad(tok)) return true;
+        if (tok.indexOf("alma") > 0) {
+            boolean real = false;
+            for (String ok : ALMA_OK) if (tok.contains(ok)) real = true;
+            if (!real) return true;
+        }
         // Összetétel MÁSODIK tagjaként is előfordulnak: a beszédbuborékban és
         // a szappanbuborékban a bor, a főképernyőn és a kezdőképernyőn az
         // eper, a hüvelykujjszabályban a zab. Az előtagot nem lehet felsorolni,

@@ -270,6 +270,33 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * Az „alma" a szó BELSEJÉBEN szinte sosem alma.
+     *
+     * A magyar „-alom" végű főnevek ragozva mind ALMÁ-vá válnak: fájdALMAt,
+     * birodALMAt, jutALMAt – és a hALMAz is ilyen. A szókezdet-vizsgálat
+     * egyiket sem fogta meg, tehát minden ilyen mondathoz járt egy fantom
+     * alma, nyolcvan kalória. A rehab-oldal érkezésével ez különösen fájt:
+     * a „fájdalmat érzek" mondat most már mindennapos.
+     */
+    @Test public void anAppleInsideAWordIsNotAnApple() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"fájdalmat okoz", "erős fájdalmat érzek a vállamban",
+                "birodalmat épített", "jutalmat kaptam", "sokadalmat láttam",
+                "nyugalmat találtam", "a halmaza", "alkalmat keresek",
+                "diadalmat aratott"})
+            assertEquals(q, "—", names(Foods.parse(all, q)));
+        // A valódi alma és az összetett gyümölcsnevek érintetlenek.
+        assertEquals("Alma", names(Foods.parse(all, "almát ettem")));
+        assertEquals("Alma", names(Foods.parse(all, "hatalmas alma")));
+        assertEquals("Gránátalma", names(Foods.parse(all, "gránátalmát ettem")));
+        // A hálózat nem hal, a csúszás nem túrós csusza.
+        assertEquals("—", names(Foods.parse(all, "hálózati hiba")));
+        assertEquals("—", names(Foods.parse(all, "csúszást érzek")));
+        assertEquals("Hal (fehér)", names(Foods.parse(all, "halat ettem")));
+        assertEquals("Túrós csusza", names(Foods.parse(all, "túrós csusza")));
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
