@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hiányzó import-ok keresése a UI-osztályokban.
+"""Fordítási hibák keresése a UI-osztályokban, a CI megvárása nélkül.
 
 Az egységtesztek csak a tiszta Java logikát fordítják; az Activity-k
 Android-osztályokat használnak, és azok csak a CI-ben fordulnak le. Egy
@@ -135,6 +135,135 @@ def unbalanced_quotes(src):
     return out
 
 
+def blanked(src):
+    """A megjegyzések és a szöveges literálok kifehérítve, a hosszt tartva.
+
+    A sorszámok így végig érvényesek maradnak, a literálban álló pontosvessző
+    vagy kapcsos zárójel viszont nem zavarja a hatókör-számolást.
+    """
+    out = list(src)
+    i, n = 0, len(src)
+    while i < n:
+        c = src[i]
+        if c == "/" and i + 1 < n and src[i + 1] == "/":
+            while i < n and src[i] != "\n":
+                out[i] = " "
+                i += 1
+        elif c == "/" and i + 1 < n and src[i + 1] == "*":
+            while i < n and not (src[i] == "*" and i + 1 < n and src[i + 1] == "/"):
+                if src[i] != "\n":
+                    out[i] = " "
+                i += 1
+            if i < n:
+                out[i] = out[i + 1] = " "
+                i += 2
+        elif c == '"':
+            out[i] = " "
+            i += 1
+            while i < n and src[i] != '"':
+                if src[i] == "\\":
+                    out[i] = " "
+                    i += 1
+                if i < n and src[i] != "\n":
+                    out[i] = " "
+                i += 1
+            if i < n:
+                out[i] = " "
+                i += 1
+        elif c == "'":
+            out[i] = " "
+            i += 1
+            while i < n and src[i] != "'":
+                if src[i] == "\\":
+                    out[i] = " "
+                    i += 1
+                if i < n:
+                    out[i] = " "
+                i += 1
+            if i < n:
+                out[i] = " "
+                i += 1
+        else:
+            i += 1
+    return "".join(out)
+
+
+_TYPE = r"(?:final\s+)?(?:[A-Za-z_][\w.]*(?:\s*<[^<>;=]*>)?(?:\s*\[\s*\])*)"
+_DECL = re.compile(r"(?<![\w.])" + _TYPE + r"\s+([a-z_]\w*)\s*(?==[^=]|;)")
+_NOT_DECL = ("return", "case", "new")
+
+
+def dup_locals(src):
+    """Ugyanazon a néven kétszer deklarált helyi változó – fordítási hiba.
+
+    Az Activity-k csak a CI-ben fordulnak, és egy ilyen ütközés pont akkor
+    születik, amikor egy meglévő metódusba új blokk kerül: a szem a saját új
+    kódját nézi, a név viszont húsz sorral feljebb már foglalt.
+
+    A számolás szándékosan óvatos: a zárójelen BELÜLI deklarációkat
+    (ciklusváltozó, metódus-paraméter, catch-ág) kihagyjuk, a névtelen belső
+    osztály és a beágyazott osztály pedig hatókör-határ – ott a takarás
+    Javában is megengedett. Így inkább keveset talál, mint tévesen riaszt.
+
+    @return (sor, név, első előfordulás) hármasok
+    """
+    src = blanked(src)
+    scopes = []
+    problems = []
+    paren = 0
+    line = 1
+    seg_start = 1
+    buf = []
+
+    def flush():
+        text = "".join(buf)
+        if paren == 0 and len(scopes) >= 2:
+            for m in _DECL.finditer(text):
+                name = m.group(1)
+                head = text[:m.start()].strip().split()
+                if head and head[-1] in _NOT_DECL:
+                    continue
+                for j in range(len(scopes) - 1, 0, -1):
+                    barrier, names = scopes[j]
+                    if name in names:
+                        problems.append((seg_start, name, names[name]))
+                        break
+                    if barrier:
+                        break
+                scopes[-1][1].setdefault(name, seg_start)
+        buf.clear()
+
+    for ch in src:
+        if ch == "\n":
+            line += 1
+        if ch == "(":
+            paren += 1
+        elif ch == ")":
+            paren = max(0, paren - 1)
+        elif ch == "{":
+            before = "".join(buf)
+            barrier = bool(re.search(r"(class|interface|enum)\s+\w+[^;{]*$", before)
+                           or re.search(r"new\s+[\w.]+\s*\([^()]*\)\s*$", before))
+            flush()
+            scopes.append((barrier, {}))
+            seg_start = line
+            continue
+        elif ch == "}":
+            flush()
+            if scopes:
+                scopes.pop()
+            seg_start = line
+            continue
+        elif ch == ";":
+            flush()
+            seg_start = line
+            continue
+        if not buf:
+            seg_start = line
+        buf.append(ch)
+    return problems
+
+
 def orphan_javadoc(src):
     """Olyan `/** … */` blokkok, amiket rögtön egy MÁSIK ilyen blokk követ.
 
@@ -174,13 +303,16 @@ def main():
         for lineno in orphan_javadoc(raw):
             problems.append(f"{name}:{lineno}: gazdátlan javadoc – "
                             "rögtön egy másik javadoc követi")
+        for lineno, var, first in dup_locals(raw):
+            problems.append(f"{name}:{lineno}: a(z) „{var}” helyi változó már "
+                            f"deklarálva ({first}. sor) – Javában ez fordítási hiba")
 
     if problems:
         print("Hiba:")
         for p in problems:
             print("  " + p)
         return 1
-    print("Rendben: import, API-szint, idézőjelek és javadoc-gazda.")
+    print("Rendben: import, API-szint, idézőjelek, javadoc-gazda és névütközés.")
     return 0
 
 
