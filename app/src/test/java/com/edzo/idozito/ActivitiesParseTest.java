@@ -2,6 +2,7 @@ package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -978,6 +979,29 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("a héten kézilabda kétszer").plans.get(0).count);
         // A tartalék ágon is: itt nincs felismert sportág, csak „edzés".
         assertEquals(4, Activities.parse("a héten edzettem négyszer").plans.get(0).count);
+    }
+
+    /**
+     * Az osztó szám mértékegységgel TÁV, nem darabszám.
+     *
+     * Az „a héten kétszer futottam 5-5 km-t" mondatból TIZENNÉGY futás lett:
+     * a kétszerest a hét napjaival is felszorozta a naponkénti szabály. Az
+     * időzítő ráadásul lecsapott rá – az „5-5" munka/pihenő párnak látszott –,
+     * és a mondat kétköros ötmásodperces tervként indult volna el.
+     */
+    @Test public void aDistributiveWithAUnitIsNotACount() {
+        Activities.Parsed p = Activities.parse("a héten kétszer futottam 5-5 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(5, p.plans.get(0).km, 0.01);
+        assertEquals(7, p.days);
+        assertNull(IntervalParse.parse("a héten kétszer futottam 5-5 km-t"));
+        // A darabszámot mondó osztó alak változatlan.
+        assertEquals(2, Activities.parse("tegnap és ma 1-1 futás").plans.get(0).count);
+        assertEquals(7, Activities.parse("a héten minden nap futottam").plans.get(0).count);
+        // És a valódi ritmus is megmarad.
+        assertEquals(10, IntervalParse.parse("10 kör 30-30 mp").rounds);
+        assertEquals(6, IntervalParse.parse("45-15 x 6").rounds);
     }
 
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {

@@ -166,8 +166,15 @@ public final class IntervalParse {
         // 3) „40/20”, „45-15”, „8x20/10”: a teremben ez a rövid írásmód. A
         //    kötőjeles alakot csak akkor fogadjuk el, ha nem sorozat: a
         //    „piramis 20-30-40 mp” nem munka/pihenő pár.
-        String slashable = s.matches(".*\\d\\s?-\\s?\\d{1,3}\\s?-\\s?\\d.*")
-                ? s.replace('-', ' ') : s;
+        // A TÁV nem ritmus: az „5-5 km" két ötkilométeres futás, nem öt
+        // másodperc munka és öt másodperc pihenő. Az „a héten kétszer
+        // futottam 5-5 km-t" mondatból eddig időzítő-terv lett, méghozzá
+        // kétköros ötmásodperces – ezért a távval kimondott párt egyetlen
+        // számra húzzuk össze, mielőtt a ritmus-minta ránézne.
+        String noDist = s.replaceAll(
+                "(\\d{1,3})\\s?[/\\-]\\s?\\d{1,3}(\\s?(?:km|kilometer\\w*|meter\\w*))", "$1$2");
+        String slashable = noDist.matches(".*\\d\\s?-\\s?\\d{1,3}\\s?-\\s?\\d.*")
+                ? noDist.replace('-', ' ') : noDist;
         java.util.regex.Matcher m = java.util.regex.Pattern
                 // A mértékegység kiírva is állhat a pár két oldalán:
                 // „40 mp / 20 mp”. Enélkül a pihenő némán elveszett.

@@ -1355,12 +1355,27 @@ public final class Activities {
                     && (i + 3 >= s.length() || !Character.isDigit(s.charAt(i + 3)))) {
                 q[i + 1] = ' ';
                 q[i + 2] = ' ';
-                return s.charAt(i) - '0';
+                // Az osztó szám csak akkor DARABSZÁM, ha nincs mögötte
+                // mértékegység. Az „5-5 km" alkalmankénti TÁV: a „héten
+                // kétszer futottam 5-5 km-t" mondatból eddig tizennégy futás
+                // lett, mert a kétszerest a hét napjaival is felszorozta.
+                return unitAfter(s, i + 3) ? 0 : s.charAt(i) - '0';
             }
         }
         int p = s.indexOf("egy-egy");
         if (p >= 0) { blank(q, p + 3, p + 7); return 1; }
         return 0;
+    }
+
+    /** Áll-e mértékegység a megadott helytől (szóközöket átlépve). */
+    private static boolean unitAfter(String s, int from) {
+        int i = from;
+        while (i < s.length() && s.charAt(i) == ' ') i++;
+        String rest = s.substring(Math.min(i, s.length()));
+        for (String u : new String[]{"km", "kilometer", "meter", "perc", "ora",
+                "masodperc", "mp", "hossz", "lepes"})
+            if (rest.startsWith(u)) return true;
+        return false;
     }
 
     /**
