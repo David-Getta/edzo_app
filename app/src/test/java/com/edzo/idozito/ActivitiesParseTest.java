@@ -1004,6 +1004,25 @@ public class ActivitiesParseTest {
         assertEquals(6, IntervalParse.parse("45-15 x 6").rounds);
     }
 
+    /**
+     * Az „alkalom" csak SZÁMMAL edzés.
+     *
+     * Magában a leghétköznapibb magyar főnév: a „születésnapi alkalomból
+     * tortát ettem" mondatból eddig negyvenöt perc mozgás lett – és mivel az
+     * edzés felismerője az étkezés ELÉ áll az útbaigazítóban, a torta el is
+     * veszett mellőle.
+     */
+    @Test public void anOccasionIsOnlyATrainingWithANumber() {
+        assertTrue(Activities.parse("születésnapi alkalomból tortát ettem").isEmpty());
+        assertTrue(Activities.parse("ebből az alkalomból pezsgőt ittunk").isEmpty());
+        assertEquals(Sentence.Kind.MEAL, Sentence.of("születésnapi alkalomból tortát ettem",
+                java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+        // Számmal viszont továbbra is edzés.
+        assertEquals(3, Activities.parse("3 alkalom a héten").plans.get(0).count);
+        assertEquals(3, Activities.parse("három alkalom").plans.get(0).count);
+        assertEquals(2, Activities.parse("két alkalommal futottam").plans.get(0).count);
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.

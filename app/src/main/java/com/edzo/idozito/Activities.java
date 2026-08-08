@@ -1080,6 +1080,13 @@ public final class Activities {
                 if (n <= 1)
                     for (int[] mu : mults)
                         if (mu[0] > p && mu[1] > 1) { n = Math.min(50, mu[1]); break; }
+                // Az „alkalom" csak SZÁMMAL edzés. Magában a leghétköznapibb
+                // magyar főnév: a „születésnapi alkalomból tortát ettem"
+                // mondatból eddig negyvenöt perc mozgás lett – az edzés
+                // felismerője pedig az étkezés elé áll, tehát a torta el is
+                // veszett mellőle.
+                if (w.equals("alkalom") && n <= 1 && numberBefore(s, p, NUM_REACH) == null)
+                    continue;
                 // A kimondott időtartam itt is számít („otthoni edzés 40 perc").
                 if (other != null) out.add(new Plan(other, n,
                         minutesFor(mins, p, p, -1, Integer.MAX_VALUE,
