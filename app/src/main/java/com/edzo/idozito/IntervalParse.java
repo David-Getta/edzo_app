@@ -602,11 +602,17 @@ public final class IntervalParse {
             // és „gyaloglás"-t ír a pihenő szakaszra, a magyar beszélt nyelv
             // meg „pihi"-t. Mindegyik ugyanaz a szünet – enélkül az edzés
             // szünet nélkülinek látszott, és a kör fele elveszett.
-            "jaras", "gyaloglas", "kocogas", "pihi", "regeneracio"};
+            "jaras", "gyaloglas", "kocogas", "pihi", "regeneracio",
+            // Az intervall-edzés másik szótára a KÖNNYŰ és a KEMÉNY: a
+            // „3 perc kemény, 2 perc könnyű" ugyanaz a ritmus, csak épp
+            // egyetlen munka-szakasszá olvadt, pihenő nélkül.
+            "konnyu", "laza", "konnyed", "levezetes"};
 
     /** A munkaszakaszt jelölő szavak – a pihenőnek ez a határa, és fordítva. */
     private static final String[] WORK_WORDS = {"munka", "aktiv", "terheles",
-            "gyakorlat", "work"};
+            "gyakorlat", "work",
+            // A könnyű szakasz párja: a „kemény", az „erős" és a „gyors".
+            "kemeny", "eros", "gyors", "hajra"};
 
     /** Perjellel elválasztott második idő: „3 perc / 1 perc” → 60. */
     private static int secondsAfterSlash(String s, int from) {
@@ -649,7 +655,11 @@ public final class IntervalParse {
      */
     private static int roundsPrefix(String s) {
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d.,])(\\d{1,2})\\s?[x×]\\s?(?=\\d)").matcher(s);
+                // A szorzó és a szám közt több szóköz is állhat: a
+                // zárójelet a felismerő már szóközre cserélte, így a
+                // „8x (30 mp munka + 30 mp pihenő)" nyolcasa eddig
+                // elveszett, és egyetlen kör maradt belőle.
+                .compile("(?<![\\d.,])(\\d{1,2})\\s*[x×]\\s*(?=\\d)").matcher(s);
         if (m.find()) {
             int v = Integer.parseInt(m.group(1));
             if (v >= 2 && v <= MAX_ROUNDS) return v;

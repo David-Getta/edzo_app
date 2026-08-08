@@ -136,6 +136,7 @@ public final class Examples {
             "8 kör: 20 mp sprint, 40 mp séta",
             "45 másodperc munka 15 pihenő nyolcszor",
             "20 mp sprint 40 mp járás 8x",
+            "3 perc kemény 2 perc könnyű 5x",
             // A forma neve is elég: a ritmust hozzáadjuk.
             "hiit 20 perc",
             "e2mom 20 perc",

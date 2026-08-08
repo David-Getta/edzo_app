@@ -487,4 +487,37 @@ public class IntervalParseTest {
         assertEquals("8×20/40", sum("20 mp sprint 40 mp séta 8x"));
         assertEquals("8×20/10", sum("8x20/10"));
     }
+
+    /**
+     * A KEMÉNY és a KÖNNYŰ is munka és pihenő.
+     *
+     * A futók és a kerékpárosok így írják le a ritmust: „3 perc kemény,
+     * 2 perc könnyű". Eddig ebből egyetlen, szünet nélküli munkaszakasz
+     * lett – a kör fele elveszett, és az edző órája végig azt mutatta,
+     * hogy hajrá.
+     */
+    @Test public void hardAndEasyAreWorkAndRest() {
+        IntervalParse.Plan a = IntervalParse.parse("3 perc kemény 2 perc könnyű 5x");
+        assertEquals(5, a.rounds);
+        assertEquals(180, a.work);
+        assertEquals(120, a.rest);
+        IntervalParse.Plan b = IntervalParse.parse("6 kör 3 perc erős 2 perc laza");
+        assertEquals(6, b.rounds);
+        assertEquals(180, b.work);
+        assertEquals(120, b.rest);
+    }
+
+    /**
+     * A zárójeles csoport körszáma nem veszhet el.
+     *
+     * A „8x (30 mp munka + 30 mp pihenő)" nyolc kör – de a zárójel helyére
+     * lépő szóköz miatt a szorzó elszakadt a számtól, és egyetlen kör
+     * maradt belőle. Nyolcadannyi edzés, ugyanazzal a mondattal.
+     */
+    @Test public void aBracketedGroupKeepsItsRoundCount() {
+        IntervalParse.Plan p = IntervalParse.parse("8x (30 mp munka + 30 mp pihenő)");
+        assertEquals(8, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+    }
 }
