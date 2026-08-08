@@ -469,4 +469,22 @@ public class IntervalParseTest {
         assertEquals(20, p.work);
         assertEquals(10, p.rest);
     }
+
+    /**
+     * A pihenő szakasz neve nem csak „séta" lehet.
+     *
+     * A futó „járás"-t, „kocogás"-t vagy „gyaloglás"-t ír a lassú szakaszra, a
+     * beszélt nyelv meg „pihi"-t. Egyik sem volt a pihenő-szavak közt, így a
+     * „20 mp sprint 40 mp járás 8x" pihenője elveszett: az edzés szünet
+     * nélkülinek látszott, és a kör fele eltűnt.
+     */
+    @Test public void theRestSegmentHasManyNames() {
+        assertEquals("8×20/40", sum("20 mp sprint 40 mp járás 8x"));
+        assertEquals("8×20/40", sum("20 mp sprint 40 mp gyaloglás 8x"));
+        assertEquals("5×300/60", sum("5 perc futás, 1 perc járás, 5x"));
+        assertEquals("6×60/30", sum("6 kör 1 perc munka 30 mp pihi"));
+        // A régi alakok változatlanok.
+        assertEquals("8×20/40", sum("20 mp sprint 40 mp séta 8x"));
+        assertEquals("8×20/10", sum("8x20/10"));
+    }
 }

@@ -597,7 +597,12 @@ public final class IntervalParse {
      * pedig szünet nélküli lett.
      */
     private static final String[] REST_WORDS = {"piheno", "pihenes", "szunet",
-            "lazitas", "seta", "lassu", "rest", "off"};
+            "lazitas", "seta", "lassu", "rest", "off",
+            // Ugyanez a hiány, másik szavakkal: a futó „járás"-t, „kocogás"-t
+            // és „gyaloglás"-t ír a pihenő szakaszra, a magyar beszélt nyelv
+            // meg „pihi"-t. Mindegyik ugyanaz a szünet – enélkül az edzés
+            // szünet nélkülinek látszott, és a kör fele elveszett.
+            "jaras", "gyaloglas", "kocogas", "pihi", "regeneracio"};
 
     /** A munkaszakaszt jelölő szavak – a pihenőnek ez a határa, és fordítva. */
     private static final String[] WORK_WORDS = {"munka", "aktiv", "terheles",
