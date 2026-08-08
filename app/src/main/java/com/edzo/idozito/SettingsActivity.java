@@ -249,7 +249,7 @@ public class SettingsActivity extends Activity {
         Button exportPulse = ghost("❤️  Pulzus-napló exportálása (CSV)");
         exportPulse.setOnClickListener(v -> exportPulseCsv());
         col.addView(exportPulse);
-        Button exportRehab = ghost("🩹  Fájdalom-napló exportálása (CSV)");
+        Button exportRehab = ghost("🩹  Rehab-napló exportálása (CSV)");
         exportRehab.setOnClickListener(v -> exportRehabCsv());
         col.addView(exportRehab);
         col.addView(gap(10));
@@ -510,8 +510,15 @@ public class SettingsActivity extends Activity {
         ShareProvider.shareTextFile(this, sb.toString(), "grit_alvas.csv", "text/csv");
     }
 
+    /**
+     * Rehab-napló egy táblában: elvégzett sorok ÉS fájdalom-értékek.
+     *
+     * Eseményenként egy sor, mert a kettő nem ugyanazon a napon történik –
+     * a gyógytornász pont a kettő együttállását nézi: mennyit csinálta, és
+     * merre ment közben a panasz.
+     */
     void exportRehabCsv() {
-        StringBuilder sb = new StringBuilder("datum;testtaj;fajdalom_0_10\n");
+        StringBuilder sb = new StringBuilder("datum;testtaj;esemeny;ertek\n");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         int rows = 0;
         for (Rehab.Area a : Rehab.AREAS) {
@@ -520,12 +527,19 @@ public class SettingsActivity extends Activity {
             for (int i = lv.length - 1; i >= 0; i--) {
                 if (lv[i] < 0 || ts[i] <= 0) continue;
                 sb.append(df.format(new Date(ts[i]))).append(';')
-                  .append(a.name).append(';').append(lv[i]).append('\n');
+                  .append(a.name).append(";fajdalom;").append(lv[i]).append('\n');
+                rows++;
+            }
+            long[] done = RehabLog.doneOf(this, a.id);
+            for (int i = done.length - 1; i >= 0; i--) {
+                if (done[i] <= 0) continue;
+                sb.append(df.format(new Date(done[i]))).append(';')
+                  .append(a.name).append(";sor;1\n");
                 rows++;
             }
         }
         if (rows == 0) {
-            Toast.makeText(this, "Nincs naplózott fájdalom-érték.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Nincs rehab-bejegyzés.", Toast.LENGTH_SHORT).show();
             return;
         }
         ShareProvider.shareTextFile(this, sb.toString(), "grit_rehab.csv", "text/csv");
