@@ -49,6 +49,23 @@ public final class Pulse {
     public static int parse(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // A CÉL nem mérés: a „szeretném, ha 50 lenne a nyugalmi pulzusom" és
+        // az „a cél 50-es nyugalmi pulzus" ugyanúgy tartalmaz számot és
+        // pulzus-szót, mint egy bejegyzés – csak épp az ellenkezőjét mondja.
+        // Az alvásnál és a testsúlynál ez a szabály régóta megvan.
+        for (String w : new String[]{"szeretn", "jo lenne", "kellene", "kene",
+                "holnap", "fogok", "legyen", "volna"})
+            if (s.contains(w)) return -1;
+        for (String w : new String[]{"cel", "celom", "celja", "celt"}) {
+            int i = s.indexOf(w);
+            while (i >= 0) {
+                boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
+                int e = i + w.length();
+                boolean r = e >= s.length() || !Character.isLetter(s.charAt(e));
+                if (l && r) return -1;
+                i = s.indexOf(w, i + 1);
+            }
+        }
         if (!s.contains("nyugalmi"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})

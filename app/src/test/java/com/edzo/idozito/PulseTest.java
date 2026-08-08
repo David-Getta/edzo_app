@@ -85,4 +85,22 @@ public class PulseTest {
                 Sentence.of("aludtam 8 órát, pulzus 52",
                         Arrays.asList(Foods.ALL), 1_753_869_600_000L));
     }
+
+    /**
+     * A CÉL nem mérés.
+     *
+     * A „szeretném, ha 50 lenne a nyugalmi pulzusom" és az „a cél 50-es
+     * nyugalmi pulzus" ugyanúgy tartalmaz számot és pulzus-szót, mint egy
+     * bejegyzés – csak épp az ellenkezőjét mondja. Az alvásnál és a
+     * testsúlynál ez a szabály régóta megvolt, itt hiányzott.
+     */
+    @Test public void goalsAreNotMeasurements() {
+        assertEquals(-1, Pulse.parse("szeretném, ha 50 lenne a nyugalmi pulzusom"));
+        assertEquals(-1, Pulse.parse("a cél 50-es nyugalmi pulzus"));
+        assertEquals(-1, Pulse.parse("jó lenne 50-es nyugalmi pulzus"));
+        assertEquals(-1, Pulse.parse("holnap megmérem a nyugalmi pulzusom"));
+        // A valódi mérés változatlan.
+        assertEquals(50, Pulse.parse("nyugalmi pulzus 50"));
+        assertEquals(48, Pulse.parse("ma reggel 48 volt a nyugalmi pulzusom"));
+    }
 }
