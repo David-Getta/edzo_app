@@ -651,4 +651,19 @@ public class FoodsFitnessTest {
         for (Foods.Hit x : h) sb.append(sb.length() > 0 ? ", " : "").append(x.food.name);
         return sb.toString();
     }
+
+    /**
+     * Két hiányzó írásmód: a magyaros „kapucsínó" és az egy m-es „humusszal".
+     *
+     * A kávézóban kapucsínót kérnek, nem cappuccinót; a humuszt pedig a
+     * magyar egy m-mel írja, és a -val rag megkettőzi az sz-t. Mindkét
+     * mondat üresen tért vissza.
+     */
+    @Test public void everydaySpellingsAreKnown() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Tejeskávé / cappuccino", one(all, "egy kapucsínót ittam"));
+        assertEquals("Tejeskávé / cappuccino", one(all, "kapuccino"));
+        assertEquals("Hummusz", one(all, "humusszal"));
+        assertEquals("Hummusz", one(all, "humusz"));
+    }
 }

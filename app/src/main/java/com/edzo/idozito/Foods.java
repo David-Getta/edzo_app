@@ -509,7 +509,10 @@ public final class Foods {
                 "edes savanyu csirke"),
         new Food("Quesadilla", 250, 11, 200, "quesadilla"),
         new Food("Falafel", 300, 13, 150, "falafel"),
-        new Food("Hummusz", 180, 8, 60, "hummus", "humusz"),
+        new Food("Hummusz", 180, 8, 60, "hummus", "humusz",
+                // A -val rag az sz-t megkettőzi: „humusszal". Egy m-mel ez a
+                // gyakoribb magyar írásmód, és eddig nem talált.
+                "humussz"),
         new Food("Limonádé", 45, 0, 300, "limonade"),
         new Food("Fröccs", 40, 0, 300, "froccs"),
         new Food("Kombucha", 20, 0, 330, "kombucha"),
@@ -692,7 +695,9 @@ public final class Foods {
         // a szó KÖZEPÉN illeszkedett rá, így a kávéból chiamag lett. A
         // jegeskávé sem fekete kávé – tej és jégkrém van benne.
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte",
-                "macchiato", "flat white", "jegeskave", "jeges kave"),
+                "macchiato", "flat white", "jegeskave", "jeges kave",
+                // Magyaros írásmóddal is: a kávézóban ezt kérik.
+                "kapucsino", "kapuccino", "kapucino"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
         // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.
