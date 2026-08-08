@@ -107,6 +107,37 @@ public class RehabTest {
         assertNull(Rehab.forComplaint("nem fájt a bokám edzés után"));
     }
 
+    /**
+     * A magyar egy szóban is elmondja, mi fáj – és a diagnózis neve is panasz.
+     *
+     * A „derékfájás" és a „csípőfájdalom" ÖSSZETETT szó: a fájdalom-tő a szó
+     * belsejébe esik, és a szókezdet-vizsgálat mindet elutasította. A
+     * „golfkönyök" pedig magában is kérés: aki ezt írja be, nem érdeklődik,
+     * hanem fáj neki. Mindegyikre üres válasz jött, pedig a lap pont róluk
+     * szól.
+     */
+    @Test public void compoundComplaintsAndDiagnosisNamesAreComplaints() {
+        assertEquals("derek", Rehab.forComplaint("derékfájás").id);
+        assertEquals("nyak", Rehab.forComplaint("nyakfájás").id);
+        assertEquals("csipo", Rehab.forComplaint("csípőfájdalom").id);
+        assertEquals("boka", Rehab.forComplaint("bokafájdalom").id);
+        assertEquals("vall", Rehab.forComplaint("vállfájás").id);
+        assertEquals("derek", Rehab.forComplaint("fáj a hátam").id);
+        // A diagnózis neve magában is panasz.
+        assertEquals("konyok-belso", Rehab.forComplaint("golfkönyök").id);
+        assertEquals("konyok-kulso", Rehab.forComplaint("teniszkönyök").id);
+        assertEquals("itszalag", Rehab.forComplaint("futótérd").id);
+        // A sarkantyú a TALP sora: a talpi szalagot kell terhelni hozzá.
+        assertEquals("talp", Rehab.forComplaint("sarkantyú").id);
+        // Ami nem a mi testtájunk, arra továbbra sincs sor.
+        assertNull(Rehab.forComplaint("fejfájás"));
+        assertNull(Rehab.forComplaint("hasfájás"));
+        assertNull(Rehab.forComplaint("torokfájás"));
+        // És a nem-panasz mondat sem lesz az.
+        assertNull(Rehab.forComplaint("hátnap"));
+        assertNull(Rehab.forComplaint("háton úszás 30 perc"));
+    }
+
     /** Az útbaigazító is a rehabhoz küldi – az edzés-felismerő előtt. */
     @Test public void theRouterPrefersTheComplaint() {
         assertEquals(Sentence.Kind.REHAB,

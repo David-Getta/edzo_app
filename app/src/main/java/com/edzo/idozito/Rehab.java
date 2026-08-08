@@ -226,7 +226,12 @@ public final class Rehab {
                 "serules", "megserult", "kificamodott", "ficam", "gyullad",
                 // A magyar bőven tud panaszt mondani fájdalom-szó nélkül is.
                 "beallt", "megrandult", "randult", "nyilallik", "nyilall", "sajog",
-                "meghuztam", "becsipodott", "belovellt", "lumbago", "merev"}) {
+                "meghuztam", "becsipodott", "belovellt", "lumbago", "merev",
+                // A diagnózis NEVE maga a panasz: aki azt írja, „golfkönyök",
+                // az nem érdeklődik, hanem fáj neki. Eddig ezekre a mondat
+                // egyáltalán nem talált semmit – pedig a lap pont róluk szól.
+                "golfkonyok", "teniszkonyok", "futoterd", "ugroterd", "sarkantyu",
+                "plantaris"}) {
             int i = s.indexOf(w);
             while (i >= 0) {
                 boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
@@ -235,6 +240,12 @@ public final class Rehab {
             }
             if (pain) break;
         }
+        // Összetett panasz-főnév: a „derékfájás", a „csípőfájdalom" és a
+        // „sarokfájdalom" egyetlen szó, tehát a fájdalom-szó a szó BELSEJÉBE
+        // esik – a szókezdet-vizsgálat így mindet elutasította. Pedig a
+        // magyar leggyakrabban pont így mondja el, mi a baj.
+        if (!pain && (s.contains("fajas") || s.contains("fajdalom")
+                || s.contains("fajdit"))) pain = true;
         if (!pain) return null;
         // A tagadott vagy elmúlt panasz jó hír, nem kérés: a „nem fáj a
         // vállam" és a „már nem fáj" után nincs mit ajánlani.
@@ -289,8 +300,8 @@ public final class Rehab {
                 // pontosabb megnevezés ezért előbb áll a puszta „térd"-nél.
                 {"itszalag", "it szalag", "itszalag", "iliotibialis", "kulso terd",
                         "terd kulso", "terdem kulso", "futoterd"},
-                {"terd", "terdem", "terde", "terd"},
-                {"derek", "derekam", "dereka", "derek", "hatam faj", "also hat",
+                {"terd", "terdem", "terde", "ugroterd", "terdfaj", "terd"},
+                {"derek", "derekam", "dereka", "derek", "hatam", "hatfaj", "also hat",
                         "gerincem", "gerinc"},
                 {"vall", "vallam", "valla", "vall"},
                 {"konyok-belso", "konyokom belso", "belso konyok", "golfkonyok"},
@@ -309,8 +320,11 @@ public final class Rehab {
                         "csuklo"},
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
                 {"csipo", "csipom", "csipoje", "csipo"},
-                {"achilles", "achilles", "vadlim", "sarkam", "sarok faj"},
-                {"talp", "talpam", "talpa", "talp"},
+                {"achilles", "achilles", "vadlim", "sarkam", "sarok faj", "sarokfaj"},
+                // A sarkantyú és a plantaris fasciitis a TALP sora, nem az
+                // Achillesé: a fájdalom a talp elülső-belső élén ébred, és a
+                // talpi szalagot kell terhelni hozzá.
+                {"talp", "talpam", "talpa", "talpfaj", "plantaris", "sarkantyu", "talp"},
                 {"sipcsont", "sipcsontom", "sipcsontja", "sipcsont"},
                 {"comb", "combom", "combhajlito", "hatso comb", "comb hatulja"},
         };

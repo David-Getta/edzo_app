@@ -179,6 +179,9 @@ public final class Examples {
             "fáj a talpam",
             "fáj a térdem külső oldala",
             "csukló mobilizálás",
+            // Egy szóban is elég – ahogy a magyar mondja.
+            "derékfájás",
+            "teniszkönyök",
             // A skálát is ki lehet mondani – az érték rögtön a naplóba kerül.
             "fáj a vállam 6/10",
             // A cél-alak is: nem kell megvárni, hogy fájjon.
