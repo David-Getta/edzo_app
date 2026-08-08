@@ -1959,7 +1959,17 @@ public final class Foods {
      */
     static double eatenFraction(String q) {
         java.util.regex.Matcher m = FRACTION_CLAUSE.matcher(q);
-        if (!m.find()) return 0;
+        if (!m.find()) {
+            // Ige nélkül is egyértelmű, ha a „csak" ott van: a „100 g rizs,
+            // de csak a felét" fele annyi. A puszta „a felét" viszont kevés –
+            // abból nem derül ki, hogy megette vagy meghagyta.
+            java.util.regex.Matcher o = ONLY_FRACTION.matcher(q);
+            if (!o.find()) return 0;
+            String g = o.group(1);
+            return g.startsWith("felet") ? 0.5
+                    : g.startsWith("ketharmad") ? 2 / 3.0
+                    : g.startsWith("harmad") ? 1 / 3.0 : 0.25;
+        }
         double f = m.group(1).startsWith("felet") ? 0.5
                 : m.group(1).startsWith("ketharmad") ? 2 / 3.0
                 : m.group(1).startsWith("harmad") ? 1 / 3.0
@@ -1968,6 +1978,11 @@ public final class Foods {
                 || m.group(2).startsWith("meghagy");
         return left ? 1 - f : f;
     }
+
+    /** „csak a felét" – a „csak" maga mondja meg, hogy kevesebb lett. */
+    private static final java.util.regex.Pattern ONLY_FRACTION =
+            java.util.regex.Pattern.compile(
+                    "csak\\s(?:a\\s)?(felet|harmadat|ketharmadat|negyedet)(?![a-z])");
 
     /** „a felét ettem meg" / „a negyedét otthagytam" – előre lefordítva. */
     private static final java.util.regex.Pattern FRACTION_CLAUSE =

@@ -369,6 +369,12 @@ public class FoodsQuantityTest {
             assertEquals("két ételnél nem skálázunk: " + h.food.name, 0, h.grams, 0.001);
         // Az elöl álló tört marad a mennyiség-felismerőé.
         assertEquals(150, Foods.parse(all, "fél pizza").get(0).grams, 0.5);
+        // Ige nélkül is egyértelmű, ha a „csak" ott van: a kimondott grammot
+        // is felezi. Enélkül a teljes adag ment a naplóba.
+        assertEquals(50, Foods.parse(all, "100 g rizs, de csak a felét").get(0).grams, 0.5);
+        assertEquals(75, Foods.parse(all, "egy pizza, csak a negyedét").get(0).grams, 0.5);
+        // A puszta „a felét" kevés: abból nem derül ki, megette vagy meghagyta.
+        assertEquals(300, Foods.parse(all, "egy pizza, a felét").get(0).grams, 0.5);
     }
 
     /** A kulacs fél liter – és a „fél kulacs" a fele. */
