@@ -152,6 +152,12 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kezdőlap csempéjén, a Statisztikában és a heti összegzésben is látszik
 - **Fokozatosság**: hat elvégzett sor után a lap kimondja a következő lépést
   (+2–3 ismétlés vagy +10 mp); a sor szövegként **megosztható**
+- **Fájdalom-napló**: napi 0–10-es érték testtájanként, egy koppintással (a
+  sor elvégzése után magától kérdez). A lap kimondja az irányt – „javul",
+  „rosszabbodik", „nem sokat mozdult" –, és görbét is rajzol; a mondat maga
+  is hozhatja az értéket („fáj a vállam 6/10"). Négy bejegyzés alatt nem
+  mond irányt, a 8 fölötti friss érték pedig szakemberhez küld. CSV-be
+  exportálható, a heti összegzés és a Statisztika is mutatja
 - Minden lapon ott a figyelmeztetés: ez megelőzés, nem orvoslás
 
 ### 😴 Alvás & nyugalmi pulzus
