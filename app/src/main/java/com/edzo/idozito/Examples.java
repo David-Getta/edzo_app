@@ -177,6 +177,8 @@ public final class Examples {
             "húzódik a combom",
             "sajog a térdem",
             "fáj a talpam",
+            "fáj a térdem külső oldala",
+            "csukló mobilizálás",
             // A skálát is ki lehet mondani – az érték rögtön a naplóba kerül.
             "fáj a vállam 6/10",
             // A cél-alak is: nem kell megvárni, hogy fájjon.
