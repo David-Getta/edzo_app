@@ -138,6 +138,28 @@ public class StrengthParseTest {
         assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60 kg"));
     }
 
+    /**
+     * Köredzés: a kör-szám az EGÉSZ listára vonatkozik.
+     *
+     * Az „5 kör – 20 burpee, 15 fekvőtámasz, 10 húzódzkodás" a chatben
+     * megosztott edzés tipikus alakja. Eddig minden gyakorlatból EGY sorozat
+     * lett, vagyis a napló a munka ötödét mutatta – és a rekordok, az
+     * izomegyensúly meg a heti volumen is abból számolt.
+     */
+    @Test public void aCircuitRoundCountAppliesToEveryMove() {
+        assertEquals("Fekvőtámasz 5×15/15/15/15/15@0 | Húzódzkodás 5×10/10/10/10/10@0",
+                sum("5 kör - 15 fekvőtámasz, 10 húzódzkodás"));
+        assertEquals("Fekvőtámasz 5×15/15/15/15/15@0 | Húzódzkodás 5×10/10/10/10/10@0",
+                sum("5 kör: 15 fekvőtámasz, 10 húzódzkodás"));
+        assertEquals("Fekvőtámasz 5×15/15/15/15/15@0 | Húzódzkodás 5×10/10/10/10/10@0",
+                sum("5 kör 15 fekvőtámasz, 10 húzódzkodás"));
+        // Ahol van saját sorozatszám, ott azt hagyjuk békén.
+        assertEquals("Guggolás 3×10/10/10@60 | Fekvenyomás 3×8/8/8@50",
+                sum("3 kör: guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg"));
+        // Egyetlen gyakorlatnál változatlan a régi viselkedés.
+        assertEquals("Fekvőtámasz 3×10/10/10@0", sum("3 kör 10 fekvőtámasz"));
+    }
+
     @Test public void perSetRepsAreKept() {
         assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
         assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));

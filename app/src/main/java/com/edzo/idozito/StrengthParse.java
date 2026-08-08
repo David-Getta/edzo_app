@@ -275,6 +275,39 @@ public final class StrengthParse {
         // „4x12 60 kg, 7-es rpe" vesszője tagmondatot zár, de a szám ugyanarra
         // a gyakorlatra vonatkozik. Több gyakorlatnál ezt nem találgatjuk.
         if (merged.size() == 1 && merged.get(0).rpe == 0) merged.get(0).rpe = rpeIn(whole);
+        // Köredzés: „5 kör – 20 burpee, 15 fekvőtámasz, 10 húzódzkodás".
+        //
+        // A kör-szám az EGÉSZ listára vonatkozik, nem csak az első
+        // gyakorlatra – a chatben megosztott edzés pont így néz ki. Eddig
+        // minden gyakorlatból EGY sorozat lett, vagyis a napló a munka
+        // ötödét mutatta. Csak akkor lép be, ha egyik gyakorlatnak sincs
+        // saját sorozatszáma: a „3 kör: guggolás 3x10" hármasa a guggolásé.
+        if (merged.size() >= 2) {
+            // A kör-számot az EREDETI mondatból is megnézzük: a normalizálás
+            // az „5 kör 15 fekvőtámasz" alakot „5x15"-re írja át, és onnan a
+            // kör szó már hiányzik.
+            String raw = Foods.norm(text);
+            int rounds = numberBefore(whole, "kor ");
+            if (rounds <= 0) rounds = numberBefore(whole, "kor:");
+            if (rounds <= 0) rounds = numberBefore(raw, "kor ");
+            if (rounds <= 0) rounds = numberBefore(raw, "kor:");
+            // Az első gyakorlat gyakran MÁR megkapta a kör-számot (vele egy
+            // tagmondatban áll), a többi nem. Akkor bővítünk, ha minden tétel
+            // vagy egy sorozatos, vagy pont ennyi sorozatos – így a saját
+            // sorozatszámmal írt listákhoz („3 kör: guggolás 3x10") nem nyúlunk.
+            boolean fits = rounds >= 2 && rounds <= 20, any1 = false;
+            for (Item it : merged) {
+                int n = it.sets.size();
+                if (n == 1) any1 = true;
+                else if (n != rounds) fits = false;
+            }
+            if (fits && any1)
+                for (Item it : merged) {
+                    if (it.sets.size() != 1) continue;
+                    Set base = it.sets.get(0);
+                    for (int i = 1; i < rounds; i++) it.sets.add(new Set(base.reps, base.weight));
+                }
+        }
         return merged;
     }
 
@@ -586,7 +619,7 @@ public final class StrengthParse {
             // a „korcsolya" ne legyen kör.
             int series = 0;
             String seriesWord = null;
-            for (String w : new String[]{"sorozat", "szett", "set", "kor "}) {
+            for (String w : new String[]{"sorozat", "szett", "set", "kor ", "kor:"}) {
                 series = numberBefore(s, w);
                 if (series > 0) { seriesWord = w; break; }
             }
