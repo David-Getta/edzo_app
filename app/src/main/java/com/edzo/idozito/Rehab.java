@@ -369,6 +369,33 @@ public final class Rehab {
         return head + "nem sokat mozdult – tartsd a sort, és nézd meg a terhelést is";
     }
 
+    /**
+     * A mondatban kimondott fájdalom-érték („fáj a vállam 6/10"), vagy -1.
+     *
+     * Aki egyszer megszokta a skálát, az le is írja – kár lenne még egyszer
+     * megkérdezni tőle. A tíz per tíz alak a beszédes, mert magát a skálát
+     * is kimondja; a „7-es fájdalom" ugyanaz más szórenddel.
+     */
+    public static int painIn(String q) {
+        if (q == null) return -1;
+        String s = Hu.digits(Foods.norm(q));
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{1,2})\\s?/\\s?10(?![0-9])").matcher(s);
+        if (m.find()) {
+            int v = Integer.parseInt(m.group(1));
+            if (v >= 0 && v <= 10) return v;
+        }
+        m = java.util.regex.Pattern
+                .compile("fajdalom\\w*\\s?:?\\s*(\\d{1,2})(?![0-9])"
+                        + "|(\\d{1,2})[- ]?[oe]s\\s?fajdalom").matcher(s);
+        if (m.find()) {
+            String g = m.group(1) != null ? m.group(1) : m.group(2);
+            int v = Integer.parseInt(g);
+            if (v >= 0 && v <= 10) return v;
+        }
+        return -1;
+    }
+
     // ---------- Heti fókusz ----------
 
     /**

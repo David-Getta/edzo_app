@@ -263,6 +263,25 @@ public class RehabTest {
         assertTrue("nem szól a szakemberért: " + eros, eros.contains("gyógytorná"));
     }
 
+    /**
+     * A mondat maga is mondhatja a skálát: „fáj a vállam 6/10".
+     *
+     * A sorozat-alak („3x10") és a súly nem fájdalom – onnan nem szabad
+     * számot hozni, mert az csendben hamis bejegyzést csinálna.
+     */
+    @Test public void theSentenceCanCarryTheScale() {
+        assertEquals(6, Rehab.painIn("fáj a vállam 6/10"));
+        assertEquals(0, Rehab.painIn("ma 0/10, semmi panasz"));
+        assertEquals(10, Rehab.painIn("10/10 fájdalom"));
+        assertEquals(7, Rehab.painIn("fájdalom: 7"));
+        assertEquals(4, Rehab.painIn("4-es fájdalom a térdemben"));
+        assertEquals(-1, Rehab.painIn("fáj a vállam"));
+        assertEquals(-1, Rehab.painIn("guggolás 3x10 60 kg"));
+        assertEquals(-1, Rehab.painIn("15/10"));
+        assertEquals(-1, Rehab.painIn(""));
+        assertEquals(-1, Rehab.painIn(null));
+    }
+
     /** A skála szavakban is olvasható – a puszta szám semmit nem mond. */
     @Test public void thePainScaleHasWords() {
         assertEquals("nincs fájdalom", Rehab.painWord(0));

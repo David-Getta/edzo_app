@@ -74,6 +74,14 @@ public class MobilityActivity extends Activity {
             if (hit != null) {
                 section = 3;
                 final Rehab.Area fhit = hit;
+                // Ha a mondat a skálát is kimondta („fáj a vállam 6/10"), azt
+                // fölösleges még egyszer megkérdezni – rögtön be is jegyezzük.
+                int said = Rehab.painIn(sent);
+                if (said >= 0) {
+                    RehabLog.addPain(this, fhit.id, System.currentTimeMillis(), said);
+                    Toast.makeText(this, "📉 " + fhit.name + ": " + said + "/10 feljegyezve",
+                            Toast.LENGTH_SHORT).show();
+                }
                 body.post(() -> areaSheet(fhit));
             }
         }
