@@ -654,8 +654,10 @@ public final class IntervalParse {
             int v = Integer.parseInt(m.group(1));
             if (v >= 2 && v <= MAX_ROUNDS) return v;
         }
-        // Záró szorzó: „30 mp on 30 mp off 10x”.
-        m = java.util.regex.Pattern.compile("(?<![\\d.,])(\\d{1,2})\\s?[x×]\\s*$")
+        // Záró szorzó: „30 mp on 30 mp off 10x”. A mondatvégi írásjel nem
+        // ronthatja el: aki pontot tesz a végére – vagy egy smiley-t –,
+        // ugyanazt mondta, és eddig egy körre olvadt az egész edzése.
+        m = java.util.regex.Pattern.compile("(?<![\\d.,])(\\d{1,2})\\s?[x×][\\s.,;:)(-]*$")
                 .matcher(s.trim());
         if (m.find()) {
             int v = Integer.parseInt(m.group(1));

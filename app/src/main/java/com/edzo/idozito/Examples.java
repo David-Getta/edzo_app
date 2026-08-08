@@ -112,6 +112,9 @@ public final class Examples {
             // Az érzett terhelés rövidítései: RIR és a kg utáni @szám.
             "guggolás 3x10 100 kg rir 2",
             "fekvenyomás 5x5 90 kg @8",
+            // Ahogy a legtöbb edzés-app exportál, és ahogy a köredzést írják.
+            "fekvenyomás 60 kg x 10, 70 kg x 8, 80 kg x 6",
+            "5 kör: 15 fekvőtámasz, 10 húzódzkodás",
     };
 
     /** Intervallum-beállítás egy mondatból. */
@@ -132,6 +135,7 @@ public final class Examples {
             "kör: 6, munka: 40mp, pihenő: 20mp",
             "8 kör: 20 mp sprint, 40 mp séta",
             "45 másodperc munka 15 pihenő nyolcszor",
+            "20 mp sprint 40 mp járás 8x",
             // A forma neve is elég: a ritmust hozzáadjuk.
             "hiit 20 perc",
             "e2mom 20 perc",
