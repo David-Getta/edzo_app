@@ -349,6 +349,7 @@ public class SettingsActivity extends Activity {
         String[][] items = {
             {"❤️", "Nyugalmi pulzus", "A „nyugalmi pulzus 52” mondat a Profilba kerül: napi egy érték, heti átlag, görbe és léptetős gyorsbevitel. Ha a reggeli érték jóval a szokásos fölött van, a kezdőlap szól, hogy ma kímélj magadon."},
             {"🏊", "Hossz, intervall, háromnegyed óra", "„40 hosszt úsztam” ezer méter, a „10x400 métert futottam” négy kilométer EGY edzésként, a „három negyed óra kondi” pedig 45 perc – nem három edzés."},
+            {"🩺", "Jelentés a gyógytornásznak", "A rehab-lap aljáról négy hét története elküldhető szövegben: elvégzett sorok, fájdalom-értékek és az irány testtájanként."},
             {"📉", "Fájdalom-napló", "A rehab-lapon egy koppintás a napi 0–10-es érték – a testtáj lapja pedig kimondja az irányt (javul / rosszabbodik), görbével. A „fáj a vállam 6/10” mondat rögtön be is jegyzi."},
             {"📤", "Rehab-sor küldése", "A testtáj lapjáról a teljes sor (gyakorlat, adagolás, tipp) szövegként elküldhető – annak, akinek épp fáj."},
             {"🏅", "Új jelvények és formák", "Megelőző, Pihenés-napló és Pulzusfigyelő jelvény; a „norvég 4x4” névvel indítható; a termi anglicizmusok (leg curl, chest press…) a magyar nevükre futnak be; a „haskörfogat 92” és a „múlt hétvégén” is érthető."},

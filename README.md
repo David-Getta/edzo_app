@@ -155,6 +155,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kezdőlap csempéjén, a Statisztikában és a heti összegzésben is látszik
 - **Fokozatosság**: hat elvégzett sor után a lap kimondja a következő lépést
   (+2–3 ismétlés vagy +10 mp); a sor szövegként **megosztható**
+- **Jelentés a gyógytornásznak**: négy hét története egy üzenetben –
+  testtájanként az elvégzett sorok, az utolsó tíz fájdalom-érték és az irány
 - **Fájdalom-napló**: napi 0–10-es érték testtájanként, egy koppintással (a
   sor elvégzése után magától kérdez). A lap kimondja az irányt – „javul",
   „rosszabbodik", „nem sokat mozdult" –, és görbét is rajzol; a mondat maga
