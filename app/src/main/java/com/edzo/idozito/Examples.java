@@ -76,6 +76,8 @@ public final class Examples {
             "futás és úszás 30-30 perc",
             "hegymászás 4 óra",
             "leúsztam ezerötszáz métert",
+            "40 hosszt úsztam",
+            "10x400 métert futottam",
             "triatlon 2 óra",
     };
 

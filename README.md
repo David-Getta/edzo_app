@@ -55,7 +55,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   (a kimondott óra pontosabb a napszaknál), „július 28-án
   futottam", „100 fekvőtámasz", „júl. 28-án 6x1 km", „napi 20 perc jóga
   egész héten", „1h20 futás", „45p nyújtás", „hetvenöt perc kondi",
-  „száz fekvőtámasz", „huszonöt kilométer bringa",
+  „száz fekvőtámasz", „huszonöt kilométer bringa", „40 hosszt úsztam"
+  (egy hossz 25 méter), „10x400 métert futottam" (össztáv, EGY edzés),
+  „három negyed óra kondi" (45 perc, nem három edzés),
   „10 km-t futottam 5:30-as tempóval" (a kimondott tempó pontosabb, mint a
   becslés), „futás 1:05:23" (óra-kijelző alak), „kondi és futás, összesen
   másfél óra" (az összesen OSZTJA az időt), „10-15 perc futás" és „5-8 km
