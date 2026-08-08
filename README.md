@@ -40,6 +40,22 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **GPS táv, tempó, lépések, kalória**, átlag/max sebesség
 - Útvonal, kör-splitek és sebesség-diagram az edzés részleteinél
 
+### 🧾 Amit NEM ír be a naplóba
+Egy fitnesz-app legcsendesebb hibája, ha olyat rögzít, ami meg sem történt:
+azt senki nem veszi észre, de a széria, az XP, a heti terhelés, a kalóriacél
+és a progresszió-javaslat mind abból számol tovább. Ezért mindegyik felismerő
+ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
+- a **terv** nem napló: „holnap futok", „el kéne menni futni", „a terv:
+  guggolás 5x5 100 kg", „ha lesz idő, futok egyet"
+- a **vágy** nem vacsora: „szeretnék egy pizzát", „jó lenne egy sör"
+- a **bevásárlás** és a **kuka** sem étkezés: „vettem két kiló almát",
+  „kidobtam a maradék rizst"
+- a **cél** nem mérés: „a cél 75 kg", „szeretném, ha 50 lenne a nyugalmi
+  pulzusom"
+- az **időpont** nem tevékenység: az „edzés után ittam egy turmixot" a
+  turmixról szól, nem egy edzésről
+- a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem"
+
 ### 📝 Kézi edzés-felvétel
 - **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
   kondi, foci, tenisz, jóga, kenu, búvárkodás, salsa, barlangászat… –
