@@ -302,7 +302,11 @@ public final class Rehab {
                 // súlyos terhelés más, mint az alkar-feszítők könyök-oldali
                 // munkája. (Korábban a külső könyök sorára ment – az is
                 // segített, de a csukló-mobilitás onnan hiányzott.)
-                {"csuklo", "csuklom", "csukloja", "csuklo faj", "csuklofajas", "egerkez"},
+                {"csuklo", "csuklom", "csukloja", "csuklo faj", "csuklofajas", "egerkez",
+                        // A puszta „csukló" is tő: a cél-mondat („csukló
+                        // mobilizálás") enélkül az edzés-felismerőhöz futott.
+                        // Panasznak továbbra is fájdalom-szó kell mellé.
+                        "csuklo"},
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
                 {"csipo", "csipom", "csipoje", "csipo"},
                 {"achilles", "achilles", "vadlim", "sarkam", "sarok faj"},

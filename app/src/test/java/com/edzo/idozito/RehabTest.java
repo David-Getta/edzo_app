@@ -137,6 +137,7 @@ public class RehabTest {
         assertEquals("achilles", Rehab.forGoal("achilles megelőzés").id);
         assertEquals("terd", Rehab.forGoal("térd stabilizálás").id);
         assertEquals("comb", Rehab.forGoal("comb rehab").id);
+        assertEquals("csuklo", Rehab.forGoal("csukló mobilizálás").id);
         // A csirkecomb cél-mondatban sem testtáj.
         assertNull(Rehab.forGoal("csirkecomb rehab"));
         assertNull(Rehab.forGoal("core stabilitás"));   // nincs testtáj

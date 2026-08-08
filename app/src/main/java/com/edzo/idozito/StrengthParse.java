@@ -104,7 +104,8 @@ public final class StrengthParse {
             {"Plank", "plank", "deszka", "oldaltamasz", "alkartamasz"},
             {"Felülés", "felules", "crunch", "felult"},
             {"Hasprés", "haspres", "hasizom", "hasgep"},
-            {"Lábemelés", "labemel"},
+            // A „térdemelés" ugyanaz a hasizom-gyakorlat, csak hajlított lábbal.
+            {"Lábemelés", "labemel", "terdemel", "terd emel"},
             {"Combhajlítás", "labhajlit", "combhajlit", "leg curl", "legcurl"},
             {"Lábnyújtás", "labnyujt", "combfeszit", "labgep", "leg extension"},
             {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok",

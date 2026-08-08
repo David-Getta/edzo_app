@@ -290,6 +290,8 @@ public class StrengthParseTest {
         assertEquals("Tricepsz", StrengthParse.parse("skull crusher 3x10 25 kg").get(0).name);
         assertEquals("Bicepsz", StrengthParse.parse("hammer curl 3x12 14 kg").get(0).name);
         assertEquals("Tolódzkodás", StrengthParse.parse("dip 3x10").get(0).name);
+        // A térdemelés ugyanaz a hasizom-gyakorlat, csak hajlított lábbal.
+        assertEquals("Lábemelés", StrengthParse.parse("térdemelés 3x15").get(0).name);
         // A RIR a tartalék-ismétlés: RIR 2 = RPE 8. Az öt fölötti szám nem RIR.
         assertEquals(8, StrengthParse.parse("guggolás 3x10 100 kg rir 2").get(0).rpe);
         assertEquals(10, StrengthParse.parse("felhúzás 1x1 180 kg rir 0").get(0).rpe);
