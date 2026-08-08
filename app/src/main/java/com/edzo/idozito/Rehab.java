@@ -69,6 +69,20 @@ public final class Rehab {
                     ex("Csípőemelés (híd)", "3×12", "Fent szorítsd meg a farizmot egy pillanatra – a hátsó lánc tehermentesíti a térdet.", "glute bridge csípőemelés"),
                     ex("Combnyújtás állva", "2×30 mp / láb", "Bokát a fenékhez, térdek egymás mellett – edzés után, nem előtte.", "combizom nyújtás álló")),
 
+            new Area("itszalag", "🏃", "Térd külső oldala (IT-szalag)",
+                    "Futótérd külső oldali fajtája (IT-szalag szindróma): a fájdalom "
+                            + "a térd külsején jelentkezik, jellemzően lejtmenetben és "
+                            + "hosszabb futás közben. Az ok szinte mindig a csípő "
+                            + "távolítóinak gyengesége – ott is kell erősíteni.",
+                    RED_FLAG + " Magát a szalagot nem érdemes hengerezni: feszes húr, "
+                            + "nem izom – a TFL-t és a farizmot lazítsd helyette.",
+                    ex("Oldalfekvő lábemelés", "3×15 / oldal", "Test egy vonalban, a felső láb kissé HÁTRA, lábujj enyhén lefelé – így a középső farizom dolgozik.", "oldalfekvő lábemelés farizom gyakorlat"),
+                    ex("Kagyló (clamshell) gumival", "3×15 / oldal", "Sarkak együtt, a felső térd nyílik – a csípő ne dőljön hátra.", "clamshell gyakorlat gumiszalag"),
+                    ex("Oldalplank csípőemeléssel", "3×10 / oldal", "Könyökön, a csípőt engedd le és emeld vissza – lassan.", "oldalplank csípőemelés gyakorlat"),
+                    ex("Oldalirányú szalagos járás", "3×10 lépés oda-vissza", "Gumiszalag a boka fölött, térd enyhén hajlítva, kis lépések.", "monster walk gumiszalag gyakorlat"),
+                    ex("TFL és farizom hengerezés", "2×60 mp / oldal", "A csípő elülső-oldalsó pontja és a far, NEM maga a szalag.", "tfl foam roll gyakorlat"),
+                    ex("Egylábas híd", "3×10 / láb", "A csípő ne billenjen oldalra – ez a lényeg, nem a magasság.", "single leg bridge gyakorlat")),
+
             new Area("derek", "🧱", "Derék (nem specifikus derékfájás ellen)",
                     "A törzs mély stabilizálói és a csípő mozgékonysága: a klasszikus "
                             + "„nagy hármas\" (madár-kutya, oldalplank, curl-up) köré épül.",
@@ -255,6 +269,11 @@ public final class Rehab {
         s = s.replace("csipos", "#").replace("vallal", "#");
         String[][] map = {
                 {"boka", "bokam", "bokaja", "boka"},
+                // A térd KÜLSŐ oldala más panasz, mint az elülső – az
+                // IT-szalag sora a csípő távolítóit erősíti. A hosszabb,
+                // pontosabb megnevezés ezért előbb áll a puszta „térd"-nél.
+                {"itszalag", "it szalag", "itszalag", "iliotibialis", "kulso terd",
+                        "terd kulso", "terdem kulso", "futoterd"},
                 {"terd", "terdem", "terde", "terd"},
                 {"derek", "derekam", "dereka", "derek", "hatam faj", "also hat",
                         "gerincem", "gerinc"},

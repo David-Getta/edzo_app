@@ -88,6 +88,10 @@ public class RehabTest {
         assertEquals("boka", Rehab.forComplaint("megrándult a bokám").id);
         assertEquals("terd", Rehab.forComplaint("sajog a térdem").id);
         assertEquals("konyok-kulso", Rehab.forComplaint("fáj a csuklóm").id);
+        // A térd külső oldala az IT-szalag sora, az elülső a térd-soré.
+        assertEquals("itszalag", Rehab.forComplaint("fáj a térdem külső oldala").id);
+        assertEquals("itszalag", Rehab.forComplaint("IT szalag fájdalom").id);
+        assertEquals("terd", Rehab.forComplaint("fáj a térdem").id);
         // Az új futó-területek: talp és sípcsont.
         assertEquals("talp", Rehab.forComplaint("fáj a talpam reggelente").id);
         assertEquals("sipcsont", Rehab.forComplaint("fáj a sípcsontom futás után").id);
