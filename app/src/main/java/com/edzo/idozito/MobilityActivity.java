@@ -376,9 +376,17 @@ public class MobilityActivity extends Activity {
         // sort, annak az adagolás emelése a következő lépés – ezt ki is mondjuk.
         int doneAll = RehabLog.doneOf(this, area.id).length;
         if (doneAll >= 6) {
+            // A területnek megvan a maga iránya: a bokánál a következő lépés
+            // nem több ismétlés, hanem instabil felület és ugrás; a
+            // golfkönyöknél nehezebb súly, lassabb leengedés. Az általános
+            // „emelj az adagoláson" ehhez képest semmit nem mond.
+            String nx = Rehab.nextLevel(area.id);
             TextView lvl = text("📈 Már " + doneAll + " alkalmon vagy túl ezen a soron – "
-                    + "ha könnyűnek érzed, emelj az adagoláson: +2–3 ismétlés vagy "
-                    + "+10 mp tartás gyakorlatonként.", 11.5f, MUTED, false);
+                    + (nx.isEmpty()
+                    ? "ha könnyűnek érzed, emelj az adagoláson: +2–3 ismétlés vagy "
+                            + "+10 mp tartás gyakorlatonként."
+                    : "ha könnyűnek érzed, jöhet a következő szint.\n\n" + nx),
+                    11.5f, MUTED, false);
             lvl.setPadding(0, dp(6), 0, 0);
             box.addView(lvl);
         }

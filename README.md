@@ -160,8 +160,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Heti fókusz**: kitűzhetsz egy testtájat, az app heti 3 alkalmat számol
   (hétfőnként nulláz), sorozat-számlálóval („🔥 3 hete sorban") – az állás a
   kezdőlap csempéjén, a Statisztikában és a heti összegzésben is látszik
-- **Fokozatosság**: hat elvégzett sor után a lap kimondja a következő lépést
-  (+2–3 ismétlés vagy +10 mp); a sor szövegként **megosztható**
+- **Fokozatosság testtájra szabva**: hat elvégzett sor után a lap kimondja a
+  KÖVETKEZŐ SZINTET – és az területenként más: a bokánál instabil felület és
+  szökdelés, a golfkönyöknél nehezebb súly lassabb leengedéssel, a deréknál
+  tartás helyett terhelés. A sor szövegként **megosztható**
 - **Jelentés a gyógytornásznak**: négy hét története egy üzenetben –
   testtájanként az elvégzett sorok, az utolsó tíz fájdalom-érték és az irány
 - **Fájdalom-napló**: napi 0–10-es érték testtájanként, egy koppintással (a

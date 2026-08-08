@@ -391,4 +391,23 @@ public class RehabTest {
         assertTrue(Rehab.focusLine(a, Rehab.WEEKLY_GOAL).contains("✔"));
         assertTrue(Rehab.focusLine(a, Rehab.WEEKLY_GOAL + 2).contains("✔"));
     }
+
+    /**
+     * Minden területnek van saját „következő szintje".
+     *
+     * A fokozatosság a rehab lelke, de az „emelj az adagoláson" tanács
+     * személytelen: a bokánál a következő lépés nem több ismétlés, hanem az
+     * instabil felület és az ugrás; a golfkönyöknél nehezebb súly, lassabb
+     * leengedés. Ha egy terület kimaradna a táblából, a lap némán a régi,
+     * általános mondatra esne vissza.
+     */
+    @Test public void everyAreaHasANextLevel() {
+        for (Rehab.Area a : Rehab.AREAS) {
+            String nx = Rehab.nextLevel(a.id);
+            assertTrue(a.id + ": nincs következő szint", nx.length() >= 60);
+            // Konkrét legyen: szám vagy mértékegység is szerepeljen benne.
+            assertTrue(a.id + ": nem konkrét", nx.matches(".*\\d.*"));
+        }
+        assertEquals("", Rehab.nextLevel("nincs-ilyen"));
+    }
 }

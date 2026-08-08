@@ -210,6 +210,68 @@ public final class Rehab {
     };
 
     /**
+     * A következő szint testtájanként: mi jön, ha a sor már könnyű.
+     *
+     * A fokozatosság a rehab lelke, de az „emelj az adagoláson" tanács
+     * személytelen: a bokánál a KÖVETKEZŐ lépés nem több ismétlés, hanem az
+     * instabil felület és az ugrás, a golfkönyöknél a nehezebb súly lassabb
+     * leengedéssel. Minden területnek megvan a maga iránya – ezt mondjuk ki,
+     * amikor a sor már hat alkalmat megélt.
+     *
+     * Sorok: [terület-azonosító, a következő lépés].
+     */
+    private static final String[][] NEXT = {
+            {"boka", "Instabil felület és ütem: párna vagy összehajtott törölköző az "
+                    + "egylábas álláshoz, csukott szemmel; a szökdelést told 3×15-re, és "
+                    + "vidd oldalra-átlósan is. A halk érkezés a mérce, nem a távolság."},
+            {"terd", "Mélyebb tartomány és egy láb: a falhoz guggolást engedd mélyebbre "
+                    + "(fájdalommentesen), a lelépést magasabb lépcsőről, 3 mp helyett 5 mp "
+                    + "alatt. A híd mehet egy lábon."},
+            {"itszalag", "Terhelt oldal-lánc: az oldalfekvő lábemeléshez tegyél gumiszalagot "
+                    + "a boka fölé, az oldalplankot told 3×20 mp-re, a szalagos járást "
+                    + "mélyebb féltérdben. Futásnál a lejtmenet jöjjön vissza utoljára."},
+            {"derek", "Tartás helyett terhelés: a madár-kutyához könyök-térd érintés "
+                    + "(3×8 / oldal), az oldalplank lábbal a padra, a hídhoz egy láb. A cél "
+                    + "a stabil derék mozgás közben – nem a hosszabb plank."},
+            {"vall", "Nagyobb kar-emelés: a külső rotációt vidd 90 fokos elrabolt karral "
+                    + "(kaszáló mozdulat), a fal-csúsztatást súllyal, a függést told "
+                    + "3×40 mp-re. Az Y-T-W-hez elég 1–2 kg."},
+            {"konyok-belso", "Nehezebb súly, lassabb leengedés: az excentrikus csuklóhajlításnál "
+                    + "emelj fél kilót, és told a leengedést 5 mp-re. A húzó terhelés (evezés, "
+                    + "húzódzkodás) fokozatosan jöhet vissza – hetente egy lépcsőt."},
+            {"konyok-kulso", "Erősebb gumirúd és fogás-munka: a Tyler twistet vidd nehezebb "
+                    + "rúdra, a csuklófeszítést fél kilóval, és tegyél mellé 3×10 "
+                    + "marokerősítést. Az egér- és billentyűzet-magasságot is nézd meg."},
+            {"csuklo", "Több súly a kézen: a tenyértámaszt vidd fekvőtámasz-helyzetbe "
+                    + "(térdről is jó), a csuklóhajlítást-feszítést 2–3 kg-ra. Az imádkozó "
+                    + "nyújtás maradjon meg mellette."},
+            {"nyak", "Terhelés a mély hajlítóknak: az állcsúszást csináld hanyatt fekve, "
+                    + "fejet kissé megemelve (3×10, 5 mp tartás), a T-emeléshez tegyél "
+                    + "1–2 kg-ot. A fal-angyal maradjon a napi tétel."},
+            {"csipo", "Terhelt mobilitás: a kagylót és a tűzcsapot gumiszalaggal, a 90/90-et "
+                    + "kézzel nem segítve (aktív forgatás), a mély guggolás tartást "
+                    + "kapaszkodás nélkül. Innen már a bolgár kitörés a következő."},
+            {"comb", "Teljesebb nordic és sebesség: engedd a nordic curl-t mélyebbre "
+                    + "(3×6–8), a slidert egy lábon, és a good morninghoz tegyél súlyt. "
+                    + "Sprintelőnek a fokozatos gyorsítás a legfontosabb elem."},
+            {"talp", "Terhelt lábboltozat: az emelt lábujjas vádliemelést vidd egy lábra "
+                    + "(3×10), a short footot állva, majd egylábas állásban. A görgetés "
+                    + "marad, de már inkább bemelegítésként."},
+            {"sipcsont", "Ütés-tűrés fokozatosan: a sarkon járást told 3×60 mp-re, a "
+                    + "lábfej-emeléshez tegyél gumiszalagot, és a futótávot hetente "
+                    + "legfeljebb tíz százalékkal emeld – a sípcsont a mennyiségre érzékeny."},
+            {"achilles", "Nehezebb excentrikus munka: a sarok-leengedéshez vegyél hátizsákot "
+                    + "(5–10 kg), és tartsd a napi két sorozatot. Ugrás és sprint csak akkor, "
+                    + "ha a reggeli merevség már elmúlt."},
+    };
+
+    /** A következő szint szövege, vagy üres, ha nincs ilyen terület. */
+    public static String nextLevel(String areaId) {
+        for (String[] r : NEXT) if (r[0].equals(areaId)) return r[1];
+        return "";
+    }
+
+    /**
      * Panaszból testtáj: „fáj a vállam" → a váll-sor.
      *
      * Az app mondat-elvű: ha a felhasználó bármelyik mezőbe beírja, hogy mi
