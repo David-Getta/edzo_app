@@ -803,6 +803,37 @@ public class ActivitiesParseTest {
         assertEquals(4.0, Activities.parse("10x400 métert futottam").plans.get(0).km, 0.01);
         assertEquals(5.0, Activities.parse("5x1000 métert").plans.get(0).km, 0.01);
         assertEquals(1, Activities.parse("5x1000 métert").plans.get(0).count);
+    }
+
+    /**
+     * Az úszók hosszban mérnek: „40 hosszt úsztam" ezer méter.
+     *
+     * A medence MÉRETE viszont nem megtett táv – a „25 méteres medencében"
+     * jelzője sosem az edzés távja.
+     */
+    @Test public void poolLengthsBecomeMeters() {
+        assertEquals(1.0, Activities.parse("40 hosszt úsztam").plans.get(0).km, 0.01);
+        assertEquals(1.5, Activities.parse("leúsztam 60 hosszt").plans.get(0).km, 0.01);
+        assertEquals(0.5, Activities.parse("20 hosszt a 25 méteres medencében")
+                .plans.get(0).km, 0.01);
+        assertEquals("uszas", Activities.parse("30 hossz az úszómedencében").plans.get(0).kind.id);
+        // Úszó szó nélkül a „hossz" bármi lehet – nem lesz belőle táv.
+        assertEquals(0, Activities.parse("40 hossz futás").plans.get(0).km, 0.01);
+        // A medenceemelés a súlyzós oldalé marad.
+        assertEquals("Csípőemelés", StrengthParse.parse("medence emelés 3x10 60 kg").get(0).name);
+    }
+
+    /** A „három negyed óra" háromnegyed óra – nem három negyedórás edzés. */
+    @Test public void threeQuartersOfAnHourIsOneWorkout() {
+        Activities.Parsed p = Activities.parse("három negyed óra kondi");
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(45, p.plans.get(0).minutes);
+        Activities.Parsed d = Activities.parse("3 negyed óra futás");
+        assertEquals(1, d.plans.get(0).count);
+        assertEquals(45, d.plans.get(0).minutes);
+        // A valódi szorzószám marad szorzószám.
+        assertEquals(3, Activities.parse("három edzés a héten").plans.get(0).count);
+        assertEquals(180, Activities.parse("három óra túra").plans.get(0).minutes);
         // A súlyzós „3x10" viszont marad sorozat×ismétlés.
         assertEquals(1, Activities.parse("3x10 guggolás").plans.get(0).count);
     }

@@ -56,6 +56,9 @@ public final class Activities {
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
                     "uszoverseny",
+                    // A medence RAGOZOTT alakja: a puszta „medence" a súlyzós
+                    // medenceemelés szava is, azt nem vesszük el tőle.
+                    "medenceben", "uszomedence",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
                     "vizilabda", "aquafit", "vizitorna"),
@@ -700,6 +703,8 @@ public final class Activities {
         java.util.List<int[]> mults = stripMultiplicative(q);
         // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
         mergeIntervalDistances(q);
+        // Az úszók hosszban mérnek: „40 hosszt úsztam" ezer méter.
+        mergePoolLengths(q);
         // Gyakoriság („hetente kétszer", „kéthetente", „másnaponta"): a
         // periódus hossza napokban – az időszak-kereső előtt vesszük ki, hogy
         // a „hetente" ne váljon egyhetes időszakká a „hónapban" helyett.
@@ -1631,6 +1636,43 @@ public final class Activities {
     }
 
     /**
+     * Medencehossz → méter: „40 hosszt úsztam" ezer méter.
+     *
+     * Az úszók nem méterben mondják a távot, hanem hosszban, és a magyar
+     * uszodák alapmérete 25 méter. Csak úszó mondatban váltunk – a „hossz"
+     * önmagában bármi lehet –, és csak akkor, ha a szorzat elfér az eredeti
+     * szövegrész helyén (a többi olvasó karakterpozíciókra épül).
+     */
+    private static void mergePoolLengths(char[] q) {
+        String s = new String(q);
+        if (!s.contains("usz") && !s.contains("medence")) return;
+        boolean done = false;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,3})\\s?hossz[a-z]*(?![a-z])").matcher(s);
+        while (m.find()) {
+            int n;
+            try { n = Integer.parseInt(m.group(1)); }
+            catch (NumberFormatException e) { continue; }
+            if (n < 1 || n > 400) continue;
+            String rep = (n * POOL_M) + " m";
+            if (rep.length() > m.end() - m.start()) continue;
+            blank(q, m.start(), m.end());
+            for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
+            done = true;
+        }
+        // A medence MÉRETE nem megtett táv: a „20 hosszt a 25 méteres
+        // medencében" ötszáz méter, nem huszonöt. A jelzői alak („méteres")
+        // sosem az edzés távja, ezért kivesszük.
+        if (!done) return;
+        java.util.regex.Matcher pm = java.util.regex.Pattern
+                .compile("(?<![\\d,.])\\d{1,3}\\s?meteres(?![a-z])").matcher(new String(q));
+        while (pm.find()) blank(q, pm.start(), pm.end());
+    }
+
+    /** A magyar uszodák alapmérete – ennyi méter egy hossz. */
+    private static final int POOL_M = 25;
+
+    /**
      * Kimondott napszak → óra. A múltbeli bejegyzés így nem a semleges délre
      * kerül, ha a felhasználó megmondta, mikor volt („tegnap este kondi").
      */
@@ -2195,6 +2237,23 @@ public final class Activities {
                             : prev.equals("masfel") ? 90
                             : prev.equals("negyed") ? 15
                             : prev.equals("haromnegyed") ? 45 : 0;
+                    // Külön írva is ugyanaz: a „három negyed óra" háromnegyed
+                    // óra, nem három darab negyedórás edzés. A „három" enélkül
+                    // szorzószámként HÁROM alkalmat csinált belőle.
+                    if (frac == 15) {
+                        int b0 = wsPos;
+                        while (b0 > 0 && s.charAt(b0 - 1) == ' ') b0--;
+                        int w0 = b0;
+                        while (w0 > 0 && Character.isLetter(s.charAt(w0 - 1))) w0--;
+                        // Számjeggyel írva is: „3 negyed óra".
+                        if (w0 == b0)
+                            while (w0 > 0 && Character.isDigit(s.charAt(w0 - 1))) w0--;
+                        String before = s.substring(w0, b0);
+                        if (before.equals("harom") || before.equals("3")) {
+                            frac = 45;
+                            wsPos = w0;
+                        }
+                    }
                     if (frac > 0) {
                         // „Két és fél óra": az egész órák a tört elé kerülnek,
                         // „és"-sel kötve – nélkülük a kettő elveszett, és fél
