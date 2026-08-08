@@ -48,6 +48,15 @@ public class IntervalParseTest {
         assertEquals("5×240/180", sum("norvég 4x4, 5 kör"));
     }
 
+    /** A perjeles pár PERCBEN is mehet: „2 perc / 1 perc, 5 kör". */
+    @Test public void theSlashPairAlsoWorksInMinutes() {
+        assertEquals("5×120/60", sum("2 perc / 1 perc, 5 kör"));
+        assertEquals("4×180/60", sum("4x3 perc / 1 perc"));
+        // A másodperces alak változatlan.
+        assertEquals("8×20/10", sum("8x20/10"));
+        assertEquals("10×40/20", sum("40 mp / 20 mp, 10 kör"));
+    }
+
     @Test public void aSingleTimeIsTheWorkInterval() {
         assertEquals("5×30/0", sum("5 kör 30 másodperc"));
         assertEquals("1×120/0", sum("2 perc"));

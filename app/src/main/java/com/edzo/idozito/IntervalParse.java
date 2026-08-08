@@ -171,15 +171,19 @@ public final class IntervalParse {
         java.util.regex.Matcher m = java.util.regex.Pattern
                 // A mértékegység kiírva is állhat a pár két oldalán:
                 // „40 mp / 20 mp”. Enélkül a pihenő némán elveszett.
-                .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?(?:masodperc|mperc|mp|sec|s)?"
-                        + "\\s?[/\\-]\\s?(\\d{1,3})\\s?(?:masodperc|mperc|mp|sec|s)?"
+                // A PERC is állhat a pár két oldalán („2 perc / 1 perc”):
+                // enélkül a perces alak kiesett a mintából, és a pihenő némán
+                // elveszett – a kör fele lett az edzésnek.
+                .compile("(?:(\\d{1,2})\\s?[x×]\\s?)?(\\d{1,3})\\s?"
+                        + "(masodperc|mperc|mp|perc|sec|s)?"
+                        + "\\s?[/\\-]\\s?(\\d{1,3})\\s?(masodperc|mperc|mp|perc|sec|s)?"
                         + "(?:\\s?[x×]\\s?(\\d{1,2}))?")
                 .matcher(slashable);
         if (m.find()) {
             int rounds = m.group(1) != null ? Integer.parseInt(m.group(1))
-                    : m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
-            int work = Integer.parseInt(m.group(2));
-            int rest = Integer.parseInt(m.group(3));
+                    : m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
+            int work = Integer.parseInt(m.group(2)) * ("perc".equals(m.group(3)) ? 60 : 1);
+            int rest = Integer.parseInt(m.group(4)) * ("perc".equals(m.group(5)) ? 60 : 1);
             if (rounds <= 0) {
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");
