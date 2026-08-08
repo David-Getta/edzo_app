@@ -488,6 +488,47 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * Minden szótő minden ragozott alakja megtalálja a SAJÁT ételét.
+     *
+     * Ez a söprés fogta meg azt, hogy a rövid tövek szó-belseji tiltása a
+     * valódi ételeket is elnyelte: a „pizzából" a zab miatt, a „sziruphoz" a
+     * pho miatt, a „hagymája" a máj miatt. Húsz gyakori rag × minden szótő –
+     * ha egy új tiltás mellékhatást okoz, itt derül ki, nem a telefonon.
+     *
+     * Az alább felsorolt alakok TUDOTT kompromisszumok: a sör/sor, a méz/mez
+     * és a hal-ige ütközése ékezet nélkül feloldhatatlan, a „tarjánál" és a
+     * „marhára" pedig valódi hétköznapi szó. Új elem csak tudatos döntéssel
+     * kerülhet a listára.
+     */
+    @Test public void everyStemSurvivesItsInflections() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.Set<String> known = new java.util.HashSet<>(java.util.Arrays.asList(
+            "babas", "babes", "borsos", "buktak", "buktakat", "buktat", "buktatol",
+            "colaja", "colajat", "combja", "combjat", "cukorkat", "flekkenes", "ginas",
+            "ginos", "halja", "haljat", "halk", "halkat", "halnak", "halnal", "halt",
+            "haltol", "kolaja", "kolajat", "majas", "marhara", "mezos", "mezt", "meztol",
+            "phoes", "phon", "phonak", "phonal", "phot", "photol", "pokera", "pokerol",
+            "ruditol", "rumba", "rumban", "soras", "sorba", "sorban", "sorbol", "sornak",
+            "sornal", "soros", "sorra", "tarjan", "tarjanak", "tarjanal"));
+        String[] suf = {"t", "ba", "bol", "ban", "val", "hoz", "nak", "ja",
+                "jat", "k", "kat", "n", "ra", "rol", "tol", "nal", "os", "as", "es"};
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL)
+            for (String st : f.stems) {
+                if (st.indexOf(' ') >= 0) continue;
+                for (String x : suf) {
+                    String q = st + x;
+                    if (known.contains(q)) continue;
+                    boolean ok = false;
+                    for (Foods.Hit y : Foods.parse(all, q))
+                        if (y.food.name.equals(f.name)) ok = true;
+                    if (!ok) bad.append("\n  ").append(q).append(" (").append(f.name).append(")");
+                }
+            }
+        assertEquals("elveszett ragozott alak:" + bad, 0, bad.length());
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
