@@ -157,8 +157,11 @@ public class ParserFuzzTest {
                 long when = TimeHint.from(q, 1_753_900_000_000L);
                 assertTrue("holnapi vagy későbbi időpont erre: " + q,
                         when <= 1_753_900_000_000L + 86400000L);
+                // A visszatevés ablaka két hét – kivéve, ha NAPNÉV is
+                // elhangzott („két hete kedden"): az legfeljebb hat nappal
+                // tolhat a hetek számán túlra, és ott a napnév a pontosabb.
                 assertTrue("túl régi időpont erre: " + q,
-                        when >= 1_753_900_000_000L - 15L * 86400000L);
+                        when >= 1_753_900_000_000L - 21L * 86400000L);
             }
         }
     }

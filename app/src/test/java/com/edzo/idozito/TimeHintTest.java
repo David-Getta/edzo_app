@@ -60,6 +60,26 @@ public class TimeHintTest {
         assertEquals(29, dayHour("egy hete")[0]);
     }
 
+    /**
+     * A napnév akkor is a napnév, ha a hetek számán túlra mutat.
+     *
+     * A „két hete kedden" tizenhét napja volt – a pótlás ablaka viszont
+     * tizennégy nap, és a mondat visszaesett a kerek két hétre. Vagyis a
+     * KEDDET egy szerdára írtuk, némán. A napnév legfeljebb hat nappal
+     * tolhat, és ez a hat nap belefér.
+     */
+    @Test public void aNamedWeekdayMayReachPastTheWeekWindow() {
+        // 2026. augusztus 5. szerda → két hete kedd: július 21.
+        assertEquals(21, dayHour("két hete kedden futottam")[0]);
+        // 2026. július 19. vasárnap.
+        assertEquals(19, dayHour("két hete vasárnap túra")[0]);
+        // Ami már tényleg régi, arra nincs pótlás: az „öt hete" a
+        // huszonöt napos határon túl van, oda nem teszünk vissza semmit.
+        long old = TimeHint.from("öt hete kedden", wednesdayNoon());
+        assertTrue("túl messzire tettük vissza",
+                old == 0 || old > wednesdayNoon() - 25L * 24 * 3600 * 1000);
+    }
+
     @Test public void yesterdayAndTheDayBeforeStillWork() {
         assertEquals(4, dayHour("tegnap este pizzát ettem")[0]);
         assertEquals(19, dayHour("tegnap este pizzát ettem")[1]);

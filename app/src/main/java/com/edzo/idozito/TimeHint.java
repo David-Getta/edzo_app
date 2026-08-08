@@ -183,9 +183,12 @@ public final class TimeHint {
                     for (int i = 0; i < 7; i++) {
                         if (!has(s, DAYS[i])) continue;
                         int back = (idx - i + 7) % 7 + v * 7;
-                        // A pótlás ablakán kívül eső napot nem találgatjuk
-                        // tovább: marad a hetek szerinti közelítés.
-                        if (back <= MAX_BACK) return back;
+                        // A napnév legfeljebb hat nappal tolhat a hetek
+                        // számán túlra, és ez a hat nap belefér: a „két hete
+                        // kedden" tizenhét napja volt. Enélkül a mondat
+                        // visszaesett a kerek tizennégy napra – vagyis a
+                        // KEDDET egy péntekre írtuk, némán.
+                        if (back <= MAX_BACK + 6) return back;
                         break;
                     }
                 }
