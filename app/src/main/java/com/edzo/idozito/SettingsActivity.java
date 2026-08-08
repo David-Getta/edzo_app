@@ -346,6 +346,7 @@ public class SettingsActivity extends Activity {
         String[][] items = {
             {"❤️", "Nyugalmi pulzus", "A „nyugalmi pulzus 52” mondat a Profilba kerül: napi egy érték, heti átlag, görbe és léptetős gyorsbevitel. Ha a reggeli érték jóval a szokásos fölött van, a kezdőlap szól, hogy ma kímélj magadon."},
             {"📤", "Rehab-sor küldése", "A testtáj lapjáról a teljes sor (gyakorlat, adagolás, tipp) szövegként elküldhető – annak, akinek épp fáj."},
+            {"🏅", "Új jelvények és formák", "Megelőző, Pihenés-napló és Pulzusfigyelő jelvény; a „norvég 4x4” névvel indítható; a termi anglicizmusok (leg curl, chest press…) a magyar nevükre futnak be; a „haskörfogat 92” és a „múlt hétvégén” is érthető."},
             {"😮‍💨", "RIR és @8", "A „guggolás 3x10 100 kg rir 2” és a „90 kg @8” is érzett terhelésként kerül a naplóba (RIR 2 = RPE 8)."},
             {"⭐", "Heti rehab-fókusz", "A rehab-lapon kitűzhetsz egy testtájat heti fókusznak: az app heti 3 alkalmat számol, az állás a kezdőlap csempéjén is látszik."},
             {"🩹", "Megelőzés és rehab", "Boka-stabilitás, térd, derék, váll, golf- és teniszkönyök, nyak, csípő, talp, sípcsont, Achilles – kész, 10–15 perces gyógytornász-ihletésű sorok a Nyújtás & mobilitás lapon."},
