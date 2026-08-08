@@ -605,6 +605,10 @@ public class ActivitiesParseTest {
         assertTrue("golfozás lett a panaszból",
                 Activities.parse("golfkönyök fájdalom").isEmpty());
         assertEquals("egyeb", Activities.parse("golf 3 óra").plans.get(0).kind.id);
+        // Ugyanez a teniszkönyökre: a panasz nem teniszezés.
+        assertTrue("teniszezés lett a panaszból",
+                Activities.parse("fáj a teniszkönyököm").isEmpty());
+        assertEquals("tenisz", Activities.parse("tenisz 90 perc").plans.get(0).kind.id);
         assertEquals("munka", Activities.parse("sövényt vágtam 1 óra").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("funkcionális edzés 1 óra").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("bootcamp 45 perc").plans.get(0).kind.id);

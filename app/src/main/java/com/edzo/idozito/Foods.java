@@ -875,6 +875,16 @@ public final class Foods {
             "napoke", "oldalasok", "oldalasat"};
 
     /**
+     * Szó ELEJÉN álló csapdák, amik ételnek látszanak: a „zsírmentes" jelző a
+     * ZSÍR tövével kezdődik, és eddig száz gramm olajat írt a naplóba a
+     * „zsírmentes túró" mellé.
+     *
+     * A „zsírszegény" szándékosan NINCS itt: annak van saját tétele
+     * („Zsírszegény tej"), és a hosszabb tő úgyis elviszi a rövidebb elől.
+     */
+    private static final String[] START_BAD_EXTRA = {"zsirmentes", "zsirtalan"};
+
+    /**
      * Maszkolandó-e a szó – igekötővel együtt is.
      *
      * A maszk a szó ELEJÉT nézi, különben a ragozott igazi ételek („sajtos",
@@ -900,6 +910,7 @@ public final class Foods {
 
     private static boolean startsWithBad(String tok) {
         for (String bad : NOT_FOOD) if (tok.startsWith(bad)) return true;
+        for (String bad : START_BAD_EXTRA) if (tok.startsWith(bad)) return true;
         return false;
     }
 

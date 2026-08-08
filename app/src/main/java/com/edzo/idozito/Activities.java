@@ -595,9 +595,10 @@ public final class Activities {
             "csatorna", "assistance", "importance",
             // A kézisúlyzó nem kézilabda: a „kezi" tő a nevében is ott van.
             "kezisulyzo", "kezisuly",
-            // A golfKÖNYÖK panasz, nem sportág: a „golf" tő a nevében ül.
-            // (Szósöprés találta: a „fáj a golfkönyököm" golfozás lett volna.)
-            "golfkonyok",
+            // A golfKÖNYÖK és a teniszKÖNYÖK panasz, nem sportág: a „golf" és
+            // a „tenisz" tő a nevükben ül. (Szósöprés találta: a „fáj a
+            // golfkönyököm" golfozás, a teniszkönyök teniszezés lett volna.)
+            "golfkonyok", "teniszkonyok",
             // A „részleTEKÉRT" végén a tekerés, a MEGERŐSÍTésben az erősítés,
             // a TÖLTEKEZÜNKben a tekézés, a KÖRGYŰRŰben (az app saját sávja)
             // a gyűrű.
