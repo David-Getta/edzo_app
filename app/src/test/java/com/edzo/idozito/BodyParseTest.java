@@ -265,6 +265,29 @@ public class BodyParseTest {
                 Sentence.of("2 csirkecomb", java.util.Arrays.asList(Foods.ALL), NOW));
     }
 
+    /**
+     * A hosszabb szám ELEJE nem testsúly.
+     *
+     * A minta számjegy-határ nélkül dolgozott, így az „1500" első három
+     * jegyéből százötven kiló lett, a „10000"-ből száz. Egy elgépelt szám
+     * tehát nem hibaüzenetet adott, hanem egy hihető, de hamis mérést – és
+     * a súlytrend, a BMI és a kalóriacél is ebből számol tovább.
+     */
+    @Test public void theStartOfALongerNumberIsNotAWeight() {
+        none("1500");
+        none("10000");
+        none("1500 kg");
+        none("mérleg 1500");
+        none("2500");
+        // Kiírva ugyanez: a „tízezer" tízezer, nem száz.
+        none("tízezer");
+        none("ezerötszáz");
+        // A valódi mérés változatlan.
+        kg("78,4", 78.4);
+        kg("78,4 kg", 78.4);
+        kg("100 kg", 100);
+    }
+
     /** A derék/magasság arány a szakirodalom hüvelykujjszabálya. */
     @Test public void waistToHeightRatio() {
         assertEquals(0.47, Profile.waistToHeight(84, 178), 0.005);

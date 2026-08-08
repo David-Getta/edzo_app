@@ -181,7 +181,13 @@ public final class BodyParse {
      */
     private static double weight(String s, double fat, double[] cm) {
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,3}([.,]\\d{1,2})?)\\s?-?\\s?(kg|kilogramm|kilo|kila)?").matcher(s);
+                // A szám két oldalán számjegy-határ kell. Enélkül a minta a
+                // HOSSZABB szám elejét is elkapta: az „1500" első három
+                // jegyéből százötven kiló lett, a „10000"-ből száz – vagyis
+                // egy elgépelt szám nem hibaüzenetet adott, hanem egy
+                // hihető, de hamis mérést a súlytrendbe.
+                .compile("(?<![\\d.,])(\\d{1,3}([.,]\\d{1,2})?)(?![\\d.,]?\\d)"
+                        + "\\s?-?\\s?(kg|kilogramm|kilo|kila)?").matcher(s);
         while (m.find()) {
             double v = num(m.group(1));
             if (v < MIN_KG || v > MAX_KG) continue;
