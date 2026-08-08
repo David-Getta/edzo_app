@@ -385,4 +385,29 @@ public class FoodsQuantityTest {
         // Az „egy shaker turmix" egy ital, nem kettő.
         assertEquals(1, Foods.parse(all, "egy shaker turmix").size());
     }
+
+    /**
+     * A tápérték-sor grammja nem az étel súlya.
+     *
+     * A dobozról vagy egy másik appból bemásolt sor így néz ki: „Protein
+     * turmix 1 adag – 120 kcal 24 g fehérje". A huszonnégy gramm a FEHÉRJE,
+     * mégis a turmix adagja lett belőle – huszonnégy gramm turmix, ötödannyi,
+     * mint a valóság.
+     *
+     * A szabály óvatos: csak akkor él, ha kalória is ki van írva a mondatban.
+     * Enélkül a „150 gramm protein turmix" is tápérték-sornak látszana, pedig
+     * ott a protein a NÉV része.
+     */
+    @Test public void aNutritionLineGramIsNotTheFoodWeight() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.List<Foods.Hit> h = Foods.parse(all,
+                "Protein turmix 1 adag - 120 kcal 24 g fehérje");
+        assertEquals(1, h.size());
+        assertEquals(300.0, h.get(0).grams, 0.01);
+        // Ahol a gramm tényleg az ételé, ott marad.
+        assertEquals(150.0, Foods.parse(all, "Csirkemell 150 g - 248 kcal, 46 g fehérje")
+                .get(0).grams, 0.01);
+        assertEquals(150.0, Foods.parse(all, "150 gramm protein turmix").get(0).grams, 0.01);
+        assertEquals(250.0, Foods.parse(all, "250 ml protein turmix").get(0).grams, 0.01);
+    }
 }

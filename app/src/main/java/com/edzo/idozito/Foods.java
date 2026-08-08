@@ -2034,6 +2034,11 @@ public final class Foods {
         List<Integer> bareNumPos = new ArrayList<>();
         List<Double> bareNumVal = new ArrayList<>();
         List<Integer> bareNumLen = new ArrayList<>();
+        // Tápérték-sor-e a mondat: csak akkor tekintünk egy grammot a
+        // FEHÉRJE mennyiségének, ha kalória is ki van írva mellette. Enélkül
+        // a „250 ml protein turmix" és a „150 gramm protein turmix" is
+        // tápérték-sornak látszana – pedig ott a protein a NÉV része.
+        boolean label = Kcal.stated(q) > 0;
         int i = 0;
         while (i < q.length()) {
             int start = i;
@@ -2112,6 +2117,15 @@ public final class Foods {
                 bareNumPos.add(start);
                 bareNumVal.add(val);
                 bareNumLen.add(i - start);
+            }
+            // A TÁPÉRTÉK-sor grammja nem az étel súlya: a „Protein turmix
+            // 1 adag – 120 kcal 24 g fehérje" huszonnégy grammja a fehérje,
+            // mégis a turmix adagja lett belőle (huszonnégy gramm turmix).
+            // A dobozról másolt sor pont így néz ki.
+            if (label && !numPos.isEmpty() && numPos.get(numPos.size() - 1) == start
+                    && nutrientWordAt(q, i)) {
+                numPos.remove(numPos.size() - 1);
+                numVal.remove(numVal.size() - 1);
             }
         }
         // A tartomány felső tagja viselheti a mértékegységet („3-4 dkg"): ezt
@@ -2705,6 +2719,23 @@ public final class Foods {
                 "uzsonnaztam", "nassoltam", "faltam", "kertem", "rendeltem"})
             if (wholeWord(s, w)) return false;
         return true;
+    }
+
+    /** Tápérték-szó áll-e a megadott helytől (szóközöket átlépve). */
+    private static boolean nutrientWordAt(String q, int from) {
+        int i = from;
+        while (i < q.length() && q.charAt(i) == ' ') i++;
+        String rest = q.substring(Math.min(i, q.length()));
+        // EGÉSZ szóként: a „150 gramm zsíros kenyér" zsírosa jelző, nem
+        // tápérték-sor – és a „zsír" magában nem is kerül a listára, mert
+        // konyhai zsírként valódi étel.
+        for (String w : new String[]{"feherje", "feherjet", "protein", "szenhidrat",
+                "rost", "telitett"}) {
+            if (!rest.startsWith(w)) continue;
+            int e = w.length();
+            if (e >= rest.length() || !Character.isLetter(rest.charAt(e))) return true;
+        }
+        return false;
     }
 
     /** Egész szóként szerepel-e a tő a szövegben. */
