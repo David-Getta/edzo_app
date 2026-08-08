@@ -977,6 +977,15 @@ public class DietActivity extends Activity {
                         reco.setText("😌 Ha nem etted meg, nem is számoljuk – nincs mit naplózni.");
                         return;
                     }
+                    // A bevásárlólista, a vágy és a kukába került étel sem
+                    // bejegyzés – de az „ezt még nem ismerem" itt egyszerűen
+                    // valótlan: pont hogy ismerjük, csak nem került tányérra.
+                    // A hallgatásnál rosszabb csak a félrevezető mondat.
+                    if (Foods.looksUneaten(q)) {
+                        reco.setText("🛒 Ez inkább terv vagy bevásárlás – a napló a "
+                                + "megevett ételeké. Ha megvolt, írd be múlt időben!");
+                        return;
+                    }
                     // Lehet, hogy nem is étel: a „30 perc futás" tökéletesen
                     // érthető mondat, csak egy képernyővel odébb. Ilyenkor az
                     // „ezt még nem ismerem" egyszerűen valótlan.

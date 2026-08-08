@@ -385,8 +385,13 @@ public final class StrengthParse {
             // Csak akkor folytatás, ha NINCS benne saját gyakorlatnév: a
             // „60 kg guggolás 3x8, 50 kg fekvenyomás 3x8" második fele önálló
             // gyakorlat, nem az előző adata – összeolvasztva mindkettő elveszett.
+            // Egy adagoló szó állhat a szám előtt: „3 sorozat, egyenként 8
+            // ismétlés, 90 kg". Az „egyenként" nélkül a hármas sorozatszám
+            // elveszett, és egyetlen nyolcas sorozat maradt a naplóban.
             if (!out.isEmpty() && moveIn(p) == null && p.matches(
-                    "^\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")) {
+                    "^(?:egyenkent|mindegyik|mindegyikben|darabonkent|soronkent|"
+                    + "sorozatonkent|szettenkent|azaz|plusz)?\\s*"
+                    + "\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")) {
                 out.set(out.size() - 1, out.get(out.size() - 1) + " " + p);
                 continue;
             }
@@ -439,7 +444,10 @@ public final class StrengthParse {
                 // A csillag ugyanaz a szorzójel: a telefon billentyűzetén ez
                 // van kéznél, és a „3*10 60 kg" eddig három ISMÉTLÉS volt.
                 .replaceAll("(\\d)\\s?\\*\\s?(\\d)", "$1x$2")
-                .replaceAll("(\\d{1,2})\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2")
+                // A kötőjeles alak ugyanaz: a „3-szor 10-et" pont úgy három
+                // sorozat tíz ismétlés, mint a „háromszor tizet" – kötőjellel
+                // viszont a hármas ISMÉTLÉSSZÁMMÁ vált, és a tíz elveszett.
+                .replaceAll("(\\d{1,2})\\s?-?\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2")
                 // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent. A szám a
                 // két oldalon köti a mintát, így a „korcsolya" nem kör.
                 .replaceAll("(\\d{1,2})\\s?kor\\s+(\\d{1,3})", "$1x$2");
@@ -542,6 +550,19 @@ public final class StrengthParse {
                         double w = Double.parseDouble(w2.group(1).replace(',', '.'));
                         if (w > 0 && w <= 500) weight = w;
                     } catch (NumberFormatException ignored) {}
+                }
+                // A súly a gyakorlatnév MÖGÉ is kerülhet: „5x5 guggolás 100".
+                // Csak a tagmondat végén álló, mértékegység nélküli, húsz
+                // fölötti szám lehet az – ennél kisebbet a terhelés-jelölések
+                // (rpe 8, rir 2) is használnak, azokat nem szabad súllyá tenni.
+                if (weight == 0 && !timed) {
+                    java.util.regex.Matcher w3 = java.util.regex.Pattern
+                            .compile("(?<![\\dx×.,])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*$")
+                            .matcher(s.trim());
+                    if (w3.find()) {
+                        double w = Double.parseDouble(w3.group(1).replace(',', '.'));
+                        if (w >= 20 && w <= 500) weight = w;
+                    }
                 }
             }
             if (n >= 1 && n <= 20 && r >= 1 && r <= maxRep)

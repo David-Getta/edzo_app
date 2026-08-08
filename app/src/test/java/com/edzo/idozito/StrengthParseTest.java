@@ -869,4 +869,38 @@ public class StrengthParseTest {
         assertEquals(60, it.get(0).topWeight(), 0.01);
         assertEquals(3, StrengthParse.parse("fekvenyomás 3 * 10 60 kg").get(0).sets.size());
     }
+
+    /**
+     * Ahogy a teremben tényleg leírják: kötőjellel, tagolva, hátul a súllyal.
+     *
+     * Három valódi alak veszett el eddig. A „3-szor 10-et" hármasa
+     * ISMÉTLÉSSZÁM lett, a tíz eltűnt. A „3 sorozat, egyenként 8 ismétlés"
+     * hármasa tűnt el, egyetlen nyolcas sorozat maradt. Az „5x5 guggolás
+     * 100" száz kilója pedig saját testsúllyá vált – a rekordokba és a
+     * heti terhelésbe is nullaként.
+     */
+    @Test public void theWayPeopleActuallyWriteItDown() {
+        List<StrengthParse.Item> a = StrengthParse.parse("guggolás 3-szor 10-et 80 kilóval");
+        assertEquals(1, a.size());
+        assertEquals(3, a.get(0).sets.size());
+        assertEquals(10, a.get(0).sets.get(0).reps);
+        assertEquals(80.0, a.get(0).sets.get(0).weight, 0.001);
+
+        List<StrengthParse.Item> b =
+                StrengthParse.parse("guggolás 3 sorozat, egyenként 8 ismétlés, 90 kg");
+        assertEquals(1, b.size());
+        assertEquals(3, b.get(0).sets.size());
+        assertEquals(8, b.get(0).sets.get(0).reps);
+        assertEquals(90.0, b.get(0).sets.get(0).weight, 0.001);
+
+        List<StrengthParse.Item> c = StrengthParse.parse("ma 5x5 guggolás 100");
+        assertEquals(1, c.size());
+        assertEquals(5, c.get(0).sets.size());
+        assertEquals(100.0, c.get(0).sets.get(0).weight, 0.001);
+
+        // A terhelés-jelölés viszont NEM súly: a „rpe 8" nyolcasa nyolc.
+        List<StrengthParse.Item> d = StrengthParse.parse("guggolás 3x10 rpe 8");
+        assertEquals(1, d.size());
+        assertEquals(0.0, d.get(0).sets.get(0).weight, 0.001);
+    }
 }

@@ -491,6 +491,13 @@ public class StrengthActivity extends Activity {
      */
     static String missingHint(String q) {
         if (q == null || q.trim().length() < 3) return "";
+        // A TERV a legfélrevezetőbb eset: a „holnap guggolás 5x5 100 kg"
+        // mondatban minden szám megvan, csak épp nem történt meg semmi. Az
+        // eddigi válasz („hány sorozat és ismétlés?") azt sugallta, hogy
+        // valami hiányzik a mondatból – pedig nem hiányzik, csak jövő időben áll.
+        if (Activities.looksLikeFuture(q))
+            return "📅 Ez tervnek hangzik – a napló a megtörtént sorozatoké. "
+                    + "Ha megvolt, írd be újra, múlt időben!";
         String move = StrengthParse.nameIn(q);
         if (move != null)
             return "✍️ " + move + " megvan – hány sorozat és ismétlés? "
