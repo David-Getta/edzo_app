@@ -859,7 +859,7 @@ public final class Foods {
             // A PARADICSOM „pari" töve: IPARI. A MARHA: marhaSÁG.
             "ipar", "marhasag", "csirkefogo",
             // Nevek és idegen szavak, amikben étel-tő lakik.
-            "shakespeare", "brien", "truman", "hodgins", "pszichi",
+            "shakespeare", "truman", "hodgins", "pszichi",
             "arizona", "rizzoli", "nicolas", "jupiter", "adios", "major",
             "ginger", "ginny", "gino", "gingi",
             // A mellKASÁN a kása, a divÍZIÓban a víz, a kettEJük a tej,
@@ -977,18 +977,36 @@ public final class Foods {
             "haboru", "sertes", "szolo", "kettej"};
 
     /**
-     * Tövek, amiknek a szó ELEJÉN kell állniuk.
+     * Tövek, amik CSAK a szó elején jelentenek ételt.
      *
      * Három-négy betűs, idegen eredetű szavak: a gin, a pho, a chia, a kesu,
-     * a stek. Magyar összetételben egyik sem áll hátul – a kesudió a kesuval
-     * KEZDŐDIK –, a szó közepén viszont sorra beleakadnak: meGINt, épphoGY,
-     * pszicHIAter, elKESUnk, teSTEK. Ötvenezer szavas gyakorisági listával
-     * végigsöpörve mind valódi eset volt.
+     * a stek – és ide tartozik a ZAB is. Magyar összetételben egyik sem áll
+     * hátul (a kesudió a kesuval KEZDŐDIK), a szó közepén viszont sorra
+     * beleakadnak: meGINt, épphoGY, pszicHIAter, elKESUnk, teSTEK, hosszABB.
+     *
+     * FONTOS: ez nem maszk. A szót magát nem takarjuk ki, csak EZ a tő nem
+     * illeszkedhet a belsejében – különben a „pizzából" (piZZABól) elveszett
+     * volna a pizza, a „sziruphoz" (sziruPHOz) a szirup, a „gnocchival" a
+     * gnocchi. A ragozás rendre gyárt ilyen véletlen betűsorokat.
      */
-    private static final String[] START_ONLY = {"gin", "pho", "chia", "kesu", "stek"};
+    private static final String[] START_ONLY = {"gin", "pho", "chia", "kesu", "stek", "zab"};
 
-    /** Kivétel: itt a tő tényleg a szó közepén áll, és mégis étel. */
-    private static final String[] START_ONLY_OK = {"macchiato"};
+    /**
+     * Kivételek a belső tiltólistához: az „eszpresszóba" közepén ott a
+     * „szoba", pedig a kávéról szól. A lista rövid, mert a tiltólista is az.
+     */
+    private static final String[] INSIDE_BAD_OK = {"presszo", "presso"};
+
+    private static boolean insideOk(String tok) {
+        for (String e : INSIDE_BAD_OK) if (tok.contains(e)) return true;
+        return false;
+    }
+
+    /** Szókezdethez kötött tő-e. */
+    private static boolean startOnly(String ns) {
+        for (String s : START_ONLY) if (s.equals(ns)) return true;
+        return false;
+    }
 
     /**
      * Szó ELEJÉN álló csapdák, amik ételnek látszanak: a „zsírmentes" jelző a
@@ -1023,10 +1041,10 @@ public final class Foods {
      * találkozásából jön, nem a májból.
      */
     private static final String[] MAJ_OK = {"csirkemaj", "libamaj", "kacsamaj",
-            "sertesmaj", "borjumaj", "majkrem", "kenomajas", "majgomboc", "almaja"};
-
-    /** Ahol a „zab" betűsor nem zab, de az étel valódi: a vaszabi. */
-    private static final String[] ZAB_OK = {"vaszabi", "wasabi"};
+            "sertesmaj", "borjumaj", "majkrem", "kenomajas", "majgomboc",
+            // Ezekben a „mája" a SAJÁT szavuk birtokos alakja: almája,
+            // hagymája, tormája, hurmája (datolyaszilva).
+            "almaja", "hagymaja", "tormaja", "hurmaja", "burgonyaja"};
 
     /**
      * Maszkolandó-e a szó – igekötővel együtt is.
@@ -1043,17 +1061,6 @@ public final class Foods {
         // A ZAB a szó belsejében sosem zab: igaZABb, hosszABB, háZÁBAn,
         // szaBAd, szaBÁLy. Zabos összetétel mindig a zabbal KEZDŐDIK
         // (zabpehely, zabkása, zabtej), tehát kivétel sem kell.
-        for (String so : START_ONLY)
-            if (tok.indexOf(so) > 0) {
-                boolean ok = false;
-                for (String e : START_ONLY_OK) if (tok.contains(e)) ok = true;
-                if (!ok) return true;
-            }
-        if (tok.indexOf("zab") > 0) {
-            boolean real = false;
-            for (String ok : ZAB_OK) if (tok.contains(ok)) real = true;
-            if (!real) return true;
-        }
         // A francia főváros nem paradicsom: a „Párizsban" közepén a „pari".
         // A párizsi FELVÁGOTT viszont valódi étel – az marad.
         if (tok.startsWith("parizs") && !tok.startsWith("parizsi")) return true;
@@ -1074,7 +1081,8 @@ public final class Foods {
         // eper, a hüvelykujjszabályban a zab. Az előtagot nem lehet felsorolni,
         // a szót magát viszont igen – és ragozva is ott van („főképernyőN"),
         // ezért nem a szó végét, hanem a benne állást nézzük.
-        for (String e : INSIDE_BAD) if (tok.indexOf(e) > 0) return true;
+        for (String e : INSIDE_BAD)
+            if (tok.indexOf(e) > 0 && !insideOk(tok)) return true;
         for (String v : VERB_PREFIX)
             if (tok.length() > v.length() + 2 && tok.startsWith(v)
                     && startsWithBad(tok.substring(v.length()))) return true;
@@ -1283,6 +1291,12 @@ public final class Foods {
      * @param qAcc ugyanaz, de „ö/ő"-vel – ugyanazokkal az indexekkel
      */
     static int stemIndex(String q, String qAcc, String ns) {
+        // Szókezdethez kötött tövek: a szó BELSEJÉBEN nem illeszkednek.
+        if (startOnly(ns)) {
+            for (int p = q.indexOf(ns); p >= 0; p = q.indexOf(ns, p + 1))
+                if (p == 0 || !Character.isLetter(q.charAt(p - 1))) return p;
+            return -1;
+        }
         String acc = accentedOf(ns);
         if (acc == null) return q.indexOf(ns);
         // Ékezetes igazi alaknál a szó eleje kivétel (ott az ékezet nélkül

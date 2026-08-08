@@ -459,6 +459,35 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * A ragozás véletlen betűsorai nem vehetik el az ételt.
+     *
+     * A rövid tövek szó-belseji tiltása kétélű: a „hosszABB"-ból tényleg nem
+     * lehet zabpehely, csakhogy a magyar ragozás rendre gyárt ugyanilyen
+     * véletlen betűsorokat a VALÓDI ételekben is. A „piZZABól" közepén ott a
+     * zab, a „sziruPHOz"-ban a pho, a „gnocCHIAval"-ban a chia, az
+     * „eszpreSSZÓBAn"-ban a szoba, a „hagyMÁJA"-ban a máj.
+     *
+     * Ezért az ilyen tő nem a SZÓT takarja ki, csak maga nem illeszkedhet a
+     * szó belsejében.
+     */
+    @Test public void inflectionDoesNotSwallowTheFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[][] keep = {{"pizzából", "Pizza"}, {"pizzában", "Pizza"},
+                {"gnocchival", "Gnocchi"}, {"sziruphoz", "Szirup (juhar/agavé)"},
+                {"ketchuphoz", "Ketchup"}, {"wraphoz", "Tortilla / wrap"},
+                {"szörphöz", "Szörp (hígítva)"}, {"eszpresszóban", "Kávé (fekete)"},
+                {"hagymája", "Hagyma"}, {"tormája", "Torma / gyömbér"},
+                {"csuszából", "Túrós csusza"}, {"macchiato", "Tejeskávé / cappuccino"}};
+        for (String[] c : keep)
+            assertEquals(c[0], c[1], names(Foods.parse(all, c[0])));
+        assertEquals("Pizza", names(Foods.parse(all, "csak a felét ettem meg a pizzából")));
+        // És a hétköznapi szavak továbbra sem ételek.
+        for (String q : new String[]{"hosszabb", "igazából", "megint", "épphogy",
+                "pszichiáter", "elkésünk", "testek"})
+            assertEquals(q, "—", names(Foods.parse(all, q)));
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
