@@ -473,4 +473,30 @@ public class RehabTest {
         assertNull(Rehab.forComplaint("lehúzás 4x12 50 kg"));
         assertNull(Rehab.forComplaint("húzódzkodás és vállból nyomás"));
     }
+
+    /**
+     * A háti gerincnek saját sora van – nem a derékkal közös.
+     *
+     * Az ülőmunka a HÁTI (mellkasi) szakaszt merevíti be, és a derék-sor
+     * (madár-kutya, curl-up, oldalplank) erről nem szól. A merev háti
+     * szakasz árát ráadásul a nyak és a váll fizeti meg: oda vándorol a
+     * mozgás, ami innen hiányzik.
+     */
+    @Test public void theThoracicSpineHasItsOwnRow() {
+        assertEquals("hati", Rehab.forComplaint("merev a felső hátam").id);
+        assertEquals("hati", Rehab.forComplaint("fáj a lapockám között").id);
+        assertEquals("hati", Rehab.forComplaint("görbe a hátam az ülőmunkától").id);
+        assertEquals("hati", Rehab.forGoal("háti gerinc mobilizálás").id);
+        // A puszta „hátam" viszont marad a deréknál: magyarul az a leggyakoribb
+        // megnevezése az ágyéki panasznak.
+        assertEquals("derek", Rehab.forComplaint("fáj a hátam").id);
+        assertEquals("derek", Rehab.forComplaint("beállt a derekam").id);
+        // A sor tartalma is a háti szakaszról szól, nem a derékról.
+        Rehab.Area a = Rehab.byId("hati");
+        assertNotNull(a);
+        assertTrue("kevés gyakorlat", a.moves.length >= 5);
+        String goal = a.goal.toLowerCase(new java.util.Locale("hu"));
+        assertTrue("a leírás nem mondja ki, hova vándorol a hiányzó mozgás",
+                goal.contains("nyak") && goal.contains("váll"));
+    }
 }

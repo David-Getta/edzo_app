@@ -160,7 +160,7 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - Heti átlag a statisztikákban és a heti összefoglalóban
 
 ### 🩹 Megelőzés & rehab
-- **14 testtáj, 75 gyógytornász-ihletésű gyakorlat** adagolással, technikai
+- **15 testtáj, 81 gyógytornász-ihletésű gyakorlat** adagolással, technikai
   tippel és videóval: boka-stabilitás, térd, IT-szalag (a térd külső oldala),
   derék (McGill-hármas), váll, golf- és teniszkönyök, csukló és kéz (egérkéz),
   nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles –
@@ -433,7 +433,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~828 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~847 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.

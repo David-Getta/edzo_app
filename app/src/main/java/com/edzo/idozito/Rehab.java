@@ -207,6 +207,20 @@ public final class Rehab {
                     ex("Sarok-leengedés hajlított térddel", "3×12 / láb", "Ugyanez enyhén hajlított térddel – így a mélyebb vádliizom (soleus) dolgozik.", "soleus vádli gyakorlat hajlított térd"),
                     ex("Vádlinyújtás falnál", "2×30 mp / láb", "Hátsó láb nyújtva, sarok végig a földön.", "vádlinyújtás falnál"),
                     ex("Egylábas vádliemelés", "3×10 / láb", "Teljes mozgástartomány, fent egy pillanat tartás.", "egylábas vádliemelés gyakorlat")),
+
+            new Area("hati", "🪑", "Háti gerinc (ülőmunka ellen)",
+                    "A háti (mellkasi) gerinc mozgékonysága: a napi nyolc óra ülés itt "
+                            + "merevíti be a hátat, és a merev háti szakasz árát a NYAK és a "
+                            + "VÁLL fizeti meg – oda vándorol a mozgás, ami innen hiányzik. "
+                            + "Rövid sor, napi adagra szánva.",
+                    RED_FLAG + " Ha a fájdalom a derékba sugárzik vagy zsibbadás kíséri, "
+                            + "az nem merevség – azt nézesd meg.",
+                    ex("Nyitott könyv (open book)", "3×8 / oldal", "Oldalfekvés, térdek hajlítva, a felső kart nyisd hátra – a fejed kísérje, a térdek maradjanak együtt.", "open book gyakorlat háti gerinc"),
+                    ex("Tűbefűzés (thread the needle)", "3×8 / oldal", "Négykézláb, a kart fűzd át a másik alatt, majd nyisd tágra felfelé – a mozgás a lapockák közül jöjjön.", "thread the needle gyakorlat"),
+                    ex("Háti extenzió hengeren", "2×10", "Henger a lapockák alatt keresztben, kezek a tarkón, hajolj hátra – a derekat NE homorítsd, a mozgás fent történjen.", "thoracic extension foam roller gyakorlat"),
+                    ex("Fal-angyal", "3×10", "Hát és alkarok a falon, csúsztasd a karokat fel-le úgy, hogy a derék végig a falhoz simuljon. Ennél nehezebb, mint amilyennek látszik.", "wall angel gyakorlat"),
+                    ex("Evezés gumiszalaggal, lapocka-összehúzással", "3×15", "Húzd a könyököd a törzs mellé, és fent tartsd egy pillanatig – a lapockák dolgozzanak, ne a kar.", "gumiszalag evezés lapocka gyakorlat"),
+                    ex("Mellizom-nyújtás ajtófélfánál", "2×30 mp / oldal", "Alkar a félfán könyökmagasságban, fordulj el lassan – a becsukódott mellizom a görbe hát másik fele.", "mellizom nyújtás ajtófélfa")),
     };
 
     /**
@@ -263,6 +277,10 @@ public final class Rehab {
             {"achilles", "Nehezebb excentrikus munka: a sarok-leengedéshez vegyél hátizsákot "
                     + "(5–10 kg), és tartsd a napi két sorozatot. Ugrás és sprint csak akkor, "
                     + "ha a reggeli merevség már elmúlt."},
+            {"hati", "Terhelt nyitás: a nyitott könyvhöz vegyél kis súlyt a felső kézbe, "
+                    + "a fal-angyalt csináld háttal a falnak ÁLLVA, sarokkal 10 cm-re, és "
+                    + "told az evezést 3×15-ről gumiszalag-fokozattal feljebb. Napi egy "
+                    + "rövid adag többet ér a heti nagynál."},
     };
 
     /**
@@ -306,6 +324,8 @@ public final class Rehab {
                     + "mellett. Pontszerű csontfájdalomnál orvos."},
             {"achilles", "Az Achilles 8–12 hét excentrikus munkával, és a napi két "
                     + "sorozat a kulcs. A merevség csökkenése az első jó jel."},
+            {"hati", "A háti merevség gyorsan enged: 2–3 hét napi adag után látszik, "
+                    + "a tartós változás 6–8 hét. Az íróasztal magassága nélkül visszatér."},
     };
 
     /** A várható javulás szövege, vagy üres, ha nincs ilyen terület. */
@@ -363,7 +383,8 @@ public final class Rehab {
         // és elég egyediek ahhoz, hogy a szó belsejében is biztosak legyünk.
         if (!pain)
             for (String w : new String[]{"gemberedik", "gemberedett", "feszul", "gorcsol",
-                    "gorcsbe", "merevedett", "gerincferdul", "szkolioz", "zsugorod"})
+                    "gorcsbe", "merevedett", "gerincferdul", "szkolioz", "zsugorod",
+                    "gorbe", "gorbul"})
                 if (s.contains(w)) { pain = true; break; }
         // A legrövidebb panasz-igék csak EGÉSZ szóként: a „húz" a
         // húzódzkodásban, a „szúr" a szúrópróbában lakik. „Húz a vádlim",
@@ -479,6 +500,14 @@ public final class Rehab {
                 {"itszalag", "it szalag", "itszalag", "iliotibialis", "kulso terd",
                         "terd kulso", "terdem kulso", "futoterd"},
                 {"terd", "terdem", "terde", "ugroterd", "terdfaj", "terd"},
+                // A HÁTI gerinc a derék elé kerül: a „felső hátam" és a
+                // „lapockáim között" nem ágyéki panasz, és a derék-sor
+                // (madár-kutya, curl-up) nem is szól róla. A puszta „hátam"
+                // marad a deréknál: aki csak annyit mond, hogy fáj a háta,
+                // az magyarul legtöbbször az ágyéki szakaszra gondol.
+                {"hati", "hati gerinc", "hati csigolya", "felso hat", "felso hatam",
+                        "lapocka", "hat kozepe", "hatam kozepe", "mellkasi gerinc",
+                        "gorbe hat", "gorbult hat", "gorbe a hat"},
                 {"derek", "derekam", "dereka", "derek", "hatam", "hatfaj", "also hat",
                         "gerincem", "gerinc"},
                 {"vall", "vallam", "valla", "vall"},

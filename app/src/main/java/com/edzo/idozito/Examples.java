@@ -193,6 +193,7 @@ public final class Examples {
             "boka stabilitás",
             "váll mobilizálás",
             "nyak gyógytorna",
+            "háti gerinc mobilizálás",
     };
 
     /**
