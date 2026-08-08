@@ -447,6 +447,30 @@ public final class Rehab {
         return n;
     }
 
+    /**
+     * Melyik sor jön ma? – döntés helyett ajánlás.
+     *
+     * Aki fájdalommal vagy fáradtan nyitja meg a lapot, annak a tizenhárom
+     * terület listája nem segítség, hanem újabb döntés. A sorrend: a heti
+     * fókusz, amíg nincs meg a heti adag; utána az, amit a legrégebben
+     * csináltál (mert az a leginkább esedékes).
+     *
+     * @param ids      a területek azonosítói
+     * @param lastDone területenként a legutóbbi alkalom ideje (0 = soha)
+     * @return a javasolt terület azonosítója, vagy null, ha nincs mit ajánlani
+     */
+    public static String nextArea(String focusId, int focusDone, String[] ids, long[] lastDone) {
+        if (focusId != null && byId(focusId) != null && focusDone < WEEKLY_GOAL) return focusId;
+        if (ids == null || lastDone == null) return null;
+        String best = null;
+        long oldest = Long.MAX_VALUE;
+        for (int i = 0; i < ids.length && i < lastDone.length; i++) {
+            if (lastDone[i] <= 0) continue;
+            if (lastDone[i] < oldest) { oldest = lastDone[i]; best = ids[i]; }
+        }
+        return best;
+    }
+
     /** A fókusz-kártya sora: hol tartasz a héten. */
     public static String focusLine(Area a, int done) {
         if (done >= WEEKLY_GOAL)

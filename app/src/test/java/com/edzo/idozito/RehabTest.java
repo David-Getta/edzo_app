@@ -294,6 +294,30 @@ public class RehabTest {
         assertEquals("erős", Rehab.painWord(9));
     }
 
+    /**
+     * A „mit csináljak ma?" ajánlás: fókusz, amíg tart, aztán a legrégebbi.
+     *
+     * A lista maga nem segítség annak, aki fáradtan nyitja meg – egy javaslat
+     * viszont igen. Ha még soha semmit nem csinált, nincs mit ajánlani.
+     */
+    @Test public void theNextAreaSuggestionPicksTheDueOne() {
+        String[] ids = {"boka", "vall", "derek"};
+        long now = 1_753_869_600_000L;
+        long day = 24L * 3600 * 1000;
+        long[] last = {now - day, now - 10 * day, now - 3 * day};
+        // Fókusz, amíg nincs meg a heti adag.
+        assertEquals("boka", Rehab.nextArea("boka", 1, ids, last));
+        assertEquals("boka", Rehab.nextArea("boka", Rehab.WEEKLY_GOAL - 1, ids, last));
+        // Kész hét után a legrégebben csinált sor jön.
+        assertEquals("vall", Rehab.nextArea("boka", Rehab.WEEKLY_GOAL, ids, last));
+        assertEquals("vall", Rehab.nextArea(null, 0, ids, last));
+        // Ismeretlen fókusz-azonosító nem téríti el.
+        assertEquals("vall", Rehab.nextArea("nincsilyen", 0, ids, last));
+        // Amit soha nem csinált, azt nem ajánljuk – és üresből nincs javaslat.
+        assertNull(Rehab.nextArea(null, 0, ids, new long[]{0, 0, 0}));
+        assertNull(Rehab.nextArea(null, 0, null, null));
+    }
+
     /** A fókusz-sor kimondja az állást, és a kész hétre pipát tesz. */
     @Test public void theFocusLineShowsProgress() {
         Rehab.Area a = Rehab.byId("boka");

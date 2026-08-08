@@ -154,6 +154,26 @@ public class MobilityActivity extends Activity {
         body.addView(text("Válassz testtájat – kész, 10–15 perces megelőző sort kapsz: "
                 + "gyakorlat, adagolás, technikai tipp.", 12.5f, MUTED, false));
         body.addView(gap(12));
+        // Döntés helyett ajánlás: a fókusz, amíg nincs meg a heti adag, utána
+        // az, amit a legrégebben csináltál.
+        String[] ids = new String[Rehab.AREAS.length];
+        long[] last = new long[Rehab.AREAS.length];
+        for (int i = 0; i < Rehab.AREAS.length; i++) {
+            ids[i] = Rehab.AREAS[i].id;
+            long[] d = RehabLog.doneOf(this, ids[i]);
+            last[i] = d.length > 0 ? d[0] : 0;
+        }
+        String fid0 = RehabLog.focusId(this);
+        int fdone0 = fid0 == null ? 0
+                : Rehab.weekCount(RehabLog.doneOf(this, fid0), System.currentTimeMillis());
+        Rehab.Area next = Rehab.byId(Rehab.nextArea(fid0, fdone0, ids, last));
+        if (next != null) {
+            final Rehab.Area fn = next;
+            Button go = startBtn("▶  Mit csináljak ma?  ·  " + fn.emoji + " " + fn.name);
+            go.setOnClickListener(v -> areaSheet(fn));
+            body.addView(go);
+            body.addView(gap(12));
+        }
         // Heti fókusz: a kitűzött terület és a hétfőnként nullázódó számláló.
         String fid = RehabLog.focusId(this);
         Rehab.Area focus = fid == null ? null : Rehab.byId(fid);
