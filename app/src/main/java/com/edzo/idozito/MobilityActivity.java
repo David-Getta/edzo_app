@@ -243,6 +243,17 @@ public class MobilityActivity extends Activity {
             pt.setPadding(0, dp(8), 0, 0);
             box.addView(pt);
         }
+        // A görbe a szemnek szól: a számsor irányát egy pillantás alatt
+        // megmutatja. Régi → új sorrendben, mint minden más grafikonon.
+        if (pain.length >= 3) {
+            double[] series = new double[pain.length];
+            for (int i = 0; i < pain.length; i++) series[i] = pain[pain.length - 1 - i];
+            ProfileActivity.ChartView ch = new ProfileActivity.ChartView(this);
+            ch.setData(series, 0xFFFF7A2F, "/10");
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-1, dp(100));
+            clp.topMargin = dp(6);
+            box.addView(ch, clp);
+        }
         final boolean isFocus = area.id.equals(RehabLog.focusId(this));
         new Sheet(this, area.emoji + " " + area.name, area.goal)
                 .addCustom(box)
@@ -313,6 +324,10 @@ public class MobilityActivity extends Activity {
                     }
                     Ux.blazeCard(this, msg);
                     if (section == 3) render();
+                    // A sor után a legjobb pillanat megkérdezni, hogy áll a
+                    // panasz – ilyenkor friss az élmény, és így lesz görbe is.
+                    if (!RehabLog.painLoggedToday(this, area.id))
+                        body.postDelayed(() -> { if (!isFinishing()) painSheet(area); }, 900);
                 })
                 .addCancel()
                 .show();

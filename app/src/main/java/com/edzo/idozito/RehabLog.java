@@ -114,6 +114,12 @@ final class RehabLog {
         return out;
     }
 
+    /** Van-e MA fájdalom-bejegyzés erre a testtájra? */
+    static boolean painLoggedToday(Context c, String id) {
+        long[] ts = painTimes(c, id);
+        return ts.length > 0 && Days.index(ts[0]) == Days.index(System.currentTimeMillis());
+    }
+
     private static String[] painParts(Context c, String id) {
         String s = p(c).getString("rehab_pain_" + id, "");
         return s.isEmpty() ? new String[0] : s.split(",");
