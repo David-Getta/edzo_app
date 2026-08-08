@@ -363,12 +363,6 @@ public class SettingsActivity extends Activity {
             {"🍽", "Okosabb étel-értés", "„egy sor csoki”, „…de csak a felét ettem meg”, zéró üdítők egy tételként, vad- és bárányhús, levestészta. És tízszer gyorsabb felismerés."},
             {"⏱", "Idő-vezérelt formák", "„hiit 20 perc”, „fartlek fél óra”, „e2mom 20” – a hosszból kijön a körszám. A „fél 8-kor” pedig hét óra, ahogy magyarul értjük."},
             {"📅", "Edzésnapok", "Tolónap, Húzónap, Lábnap… – hat beépített nap, és sajátot is felvehetsz. A nap megnyitva gyakorlatonként ott a mai javaslat és a bemelegítés, ami megvan, az ki van pipálva."},
-            {"🔥", "Bemelegítő rámpa", "A mai munkasúlyhoz üres rúd → 50% → 70% → 85%, felrakható súlyokon. Ott van a mai javaslat mellett és külön kalkulátorként is, a tárcsabontással."},
-            {"💪", "Erő-csúcsok", "A Csúcsaid közt ott a legnehezebb emelésed és a legjobb becsült 1RM-ed, a gyakorlat nevével. A heti összegzés pedig külön szól, ha mindenkori rekord dőlt meg."},
-            {"🐺", "Blaze köszönt", "Az app megnyitásakor a köszöntő kártyán integet és kacsint. A kabalára koppintva bármikor újra."},
-            {"✍️", "Pontosabb mondatértés", "„1h20 futás”, „fekvenyomás 60x10, 70x8, 80x6”, „1:30 munka 0:30 pihenő”, „száz gramm rizs”, „csirke rizzsel” – és a kimondott óra is számít („ma reggel 6-kor futottam”)."},
-            {"📈", "A legnehezebb napod", "A havi étrend-kártya kiírja, melyik hétköznapon eszel a legtöbbet – a havi átlag ezt elrejtené."},
-            {"📋", "Heti fókusz", "Melyik napon mit edzel („H: Láb · Sze: Hát”). A kezdőlap és az esti emlékeztető is mutatja, a heti összegzés pedig azt is, hogy teljesült-e."},
         };
         Sheet sh = new Sheet(this, "Újdonságok 🆕", "A legutóbbi fejlesztések");
         for (String[] it : items)
