@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -377,6 +378,57 @@ public class FoodsDataQualityTest {
             assertEquals(c[0], c[1], names(Foods.parse(all, c[0])));
         assertEquals("kondi", Activities.parse("edzőteremben voltam").plans.get(0).kind.id);
         assertEquals("munka", Activities.parse("ásás a kertben 1 óra").plans.get(0).kind.id);
+    }
+
+    /**
+     * Elgépelésre tipp jár, nem „ezt még nem ismerem".
+     *
+     * A telefon billentyűzetén az elütés a leggyakoribb hiba, és a „joghrut"
+     * eddig ugyanazt kapta, mint egy tényleg ismeretlen étel. Pedig ismerjük,
+     * csak egy betűvel odébb.
+     *
+     * A szabály szigorú, mert a rossz tipp bosszantóbb, mint a semmi: hat
+     * betűtől, egyező szókezdettel, egy hibával (hosszú szónál kettővel).
+     * A felcserélt betű egy hibának számít – a telefonon az a jellemző.
+     */
+    @Test public void typosGetASuggestion() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[][] cases = {{"joghrut", "Joghurt"}, {"csirkemel", "Csirkemell (sült/grill)"},
+                {"burgnya", "Burgonya (főtt)"}, {"csokolde", "Csokoládé"},
+                {"hamburgr", "Hamburger"}, {"mogyroo", "Mogyoró"},
+                {"paradicsm", "Paradicsom"}, {"tejfoel", "Tejföl"}};
+        for (String[] c : cases) {
+            Foods.Food f = Foods.closest(all, c[0]);
+            assertEquals(c[0], c[1], f == null ? "—" : f.name);
+        }
+    }
+
+    /** …de a hétköznapi szóra nincs tipp. */
+    @Test public void everydayWordsGetNoSuggestion() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (String q : new String[]{"valami", "asztal", "telefon", "macska", "ember",
+                "hagyja", "készen", "tiszta", "harcra", "oldalán", "szedem", "kényes",
+                "mindenki", "szeretem", "gondolom", "amikor", "nagyon", "asdfgh"}) {
+            Foods.Food f = Foods.closest(all, q);
+            if (f != null) bad.append("\n  ").append(q).append(" -> ").append(f.name);
+        }
+        assertEquals("téves tipp:" + bad, 0, bad.length());
+        // Üres és rövid bemenet sem dob.
+        assertNull(Foods.closest(all, null));
+        assertNull(Foods.closest(all, ""));
+        assertNull(Foods.closest(all, "ab"));
+        assertNull(Foods.closest(null, "alma"));
+    }
+
+    /** A felcserélt betű egy hiba, nem kettő. */
+    @Test public void aSwappedLetterIsOneMistake() {
+        assertEquals(1, Foods.editDistance("joghrut", "joghurt", 2));
+        assertEquals(1, Foods.editDistance("alma", "almá", 2));
+        assertEquals(0, Foods.editDistance("alma", "alma", 2));
+        assertEquals(2, Foods.editDistance("alma", "elme", 2));
+        // A korlát fölött feladja – nem számol tovább.
+        assertTrue(Foods.editDistance("alma", "csirkemell", 2) > 2);
     }
 
     /**

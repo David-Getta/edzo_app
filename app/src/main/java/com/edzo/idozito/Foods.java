@@ -855,6 +855,16 @@ public final class Foods {
             "vizelet", "halgass", "sztar",
             // A „marhára jó" nem marhahús, a vízesés és a vízvezeték nem ital.
             "marhara", "vizeses", "vizvezetek", "babe",
+            // A HAGYJA nem hagyma, a KÉSZEN nem keszeg, a HARCRA nem hal,
+            // az OLDALÁN nem sült oldalas, a SZEDEM nem szeder. Ezek az
+            // elgépelés-tippet is kizárják: a maszkolt szó nem kap javaslatot.
+            // A „hagyt" szándékosan hiányzik: a KIHAGYTAM a tagadás szava, és
+            // maszkolva a „kihagytam a tésztát" tésztája visszakerült volna.
+            "hagyj", "hagyn", "hagyv", "keszen", "keszek", "kenyes",
+            // A „harc" NEM kerülhet ide: a harcsa hal. Csak a ragozott alakok.
+            "harcra", "harcba", "harcban", "harcol", "harcos",
+            "oldalan", "oldalat", "oldalam", "oldalad", "szedem", "szedek",
+            "szeded", "szeker", "keverd",
             // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
             "kolesz",
             // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, tea,
@@ -1371,6 +1381,86 @@ public final class Foods {
             if (byTok != null) return byTok;
         }
         return null;
+    }
+
+    /**
+     * A legközelebbi ismert étel elgépelés esetén – „csirkemel" → Csirkemell.
+     *
+     * A telefon billentyűzetén az elütés a leggyakoribb hiba, és eddig a
+     * „joghrut" ugyanazt kapta, mint egy tényleg ismeretlen étel: „ezt még
+     * nem ismerem". Pedig ismerjük, csak egy betűvel odébb.
+     *
+     * Szigorú, mert a rossz tipp bosszantóbb, mint a semmi: szavanként
+     * nézzük, legalább négy betűtől, és EGY hiba fér bele – hosszú
+     * szótőnél (kilenc betűtől) kettő. A felcserélt betű is egy hibának
+     * számít, mert a telefonon az a leggyakoribb elütés: a „joghrut" egy
+     * ujjmozdulat a joghurttól. Enélkül a „valami" szalámi lett volna, az
+     * „asztal" pedig aszalt gyümölcs.
+     *
+     * @return a legjobb tipp, vagy null, ha nincs elég közeli
+     */
+    public static Food closest(List<Food> list, String query) {
+        if (list == null || query == null) return null;
+        String q = mask(norm(query)).trim();
+        if (q.isEmpty()) return null;
+        Food best = null;
+        int bestDist = Integer.MAX_VALUE, bestLen = 0;
+        for (String tok : q.split("[^a-z0-9]+")) {
+            if (tok.length() < 6) continue;
+            for (Food f : list)
+                for (String ns : f.nstems) {
+                    if (ns.length() < 6 || ns.indexOf(' ') >= 0) continue;
+                    // A szó ELEJE nem szokott elgépelődni, viszont erős jel.
+                    // Enélkül a „neki" gyorséttermi menü lett, a „saját" sajt,
+                    // a „tiszta" tészta. A rossz tipp bosszantóbb, mint a
+                    // semmi, ezért itt a pontosság fontosabb, mint a lefedés.
+                    if (!ns.regionMatches(0, tok, 0, 3)) continue;
+                    int max = ns.length() >= 9 ? 2 : 1;
+                    if (Math.abs(ns.length() - tok.length()) > max) continue;
+                    int d = editDistance(tok, ns, max);
+                    if (d <= 0 || d > max) continue;
+                    // Azonos távolságnál a hosszabb szótő a jobb tipp: több
+                    // betű egyezik, tehát kevesebb a véletlen.
+                    if (d < bestDist || (d == bestDist && ns.length() > bestLen)) {
+                        best = f; bestDist = d; bestLen = ns.length();
+                    }
+                }
+        }
+        return best;
+    }
+
+    /**
+     * Szerkesztési távolság a FELCSERÉLT betűt is egy hibának számolva.
+     *
+     * A sima Levenshtein a cserét két műveletnek látja, pedig a telefonon
+     * pont az a leggyakoribb elütés: a „joghrut" egyetlen ujjmozdulat a
+     * joghurttól. Ezért Damerau-változat (optimális illesztés).
+     *
+     * A {@code max} fölötti feladás nem optimalizálás, hanem a viselkedés
+     * része: a beviteli mező minden leütésre újrakérdez, és háromszázötven
+     * étel összes szótövén végigmenni betűnként nem lehet drága.
+     */
+    static int editDistance(String a, String b, int max) {
+        int n = a.length(), m = b.length();
+        if (Math.abs(n - m) > max) return max + 1;
+        int[] prev2 = new int[m + 1], prev = new int[m + 1], cur = new int[m + 1];
+        for (int j = 0; j <= m; j++) prev[j] = j;
+        for (int i = 1; i <= n; i++) {
+            cur[0] = i;
+            int rowMin = cur[0];
+            for (int j = 1; j <= m; j++) {
+                int cost = a.charAt(i - 1) == b.charAt(j - 1) ? 0 : 1;
+                int v = Math.min(Math.min(cur[j - 1] + 1, prev[j] + 1), prev[j - 1] + cost);
+                if (i > 1 && j > 1 && a.charAt(i - 1) == b.charAt(j - 2)
+                        && a.charAt(i - 2) == b.charAt(j - 1))
+                    v = Math.min(v, prev2[j - 2] + 1);
+                cur[j] = v;
+                rowMin = Math.min(rowMin, v);
+            }
+            if (rowMin > max) return max + 1;
+            int[] t = prev2; prev2 = prev; prev = cur; cur = t;
+        }
+        return prev[m];
     }
 
     /**

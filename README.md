@@ -78,6 +78,9 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 ### 🍽️ Étrend
 - **Írd le, mit ettél** – az app felismeri az ételeket a mondatból:
   „rántott hús rizzsel", „150 g csirkemell 200 g rizs", „2 tojás", „fél alma"
+- **Elgépelésre tipp**: a „joghrut" és a „csirkemel" nem „ezt még nem
+  ismerem", hanem „erre gondoltál: Joghurt?" – a felcserélt betű a
+  telefonon a leggyakoribb hiba, és egy koppintással javítható
 - **Érti a tagadást is**: a „chips helyett almát ettem" csak almát naplóz,
   a „csoki nélkül kértem a kávét" csak kávét, a „ma nem ettem csokit" semmit.
   A tagadás az „és"-en át is ér („nem ettem csokit és chipset"), de megáll

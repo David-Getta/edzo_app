@@ -997,6 +997,21 @@ public class DietActivity extends Activity {
                                 + " – " + Kcal.label(q) + " néven naplózom.");
                         return;
                     }
+                    // Elgépelés: a telefon billentyűzetén ez a leggyakoribb
+                    // hiba, és eddig ugyanazt kapta, mint egy tényleg
+                    // ismeretlen étel. Pedig ismerjük, csak egy betűvel
+                    // odébb – kérdezzük meg, ne állítsuk.
+                    final Foods.Food near = Foods.closest(Foods.all(DietActivity.this), q);
+                    if (near != null) {
+                        reco.setText("🤔 Erre gondoltál: " + near.name
+                                + "? Koppints, és beírom.");
+                        reco.setClickable(true);
+                        reco.setOnClickListener(v -> {
+                            nameEt.setText(near.name);
+                            nameEt.setSelection(nameEt.getText().length());
+                        });
+                        return;
+                    }
                     reco.setText("🔍 Ezt még nem ismerem – koppints ide, és vedd fel saját ételként!");
                     reco.setClickable(true);
                     reco.setOnClickListener(v -> addCustomFoodSheet(q));
