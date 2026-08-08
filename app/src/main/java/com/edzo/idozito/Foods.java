@@ -121,7 +121,9 @@ public final class Foods {
                 "brios", "molnark", "bagel"),
         new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
                 "protein zabkasa", "overnight oats", "oats"),
-        new Food("Müzli", 380, 9, 60, "muzli", "granola"),
+        new Food("Müzli", 380, 9, 60, "muzli", "granola",
+                // Ékezet nélkül gépelve leggyakrabban így: „musli".
+                "musli"),
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
@@ -434,6 +436,9 @@ public final class Foods {
         new Food("Tarhonyás hús", 160, 10, 400, "tarhonyas hus"),
         new Food("Grenadírmars (krumplis tészta)", 150, 4, 400,
                 "grenadir", "krumplis teszta"),
+        // A bográcsos slambuc krumpli + tészta + szalonna: nehezebb, mint a
+        // grenadírmars, ezért saját tétel.
+        new Food("Slambuc", 210, 6, 350, "slambuc", "slamboc"),
         new Food("Rántott zöldség", 180, 5, 200, "rantott karfiol",
                 "rantott zoldseg", "rantott brokkoli", "rantott cukkini"),
         new Food("Kakaós csiga", 380, 7, 90, "kakaos csiga", "csiga"),
