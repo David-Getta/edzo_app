@@ -137,6 +137,20 @@ public final class BodyParse {
     }
 
     /**
+     * Mértékegységgel kimondott körfogat: „comb 58 cm".
+     *
+     * Az útbaigazítónak kell: a comb, a mell és a kar EGYSZERRE testrész és
+     * étel, és az étel-felismerő hamarabb szólal meg. Kiírt centiméterrel
+     * viszont nincs kétség – csirkecombot senki nem mér mérőszalaggal.
+     */
+    public static boolean girthWithUnit(String q) {
+        if (q == null) return false;
+        String s = Foods.norm(q);
+        if (!s.contains("cm") && !s.contains("centi")) return false;
+        return parse(q).hasCm();
+    }
+
+    /**
      * Testzsír: „18% testzsír”, „testzsír 18”, „18 százalék”.
      *
      * A puszta százalék is elfogadható: ilyen mondatban más százalékos adat
@@ -232,8 +246,14 @@ public final class BodyParse {
                 // „derék körfogat: 84"), a kilós szám viszont nem körfogat –
                 // a „bicepsz 20 kg" súlyzó, nem mérőszalag.
                 out[i][j] = java.util.regex.Pattern.compile(after
+                        // A szám után álló írásjel nem folytatás: a „derék 84,
+                        // csípő 95" felsorolásában a vessző elválaszt, nem
+                        // tizedesjegyet nyit. Ezért csak a SZÁMMAL folytatódó
+                        // pont és vessző zárja ki a találatot – enélkül az
+                        // első körfogat kiesett, és a nyolcvannégy centiből a
+                        // súly-felismerőnél nyolcvannégy kiló lett.
                         ? "(?<![a-z])" + stem + "(?:\\s?korfogat\\w*)?(?![a-z])\\s?:?\\s?"
-                                + "(\\d{1,3}([.,]\\d)?)(?![\\d,.]|\\s?kg)\\s?(cm|centi\\w*)?"
+                                + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg)\\s?(cm|centi\\w*)?"
                         : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
                                 + "(?<![a-z])" + stem + "(?![a-z])");
             }

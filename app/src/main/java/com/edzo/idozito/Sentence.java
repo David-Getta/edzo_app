@@ -76,6 +76,10 @@ public final class Sentence {
         // puszta kiló továbbra is a lista végén dől el.
         BodyParse.Body body = BodyParse.parse(q);
         if (body.kg > 0 && body.fatPct > 0) return Kind.BODY;
+        // A mérőszalag adata is félreérthetetlen, ha ki van írva a centi: a
+        // comb, a mell és a kar egyszerre testrész és étel, és az étel
+        // hamarabb szólal meg – a „comb 58 cm" eddig csirkecomb volt.
+        if (BodyParse.girthWithUnit(q)) return Kind.BODY;
         if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
         // Kimondott kalória étel nélkül („vacsora 650 kcal"): ez is étkezés,
         // csak épp nincs benne olyan szó, amit az adatbázis ismerne.

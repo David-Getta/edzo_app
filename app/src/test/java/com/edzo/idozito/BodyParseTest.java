@@ -15,6 +15,9 @@ import org.junit.Test;
  */
 public class BodyParseTest {
 
+    /** Rögzített pillanat az útbaigazító-teszteknek. */
+    private static final long NOW = 1_753_869_600_000L;
+
     private static void kg(String q, double expect) {
         BodyParse.Body b = BodyParse.parse(q);
         assertEquals(q, expect, b.kg, 0.001);
@@ -222,6 +225,44 @@ public class BodyParseTest {
                 // A kilós szám súlyzó, nem mérőszalag.
                 "bicepsz 20 kg", "comb 58 kg-os lábtolás"})
             assertTrue("körfogat lett belőle: " + q, !BodyParse.parse(q).hasCm());
+    }
+
+    /**
+     * Felsorolt körfogatok: a vessző elválaszt, nem tizedesjegyet nyit.
+     *
+     * A „derék 84, csípő 95" mondatból eddig a DERÉK esett ki – a szám után
+     * álló vessző elrontotta a mintát –, és a nyolcvannégy centiből a
+     * súly-felismerőnél nyolcvannégy kiló lett. Egy mérésből így egyszerre
+     * lett hiányos adat és hamis testsúly.
+     */
+    @Test public void severalGirthsInOneSentence() {
+        BodyParse.Body b = BodyParse.parse("derék 84, csípő 95");
+        assertEquals(84, b.cm[0], 0.01);
+        assertEquals(95, b.cm[1], 0.01);
+        assertEquals(0, b.kg, 0.01);
+        BodyParse.Body c = BodyParse.parse("derék 84, csípő 95, mellkas 100");
+        assertEquals(100, c.cm[2], 0.01);
+        // A tizedesjegy változatlanul tizedesjegy.
+        assertEquals(84.5, BodyParse.parse("derék 84,5 cm").cm[0], 0.01);
+    }
+
+    /**
+     * A comb és a mell egyszerre testrész és étel – a centi dönt.
+     *
+     * A „comb 58 cm" eddig csirkecombként ment az Étrendbe, mert az
+     * étel-felismerő hamarabb szólal meg. Kiírt mértékegységgel viszont
+     * nincs kétség; nélküle marad minden a régiben.
+     */
+    @Test public void girthWithUnitBeatsTheFood() {
+        assertEquals(Sentence.Kind.BODY,
+                Sentence.of("comb 58 cm", java.util.Arrays.asList(Foods.ALL), NOW));
+        assertEquals(Sentence.Kind.BODY,
+                Sentence.of("mellkas 100 cm", java.util.Arrays.asList(Foods.ALL), NOW));
+        // Mértékegység nélkül az étel marad étel.
+        assertEquals(Sentence.Kind.MEAL,
+                Sentence.of("mell 20 dkg csirke", java.util.Arrays.asList(Foods.ALL), NOW));
+        assertEquals(Sentence.Kind.MEAL,
+                Sentence.of("2 csirkecomb", java.util.Arrays.asList(Foods.ALL), NOW));
     }
 
     /** A derék/magasság arány a szakirodalom hüvelykujjszabálya. */
