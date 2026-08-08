@@ -101,6 +101,25 @@ public class StrengthParseTest {
         assertNull(StrengthParse.closestMove(null));
     }
 
+    /**
+     * A TERV nem napló.
+     *
+     * A „holnap guggolás 5x5 100 kg" és a „kellene 5x5 80 kg-ot guggolnom"
+     * ugyanazokból a számokból áll, mint a megtörtént sorozat – csak épp még
+     * nem történt meg. A mozgás-oldalon ez a szabály régóta megvolt, itt
+     * hiányzott: a kitalált sorozat a rekordba, az 1RM-be és a
+     * progresszió-javaslatba is beszámított.
+     */
+    @Test public void plansAreNotEntries() {
+        for (String q : new String[]{"holnap guggolás 5x5 100 kg",
+                "kellene 5x5 80 kg-ot guggolnom", "a terv: guggolás 5x5 100 kg",
+                "jövő héten guggolás 5x5 100 kg", "szeretnék 100 kg-ot nyomni"})
+            assertEquals(q, "", sum(q));
+        // A megtörtént sorozat változatlan.
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("guggolás 5x5 100 kg"));
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("tegnap guggolás 5x5 100 kg"));
+    }
+
     @Test public void perSetRepsAreKept() {
         assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
         assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));

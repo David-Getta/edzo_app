@@ -1524,7 +1524,9 @@ public final class Activities {
                 // A feltételes „ha lesz" ugyanígy: a „ha lesz idő, futok
                 // egyet" mondatból eddig negyvenöt perc futás lett.
                 "kene", "kell csinalnom", "kell mennem", "meg kell", "ha lesz",
-                "ha lesz ido", "ha birom", "ha sikerul"})
+                "ha lesz ido", "ha birom", "ha sikerul",
+                // A kiírt TERV szó is: „a terv: guggolás 5x5 100 kg".
+                "a terv", "terv:", "tervem"})
             if (s.contains(w)) return true;
         // Egyes szám első személyű jelen idő. A „futok" és az „edzek"
         // SZÁNDÉKOSAN kimarad: az előbbi a futás szótöve (a „három kört futok"

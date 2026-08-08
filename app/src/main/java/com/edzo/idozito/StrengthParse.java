@@ -221,6 +221,12 @@ public final class StrengthParse {
     public static List<Item> parse(String text) {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
+        // A TERV nem napló. A „holnap guggolás 5x5 100 kg" és a „kellene 5x5
+        // 80 kg-ot guggolnom" ugyanazokból a számokból áll, mint a megtörtént
+        // sorozat – csak épp még nem történt meg. A mozgás-oldalon ez a
+        // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
+        // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
+        if (Activities.looksLikeFuture(text)) return out;
         String whole = stripInsteadOf(sets(stripListMarkers(Foods.norm(text))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
