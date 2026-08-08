@@ -252,11 +252,55 @@ public final class Rehab {
         for (String neg : new String[]{"nem faj", "mar nem", "elmult", "meggyogyult",
                 "nem fajt"})
             if (s.contains(neg)) return null;
-        // A zsibbadás piros zászló, nem torna-ügy: arra nem sort ajánlunk,
-        // hanem hallgatunk – a figyelmeztetés a lapokon úgyis ott van, de
-        // ide el sem visszük.
-        if (s.contains("zsibbad")) return null;
+        // A piros zászlós panaszra nem sort ajánlunk: arra a redFlag()
+        // figyelmeztetése a válasz, és azt a képernyő mutatja meg.
+        if (redFlag(q) != null) return null;
         return areaOf(s);
+    }
+
+    /**
+     * Piros zászlós jelek: [tő, ahogy magyarul hívjuk].
+     *
+     * Ezek nem „erősítsd meg" ügyek. A zsibbadás idegre utal, a duzzanat
+     * gyulladásra vagy sérülésre, az éjszakai fájdalom pedig arra, hogy a
+     * panasz nem a terheléstől függ – ezekre a vizsgálat a helyes lépés,
+     * nem egy gyakorlatsor. Rövid a lista, mert a fals riasztás is árt:
+     * aki mindenre azt hallja, „menj orvoshoz", az legközelebb nem ír be
+     * semmit.
+     */
+    private static final String[][] RED_SIGNS = {
+            {"zsibbad", "zsibbadás"},
+            {"bizsereg", "zsibbadás"},
+            {"duzzad", "duzzanat"}, {"dagadt", "duzzanat"}, {"bedagadt", "duzzanat"},
+            {"ejszaka faj", "éjszakai fájdalom"}, {"ejjel faj", "éjszakai fájdalom"},
+            {"alvasbol ebreszt", "éjszakai fájdalom"},
+            {"sugarzo", "sugárzó fájdalom"}, {"sugarzik", "sugárzó fájdalom"},
+            {"nem tudok ralepni", "terhelhetetlenség"},
+            {"nem birok ralepni", "terhelhetetlenség"},
+            {"nem tudom mozgatni", "mozgásképtelenség"},
+    };
+
+    /**
+     * Figyelmeztetés a piros zászlós panaszra, vagy null.
+     *
+     * Az app eddig HALLGATOTT ezekre: a „zsibbad a kezem" mondatra nem jött
+     * semmilyen válasz, mert gyakorlatsort nem akartunk ajánlani rá. A
+     * hallgatás viszont a legrosszabb válasz – azt üzeni, hogy nem értjük,
+     * pedig pont hogy értjük, és éppen ezért nem tornáztatunk.
+     */
+    public static String redFlag(String q) {
+        if (q == null) return null;
+        String s = Foods.norm(q);
+        for (String neg : new String[]{"nem zsibbad", "mar nem", "elmult", "nem dagadt"})
+            if (s.contains(neg)) return null;
+        for (String[] r : RED_SIGNS)
+            if (s.contains(r[0]))
+                return "Amit leírtál (" + r[1] + "), arra nem gyakorlatsor a jó válasz. "
+                        + "Ez a jel azt jelenti, hogy a panaszt meg kell nézetni: "
+                        + "kérj időpontot orvostól vagy gyógytornásztól, és addig ne "
+                        + "terheld. Ha ez elmúlt, és csak a régi merevség maradt, "
+                        + "gyere vissza – a megelőző sorok akkor a te dolgod.";
+        return null;
     }
 
     /**

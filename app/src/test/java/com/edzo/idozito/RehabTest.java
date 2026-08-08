@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -99,7 +100,8 @@ public class RehabTest {
         assertEquals("sipcsont", Rehab.forComplaint("fáj a sípcsontom futás után").id);
         // A sarok továbbra is az Achilles-sor felé megy.
         assertEquals("achilles", Rehab.forComplaint("fáj a sarkam").id);
-        // A zsibbadás piros zászló: arra nem sort ajánlunk, hanem hallgatunk.
+        // A zsibbadás piros zászló: arra nem sort ajánlunk, hanem
+        // figyelmeztetést – lásd redFlagsGetAnAnswerButNoExercises.
         assertNull(Rehab.forComplaint("zsibbad a karom"));
         // A tagadott panasz jó hír, nem kérés.
         assertNull(Rehab.forComplaint("nem fáj a vállam"));
@@ -136,6 +138,34 @@ public class RehabTest {
         // És a nem-panasz mondat sem lesz az.
         assertNull(Rehab.forComplaint("hátnap"));
         assertNull(Rehab.forComplaint("háton úszás 30 perc"));
+    }
+
+    /**
+     * A piros zászlós panaszra válasz jár – csak nem gyakorlatsor.
+     *
+     * A „zsibbad a kezem" mondatra az app eddig HALLGATOTT: sort nem
+     * akartunk ajánlani rá, tehát semmi nem jött vissza. A hallgatás
+     * viszont azt üzeni, hogy nem értjük – pedig pont hogy értjük, és
+     * éppen ezért nem tornáztatunk. Mostantól megmondjuk, miért.
+     */
+    @Test public void redFlagsGetAnAnswerButNoExercises() {
+        for (String q : new String[]{"zsibbad a kezem", "elzsibbadt a lábam",
+                "bedagadt a bokám", "éjszaka fáj a vállam",
+                "a lábamba sugárzik a fájdalom", "nem tudok rálépni a bokámra"}) {
+            assertNotNull("nincs figyelmeztetés: " + q, Rehab.redFlag(q));
+            // Sort viszont nem ajánlunk rá.
+            assertNull("sort ajánlott rá: " + q, Rehab.forComplaint(q));
+            // De az útbaigazító idehozza – nem hagyjuk válasz nélkül.
+            assertEquals(q, Sentence.Kind.REHAB,
+                    Sentence.of(q, java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+        }
+        // A hétköznapi panasz továbbra is sort kap, nem figyelmeztetést.
+        assertNull(Rehab.redFlag("fáj a vállam"));
+        assertNull(Rehab.redFlag("derékfájás"));
+        assertNull(Rehab.redFlag(null));
+        assertEquals("vall", Rehab.forComplaint("fáj a vállam").id);
+        // Az elmúlt jel sem zászló.
+        assertNull(Rehab.redFlag("már nem zsibbad a kezem"));
     }
 
     /** Az útbaigazító is a rehabhoz küldi – az edzés-felismerő előtt. */

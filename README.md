@@ -144,8 +144,12 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   kész, 10–20 perces megelőző sorok
 - **A panasz-mondat is ajtó**: a „fáj a vállam", a „beállt a derekam" vagy a
   „kificamodott a bokám" bármelyik beviteli mezőből a megfelelő sorhoz visz.
-  A tagadott panasz („már nem fáj") és a zsibbadás (piros zászló) nem –
-  utóbbinál orvos kell, nem app
+  Egy szóban is elég, ahogy a magyar mondja: „derékfájás", „csípőfájdalom" –
+  és a diagnózis neve is („golfkönyök", „teniszkönyök", „futótérd",
+  „sarkantyú"). A tagadott panasz („már nem fáj") nem nyit sort
+- **Piros zászló**: zsibbadásra, duzzanatra, éjszakai vagy sugárzó
+  fájdalomra az app nem gyakorlatsort ad, hanem kimondja, hogy ezt meg kell
+  nézetni – a hallgatás rosszabb válasz lenne, mint a nemleges
 - **A cél-mondat is**: „boka stabilitás", „váll mobilizálás", „derék rehab" –
   nem kell megvárni, hogy fájjon
 - **Vezetett mód**: a telefon időzíti és bemondja a gyakorlatokat, a

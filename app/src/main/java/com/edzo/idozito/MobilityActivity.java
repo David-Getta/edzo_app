@@ -69,8 +69,16 @@ public class MobilityActivity extends Activity {
         String sent = getIntent().getStringExtra(Sentence.EXTRA);
         if (sent != null && !sent.trim().isEmpty()) {
             getIntent().removeExtra(Sentence.EXTRA);
-            Rehab.Area hit = Rehab.forComplaint(sent);
-            if (hit == null) hit = Rehab.forGoal(sent);
+            // Piros zászlós panasz: erre nem sort ajánlunk, hanem kimondjuk,
+            // miért nem. A hallgatás azt üzenné, hogy nem értjük – pedig
+            // pont hogy értjük, és éppen ezért nem tornáztatunk.
+            final String flag = Rehab.redFlag(sent);
+            if (flag != null) {
+                section = 3;
+                body.post(() -> redFlagSheet(flag));
+            }
+            Rehab.Area hit = flag != null ? null : Rehab.forComplaint(sent);
+            if (hit == null && flag == null) hit = Rehab.forGoal(sent);
             if (hit != null) {
                 section = 3;
                 final Rehab.Area fhit = hit;
@@ -321,6 +329,27 @@ public class MobilityActivity extends Activity {
                     "Rehab-napló"));
         } catch (Exception ignored) {
         }
+    }
+
+    /**
+     * A piros zászlós panasz válasza: figyelmeztetés, gyakorlat nélkül.
+     *
+     * Szándékosan nincs rajta „mégis mutasd a sort" gomb. Aki zsibbadást ír
+     * be, annak a legjobb, amit egy app tehet, hogy nem ad neki tornát – és
+     * ezt meg is indokolja, hogy ne érezze válasz nélkül magát.
+     */
+    void redFlagSheet(String msg) {
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), 0);
+        box.addView(text(msg, 14, TXT, false));
+        TextView small = text("Ez az app megelőzésre és általános erősítésre való, "
+                + "nem orvoslásra – és nem is akar az lenni.", 11.5f, MUTED, false);
+        small.setPadding(0, dp(10), 0, 0);
+        box.addView(small);
+        new Sheet(this, "⚠️ Ezt nézesd meg", "Piros zászlós panasz")
+                .addCustom(box)
+                .addPrimary("Értem", () -> { })
+                .show();
     }
 
     /** Egy testtáj kész sora: gyakorlatok, videók, és egy koppintásos naplózás. */

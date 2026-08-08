@@ -66,7 +66,11 @@ public final class Sentence {
         // és a „golfkönyök fájdalom" nem edzés – hiába van benne sportszó, a
         // fájdalom-szó mást mond. Kimondott fájdalom nélkül ez az ág nem él.
         // A cél-mondat („boka stabilitás") ugyanide fut: az is a rehab ajtaja.
-        if (Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null) return Kind.REHAB;
+        // A piros zászlós panasz („zsibbad a kezem") is ide tartozik: sort
+        // nem ajánlunk rá, de a hallgatás rosszabb – ott a figyelmeztetés
+        // vár rá, nem egy „nem értem".
+        if (Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null
+                || Rehab.redFlag(q) != null) return Kind.REHAB;
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;
