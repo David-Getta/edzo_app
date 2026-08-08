@@ -263,8 +263,64 @@ public class MobilityActivity extends Activity {
         }
         body.addView(card, lp());
         body.addView(gap(12));
+        // Jelentés: aki elmegy a gyógytornászhoz, ne fejből mondja el, mit
+        // csinált és merre ment a panasz – négy hét adata egy üzenetben.
+        if (hasRehabData()) {
+            Button rep = chip("📤  Jelentés a gyógytornásznak (4 hét)", false);
+            rep.setPadding(dp(14), dp(12), dp(14), dp(12));
+            rep.setOnClickListener(v -> shareReport());
+            body.addView(rep, lp());
+            body.addView(gap(12));
+        }
         body.addView(text("⚠️ " + Rehab.RED_FLAG, 12, MUTED, false));
         body.post(() -> Ux.enterChildren(body, 20, 35));
+    }
+
+    /** Van-e egyáltalán rehab-adat, amiről jelentést lehetne írni? */
+    boolean hasRehabData() {
+        for (Rehab.Area a : Rehab.AREAS)
+            if (RehabLog.doneOf(this, a.id).length > 0
+                    || RehabLog.painLevels(this, a.id).length > 0) return true;
+        return false;
+    }
+
+    /**
+     * Négy hét rehab-története szövegben: mit csinált, és merre ment a panasz.
+     *
+     * A gyógytornász első két kérdése pontosan ez, és fejből egyik sem
+     * megválaszolható. A CSV a táblázatosaké; ez az, ami elküldhető egy
+     * üzenetben.
+     */
+    void shareReport() {
+        long now = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder("🩹 Rehab-napló – elmúlt 4 hét\n");
+        for (Rehab.Area a : Rehab.AREAS) {
+            long[] done = RehabLog.doneOf(this, a.id);
+            int[] pain = RehabLog.painLevels(this, a.id);
+            int n = 0;
+            for (long t : done) if (Days.ago(t, now) >= 0 && Days.ago(t, now) < 28) n++;
+            if (n == 0 && pain.length == 0) continue;
+            sb.append('\n').append(a.emoji).append(' ').append(a.name).append('\n');
+            sb.append("   ").append(n).append(" elvégzett sor\n");
+            if (pain.length > 0) {
+                sb.append("   fájdalom: ");
+                for (int i = Math.min(pain.length, 10) - 1; i >= 0; i--) {
+                    sb.append(pain[i]);
+                    if (i > 0) sb.append(" → ");
+                }
+                sb.append("  (0–10)\n");
+                String line = Rehab.painLine(pain);
+                if (!line.isEmpty()) sb.append("   ").append(line).append('\n');
+            }
+        }
+        sb.append('\n').append("A sorok gyógytornász-ihletésű megelőző gyakorlatok, "
+                + "nem orvosi kezelés.");
+        try {
+            startActivity(Intent.createChooser(new Intent(Intent.ACTION_SEND)
+                    .setType("text/plain").putExtra(Intent.EXTRA_TEXT, sb.toString()),
+                    "Rehab-napló"));
+        } catch (Exception ignored) {
+        }
     }
 
     /** Egy testtáj kész sora: gyakorlatok, videók, és egy koppintásos naplózás. */
