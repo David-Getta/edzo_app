@@ -2214,13 +2214,15 @@ public final class Activities {
     }
 
     /**
-     * Az ALVÁS órái nem edzés-percek.
+     * Ami idő-alakú, de nem az edzés hossza: az ALVÁS és a TEMPÓ.
      *
      * Az „aludtam 8 órát, reggel futottam 5 km-t" nyolc órája az éjszakáé,
-     * mégis a futás hosszává vált: nyolcórás futás került a naplóba, a hozzá
-     * tartozó kalóriával és heti terheléssel együtt. A bemelegítés-szabálytól
-     * abban tér el, hogy itt nincs darabszám-feltétel – az alvás akkor sem
-     * edzésidő, ha ez az EGYETLEN időtartam a mondatban.
+     * mégis a futás hosszává vált – nyolcórás futás került a naplóba. A
+     * „futás 5 km 24:59 tempó 5:00" ötös száma pedig SEBESSÉG (perc/km),
+     * és ötszáz perces futássá duzzasztotta a huszonöt perceset.
+     *
+     * A bemelegítés-szabálytól abban tér el, hogy itt nincs darabszám-
+     * feltétel: egyik sem edzésidő akkor sem, ha ez az EGYETLEN időtartam.
      */
     private static void dropSleepTimes(String s, List<int[]> mins) {
         List<int[]> keep = new ArrayList<>();
@@ -2231,13 +2233,20 @@ public final class Activities {
         }
     }
 
-    /** Alvás-szó áll-e az időtartam mellett (előtte vagy két szóval utána). */
+    /** Alvás- vagy tempó-szó áll-e az időtartam mellett. */
     private static boolean sleepWordAt(String s, int[] m) {
         int b = m[0];
         while (b > 0 && s.charAt(b - 1) == ' ') b--;
         int a = b;
         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
-        if (a < b && isSleepWord(s.substring(a, b))) return true;
+        String before = a < b ? s.substring(a, b) : "";
+        if (isSleepWord(before)) return true;
+        // A TEMPÓ csak ELŐLRŐL köt, és csak ÓRA-alakú számra: a „tempó 5:00"
+        // öt perc egy kilométerre. Hátrafelé nem nézünk, mert a „24:59 tempó
+        // 5:00" első száma a valódi idő; a „perc"-cel kiírt hossz pedig sosem
+        // tempó („tempó 30 perc kondi" harminc perc kondi).
+        if (isPaceWord(before) && m[0] < m[2] && m[2] <= s.length()
+                && s.substring(m[0], m[2]).indexOf(':') >= 0) return true;
         int i = m[2];
         for (int w = 0; w < 2 && i < s.length(); w++) {
             while (i < s.length() && !Character.isLetter(s.charAt(i))) i++;
@@ -2252,6 +2261,11 @@ public final class Activities {
 
     private static boolean isSleepWord(String w) {
         return w.startsWith("alud") || w.startsWith("alvas") || w.startsWith("alszo");
+    }
+
+    /** Sebességet jelölő szó: ami utána áll, az perc/km, nem perc. */
+    private static boolean isPaceWord(String w) {
+        return w.startsWith("tempo") || w.startsWith("iram");
     }
 
     /**
@@ -2285,13 +2299,20 @@ public final class Activities {
             // A napszakos vagy -kor-os alak a NAP órája, nem időtartam:
             // „10 km reggel 7:30", „10 km-t futottam 18:30-kor".
             if (s.startsWith("-kor", m.end()) || s.startsWith(" kor", m.end())) continue;
+            int first = Integer.parseInt(m.group(1));
             // A tempó sem időtartam: „5:30-as tempóval", „4:45/km".
             if (s.startsWith("-as", m.end()) || s.startsWith("-es", m.end())
                     || s.startsWith("/km", m.end())
-                    || s.regionMatches(m.end(), " tempo", 0, 6)
-                    || (m.end() + 12 <= s.length()
+                    // A „ tempo" utótag is csak tempó-tartományú számra:
+                    // a „24:59 tempó 5:00" első száma a valódi idő, a tempó a
+                    // KÖVETKEZŐ számhoz tartozik.
+                    || (first < 10 && s.regionMatches(m.end(), " tempo", 0, 6))
+                    // A tágabb ablak CSAK tempó-tartományú számra él (10 perc
+                    // alatti perc:mp). Enélkül a „futás 5 km 24:59 tempó 5:00"
+                    // huszonöt perce is kiesett – pedig az a valódi idő, és a
+                    // helyére a becsült harminc perc lépett.
+                    || (first < 10 && m.end() + 12 <= s.length()
                         && s.substring(m.end(), m.end() + 12).contains("tempo"))) continue;
-            int first = Integer.parseInt(m.group(1));
             boolean daypart = false;
             for (String dw : new String[]{"reggel", "este", "delutan", "delelott",
                     "hajnal", "ejjel"})

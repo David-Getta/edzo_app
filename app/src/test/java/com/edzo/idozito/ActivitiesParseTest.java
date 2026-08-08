@@ -1102,6 +1102,27 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A tempó perc/km, nem perc.
+     *
+     * A „futás 5 km 24:59 tempó 5:00" – ahogy az órád exportálja – ötszáz
+     * perces futássá vált: az ötös tempó-szám lett az edzés hossza. Rosszabb,
+     * hogy közben a VALÓDI huszonöt perc is kiesett, mert a tempó-szó
+     * ránézett a mellette álló számra is.
+     */
+    @Test public void paceIsNotDuration() {
+        assertEquals(25, Activities.parse("futás 5 km 24:59 tempó 5:00")
+                .plans.get(0).minutes);
+        assertEquals(25, Activities.parse("futás 5 km 24:59 tempó 5:00/km")
+                .plans.get(0).minutes);
+        assertEquals(53, Activities.parse("futás 10 km 52:30 tempó 5:15")
+                .plans.get(0).minutes);
+        // Ami perccel van kiírva, az sosem tempó.
+        assertEquals(30, Activities.parse("tempó 30 perc kondi").plans.get(0).minutes);
+        assertEquals(25, Activities.parse("futás 5 km 25 perc tempó 5:00")
+                .plans.get(0).minutes);
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.
