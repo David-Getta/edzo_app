@@ -40,7 +40,7 @@ public final class BodyParse {
             {"csipo", "csipom", "csipobosege", "fenek"},
             {"mellkas", "mell", "mellbosege"},
             {"comb", "combom", "combbosege"},
-            {"kar", "karom", "bicepszem", "felkar"},
+            {"kar", "karom", "bicepszem", "felkar", "bicepsz"},
     };
     /** Életszerű körfogat-határok centiben. */
     static final double MIN_CM = 15, MAX_CM = 200;
@@ -228,9 +228,12 @@ public final class BodyParse {
             out[i] = new java.util.regex.Pattern[PART_STEMS[i].length];
             for (int j = 0; j < PART_STEMS[i].length; j++) {
                 String stem = PART_STEMS[i][j];
+                // A „körfogat" szó közbeékelődhet („haskörfogat 92",
+                // „derék körfogat: 84"), a kilós szám viszont nem körfogat –
+                // a „bicepsz 20 kg" súlyzó, nem mérőszalag.
                 out[i][j] = java.util.regex.Pattern.compile(after
-                        ? "(?<![a-z])" + stem + "(?![a-z])\\s?:?\\s?"
-                                + "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)?"
+                        ? "(?<![a-z])" + stem + "(?:\\s?korfogat\\w*)?(?![a-z])\\s?:?\\s?"
+                                + "(\\d{1,3}([.,]\\d)?)(?![\\d,.]|\\s?kg)\\s?(cm|centi\\w*)?"
                         : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
                                 + "(?<![a-z])" + stem + "(?![a-z])");
             }

@@ -200,6 +200,10 @@ public class BodyParseTest {
         assertEquals(58, BodyParse.parse("comb 58 cm").cm[3], 0.01);
         assertEquals(40, BodyParse.parse("bicepszem 40 cm").cm[4], 0.01);
         assertEquals(90, BodyParse.parse("hasam 90 cm").cm[0], 0.01);
+        // A „körfogat" szó közbeékelődhet, egybe- és különírva is.
+        assertEquals(92, BodyParse.parse("haskörfogat 92 cm").cm[0], 0.01);
+        assertEquals(84, BodyParse.parse("derék körfogat: 84").cm[0], 0.01);
+        assertEquals(36, BodyParse.parse("bicepsz körfogat 36 cm").cm[4], 0.01);
 
         // Súly, zsír és körfogat EGY mondatban, egy mérésben.
         BodyParse.Body b = BodyParse.parse("78 kg, 18% testzsír, derék 84 cm");
@@ -214,7 +218,9 @@ public class BodyParseTest {
     /** Ami nem körfogat, abból ne legyen az. */
     @Test public void notEveryCentimeterIsACircumference() {
         for (String q : new String[]{"180 cm magas vagyok", "magasság 180 cm",
-                "derék 300 cm", "combhajlítás 3x12", "fekvenyomás 80 kg"})
+                "derék 300 cm", "combhajlítás 3x12", "fekvenyomás 80 kg",
+                // A kilós szám súlyzó, nem mérőszalag.
+                "bicepsz 20 kg", "comb 58 kg-os lábtolás"})
             assertTrue("körfogat lett belőle: " + q, !BodyParse.parse(q).hasCm());
     }
 
