@@ -172,6 +172,23 @@ public final class TimeHint {
         if (wm.find()) {
             try {
                 int v = Integer.parseInt(wm.group(1));
+                // Napnévvel együtt a NAPNÉV a pontos: a „két hete kedden" az
+                // azelőtti keddet jelenti, nem a mai nap két héttel korábbi
+                // párját. Enélkül négy napot is tévedhettünk – és egy rossz
+                // nap két napi összesítőt ront el.
+                if (v >= 1) {
+                    Calendar wc = Calendar.getInstance();
+                    wc.setTimeInMillis(now);
+                    int idx = (wc.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+                    for (int i = 0; i < 7; i++) {
+                        if (!has(s, DAYS[i])) continue;
+                        int back = (idx - i + 7) % 7 + v * 7;
+                        // A pótlás ablakán kívül eső napot nem találgatjuk
+                        // tovább: marad a hetek szerinti közelítés.
+                        if (back <= MAX_BACK) return back;
+                        break;
+                    }
+                }
                 if (v >= 1 && v * 7 <= MAX_BACK) return v * 7;
             } catch (NumberFormatException ignored) {
             }

@@ -45,6 +45,21 @@ public class TimeHintTest {
         assertEquals(5, dayHour("éjfél körül ettem")[0]);
     }
 
+    /**
+     * Hetek ÉS napnév együtt: az „egy hete kedden" a múlt keddet jelenti.
+     *
+     * A hetes szabály eddig elnyelte a napnevet, és a mai nap egy héttel
+     * korábbi párját adta – szerdán írva ez négy napot tévedett, és egy rossz
+     * nap két napi összesítőt ront el.
+     */
+    @Test public void weeksAndWeekdaysCombine() {
+        // 2026. augusztus 5. szerda; az előző kedd augusztus 4.
+        assertEquals(28, dayHour("egy hete kedden edzettem")[0]);   // július 28.
+        assertEquals(23, dayHour("egy hete csütörtökön futottam")[0]); // július 23.
+        // A napnév nélküli alak változatlan: egy hét hét nap.
+        assertEquals(29, dayHour("egy hete")[0]);
+    }
+
     @Test public void yesterdayAndTheDayBeforeStillWork() {
         assertEquals(4, dayHour("tegnap este pizzát ettem")[0]);
         assertEquals(19, dayHour("tegnap este pizzát ettem")[1]);
