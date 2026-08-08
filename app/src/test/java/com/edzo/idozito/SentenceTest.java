@@ -196,4 +196,22 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.WORKOUT, Sentence.of("30 perc futás", null, NOW));
         assertEquals(Sentence.Kind.NONE, Sentence.of("2 tojás", null, NOW));
     }
+
+    /**
+     * A kérdés nem bejegyzés.
+     *
+     * A „mennyi kalória van a banánban?" banánt naplózott volna, a „mit
+     * egyek edzés előtt?" pedig edzést – pedig aki kérdez, az épp nem evett
+     * és nem edzett. A kérdőjel a legmegbízhatóbb jel erről.
+     */
+    @Test public void questionsAreNotEntries() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        long now = 1_753_869_600_000L;
+        assertEquals(Sentence.Kind.NONE, Sentence.of("mennyi kalória van a banánban?", all, now));
+        assertEquals(Sentence.Kind.NONE, Sentence.of("mit egyek edzés előtt?", all, now));
+        assertEquals(Sentence.Kind.NONE, Sentence.of("hány kör legyen a tabata?", all, now));
+        // A kijelentés viszont marad bejegyzés.
+        assertEquals(Sentence.Kind.MEAL, Sentence.of("ettem egy banánt", all, now));
+        assertEquals(Sentence.Kind.INTERVAL, Sentence.of("tabata", all, now));
+    }
 }

@@ -40,6 +40,11 @@ public final class Sentence {
      */
     public static Kind of(String q, List<Foods.Food> foods, long now) {
         if (q == null || q.trim().length() < 3) return Kind.NONE;
+        // A KÉRDÉS nem bejegyzés: a „mennyi kalória van a banánban?" banánt
+        // naplózott volna, a „mit egyek edzés előtt?" pedig edzést. Aki
+        // kérdez, az nem most evett és nem most edzett – a kérdőjel a
+        // legmegbízhatóbb jel, amit egy magyar mondat adhat erről.
+        if (q.trim().endsWith("?")) return Kind.NONE;
         if (!StrengthParse.parse(q).isEmpty()) return Kind.STRENGTH;
         IntervalParse.Plan iv = IntervalParse.parse(q);
         // A PIHENŐT is kimondó, többköros terv egyértelműen időzítő: a
