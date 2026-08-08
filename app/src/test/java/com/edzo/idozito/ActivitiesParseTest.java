@@ -1055,6 +1055,17 @@ public class ActivitiesParseTest {
             assertTrue(q, Activities.parse(q).isEmpty());
             assertEquals(q, Sentence.Kind.MEAL, Sentence.of(q, all, 1_753_869_600_000L));
         }
+        // Ugyanez a SPORTNEVEKRE is: a „futás után turmix" a turmixról szól.
+        for (String q : new String[]{"futás után turmix", "úszás után szendvics",
+                "bringázás után sör", "jóga előtt tea", "futás előtt ettem egy banánt"})
+            assertTrue(q, Activities.parse(q).isEmpty());
+        // Kimondott számmal viszont a futás valódi – azt a szám hitelesíti.
+        assertEquals(60, Activities.parse("60 perc futás után ittam egy turmixot")
+                .plans.get(0).minutes);
+        assertEquals(10, Activities.parse("10 km futás után szendvics")
+                .plans.get(0).km, 0.01);
+        // És ami a mondatban tényleg megtörtént, az megmarad.
+        assertEquals("joga", Activities.parse("ma futás után jóga").plans.get(0).kind.id);
         // A valódi edzés-mondat érintetlen.
         assertEquals(45, Activities.parse("edzés 45 perc").plans.get(0).minutes);
         assertEquals(60, Activities.parse("edzettem 1 órát").plans.get(0).minutes);

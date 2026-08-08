@@ -860,6 +860,17 @@ public final class Activities {
                                 || s.startsWith("disz", p - 4)
                                 || (p >= 3 && s.startsWith("tan", p - 3))))
                         continue;
+                    // A „futás UTÁN" nem futás, hanem IDŐPONT: a „futás után
+                    // turmix" mondat a turmixról szól, mégis negyvenöt perc
+                    // futás lett belőle – kitalált edzés, ami a szériába, az
+                    // XP-be és a heti percbe is beszámított, ráadásul az
+                    // étkezés elé állt az útbaigazítóban.
+                    //
+                    // Csak akkor élhet, ha a mondatban SEMMILYEN időtartam,
+                    // táv vagy lépésszám nincs: a „60 perc futás után ittam"
+                    // futása valódi, azt a kimondott szám hitelesíti.
+                    if (mins.isEmpty() && kms.isEmpty() && steps <= 0
+                            && timePhraseAfter(s, p + w.length())) continue;
                     hits.add(new int[]{p, w.length(), ki});
                 }
             }
