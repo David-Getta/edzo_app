@@ -1518,7 +1518,13 @@ public final class Activities {
                 // pont az ellenkezője. Mind a naplóba került, negyvenöt
                 // perces alapértelmezett hosszal.
                 "szeretek", "szeretem", "imadok", "utalok", "utalom",
-                "kellene", "jo lenne", "jol esne", "kedvem"})
+                "kellene", "jo lenne", "jol esne", "kedvem",
+                // A „kéne" a „kellene" beszélt alakja, a „kell csinálnom" és
+                // a „meg kell" pedig a teendő – ezek is tervek, nem naplók.
+                // A feltételes „ha lesz" ugyanígy: a „ha lesz idő, futok
+                // egyet" mondatból eddig negyvenöt perc futás lett.
+                "kene", "kell csinalnom", "kell mennem", "meg kell", "ha lesz",
+                "ha lesz ido", "ha birom", "ha sikerul"})
             if (s.contains(w)) return true;
         // Egyes szám első személyű jelen idő. A „futok" és az „edzek"
         // SZÁNDÉKOSAN kimarad: az előbbi a futás szótöve (a „három kört futok"

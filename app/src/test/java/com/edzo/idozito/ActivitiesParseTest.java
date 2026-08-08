@@ -455,6 +455,16 @@ public class ActivitiesParseTest {
         assertFalse(Activities.looksLikeFuture("tegnap futottam"));
         assertFalse(Activities.looksLikeFuture("semmi értelmes szöveg"));
         assertFalse(Activities.looksLikeFuture(null));
+        // A beszélt alakok is tervek: „el kéne menni futni", „meg kell
+        // csinálnom a lábnapot", „ha lesz idő, futok egyet". Mindháromból
+        // negyvenöt perces edzés került a naplóba – pont abból a mondatból,
+        // ami arról szól, hogy MÉG NEM volt meg.
+        for (String q : new String[]{"el kéne menni futni",
+                "meg kell csinálnom a lábnapot", "ha lesz idő, futok egyet",
+                "ha bírom, elmegyek úszni"}) {
+            assertTrue(q, Activities.looksLikeFuture(q));
+            assertTrue(q, Activities.parse(q).isEmpty());
+        }
     }
 
     @Test public void nonsenseProducesNothing() {
