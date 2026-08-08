@@ -71,7 +71,8 @@ public final class StrengthParse {
      * nyer, hogy az összetett nevek jól dőljenek el („fekvenyomás” ne legyen
      * „fekvőtámasz”). Angol alakok is, mert a teremben azok járják.
      */
-    private static final String[][] MOVES = {
+    // Csomag-szintű, hogy a ragozás-söprés tesztje végig tudjon menni rajta.
+    static final String[][] MOVES = {
             {"Guggolás", "guggol", "szkvot", "squat"},
             {"Fekvenyomás", "fekvenyom", "fekve nyom", "bench", "mellet nyom"},
             // A jelzős változatok KÜLÖN gyakorlatok, nem a bázis becézései: a

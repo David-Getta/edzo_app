@@ -160,6 +160,31 @@ public class StrengthParseTest {
         assertEquals("Fekvőtámasz 3×10/10/10@0", sum("3 kör 10 fekvőtámasz"));
     }
 
+    /**
+     * Minden gyakorlat-szótő minden ragozott alakja a saját gyakorlatát adja.
+     *
+     * Ugyanaz a söprés, ami az ételeknél és a mozgásformáknál fut. Itt
+     * jelenleg NINCS kivétel: mind a tizenkilenc rag átmegy minden tövön –
+     * és ez a nulla az, amit őrizni érdemes.
+     */
+    @Test public void everyMoveStemSurvivesItsInflections() {
+        String[] suf = {"", "t", "ba", "bol", "ban", "val", "hoz", "nak", "n",
+                "ra", "rol", "tol", "nal", "os", "as", "es", "om", "unk", "ok"};
+        StringBuilder bad = new StringBuilder();
+        for (String[] row : StrengthParse.MOVES)
+            for (int i = 1; i < row.length; i++) {
+                if (row[i].indexOf(' ') >= 0) continue;
+                for (String x : suf) {
+                    boolean ok = false;
+                    for (StrengthParse.Item it : StrengthParse.parse(row[i] + x + " 3x10"))
+                        if (it.name.equals(row[0])) ok = true;
+                    if (!ok) bad.append("\n  ").append(row[i]).append(x)
+                            .append(" (").append(row[0]).append(")");
+                }
+            }
+        assertEquals("elveszett ragozott gyakorlat-alak:" + bad, 0, bad.length());
+    }
+
     @Test public void perSetRepsAreKept() {
         assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
         assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));

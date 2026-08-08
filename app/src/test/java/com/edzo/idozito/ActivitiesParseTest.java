@@ -1140,6 +1140,38 @@ public class ActivitiesParseTest {
             assertTrue(q, Activities.parse(q).isEmpty());
     }
 
+    /**
+     * Minden sport-szótő minden ragozott alakja megtalálja a saját mozgását.
+     *
+     * Ugyanaz a söprés, ami az ételeknél kimutatta, hogy a szó-belseji
+     * tiltások a valódi szavakat is elnyelik. Itt tizennyolc gyakori rag ×
+     * minden szótő fut le – ha egy új maszk mellékhatást okoz, itt derül ki.
+     *
+     * A négy tudott kivétel: a „teremt" és a „teremtől" a TEREMTÉS miatt
+     * maszkolt, a „lépcsőzős" és a „lépcsőzöm" pedig a tő magánhangzó-
+     * illeszkedése miatt marad ki.
+     */
+    @Test public void everySportStemSurvivesItsInflections() {
+        java.util.Set<String> known = new java.util.HashSet<>(java.util.Arrays.asList(
+                "lepcsozos", "lepcsozom", "teremt", "teremtol"));
+        String[] suf = {"", "t", "ba", "bol", "ban", "val", "hoz", "nak", "n",
+                "ra", "rol", "tol", "nal", "os", "as", "es", "om", "unk"};
+        StringBuilder bad = new StringBuilder();
+        for (Activities.Kind k : Activities.ALL)
+            for (String w : k.words) {
+                if (w.indexOf(' ') >= 0) continue;
+                for (String x : suf) {
+                    if (known.contains(w + x)) continue;
+                    boolean ok = false;
+                    for (Activities.Plan p : Activities.parse(w + x + " 30 perc").plans)
+                        if (p.kind.id.equals(k.id)) ok = true;
+                    if (!ok) bad.append("\n  ").append(w).append(x).append(" (")
+                            .append(k.id).append(")");
+                }
+            }
+        assertEquals("elveszett ragozott sport-alak:" + bad, 0, bad.length());
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.
