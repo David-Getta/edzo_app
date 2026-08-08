@@ -202,6 +202,17 @@ public final class TimeHint {
             if ((hasWord(s, "mult") || has(s, "elozo")) && back + 7 <= MAX_BACK) back += 7;
             return back;
         }
+        // „múlt hétvégén", „múlt hét végén": az előző szombat. A Hu.digits a
+        // különírt „hét"-ből 7-et csinál, ezért a „7 vege" alak is ide tartozik.
+        if ((hasWord(s, "mult") || has(s, "elmult") || has(s, "elozo"))
+                && (has(s, "hetvege") || s.contains("7 vege") || has(s, "het vege"))) {
+            int dow = c.get(Calendar.DAY_OF_WEEK);
+            // Szombaton és vasárnap a „múlt hétvége" az egy héttel korábbi.
+            if (dow == Calendar.SATURDAY) return 7;
+            if (dow == Calendar.SUNDAY) return 8;
+            int back = (dow + 7 - Calendar.SATURDAY) % 7;
+            return back <= MAX_BACK ? back : 0;
+        }
         // Napnév nélküli „múlt héten", „előző héten": a hét távolabbi vége.
         // Közelítés – de a MAI dátum biztosan rossz, és egy rossz nap két
         // napi összesítőt ront el: ahonnan elveszi, és ahová beteszi.
@@ -303,6 +314,9 @@ public final class TimeHint {
             } catch (NumberFormatException ignored) {
             }
         }
+        // Az éjfél a nap eleje: aki „éjfél körül" evett, annak a bejegyzés a
+        // mai nap 0 órájára esik – az „éjjel" 22-je itt két órát tévedne.
+        if (has(s, "ejfel")) return 0;
         if (has(s, "hajnal")) return 5;
         if (has(s, "reggel")) return 8;
         if (has(s, "tizorai") || has(s, "delelott")) return 10;

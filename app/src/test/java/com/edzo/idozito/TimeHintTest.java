@@ -31,6 +31,20 @@ public class TimeHintTest {
         return new int[]{c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY)};
     }
 
+    /** A „múlt hétvégén" az előző szombat – nem a mai nap. */
+    @Test public void lastWeekendIsThePreviousSaturday() {
+        // 2026. aug 5. szerda → az előző szombat aug 1.
+        assertEquals(1, dayHour("múlt hétvégén túráztunk")[0]);
+        assertEquals(1, dayHour("múlt hét végén túra")[0]);
+        assertEquals(1, dayHour("előző hétvégén futottam")[0]);
+    }
+
+    /** Az éjfél a nap 0 órája, nem az éjjel 22-je. */
+    @Test public void midnightIsHourZero() {
+        assertEquals(0, dayHour("éjfél körül ettem")[1]);
+        assertEquals(5, dayHour("éjfél körül ettem")[0]);
+    }
+
     @Test public void yesterdayAndTheDayBeforeStillWork() {
         assertEquals(4, dayHour("tegnap este pizzát ettem")[0]);
         assertEquals(19, dayHour("tegnap este pizzát ettem")[1]);
