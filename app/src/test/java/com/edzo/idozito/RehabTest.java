@@ -410,4 +410,22 @@ public class RehabTest {
         }
         assertEquals("", Rehab.nextLevel("nincs-ilyen"));
     }
+
+    /**
+     * Minden területnek van „mikorra várható javulás" mondata.
+     *
+     * A gyógytornász első mondata mindig ez, és pont ez hiányzott: aki két
+     * nap után nem érez semmit, abbahagyja – pedig az ín-panaszok (golfkönyök,
+     * Achilles, talp) hetekben mérhetők, nem napokban.
+     */
+    @Test public void everyAreaSaysWhenToExpectResults() {
+        for (Rehab.Area a : Rehab.AREAS) {
+            String e = Rehab.expected(a.id);
+            assertTrue(a.id + ": nincs időtáv", e.length() >= 60);
+            // Konkrét hetekben legyen megadva.
+            assertTrue(a.id + ": nincs benne hét", e.contains("hét"));
+            assertTrue(a.id + ": nincs benne szám", e.matches(".*\\d.*"));
+        }
+        assertEquals("", Rehab.expected("nincs-ilyen"));
+    }
 }

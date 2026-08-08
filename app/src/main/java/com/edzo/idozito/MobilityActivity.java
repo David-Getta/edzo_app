@@ -369,6 +369,15 @@ public class MobilityActivity extends Activity {
             row.addView(videoBtn(e.video));
             box.addView(row, lp());
         }
+        // A gyógytornász első mondata: mikorra várható javulás. Enélkül aki
+        // két nap után nem érez semmit, abbahagyja – pedig az ín-panaszok
+        // hetekben mérhetők, nem napokban.
+        String exp = Rehab.expected(area.id);
+        if (!exp.isEmpty()) {
+            TextView ex = text("⏳ " + exp, 11.5f, MUTED, false);
+            ex.setPadding(0, dp(8), 0, 0);
+            box.addView(ex);
+        }
         TextView warn = text("⚠️ " + area.warn, 11.5f, MUTED, false);
         warn.setPadding(0, dp(8), 0, 0);
         box.addView(warn);
@@ -451,6 +460,8 @@ public class MobilityActivity extends Activity {
                     for (Rehab.Ex e : area.moves)
                         sb.append("• ").append(e.name).append("  –  ").append(e.dose)
                                 .append('\n').append("   ").append(e.cue).append('\n');
+                    if (!Rehab.expected(area.id).isEmpty())
+                        sb.append('\n').append("⏳ ").append(Rehab.expected(area.id)).append('\n');
                     sb.append('\n').append("⚠️ ").append(area.warn);
                     Intent sh = new Intent(Intent.ACTION_SEND).setType("text/plain")
                             .putExtra(Intent.EXTRA_TEXT, sb.toString());

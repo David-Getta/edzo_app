@@ -180,6 +180,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - **Heti fókusz**: kitűzhetsz egy testtájat, az app heti 3 alkalmat számol
   (hétfőnként nulláz), sorozat-számlálóval („🔥 3 hete sorban") – az állás a
   kezdőlap csempéjén, a Statisztikában és a heti összegzésben is látszik
+- **Mikorra várható javulás**: minden testtáj lapján ott a reális időtáv –
+  az egyensúly-munka 2–3 hét, az ín-panaszok (golfkönyök, Achilles, talp)
+  6–12 hét. Aki két nap után nem érez semmit, különben abbahagyja
 - **Fokozatosság testtájra szabva**: hat elvégzett sor után a lap kimondja a
   KÖVETKEZŐ SZINTET – és az területenként más: a bokánál instabil felület és
   szökdelés, a golfkönyöknél nehezebb súly lassabb leengedéssel, a deréknál

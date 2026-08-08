@@ -265,6 +265,55 @@ public final class Rehab {
                     + "ha a reggeli merevség már elmúlt."},
     };
 
+    /**
+     * Mikorra várható javulás – testtájanként.
+     *
+     * A gyógytornász első mondata mindig ez, és pont ez hiányzott: aki két
+     * nap után nem érez semmit, abbahagyja. Az ín-panaszok (golfkönyök,
+     * Achilles, talp) hetekben mérhetők, az egyensúly-munka gyorsabban hoz
+     * eredményt. A számok a konzervatív kezelés szokásos időtávjai – nem
+     * ígéret, hanem türelem-mérték.
+     *
+     * Sorok: [terület-azonosító, a várható időtáv].
+     */
+    private static final String[][] EXPECT = {
+            {"boka", "Az egyensúly-érzék gyorsan javul: 2–3 hét rendszeres munka után "
+                    + "érezhetően stabilabb a boka, a teljes hatás 6–8 hét."},
+            {"terd", "Az elülső térdfájdalom 4–6 hét alatt szokott érdemben javulni, "
+                    + "ha a csípő-erősítés is megvan. Türelem kell hozzá."},
+            {"itszalag", "Az IT-szalag panasz 4–8 hét: a futásmennyiséget közben "
+                    + "csökkentsd, ne állítsd le teljesen."},
+            {"derek", "A nem specifikus derékfájás java 2–6 hét alatt rendeződik. "
+                    + "A mozgás segít, az ágy nem."},
+            {"vall", "A váll 6–12 hét: a forgatóköpeny lassan épül, viszont tartósan. "
+                    + "A napi kis adag többet ér a heti nagynál."},
+            {"konyok-belso", "Az ín-panasz a leglassabb: 6–12 hét, néha több. Az első "
+                    + "3–4 hétben a fájdalom nem csökken látványosan – ez normális, "
+                    + "az ín ilyenkor épül."},
+            {"konyok-kulso", "Ugyanaz, mint a belsőnél: 6–12 hét. A gumirúd-csavarás "
+                    + "vizsgálatokban 4–6 hét alatt hozott mérhető javulást."},
+            {"csuklo", "A mozgástartomány 2–4 hét alatt visszatér, az erő 6–8 hét. "
+                    + "Az egérhasználat átállítása azonnal segít."},
+            {"nyak", "A monitor-nyak 3–6 hét alatt enged, ha a napi állcsúszás megvan. "
+                    + "A munkahely-beállítás nélkül visszatér."},
+            {"csipo", "A mozgékonyság 2–4 hét alatt látványosan nő, az erő 6–8 hét. "
+                    + "Ülőmunkánál a napi csípőhajlító-nyújtás tartja meg."},
+            {"comb", "Meghúzódás után 3–6 hét a visszatérés, a megelőző nordic curl "
+                    + "hatása 8–10 hét után mérhető. A sprintet fokozatosan told vissza."},
+            {"talp", "A talpfájás 6–12 hét, és a reggeli első lépések javulnak először. "
+                    + "A görgetés csillapít, az erősítés gyógyít."},
+            {"sipcsont", "A sípcsont-panasz 2–6 hét, de csak csökkentett futómennyiség "
+                    + "mellett. Pontszerű csontfájdalomnál orvos."},
+            {"achilles", "Az Achilles 8–12 hét excentrikus munkával, és a napi két "
+                    + "sorozat a kulcs. A merevség csökkenése az első jó jel."},
+    };
+
+    /** A várható javulás szövege, vagy üres, ha nincs ilyen terület. */
+    public static String expected(String areaId) {
+        for (String[] r : EXPECT) if (r[0].equals(areaId)) return r[1];
+        return "";
+    }
+
     /** A következő szint szövege, vagy üres, ha nincs ilyen terület. */
     public static String nextLevel(String areaId) {
         for (String[] r : NEXT) if (r[0].equals(areaId)) return r[1];
