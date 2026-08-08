@@ -429,7 +429,7 @@ public class MobilityActivity extends Activity {
                 // maradjon. Az ismétlésszámos adagolás durvább közelítése, de
                 // kézbe veszi azt, aki csak sodródna a listán.
                 .addNeutral("▶ Vezetett indítás (" + Rehab.guidedRounds(area)
-                        + " kör, 40 mp)", () -> {
+                        + " kör, 40 mp · ~" + Rehab.guidedMinutes(area) + " perc)", () -> {
                     java.util.List<String> one = Rehab.guidedNames(area);
                     java.util.ArrayList<String> names = new java.util.ArrayList<>();
                     for (int r = 0; r < Rehab.guidedRounds(area); r++) names.addAll(one);
@@ -437,9 +437,9 @@ public class MobilityActivity extends Activity {
                     gi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     gi.putExtra("r_names", names.toArray(new String[0]));
                     gi.putExtra("r_label", area.name);
-                    gi.putExtra("r_work", 40);
-                    gi.putExtra("r_rest", 8);
-                    gi.putExtra("r_prep", 5);
+                    gi.putExtra("r_work", Rehab.GUIDED_WORK);
+                    gi.putExtra("r_rest", Rehab.GUIDED_REST);
+                    gi.putExtra("r_prep", Rehab.GUIDED_PREP);
                     startActivity(gi);
                 })
                 // A fókusz kitűzése: heti számláló, hétfőnként nullázódik. A

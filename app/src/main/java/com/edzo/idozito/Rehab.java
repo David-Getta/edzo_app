@@ -533,6 +533,23 @@ public final class Rehab {
         return guidedNames(a).size() > a.moves.length ? 2 : 3;
     }
 
+    /** A vezetett mód munkaideje és pihenője másodpercben (a gombhoz és az időzítőnek). */
+    public static final int GUIDED_WORK = 40, GUIDED_REST = 8, GUIDED_PREP = 5;
+
+    /**
+     * A vezetett sor tényleges hossza percben.
+     *
+     * A lap fejlécén a gyakorlatok adagolásából becsült idő áll (10–15 perc),
+     * a vezetett mód viszont fix ablakokkal dolgozik – a kettő nem ugyanaz.
+     * Ha a gombra írt szám nem igaz, az a legrosszabb fajta apró hazugság:
+     * az ember beosztja rá az idejét.
+     */
+    public static int guidedMinutes(Area a) {
+        int items = guidedNames(a).size() * guidedRounds(a);
+        int sec = GUIDED_PREP + items * (GUIDED_WORK + GUIDED_REST);
+        return Math.max(1, (int) Math.round(sec / 60.0));
+    }
+
     // ---------- Fájdalom-napló ----------
 
     /**

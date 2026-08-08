@@ -428,4 +428,23 @@ public class RehabTest {
         }
         assertEquals("", Rehab.expected("nincs-ilyen"));
     }
+
+    /**
+     * A vezetett mód gombjára írt idő IGAZ.
+     *
+     * A lap fejlécén a gyakorlatok adagolásából becsült idő áll, a vezetett
+     * mód viszont fix ablakokkal dolgozik – a kettő nem ugyanaz. Ha a gombra
+     * írt szám nem igaz, az a legrosszabb fajta apró hazugság: az ember
+     * beosztja rá az idejét.
+     */
+    @Test public void theGuidedButtonTellsTheRealLength() {
+        for (Rehab.Area a : Rehab.AREAS) {
+            int items = Rehab.guidedNames(a).size() * Rehab.guidedRounds(a);
+            int sec = Rehab.GUIDED_PREP + items * (Rehab.GUIDED_WORK + Rehab.GUIDED_REST);
+            assertEquals(a.id, Math.round(sec / 60.0), Rehab.guidedMinutes(a));
+            // És a keret is tartható marad.
+            assertTrue(a.id + ": túl hosszú vezetett sor (" + Rehab.guidedMinutes(a) + " perc)",
+                    Rehab.guidedMinutes(a) >= 8 && Rehab.guidedMinutes(a) <= 20);
+        }
+    }
 }
