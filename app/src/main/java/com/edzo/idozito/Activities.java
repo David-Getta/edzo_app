@@ -828,6 +828,7 @@ public final class Activities {
         for (int[] m : mins) blank(q, m[0], m[2]);
         mergeTimeRanges(beforeBlank, mins, q);
         dropWarmupTimes(beforeBlank, mins);
+        dropSleepTimes(beforeBlank, mins);
 
         // 3) Mozgásformák a maradék szövegben.
         String s = new String(q);
@@ -2210,6 +2211,47 @@ public final class Activities {
 
     private static boolean isWarmupWord(String w) {
         return w.startsWith("bemelegit") || w.startsWith("levezet");
+    }
+
+    /**
+     * Az ALVÁS órái nem edzés-percek.
+     *
+     * Az „aludtam 8 órát, reggel futottam 5 km-t" nyolc órája az éjszakáé,
+     * mégis a futás hosszává vált: nyolcórás futás került a naplóba, a hozzá
+     * tartozó kalóriával és heti terheléssel együtt. A bemelegítés-szabálytól
+     * abban tér el, hogy itt nincs darabszám-feltétel – az alvás akkor sem
+     * edzésidő, ha ez az EGYETLEN időtartam a mondatban.
+     */
+    private static void dropSleepTimes(String s, List<int[]> mins) {
+        List<int[]> keep = new ArrayList<>();
+        for (int[] m : mins) if (!sleepWordAt(s, m)) keep.add(m);
+        if (keep.size() < mins.size()) {
+            mins.clear();
+            mins.addAll(keep);
+        }
+    }
+
+    /** Alvás-szó áll-e az időtartam mellett (előtte vagy két szóval utána). */
+    private static boolean sleepWordAt(String s, int[] m) {
+        int b = m[0];
+        while (b > 0 && s.charAt(b - 1) == ' ') b--;
+        int a = b;
+        while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
+        if (a < b && isSleepWord(s.substring(a, b))) return true;
+        int i = m[2];
+        for (int w = 0; w < 2 && i < s.length(); w++) {
+            while (i < s.length() && !Character.isLetter(s.charAt(i))) i++;
+            int e = i;
+            while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
+            if (e == i) break;
+            if (isSleepWord(s.substring(i, e))) return true;
+            i = e;
+        }
+        return false;
+    }
+
+    private static boolean isSleepWord(String w) {
+        return w.startsWith("alud") || w.startsWith("alvas") || w.startsWith("alszo");
     }
 
     /**

@@ -1083,6 +1083,25 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    /**
+     * Az alvás órái nem edzés-percek.
+     *
+     * Az „aludtam 8 órát, reggel futottam 5 km-t" nyolc órája az éjszakáé,
+     * mégis a futás hosszává vált: NYOLCÓRÁS futás került a naplóba, a hozzá
+     * tartozó kalóriával és heti terheléssel együtt. A bemelegítés-szabálytól
+     * abban tér el, hogy itt nincs darabszám-feltétel – az alvás akkor sem
+     * edzésidő, ha ez az egyetlen időtartam a mondatban.
+     */
+    @Test public void sleepHoursAreNotTrainingMinutes() {
+        Activities.Parsed p = Activities.parse("aludtam 8 órát, reggel futottam 5 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals(5, p.plans.get(0).km, 0.01);
+        assertTrue("nyolcórás futás lett belőle", p.plans.get(0).minutes <= 60);
+        // A valódi időtartam megmarad.
+        assertEquals(45, Activities.parse("aludtam 8 órát, 45 perc kondi")
+                .plans.get(0).minutes);
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.
