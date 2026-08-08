@@ -598,6 +598,8 @@ public class ActivitiesParseTest {
     @Test public void gymAndFitnessSynonymsMapToTheRightSport() {
         assertEquals("kondi", Activities.parse("crossfit").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("trx edzés").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("füvet nyírtam 1 órát").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("sövényt vágtam 1 óra").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("funkcionális edzés 1 óra").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("bootcamp 45 perc").plans.get(0).kind.id);
         assertEquals("kondi", Activities.parse("erősítő edzés").plans.get(0).kind.id);
@@ -795,6 +797,12 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×futas/19", summary("intervall: 8x400 méter"));
         // Nem hat-tíz külön alkalom!
         assertEquals(1, Activities.parse("10x100 méter úszás").plans.get(0).count);
+        // A RAGOZOTT mértékegység is összevonódik: enélkül a „10x400 métert"
+        // tíz külön edzés lett, az „5x1000 métert" pedig egyetlen kilométer.
+        assertEquals(1, Activities.parse("10x400 métert futottam").plans.get(0).count);
+        assertEquals(4.0, Activities.parse("10x400 métert futottam").plans.get(0).km, 0.01);
+        assertEquals(5.0, Activities.parse("5x1000 métert").plans.get(0).km, 0.01);
+        assertEquals(1, Activities.parse("5x1000 métert").plans.get(0).count);
         // A súlyzós „3x10" viszont marad sorozat×ismétlés.
         assertEquals(1, Activities.parse("3x10 guggolás").plans.get(0).count);
     }

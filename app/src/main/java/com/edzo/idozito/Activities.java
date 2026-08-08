@@ -129,7 +129,8 @@ public final class Activities {
                     "boulder", "maszofal"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
                     "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
-                    "takarit", "funyir", "koltoz", "asas", "kapalas", "kapal", "gereblyez",
+                    "takarit", "funyir", "fuvet nyir", "sovenyt vag", "sovenyvag",
+                    "koltoz", "asas", "kapalas", "kapal", "gereblyez",
                     "lapatol",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
@@ -1600,7 +1601,11 @@ public final class Activities {
     private static void mergeIntervalDistances(char[] q) {
         String s = new String(q);
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,2})\\s?x\\s?(\\d{1,4}(?:[.,]\\d+)?)\\s?(km|meter|m)(?![a-z])")
+                // A mértékegység ragozott alakja is ide tartozik („8x400
+                // métert futottam"): a toldalék nélkül a szorzat kiesett, és
+                // a táv vagy elveszett, vagy tíz külön edzéssé esett szét.
+                .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,4}(?:[.,]\\d+)?)\\s?"
+                        + "(km|meter[a-z]*|m)(?![a-z])")
                 .matcher(s);
         while (m.find()) {
             int n;
