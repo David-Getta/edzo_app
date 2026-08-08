@@ -1007,7 +1007,10 @@ public class DietActivity extends Activity {
                                 + "? Koppints, és beírom.");
                         reco.setClickable(true);
                         reco.setOnClickListener(v -> {
-                            nameEt.setText(near.name);
+                            // A zárójeles pontosítás a NÉV része, de a mezőben
+                            // már ÚJRA felismerésre kerülne: a „Rántott hús
+                            // (sertés)" mellé egy adag sertéskaraj is bemenne.
+                            nameEt.setText(near.name.replaceAll("\\s*\\(.*?\\)", "").trim());
                             nameEt.setSelection(nameEt.getText().length());
                         });
                         return;

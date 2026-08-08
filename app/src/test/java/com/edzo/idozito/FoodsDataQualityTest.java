@@ -432,6 +432,26 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * Az étel NEVE – zárójeles pontosítás nélkül – önmagát adja vissza.
+     *
+     * Ez az elgépelés-tipp útja: a javaslatra koppintva a név kerül a mezőbe,
+     * és azt a felismerő újra elolvassa. A zárójeles magyarázatot ezért
+     * levágjuk – a „Rántott hús (sertés)" mellé különben egy adag
+     * sertéskaraj is bement volna, a „Kakaó (tejes)" mellé egy pohár tej.
+     */
+    @Test public void everyFoodNameResolvesToItself() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL) {
+            String typed = f.name.replaceAll("\\s*\\(.*?\\)", "").trim();
+            java.util.List<Foods.Hit> h = Foods.parse(all, typed);
+            if (h.size() != 1 || !h.get(0).food.name.equals(f.name))
+                bad.append("\n  ").append(f.name).append(" -> ").append(names(h));
+        }
+        assertEquals("a saját nevét nem ismeri fel:" + bad, 0, bad.length());
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
