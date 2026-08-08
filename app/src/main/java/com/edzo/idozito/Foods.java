@@ -862,7 +862,13 @@ public final class Foods {
     };
 
     /** Összetétel BÁRMELYIK tagjaként maszkolandó szavak. */
-    private static final String[] INSIDE_BAD = {"buborek", "kepernyo", "szabaly"};
+    // A szó BELSEJÉBEN álló csapdák: a beszédbuborékban a bor, a
+    // főképernyőn az eper, a hüvelykujjszabályban a zab – és a
+    // pihenőNAPOKÉhoz szóban a poke bowl, a kétOLDALASokat szóban a sült
+    // oldalas. Mindet a szósöprés találta: a bejegyzés létrejött volna,
+    // csak épp nem arról, amit az ember írt.
+    private static final String[] INSIDE_BAD = {"buborek", "kepernyo", "szabaly",
+            "napoke", "oldalasok", "oldalasat"};
 
     /**
      * Maszkolandó-e a szó – igekötővel együtt is.

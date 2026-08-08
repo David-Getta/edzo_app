@@ -169,13 +169,17 @@ public class FoodsDataQualityTest {
                 "fogás", "fogások", "fogásnak", "beszédbuborék", "szappanbuborék",
                 "főképernyő", "kezdőképernyő", "domborítsd", "buktató", "ellenőrizzük",
                 "fogalmaz", "durumbúza", "szeretek futni", "szeretem", "stádió",
-                "szokásaim", "levesszük", "hüvelykujjszabály", "vízilabda"};
+                "szokásaim", "levesszük", "hüvelykujjszabály", "vízilabda",
+                // A szósöprés mai fogásai: a pihenőNAPOKÉhoz szóban a poke
+                // bowl, a kétOLDALASokat szóban a sült oldalas lapult.
+                "pihenőnapokéhoz", "pihenőnapokat", "kétoldalasokat"};
         for (String q : notFood)
             assertTrue("ételt talált benne: " + q + " -> " + names(Foods.parse(all, q)),
                     Foods.parse(all, q).isEmpty());
         // A valódi tételek viszont maradnak – ékezet nélkül gépelve is.
         String[] food = {"méz", "mez", "kávé", "kave", "kóla", "kola", "tej", "bor",
-                "fogas", "vörösbor", "tejföl", "mézes", "fogassal"};
+                "fogas", "vörösbor", "tejföl", "mézes", "fogassal",
+                "poke bowl", "poke tál", "sült oldalas", "oldalast ettem"};
         for (String q : food)
             assertTrue("elveszett az étel: " + q, !Foods.parse(all, q).isEmpty());
     }
