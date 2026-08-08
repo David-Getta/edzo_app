@@ -648,4 +648,37 @@ public class FoodsIntegrationTest {
         // A cukros változat magában marad cukros.
         assertEquals(42, Foods.parse(all, "üdítő").get(0).food.kcal100);
     }
+
+    /**
+     * Ami nem került a tányérra, az a naplóba se kerül – a vágy sem.
+     *
+     * A magyar ugyanazzal a szórenddel mondja el a vágyat és a vacsorát: a
+     * „szeretnék egy pizzát" és az „ettem egy pizzát" csak az igében tér el.
+     * Eddig mindkettőből bejegyzés lett – a „vettem két kiló almát" ezer
+     * kalóriát írt a naplóba egy BEVÁSÁRLÁSBÓL, a „kidobtam a maradék rizst"
+     * pedig a kukából.
+     *
+     * A szabály kétfeltételes: szándék-szó KELL, és evés-ige NEM lehet
+     * mellette. Így a „vettem egy kávét és megittam" valódi bejegyzés marad.
+     */
+    @Test public void wishesShoppingAndBinsAreNotMeals() {
+        for (String q : new String[]{"szeretnék egy pizzát", "holnap sütök egy tortát",
+                "kéne egy kávé", "jó lenne egy sör", "vettem két kiló almát",
+                "hoztam egy üveg bort", "főzök egy levest", "eldobtam a fél pizzát",
+                "kidobtam a maradék rizst", "a gyerek megette a banánomat"}) {
+            assertTrue(q, Foods.looksUneaten(q));
+            assertEquals(q, "", summary(q));
+        }
+        // Evés-igével viszont valódi bejegyzés – a „Vettem" végén álló
+        // „ettem" nem az: a szóhatár dönt.
+        assertEquals("Kávé (fekete) 200g", summary("vettem egy kávét és megittam"));
+        assertEquals("Szendvics 150g", summary("vettem egy szendvicset, megettem"));
+        assertEquals("Sütemény 100g", summary("kaptam egy sütit és megettem"));
+        assertEquals("Pizza 300g", summary("rendeltem egy pizzát"));
+        // És ami eddig is ment, az ugyanúgy megy.
+        assertEquals("Pizza 300g", summary("ettem egy pizzát"));
+        assertEquals("Pizza 150g", summary("megettem a fél pizzát"));
+        assertTrue(!Foods.looksUneaten("150 g csirkemell rizzsel"));
+        assertTrue(!Foods.looksUneaten(null));
+    }
 }

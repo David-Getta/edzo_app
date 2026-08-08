@@ -81,6 +81,10 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - **Elgépelésre tipp**: a „joghrut" és a „csirkemel" nem „ezt még nem
   ismerem", hanem „erre gondoltál: Joghurt?" – a felcserélt betű a
   telefonon a leggyakoribb hiba, és egy koppintással javítható
+- **A vágy nem vacsora**: a „szeretnék egy pizzát", a „vettem két kiló almát"
+  és a „kidobtam a maradék rizst" nem kerül a naplóba – szándék-szó mellett
+  evés-ige kell hozzá, így a „vettem egy kávét és megittam" továbbra is
+  bejegyzés
 - **Érti a tagadást is**: a „chips helyett almát ettem" csak almát naplóz,
   a „csoki nélkül kértem a kávét" csak kávét, a „ma nem ettem csokit" semmit.
   A tagadás az „és"-en át is ér („nem ettem csokit és chipset"), de megáll

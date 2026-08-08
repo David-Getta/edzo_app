@@ -2008,6 +2008,11 @@ public final class Foods {
     }
 
     static List<Hit> parse(List<Food> list, String query) {
+        // Ami nem került a tányérra, az a naplóba se kerüljön: a „szeretnék
+        // egy pizzát" és a „vettem két kiló almát" ugyanúgy tartalmaz ételt
+        // és mennyiséget, mint egy bejegyzés – csak épp egyikből sem lett
+        // falat. Eddig mindkettő bement, háromszáz, illetve ezer kalóriával.
+        if (looksUneaten(query)) return new ArrayList<>();
         List<Match> ms = matches(list, query);
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {
@@ -2655,6 +2660,59 @@ public final class Foods {
         if (liters <= 0 || liters > 5) return null;
         for (Food f : list) if (f.name.startsWith("Víz")) return new Hit(f, liters * 1000);
         return null;
+    }
+
+    /**
+     * Szándék, vásárlás, főzés, kidobás – ami NEM evés.
+     *
+     * A magyar ugyanazzal a szórenddel mondja el a vágyat és a vacsorát: a
+     * „szeretnék egy pizzát" és az „ettem egy pizzát" csak az igében tér el.
+     * Eddig mindkettőből bejegyzés lett – a „vettem két kiló almát" ezer
+     * kalóriát írt a naplóba egy bevásárlásból.
+     *
+     * A szabály kétfeltételes, mert a szándék-szó ÖNMAGÁBAN nem elég: a
+     * „vettem egy kávét és megittam" valódi bejegyzés. Ezért csak akkor
+     * dobjuk el a mondatot, ha van benne szándék-szó, ÉS nincs benne egyetlen
+     * EVÉS-ige sem.
+     */
+    public static boolean looksUneaten(String query) {
+        String s = norm(query == null ? "" : query);
+        if (s.isEmpty()) return false;
+        boolean intent = false;
+        for (String w : new String[]{
+                // Jövő és szándék.
+                "holnap", "majd veszek", "majd sutok", "fogok", "tervez",
+                "szeretnek", "szeretne", "kene", "kellene", "jo lenne",
+                "jol esne", "kivanok", "kivannek",
+                // Bevásárlás: a kosárban lévő étel nem elfogyasztott étel.
+                "vettem", "veszek", "vasarol", "hoztam", "hozok", "kaptam",
+                // Főzés jelen időben: a „főzök egy levest" még nem vacsora.
+                "fozok", "sutok", "keszitek", "keszitem", "fozni fogok",
+                // Ami a kukába ment.
+                "eldobtam", "kidobtam", "kiontottem", "megromlott", "kidobom",
+                // Amit más evett meg.
+                "megette a", "megettek", "megitta a"})
+            if (s.contains(w)) { intent = true; break; }
+        if (!intent) return false;
+        // Az evés-igét SZÓHATÁRRAL keressük: a „Vettem" végén ott az „ettem",
+        // és enélkül a bevásárlás úgy nézett ki, mint egy vacsora.
+        for (String w : new String[]{"ettem", "ettel", "evett", "eszem", "ittam",
+                "ittal", "ivott", "iszom", "megettem", "megittam", "elfogyasztottam",
+                "bekaptam", "haraptam", "reggeliztem", "ebedeltem", "vacsoraztam",
+                "uzsonnaztam", "nassoltam", "faltam", "kertem", "rendeltem"})
+            if (wholeWord(s, w)) return false;
+        return true;
+    }
+
+    /** Egész szóként szerepel-e a tő a szövegben. */
+    private static boolean wholeWord(String s, String w) {
+        for (int i = s.indexOf(w); i >= 0; i = s.indexOf(w, i + 1)) {
+            boolean left = i == 0 || !Character.isLetter(s.charAt(i - 1));
+            int e = i + w.length();
+            boolean right = e >= s.length() || !Character.isLetter(s.charAt(e));
+            if (left && right) return true;
+        }
+        return false;
     }
 
     /** Tagadó bevitel: az üres találat oka nem az, hogy nem ismerjük az ételt. */
