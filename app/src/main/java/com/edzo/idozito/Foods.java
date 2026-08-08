@@ -988,18 +988,32 @@ public final class Foods {
     };
 
     /**
+     * Tövek, amelyek ékezet nélkül MÉRTÉKSZÓVÁ válnak.
+     *
+     * Rövid a lista, és az is marad: a magyarban a „sor" az egyetlen olyan
+     * szó a tövek közt, ami egy másik étel elé állva a MENNYISÉGET mondja
+     * meg („egy sor csoki"). A „mez", a „kave" és a „kola" soha – ezek elé
+     * senki nem tesz ételt mértékszóként.
+     */
+    private static final String[] MEASURE_STEM = {"sor"};
+
+    /**
      * Ékezet nélkül írt, MÉRTÉKSZÓKÉNT álló tövek kidobása.
      *
      * A minta mindig ugyanaz: „egy SOR csoki”, ahol a szó a mennyiséget
      * mondja meg, nem az ételt. Csak akkor lép működésbe, ha a tövet ékezet
      * nélkül írták (tehát nem „sör”), ÉS közvetlenül utána egy másik felismert
      * étel kezdődik.
+     *
+     * A szűkítés fontos: enélkül minden ékezettel megkülönböztetett tő így
+     * viselkedett, és a „kave tejjel" beírásából eltűnt a kávé – pedig ott a
+     * kávé az ital, a tej a hozzávaló.
      */
     private static List<Match> dropMeasureWords(String q, String qAcc, List<Match> in) {
         List<Match> out = new ArrayList<>();
         for (Match m : in) {
             boolean drop = false;
-            if (m.pos + m.len <= q.length()) {
+            if (m.pos + m.len <= q.length() && isMeasureStem(q.substring(m.pos, m.pos + m.len))) {
                 String acc = accentedOf(q.substring(m.pos, m.pos + m.len));
                 if (acc != null && !acc.equals(q.substring(m.pos, m.pos + m.len))
                         && !qAcc.regionMatches(m.pos, acc, 0, acc.length()))
@@ -1022,6 +1036,53 @@ public final class Foods {
             if (!drop) out.add(m);
         }
         return out;
+    }
+
+    /**
+     * Fajta + gyűjtőnév: a második szó ugyanaz az étel, nem egy másik.
+     *
+     * A magyar a fajtát a gyűjtőnév elé teszi: „feta sajt", „mozzarella
+     * sajt". Az étel viszont EGY – a naplóba eddig két tétel ment be, egy
+     * adag feta ÉS egy adag trappista, vagyis a felismerés maga hízlalta a
+     * napot úgy nyolcvan kalóriával.
+     *
+     * A táblázat szándékosan szűk. „Sonka sajt" NEM tartozik ide: ott tényleg
+     * két étel van a tányéron. Csak az kerül be, ami a gyűjtőnév alá esik –
+     * a feta sajt, a mozzarella sajt.
+     *
+     * Sorok: [gyűjtő-tő, majd a fajták étel-nevei].
+     */
+    private static final String[][] KIND_THEN_GENERIC = {
+            {"sajt", "Mozzarella", "Parmezán", "Camembert / brie", "Feta",
+                    "Mascarpone", "Ricotta", "Cottage cheese"},
+    };
+
+    /** A fajta után álló gyűjtőnév-találat kidobása („feta sajt”). */
+    private static List<Match> dropGenericAfterKind(String q, List<Match> in) {
+        List<Match> out = new ArrayList<>();
+        for (Match m : in) {
+            String stem = q.substring(m.pos, m.pos + m.len);
+            boolean drop = false;
+            for (String[] row : KIND_THEN_GENERIC) {
+                if (!row[0].equals(stem)) continue;
+                for (Match o : in) {
+                    if (o == m || o.pos + o.len > m.pos) continue;
+                    // Legfeljebb egy szóköz és egy odatapadt rag fér közé:
+                    // „feta sajt", „fetás sajt".
+                    if (m.pos - (o.pos + o.len) > 3) continue;
+                    for (int i = 1; i < row.length; i++)
+                        if (row[i].equals(o.food.name)) drop = true;
+                }
+            }
+            if (!drop) out.add(m);
+        }
+        return out;
+    }
+
+    /** Mértékszóvá váló tő-e (ékezet nélkül írva). */
+    private static boolean isMeasureStem(String ns) {
+        for (String s : MEASURE_STEM) if (s.equals(ns)) return true;
+        return false;
     }
 
     /** A szótő igazi írásmódja, ha ékezettel megkülönböztetett – különben null. */
@@ -2112,6 +2173,8 @@ public final class Foods {
         // egy sor huszonöt gramm.) A sör ettől nem sérül: az ital nem szokott
         // egy másik étel neve előtt állni, és ékezettel írva úgyis átmegy.
         found = dropMeasureWords(q, qAcc, found);
+        // „feta sajt”: a fajta után álló gyűjtőnév ugyanaz az étel, nem másik.
+        found = dropGenericAfterKind(q, found);
 
         // A hosszabb találatba beleeső rövidebbeket eldobjuk.
         List<Match> out = new ArrayList<>();

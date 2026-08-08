@@ -232,6 +232,44 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * A mértékszó-szabály csak a „sor"-ra vonatkozik.
+     *
+     * A szabály régen minden ékezettel megkülönböztetett tőre lecsapott, ha
+     * közvetlenül utána étel állt – így a „kávé tejjel" beírásából eltűnt a
+     * kávé, és a „méz" is elszállt volna egy „méz banánnal"-ból. Mértékszó
+     * viszont csak a sor: kávét senki nem tesz mennyiségnek egy étel elé.
+     */
+    @Test public void onlyRowIsAMeasureWord() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Kávé (fekete), Tej", names(Foods.parse(all, "kave tejjel")));
+        assertEquals("Kávé (fekete), Cukor", names(Foods.parse(all, "kave cukorral")));
+        assertEquals("Méz, Banán", names(Foods.parse(all, "mez banannal")));
+        assertEquals("Üdítő (cukros), Pizza", names(Foods.parse(all, "kola pizzaval")));
+    }
+
+    /**
+     * Fajta + gyűjtőnév egy étel: „feta sajt".
+     *
+     * A magyar a fajtát a gyűjtőnév elé teszi, és a kettő ugyanaz a falat.
+     * A naplóba eddig két tétel ment be – egy adag feta ÉS egy adag
+     * trappista –, vagyis a felismerés maga adott hozzá vagy nyolcvan
+     * kalóriát. Ahol viszont tényleg két étel van („sonka sajt"), ott
+     * marad mind a kettő.
+     */
+    @Test public void aKindBeforeTheGenericNameIsOneFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Feta", names(Foods.parse(all, "feta sajt")));
+        assertEquals("Feta", names(Foods.parse(all, "feta sajttal")));
+        assertEquals("Mozzarella", names(Foods.parse(all, "mozzarella sajt")));
+        assertEquals("Parmezán", names(Foods.parse(all, "parmezán sajt")));
+        assertEquals("Ricotta", names(Foods.parse(all, "ricotta sajt")));
+        // Két külön étel marad kettő.
+        assertEquals("Sonka, Sajt (trappista)", names(Foods.parse(all, "sonka sajt")));
+        // Aminek nincs saját sora, az marad a gyűjtőnévnél.
+        assertEquals("Sajt (trappista)", names(Foods.parse(all, "cheddar sajt")));
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
