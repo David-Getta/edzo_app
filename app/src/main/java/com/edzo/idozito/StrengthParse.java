@@ -22,7 +22,14 @@ public final class StrengthParse {
     public static final class Set {
         public final int reps;
         public final double weight;
-        public Set(int reps, double weight) { this.reps = reps; this.weight = weight; }
+        public Set(int reps, double weight) {
+            this.reps = reps;
+            // Egy kilónál könnyebb sorozat nem létezik: a legkisebb kézisúlyzó
+            // is egy kiló. Ilyen szám csak félreolvasásból születik – a „fél
+            // testsúllyal" mondat „fél"-jéből lett fél kilós fekvenyomás.
+            // Testsúlyosnak vesszük, mert az legalább igaz.
+            this.weight = weight > 0 && weight < 1 ? 0 : weight;
+        }
     }
 
     /** Egy gyakorlat a hozzá tartozó sorozatokkal. */

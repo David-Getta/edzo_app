@@ -270,6 +270,14 @@ public class StrengthParseTest {
         // Ami nincs a 6–10 sávban, az nem RPE.
         assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rpe 3").get(0).rpe);
         assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg").get(0).rpe);
+        // Egy kilónál könnyebb sorozat nincs: a „fél testsúllyal" fele nem súly.
+        assertEquals(0.0, StrengthParse.parse("fekvenyomás 3x8 fél testsúllyal")
+                .get(0).sets.get(0).weight, 0.001);
+        // A valódi kis súly viszont megmarad.
+        assertEquals(1.5, StrengthParse.parse("bicepsz 3x12 1,5 kg")
+                .get(0).sets.get(0).weight, 0.001);
+        assertEquals(1.5, StrengthParse.parse("bicepsz 3x12 másfél kiló")
+                .get(0).sets.get(0).weight, 0.001);
         // A termi anglicizmusok a magyar nevükre futnak be.
         assertEquals("Combhajlítás", StrengthParse.parse("leg curl 3x12 40 kg").get(0).name);
         assertEquals("Lábnyújtás", StrengthParse.parse("leg extension 3x12 45 kg").get(0).name);
