@@ -160,6 +160,20 @@ public class DailyNudgeReceiver extends BroadcastReceiver {
             }
         } catch (Exception ignored) {}
 
+        // 6/b) Rehab-fókusz: a hét második felében, ha még hiányzik az adag.
+        // Hétfőn még korai számonkérni, csütörtöktől viszont már fogy az idő –
+        // és a megelőzésnél pont a rendszeresség a hatóanyag.
+        try {
+            String rid = RehabLog.focusId(c);
+            Rehab.Area ra = rid == null ? null : Rehab.byId(rid);
+            if (ra != null && dowIdx >= 3) {
+                int done = Rehab.weekCount(RehabLog.doneOf(c, rid), System.currentTimeMillis());
+                if (done < Rehab.WEEKLY_GOAL)
+                    lines.add("🩹 " + ra.name + ": " + done + "/" + Rehab.WEEKLY_GOAL
+                            + " a héten – tíz perc most is belefér.");
+            }
+        } catch (Exception ignored) {}
+
         // 7) Víz: hasznos, de a mozgásnál kevésbé sürgős.
         try {
             int cl = Water.todayCl(c);
