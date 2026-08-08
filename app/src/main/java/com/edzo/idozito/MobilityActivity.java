@@ -189,8 +189,12 @@ public class MobilityActivity extends Activity {
             row.addView(em);
             LinearLayout mid = vbox();
             mid.addView(text(area.name, 15.5f, TXT, true));
-            mid.addView(text(area.moves.length + " gyakorlat · ~" + Rehab.minutesOf(area)
-                    + " perc", 12, MUTED, false));
+            // Ahol van fájdalom-bejegyzés, ott a legutóbbi érték a listán is
+            // látszik – így egy pillantás alatt kiderül, hol áll a panasz.
+            int[] plv = RehabLog.painLevels(this, area.id);
+            String sub = area.moves.length + " gyakorlat · ~" + Rehab.minutesOf(area) + " perc";
+            if (plv.length > 0 && plv[0] >= 0) sub += "   ·   📉 " + plv[0] + "/10";
+            mid.addView(text(sub, 12, MUTED, false));
             row.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
             TextView arrow = text("›", 22, MUTED, false);
             row.addView(arrow);
