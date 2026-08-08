@@ -1115,6 +1115,12 @@ public final class Activities {
                     "mozgas", "hiit", "intervall"}) {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
+                // Az „edzés UTÁN" nem edzés, hanem IDŐPONT. Az „edzés után
+                // ittam egy fehérjeturmixot" mondatból eddig negyvenöt perc
+                // egyéb mozgás lett – és mivel az edzés-felismerő az étkezés
+                // elé áll, a turmix el is veszett mellőle. Ugyanez az „edzés
+                // előtt" és az „edzés közben".
+                if (timePhraseAfter(s, p + w.length())) continue;
                 Kind other = byId("egyeb");
                 int n = countBefore(s, p);
                 // A szorzószám itt is állhat hátul: „a héten edzettem négyszer".
@@ -1413,6 +1419,23 @@ public final class Activities {
         int p = s.indexOf("egy-egy");
         if (p >= 0) { blank(q, p + 3, p + 7); return 1; }
         return 0;
+    }
+
+    /**
+     * Időpont-szó áll-e a megadott hely után: „edzés UTÁN", „edzés ELŐTT".
+     *
+     * A szó ragja még hozzátartozhat a tőhöz („edzés" → „edzésem"), ezért a
+     * betűket átlépjük, és csak az utána álló KÜLÖN szót nézzük.
+     */
+    private static boolean timePhraseAfter(String s, int from) {
+        int i = from;
+        while (i < s.length() && Character.isLetter(s.charAt(i))) i++;
+        while (i < s.length() && s.charAt(i) == ' ') i++;
+        String rest = s.substring(Math.min(i, s.length()));
+        for (String u : new String[]{"utan", "elott", "kozben", "kozbeni", "utani",
+                "elotti", "kore", "korul"})
+            if (rest.startsWith(u)) return true;
+        return false;
     }
 
     /** Áll-e mértékegység a megadott helytől (szóközöket átlépve). */

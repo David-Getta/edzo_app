@@ -1039,6 +1039,29 @@ public class ActivitiesParseTest {
         assertNull(Activities.closestKind(null));
     }
 
+    /**
+     * Az „edzés UTÁN" nem edzés, hanem IDŐPONT.
+     *
+     * Az „edzés után ittam egy fehérjeturmixot" mondatból negyvenöt perc egyéb
+     * mozgás lett – és mivel az edzés-felismerő az étkezés ELÉ áll az
+     * útbaigazítóban, a turmix el is veszett mellőle: egyszerre került be egy
+     * nem létező edzés és maradt ki egy valódi étkezés.
+     */
+    @Test public void beforeAndAfterTrainingIsATimePhrase() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"edzés után ittam egy fehérjeturmixot",
+                "edzés előtt ettem egy banánt", "edzés közben ittam egy izotóniást",
+                "edzés után túró rudi"}) {
+            assertTrue(q, Activities.parse(q).isEmpty());
+            assertEquals(q, Sentence.Kind.MEAL, Sentence.of(q, all, 1_753_869_600_000L));
+        }
+        // A valódi edzés-mondat érintetlen.
+        assertEquals(45, Activities.parse("edzés 45 perc").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("edzettem 1 órát").plans.get(0).minutes);
+        assertEquals("joga", Activities.parse("edzés után 45 perc nyújtás")
+                .plans.get(0).kind.id);
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.
