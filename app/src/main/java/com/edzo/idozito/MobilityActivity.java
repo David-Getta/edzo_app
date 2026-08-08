@@ -177,6 +177,37 @@ public class MobilityActivity extends Activity {
         // Heti fókusz: a kitűzött terület és a hétfőnként nullázódó számláló.
         String fid = RehabLog.focusId(this);
         Rehab.Area focus = fid == null ? null : Rehab.byId(fid);
+        // Akinek egy testtájnál már gyűlnek a fájdalom-értékek, de nincs
+        // kitűzött fókusza, annak egy koppintással felajánljuk: a panasz
+        // követése és a heti adag együtt ér valamit.
+        if (focus == null) {
+            Rehab.Area cand = null;
+            int most = 2;
+            for (Rehab.Area a : Rehab.AREAS) {
+                int n = RehabLog.painLevels(this, a.id).length;
+                if (n > most) { most = n; cand = a; }
+            }
+            if (cand != null) {
+                final Rehab.Area fc2 = cand;
+                LinearLayout sc = card();
+                sc.setPadding(dp(14), dp(12), dp(14), dp(12));
+                sc.addView(text("⭐ Legyen ez a heti fókusz?", 14.5f, TXT, true));
+                TextView sh2 = text(fc2.emoji + " " + fc2.name + " – ide már " + most
+                        + " fájdalom-értéket írtál. Heti " + Rehab.WEEKLY_GOAL
+                        + " alkalommal érdemes csinálni; koppints, és számolom.",
+                        12, MUTED, false);
+                sh2.setPadding(0, dp(2), 0, 0);
+                sc.addView(sh2);
+                sc.setClickable(true);
+                sc.setOnClickListener(v -> {
+                    RehabLog.setFocus(this, fc2.id);
+                    Ux.blazeCard(this, "⭐ " + fc2.name + " a heti fókusz.");
+                    render();
+                });
+                body.addView(sc, lp());
+                body.addView(gap(12));
+            }
+        }
         if (focus != null) {
             long[] doneTs = RehabLog.doneOf(this, fid);
             int done = Rehab.weekCount(doneTs, System.currentTimeMillis());
