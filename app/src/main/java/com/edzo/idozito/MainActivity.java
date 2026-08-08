@@ -762,6 +762,23 @@ public class MainActivity extends Activity {
             c.addView(b2);
             return c;
         }
+        // A romló panasz ugyanígy fontosabb a napi tippnél: a rehab-sorok
+        // pont attól érnek valamit, hogy időben visszajelzést adnak.
+        for (Rehab.Area ra : Rehab.AREAS) {
+            int[] plv = RehabLog.painLevels(this, ra.id);
+            if (plv.length < 4) continue;
+            String pl = Rehab.painLine(plv);
+            if (!pl.contains("rosszabbodik") && !pl.contains("Erős fájdalom")) continue;
+            TextView h2 = text("🩹 " + ra.name, 12, tAccent, true);
+            TextView b3 = text(pl, 13.5f, TXT, false);
+            b3.setPadding(0, dp(6), 0, 0);
+            c.addView(h2);
+            c.addView(b3);
+            c.setClickable(true);
+            c.setOnClickListener(v -> startActivity(new Intent(this, MobilityActivity.class)
+                    .putExtra("open_rehab", true)));
+            return c;
+        }
         final TextView head = text("💡 Napi tipp  ·  koppints az újért", 12, tAccent, true);
         int doy = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
         final int[] idx = { ((doy % TIPS.length) + TIPS.length) % TIPS.length };
