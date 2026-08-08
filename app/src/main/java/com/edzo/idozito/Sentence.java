@@ -47,6 +47,11 @@ public final class Sentence {
         if (q.trim().endsWith("?")) return Kind.NONE;
         if (!StrengthParse.parse(q).isEmpty()) return Kind.STRENGTH;
         IntervalParse.Plan iv = IntervalParse.parse(q);
+        // Az alvás-mondat sosem időzítő-terv. A „8-9 órát aludtam" tól-ig
+        // párja pont úgy néz ki, mint egy munka/pihenő ritmus, és a felismerő
+        // be is állította rá az órát. Kimondott alvás-szó kell hozzá, tehát
+        // ez az ág mástól nem vesz el semmit.
+        if (iv != null && Sleep.parse(q) > 0) return Kind.SLEEP;
         // A PIHENŐT is kimondó, többköros terv egyértelműen időzítő: a
         // megtörtént edzésről senki nem írja le, hogy „20 mp pihenő". Ez a
         // kivétel a megosztott sablonok miatt kell – azok nevében gyakran ott

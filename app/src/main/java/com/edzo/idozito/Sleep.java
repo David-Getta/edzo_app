@@ -40,7 +40,18 @@ public final class Sleep {
             // „alvás: 8", „alvás 7,5 óra"
             java.util.regex.Pattern.compile(
                     "alvas\\w*\\s?:?\\s?(\\d{1,2}([.,]\\d)?)"),
+            // „7,5 órát aludtam", „csak 4 órát aludtam", „tegnap 6 órát
+            // aludtam összesen” – a szám ELÖL áll, az ige mögötte. Ez a
+            // leggyakoribb magyar szórend, és eddig egyszerűen kiesett: aki
+            // így írta le, semmit nem kapott vissza.
+            java.util.regex.Pattern.compile(
+                    "(\\d{1,2}([.,]\\d)?)\\s?ora\\w*[^0-9]{0,14}?aludtam"),
     };
+
+    /** Alvásról szól-e egyáltalán a mondat. */
+    private static boolean saysSleep(String s) {
+        return s.contains("alud") || s.contains("alvas") || s.contains("aludt");
+    }
 
     /**
      * A mondatban kimondott alvásóra, vagy -1.
@@ -55,6 +66,37 @@ public final class Sleep {
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
             return -1;
+        // Óra ÉS perc: a „6 óra 30 perc alvás" fél órája eddig elveszett –
+        // sőt az egész mondat, mert a perc a szám mellé állva elrontotta a
+        // mintát. Alvás-szó nélkül ez az ág nem él.
+        if (saysSleep(s)) {
+            java.util.regex.Matcher hm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?ora\\w*\\s?(\\d{1,2})\\s?perc").matcher(s);
+            if (hm.find()) {
+                double v = Integer.parseInt(hm.group(1)) + Integer.parseInt(hm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // „hét és fél órát aludtam": a számnév-fordítás után „7 es 0,5
+            // orat", ahol a fél KÜLÖN számként áll. A régi összeadás csak az
+            // ige mögötti alakra élt, az elöl álló számra nem.
+            java.util.regex.Matcher fm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?es\\s?0,5\\s?ora").matcher(s);
+            if (fm.find()) {
+                double v = Integer.parseInt(fm.group(1)) + 0.5;
+                if (v >= MIN_H && v <= MAX_H) return v;
+            }
+            // Tól-ig: a „8-9 órát aludtam" közepét vesszük. Enélkül a pár úgy
+            // nézett ki, mint egy munka/pihenő ritmus, és az időzítőbe ment.
+            java.util.regex.Matcher rm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?-\\s?(\\d{1,2})\\s?ora").matcher(s);
+            if (rm.find()) {
+                double lo = Integer.parseInt(rm.group(1)), hi = Integer.parseInt(rm.group(2));
+                if (hi > lo) {
+                    double v = (lo + hi) / 2.0;
+                    if (v >= MIN_H && v <= MAX_H) return v;
+                }
+            }
+        }
         for (java.util.regex.Pattern p : FORMS) {
             java.util.regex.Matcher m = p.matcher(s);
             if (!m.find()) continue;

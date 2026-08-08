@@ -25,6 +25,41 @@ public class SleepTest {
         assertEquals(7.5, Sleep.parse("aludtam hét és fél órát"), 0.01);
     }
 
+    /**
+     * A szám ELÖL is állhat: „7,5 órát aludtam".
+     *
+     * Ez a leggyakoribb magyar szórend, és a felismerő pont ezt nem értette –
+     * csak az ige mögötti számot. Aki így írta le az éjszakáját, semmit nem
+     * kapott vissza.
+     */
+    @Test public void theNumberMayComeFirst() {
+        assertEquals(7.5, Sleep.parse("7,5 órát aludtam"), 0.01);
+        assertEquals(4, Sleep.parse("csak 4 órát aludtam"), 0.01);
+        assertEquals(6, Sleep.parse("tegnap 6 órát aludtam összesen"), 0.01);
+        assertEquals(9, Sleep.parse("kilenc órát aludtam"), 0.01);
+        assertEquals(7.5, Sleep.parse("hét és fél órát aludtam"), 0.01);
+        // A másik igét nem húzza magához: a munka nem alvás.
+        assertEquals(6, Sleep.parse("8 órát dolgoztam, 6 órát aludtam"), 0.01);
+    }
+
+    /**
+     * Óra ÉS perc, illetve tól-ig.
+     *
+     * A „6 óra 30 perc alvás" fél órája eddig nemhogy elveszett: az egész
+     * mondat kiesett. A „8-9 órát aludtam" párja pedig úgy nézett ki, mint egy
+     * munka/pihenő ritmus, és az időzítőt állította be helyette.
+     */
+    @Test public void hoursWithMinutesAndRanges() {
+        assertEquals(6.5, Sleep.parse("6 óra 30 perc alvás"), 0.01);
+        assertEquals(7.8, Sleep.parse("aludtam 7 órát 45 percet"), 0.01);
+        assertEquals(8.5, Sleep.parse("8-9 órát aludtam"), 0.01);
+        assertEquals(Sentence.Kind.SLEEP,
+                Sentence.of("8-9 órát aludtam", null, 1_753_869_600_000L));
+        // Az időzítő-mondat érintetlen: nincs benne alvás-szó.
+        assertEquals(Sentence.Kind.INTERVAL,
+                Sentence.of("8 kör 40 mp munka 20 mp pihenő", null, 1_753_869_600_000L));
+    }
+
     @Test public void notEverySentenceWithHoursIsSleep() {
         assertEquals(-1, Sleep.parse("8 óra kondi"), 0.01);
         assertEquals(-1, Sleep.parse("8 órakor keltem"), 0.01);
