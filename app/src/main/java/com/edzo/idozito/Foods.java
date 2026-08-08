@@ -2738,8 +2738,32 @@ public final class Foods {
                 // Ami a kukába ment.
                 "eldobtam", "kidobtam", "kiontottem", "megromlott", "kidobom",
                 // Amit más evett meg.
-                "megette a", "megettek", "megitta a"})
+                "megette a", "megettek", "megitta a",
+                // A bevásárlólista és a KIFOGYOTT étel: mindkettő arról szól,
+                // hogy az étel épp NINCS meg – az egyikből mégis vacsora
+                // lett. („Elfogyott a tej" hatvan kaló volt a naplóban.)
+                "bevasarlolista", "bevasarlo lista", "bevasarlas", "kifogyott",
+                "elfogyott a", "nincs itthon", "nincs otthon",
+                // Ami eltéve vagy lefagyasztva vár: „el kell tennem",
+                // „lefagyasztottam a maradékot".
+                "el kell tennem", "eltennem", "lefagyaszt", "befottnek",
+                // Vágy és kíváncsiság: „megkívántam a csokit", „meg akarok
+                // kóstolni egy tiramisut", „receptet keresek".
+                "megkivantam", "megkivanom", "kostolni", "recept",
+                // Feltételes mód: a „rendelnék egy pizzát" nem rendelés.
+                "rendelnek", "sutnek", "foznek", "keszitenek", "ennek egy"})
             if (s.contains(w)) { intent = true; break; }
+        // A mondat ELEJÉN álló „majd" a JELEN idejű evés-igével együtt jövő
+        // idő: a „majd eszem egy pizzát" még nem vacsora. Az evés-ige miatt
+        // az alábbi kivétel-lista különben felmentené, ezért itt dől el – a
+        // mondat közepén viszont a „majd" sorrendet jelent („ettem egy
+        // levest, majd egy palacsintát"), ezért csak a mondatkezdő alak
+        // számít, és csak a jelen idejű igével.
+        for (String p : new String[]{"majd ", "esetleg ", "talan "})
+            if (s.startsWith(p))
+                for (String w : new String[]{"eszem", "eszek", "eszunk", "megeszem",
+                        "iszom", "megiszom", "bekapok", "rendelek"})
+                    if (wholeWord(s, w)) return true;
         if (!intent) return false;
         // Az evés-igét SZÓHATÁRRAL keressük: a „Vettem" végén ott az „ettem",
         // és enélkül a bevásárlás úgy nézett ki, mint egy vacsora.

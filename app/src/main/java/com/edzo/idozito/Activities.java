@@ -1538,9 +1538,23 @@ public final class Activities {
                 // történt. A „fogom" a „fogok" párja (tárgyas ragozás).
                 "akarok", "akarom", "akarunk", "akarod", "akarja",
                 "fogom", "fogunk", "fogjuk", "fogja",
+                // A szándék többi hétköznapi alakja. Mind ugyanarról szól:
+                // a mondat egy JÖVŐBELI edzésről beszél, az app mégis
+                // megtörténtként naplózta, teljes idővel, szériával, XP-vel.
+                "remelem", "megprobal", "probalok", "probalom", "keszulok",
+                "elhataroz", "eldontottem", "muszaj", "kotelezo", "vagyom ra",
+                "gondolkodom", "gondolkozom", "igerem", "eltokel", "nekiallok",
+                "raveszem magam", "ossze kell szedn",
                 // A kiírt TERV szó is: „a terv: guggolás 5x5 100 kg".
                 "a terv", "terv:", "tervem"})
             if (s.contains(w)) return true;
+        // A mondat ELEJÉN álló „majd" és a FŐNÉVI IGENÉV együtt jövő idő:
+        // „majd futni 30 percet", „talán elmenni a terembe". Külön-külön
+        // egyik sem elég – a „majd 30 perc kondi" beírható a naplóba
+        // utólag is, a „futottam, majd úsztam" pedig két megtörtént edzés –,
+        // de a kettő együtt csak szándékot jelenthet.
+        for (String w : new String[]{"majd ", "esetleg ", "talan "})
+            if (s.startsWith(w) && hasInfinitive(s)) return true;
         // Egyes szám első személyű jelen idő. A „futok" és az „edzek"
         // SZÁNDÉKOSAN kimarad: az előbbi a futás szótöve (a „három kört futok"
         // is futás), az utóbbi pedig szinte mindig tagadásban áll („nem
@@ -1559,6 +1573,20 @@ public final class Activities {
                 p = s.indexOf(w, p + 1);
             }
         }
+        return false;
+    }
+
+    /**
+     * Van-e a mondatban főnévi igenév („futni", „elmenni", „megcsinálni")?
+     *
+     * A magyar főnévi igenév sosem mond meg NEM TÖRTÉNT eseményt magában, de
+     * a jövőre utaló szavakkal együtt már egyértelmű: „majd futni egyet".
+     * Öt betűnél rövidebbet nem fogadunk el, mert a rövid -ni végű szavak
+     * (bikini, martini) nem igék.
+     */
+    private static boolean hasInfinitive(String s) {
+        for (String w : s.split("[^a-z0-9]+"))
+            if (w.length() >= 5 && w.endsWith("ni")) return true;
         return false;
     }
 

@@ -489,6 +489,34 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Tizenkilenc szándék-alak öt edzéssel: egyikből sem lehet bejegyzés.
+     *
+     * A remény, a próbálkozás, a készülés, az elhatározás, a kötelesség és
+     * az ígéret mind jövő időben beszél – az app mégis mindegyikből teljes
+     * értékű, negyvenöt–hatvan perces edzést csinált.
+     */
+    @Test public void noFormOfIntentEverBecomesALogEntry() {
+        String[] intent = {"szeretnék", "tervezem, hogy", "el kéne mennem", "majd",
+                "jó lenne", "akarok", "fogok", "remélem tudok", "megpróbálok",
+                "készülök", "elhatároztam, hogy", "muszáj lesz", "kötelező lesz",
+                "vágyom rá, hogy", "gondolkodom rajta, hogy", "ígérem, hogy",
+                "eldöntöttem, hogy", "talán", "esetleg"};
+        String[] core = {"futni 30 percet", "elmenni a konditerembe", "úszni egy órát",
+                "biciklizni 20 km-t", "megcsinálni a lábnapot"};
+        StringBuilder bad = new StringBuilder();
+        for (String p : intent)
+            for (String c : core) {
+                String q = p + " " + c;
+                if (!Activities.parse(q).isEmpty()) bad.append("\n  ").append(q);
+            }
+        assertEquals("tervből bejegyzés lett:" + bad, 0, bad.length());
+        // A „majd" magában viszont NEM jövő idő: főnévi igenév kell mellé.
+        // A „futottam, majd úsztam" két megtörtént edzés.
+        assertEquals(1, Activities.parse("majd 30 perc kondi").plans.size());
+        assertEquals(2, Activities.parse("futottam, majd úsztam").plans.size());
+    }
+
+    /**
      * A ház körüli munka is mozgás.
      *
      * Aki három órát ás a kertben, többet mozgott, mint egy fél órás

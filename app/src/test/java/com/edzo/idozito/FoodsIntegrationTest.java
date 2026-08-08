@@ -684,4 +684,31 @@ public class FoodsIntegrationTest {
         assertTrue(!Foods.looksUneaten("150 g csirkemell rizzsel"));
         assertTrue(!Foods.looksUneaten(null));
     }
+
+    /**
+     * A bevásárlólista, a kifogyott étel és a vágy sem vacsora.
+     *
+     * Tizenöt szándék-alakot húsz étellel próbálva ez a hét maradt, amiből
+     * bejegyzés lett: a „bevásárlólista: pizza", a „kifogyott a tej", az
+     * „el kell tennem a maradékot", a „meg akarok kóstolni egy tiramisut",
+     * a „receptet keresek", a „rendelnék egy pizzát" és a „megkívántam a
+     * csokit". Mind arról szól, hogy az étel épp NEM került a tányérra.
+     */
+    @Test public void shoppingListsAndCravingsAreNotMeals() {
+        for (String q : new String[]{"bevásárlólista: pizza, tej, alma",
+                "kifogyott a tej", "elfogyott a kenyér", "el kell tennem a maradékot",
+                "meg akarok kóstolni egy tiramisut", "receptet keresek a rizottóhoz",
+                "rendelnék egy pizzát", "megkívántam a csokit",
+                "lefagyasztottam a maradék levest", "majd eszem egy pizzát",
+                "talán eszem egy szendvicset"}) {
+            assertTrue(q, Foods.looksUneaten(q));
+            assertEquals(q, "", summary(q));
+        }
+        // Az evés-ige itt is felülír: a vágyból lett vacsora bejegyzés.
+        assertEquals("Csokoládé 25g", summary("megkívántam a csokit és megettem"));
+        assertEquals("Pörkölt 300g", summary("a nagyi receptje szerinti pörköltet ettem"));
+        assertEquals("Sütemény 100g", summary("kóstoltam a tortát"));
+        // A mondat KÖZEPÉN álló „majd" sorrend, nem jövő idő.
+        assertEquals("Leves (átlag) 400g", summary("ettem egy levest, majd még egy levest"));
+    }
 }
