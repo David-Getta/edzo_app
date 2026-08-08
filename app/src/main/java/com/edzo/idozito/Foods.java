@@ -372,8 +372,12 @@ public final class Foods {
                 "ravioli", "cannelloni"),
         // A puszta „turmix" magyarul gyümölcsös: nem fehérjeturmix. A teljes
         // „protein turmix" alak szótő, így az egyben marad.
+        // A „fehérjeturmix" magyar alakja is IDE tartozik: a rövidebb „turmix"
+        // tő a gyümölcsöset vitte, és tíz gramm fehérje helyett eggyel meg
+        // negyven kalóriával kevesebbel írta be a naplóba.
         new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake",
-                "kazein turmix", "whey turmix", "gainer"),
+                "kazein turmix", "whey turmix", "gainer",
+                "feherjeturmix", "feherje turmix", "feherjeshake"),
         new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "turmix", "smoothie", "acai"),
         // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
         // talált, vagy a 100 kcal/100 g-os kész italra esett – harmadannyi kalória.

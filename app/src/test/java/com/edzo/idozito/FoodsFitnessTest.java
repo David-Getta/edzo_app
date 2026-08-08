@@ -610,4 +610,21 @@ public class FoodsFitnessTest {
         assertEquals("Rántott csirkemell",
                 Foods.parse(all, "kfc csirkecsíkok").get(0).food.name);
     }
+
+    /**
+     * A „fehérjeturmix" fehérje-turmix, nem gyümölcsös.
+     *
+     * A rövidebb „turmix" tő eddig a gyümölcsöset vitte: tíz gramm fehérje
+     * helyett eggyel, és negyven kalóriával kevesebbel került a naplóba.
+     */
+    @Test public void theProteinShakeIsNotAFruitSmoothie() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Protein turmix", Foods.parse(all, "fehérjeturmix").get(0).food.name);
+        assertEquals("Protein turmix", Foods.parse(all, "fehérje turmix").get(0).food.name);
+        assertEquals("Protein turmix", Foods.parse(all, "protein turmix").get(0).food.name);
+        // A gyümölcsös marad a magáé.
+        assertEquals("Gyümölcsturmix / smoothie",
+                Foods.parse(all, "gyümölcsturmix").get(0).food.name);
+        assertEquals("Gyümölcsturmix / smoothie", Foods.parse(all, "turmix").get(0).food.name);
+    }
 }

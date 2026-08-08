@@ -144,6 +144,7 @@ public final class Activities {
                     "tekezunk", "tekezik",
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
+
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
                     "ugralo kotel", "hulahopp", "kotelugras",
@@ -594,6 +595,9 @@ public final class Activities {
             "csatorna", "assistance", "importance",
             // A kézisúlyzó nem kézilabda: a „kezi" tő a nevében is ott van.
             "kezisulyzo", "kezisuly",
+            // A golfKÖNYÖK panasz, nem sportág: a „golf" tő a nevében ül.
+            // (Szósöprés találta: a „fáj a golfkönyököm" golfozás lett volna.)
+            "golfkonyok",
             // A „részleTEKÉRT" végén a tekerés, a MEGERŐSÍTésben az erősítés,
             // a TÖLTEKEZÜNKben a tekézés, a KÖRGYŰRŰben (az app saját sávja)
             // a gyűrű.
