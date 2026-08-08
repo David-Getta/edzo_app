@@ -127,6 +127,21 @@ public final class Rehab {
                     ex("Csuklófeszítő nyújtás", "2×30 mp / kar", "Nyújtott könyök, tenyér lefelé, húzd a kézfejed a test felé.", "csuklófeszítő nyújtás alkar"),
                     ex("Ujj-nyitás gumival", "3×15", "Gumigyűrű az ujjak körül, nyisd szét – a feszítők másik fele.", "ujj extenzió gumi gyakorlat")),
 
+            new Area("csuklo", "🤲", "Csukló és kéz",
+                    "Egérkéz, gépelés, fekvőtámasz, mászás: a csukló apró "
+                            + "ízület, ami sok terhet visz. A mozgástartomány "
+                            + "megtartása és a terhelés fokozatos emelése a megelőzés – "
+                            + "naponta pár perc elég.",
+                    RED_FLAG + " Éjszakai zsibbadás, ujjakba sugárzó tünet esetén "
+                            + "orvoshoz fordulj: az nem terhelés-kérdés.",
+                    ex("Csuklókörzés", "2×10 / irány", "Lassan, teljes körrel – ez a bemelegítés, nem az edzés.", "csuklókörzés bemelegítés gyakorlat"),
+                    ex("Imádkozó nyújtás", "3×20 mp", "Tenyerek össze mellkas előtt, engedd le a kezed, amíg húz.", "prayer stretch csukló nyújtás"),
+                    ex("Fordított imádkozó nyújtás", "3×20 mp", "Kézfejek össze, ujjak lefelé – a másik oldal nyúlik.", "reverse prayer stretch csukló"),
+                    ex("Csuklóhajlítás kis súllyal", "3×15", "1–2 kg, alkar a combon, tenyér felfelé, lassú leengedés.", "csuklóhajlítás kézisúlyzó gyakorlat"),
+                    ex("Csuklófeszítés kis súllyal", "3×15", "Ugyanaz tenyérrel lefelé – a gyengébb oldal, ezért fontosabb.", "csuklófeszítés kézisúlyzó gyakorlat"),
+                    ex("Ujj-nyitás gumival", "3×15", "Gumigyűrű az ujjak körül – a szorítás ellenpárja.", "ujj extenzió gumi gyakorlat"),
+                    ex("Tenyértámasz terhelés", "3×20 mp", "Négykézláb, ujjak előre, majd kifelé fordítva – óvatosan told a súlyt a kézre.", "csukló terhelés négykézláb gyakorlat")),
+
             new Area("nyak", "🙆", "Nyak és felső hát",
                     "Az előreesett fej és a monitor-nyak ellen: mély nyakhajlítók, "
                             + "lapocka-stabilizálók és mellkasnyitás.",
@@ -283,9 +298,11 @@ public final class Rehab {
                 // A puszta „könyök" a gyakoribb külsőre megy – a lap tetejéről
                 // egy koppintás a belső.
                 {"konyok-kulso", "konyokom", "konyoke", "konyok"},
-                // A csukló-panasz mögött legtöbbször az alkar-feszítők
-                // túlterhelése áll – a külső könyök sora pont őket erősíti.
-                {"konyok-kulso", "csuklom", "csukloja", "csuklo faj"},
+                // A csuklónak saját sora van: a mozgástartomány és a kis
+                // súlyos terhelés más, mint az alkar-feszítők könyök-oldali
+                // munkája. (Korábban a külső könyök sorára ment – az is
+                // segített, de a csukló-mobilitás onnan hiányzott.)
+                {"csuklo", "csuklom", "csukloja", "csuklo faj", "csuklofajas", "egerkez"},
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
                 {"csipo", "csipom", "csipoje", "csipo"},
                 {"achilles", "achilles", "vadlim", "sarkam", "sarok faj"},

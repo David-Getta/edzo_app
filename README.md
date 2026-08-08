@@ -137,11 +137,11 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
 - Heti átlag a statisztikákban és a heti összefoglalóban
 
 ### 🩹 Megelőzés & rehab
-- **13 testtáj, 68 gyógytornász-ihletésű gyakorlat** adagolással, technikai
+- **14 testtáj, 75 gyógytornász-ihletésű gyakorlat** adagolással, technikai
   tippel és videóval: boka-stabilitás, térd, IT-szalag (a térd külső oldala),
-  derék (McGill-hármas), váll, golf- és teniszkönyök, nyak, csípő,
-  combhajlító, talp (plantar fasciitis), sípcsont, Achilles – kész, 10–20
-  perces megelőző sorok
+  derék (McGill-hármas), váll, golf- és teniszkönyök, csukló és kéz (egérkéz),
+  nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles –
+  kész, 10–20 perces megelőző sorok
 - **A panasz-mondat is ajtó**: a „fáj a vállam", a „beállt a derekam" vagy a
   „kificamodott a bokám" bármelyik beviteli mezőből a megfelelő sorhoz visz.
   A tagadott panasz („már nem fáj") és a zsibbadás (piros zászló) nem –

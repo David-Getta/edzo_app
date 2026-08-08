@@ -87,7 +87,9 @@ public class RehabTest {
         assertEquals("derek", Rehab.forComplaint("beállt a derekam").id);
         assertEquals("boka", Rehab.forComplaint("megrándult a bokám").id);
         assertEquals("terd", Rehab.forComplaint("sajog a térdem").id);
-        assertEquals("konyok-kulso", Rehab.forComplaint("fáj a csuklóm").id);
+        // A csuklónak saját sora van (mobilitás + kis súlyos terhelés).
+        assertEquals("csuklo", Rehab.forComplaint("fáj a csuklóm").id);
+        assertEquals("konyok-kulso", Rehab.forComplaint("teniszkönyök fájdalom").id);
         // A térd külső oldala az IT-szalag sora, az elülső a térd-soré.
         assertEquals("itszalag", Rehab.forComplaint("fáj a térdem külső oldala").id);
         assertEquals("itszalag", Rehab.forComplaint("IT szalag fájdalom").id);
