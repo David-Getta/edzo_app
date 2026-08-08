@@ -25,6 +25,24 @@ public class PulseTest {
         assertEquals(58, Pulse.parse("ma reggel a pulzusom 58 volt"));
     }
 
+    /**
+     * A szám elöl, a pulzus-szó a mondat végén.
+     *
+     * A „ma reggel 47 volt a nyugalmi pulzusom" a legtermészetesebb magyar
+     * alak, és eddig nem létezett: a felismerő csak a pulzus-szó UTÁNI
+     * számot kereste. A „nyugalmi" itt kötelező, különben a mondat bármelyik
+     * száma odaeshetne.
+     */
+    @Test public void theNumberMayComeFirst() {
+        assertEquals(47, Pulse.parse("ma reggel 47 volt a nyugalmi pulzusom"));
+        assertEquals(52, Pulse.parse("reggel 52 a nyugalmi pulzusom"));
+        assertEquals(48, Pulse.parse("48 a nyugalmi pulzusom ma"));
+        // Az életszerűtlen érték itt sem megy át.
+        assertEquals(-1, Pulse.parse("165 volt a nyugalmi pulzusom"));
+        // „Nyugalmi" nélkül nem talál: az edzés-szám nem pihenőérték.
+        assertEquals(-1, Pulse.parse("edzés után 20 perccel 95 volt a pulzusom"));
+    }
+
     /** Az edzés-adat nem pihenőérték. */
     @Test public void trainingHeartRateIsNotResting() {
         assertEquals(-1, Pulse.parse("futás átlagpulzus 165"));
