@@ -1123,6 +1123,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * SUP és szinkronúszás: két hiányzó vizes sport.
+     *
+     * Az álló evezés (SUP) a Balatonon a legnépszerűbb vizes sport, és egyik
+     * írásmódját sem ismertük. A puszta „sup" szándékosan NEM szótő: a
+     * supermarket, a support és a supervisor is azzal kezdődik.
+     */
+    @Test public void paddleboardingAndSyncSwimmingAreKnown() {
+        assertEquals("evezes", Activities.parse("supoztam 1 órát").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("szupozás 90 perc").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("paddleboard 1 óra").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("álló evezés 45 perc").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("szinkronúszás 1 óra").plans.get(0).kind.id);
+        for (String q : new String[]{"supermarket", "support", "supervisor"})
+            assertTrue(q, Activities.parse(q).isEmpty());
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.

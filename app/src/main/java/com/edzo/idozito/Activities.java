@@ -58,7 +58,7 @@ public final class Activities {
                     "uszoverseny",
                     // A medence RAGOZOTT alakja: a puszta „medence" a súlyzós
                     // medenceemelés szava is, azt nem vesszük el tőle.
-                    "medenceben", "uszomedence",
+                    "medenceben", "uszomedence", "szinkronuszas",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
                     "vizilabda", "aquafit", "vizitorna"),
@@ -75,7 +75,11 @@ public final class Activities {
                     "barlangasz", "via ferrata"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
-                    "raftin", "sarkanyhajo", "sarkany hajo"),
+                    "raftin", "sarkanyhajo", "sarkany hajo",
+                    // A SUP (álló evezés) a Balatonon a legnépszerűbb vizes
+                    // sport – eddig egyik írásmódját sem ismertük.
+                    "supozas", "supoztam", "szupozas", "paddleboard",
+                    "allo evezes", "sup-ozas"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
