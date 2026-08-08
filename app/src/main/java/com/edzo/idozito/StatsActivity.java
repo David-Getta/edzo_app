@@ -1977,9 +1977,9 @@ public class StatsActivity extends Activity {
         for (Rehab.Area a : Rehab.AREAS) {
             int[] pain = RehabLog.painLevels(this, a.id);
             if (pain.length < 3) continue;
-            String line = Rehab.painLine(pain);
-            if (line.isEmpty()) continue;
-            TextView pt = text("📉 " + a.name + " – " + line, 12.5f, MUTED, false);
+            String pl = Rehab.painLine(pain);
+            if (pl.isEmpty()) continue;
+            TextView pt = text("📉 " + a.name + " – " + pl, 12.5f, MUTED, false);
             pt.setPadding(0, dp(4), 0, 0);
             c.addView(pt);
         }
