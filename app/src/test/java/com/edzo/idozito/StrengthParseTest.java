@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -79,6 +80,25 @@ public class StrengthParseTest {
         assertEquals("Fekvőtámasz 1×50@0", sum("50 fekvőtámasz."));
         assertEquals("Guggolás 5×5/5/5/5/5@80", sum("guggolás 5x5 80 kg."));
         assertEquals("Bicepsz 3×12/12/12@12,5", sum("bicepsz 3x12 12.5 kg"));
+    }
+
+    /**
+     * Elgépelt gyakorlatnévre tipp jár.
+     *
+     * A súlyzós mezőben eddig SEMMI visszajelzés nem jött a fel nem ismert
+     * mondatra – a mező néma maradt. Ugyanaz a szigorú szabály, mint az
+     * ételeknél: hat betűtől, egyező szókezdettel, egy hibával; a felcserélt
+     * betű egy hiba, mert a telefonon az a jellemző elütés.
+     */
+    @Test public void typosInMoveNamesGetASuggestion() {
+        assertEquals("Fekvenyomás", StrengthParse.closestMove("fekvenyomsá 3x10"));
+        assertEquals("Vádliemelés", StrengthParse.closestMove("vádliemeles"));
+        assertEquals("Bicepsz", StrengthParse.closestMove("biceps 3x12"));
+        // Ami nem gyakorlat, arra nincs tipp.
+        for (String q : new String[]{"valami", "asztal", "futottam", "3x10",
+                "csirkemell", "szeretem", ""})
+            assertNull(q, StrengthParse.closestMove(q));
+        assertNull(StrengthParse.closestMove(null));
     }
 
     @Test public void perSetRepsAreKept() {

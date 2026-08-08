@@ -670,6 +670,40 @@ public final class StrengthParse {
         return raw == null ? null : moveIn(Foods.norm(raw));
     }
 
+    /**
+     * A legközelebbi gyakorlatnév elgépelés esetén – „guggolsá" → Guggolás.
+     *
+     * Ugyanaz a szabály, mint az ételeknél: hat betűtől, egyező szókezdettel,
+     * egy hibával (hosszú tőnél kettővel), a felcserélt betűt egy hibának
+     * számolva. A súlyzós mezőben ez különösen hiányzott: ott a fel nem
+     * ismert mondatra eddig SEMMI visszajelzés nem jött.
+     *
+     * @return a szép név, vagy null, ha nincs elég közeli
+     */
+    public static String closestMove(String raw) {
+        if (raw == null) return null;
+        String q = Foods.norm(raw);
+        String best = null;
+        int bestDist = Integer.MAX_VALUE, bestLen = 0;
+        for (String tok : q.split("[^a-z0-9]+")) {
+            if (tok.length() < 6) continue;
+            for (String[] row : MOVES)
+                for (int i = 1; i < row.length; i++) {
+                    String ns = row[i];
+                    if (ns.length() < 6 || ns.indexOf(' ') >= 0) continue;
+                    if (!ns.regionMatches(0, tok, 0, 3)) continue;
+                    int max = ns.length() >= 9 ? 2 : 1;
+                    if (Math.abs(ns.length() - tok.length()) > max) continue;
+                    int d = Foods.editDistance(tok, ns, max);
+                    if (d <= 0 || d > max) continue;
+                    if (d < bestDist || (d == bestDist && ns.length() > bestLen)) {
+                        best = row[0]; bestDist = d; bestLen = ns.length();
+                    }
+                }
+        }
+        return best;
+    }
+
     /** A leghosszabb illeszkedő gyakorlat-tő szép neve, vagy null. */
     private static String moveIn(String s) {
         String best = null;

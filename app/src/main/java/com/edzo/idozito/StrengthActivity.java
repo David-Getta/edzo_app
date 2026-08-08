@@ -481,6 +481,27 @@ public class StrengthActivity extends Activity {
 
     // ---------- Sorozatok mondatból ----------
 
+    /**
+     * Mi hiányzik a fel nem ismert mondatból – egy sorban.
+     *
+     * A felismerés óvatos: ismétlésszám nélkül nincs mentés. Ez helyes, de
+     * néma: a mező eddig üresen maradt, és a felhasználó nem tudta, hogy a
+     * gyakorlatot MEGÉRTETTÜK, csak a számot várjuk. A három eset – hiányzó
+     * ismétlés, elgépelt név, másik naplóba való mondat – mind kimondható.
+     */
+    static String missingHint(String q) {
+        if (q == null || q.trim().length() < 3) return "";
+        String move = StrengthParse.nameIn(q);
+        if (move != null)
+            return "✍️ " + move + " megvan – hány sorozat és ismétlés? "
+                    + "Pl. „" + move.toLowerCase(new java.util.Locale("hu")) + " 3x10 40 kg\".";
+        String near = StrengthParse.closestMove(q);
+        if (near != null) return "🤔 Erre gondoltál: " + near + "?";
+        Sentence.Kind k = Sentence.of(q, null, System.currentTimeMillis());
+        if (k != Sentence.Kind.NONE && k != Sentence.Kind.STRENGTH) return Sentence.hint(k);
+        return "";
+    }
+
     /** Egy mondatból több gyakorlat sorozatai – gépelés helyett. */
     void sentenceSheet(String prefill) {
         final LinearLayout box = vbox();
@@ -503,7 +524,13 @@ public class StrengthActivity extends Activity {
             public void onTextChanged(CharSequence s, int a, int b, int c) {}
             public void afterTextChanged(android.text.Editable e) {
                 List<StrengthParse.Item> items = StrengthParse.parse(e.toString());
-                if (items.isEmpty()) { reco.setText(""); return; }
+                if (items.isEmpty()) {
+                    // Eddig SEMMI nem jött vissza a fel nem ismert mondatra:
+                    // a mező néma maradt, és a felhasználó nem tudta, mi
+                    // hiányzik. Három eset van, és mind megmondható.
+                    reco.setText(missingHint(e.toString()));
+                    return;
+                }
                 StringBuilder sb = new StringBuilder("✔ Felismerve:");
                 for (StrengthParse.Item it : items) sb.append("\n•  ").append(it.label());
                 reco.setText(sb.toString());
