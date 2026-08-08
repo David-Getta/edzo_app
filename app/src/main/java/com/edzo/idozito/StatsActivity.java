@@ -1942,18 +1942,26 @@ public class StatsActivity extends Activity {
             Integer prev = per.get(n);
             per.put(n, prev == null ? 1 : prev + 1);
         }
-        if (total == 0) return null;
+        // Fájdalmat naplózni sor elvégzése nélkül is lehet – annak is jár a
+        // kártya, mert épp az ilyen embernek a legfontosabb az irány.
+        boolean anyPain = false;
+        for (Rehab.Area a : Rehab.AREAS)
+            if (RehabLog.painLevels(this, a.id).length >= 3) { anyPain = true; break; }
+        if (total == 0 && !anyPain) return null;
         LinearLayout c = card();
         c.setPadding(dp(16), dp(12), dp(16), dp(12));
-        c.addView(text("🩹 " + total + " rehab-alkalom 4 hét alatt", 15, TXT, true));
+        c.addView(text(total > 0 ? "🩹 " + total + " rehab-alkalom 4 hét alatt"
+                : "🩹 Megelőzés", 15, TXT, true));
         StringBuilder line = new StringBuilder();
         for (java.util.Map.Entry<String, Integer> e : per.entrySet()) {
             if (line.length() > 0) line.append("  ·  ");
             line.append(e.getKey()).append(" ×").append(e.getValue());
         }
-        TextView lt = text(line.toString(), 12.5f, MUTED, false);
-        lt.setPadding(0, dp(4), 0, 0);
-        c.addView(lt);
+        if (line.length() > 0) {
+            TextView lt = text(line.toString(), 12.5f, MUTED, false);
+            lt.setPadding(0, dp(4), 0, 0);
+            c.addView(lt);
+        }
         // A kitűzött fókusz heti állása is ide tartozik.
         String fid = RehabLog.focusId(this);
         Rehab.Area fa = fid == null ? null : Rehab.byId(fid);
@@ -1963,6 +1971,17 @@ public class StatsActivity extends Activity {
                     12.5f, MUTED, false);
             ft.setPadding(0, dp(4), 0, 0);
             c.addView(ft);
+        }
+        // Ahol fájdalmat is naplóztál, ott az irány a lényeg – nem az, hogy
+        // hányszor tornáztál, hanem hogy csökken-e a panasz.
+        for (Rehab.Area a : Rehab.AREAS) {
+            int[] pain = RehabLog.painLevels(this, a.id);
+            if (pain.length < 3) continue;
+            String line = Rehab.painLine(pain);
+            if (line.isEmpty()) continue;
+            TextView pt = text("📉 " + a.name + " – " + line, 12.5f, MUTED, false);
+            pt.setPadding(0, dp(4), 0, 0);
+            c.addView(pt);
         }
         return c;
     }

@@ -313,6 +313,9 @@ public class WeeklyReceiver extends BroadcastReceiver {
                 text += "\n🩹 " + rfa.name + ": " + rdone + "/" + Rehab.WEEKLY_GOAL
                         + " alkalom" + (rdone >= Rehab.WEEKLY_GOAL ? "  ✔"
                         : " – a megelőzés a rendszerességen múlik.");
+                // Ha fájdalmat is naplózott, az irány többet ér a darabszámnál.
+                int[] pain = RehabLog.painLevels(c, rfid);
+                if (pain.length >= 4) text += "\n📉 " + Rehab.painLine(pain);
             }
         } catch (Exception ignored) {}
 
