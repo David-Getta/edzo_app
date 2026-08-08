@@ -151,6 +151,14 @@ public class FoodsIntegrationTest {
         assertEquals("Leves (átlag) 400g", summary("tejszín nélkül kértem a levest"));
         // A tagadás csak a saját tagmondatára hat.
         assertEquals("Pizza 300g", summary("ebédre pizza, de nem ettem meg a felét"));
+        // A KIHAGYOTT hozzávaló nem viheti magával a fogást: a „hamburger
+        // sajt nélkül" hamburger marad. (A sajtot a hamburger amúgy is
+        // elnyeli, így a szabály korábban magát a hamburgert ölte meg, és a
+        // mondatból semmi nem került a naplóba.)
+        assertEquals("Hamburger 250g", summary("hamburger sajt nélkül"));
+        assertEquals("Pizza 300g", summary("pizza sajt nélkül"));
+        assertEquals("Csirkemell (sült/grill) 150g", summary("csirkemell rizs nélkül"));
+        assertEquals("Gyros 350g", summary("gyros saláta nélkül"));
         // A felismerő sor barátságos üzenetéhez.
         assertEquals(true, Foods.looksNegated("ma nem ettem csokit"));
         assertEquals(false, Foods.looksNegated("ebédre gulyásleves"));

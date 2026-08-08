@@ -2334,8 +2334,22 @@ public final class Foods {
                 Match best = null;
                 for (Match m : in) {
                     int end = m.pos + m.len;
-                    if (end <= p && p - end <= 6 && (best == null || m.pos > best.pos))
-                        best = m;
+                    if (end > p || p - end > 6) continue;
+                    // A kihagyott hozzávaló KÖZVETLENÜL a „nélkül" előtt áll.
+                    // A köztük lévő szöveg csak a saját ragja lehet: ha egy
+                    // MÁSIK szó is elfér ott, akkor nem ő a kihagyott tétel.
+                    // Enélkül a „hamburger sajt nélkül" hamburgerét öltük meg
+                    // (a sajtot a hamburger már elnyelte, így a legközelebbi
+                    // találat maga a hamburger lett) – és a mondatból semmi
+                    // nem került a naplóba.
+                    String gap = q.substring(end, p);
+                    boolean own = true, broke = false;
+                    for (int i = 0; i < gap.length(); i++) {
+                        if (Character.isLetter(gap.charAt(i))) {
+                            if (broke || i >= 3) { own = false; break; }
+                        } else broke = true;
+                    }
+                    if (own && (best == null || m.pos > best.pos)) best = m;
                 }
                 if (best != null) dead.add(best);
                 p = q.indexOf(w, p + 1);
