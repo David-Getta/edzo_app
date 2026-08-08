@@ -1023,6 +1023,22 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("két alkalommal futottam").plans.get(0).count);
     }
 
+    /**
+     * Elgépelt mozgásformára tipp jár.
+     *
+     * A „nem lettem okos" üzenet igaz, de személytelen: ha a nevet csak
+     * elgépelte, a leghasznosabb, amit mondhatunk, hogy MELYIKRE gondolhatott.
+     * A szabály itt is szigorú – a rossz tipp bosszantóbb, mint a semmi.
+     */
+    @Test public void typosInSportNamesGetASuggestion() {
+        assertEquals("kerekpar", Activities.closestKind("kerekpr 40 perc").id);
+        assertEquals("kosarlabda", Activities.closestKind("kosárlabd").id);
+        assertEquals("kondi", Activities.closestKind("konditerm").id);
+        for (String q : new String[]{"asztal", "valami", "szeretem", "csirkemell", ""})
+            assertNull(q, Activities.closestKind(q));
+        assertNull(Activities.closestKind(null));
+    }
+
     @Test public void theFollowingActivityKeepsItsOwnMultiplier() {
         // A „kétszer" az úszásé, nem a túráé – az úszás saját darabszámként
         // már megtalálta, tehát a túra nem veheti el.

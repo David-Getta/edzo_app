@@ -613,6 +613,39 @@ public final class Activities {
             "mozgaskeptelen",
     };
 
+    /**
+     * A legközelebbi mozgásforma elgépelés esetén – „futtás" → Futás.
+     *
+     * Ugyanaz a szigorú szabály, mint az ételeknél és a gyakorlatoknál: hat
+     * betűtől, egyező szókezdettel, egy hibával (hosszú tőnél kettővel), a
+     * felcserélt betűt EGY hibának számolva – a telefonon az a jellemző
+     * elütés. A „nem lettem okos" üzenet így legalább tippet ad.
+     *
+     * @return a mozgásforma, vagy null, ha nincs elég közeli
+     */
+    public static Kind closestKind(String raw) {
+        if (raw == null) return null;
+        String q = Foods.norm(raw);
+        Kind best = null;
+        int bestDist = Integer.MAX_VALUE, bestLen = 0;
+        for (String tok : q.split("[^a-z0-9]+")) {
+            if (tok.length() < 6) continue;
+            for (Kind k : ALL)
+                for (String ns : k.words) {
+                    if (ns.length() < 6 || ns.indexOf(' ') >= 0) continue;
+                    if (!ns.regionMatches(0, tok, 0, 3)) continue;
+                    int max = ns.length() >= 9 ? 2 : 1;
+                    if (Math.abs(ns.length() - tok.length()) > max) continue;
+                    int d = Foods.editDistance(tok, ns, max);
+                    if (d <= 0 || d > max) continue;
+                    if (d < bestDist || (d == bestDist && ns.length() > bestLen)) {
+                        best = k; bestDist = d; bestLen = ns.length();
+                    }
+                }
+        }
+        return best;
+    }
+
     /** Maszkolandó-e a szó – igekötővel együtt is. */
     private static boolean maskedWord(String tok) {
         if (startsWithNotSport(tok)) return true;

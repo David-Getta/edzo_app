@@ -635,6 +635,22 @@ public class HistoryActivity extends Activity {
 
     // ---- Több edzés egyszerre, szövegből ----
 
+    /**
+     * Mit mondjunk, ha nem értettük a mondatot.
+     *
+     * A „próbáld így" tanács igaz, de személytelen: ha a mozgásforma nevét
+     * csak elgépelte, akkor a leghasznosabb, amit mondhatunk, hogy MELYIKRE
+     * gondolhatott. Elgépelés nélkül marad a példamondat.
+     */
+    static String notUnderstoodHelp(String text) {
+        Activities.Kind near = Activities.closestKind(text);
+        if (near != null)
+            return "Erre gondoltál: " + near.title() + "? Írd be a hosszával együtt, "
+                    + "pl. „" + near.name.split(" ")[0].toLowerCase(new Locale("hu"))
+                    + " 45 perc\".";
+        return "Próbáld így: „az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés”.";
+    }
+
     /** Egy mondat, amiből több bejegyzés lesz. */
     void bulkSheet(String prefill) {
         final EditText et = inputField(
@@ -734,7 +750,7 @@ public class HistoryActivity extends Activity {
                             ? "A napló a megtörtént edzéseké – ha majd megvolt, írd be újra, múlt időben!"
                             : rest
                             ? "Ha kimaradt az edzés, nincs mit naplózni – a pihenő a fejlődés része. Blaze holnap is várni fog! 🐺"
-                            : "Próbáld így: „az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés”.")
+                            : notUnderstoodHelp(text))
                     .addPrimary("Újra", () -> bulkSheet(text))
                     .addCancel()
                     .show();
