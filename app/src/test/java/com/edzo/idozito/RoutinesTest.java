@@ -291,6 +291,27 @@ public class RoutinesTest {
     }
 
     /**
+     * A nap neve gondolatjellel is elválhat: „Mellnap – fekvenyomás, …".
+     *
+     * Az edzőtől kapott sor gyakran így érkezik, és eddig a NÉV veszett el
+     * belőle: a gondolatjel elválasztó volt, a „Mellnap" pedig egy fel nem
+     * ismert gyakorlat – a nap „Kapott edzésnap" néven került be.
+     */
+    @Test public void aDashMayIntroduceTheName() {
+        Routines.Routine r = Routines.parseShared("Mellnap - fekvenyomás, tárogatás, tolódzkodás");
+        assertNotNull(r);
+        assertEquals("Mellnap", r.name);
+        assertEquals(3, r.moves.size());
+        assertEquals("Mellnap", Routines.parseShared(
+                "Mellnap – fekvenyomás, tárogatás, tolódzkodás").name);
+        // Ami viszont felsorolás, az felsorolás marad: az eleje gyakorlatnév.
+        Routines.Routine x = Routines.parseShared("guggolás - fekvenyomás - evezés");
+        assertNotNull(x);
+        assertEquals("Kapott edzésnap", x.name);
+        assertEquals(3, x.moves.size());
+    }
+
+    /**
      * A perjel és a gondolatjel is felsorolás.
      *
      * Az edzőtől kapott nap sokszor így érkezik – vessző helyett perjellel

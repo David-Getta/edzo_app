@@ -198,6 +198,22 @@ public final class StrengthParse {
     }
 
     /**
+     * Sorszámozott lista jelölőinek kitakarása: „1. guggolás 2. fekvenyomás".
+     *
+     * A leírt edzésterv gyakran számozott lista, és a sorszám ilyenkor NEM
+     * ismétlésszám. Eddig az lett belőle: az „1. guggolás 2. fekvenyomás 3.
+     * evezés" tervből egy kétismétléses guggolás és egy háromismétléses
+     * fekvenyomás került a naplóba – kitalált sorozatok, amik a rekordokba és
+     * az 1RM-be is beszámítottak.
+     *
+     * A minta szűk: a szám után PONT vagy ZÁRÓJEL áll, utána szóköz és betű.
+     * A tizedes szám így érintetlen („12.5 kg”), és a mondatvégi pont is az.
+     */
+    static String stripListMarkers(String s) {
+        return s.replaceAll("(?<![\\d,.])(\\d{1,2})[.)]\\s+(?=[a-z])", " ");
+    }
+
+    /**
      * A mondat feldolgozása. Tagmondatonként (vessző, pontosvessző, „és”,
      * „majd”, „utána”) egy-egy gyakorlat; ami tagmondatban nincs felismert
      * gyakorlat VAGY nincs értelmes ismétlésszám, az kimarad.
@@ -205,7 +221,7 @@ public final class StrengthParse {
     public static List<Item> parse(String text) {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
-        String whole = stripInsteadOf(sets(Foods.norm(text)));
+        String whole = stripInsteadOf(sets(stripListMarkers(Foods.norm(text))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat

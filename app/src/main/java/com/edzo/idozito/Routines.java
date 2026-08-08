@@ -213,6 +213,17 @@ public final class Routines {
             name = clean(t.substring(0, c));
             body = t.substring(c + 1);
         }
+        // A nap neve gondolatjellel is elválhat: „Mellnap – fekvenyomás,
+        // tárogatás". Csak akkor, ha az eleje NEM gyakorlatnév – különben a
+        // „guggolás – fekvenyomás – evezés" felsorolásból lenne név.
+        if (name == null) {
+            java.util.regex.Matcher dm = java.util.regex.Pattern
+                    .compile("^(.{1,24}?)\\s[-–]\\s").matcher(t);
+            if (dm.find() && StrengthParse.nameIn(dm.group(1)) == null) {
+                name = clean(dm.group(1));
+                body = t.substring(dm.end());
+            }
+        }
         List<String> moves = new ArrayList<>();
         // Sorszámozott lista is elválasztó: az „1. guggolás 2. fekvenyomás"
         // ugyanaz a felsorolás, csak vessző nélkül. A minta szóhatárhoz kötött,

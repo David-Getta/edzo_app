@@ -64,6 +64,23 @@ public class StrengthParseTest {
         assertEquals("Evezés 3×10/10/10@40", sum("evezés 3x10 40 kg"));
     }
 
+    /**
+     * A számozott lista sorszáma nem ismétlésszám.
+     *
+     * A leírt edzésterv gyakran számozott lista, és az „1. guggolás
+     * 2. fekvenyomás 3. evezés" tervből egy KÉTismétléses guggolás és egy
+     * HÁROMismétléses fekvenyomás került a naplóba – kitalált sorozatok,
+     * amik a rekordba és az 1RM-be is beszámítottak.
+     */
+    @Test public void listMarkersAreNotReps() {
+        assertEquals("", sum("1. guggolás 2. fekvenyomás 3. evezés"));
+        assertEquals("", sum("1) guggolás 2) fekvenyomás"));
+        // A mondatvégi pont és a tizedes szám érintetlen.
+        assertEquals("Fekvőtámasz 1×50@0", sum("50 fekvőtámasz."));
+        assertEquals("Guggolás 5×5/5/5/5/5@80", sum("guggolás 5x5 80 kg."));
+        assertEquals("Bicepsz 3×12/12/12@12,5", sum("bicepsz 3x12 12.5 kg"));
+    }
+
     @Test public void perSetRepsAreKept() {
         assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
         assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));
