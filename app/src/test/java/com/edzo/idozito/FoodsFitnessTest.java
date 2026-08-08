@@ -627,4 +627,28 @@ public class FoodsFitnessTest {
                 Foods.parse(all, "gyümölcsturmix").get(0).food.name);
         assertEquals("Gyümölcsturmix / smoothie", Foods.parse(all, "turmix").get(0).food.name);
     }
+
+    /**
+     * A „zsírszegény" a zsír TARTALMÁRÓL szól, nem hozzávalóról.
+     *
+     * A „zsírszegény túró" mellé eddig száz gramm olaj került a naplóba,
+     * kilencszáz kalória – pont az ellenkezője annak, amit az ember írt.
+     * A saját tétele viszont megmarad: a „zsírszegény tej" nem sima tej.
+     */
+    @Test public void lowFatIsNotFat() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Túró", one(all, "zsírszegény túró"));
+        assertEquals("Sajt (trappista)", one(all, "zsírszegény sajt"));
+        assertEquals("Zsírszegény tej", one(all, "zsírszegény tej"));
+        assertEquals("Túró", one(all, "zsírmentes túró"));
+        // A zsíros kenyér viszont tényleg zsírral készül.
+        assertEquals("Olaj", one(all, "zsírban sült"));
+    }
+
+    private static String one(java.util.List<Foods.Food> all, String q) {
+        java.util.List<Foods.Hit> h = Foods.parse(all, q);
+        StringBuilder sb = new StringBuilder();
+        for (Foods.Hit x : h) sb.append(sb.length() > 0 ? ", " : "").append(x.food.name);
+        return sb.toString();
+    }
 }

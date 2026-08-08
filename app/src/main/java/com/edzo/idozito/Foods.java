@@ -962,7 +962,15 @@ public final class Foods {
             int j = i;
             while (j < sb.length() && Character.isLetter(sb.charAt(j))) j++;
             String tok = sb.substring(i, j);
-            if (masked(tok)) for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
+            boolean hide = masked(tok);
+            // A „zsírszegény" a zsír TARTALMÁRÓL szól, nem hozzávalóról: a
+            // „zsírszegény túró" mellé eddig száz gramm olaj került, kilenc-
+            // száz kalória – pont az ellenkezője annak, amit az ember írt.
+            // A saját tételét („zsírszegény tej") viszont nem vehetjük el,
+            // ezért csak akkor takarjuk ki, ha nem az áll utána.
+            if (!hide && tok.startsWith("zsirszegeny"))
+                hide = !sb.substring(j).trim().startsWith("tej");
+            if (hide) for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
             i = j;
         }
         return sb.toString();
