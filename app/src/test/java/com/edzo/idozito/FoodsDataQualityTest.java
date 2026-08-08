@@ -297,6 +297,23 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * A „meg" igekötő és a gy-kezdetű ige együtt MEGGY-nek olvasódik.
+     *
+     * megGYŐZ, megGYÓGYUL, megGYÚJT – és a „meggyógyult a vállam" épp a
+     * rehab-oldal mondata: abból eddig egy adag meggy lett a naplóban.
+     * Mellette a legINkább közepén a gin, a szövEGRÉSZben az egres.
+     */
+    @Test public void aVerbPrefixDoesNotMakeACherry() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"meggyőzőbb", "meggyőztem", "meggyógyult a vállam",
+                "meggyújtottam", "leginkább", "leginkább ezt szeretem", "szövegrész"})
+            assertEquals(q, "—", names(Foods.parse(all, q)));
+        // A valódi meggy és egres marad.
+        assertEquals("Cseresznye / meggy", names(Foods.parse(all, "meggyet ettem")));
+        assertEquals("Bogyós gyümölcs", names(Foods.parse(all, "egres")));
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer

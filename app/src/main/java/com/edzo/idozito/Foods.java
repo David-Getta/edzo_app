@@ -790,6 +790,15 @@ public final class Foods {
             "riziko", "sorsol", "alkalm", "borda",
             // A hálózat és a hálószoba nem hal, a csúszás nem túrós csusza.
             "haloz", "haloszob", "csuszas", "csuszik", "csuszo", "csuszd",
+            // A „meg" igekötő elé áll a gy-kezdetű igéknek, és a kettő
+            // együtt MEGGY-nek olvasódik: megGYŐZ, megGYÓGYUL, megGYÚJT.
+            // A „meggyógyult a vállam" épp a rehab-oldal mondata – abból
+            // eddig egy adag meggy lett.
+            "meggyoz", "meggyogyu", "meggyujt", "meggyanu", "meggyeng",
+            "meggyors", "meggyul", "meggyalaz", "meggyarap", "meggyotor",
+            // A legINkább közepén a gin, a szövEGRÉSZben az egres.
+            "leginkabb", "regina", "virgin", "origin", "login", "engine",
+            "margin", "imagin", "szovegresz",
             // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
             "kolesz",
             // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, tea,
