@@ -214,4 +214,25 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.MEAL, Sentence.of("ettem egy banánt", all, now));
         assertEquals(Sentence.Kind.INTERVAL, Sentence.of("tabata", all, now));
     }
+
+    /**
+     * A panasz-KÉRDÉS a rehab-lapé.
+     *
+     * A kérdőjel általában azt jelenti, hogy nincs mit naplózni – de a
+     * rehab-lap nem naplóz, hanem MUTAT. A „mit csináljak a fájó vállammal?"
+     * és a „van valami gyakorlat a derékfájásra?" pont az a kérdés, amire jó
+     * válaszunk van; eddig mindkettőre „nem értem" jött.
+     */
+    @Test public void aPainQuestionStillFindsTheRehabPage() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        long now = 1_753_869_600_000L;
+        assertEquals(Sentence.Kind.REHAB, Sentence.of("mit csináljak a fájó vállammal?", all, now));
+        assertEquals(Sentence.Kind.REHAB, Sentence.of("fáj a térdem, mit csináljak?", all, now));
+        assertEquals(Sentence.Kind.REHAB, Sentence.of("van valami gyakorlat a derékfájásra?", all, now));
+        assertEquals(Sentence.Kind.REHAB, Sentence.of("boka stabilitás gyakorlatok?", all, now));
+        // A többi kérdés továbbra sem bejegyzés.
+        assertEquals(Sentence.Kind.NONE, Sentence.of("mennyi kalória van a banánban?", all, now));
+        assertEquals(Sentence.Kind.NONE, Sentence.of("mit egyek edzés előtt?", all, now));
+        assertEquals(Sentence.Kind.NONE, Sentence.of("hány kört fussak?", all, now));
+    }
 }

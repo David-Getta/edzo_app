@@ -44,7 +44,15 @@ public final class Sentence {
         // naplózott volna, a „mit egyek edzés előtt?" pedig edzést. Aki
         // kérdez, az nem most evett és nem most edzett – a kérdőjel a
         // legmegbízhatóbb jel, amit egy magyar mondat adhat erről.
-        if (q.trim().endsWith("?")) return Kind.NONE;
+        if (q.trim().endsWith("?")) {
+            // Egy kivétellel: a rehab-lap nem NAPLÓZ, hanem mutat. A „mit
+            // csináljak a fájó vállammal?" és a „van valami gyakorlat a
+            // derékfájásra?" pont az a kérdés, amire jó válaszunk van –
+            // kérdőjellel is. Bejegyzés ebből sem lesz, tehát nem árthat.
+            if (Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null
+                    || Rehab.redFlag(q) != null) return Kind.REHAB;
+            return Kind.NONE;
+        }
         if (!StrengthParse.parse(q).isEmpty()) return Kind.STRENGTH;
         IntervalParse.Plan iv = IntervalParse.parse(q);
         // Az alvás-mondat sosem időzítő-terv. A „8-9 órát aludtam" tól-ig
