@@ -165,6 +165,7 @@ public final class Examples {
             "Hátnap: húzódzkodás, evezés, lehúzás, csuklyás emelés",
             "Teljes test: guggolás, fekvenyomás, evezés, plank",
             "guggolás, fekvenyomás, felhúzás",
+            "Törzsnap: plank / fal-ülés / hasprés",
     };
 
     /** Panasz vagy megelőző cél egy mondatban – a rehab-sorok ajtaja. */

@@ -218,7 +218,10 @@ public final class Routines {
         // ugyanaz a felsorolás, csak vessző nélkül. A minta szóhatárhoz kötött,
         // hogy a „3x10" és a „2,5 kg" ne essen szét tőle.
         body = body.replaceAll("(?<=^|\\s)\\d{1,2}[.)]\\s+", ", ");
-        for (String part : body.split("[,;\n]| és | meg | majd ")) {
+        // A perjel és a gondolatjel ugyanúgy felsorolás, ahogy a vessző:
+        // „guggolás / fekvenyomás / evezés". A kötőjel csak SZÓKÖZÖKKEL
+        // körülvéve elválasztó – a „12-10-8" és a „fal-ülés" nem eshet szét.
+        for (String part : body.split("[,;/\n]| - | – | és | meg | majd ")) {
             String m = StrengthParse.nameIn(part);
             if (m != null && !moves.contains(m) && moves.size() < MAX_MOVES) moves.add(m);
         }

@@ -289,4 +289,29 @@ public class RoutinesTest {
         assertNotNull(x);
         assertEquals(2, x.moves.size());
     }
+
+    /**
+     * A perjel és a gondolatjel is felsorolás.
+     *
+     * Az edzőtől kapott nap sokszor így érkezik – vessző helyett perjellel
+     * vagy gondolatjellel. A kötőjel viszont csak SZÓKÖZÖKKEL körülvéve
+     * elválasztó: a „12-10-8" ismétlésszám és a „fal-ülés" név egyben marad.
+     */
+    @Test public void slashesAndDashesSeparateToo() {
+        Routines.Routine s = Routines.parseShared("Edzés: guggolás / fekvenyomás / evezés");
+        assertNotNull(s);
+        assertEquals(3, s.moves.size());
+        Routines.Routine d = Routines.parseShared("guggolás - fekvenyomás - evezés");
+        assertNotNull(d);
+        assertEquals(3, d.moves.size());
+        // A kötőjeles NÉV nem esik szét: a fal-ülés egy gyakorlat.
+        Routines.Routine w = Routines.parseShared("Törzsnap: plank, fal-ülés, hasprés");
+        assertNotNull(w);
+        assertEquals(3, w.moves.size());
+        assertTrue(w.moves.contains("Fal-ülés"));
+        // A sorozat-jelölés sem: a „bicepsz 12-10-8" egy gyakorlat.
+        Routines.Routine n = Routines.parseShared("Karnap: bicepsz 12-10-8, tricepsz, alkar");
+        assertNotNull(n);
+        assertEquals("Bicepsz", n.moves.get(0));
+    }
 }
