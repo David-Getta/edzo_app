@@ -603,6 +603,10 @@ public final class Activities {
             // a TÖLTEKEZÜNKben a tekézés, a KÖRGYŰRŰben (az app saját sávja)
             // a gyűrű.
             "reszlet", "megerosit", "toltekez", "korgyuru",
+            // Ötvenezer szavas magyar gyakorisági listával végigsöpörve.
+            // A paSASban az ásás, a naGYÚRban a gyúrás, a TEREMtésben és a
+            // TEREMtményben az edzőterem, az EGYÉBKÉNTben az „egyéb mozgás".
+            "pasas", "nagyur", "teremt", "egyebkent",
     };
 
     /** Maszkolandó-e a szó – igekötővel együtt is. */

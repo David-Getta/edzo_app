@@ -798,7 +798,61 @@ public final class Foods {
             "meggyors", "meggyul", "meggyalaz", "meggyarap", "meggyotor",
             // A legINkább közepén a gin, a szövEGRÉSZben az egres.
             "leginkabb", "regina", "virgin", "origin", "login", "engine",
-            "margin", "imagin", "szovegresz",
+            "margin", "imagin", "szovegresz", "gina",
+            // Az ötvenezer szavas magyar gyakorisági listával végigsöpörve.
+            // A HAL nem csak étel, hanem ige is: megHALT, HALNI, HALOK – és
+            // az igekötős alakot a „meg" levágása után ugyanez fogja meg.
+            "halt", "halni", "halok", "halsz", "halunk", "halnak", "halna",
+            "halj", "haldok", "halando", "halhatatlan", "halmoz", "halomra",
+            "marshall",
+            // A BABa és a szoBÁBAn nem bab, a suliBA és a buliBA nem liba.
+            "baba", "baby", "szoba", "suli", "buli", "csali", "kisbaba", "sors",
+            // A háBORú, a cimBORa és a hátBORzongató nem bor.
+            "haboru", "cimbora", "hatborzong", "bordel",
+            // Az iDIÓta nem dió, a tolVAJ nem vaj, a CSAJt nem sajt,
+            // a kaPITÁny nem pita, a vaDASZ nem vadas hús.
+            "idiot", "tolvaj", "csaj", "kapitany", "vadasz",
+            // A kereSTEK nem steak, a soRSa nem sör, a gaBRIEl nem brie,
+            // a PHOebe nem pho-leves.
+            "keres", "sorsa", "sorsom", "sorsod", "sorsunk", "sorsot", "sorsa",
+            "gabriel", "phoe", "phon", "phot",
+            // A megGYILKolt sem meggy.
+            "meggyilkol",
+            // A meGINt nem gin, a laKÁSA nem kása, a tönkRETESzi nem rétes,
+            // a valaSZÓLOk nem szőlő, a PARIs nem paradicsom.
+            "megint", "lakas", "tonkretesz", "valaszol", "paris",
+            // A HAL igei alakjai és a hall- kezdetűek.
+            "halhat", "haliho", "belehal", "kihal", "elhal", "halovany",
+            // A BOR mindenütt: felHÁBORító, szoBOR, BORravaló, bíBOROs,
+            // kóBOR, világháBORú.
+            "felhaborit", "szobor", "borraval", "biboros", "kobor", "boris",
+            // A KÓLA: karCOLás, bonCOLás. (A parkolás már régóta itt van.)
+            "karcol", "boncol", "csonkol", "foncsor",
+            // A LIBA: nappaLIBAn. A BAB: fürdőSZOBÁBAn – a szoba a
+            // belső-tiltón is rajta van, mert összetétel második tagja.
+            "nappali",
+            // A MÁJ: majmok, majmot. A VAJ: sVÁJCi. A FETA: PRÓFÉTA.
+            "majm", "svajc", "profeta",
+            // A TEA: team. A SÜTI: vaSÚTi. A RIZS: terroRIZmus.
+            "team", "vasut", "terroriz",
+            // A SÖR: cSÖRÖg, kiSÖREg. A PITA: megállaPÍTAni.
+            "csorog", "kisoreg", "megallapit",
+            // A RÉTES: ígéRETES. Az ÖNTET: DÖNTETlen. A POKE: PÓKEmber,
+            // PÓKEr, ciPŐKEt.
+            "igeret", "dontet", "pokemb", "poker", "cipoke", "pokol",
+            // A PARADICSOM „pari" töve: IPARI. A MARHA: marhaSÁG.
+            "ipar", "marhasag", "csirkefogo",
+            // Nevek és idegen szavak, amikben étel-tő lakik.
+            "shakespeare", "brien", "truman", "hodgins", "pszichi",
+            "arizona", "rizzoli", "nicolas", "jupiter", "adios", "major",
+            "ginger", "ginny", "gino", "gingi",
+            // A mellKASÁN a kása, a divÍZIÓban a víz, a kettEJük a tej,
+            // a gyŰRŰMben a rum, a balLISZTikaiban a liszt.
+            "mellkas", "diviz", "kettej", "gyuru", "ballisztik", "statisztik",
+            // Az elBUKTAm nem bukta, az állaPÍTAni nem pita, a vilÁGOMBAn
+            // nem gomba, a vizELETe nem víz-ital, a halgass nem hal.
+            "buktam", "buktal", "buktunk", "buktak", "allapit", "vilagom",
+            "vizelet", "halgass", "sztar",
             // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
             "kolesz",
             // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, tea,
@@ -883,7 +937,30 @@ public final class Foods {
     // oldalas. Mindet a szósöprés találta: a bejegyzés létrejött volna,
     // csak épp nem arról, amit az ember írt.
     private static final String[] INSIDE_BAD = {"buborek", "kepernyo", "szabaly",
-            "napoke", "oldalasok", "oldalasat"};
+            "poke", "oldalasok", "oldalasat",
+            // A SZOBA összetétel második tagjaként is gyakori (fürdőszoba,
+            // hálószoba, nappali szoba), és mindegyikben ott a BAB. A HALL
+            // ugyanígy: ideHALLgass, viszHALL.
+            "szoba", "hall",
+            // A HÁBORÚ (polgárháború, világháború) a BORt, a SERTÉS a
+            // karajt, a SZŐLŐ pedig a bokSZOLÓt és a gyáSZOLÓt hozta be.
+            // Egyik tő sem áll összetétel második tagjaként az adatbázisban,
+            // tehát a szó belsejében nyugodtan kitakarhatók.
+            "haboru", "sertes", "szolo"};
+
+    /**
+     * Tövek, amiknek a szó ELEJÉN kell állniuk.
+     *
+     * Három-négy betűs, idegen eredetű szavak: a gin, a pho, a chia, a kesu,
+     * a stek. Magyar összetételben egyik sem áll hátul – a kesudió a kesuval
+     * KEZDŐDIK –, a szó közepén viszont sorra beleakadnak: meGINt, épphoGY,
+     * pszicHIAter, elKESUnk, teSTEK. Ötvenezer szavas gyakorisági listával
+     * végigsöpörve mind valódi eset volt.
+     */
+    private static final String[] START_ONLY = {"gin", "pho", "chia", "kesu", "stek"};
+
+    /** Kivétel: itt a tő tényleg a szó közepén áll, és mégis étel. */
+    private static final String[] START_ONLY_OK = {"macchiato"};
 
     /**
      * Szó ELEJÉN álló csapdák, amik ételnek látszanak: a „zsírmentes" jelző a
@@ -912,6 +989,18 @@ public final class Foods {
             "aranyalma", "csipkebogyoalma"};
 
     /**
+     * Valódi májas összetételek – ezekben a „mája" tényleg máj.
+     *
+     * Az „almája" is itt van: ott a betűsor az ALMA és a birtokos „-ja"
+     * találkozásából jön, nem a májból.
+     */
+    private static final String[] MAJ_OK = {"csirkemaj", "libamaj", "kacsamaj",
+            "sertesmaj", "borjumaj", "majkrem", "kenomajas", "majgomboc", "almaja"};
+
+    /** Ahol a „zab" betűsor nem zab, de az étel valódi: a vaszabi. */
+    private static final String[] ZAB_OK = {"vaszabi", "wasabi"};
+
+    /**
      * Maszkolandó-e a szó – igekötővel együtt is.
      *
      * A maszk a szó ELEJÉT nézi, különben a ragozott igazi ételek („sajtos",
@@ -923,6 +1012,30 @@ public final class Foods {
      */
     private static boolean masked(String tok) {
         if (startsWithBad(tok)) return true;
+        // A ZAB a szó belsejében sosem zab: igaZABb, hosszABB, háZÁBAn,
+        // szaBAd, szaBÁLy. Zabos összetétel mindig a zabbal KEZDŐDIK
+        // (zabpehely, zabkása, zabtej), tehát kivétel sem kell.
+        for (String so : START_ONLY)
+            if (tok.indexOf(so) > 0) {
+                boolean ok = false;
+                for (String e : START_ONLY_OK) if (tok.contains(e)) ok = true;
+                if (!ok) return true;
+            }
+        if (tok.indexOf("zab") > 0) {
+            boolean real = false;
+            for (String ok : ZAB_OK) if (tok.contains(ok)) real = true;
+            if (!real) return true;
+        }
+        // A francia főváros nem paradicsom: a „Párizsban" közepén a „pari".
+        // A párizsi FELVÁGOTT viszont valódi étel – az marad.
+        if (tok.startsWith("parizs") && !tok.startsWith("parizsi")) return true;
+        // A birtokos „-ja" a -ma végű főnevek után MÁJ-at ad: probléMÁJA,
+        // téMÁJA, forMÁJA. A valódi májas összetételek viszont maradnak.
+        if (tok.indexOf("maja") > 0) {
+            boolean real = false;
+            for (String ok : MAJ_OK) if (tok.contains(ok)) real = true;
+            if (!real) return true;
+        }
         if (tok.indexOf("alma") > 0) {
             boolean real = false;
             for (String ok : ALMA_OK) if (tok.contains(ok)) real = true;
@@ -1025,6 +1138,10 @@ public final class Foods {
     private static final String[][] ACCENTED_STEM = {
             {"sor", "sör"}, {"mez", "méz"}, {"kave", "kávé"}, {"kola", "kóla"},
             {"bor", "bor"}, {"tej", "tej"}, {"fogas", "fogas"},
+            // A HAL ékezet nélküli szó, a HÁLA és a HÁLÁS viszont á-val írt –
+            // ezért a hal tövét mindenhol ékezet nélkül kérjük. Enélkül a
+            // „hálás vagyok" egy adag halat írt a naplóba.
+            {"hal", "hal"},
     };
 
     /**

@@ -314,6 +314,71 @@ public class FoodsDataQualityTest {
     }
 
     /**
+     * Ötvenezer szavas magyar gyakorisági lista söprése.
+     *
+     * A saját kommentjeinkből épített korpusz elfogyott: ez a lista valódi
+     * beszélt nyelvi szavakból jön, és sorra hozta a rövid szótövek
+     * csapdáit. Mind valódi eset volt – a bejegyzés létrejött, csak épp nem
+     * arról, amit az ember írt. A leggyakoribbak: a HAL ige („meghalt"), a
+     * ZAB a hosszABBban, a BAB a szoBÁBAn, a LIBA a nappaLIBAn, a GIN a
+     * meGINtben.
+     */
+    @Test public void everydayHungarianWordsAreNotFood() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[] words = {"meghalt", "meghalni", "halok", "haldoklik", "idehallgass",
+                "hosszabb", "igazából", "házában", "lakása", "mellkasán",
+                "baba", "kisbaba", "szobában", "fürdőszobában",
+                "suliban", "buliba", "nappaliban",
+                "háború", "világháborúban", "cimbora", "hátborzongató", "szobor",
+                "bíboros", "borravalót", "felháborító",
+                "megint", "meginni", "leginkább", "ginger",
+                "idióta", "tolvaj", "csajt", "kapitány", "vadászni", "sors",
+                "problémája", "majmok", "svájci", "próféta", "team", "vasúti",
+                "terrorizmus", "csörög", "megállapítani", "ígéretes", "döntetlen",
+                "pókember", "hamupipőke", "elkésünk", "pszichiáter", "épphogy",
+                "testek", "festék", "kerestek", "boncolás", "karcolás",
+                "bokszoló", "gyászoló", "divízió", "kettejük", "elbuktam",
+                "kísértés", "megsértése", "ballisztikai", "vizelet", "világomban",
+                "shakespeare", "marhaság", "ipari", "párizsban", "szövegrész",
+                "meggyőzőbb", "meggyógyult", "gyűrűm"};
+        StringBuilder bad = new StringBuilder();
+        for (String w : words) {
+            java.util.List<Foods.Hit> h = Foods.parse(all, w);
+            if (!h.isEmpty()) bad.append("\n  ").append(w).append(" -> ").append(names(h));
+        }
+        assertEquals("hétköznapi szóból étel lett:" + bad, 0, bad.length());
+    }
+
+    /** Ugyanez a mozgás-felismerőn. */
+    @Test public void everydayHungarianWordsAreNotSport() {
+        StringBuilder bad = new StringBuilder();
+        for (String w : new String[]{"pasas", "nagyuram", "teremtés", "teremtmény",
+                "egyébként"}) {
+            Activities.Parsed p = Activities.parse(w);
+            if (p != null && !p.isEmpty())
+                bad.append("\n  ").append(w).append(" -> ").append(p.plans.get(0).kind.id);
+        }
+        assertEquals("hétköznapi szóból edzés lett:" + bad, 0, bad.length());
+    }
+
+    /** A valódi ételek és mozgások ettől nem sérülnek. */
+    @Test public void theRealWordsStillWork() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String[][] ok = {{"halat ettem", "Hal (fehér)"}, {"zabkása", "Zabpehely"},
+                {"babot ettem", "Bab (főtt)"}, {"liba", "Kacsa / liba"},
+                {"vörösbor", "Bor (vörös/fehér)"}, {"kesudió", "Kesudió"},
+                {"chia mag", "Chia / lenmag"}, {"macchiato", "Tejeskávé / cappuccino"},
+                {"steak", "Marhahús"}, {"sertéskaraj", "Sertéskaraj"},
+                {"szőlő", "Szőlő"}, {"rétes", "Rétes"}, {"pite", "Pite (almás/gyümölcsös)"},
+                {"vaszabi", "Mustár"}, {"csirkemájat ettem", "Csirkemáj"},
+                {"almáját megette", "Alma"}, {"poke bowl", "Poke bowl"}};
+        for (String[] c : ok)
+            assertEquals(c[0], c[1], names(Foods.parse(all, c[0])));
+        assertEquals("kondi", Activities.parse("edzőteremben voltam").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("ásás a kertben 1 óra").plans.get(0).kind.id);
+    }
+
+    /**
      * Az előre normalizált szótövek megegyeznek az eredetivel.
      *
      * A felismerés sebességéért a szótövek ékezet nélküli alakja egyszer
