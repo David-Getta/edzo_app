@@ -353,7 +353,8 @@ public class FoodsDataQualityTest {
     @Test public void everydayHungarianWordsAreNotSport() {
         StringBuilder bad = new StringBuilder();
         for (String w : new String[]{"pasas", "nagyuram", "teremtés", "teremtmény",
-                "egyébként"}) {
+                "egyébként", "jegyéből", "félreolvasásból", "megúsztuk",
+                "mozgásképtelenség", "marhára"}) {
             Activities.Parsed p = Activities.parse(w);
             if (p != null && !p.isEmpty())
                 bad.append("\n  ").append(w).append(" -> ").append(p.plans.get(0).kind.id);

@@ -46,23 +46,68 @@ open(out, 'w').write('\n'.join(keep))
 print('korpusz: %d szó' % len(keep), file=sys.stderr)
 PY
 
-# 2) A vizsgáló osztály a korpusszal.
-python3 - "$WORK/szavak.txt" "$PKG/Sopres.java" <<'PY'
+# 1b) KÜLSŐ korpusz: ötvenezer szavas magyar gyakorisági lista.
+#
+# A kommentekből épített korpusz a MI szókincsünk – tele étel- és
+# edzés-szavakkal, és épp azok a hétköznapi szavak hiányoznak belőle,
+# amikbe a rövid szótövek beleakadnak. A külső listával futtatva negyvenegy
+# valódi hiba jött ki elsőre: a „meghalt" halat, a „hosszabb" zabpelyhet,
+# a „szobában" babot naplózott.
+#
+# A listát nem tesszük a repóba (huszonötezer sor idegen adat): letöltjük,
+# ha nincs meg, és hálózat nélkül csendben kihagyjuk.
+LISTA="${SZOSOPRES_LISTA:-${TMPDIR:-/tmp}/hu_50k.txt}"
+LISTA_URL="https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/hu/hu_50k.txt"
+LISTA_SZO="${SZOSOPRES_SZO:-25000}"
+if [ ! -s "$LISTA" ] && [ "${SZOSOPRES_LETOLT:-1}" = "1" ]; then
+  curl -sS -m 60 -o "$LISTA" "$LISTA_URL" 2>/dev/null || true
+fi
+if [ -s "$LISTA" ]; then
+  python3 - "$LISTA" "$WORK/szavak.txt" "$LISTA_SZO" <<'PY'
 import sys
-ws = [w for w in open(sys.argv[1]).read().split('\n') if w]
-esc = lambda s: s.replace('\\', '\\\\').replace('"', '\\"')
-arr = ',\n'.join('            "%s"' % esc(w) for w in ws)
-open(sys.argv[2], 'w').write('''package com.edzo.idozito;
+src, out, limit = sys.argv[1], sys.argv[2], int(sys.argv[3])
+have = set(open(out).read().split('\n'))
+add, n = [], 0
+for line in open(src, encoding='utf-8'):
+    w = line.split(' ')[0].strip().lower()
+    if len(w) < 4:
+        continue
+    n += 1
+    if n > limit:
+        break
+    if w not in have:
+        add.append(w)
+        have.add(w)
+open(out, 'a', encoding='utf-8').write('\n' + '\n'.join(add))
+print('gyakorisági lista: +%d szó' % len(add), file=sys.stderr)
+PY
+else
+  echo "gyakorisági lista nincs meg – csak a saját korpusz fut" >&2
+fi
+
+# 2) A vizsgáló osztály. A szavakat FÁJLBÓL olvassa: huszonötezer szót egy
+#    Java tömb-literálba írni túllépné a statikus inicializáló méretkorlátját.
+cat > "$PKG/Sopres.java" <<'JAVA'
+package com.edzo.idozito;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+/** Egy szó, minden felismerőn. Ami találatot ad, azt VÉGIG KELL NÉZNI. */
 public class Sopres {
-    static final String[] W = {
-%s
-    };
-    public static void main(String[] x) {
+    public static void main(String[] x) throws Exception {
+        BufferedReader r = new BufferedReader(new InputStreamReader(
+                new FileInputStream(x[0]), StandardCharsets.UTF_8));
+        PrintWriter w = new PrintWriter(new OutputStreamWriter(
+                System.out, StandardCharsets.UTF_8), true);
         List<Foods.Food> all = Arrays.asList(Foods.ALL);
         long now = 1753869600000L;
-        int n = 0;
-        for (String q : W) {
+        int n = 0, total = 0;
+        String q;
+        while ((q = r.readLine()) != null) {
+            if (q.isEmpty()) continue;
+            total++;
             StringBuilder sb = new StringBuilder();
             for (Foods.Hit h : Foods.parse(all, q)) sb.append("etel:").append(h.food.name).append(" ");
             Activities.Parsed p = Activities.parse(q, now);
@@ -70,14 +115,15 @@ public class Sopres {
             for (StrengthParse.Item i : StrengthParse.parse(q)) sb.append("sorozat:").append(i.name).append(" ");
             if (IntervalParse.parse(q) != null) sb.append("idozito ");
             BodyParse.Body b = BodyParse.parse(q);
-            if (!b.isEmpty()) sb.append("meres:").append(b.label());
-            if (sb.length() > 0) { System.out.println(q + "  ->  " + sb); n++; }
+            if (!b.isEmpty()) sb.append("meres:").append(b.label()).append(" ");
+            Rehab.Area rh = Rehab.forComplaint(q);
+            if (rh != null) sb.append("rehab:").append(rh.id);
+            if (sb.length() > 0) { w.println(q + "  ->  " + sb); n++; }
         }
-        System.out.println("--- " + W.length + " szo, " + n + " talalat");
+        w.println("--- " + total + " szo, " + n + " talalat");
     }
 }
-''' % arr)
-PY
+JAVA
 
 # 3) A tiszta Java osztályok (ugyanaz a válogatás, mint a gyorsteszté).
 for f in Rehab Kcal BodyParse Sentence Days Hu Muscles Activities StrengthParse IntervalParse Load Progression Warmup Mobility Routines; do
@@ -174,7 +220,7 @@ javac -d "$OUT" "$PKG"/*.java 2>&1 | grep -v '^Note:' || true
 if [ ! -f "$OUT/com/edzo/idozito/Sopres.class" ]; then
   echo "A fordítás nem sikerült."; rm -rf "$WORK"; exit 1
 fi
-java -Dstdout.encoding=UTF-8 -Dfile.encoding=UTF-8 -cp "$OUT" com.edzo.idozito.Sopres
+java -Dstdout.encoding=UTF-8 -Dfile.encoding=UTF-8 -cp "$OUT" com.edzo.idozito.Sopres "$WORK/szavak.txt"
 CODE=$?
 rm -rf "$WORK"
 exit $CODE

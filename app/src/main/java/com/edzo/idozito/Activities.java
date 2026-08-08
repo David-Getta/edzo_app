@@ -606,7 +606,11 @@ public final class Activities {
             // Ötvenezer szavas magyar gyakorisági listával végigsöpörve.
             // A paSASban az ásás, a naGYÚRban a gyúrás, a TEREMtésben és a
             // TEREMtményben az edzőterem, az EGYÉBKÉNTben az „egyéb mozgás".
-            "pasas", "nagyur", "teremt", "egyebkent",
+            "pasas", "nagyur", "teremt", "egyebkent", "jegyeb", "felreolvas",
+            // A megÚSZTUK nem úszás, hanem szólás – és a MOZGÁSKÉPTELENSÉG
+            // épp az ellenkezője a mozgásnak (a rehab piros zászlója).
+            "megusztuk", "megusztak", "meguszta", "megusztad",
+            "mozgaskeptelen",
     };
 
     /** Maszkolandó-e a szó – igekötővel együtt is. */

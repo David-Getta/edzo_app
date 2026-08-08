@@ -853,6 +853,8 @@ public final class Foods {
             // nem gomba, a vizELETe nem víz-ital, a halgass nem hal.
             "buktam", "buktal", "buktunk", "buktak", "allapit", "vilagom",
             "vizelet", "halgass", "sztar",
+            // A „marhára jó" nem marhahús, a vízesés és a vízvezeték nem ital.
+            "marhara", "vizeses", "vizvezetek", "babe",
             // A „köles" szótő miatt: a koleszterin és a kolesz nem étel.
             "kolesz",
             // A legrövidebb szótövek (viz, zab, riz, rum, sor, bor, vaj, tea,
@@ -946,7 +948,7 @@ public final class Foods {
             // karajt, a SZŐLŐ pedig a bokSZOLÓt és a gyáSZOLÓt hozta be.
             // Egyik tő sem áll összetétel második tagjaként az adatbázisban,
             // tehát a szó belsejében nyugodtan kitakarhatók.
-            "haboru", "sertes", "szolo"};
+            "haboru", "sertes", "szolo", "kettej"};
 
     /**
      * Tövek, amiknek a szó ELEJÉN kell állniuk.

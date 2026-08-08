@@ -405,10 +405,12 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~786 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~810 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
-                              # ellen: melyikben lakik egy rövid szótő
+                              # ellen: melyikben lakik egy rövid szótő.
+                              # A saját kommentjeink mellé egy ötvenezer
+                              # szavas gyakorisági listát is letölt
 ```
 
 A **szósöprés** a leghalkabb hibafajtát keresi: amikor egy rövid szótő
