@@ -584,6 +584,14 @@ public final class StrengthParse {
                 // A „3x max" hármasa SOROZATSZÁM: az ismétlés ismeretlen, és
                 // hármat beírni helyette csendes hazugság lenne.
                 if (rest.startsWith("x") || rest.startsWith("×")) continue;
+                // Az IDŐ nem ismétlés. Az „evezés 20 perc" húsz perc
+                // evezőgép, nem húsz húzás – tartásnál a percet ekkorra már
+                // másodperccé váltottuk, tehát itt csak a valódi időtartam
+                // marad. Enélkül a kardió-mondat csendben súlyzós
+                // bejegyzéssé vált, és a naplóban nem is látszott, hol.
+                if (rest.startsWith("perc") || rest.startsWith("ora")
+                        || rest.startsWith("óra") || rest.startsWith("mp")
+                        || rest.startsWith("masodperc")) continue;
                 if (isWeightSuffixed(s, e)) continue;
                 if (isAtWeight(s, bare.start())) continue;
                 int r = Integer.parseInt(bare.group(1));

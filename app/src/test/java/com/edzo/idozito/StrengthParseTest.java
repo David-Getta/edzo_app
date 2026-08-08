@@ -45,6 +45,25 @@ public class StrengthParseTest {
                 .contains("saját testsúly"));
     }
 
+    /**
+     * Az időtartam nem ismétlés.
+     *
+     * Az „evezés 20 perc" húsz perc evezőgép, nem húsz húzás – a puszta
+     * darabszám-szabály viszont ráharapott a számra, és a kardió-mondatból
+     * csendben súlyzós bejegyzés lett. Tartásnál a perc továbbra is
+     * másodperc: a plank ideje maga a teljesítmény.
+     */
+    @Test public void aDurationIsNotARepCount() {
+        assertEquals("", sum("evezés 20 perc"));
+        assertEquals("", sum("evezés 1 óra"));
+        assertEquals("", sum("lehúzás 20 percet"));
+        // Tartásnál viszont marad, amit eddig is értett.
+        assertEquals("Plank 1×120@0", sum("plank 2 perc"));
+        assertEquals("Plank 3×60/60/60@0", sum("plank 3x1 perc"));
+        // És a valódi sorozat sem sérül.
+        assertEquals("Evezés 3×10/10/10@40", sum("evezés 3x10 40 kg"));
+    }
+
     @Test public void perSetRepsAreKept() {
         assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
         assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));
