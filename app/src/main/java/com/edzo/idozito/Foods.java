@@ -2685,7 +2685,10 @@ public final class Foods {
                 "szeretnek", "szeretne", "kene", "kellene", "jo lenne",
                 "jol esne", "kivanok", "kivannek",
                 // Bevásárlás: a kosárban lévő étel nem elfogyasztott étel.
-                "vettem", "veszek", "vasarol", "hoztam", "hozok", "kaptam",
+                // A „kaptam" SZÁNDÉKOSAN nincs itt: aki azt írja, „kaptam egy
+                // szelet tortát", az rendszerint meg is ette – a naplózó
+                // mezőben a kapott étel elfogyasztott étel.
+                "vettem", "veszek", "vasarol", "hoztam", "hozok",
                 // Főzés jelen időben: a „főzök egy levest" még nem vacsora.
                 "fozok", "sutok", "keszitek", "keszitem", "fozni fogok",
                 // Ami a kukába ment.

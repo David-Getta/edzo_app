@@ -674,6 +674,9 @@ public class FoodsIntegrationTest {
         assertEquals("Kávé (fekete) 200g", summary("vettem egy kávét és megittam"));
         assertEquals("Szendvics 150g", summary("vettem egy szendvicset, megettem"));
         assertEquals("Sütemény 100g", summary("kaptam egy sütit és megettem"));
+        // A „kaptam" magában sem blokkol: aki kapott egy szelet tortát, az
+        // rendszerint meg is ette – a naplózó mezőben ez bejegyzés.
+        assertEquals("Sütemény 80g", summary("kaptam egy szelet tortát a születésnapon"));
         assertEquals("Pizza 300g", summary("rendeltem egy pizzát"));
         // És ami eddig is ment, az ugyanúgy megy.
         assertEquals("Pizza 300g", summary("ettem egy pizzát"));
