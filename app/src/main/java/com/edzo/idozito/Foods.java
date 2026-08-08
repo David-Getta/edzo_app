@@ -131,7 +131,7 @@ public final class Foods {
         new Food("Pizza", 260, 11, 300, "pizza", "calzone", "quattro formaggi",
                 "quattro stagioni"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
-                "whopper"),
+                "whopper", "cheeseburger"),
         new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal",
                 // Ahogy a magyar mondja: „mekis kaja", „kfc kosár". A puszta
                 // márkanév is menüt jelent – aki csak a helyet írja le, az a
@@ -291,7 +291,7 @@ public final class Foods {
         new Food("Energiagolyó", 420, 8, 25,
                 "energiagolyo", "kokuszgolyo", "zabgolyo", "proteingolyo"),
         new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt", "jegkrem",
-                "protein jegkrem"),
+                "protein jegkrem", "sundae"),
         new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
                 // A „tortilla chips" eddig KÉT tétel volt (tortilla + chips):
                 // egy lapos kenyér kalóriája a nassolnivaló mellé.
@@ -389,7 +389,7 @@ public final class Foods {
                 // hozzon MELLÉ egy kész turmixot is („whey protein 30 g").
                 "whey protein", "kazein protein", "kollagen"),
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
-                "feherjeszelet", "energiaszelet"),
+                "feherjeszelet", "feherje szelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
         new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog", "hot dog"),
@@ -691,7 +691,7 @@ public final class Foods {
         new Food("Krumplisaláta", 150, 2.5, 200, "krumplisalata", "krumpli salata",
                 "burgonyasalata", "burgonya salata"),
         new Food("Frankfurti leves", 90, 4, 350, "frankfurti leves", "frankfurti"),
-        new Food("Körözött", 250, 12, 80, "korozott"),
+        new Food("Körözött", 250, 12, 80, "korozott", "liptoi", "liptauer"),
         new Food("Sajtkrém", 250, 8, 40, "sajtkrem"),
         // --- Italok ---
         new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo",
@@ -702,14 +702,20 @@ public final class Foods {
         new Food("Tejeskávé / cappuccino", 55, 3, 250, "tejeskave", "cappuccino", "latte",
                 "macchiato", "flat white", "jegeskave", "jeges kave",
                 // Magyaros írásmóddal is: a kávézóban ezt kérik.
-                "kapucsino", "kapuccino", "kapucino"),
+                "kapucsino", "kapuccino", "kapucino",
+                // A bécsi kávéház szava, a magyar cukrászdában is ez áll az
+                // étlapon – tejszínhabos tejeskávé.
+                "melange", "melanzs"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
         // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.
         new Food("Víz / ásványvíz", 0, 0, 250, "viz", "asvanyviz", "szoda"),
         // A rizling BOR, nem rizs – a hosszabb tő menti meg a „rizs"-től.
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor",
-                "rizling", "furmint", "kekfrankos", "cabernet", "chardonnay"),
+                "rizling", "furmint", "kekfrankos", "cabernet", "chardonnay",
+                // A rozé is bor: az étlapon a harmadik szín, és eddig
+                // egyáltalán nem létezett a felismerőnek.
+                "roze", "rozebor"),
         // A „borssal" nem egy pohár bor: a „bor" szótő beleesett, és minden
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
         // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.
@@ -989,7 +995,10 @@ public final class Foods {
      * volna a pizza, a „sziruphoz" (sziruPHOz) a szirup, a „gnocchival" a
      * gnocchi. A ragozás rendre gyárt ilyen véletlen betűsorokat.
      */
-    private static final String[] START_ONLY = {"gin", "pho", "chia", "kesu", "stek", "zab"};
+    private static final String[] START_ONLY = {"gin", "pho", "chia", "kesu", "stek", "zab",
+            // A „rozé" a SÖRÖZÉS közepén is ott van – abból eddig egy pohár
+            // bor lett a három korsó sör helyett.
+            "roze"};
 
     /**
      * Kivételek a belső tiltólistához: az „eszpresszóba" közepén ott a
