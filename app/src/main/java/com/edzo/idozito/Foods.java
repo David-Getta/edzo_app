@@ -779,6 +779,12 @@ public final class Foods {
             "kolbaszol", "rumli",
             // Átvitt értelmű és összetett álca-szavak: a „narancsbőr" nem bor,
             // a „sörhas" nem sör, a „kávészünet" nem kávé.
+            // A magyar hangrend ékezet nélkül is elárulja a SORT: a „sör"
+            // magas hangrendű (sörnek, sörrel, sörnél), a „sor" mély
+            // (sornak, sorral, sornál). Ahol a rag magánhangzója eltér, ott
+            // nincs kétség – a -ból/-ből és a -hoz/-höz viszont ékezet nélkül
+            // egybeesik, azok maradnak a régi szabálynál.
+            "sornak", "sorral", "sornal", "sorai", "soraban", "soranak",
             "borsos", "gombamod", "tejszinu", "vajszinu", "uborkaszezon",
             "lencseveg", "banankoz", "narancsbor", "kenyerkeres", "tortaform",
             "kaveszunet", "teadelutan", "olajfolt", "halaszf", "borvidek",

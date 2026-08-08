@@ -224,6 +224,13 @@ public class FoodsDataQualityTest {
         assertEquals("Csokoládé", names(Foods.parse(all, "egy sor csoki")));
         assertEquals("Csokoládé", names(Foods.parse(all, "két sor csokoládé")));
         assertEquals("Csokoládé, Sör", names(Foods.parse(all, "egy sor csoki és egy sör")));
+        // A magyar hangrend ékezet nélkül is elárulja a SORT: a „sör" magas
+        // hangrendű (sörnek, sörrel, sörnél), a „sor" mély (sornak, sorral,
+        // sornál). Ahol a rag magánhangzója eltér, ott nincs kétség.
+        for (String q : new String[]{"sornak", "sorral", "sornál", "soraban"})
+            assertEquals(q, "—", names(Foods.parse(all, q)));
+        for (String q : new String[]{"sörnek", "sörrel", "sörnél"})
+            assertEquals(q, "Sör", names(Foods.parse(all, q)));
         // A sör magában marad sör – ékezet nélkül is.
         assertEquals("Sör", names(Foods.parse(all, "sor")));
         assertEquals("Sör", names(Foods.parse(all, "sört ittam")));
