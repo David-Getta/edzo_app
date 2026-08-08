@@ -60,4 +60,62 @@ final class RehabLog {
         }
         return n == out.length ? out : java.util.Arrays.copyOf(out, n);
     }
+
+    // ---------- Fájdalom-napló ----------
+
+    /**
+     * Egy fájdalom-érték (0–10) feljegyzése az adott testtájra.
+     *
+     * Napi egy érték: aki kétszer is beírja, annak az újabb marad – a
+     * panasz napi szinten mozog, óránként nem érdemes követni.
+     */
+    static void addPain(Context c, String id, long ts, int level) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ts).append(':').append(level);
+        long day = Days.index(ts);
+        int[] lv = painLevels(c, id);
+        long[] ts2 = painTimes(c, id);
+        int kept = 0;
+        for (int i = 0; i < lv.length && kept < 59; i++) {
+            if (Days.index(ts2[i]) == day) continue;
+            sb.append(',').append(ts2[i]).append(':').append(lv[i]);
+            kept++;
+        }
+        p(c).edit().putString("rehab_pain_" + id, sb.toString()).apply();
+    }
+
+    /** A fájdalom-értékek, legfrissebb elöl. */
+    static int[] painLevels(Context c, String id) {
+        String[] parts = painParts(c, id);
+        int[] out = new int[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            String[] kv = parts[i].split(":");
+            try {
+                out[i] = kv.length > 1 ? Integer.parseInt(kv[1].trim()) : -1;
+            } catch (NumberFormatException e) {
+                out[i] = -1;
+            }
+        }
+        return out;
+    }
+
+    /** A fájdalom-bejegyzések időbélyegei, ugyanabban a sorrendben. */
+    static long[] painTimes(Context c, String id) {
+        String[] parts = painParts(c, id);
+        long[] out = new long[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            String[] kv = parts[i].split(":");
+            try {
+                out[i] = Long.parseLong(kv[0].trim());
+            } catch (NumberFormatException e) {
+                out[i] = 0;
+            }
+        }
+        return out;
+    }
+
+    private static String[] painParts(Context c, String id) {
+        String s = p(c).getString("rehab_pain_" + id, "");
+        return s.isEmpty() ? new String[0] : s.split(",");
+    }
 }

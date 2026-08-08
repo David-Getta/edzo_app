@@ -234,9 +234,19 @@ public class MobilityActivity extends Activity {
             lvl.setPadding(0, dp(6), 0, 0);
             box.addView(lvl);
         }
+        // Fájdalom-napló: a panasz iránya többet mond, mint egyetlen nap
+        // száma – és pont ez az, amit a gyógytornász is kérdezni szokott.
+        int[] pain = RehabLog.painLevels(this, area.id);
+        String pline = Rehab.painLine(pain);
+        if (!pline.isEmpty()) {
+            TextView pt = text("📉 " + pline, 12, MUTED, false);
+            pt.setPadding(0, dp(8), 0, 0);
+            box.addView(pt);
+        }
         final boolean isFocus = area.id.equals(RehabLog.focusId(this));
         new Sheet(this, area.emoji + " " + area.name, area.goal)
                 .addCustom(box)
+                .addNeutral("📉 Mennyire fáj ma? (0–10)", () -> painSheet(area))
                 // Vezetett mód: az időzítő 40 mp-es ablakokban mondja a
                 // gyakorlatokat – a kétoldalasokat bal/jobb bontásban, és a
                 // kör-szám úgy áll be, hogy a sor a 10–20 perces keretben
@@ -304,6 +314,56 @@ public class MobilityActivity extends Activity {
                     Ux.blazeCard(this, msg);
                     if (section == 3) render();
                 })
+                .addCancel()
+                .show();
+    }
+
+    /**
+     * Fájdalom-bevitel: tizenegy gomb, semmi csúszka.
+     *
+     * A skála két végét oda kell írni, különben a szám önkényes: a nulla a
+     * panaszmentes nap, a tíz az elviselhetetlen. Napi egy érték elég.
+     */
+    void painSheet(final Rehab.Area area) {
+        LinearLayout box = vbox();
+        box.setPadding(dp(4), 0, dp(4), dp(4));
+        box.addView(text("0 = nincs fájdalom   ·   3 = enyhe   ·   6 = közepes   ·   "
+                + "10 = elviselhetetlen", 12, MUTED, false));
+        for (int row = 0; row < 2; row++) {
+            LinearLayout r = hbox();
+            r.setPadding(0, dp(8), 0, 0);
+            int from = row * 6, to = Math.min(from + 6, 11);
+            for (int i = from; i < to; i++) {
+                final int level = i;
+                Button b = new Button(this);
+                b.setText(String.valueOf(level));
+                b.setAllCaps(false);
+                b.setTextSize(15);
+                b.setTypeface(null, Typeface.BOLD);
+                b.setStateListAnimator(null);
+                b.setMinWidth(0);
+                b.setMinHeight(0);
+                b.setPadding(0, dp(11), 0, dp(11));
+                GradientDrawable bg = new GradientDrawable();
+                bg.setCornerRadius(dp(13));
+                bg.setColor(CARD2);
+                bg.setStroke(dp(1), LINE);
+                b.setBackground(bg);
+                b.setTextColor(TXT);
+                b.setOnClickListener(v -> {
+                    RehabLog.addPain(this, area.id, System.currentTimeMillis(), level);
+                    Ux.blazeCard(this, "📉 " + area.name + ": " + level + "/10 – "
+                            + Rehab.painWord(level));
+                    if (section == 3) render();
+                });
+                LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(0, -2, 1f);
+                blp.leftMargin = dp(2); blp.rightMargin = dp(2);
+                r.addView(b, blp);
+            }
+            box.addView(r, lp());
+        }
+        new Sheet(this, "📉 " + area.name, "Mennyire fáj ma?")
+                .addCustom(box)
                 .addCancel()
                 .show();
     }

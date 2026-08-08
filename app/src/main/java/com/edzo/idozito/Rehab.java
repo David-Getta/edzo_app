@@ -324,6 +324,51 @@ public final class Rehab {
         return guidedNames(a).size() > a.moves.length ? 2 : 3;
     }
 
+    // ---------- Fájdalom-napló ----------
+
+    /**
+     * A 0–10-es skála szavakban.
+     *
+     * A szám önmagában nem mond semmit annak, aki most írja be először:
+     * a „4" akkor lesz értelmes, ha oda van írva, hogy az közepes.
+     */
+    public static String painWord(int level) {
+        if (level <= 0) return "nincs fájdalom";
+        if (level <= 3) return "enyhe";
+        if (level <= 6) return "közepes";
+        return "erős";
+    }
+
+    /**
+     * Merre tart a panasz? – a legfrissebb és a legrégebbi napok átlaga.
+     *
+     * A tömb legfrissebb elöl. Négy bejegyzés alatt nem mondunk irányt: két
+     * adatból trendet olvasni önbecsapás, a rossz nap pedig mindenkinél van.
+     * Az erős (8 fölötti) friss érték felülír mindent – ott nem a görbe a
+     * hír, hanem az, hogy szakember kell.
+     */
+    public static String painLine(int[] newestFirst) {
+        if (newestFirst == null || newestFirst.length == 0) return "";
+        int last = newestFirst[0];
+        if (last >= 8)
+            return "Erős fájdalom – ezt nézesd meg orvossal vagy gyógytornásszal.";
+        if (newestFirst.length < 4)
+            return "Legutóbb: " + last + "/10 (" + painWord(last)
+                    + ") – pár nap után látszik majd az irány.";
+        int win = Math.min(3, newestFirst.length / 2);
+        double now = 0, then = 0;
+        for (int i = 0; i < win; i++) now += newestFirst[i];
+        for (int i = 0; i < win; i++) then += newestFirst[newestFirst.length - 1 - i];
+        now /= win;
+        then /= win;
+        double diff = then - now;
+        String head = "Legutóbb: " + last + "/10 (" + painWord(last) + ") · ";
+        if (diff >= 1.5) return head + "javul – " + Hu.kg(then) + "-ról " + Hu.kg(now) + "-ra";
+        if (diff <= -1.5)
+            return head + "rosszabbodik – ha egy hét után sem fordul, kérj gyógytornász-segítséget";
+        return head + "nem sokat mozdult – tartsd a sort, és nézd meg a terhelést is";
+    }
+
     // ---------- Heti fókusz ----------
 
     /**

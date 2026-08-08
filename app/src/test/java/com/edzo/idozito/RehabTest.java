@@ -236,6 +236,41 @@ public class RehabTest {
         assertEquals(0, Rehab.weekStreak(new long[]{now, now - day}, now));
     }
 
+    /**
+     * A fájdalom-napló iránya: javul, romlik, vagy áll.
+     *
+     * Kevés adatból nem mondunk trendet, az erős friss érték pedig
+     * felülír mindent – ott nem a görbe a hír, hanem hogy szakember kell.
+     */
+    @Test public void thePainLineReadsTheDirection() {
+        assertEquals("", Rehab.painLine(null));
+        assertEquals("", Rehab.painLine(new int[0]));
+        // Kevés adat: az érték igen, az irány még nem.
+        assertTrue(Rehab.painLine(new int[]{4}).contains("4/10"));
+        assertTrue(Rehab.painLine(new int[]{4}).contains("közepes"));
+        assertTrue(Rehab.painLine(new int[]{4, 5, 6}).contains("irány"));
+        // Javuló sor (legfrissebb elöl): 2,2,1 most – 6,6,5 régen.
+        String jav = Rehab.painLine(new int[]{2, 2, 1, 5, 6, 6, 5});
+        assertTrue("nem látja a javulást: " + jav, jav.contains("javul"));
+        // Romló sor.
+        String rossz = Rehab.painLine(new int[]{6, 6, 5, 2, 2, 1, 2});
+        assertTrue("nem látja a romlást: " + rossz, rossz.contains("rosszabbodik"));
+        // Egy helyben álló sor.
+        String all = Rehab.painLine(new int[]{4, 4, 4, 4, 4, 4});
+        assertTrue("irányt lát, ahol nincs: " + all, all.contains("nem sokat mozdult"));
+        // Az erős friss érték mindent felülír.
+        String eros = Rehab.painLine(new int[]{9, 2, 2, 1, 1, 1});
+        assertTrue("nem szól a szakemberért: " + eros, eros.contains("gyógytorná"));
+    }
+
+    /** A skála szavakban is olvasható – a puszta szám semmit nem mond. */
+    @Test public void thePainScaleHasWords() {
+        assertEquals("nincs fájdalom", Rehab.painWord(0));
+        assertEquals("enyhe", Rehab.painWord(2));
+        assertEquals("közepes", Rehab.painWord(5));
+        assertEquals("erős", Rehab.painWord(9));
+    }
+
     /** A fókusz-sor kimondja az állást, és a kész hétre pipát tesz. */
     @Test public void theFocusLineShowsProgress() {
         Rehab.Area a = Rehab.byId("boka");
