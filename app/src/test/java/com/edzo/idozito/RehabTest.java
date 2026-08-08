@@ -447,4 +447,30 @@ public class RehabTest {
                     Rehab.guidedMinutes(a) >= 8 && Rehab.guidedMinutes(a) <= 20);
         }
     }
+
+    /**
+     * A magyar nem csak azt mondja, hogy „fáj".
+     *
+     * A „húz a vádlim", a „görcsöl a lábam", a „szúr a derekam" és a
+     * reggeli „elgémberedik a kezem" ugyanolyan panasz – eddig mindegyikre
+     * az jött, hogy nem értjük. A legrövidebbek (húz, szúr) csak egész
+     * szóként számítanak: a húzódzkodás nem panasz.
+     */
+    @Test public void everydayComplaintVerbsAreUnderstood() {
+        assertNotNull("húz a vádlim", Rehab.forComplaint("húz a vádlim"));
+        assertNotNull("görcsöl a vádlim", Rehab.forComplaint("görcsöl a vádlim"));
+        assertNotNull("szúr a derekam", Rehab.forComplaint("szúr a derekam"));
+        assertNotNull("feszül a nyakam", Rehab.forComplaint("feszül a nyakam"));
+        assertNotNull("bemerevedett a vállam", Rehab.forComplaint("bemerevedett a vállam"));
+        assertNotNull("elgémberedik a kezem",
+                Rehab.forComplaint("reggelre elgémberedik a kezem"));
+        assertNotNull("gerincferdülés", Rehab.forComplaint("gerincferdülésem van"));
+        // A kéz panasza a csukló sorára fut.
+        assertEquals("csuklo", Rehab.forComplaint("fáj a kezem").id);
+        assertEquals("csuklo", Rehab.forComplaint("merevek az ujjaim").id);
+        // A gyakorlat neve nem panasz, hiába lakik benne a „húz".
+        assertNull(Rehab.forComplaint("húzódzkodás 3x8"));
+        assertNull(Rehab.forComplaint("lehúzás 4x12 50 kg"));
+        assertNull(Rehab.forComplaint("húzódzkodás és vállból nyomás"));
+    }
 }

@@ -298,4 +298,20 @@ public class BodyParseTest {
         assertEquals("kockázati sávban", Profile.waistVerdict(0.62));
         assertEquals("", Profile.waistVerdict(-1));
     }
+
+    /**
+     * A ragozott mértékegység is mértékegység.
+     *
+     * A „ma reggel 79 kilóval keltem" a legtermészetesebb magyar mérés-mondat,
+     * és eddig kiesett: a „kilóval" bennmaradt a maradékban, és a mondat ettől
+     * nem számított mérésnek.
+     */
+    @Test public void anInflectedUnitIsStillAUnit() {
+        kg("ma reggel 79 kilóval keltem", 79);
+        kg("78 kilóval ébredtem", 78);
+        kg("reggel 80,5 kilót mértem", 80.5);
+        // A vásárlás és a munkasúly továbbra sem mérés.
+        none("vettem 2 kg almát");
+        none("80 kg-os súllyal nyomtam");
+    }
 }

@@ -290,9 +290,16 @@ public final class BodyParse {
         // szomszédos szó („ma reggel”) közül a második különben bennmaradna,
         // mert az elsőt kereső minta elvinné a köztük álló szóközt.
         String rest = s.replaceAll("\\d+([.,]\\d+)?", " ")
-                .replaceAll("(?<![a-z])(kg|kilogramm|kilo|kila|szazalek|testzsir\\w*|ma|reggel|"
+                // A mértékegység ragozva is mértékegység: a „79 kilóval
+                // keltem" ugyanaz a mérés, mint a „79 kg". A ragos alak
+                // (kilóval, kilót, kilóra) eddig bennmaradt a maradékban, és
+                // ettől az egész mondat kiesett a mérések közül.
+                .replaceAll("(?<![a-z])(kg\\w*|kilogramm\\w*|kilo\\w*|kila|szazalek|"
+                        + "testzsir\\w*|ma|reggel|"
                         + "este|delben|delelott|delutan|ejjel|hajnalban|tegnap|most|"
                         + "eppen|epp|ebredes|felkeles|utan|kor|orakor|volt|voltam|"
+                        // Az ébredés igéje is csak időpont: „79 kilóval keltem".
+                        + "keltem|felkeltem|ebredtem|felebredtem|mertem|merve|"
                         // A megnevezett nap ugyanolyan időpont, mint a napszak:
                         // a „kedden 80 kg voltam" ugyanaz a mérés, mint a „ma".
                         + "hetfon|kedden|szerdan|csutortokon|penteken|szombaton|"

@@ -467,6 +467,44 @@ public class ActivitiesParseTest {
         }
     }
 
+    /**
+     * A kimondott AKARAT sem edzés.
+     *
+     * Az „erősíteni akarom a bokám" mondatból hatvan perc kondi lett, az
+     * „el akarok kezdeni futni"-ból negyvenöt perc futás. Ez a legrosszabb
+     * fajta hiba: a napló arról állít valamit, hogy megtörtént, amiről a
+     * mondat épp azt mondja, hogy még nem.
+     */
+    @Test public void wantingToTrainIsNotTraining() {
+        for (String q : new String[]{"erősíteni akarom a bokám",
+                "erősíteni fogom a vállam", "el akarok kezdeni futni",
+                "holnap fogom megcsinálni a lábnapot",
+                "le akarom futni a félmaratont", "úszni akarunk a hétvégén"}) {
+            assertTrue(q, Activities.looksLikeFuture(q));
+            assertTrue(q, Activities.parse(q).isEmpty());
+        }
+        // A megtörtént edzés változatlan – a múlt idő ragja mást mond.
+        assertEquals(1, Activities.parse("tegnap lefutottam a félmaratont").plans.size());
+        assertEquals(1, Activities.parse("úsztam a hétvégén").plans.size());
+    }
+
+    /**
+     * A ház körüli munka is mozgás.
+     *
+     * Aki három órát ás a kertben, többet mozgott, mint egy fél órás
+     * kocogással – a naplóban eddig mégis semmi sem maradt belőle.
+     */
+    @Test public void workAroundTheHouseCounts() {
+        for (String q : new String[]{"kertben dolgoztam 3 órát",
+                "ástam a kertben egy órát", "két órát takarítottam",
+                "havat lapátoltam egy órát", "füvet nyírtam 40 percet"})
+            assertTrue(q, !Activities.parse(q).isEmpty());
+        assertEquals("munka", Activities.parse("kertben dolgoztam 3 órát")
+                .plans.get(0).kind.id);
+        assertEquals(180, Activities.parse("kertben dolgoztam 3 órát")
+                .plans.get(0).minutes);
+    }
+
     @Test public void nonsenseProducesNothing() {
         assertTrue(Activities.parse("semmi értelmes szöveg").isEmpty());
         assertTrue(Activities.parse("").isEmpty());

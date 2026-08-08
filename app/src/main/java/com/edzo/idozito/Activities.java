@@ -138,7 +138,8 @@ public final class Activities {
                     "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
                     "takarit", "funyir", "fuvet nyir", "sovenyt vag", "sovenyvag",
                     "koltoz", "asas", "kapalas", "kapal", "gereblyez",
-                    "lapatol",
+                    "lapatol", "kertben dolgoz", "kertben melo", "astam", "asni",
+                    "sepreget", "felmostam", "felmosas",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     // A „kardió" edzés-szó: enélkül a „45 perc kardió" semmi
@@ -1530,6 +1531,13 @@ public final class Activities {
                 // egyet" mondatból eddig negyvenöt perc futás lett.
                 "kene", "kell csinalnom", "kell mennem", "meg kell", "ha lesz",
                 "ha lesz ido", "ha birom", "ha sikerul",
+                // A kimondott AKARAT a legtisztább szándék-alak, és eddig
+                // hiányzott: az „erősíteni akarom a bokám" és az „el akarok
+                // kezdeni futni" mondatból egy hatvanperces kondi, illetve
+                // egy negyvenöt perces futás lett – olyan edzés, ami meg sem
+                // történt. A „fogom" a „fogok" párja (tárgyas ragozás).
+                "akarok", "akarom", "akarunk", "akarod", "akarja",
+                "fogom", "fogunk", "fogjuk", "fogja",
                 // A kiírt TERV szó is: „a terv: guggolás 5x5 100 kg".
                 "a terv", "terv:", "tervem"})
             if (s.contains(w)) return true;

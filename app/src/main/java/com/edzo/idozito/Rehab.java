@@ -357,6 +357,29 @@ public final class Rehab {
         // magyar leggyakrabban pont így mondja el, mi a baj.
         if (!pain && (s.contains("fajas") || s.contains("fajdalom")
                 || s.contains("fajdit"))) pain = true;
+        // Panasz-szavak, amiket a magyar igekötővel mond: az „elgémberedik",
+        // a „megfeszül" és a „bemerevedett" a szótő ELÉ tesz egy szótagot,
+        // így a szókezdet-vizsgálat mindet elutasította. Ezek elég hosszúak
+        // és elég egyediek ahhoz, hogy a szó belsejében is biztosak legyünk.
+        if (!pain)
+            for (String w : new String[]{"gemberedik", "gemberedett", "feszul", "gorcsol",
+                    "gorcsbe", "merevedett", "gerincferdul", "szkolioz", "zsugorod"})
+                if (s.contains(w)) { pain = true; break; }
+        // A legrövidebb panasz-igék csak EGÉSZ szóként: a „húz" a
+        // húzódzkodásban, a „szúr" a szúrópróbában lakik. „Húz a vádlim",
+        // „szúr a derekam" – ennél magyarabbul nem lehet elmondani.
+        if (!pain)
+            for (String w : new String[]{"huz", "szur", "gorcs"}) {
+                int i = s.indexOf(w);
+                while (i >= 0) {
+                    boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
+                    int e = i + w.length();
+                    boolean r = e >= s.length() || !Character.isLetter(s.charAt(e));
+                    if (l && r) { pain = true; break; }
+                    i = s.indexOf(w, i + 1);
+                }
+                if (pain) break;
+            }
         if (!pain) return null;
         // A tagadott vagy elmúlt panasz jó hír, nem kérés: a „nem fáj a
         // vállam" és a „már nem fáj" után nincs mit ajánlani.
@@ -469,6 +492,12 @@ public final class Rehab {
                 // munkája. (Korábban a külső könyök sorára ment – az is
                 // segített, de a csukló-mobilitás onnan hiányzott.)
                 {"csuklo", "csuklom", "csukloja", "csuklo faj", "csuklofajas", "egerkez",
+                        // A KÉZ panasza is ide fut: a reggeli elgémberedés és
+                        // az ujjak merevsége ugyanarról szól, mint a csukló
+                        // mozgástartománya. (A puszta „kéz" nem tő – a
+                        // kezdetben és a kezelésben is benne lakik –, a ragos
+                        // alak viszont félreérthetetlen.)
+                        "kezem", "kezeim", "ujjam", "ujjaim",
                         // A puszta „csukló" is tő: a cél-mondat („csukló
                         // mobilizálás") enélkül az edzés-felismerőhöz futott.
                         // Panasznak továbbra is fájdalom-szó kell mellé.
