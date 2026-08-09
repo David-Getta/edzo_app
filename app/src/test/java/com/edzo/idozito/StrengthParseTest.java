@@ -251,6 +251,22 @@ public class StrengthParseTest {
         assertEquals("Kettlebell lendítés 5×15/15/15/15/15@16", sum("kettlebell 16 kg 5x15"));
     }
 
+    /**
+     * A CSÚCS-mondat: „végre lement a 100 kg-os fekvenyomás".
+     *
+     * Ismétlésszám nincs benne, mert egyszeri – és pont ez az a bejegyzés,
+     * amit az ember a legjobban szeretne látni a naplóban. Eddig egyik sem
+     * került be: sem a rekord, sem az 1RM, sem a progresszió nem tudott róla.
+     */
+    @Test public void aPersonalRecordSentenceIsSaved() {
+        assertEquals("Fekvenyomás 1×1@100", sum("végre lement a 100 kg-os fekvenyomás"));
+        assertEquals("Felhúzás 1×1@200", sum("sikerült a 200 kg-os holtemelés"));
+        assertEquals("Guggolás 1×1@150",
+                sum("megdöntöttem a rekordomat guggolásban: 150 kg"));
+        // Csúcs-szó nélkül továbbra sem találunk ki ismétlést.
+        assertEquals(0, StrengthParse.parse("100 kg-os fekvenyomás").size());
+    }
+
     @Test public void aPercentageIsNotAWeight() {
         // A „@70%" a maximum arányát mondja, nem a rúdon lévő súlyt – a
         // mondat meg sem mondja, mennyi volt. Hetven kilóként viszont bekerült

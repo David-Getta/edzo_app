@@ -797,6 +797,15 @@ public final class StrengthParse {
         // maximumig” ismétlésszáma ismeretlen, abból nem találunk ki egyet.
         if (sets.isEmpty() && weight > 0 && s.matches(".*(^|[^a-z])max.*"))
             sets.add(new Set(1, weight));
+        // A CSÚCS-mondat ugyanez, magyarul: „végre lement a 100 kg-os
+        // fekvenyomás", „sikerült a 200 kg-os holtemelés", „megdöntöttem a
+        // rekordomat guggolásban: 150 kg". Ismétlésszám nincs benne, mert
+        // egyszeri – és pont ez az a bejegyzés, amit az ember a legjobban
+        // szeretne látni a naplóban. Eddig egyik sem került be.
+        if (sets.isEmpty() && weight > 0)
+            for (String w : new String[]{"rekord", "csucs", "sikerult", "lement",
+                    "vegre", "megdontott", "eloszor", "elso alkalommal", "pr "})
+                if (s.contains(w)) { sets.add(new Set(1, weight)); break; }
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);
         it.rpe = rpeIn(s);
