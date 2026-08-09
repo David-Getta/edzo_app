@@ -418,4 +418,20 @@ public class FoodsParseTest {
         // A gyümölcs magában marad gyümölcs.
         assertEquals("Szőlő", Foods.parse(all, "szőlő 100 g").get(0).food.name);
     }
+
+    /**
+     * A frizbiben nincs rizs.
+     *
+     * A „frizbi a parkban 1 óra" kétszáz gramm főtt rizst írt a naplóba egy
+     * lejátszott óra helyett – a fRIZbi közepén ott a rizs szótöve. A
+     * frizura és a frizsider ugyanez.
+     */
+    @Test public void thereIsNoRiceInAFrisbee() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "frizbi a parkban 1 óra").isEmpty());
+        assertTrue(Foods.parse(all, "új frizurám lett").isEmpty());
+        // A rizs viszont marad rizs.
+        assertEquals("Rizs (főtt)", Foods.parse(all, "csirke rizzsel")
+                .get(1).food.name);
+    }
 }

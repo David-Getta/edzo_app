@@ -240,6 +240,9 @@ public final class Activities {
                     // A puszta „tekez" nem elég: az érTEKEZletben is benne van.
                     "kardio", "bowling", "tekepalya", "tekezes", "tekeztem", "tekezni",
                     // Termi eszközök, amik magukban is edzést jelentenek.
+                    // A szabadtéri játékok is mozgás: a frizbi, a parkour és
+                    // a slackline órákra viszi ki az embert a szabadba.
+                    "frizbi", "ultimate frizbi", "slackline", "szlekklajn",
                     "medicinlabda", "bosu", "battle rope", "kotelezes",
                     "szankotolas", "szanko tolas", "traktorgumi", "step pad",
                     "steppad", "step ora",
