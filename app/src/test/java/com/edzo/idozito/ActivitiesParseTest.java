@@ -2085,4 +2085,20 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
         assertEquals(3, Activities.parse("3 futás a héten").plans.get(0).count);
     }
+
+    /**
+     * A helyesbítés második száma az igazi – a távnál is.
+     *
+     * A „nem futottam 10 km-t, csak 3-at" mondatból eddig SEMMI nem lett: a
+     * tagadás elvitte az egész edzést, pedig a három kilométer megvolt.
+     */
+    @Test public void theCorrectedDistanceIsLogged() {
+        Activities.Parsed p = Activities.parse("nem futottam 10 km-t, csak 3-at");
+        assertEquals(1, p.plans.size());
+        assertEquals(3.0, p.plans.get(0).km, 0.001);
+        assertEquals(20, Activities.parse("nem 45 percet kondiztam, hanem 20-at")
+                .plans.get(0).minutes);
+        // Szám nélküli tagadásra nem él: ott a mondat tagadás marad.
+        assertTrue(Activities.parse("nem futottam ma").isEmpty());
+    }
 }

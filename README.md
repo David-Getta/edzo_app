@@ -101,6 +101,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   belőle
 - a **tagadott evés-ige** nem menti fel a bevásárlást: a „vettem egy kiflit,
   **de nem ettem meg**" mondatban ott az „ettem", és eddig ettől bejegyzés lett
+- a **helyesbítés** második száma az igazi: a magyar így javít – kimondja, ami
+  nem igaz, aztán azt, ami igen. A „nem aludtam 8 órát, **csak 5-öt**"
+  nyolcórás alvást írt a naplóba, a „nem 80 kg vagyok, **hanem 78**" pedig
+  nyolcvan kilót a súlytrendbe: pont azt, amit a mondat tagad. A „nem
+  futottam 10 km-t, csak 3-at" hármasa viszont teljesen elveszett
 - a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem" –
   a **„mégsem"** ugyanígy: „mégsem futottam ma", „mégsem ettem a csokit"
 

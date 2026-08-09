@@ -199,4 +199,19 @@ public class SleepTest {
         assertEquals(8.0, Sleep.parse("este 11-kor feküdtem, reggel 7-kor keltem"), 0.01);
         assertEquals(7.8, Sleep.parse("22:30-tól 6:15-ig aludtam"), 0.05);
     }
+
+    /**
+     * A helyesbítés második száma az igazi.
+     *
+     * A magyar így javít: kimondja, ami nem igaz, aztán azt, ami igen. A
+     * „nem aludtam 8 órát, csak 5-öt" mondatból NYOLC óra alvás került a
+     * naplóba – vagyis pont az, amit a mondat tagad.
+     */
+    @Test public void theCorrectedNumberWins() {
+        assertEquals(5.0, Sleep.parse("nem aludtam 8 órát, csak 5-öt"), 0.01);
+        assertEquals(6.0, Sleep.parse("nem 9 órát aludtam, hanem 6-ot"), 0.01);
+        // A javítás nélküli mondat változatlan.
+        assertEquals(8.0, Sleep.parse("aludtam 8 órát"), 0.01);
+        assertEquals(-1, Sleep.parse("nem aludtam eleget"), 0.01);
+    }
 }

@@ -236,4 +236,30 @@ public final class Hu {
     public static String d2(double v) {
         return String.format(LOCALE, "%.2f", v);
     }
+
+    /**
+     * A HELYESBÍTÉS második száma az igazi: „nem aludtam 8 órát, csak 5-öt".
+     *
+     * A magyar így javít: kimondja, ami nem igaz, aztán utána azt, ami igen.
+     * A felismerők eddig az ELSŐ számot vették – vagyis pont azt, amit a
+     * mondat tagad. Nyolc óra alvás került a naplóba öt helyett, nyolcvan
+     * kiló hetvennyolc helyett: a hibás adat rosszabb, mint a semmilyen.
+     *
+     * A csere a helyén hagyja a mértékegységet és az igét, csak a számot
+     * írja át – onnantól minden meglévő szabály érti a mondatot. Szám
+     * nélküli tagadásra („nem futottam ma, csak sétáltam") nem él.
+     *
+     * @param s már normalizált (ékezet nélküli, kisbetűs) szöveg
+     */
+    public static String correction(String s) {
+        if (s == null || s.isEmpty()) return s == null ? "" : s;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![a-z])nem\\s+([^,;0-9]{0,30}?)(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                        + "([^,;0-9]{0,25}?)\\s*[,;]?\\s*(?:csak|hanem)\\s+"
+                        + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*-?\\s*[a-z]{0,4}(?![a-z])")
+                .matcher(s);
+        if (!m.find()) return s;
+        return s.substring(0, m.start()) + m.group(1) + m.group(4) + m.group(3)
+                + s.substring(m.end());
+    }
 }

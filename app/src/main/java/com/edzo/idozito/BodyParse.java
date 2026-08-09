@@ -157,7 +157,8 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
         // mérleget sokan hangosan olvassák fel, és úgy is írják le.
-        String s = maskTimeUnder(keepTheNewValue(dropOtherLogs(Hu.digits(Foods.norm(q)))));
+        String s = maskTimeUnder(keepTheNewValue(dropOtherLogs(
+                Hu.digits(Hu.correction(Foods.norm(q))))));
         if (s.isEmpty()) return new Body(0, 0);
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.

@@ -318,7 +318,7 @@ public final class StrengthParse {
         if (looksLikeSplit(Foods.norm(text))) return out;
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(
-                        stripPercent(stripListMarkers(Foods.norm(text)))))))))));
+                        stripPercent(stripListMarkers(Hu.correction(Foods.norm(text))))))))))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat

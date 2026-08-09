@@ -893,7 +893,7 @@ public final class Activities {
         // kondi-edzés lett belőle. A sor eleje csak a normalizálás ELŐTT
         // látszik – az egymás utáni szóközöket (és a sortörést) a norm()
         // egyetlen szóközzé vonja össze.
-        char[] q = shortForms(Foods.norm(maskListMarkers(text))).toCharArray();
+        char[] q = shortForms(Hu.correction(Foods.norm(maskListMarkers(text)))).toCharArray();
         // A kiírt számnév-pár is tartomány: „húsz-huszonöt perc kondi". A
         // nyers alak ELŐTT fut, mert az osztó pár felismerése („öt-öt km")
         // is számjegyet keres.

@@ -482,4 +482,17 @@ public class BodyParseTest {
         assertEquals(38.5, BodyParse.parse("38,5 kg vagyok").kg, 0.01);
         assertEquals(79.2, BodyParse.parse("reggel 79,2 kg").kg, 0.01);
     }
+
+    /**
+     * A helyesbítés második száma az igazi – a mérlegnél is.
+     *
+     * A „nem 80 kg vagyok, hanem 78" mondatból NYOLCVAN kiló került a
+     * súlytrendbe: pont az, amit a mondat tagad. A hibás adat rosszabb, mint
+     * a semmilyen – a görbe és a BMI is abból számol tovább.
+     */
+    @Test public void theCorrectedWeightWins() {
+        assertEquals(78, BodyParse.parse("nem 80 kg vagyok, hanem 78").kg, 0.01);
+        assertEquals(76.5, BodyParse.parse("nem 79 kg lettem, hanem 76,5").kg, 0.01);
+        assertEquals(80, BodyParse.parse("80 kg vagyok").kg, 0.01);
+    }
 }
