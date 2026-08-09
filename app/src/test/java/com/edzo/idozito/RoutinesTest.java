@@ -335,4 +335,38 @@ public class RoutinesTest {
         assertNotNull(n);
         assertEquals("Bicepsz", n.moves.get(0));
     }
+
+    /**
+     * A beépített programok megosztott alakja visszaolvasható.
+     *
+     * A megosztás szövege ígéret: a másik telefonon ugyanannak kell
+     * visszajönnie. Ha egy program gyakorlatait átnevezzük, a saját
+     * formátumunkat sem értenénk vissza – és az edzésnap üresen érkezne meg.
+     */
+    @Test public void everyBuiltInProgramSurvivesSharing() {
+        StringBuilder bad = new StringBuilder();
+        for (Programs.P p : Programs.BUILT_IN) {
+            StringBuilder sb = new StringBuilder(p.name).append(": ");
+            for (int i = 0; i < p.ex.length; i++) {
+                if (i > 0) sb.append(", ");
+                sb.append(p.ex[i]);
+            }
+            Routines.Routine r = Routines.parseShared(sb.toString());
+            if (r == null || r.moves.size() < 2)
+                bad.append("\n  ").append(sb).append(" -> ")
+                   .append(r == null ? "semmi" : r.moves.size() + " gyakorlat");
+        }
+        assertEquals("megosztva elveszne:" + bad, 0, bad.length());
+    }
+
+    /**
+     * A rehab-területek NEVE cél-mondatként is megtalálja a saját sorát.
+     *
+     * A lap a nevet mutatja; ha valaki azt írja be egy másik mezőbe, hogy
+     * „Boka-stabilitás mobilizálás", oda kell jutnia, ahonnan a név való.
+     */
+    @Test public void everyRehabAreaNameWorksAsAGoal() {
+        for (Rehab.Area a : Rehab.AREAS)
+            assertNotNull(a.name, Rehab.forGoal(a.name + " mobilizálás"));
+    }
 }

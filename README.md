@@ -478,7 +478,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~874 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~876 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.
