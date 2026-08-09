@@ -316,6 +316,10 @@ public final class StrengthParse {
         // rekordok közé. Kimondott sorozat vagy súly viszont megvédi a
         // valódi többnapos naplót: „hétfőn guggolás 3x5, szerdán 4x8 60 kg".
         if (looksLikeSplit(Foods.norm(text))) return out;
+        // Ami MÁSÉ, az nem az én rekordom: az „a srácok csináltak 50
+        // fekvőtámaszt" eddig bekerült az erősítő naplóba – és onnantól a
+        // progresszió-javaslat is arra épült.
+        if (Activities.someoneElsesDoing(text)) return out;
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(
                         stripPercent(stripListMarkers(Hu.correction(Foods.norm(text))))))))))));

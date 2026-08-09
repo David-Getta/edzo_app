@@ -2096,7 +2096,13 @@ public final class Activities {
                 // negyvenöt perces bejegyzés lett. A saját „edzésen voltam"
                 // viszont marad.
                 "gyerek edzes", "gyereket vittem", "fiam edzes", "lanyom edzes",
-                "gyerek meccs"}) {
+                "gyerek meccs",
+                // A szórend szabad: a „vittem a gyereket edzésre" ugyanaz,
+                // mint a „gyereket vittem" – eddig csak az egyik alak volt
+                // kizárva, a másikból negyvenöt perces bejegyzés lett.
+                "vittem a gyerek", "elvittem a gyerek", "kisertem a gyerek",
+                "vittem a fiam", "vittem a lanyom", "edzesre vittem",
+                "meccsre vittem", "gyereket kisertem"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));
@@ -3419,11 +3425,38 @@ public final class Activities {
         return false;
     }
 
+    /**
+     * MÁSÉ az egész mondat? („A srácok csináltak 50 fekvőtámaszt.")
+     *
+     * A mozgás-oldal tagmondatonként takarja ki az idegen alanyt; a sorozat
+     * viszont az egész mondatból épül, ezért ott egyben kell megkérdezni.
+     * Enélkül az erősítő naplóba került, amit valaki MÁS csinált – a
+     * rekordok és a progresszió-javaslat közé.
+     */
+    public static boolean someoneElsesDoing(String text) {
+        if (text == null) return false;
+        String s = Foods.norm(text);
+        boolean other = false;
+        for (String cl : s.split("[,.;]")) {
+            if (cl.trim().isEmpty()) continue;
+            if (firstPerson(cl)) return false;
+            if (otherSubject(cl)) other = true;
+        }
+        return other;
+    }
+
     /** Harmadik személyű alany egész szóként. */
     private static boolean otherSubject(String cl) {
         String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
         for (String w : OTHER_SUBJECT) if (t.contains(" " + w + " ")) return true;
-        return false;
+        // A TÖBBES SZÁM HARMADIK SZEMÉLY magától is elárulja magát: az „ők
+        // futottak 10 km-t" és a „csináltak 20 fekvőtámaszt" nem az én
+        // naplóm. Az igevégződés elég, alany nélkül is – a magyar úgyis
+        // elhagyja. (Az első személyű alakot a hívó már kizárta.)
+        // A múlt idő jele MÁSSALHANGZÓ után áll („futoTTak", „menTek",
+        // „csinálTak"). A magánhangzó utáni -tek/-tak főnév: a videojáTÉK és
+        // a heTEK nem ige, és tőlük az egész mondat kiesett volna.
+        return cl.matches(".*\\b\\w{2,}[^aeiou\\W]t[ae]k\\b.*");
     }
 
     /**

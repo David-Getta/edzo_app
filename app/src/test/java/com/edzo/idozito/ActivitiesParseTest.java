@@ -2116,4 +2116,27 @@ public class ActivitiesParseTest {
         assertEquals("joga", Activities.parse("20 perc habhengerezés")
                 .plans.get(0).kind.id);
     }
+
+    /**
+     * A többes szám harmadik személy magától elárulja magát.
+     *
+     * Az „ők futottak 10 km-t" és „a srácok csináltak 50 fekvőtámaszt" nem
+     * az én naplóm – az utóbbi ráadásul az erősítő naplóba került, a
+     * rekordok és a progresszió-javaslat közé. A magyar el is hagyja az
+     * alanyt, tehát az igevégződés a jel.
+     */
+    @Test public void theThirdPersonPluralIsNotMine() {
+        assertTrue(Activities.parse("ők futottak 10 km-t").isEmpty());
+        assertTrue(StrengthParse.parse("a srácok csináltak 50 fekvőtámaszt").isEmpty());
+        assertTrue(Activities.parse("vittem a gyereket edzésre").isEmpty());
+        assertTrue(Activities.parse("elvittem a gyereket a meccsre").isEmpty());
+        // A magánhangzó utáni -tek/-tak főnév, nem ige: a videojáTÉK és a
+        // heTEK nem vihetik el a mondatot.
+        assertEquals(1, Activities.parse("hetek óta futok").plans.size());
+        // Az együtt végzett edzés az enyém is.
+        assertEquals(10.0, Activities.parse("megcsináltuk a 10 km-t a párommal")
+                .plans.get(0).km, 0.01);
+        assertEquals(5.0, Activities.parse("a fiammal futottunk 5 km-t")
+                .plans.get(0).km, 0.01);
+    }
 }

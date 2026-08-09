@@ -78,7 +78,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   felében áll: „a fiam focizott, én csak néztem", „a párom jógázott, én
   addig főztem". Harmadik személyű alany + első személyű ige nélküli
   tagmondat = nem az én naplóm. A „fiammal futottam" és „a fiam és én
-  futottunk" viszont megtörtént – velem
+  futottunk" viszont megtörtént – velem. A **többes szám harmadik személy**
+  magától is elárulja magát: az „ők futottak 10 km-t" és „a srácok csináltak
+  50 fekvőtámaszt" nem az én naplóm, alany nélkül sem. (A magánhangzó utáni
+  -tek/-tak főnév: a videojáTÉK és a heTEK nem ige.) A gyerek edzésre
+  KÍSÉRÉSE sem az én mozgásom, bármilyen szórenddel
 - a **panasz** nem gyakorlat: a „kaptam egy húzódást a vádlimba" nem
   vádliemelés. Ami mégis megtörtént, az marad: „fájt a vállam, mégis
   fekvenyomás 3x8 60 kg"
