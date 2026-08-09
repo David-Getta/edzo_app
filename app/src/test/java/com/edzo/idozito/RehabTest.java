@@ -663,4 +663,19 @@ public class RehabTest {
         assertEquals(Sentence.Kind.STRENGTH, Sentence.of("plank tartás 3x60",
                 java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
     }
+
+    /**
+     * A szédülés és a hányinger edzés körül keringési jel.
+     *
+     * A „szédülés és hányinger edzés után" mondatra eddig egyáltalán nem jött
+     * válasz – pedig ez nem izomprobléma, és gyakorlatsor nem jó felelet rá.
+     */
+    @Test public void dizzinessAroundTrainingIsARedFlag() {
+        assertNotNull(Rehab.redFlag("szédülés és hányinger edzés után"));
+        assertNotNull(Rehab.redFlag("megszédültem edzés közben"));
+        assertTrue(Rehab.redFlag("fáj a mellkasom futás közben").contains("112"));
+        // A hétköznapi panasz marad gyakorlatsor.
+        assertNull(Rehab.redFlag("fáj a térdem"));
+        assertNotNull(Rehab.forComplaint("fáj a térdem"));
+    }
 }

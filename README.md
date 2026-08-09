@@ -285,7 +285,9 @@ sem talált, tehát ha talál, az tényleg ott van.
 - **Mellkasi panasz: külön ág.** A „fáj a mellkasom futás közben" és a
   „szorít a mellkasom edzés közben" nem gyógytorna-ügy: az app abbahagyást,
   sürgős orvosi segítséget és 112-t mond. Itt a tévedés ára aszimmetrikus –
-  egy felesleges figyelmeztetés kellemetlen, egy elmaradó nem javítható
+  egy felesleges figyelmeztetés kellemetlen, egy elmaradó nem javítható. Az
+  edzés körüli **szédülés és hányinger** ugyanide tartozik: az sem
+  izomprobléma, és eddig egyáltalán nem jött rá válasz
 - **A cél-mondat is**: „boka stabilitás", „váll mobilizálás", „derék rehab" –
   nem kell megvárni, hogy fájjon. És ahogy az ember tényleg kéri: „váll
   gyakorlatok", „mit csináljak a vállamra", „nyak lazítás", „boka erősítés",

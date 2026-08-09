@@ -494,6 +494,11 @@ public final class Rehab {
             "osszeszorul a mellkasom", "elszorul a mellkasom",
             "nyomo erzes a mellkasom", "szorito erzes a mellkasom",
             "elajultam", "elvesztettem az eszmeletem", "elsotetult a vilag",
+            // A SZÉDÜLÉS is ide tartozik, ha edzés közben vagy után jön: a
+            // „szédülés és hányinger edzés után" mondatra eddig egyáltalán
+            // nem jött válasz, pedig ez a keringés jelzése, nem izomprobléma.
+            "szedules es hanyinger", "hanyinger es szedules",
+            "megszedultem edzes", "szedulok edzes",
     };
 
     /**
