@@ -402,4 +402,20 @@ public class FoodsParseTest {
                 "ma 1850 kcal, 140 g fehérje, 180 g szénhidrát, 60 g zsír").isEmpty());
         assertEquals("Olaj", Foods.parse(all, "100 g zsír").get(0).food.name);
     }
+
+    /**
+     * A gyümölcs neve plusz a „lé" külön étel.
+     *
+     * Az „egy pohár szőlőlé" a szőlő szótövére esett, és ÖT GRAMM szőlő
+     * került a naplóba egy pohár lé helyett.
+     */
+    @Test public void theJuiceIsNotTheFruit() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        Foods.Hit h = Foods.parse(all, "egy pohár szőlőlé").get(0);
+        assertEquals("Gyümölcslé", h.food.name);
+        assertEquals(250, h.grams, 1);
+        assertEquals("Gyümölcslé", Foods.parse(all, "meggylé").get(0).food.name);
+        // A gyümölcs magában marad gyümölcs.
+        assertEquals("Szőlő", Foods.parse(all, "szőlő 100 g").get(0).food.name);
+    }
 }
