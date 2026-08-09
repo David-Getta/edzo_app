@@ -308,6 +308,17 @@ public class BodyParseTest {
                 BodyParse.parse("az inbody szerint 22% a testzsírom").fatPct, 0.01);
     }
 
+    /** Az idő és a táv sem kiló – az edzés száma nem a mérlegé. */
+    @Test public void minutesAndKilometresAreNotKilograms() {
+        // Az „este 45 perc jóga, aztán 78,9 kg a mérlegen" negyvenöt PERCE
+        // lett a testsúly – a valódi mérés pedig, ami ott állt a mondat másik
+        // felében, elveszett.
+        kg("este 45 perc jóga, aztán 78,9 kg a mérlegen", 78.9);
+        kg("50 perc kondi, mérleg 81,2", 81.2);
+        none("45 perc jóga");
+        none("10 km futás");
+    }
+
     /** A másik napló folytatása nem mérés: az esti pulzus nem testsúly. */
     @Test public void theOtherLogsContinuationIsNotAWeight() {
         none("nyugalmi pulzus reggel 47, este 62");

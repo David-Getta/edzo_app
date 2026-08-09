@@ -258,6 +258,12 @@ public final class BodyParse {
             // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
             // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
             if (rest.startsWith("fok")) continue;
+            // Az IDŐ és a TÁV sem kiló. Az „este 45 perc jóga, aztán 78,9 kg
+            // a mérlegen" negyvenöt PERCE lett a testsúly – a valódi mérés
+            // pedig, ami ott állt a mondat másik felében, elveszett.
+            for (String u : new String[]{"perc", "ora", "mp", "masodperc", "km", "lepes"})
+                if (rest.startsWith(u)) { rest = "#"; break; }
+            if (rest.equals("#")) continue;
             // Az IZOMTÖMEG nem a testsúly. A mérleg ugyanabban a sorban írja
             // ki mindkettőt, és a „testzsír 19,5%, izomtömeg 62 kg" hatvankét
             // kilós méréssé vált a súlytrendben – nyolcvan helyett.
