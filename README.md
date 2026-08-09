@@ -291,11 +291,19 @@ sem talált, tehát ha talál, az tényleg ott van.
 - Heti átlag a statisztikákban és a heti összefoglalóban
 
 ### 🩹 Megelőzés & rehab
-- **15 testtáj, 81 gyógytornász-ihletésű gyakorlat** adagolással, technikai
+- **16 testtáj, 87 gyógytornász-ihletésű gyakorlat** adagolással, technikai
   tippel és videóval: boka-stabilitás, térd, IT-szalag (a térd külső oldala),
   derék (McGill-hármas), váll, golf- és teniszkönyök, csukló és kéz (egérkéz),
   nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles,
-  **háti gerinc (ülőmunka ellen)** – kész, 10–15 perces megelőző sorok
+  **háti gerinc (ülőmunka ellen)** és **törzs/medence (mélyizom-stabilitás)** –
+  kész, 10–15 perces megelőző sorok
+- **A törzs saját lapja**: a derék, a csípő és a térd sora mind a mély
+  stabilizálókra hivatkozik, de saját lapjuk nem volt. A „gyenge a
+  törzsizmom" válasz nélkül maradt, a „core erősítés" pedig hatvanperces
+  kondi-BEJEGYZÉS lett a naplóban – egy meg nem történt edzés. A sor a
+  haránt hasizomtól a farmer-sétáig vezet
+- **A gyengeség is panasz**, nem csak a fájdalom: a „gyenge a bokám" és a
+  „nem bírja a térdem a lépcsőt" ugyanolyan pontos leírás
 - **A háti gerinc saját sort kapott**: a napi nyolc óra ülés a mellkasi
   szakaszt merevíti be, és ennek árát a nyak és a váll fizeti meg – oda
   vándorol a mozgás, ami innen hiányzik. A „merev a felső hátam", a „fáj a

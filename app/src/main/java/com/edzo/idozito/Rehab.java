@@ -221,6 +221,25 @@ public final class Rehab {
                     ex("Fal-angyal", "3×10", "Hát és alkarok a falon, csúsztasd a karokat fel-le úgy, hogy a derék végig a falhoz simuljon. Ennél nehezebb, mint amilyennek látszik.", "wall angel gyakorlat"),
                     ex("Evezés gumiszalaggal, lapocka-összehúzással", "3×15", "Húzd a könyököd a törzs mellé, és fent tartsd egy pillanatig – a lapockák dolgozzanak, ne a kar.", "gumiszalag evezés lapocka gyakorlat"),
                     ex("Mellizom-nyújtás ajtófélfánál", "2×30 mp / oldal", "Alkar a félfán könyökmagasságban, fordulj el lassan – a becsukódott mellizom a görbe hát másik fele.", "mellizom nyújtás ajtófélfa")),
+            // A TÖRZS a derék, a csípő és a térd közös alapja: a legtöbb
+            // panasz-sor a mély stabilizálókra hivatkozik, de saját lapja
+            // eddig nem volt. A „gyenge a törzsizmom" és a „core erősítés"
+            // ezért válasz nélkül maradt – vagy ami rosszabb, hatvanperces
+            // kondi-edzésként került a naplóba.
+            new Area("torzs", "🧍", "Törzs és medence (mélyizom-stabilitás)",
+                    "A haránt hasizom és a medencefenék munkája: a törzs nem a látható "
+                            + "hasizomtól stabil, hanem attól a mély rétegtől, ami a gerincet "
+                            + "MOZGÁS KÖZBEN tartja meg. Ez a sor a derék, a csípő és a térd "
+                            + "panaszainak a közös alapja – önmagában is, és a többi sor mellé is.",
+                    RED_FLAG + " Ha a hasfal középen kidomborodik a gyakorlat alatt "
+                            + "(rectus diastasis), hagyd abba, és kérj orvosi vagy "
+                            + "gyógytornászi véleményt – az nem edzésmennyiség kérdése.",
+                    ex("Haránt hasizom aktiválás", "3×10 lélegzet", "Hanyatt, térdek hajlítva. Kilégzésre húzd be finoman a köldököt – a bordáid NE emelkedjenek. Ennyi az egész, és ez a legnehezebb.", "haránt hasizom aktiválás gyakorlat"),
+                    ex("Halott bogár (dead bug)", "3×8 / oldal", "Hanyatt, kar és láb a levegőben. Az ellentétes kar-lábat engedd le lassan – a derék végig a talajon marad.", "dead bug gyakorlat helyes technika"),
+                    ex("Oldalplank térdről", "3×20 mp / oldal", "Könyökön, térdek hajlítva. A csípő ne essen le: a váll, a csípő és a térd egy vonal.", "oldalplank térdről gyakorlat"),
+                    ex("Plank vállérintéssel", "3×10", "Plankben érintsd meg felváltva az ellenkező vállad – a csípő NE forduljon el. Ha billeg, tedd szélesebbre a lábad.", "plank shoulder tap gyakorlat"),
+                    ex("Egykezes farmer-séta", "3×20 m / oldal", "Egy kézben súly, sétálj egyenesen, vállak vízszintben. A törzs OLDALIRÁNYÚ stabilitása ez – a legéletszerűbb core-gyakorlat.", "suitcase carry gyakorlat"),
+                    ex("Medencefenék-légzés", "2×10 lélegzet", "Belégzésre engedd el, kilégzésre finoman emeld – a hasfal és a medencefenék egy rendszer, együtt dolgozik.", "medencefenék légzés gyakorlat")),
     };
 
     /**
@@ -281,6 +300,10 @@ public final class Rehab {
                     + "a fal-angyalt csináld háttal a falnak ÁLLVA, sarokkal 10 cm-re, és "
                     + "told az evezést 3×15-ről gumiszalag-fokozattal feljebb. Napi egy "
                     + "rövid adag többet ér a heti nagynál."},
+            {"torzs", "Mozgás közbeni terhelés: a halott bogárhoz vegyél 2–3 kg-os súlyt a "
+                    + "kézbe, az oldalplankot vidd le lábról (3×30 mp), a farmer-sétát told "
+                    + "3×40 m-re nehezebb súllyal. A haránt hasizom-aktiválás onnantól "
+                    + "nem külön gyakorlat, hanem MINDEN gyakorlat része."},
     };
 
     /**
@@ -326,6 +349,9 @@ public final class Rehab {
                     + "sorozat a kulcs. A merevség csökkenése az első jó jel."},
             {"hati", "A háti merevség gyorsan enged: 2–3 hét napi adag után látszik, "
                     + "a tartós változás 6–8 hét. Az íróasztal magassága nélkül visszatér."},
+            {"torzs", "A mély stabilizálók 4–6 hét alatt kapcsolnak be igazán, és az első "
+                    + "jel nem a hasizom, hanem az, hogy a derék kevésbé fárad el álló "
+                    + "munkában. Napi rövid adag többet ér a heti nagynál."},
     };
 
     /** A várható javulás szövege, vagy üres, ha nincs ilyen terület. */
@@ -388,6 +414,11 @@ public final class Rehab {
                 "huzza", "huzza a", "problema", "problemam", "panaszom",
                 "baj van a", "kiujult", "elojott",
                 "kicsuszik", "instabil", "bizonytalan a", "megrogyik",
+                // A GYENGESÉG is panasz, csak nem fáj: a „gyenge a törzsizmom"
+                // és a „nem bírja a bokám" ugyanolyan pontos leírás, mint egy
+                // fájdalom-szó – és eddig egyikre sem jött válasz.
+                "gyenge a", "gyengek a", "gyengeseg", "elgyengult", "nem birja",
+                "nem birom megtartani", "elfarad",
                 // A RÖVIDÜLÉS ugyanígy: „rövid a combhajlítóm", „feszes a vádlim".
                 "rovid a", "roviduelt", "roviduelt", "beszukult",
                 "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
@@ -664,6 +695,13 @@ public final class Rehab {
                 {"sipcsont", "sipcsontom", "sipcsontja", "sipcsont", "labszaram",
                         "labszarfaj", "labszar", "shin splint", "shinsplint"},
                 {"comb", "combom", "combhajlito", "hatso comb", "comb hatulja"},
+                // A TÖRZS a leggyakoribb cél-mondat, és eddig nem volt hova
+                // vinni: a „core erősítés" hatvanperces kondi-edzés lett, a
+                // „gyenge a törzsizmom" pedig válasz nélkül maradt.
+                {"torzs", "torzsizm", "torzsem", "torzs stabil", "torzsstabil",
+                        "core", "melyizom", "mely izom", "harant hasizom",
+                        "medencefenek", "medencem", "medence stabil", "hasizmom",
+                        "hasizmaim", "hasfalam", "rectus diastasis", "diastasis"},
         };
         for (String[] m : map)
             for (int i = 1; i < m.length; i++)

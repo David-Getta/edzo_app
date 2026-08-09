@@ -240,7 +240,10 @@ public class RehabTest {
         assertEquals("csuklo", Rehab.forGoal("csukló mobilizálás").id);
         // A csirkecomb cél-mondatban sem testtáj.
         assertNull(Rehab.forGoal("csirkecomb rehab"));
-        assertNull(Rehab.forGoal("core stabilitás"));   // nincs testtáj
+        // A CORE-nak mostantól saját lapja van: a mély stabilizálók a derék,
+        // a csípő és a térd panaszainak közös alapja.
+        assertEquals("torzs", Rehab.forGoal("core stabilitás").id);
+        assertEquals("torzs", Rehab.forGoal("mélyizom erősítés").id);
         // Az ERŐSÍTÉS is ide tartozik: a „boka erősítés" korábban egy
         // hatvanperces kondi-BEJEGYZÉS lett a naplóban – vagyis egy meg nem
         // történt edzés. A súlyzós mondat továbbra is az erősítő naplóé.
@@ -623,7 +626,8 @@ public class RehabTest {
                 {"nyak", "fáj a nyakam"}, {"csipo", "fáj a csípőm"},
                 {"achilles", "fáj az Achillesem"}, {"talp", "fáj a talpam"},
                 {"sipcsont", "fáj a sípcsontom"}, {"comb", "húzódik a combom"},
-                {"hati", "merev a felső hátam"}};
+                {"hati", "merev a felső hátam"},
+                {"torzs", "gyenge a törzsizmom"}};
         StringBuilder bad = new StringBuilder();
         for (String[] r : t) {
             Rehab.Area c = Rehab.forComplaint(r[1]);
@@ -677,5 +681,26 @@ public class RehabTest {
         // A hétköznapi panasz marad gyakorlatsor.
         assertNull(Rehab.redFlag("fáj a térdem"));
         assertNotNull(Rehab.forComplaint("fáj a térdem"));
+    }
+
+    /**
+     * A törzs saját lapja: a legtöbbet kért, eddig hiányzó terület.
+     *
+     * A derék, a csípő és a térd sora mind a mély stabilizálókra hivatkozik,
+     * de saját lapjuk nem volt. A „gyenge a törzsizmom" válasz nélkül maradt,
+     * a „core erősítés" pedig hatvanperces kondi-BEJEGYZÉS lett a naplóban –
+     * vagyis egy meg nem történt edzés.
+     */
+    @Test public void theCoreHasItsOwnPage() {
+        assertNotNull(Rehab.byId("torzs"));
+        assertEquals("torzs", Rehab.forComplaint("gyenge a törzsizmom").id);
+        assertEquals("torzs", Rehab.forComplaint("instabil a medencém futás közben").id);
+        assertEquals("torzs", Rehab.forGoal("core erősítés").id);
+        assertEquals("torzs", Rehab.forGoal("szeretném erősíteni a hasizmomat").id);
+        // A gyengeség máshol is panasz, nem csak a törzsnél.
+        assertEquals("boka", Rehab.forComplaint("gyenge a bokám").id);
+        assertEquals("terd", Rehab.forComplaint("nem bírja a térdem a lépcsőt").id);
+        // A kimondott hosszúságú core-edzés viszont megtörtént mozgás marad.
+        assertEquals(30, Activities.parse("core edzés 30 perc").plans.get(0).minutes);
     }
 }
