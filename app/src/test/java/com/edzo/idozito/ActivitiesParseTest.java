@@ -276,6 +276,17 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void duringTrainingIsATimestampToo() {
+        // Az „edzés ALATT ittam egy izotóniást" ugyanolyan időpont, mint az
+        // „edzés után" – eddig negyvenöt perces bejegyzés lett belőle az ital
+        // mellé, holott a mondat az italról szól.
+        assertEquals("1d+0: ", summary("edzés alatt 7 dl izotóniás"));
+        assertEquals("1d+0: ", summary("edzés során ittam 5 dl vizet"));
+        // A mértékegységes „alatt" viszont a futás ideje, nem időpont.
+        assertEquals("1d+0: 1×futas/30", summary("30 perc alatt futottam 5 km-t"));
+        assertEquals("1d+0: 1×kerekpar/60", summary("1 óra alatt bicikliztem 20 km-t"));
+    }
+
     @Test public void intervalSegmentsAreNotSeparateWorkouts() {
         // A „20 mp sprint 40 mp séta, 12 kör" a futásnak és a sétának is a
         // mozgásforma szokásos hosszát adta: negyvenöt plusz kilencven percet

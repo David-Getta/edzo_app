@@ -1590,6 +1590,10 @@ public final class Activities {
         while (i < s.length() && s.charAt(i) == ' ') i++;
         String rest = s.substring(Math.min(i, s.length()));
         for (String u : new String[]{"utan", "elott", "kozben", "kozbeni", "utani",
+                // Az „edzés ALATT ittam egy izotóniást" ugyanolyan időpont,
+                // mint az „edzés után" – eddig negyvenöt perces bejegyzés
+                // lett belőle az ital mellé.
+                "alatt", "alatti", "soran", "vegen", "elejen",
                 "elotti", "kore", "korul"})
             if (rest.startsWith(u)) return true;
         return false;
