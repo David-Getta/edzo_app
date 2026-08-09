@@ -1365,6 +1365,32 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Százhúsz sportnév végigpróbálva: ezek hiányoztak.
+     *
+     * A terepkerékpár angolul él a hazai szóhasználatban („mtb", „mountain
+     * bike", „gravel"), az atlétika dobó- és ugrószámai pedig egyáltalán nem
+     * léteztek – pedig egy atlétika-edzés ugyanúgy másfél óra, mint bármi más.
+     */
+    @Test public void theSecondSweepOfSportNames() {
+        String[][] want = {
+                {"mountain bike 1 óra", "kerekpar"}, {"mtb 90 perc", "kerekpar"},
+                {"gravel 2 óra", "kerekpar"}, {"pole dance 1 óra", "tanc"},
+                {"taekwondo edzés", "harcmuveszet"}, {"atlétika 90 perc", "egyeb"},
+                {"magasugrás edzés", "egyeb"}, {"súlylökés 1 óra", "egyeb"},
+                {"gerelyhajítás edzés", "egyeb"}, {"aquatlon verseny", "triatlon"},
+                {"kitesurf 2 óra", "uszas"}, {"snorkeling 1 óra", "uszas"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] w : want) {
+            Activities.Parsed p = Activities.parse(w[0]);
+            String got = p.isEmpty() ? "-" : p.plans.get(0).kind.id;
+            if (!got.equals(w[1]))
+                bad.append("\n  ").append(w[0]).append(" -> ").append(got)
+                   .append(" (várt: ").append(w[1]).append(")");
+        }
+        assertEquals("hiányzó vagy rossz mozgásforma:" + bad, 0, bad.length());
+    }
+
+    /**
      * A „km/h" sebesség, nem táv.
      *
      * A „futás 28 km/h" huszonnyolc kilométeres futásnak számított – majdnem

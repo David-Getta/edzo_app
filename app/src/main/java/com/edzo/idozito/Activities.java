@@ -61,14 +61,20 @@ public final class Activities {
                     "medenceben", "uszomedence", "szinkronuszas",
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
-                    "vizilabda", "aquafit", "vizitorna"),
+                    "vizilabda", "aquafit", "vizitorna",
+                    // A felszíni és a felszín alatti vizes sportok is ide:
+                    // a snorkeling és a kitesurf ugyanabban a közegben zajlik.
+                    "snorkel", "kitesurf", "kiteszorf"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
                     // A spinning teremben zajlik, de a lába ugyanazt csinálja:
                     // a tánc MET-je alábecsülte.
                     "spinning", "szobabicikli", "spinning ora",
                     // A „bringatúra" egyben fedi a „bringa" és a „túra" tövet is.
-                    "bringatura", "biciklitura", "kerekpartura"),
+                    "bringatura", "biciklitura", "kerekpartura",
+                    // A terepkerékpár a hazai szóhasználatban angolul él:
+                    // „mtb", „mountain bike", és újabban a „gravel".
+                    "mountain bike", "mountainbike", "mtb", "gravel"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
                     "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi",
@@ -108,9 +114,11 @@ public final class Activities {
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
                     "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
-                    "aikido", "onvedelm", "vivas"),
+                    "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",
+                    "capoeira", "muay thai", "muaythai"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
-                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa"),
+                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
+                    "pole dance", "poledance", "rudtanc"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
@@ -130,7 +138,8 @@ public final class Activities {
             // három (két) sportág együtt más terhelés, mint bármelyik külön. A
             // saját tétele nélkül vagy elveszne, vagy hamis névvel kerülne be.
             new Kind("triatlon", "🏊", "Triatlon / duatlon", 9.0, true, 150,
-                    "triatlon", "duatlon", "ironman", "sprinttriatlon", "olimpiai tav"),
+                    "triatlon", "duatlon", "aquatlon", "ironman", "sprinttriatlon",
+                    "olimpiai tav"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "falmasz", "maszas", "sziklamasz",
                     "boulder", "maszofal"),
@@ -158,6 +167,11 @@ public final class Activities {
                     // íjászat hiányzott. (A darts szándékosan marad kimaradva:
                     // a kocsmasportok nem edzések – erről külön teszt szól.)
                     "ijaszat", "ijasz",
+                    // Az atlétika dobó- és ugrószámai: az edzés maga vegyes
+                    // terhelésű, a MET a közepes sáv. Százhúsz sportnévvel
+                    // végigpróbálva ezek hiányoztak.
+                    "atletika", "magasugras", "tavolugras", "sulylokes",
+                    "gerelyhajitas", "diszkoszvetes", "kalapacsvetes", "rudugras",
                     // A taposógép ugyanaz a gép, mint a lépcsőzőgép: kardió,
                     // nem súlyzós edzés.
                     "taposogep", "taposo gep"),
