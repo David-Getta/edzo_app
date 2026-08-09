@@ -78,7 +78,8 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - a **szokás kezdete** nem egy edzés: a „három hónapja kezdtem el edzeni"
   arról szól, mióta sportol az ember – de a „két hete kezdtem el futni,
   **azóta 40 km-t futottam**" negyven kilométere valódi
-- a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem"
+- a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem" –
+  a **„mégsem"** ugyanígy: „mégsem futottam ma", „mégsem ettem a csokit"
 
 Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
 bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
@@ -294,7 +295,8 @@ sem talált, tehát ha talál, az tényleg ott van.
   (sorozatonként más ismétlés, per-jellel is: „5/5/5"), „guggolás 3x10x60", „vállból nyomás
   3 sorozat 12 ismétlés 20 kg", „4 sorozat 8 fekvenyomás" (az „ismétlés"
   szót el lehet hagyni), „guggolás ötször ötöt 100 kg",
-  „fekvenyomás 60x10, 70x8, 80x6" és „fekvenyomás: 60/10, 70/8, 80/6"
+  „fekvenyomás 60x10, 70x8, 80x6", „fekvenyomás: 60/10, 70/8, 80/6" és
+  „húzódzkodás 12, 10, 8" (szóközzel is)
   (súly × ismétlés, sorozatonként – szorzójellel és perjellel is),
   „3 kör 10 fekvőtámasz", „5 kör 10 fekvőtámasz 15 guggolás 20 hasizom"
   (vessző nélkül is: a magyar felsorolásban a szám maga tagol),
