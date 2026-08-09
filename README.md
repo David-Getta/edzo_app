@@ -54,7 +54,16 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   pulzusom"
 - az **időpont** nem tevékenység: az „edzés után ittam egy turmixot" a
   turmixról szól, nem egy edzésről
+- a **kimondott akarat** sem edzés: „erősíteni akarom a bokám", „el akarok
+  kezdeni futni", „remélem tudok futni 30 percet", „készülök elmenni a terembe"
+- a **bevásárlólista** és a **kifogyott étel** sem vacsora: „bevásárlólista:
+  pizza, tej", „kifogyott a tej", „el kell tennem a maradékot", „receptet
+  keresek", „megkívántam a csokit", „rendelnék egy pizzát"
 - a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem"
+
+Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
+bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
+étellel végigpróbálva egyikből sem lesz napló-sor.
 
 ### 📝 Kézi edzés-felvétel
 - **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
@@ -163,13 +172,20 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - **15 testtáj, 81 gyógytornász-ihletésű gyakorlat** adagolással, technikai
   tippel és videóval: boka-stabilitás, térd, IT-szalag (a térd külső oldala),
   derék (McGill-hármas), váll, golf- és teniszkönyök, csukló és kéz (egérkéz),
-  nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles –
-  kész, 10–20 perces megelőző sorok
+  nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles,
+  **háti gerinc (ülőmunka ellen)** – kész, 10–20 perces megelőző sorok
+- **A háti gerinc saját sort kapott**: a napi nyolc óra ülés a mellkasi
+  szakaszt merevíti be, és ennek árát a nyak és a váll fizeti meg – oda
+  vándorol a mozgás, ami innen hiányzik. A „merev a felső hátam", a „fáj a
+  lapockám között" és a „görbe a hátam az ülőmunkától" ide fut
 - **A panasz-mondat is ajtó**: a „fáj a vállam", a „beállt a derekam" vagy a
   „kificamodott a bokám" bármelyik beviteli mezőből a megfelelő sorhoz visz.
   Egy szóban is elég, ahogy a magyar mondja: „derékfájás", „csípőfájdalom" –
   és a diagnózis neve is („golfkönyök", „teniszkönyök", „futótérd",
-  „sarkantyú"). A tagadott panasz („már nem fáj") nem nyit sort
+  „sarkantyú", „gerincferdülés"). Nem csak a „fáj": „húz a vádlim",
+  „görcsöl a lábam", „szúr a derekam", „feszül a nyakam", „reggelre
+  elgémberedik a kezem" – ahogy a magyar tényleg mondja. A tagadott panasz
+  („már nem fáj", „fájdalommentes") nem nyit sort
 - **Piros zászló**: zsibbadásra, duzzanatra, éjszakai vagy sugárzó
   fájdalomra az app nem gyakorlatsort ad, hanem kimondja, hogy ezt meg kell
   nézetni – a hallgatás rosszabb válasz lenne, mint a nemleges
@@ -200,6 +216,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 ### 😴 Alvás & nyugalmi pulzus
 - **„Aludtam 8 órát"** – egy mondat vagy egy koppintás a Profilban: napi egy
   érték, heti átlag, két hét görbe, minősítés; a vasárnapi összegzésben is
+- **Két időpont is elég**: „este 11-kor feküdtem, reggel 7-kor keltem",
+  „22:30-tól 6:15-ig aludtam", „lefeküdtem 23 órakor, felkeltem 7 órakor" –
+  a kivonást ne a felhasználó végezze el. A magyar „fél tizenegy" tíz harminc,
+  és ha a délelőtti óraszámból képtelen hossz jönne ki, este értendő; az
+  „alvás 6:30" pedig hossz, nem időpont
 - **„Nyugalmi pulzus 52"** – ugyanígy: napi egy érték, heti átlag, görbe és
   léptetős gyorsbevitel; az edzés-adat („átlagpulzus 165") nem téveszti meg
 - **A szokásosnál jóval magasabb reggeli pulzusnál** a kezdőlap szól:
