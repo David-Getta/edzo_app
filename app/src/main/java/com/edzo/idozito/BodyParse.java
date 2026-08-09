@@ -221,6 +221,10 @@ public final class BodyParse {
                     "perc", "ittam", "ettem", "ebed", "vacsora", "uzsonna",
                     "kcal", "kalori"})
                 if (part.contains(w)) { other = true; break; }
+            // A SOROZAT tagmondata is másé: a „körfogatok és súlyok: derék
+            // 84, guggolás 3x5 100" száza a rúdon van, nem a mérlegen –
+            // eddig száz kilós MÉRÉS lett belőle a súlytrendben.
+            if (part.matches(".*\\d\\s?x\\s?\\d.*")) other = true;
             if (other) { dropped = true; continue; }
             if (keep.length() > 0) keep.append(' ');
             keep.append(part.trim());

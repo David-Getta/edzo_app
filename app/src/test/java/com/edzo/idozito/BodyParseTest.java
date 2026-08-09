@@ -586,4 +586,18 @@ public class BodyParseTest {
         // A „reggeli" szándékosan nem tiltó szó: az még mérés is lehet.
         assertEquals(80.1, BodyParse.parse("reggeli mérés: 80,1 kg").kg, 0.01);
     }
+
+    /**
+     * A sorozat tagmondata is másé.
+     *
+     * A „körfogatok és súlyok: derék 84, guggolás 3x5 100" száza a RÚDON van,
+     * nem a mérlegen – eddig száz kilós mérés lett belőle a súlytrendben, a
+     * derék viszont megmaradt.
+     */
+    @Test public void aBarbellWeightIsNotABodyWeight() {
+        BodyParse.Body b = BodyParse.parse("körfogatok és súlyok: derék 84, "
+                + "guggolás 3x5 100");
+        assertEquals(0.0, b.kg, 0.01);
+        assertEquals(84.0, b.cm[0], 0.01);
+    }
 }
