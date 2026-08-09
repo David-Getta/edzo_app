@@ -123,12 +123,28 @@ public final class BodyParse {
             "szeretnek", "akarok", "cel", "celom", "lenni"
     };
 
+    /**
+     * A -ról/-re pár MÁSODIK száma a mai érték.
+     *
+     * A „haskörfogatom 92 cm-ről 88-ra ment le" és a „testzsír 22-ről 18
+     * százalékra" mondatban két szám áll: a régi és a mai. A felismerő eddig
+     * az elsőt vette – vagyis pont azt, ami már NEM igaz –, a haskörfogatnál
+     * pedig a két szám együtt olyan zavaros maradt, hogy semmi nem lett
+     * belőle. A régi értéket kivágjuk, a mai marad a helyén.
+     */
+    private static String keepTheNewValue(String s) {
+        return s.replaceAll(
+                "(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:cm|centi|kg|kilo|%|szazalek)?"
+                        + "\\s?-?r[o\u00f3]l\\b([^0-9]{0,12}?)"
+                        + "(\\d{1,3}(?:[.,]\\d{1,2})?\\s?-?r[ae]\\b)", "$2");
+    }
+
     /** A mondatban rejlő mérés, vagy egy üres Body. */
     public static Body parse(String q) {
         if (q == null) return new Body(0, 0);
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
         // mérleget sokan hangosan olvassák fel, és úgy is írják le.
-        String s = dropOtherLogs(Hu.digits(Foods.norm(q)));
+        String s = keepTheNewValue(dropOtherLogs(Hu.digits(Foods.norm(q))));
         if (s.isEmpty()) return new Body(0, 0);
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.

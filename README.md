@@ -312,6 +312,9 @@ sem talált, tehát ha talál, az tényleg ott van.
   „alvás 6:30" pedig hossz, nem időpont. Az ébredés állhat elöl is („ma
   reggel 6:30-kor keltem, 22:45-kor feküdtem le") – a lefekvés- és
   ébredés-szó helye dönti el a sorrendet
+- **A -ról/-re pár második száma a mai érték**: a „derékbőségem 90-ről 86-ra
+  csökkent" és a „testzsír 22-ről 18 százalékra" mondatból eddig a RÉGI szám
+  került be – pont az, ami már nem igaz
 - **„Nyugalmi pulzus 52"** – ugyanígy: napi egy érték, heti átlag, görbe és
   léptetős gyorsbevitel; az edzés-adat („átlagpulzus 165") nem téveszti meg
 - **A szokásosnál jóval magasabb reggeli pulzusnál** a kezdőlap szól:

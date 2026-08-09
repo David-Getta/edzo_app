@@ -417,4 +417,22 @@ public class BodyParseTest {
         // Az alvás is érti a kimondott törtet.
         assertEquals(7.5, Sleep.parse("hét egész öt órát aludtam"), 0.01);
     }
+
+    /**
+     * A -ról/-re pár második száma a mai érték.
+     *
+     * A „derékbőségem 90-ről 86-ra csökkent" két számot mond: a régit és a
+     * mait. A felismerő eddig az elsőt vette – pont azt, ami már NEM igaz –,
+     * a körfogatnál pedig a kettő együtt olyan zavaros maradt, hogy semmi
+     * nem lett belőle.
+     */
+    @Test public void theSecondNumberOfAFromToPairIsTodaysValue() {
+        assertEquals(86, BodyParse.parse("a derékbőségem 90-ről 86-ra csökkent").cm[0], 0.01);
+        assertEquals(88, BodyParse.parse("haskörfogatom 92 cm-ről 88-ra").cm[0], 0.01);
+        assertEquals(18, BodyParse.parse("testzsír 22-ről 18 százalékra").fatPct, 0.01);
+        assertEquals(79.8, BodyParse.parse("82,5-ről 79,8-ra fogytam").kg, 0.01);
+        // Az egyszerű mérés nem sérül.
+        assertEquals(84, BodyParse.parse("derék 84 cm, csípő 95 cm").cm[0], 0.01);
+        assertEquals(78, BodyParse.parse("78 kg 18% zsír").kg, 0.01);
+    }
 }
