@@ -3450,14 +3450,25 @@ public final class Activities {
         String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
         for (String w : OTHER_SUBJECT) if (t.contains(" " + w + " ")) return true;
         // A TÖBBES SZÁM HARMADIK SZEMÉLY magától is elárulja magát: az „ők
-        // futottak 10 km-t" és a „csináltak 20 fekvőtámaszt" nem az én
-        // naplóm. Az igevégződés elég, alany nélkül is – a magyar úgyis
-        // elhagyja. (Az első személyű alakot a hívó már kizárta.)
-        // A múlt idő jele MÁSSALHANGZÓ után áll („futoTTak", „menTek",
-        // „csinálTak"). A magánhangzó utáni -tek/-tak főnév: a videojáTÉK és
-        // a heTEK nem ige, és tőlük az egész mondat kiesett volna.
-        return cl.matches(".*\\b\\w{2,}[^aeiou\\W]t[ae]k\\b.*");
+        // futottak 10 km-t" és a „csináltak 50 fekvőtámaszt" nem az én
+        // naplóm – a magyar az alanyt úgyis elhagyja, tehát az ige a jel.
+        //
+        // De csak a CSELEKVÉS igéi, felsorolva. A magyar a saját testrészeimre
+        // is többes szám harmadik személyt használ: az „elfáradtak a lábaim"
+        // és a „jól sikerültek a sorozatok" ugyanígy néz ki, és egy általános
+        // -tak/-tek szabály elvitte volna a mellettük álló valódi edzést is.
+        for (String v : OTHER_VERB) if (t.contains(" " + v + " ")) return true;
+        return false;
     }
+
+    /** Cselekvés-igék többes szám harmadik személyben: „futottak", „ettek". */
+    private static final String[] OTHER_VERB = {
+            "futottak", "futnak", "mentek", "jartak", "edzettek", "edzenek",
+            "csinaltak", "nyomtak", "huztak", "toltak", "usztak", "tekertek",
+            "bicikliztek", "gyalogoltak", "setaltak", "jatszottak", "tornaztak",
+            "sportoltak", "gyakoroltak", "ettek", "ittak", "guggoltak", "emeltek",
+            "megettek", "megittak", "leguggoltak", "kinyomtak",
+    };
 
     /**
      * Hátravetett tagadás: „futni nem voltam", „úszni nem mentem".

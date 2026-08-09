@@ -2130,9 +2130,17 @@ public class ActivitiesParseTest {
         assertTrue(StrengthParse.parse("a srácok csináltak 50 fekvőtámaszt").isEmpty());
         assertTrue(Activities.parse("vittem a gyereket edzésre").isEmpty());
         assertTrue(Activities.parse("elvittem a gyereket a meccsre").isEmpty());
-        // A magánhangzó utáni -tek/-tak főnév, nem ige: a videojáTÉK és a
-        // heTEK nem vihetik el a mondatot.
         assertEquals(1, Activities.parse("hetek óta futok").plans.size());
+        // Csak a CSELEKVÉS igéi számítanak. A magyar a saját testrészeimre is
+        // többes szám harmadik személyt használ: az „elfáradtak a lábaim" és
+        // a „jól sikerültek a sorozatok" ugyanígy néz ki, és egy általános
+        // -tak/-tek szabály elvitte volna a mellettük álló valódi edzést is.
+        assertEquals(10.0, Activities.parse("a lábaim elfáradtak a 10 km futás után")
+                .plans.get(0).km, 0.01);
+        assertEquals(1, StrengthParse.parse(
+                "jól sikerültek a sorozatok, 3x10 fekvenyomás 60 kg").size());
+        assertEquals(1, StrengthParse.parse(
+                "a szettek között 2 perc pihi volt, guggolás 5x5 100 kg").size());
         // Az együtt végzett edzés az enyém is.
         assertEquals(10.0, Activities.parse("megcsináltuk a 10 km-t a párommal")
                 .plans.get(0).km, 0.01);

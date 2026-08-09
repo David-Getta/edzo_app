@@ -80,8 +80,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   tagmondat = nem az én naplóm. A „fiammal futottam" és „a fiam és én
   futottunk" viszont megtörtént – velem. A **többes szám harmadik személy**
   magától is elárulja magát: az „ők futottak 10 km-t" és „a srácok csináltak
-  50 fekvőtámaszt" nem az én naplóm, alany nélkül sem. (A magánhangzó utáni
-  -tek/-tak főnév: a videojáTÉK és a heTEK nem ige.) A gyerek edzésre
+  50 fekvőtámaszt" nem az én naplóm, alany nélkül sem – de csak a CSELEKVÉS
+  igéi számítanak, felsorolva: a magyar a saját testrészeimre is többes szám
+  harmadik személyt használ („elfáradtak a lábaim", „jól sikerültek a
+  sorozatok"), és egy általános szabály elvitte volna a mellettük álló valódi
+  edzést is. A gyerek edzésre
   KÍSÉRÉSE sem az én mozgásom, bármilyen szórenddel
 - a **panasz** nem gyakorlat: a „kaptam egy húzódást a vádlimba" nem
   vádliemelés. Ami mégis megtörtént, az marad: „fájt a vállam, mégis
