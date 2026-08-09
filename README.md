@@ -259,7 +259,8 @@ sem talált, tehát ha talál, az tényleg ott van.
   (sorozatonként más ismétlés, per-jellel is: „5/5/5"), „guggolás 3x10x60", „vállból nyomás
   3 sorozat 12 ismétlés 20 kg", „4 sorozat 8 fekvenyomás" (az „ismétlés"
   szót el lehet hagyni), „guggolás ötször ötöt 100 kg",
-  „fekvenyomás 60x10, 70x8, 80x6" (súly × ismétlés, sorozatonként),
+  „fekvenyomás 60x10, 70x8, 80x6" és „fekvenyomás: 60/10, 70/8, 80/6"
+  (súly × ismétlés, sorozatonként – szorzójellel és perjellel is),
   „3 kör 10 fekvőtámasz" – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").

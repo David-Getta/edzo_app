@@ -245,6 +245,32 @@ public final class StrengthParse {
     }
 
     /**
+     * Perjeles súly/ismétlés: „fekvenyomás: 60/10, 70/8, 80/6".
+     *
+     * Ugyanaz a piramis, amit az „60x10" alakkal már értettünk – csak a
+     * teremben sokan perjellel írják. Húsz fölötti első tag (az a súly) és
+     * harminc alatti második (az az ismétlés) kell hozzá, hogy a ritmus-jelölés
+     * („40/20") ne essen ide.
+     */
+    static String slashWeightReps(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                // A záró vessző LISTA-jel, nem tizedes: a „60/10, 70/8" első
+                // két párja különben kimaradt volna a cseréből.
+                .compile("(?<![\\d.,/])(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?/\\s?(\\d{1,2})(?![\\d/])")
+                .matcher(s);
+        StringBuffer b = new StringBuffer();
+        while (m.find()) {
+            double w = Double.parseDouble(m.group(1).replace(',', '.'));
+            int r = Integer.parseInt(m.group(2));
+            m.appendReplacement(b, w >= 20 && r <= 30
+                    ? java.util.regex.Matcher.quoteReplacement(m.group(1) + "x" + r)
+                    : java.util.regex.Matcher.quoteReplacement(m.group()));
+        }
+        m.appendTail(b);
+        return b.toString();
+    }
+
+    /**
      * A mondat feldolgozása. Tagmondatonként (vessző, pontosvessző, „és”,
      * „majd”, „utána”) egy-egy gyakorlat; ami tagmondatban nincs felismert
      * gyakorlat VAGY nincs értelmes ismétlésszám, az kimarad.
@@ -258,7 +284,8 @@ public final class StrengthParse {
         // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
         if (Activities.looksLikeFuture(text)) return out;
-        String whole = stripInsteadOf(sets(kgBeforeMultiplier(stripListMarkers(Foods.norm(text)))));
+        String whole = stripInsteadOf(sets(slashWeightReps(
+                kgBeforeMultiplier(stripListMarkers(Foods.norm(text))))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat

@@ -955,5 +955,16 @@ public class StrengthParseTest {
                 StrengthParse.parse("kettlebell guggolás 3x10 20 kg").get(0).name);
         // Sorozat nélkül továbbra sincs bejegyzés.
         assertTrue(StrengthParse.parse("kettlebell 24 kg").isEmpty());
+        // Perjeles súly/ismétlés: ugyanaz a piramis, amit az „60x10" alakkal
+        // már értettünk – csak a teremben sokan perjellel írják.
+        List<StrengthParse.Item> sl = StrengthParse.parse("fekvenyomás: 60/10, 70/8, 80/6");
+        assertEquals(1, sl.size());
+        assertEquals(3, sl.get(0).sets.size());
+        assertEquals(10, sl.get(0).sets.get(0).reps);
+        assertEquals(60.0, sl.get(0).sets.get(0).weight, 0.001);
+        assertEquals(80.0, sl.get(0).topWeight(), 0.001);
+        // A RITMUS-jelölés nem súly/ismétlés: a „40/20" időzítő marad.
+        assertTrue(StrengthParse.parse("8x20/10").isEmpty());
+        assertTrue(StrengthParse.parse("40/20 8 kör").isEmpty());
     }
 }

@@ -97,6 +97,7 @@ public final class Examples {
             "guggolás 3x10 100 kg rpe 8",
             "tegnap húzódzkodás 4x8",
             "fekvenyomás 60x10, 70x8, 80x6",
+            "fekvenyomás: 60/10, 70/8, 80/6",
             "guggolás 5x5 hetvenöt kiló",
             "3 kör 10 fekvőtámasz",
             // Az újabb alakok is szerepeljenek: amit ért, azt hirdesse is.
