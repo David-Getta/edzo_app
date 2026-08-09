@@ -62,6 +62,17 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - ami **nem az én mozgásom**, az nem az én naplóm: „a gyerek edzésén voltam",
   „home office, alig mozogtam" (az „alig" viszont csak a mozgás-igével együtt
   tagadás – az „alig bírtam végigcsinálni a 30 perc futást" megtörtént edzés)
+- ami **másé**, az nem az enyém, akkor sem, ha a tagadás a mondat másik
+  felében áll: „a fiam focizott, én csak néztem", „a párom jógázott, én
+  addig főztem". Harmadik személyű alany + első személyű ige nélküli
+  tagmondat = nem az én naplóm. A „fiammal futottam" és „a fiam és én
+  futottunk" viszont megtörtént – velem
+- a **panasz** nem gyakorlat: a „kaptam egy húzódást a vádlimba" nem
+  vádliemelés. Ami mégis megtörtént, az marad: „fájt a vállam, mégis
+  fekvenyomás 3x8 60 kg"
+- a **szokás kezdete** nem egy edzés: a „három hónapja kezdtem el edzeni"
+  arról szól, mióta sportol az ember – de a „két hete kezdtem el futni,
+  **azóta 40 km-t futottam**" negyven kilométere valódi
 - a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem"
 
 Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
@@ -238,7 +249,9 @@ sem talált, tehát ha talál, az tényleg ott van.
 - **„Aludtam 8 órát"** – egy mondat vagy egy koppintás a Profilban: napi egy
   érték, heti átlag, két hét görbe, minősítés; a vasárnapi összegzésben is
 - **Két időpont is elég**: „este 11-kor feküdtem, reggel 7-kor keltem",
-  „22:30-tól 6:15-ig aludtam", „lefeküdtem 23 órakor, felkeltem 7 órakor" –
+  „22:30-tól 6:15-ig aludtam", „lefeküdtem 23 órakor, felkeltem 7 órakor",
+  „este 10-re ágyban voltam, reggel 6-kor keltem" (a lefekvést nem csak
+  „feküdtem"-mel mondjuk) –
   a kivonást ne a felhasználó végezze el. A magyar „fél tizenegy" tíz harminc,
   és ha a délelőtti óraszámból képtelen hossz jönne ki, este értendő; az
   „alvás 6:30" pedig hossz, nem időpont
@@ -268,7 +281,9 @@ sem talált, tehát ha talál, az tényleg ott van.
   szót el lehet hagyni), „guggolás ötször ötöt 100 kg",
   „fekvenyomás 60x10, 70x8, 80x6" és „fekvenyomás: 60/10, 70/8, 80/6"
   (súly × ismétlés, sorozatonként – szorzójellel és perjellel is),
-  „3 kör 10 fekvőtámasz" – akár több
+  „3 kör 10 fekvőtámasz", „leguggoltam 140-et" (rúddal terhelt
+  gyakorlatnál a magában álló háromjegyű szám kiló, nem ismétlés – de a
+  „csináltam 100 guggolást" darabszám marad) – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
   51 gyakorlat és gép, a jelzős változatokkal
