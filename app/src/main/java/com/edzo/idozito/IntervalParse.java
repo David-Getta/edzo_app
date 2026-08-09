@@ -147,6 +147,13 @@ public final class IntervalParse {
                 // Az EMOM percenként egy kör: az „emom 12" tizenkét kör, az
                 // „emom 20 perc" húsz. A szám a név UTÁN áll, nem előtte.
                 if (r <= 0 && p[0].equals("emom")) r = numberAfter(s, "emom");
+                // „húsz perc emom”: a szám a név ELŐTT áll, mértékegységgel.
+                // Diktálva ez a természetes szórend, és eddig az alapértelmezett
+                // tíz kör lett belőle – feleannyi edzés, mint amit kért.
+                if (r <= 0 && p[0].equals("emom")) {
+                    int sec = firstSeconds(s);
+                    if (sec >= 60 && sec <= MAX_ROUNDS * 60) r = sec / 60;
+                }
                 int rounds = r > 0 && r <= MAX_ROUNDS ? r : Integer.parseInt(p[1]);
                 return new Plan(rounds, Integer.parseInt(p[2]), Integer.parseInt(p[3]),
                         warmIn(s), coolIn(s));

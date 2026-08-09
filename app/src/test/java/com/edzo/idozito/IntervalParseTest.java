@@ -538,4 +538,25 @@ public class IntervalParseTest {
         assertTrue(p.totalSec() <= 4 * 3600);
         assertEquals(20, IntervalParse.parse("amrap 20 perc").work / 60);
     }
+
+    /**
+     * „Húsz perc EMOM": a szám a név ELŐTT is állhat.
+     *
+     * Diktálva ez a természetes szórend, és eddig az alapértelmezett tíz kör
+     * lett belőle – feleannyi edzés, mint amit kért. Egy percenként induló
+     * körnél a percszám maga a körszám.
+     */
+    @Test public void emomAcceptsTheNumberBeforeTheName() {
+        assertEquals(20, IntervalParse.parse("húsz perc emom").rounds);
+        assertEquals(20, IntervalParse.parse("20 perc emom").rounds);
+        assertEquals(30, IntervalParse.parse("30 perc emom").rounds);
+        // A régi alakok változatlanok.
+        assertEquals(10, IntervalParse.parse("emom 10 perc").rounds);
+        assertEquals(12, IntervalParse.parse("emom 12").rounds);
+        assertEquals(10, IntervalParse.parse("emom").rounds);
+        // A bemelegítés ideje nem körszám.
+        IntervalParse.Plan p = IntervalParse.parse("5 perc emom bemelegítés");
+        assertEquals(10, p.rounds);
+        assertEquals(300, p.warm);
+    }
 }
