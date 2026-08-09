@@ -93,7 +93,7 @@ public final class Activities {
                     // A SUP (álló evezés) a Balatonon a legnépszerűbb vizes
                     // sport – eddig egyik írásmódját sem ismertük.
                     "supozas", "supoztam", "szupozas", "paddleboard",
-                    "allo evezes", "sup-ozas"),
+                    "allo evezes", "sup-ozas", "sup-oz", "supoz", "szupoz"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
@@ -118,12 +118,15 @@ public final class Activities {
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
                     "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong",
-                    "ping pong", "asztalitenisz", "padel"),
+                    // A squash angol írásmódja gyakran elgépelve érkezik – a
+                    // „sqash 45 perc" eddig válasz nélkül maradt.
+                    "ping pong", "asztalitenisz", "padel", "sqash", "skvos", "szkvos"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
                     "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",
-                    "capoeira", "muay thai", "muaythai"),
+                    "capoeira", "muay thai", "muaythai", "krav maga", "kravmaga",
+                    "szambo", "sumo", "szumo", "kendo"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
                     "pole dance", "poledance", "rudtanc"),

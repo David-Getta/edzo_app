@@ -378,6 +378,10 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×kerekpar/60", summary("bicigliztem 20 km"));
         assertEquals("1d+0: 1×kerekpar/60", summary("biciglizteem 20 km"));
         assertEquals("1d+0: 1×kerekpar/60", summary("bicóztam 20 km"));
+        // Az elgépelt squash és a magyarul ritkábban leírt sportok.
+        assertEquals("1d+0: 1×tenisz/45", summary("sqash 45 perc"));
+        assertEquals("1d+0: 1×evezes/60", summary("sup-oztam 1 órát"));
+        assertEquals("1d+0: 1×harcmuveszet/75", summary("krav maga edzés 75 perc"));
     }
 
     @Test public void theDurationCanAlsoComeBeforeTheSport() {
