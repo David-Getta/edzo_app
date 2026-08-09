@@ -137,4 +137,18 @@ public class PulseTest {
         assertNotNull(IntervalParse.parse("4 kör 4 perc, pulzus 165 körül"));
         assertNotNull(IntervalParse.parse("3 kör 40 mp munka 20 mp pihenő"));
     }
+
+    /**
+     * A „nyugalmi" magában is kimondja, miről van szó.
+     *
+     * A „hrv 62 ms, nyugalmi 49" a sportóra-leolvasás legrövidebb alakja, és
+     * eddig némán elveszett – más nyugalmi értéket senki nem ír egy
+     * edzésnaplóba.
+     */
+    @Test public void theWordRestingIsEnoughOnItsOwn() {
+        assertEquals(49, Pulse.parse("hrv 62 ms, nyugalmi 49"));
+        assertEquals(49, Pulse.parse("nyugalmi 49"));
+        // Szám nélkül nincs mérés.
+        assertEquals(-1, Pulse.parse("nyugalmi állapotban voltam"));
+    }
 }

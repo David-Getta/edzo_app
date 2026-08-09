@@ -234,4 +234,22 @@ public class SleepTest {
         // Alvás-szó nélkül nincs bejegyzés.
         assertEquals(-1, Sleep.parse("18:00-tól 19:30-ig kondi"), 0.01);
     }
+
+    /**
+     * A hossz a következő tagmondatban is állhat.
+     *
+     * A „rosszul aludtam, kb 5 órát" a legtermészetesebb panasz-mondat, és
+     * eddig SEMMI nem lett belőle: az ige melletti szám elől a vessző
+     * szándékos határ (ott az ébredések száma állna), csak épp az óra-szó
+     * megkülönbözteti a kettőt.
+     */
+    @Test public void theLengthMayFollowTheComma() {
+        assertEquals(5.0, Sleep.parse("rosszul aludtam, kb 5 órát, "
+                + "kétszer felébredtem"), 0.01);
+        // Az ébredések száma továbbra sem alvásóra.
+        assertEquals(7.5, Sleep.parse("7,5 órát aludtam, de 3-szor "
+                + "felébredtem"), 0.01);
+        // A „3 óra múlva" időpont, nem hossz.
+        assertEquals(-1.0, Sleep.parse("aludtam, de 3 óra múlva felébredtem"), 0.01);
+    }
 }

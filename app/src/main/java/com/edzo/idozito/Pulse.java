@@ -44,6 +44,12 @@ public final class Pulse {
             // enélkül a mondat bármelyik száma odaeshetne.
             java.util.regex.Pattern.compile(
                     "(\\d{2,3})[^0-9]{0,16}?nyugalmi\\s?pulzus"),
+            // A PULZUS szó el is maradhat: a „hrv 62 ms, nyugalmi 49" a
+            // sportóra-leolvasás legrövidebb alakja, és eddig némán elveszett.
+            // A „nyugalmi" magában is kimondja, miről van szó – más
+            // nyugalmi értéket senki nem ír egy edzésnaplóba.
+            java.util.regex.Pattern.compile(
+                    "(?<![a-z])nyugalmi\\w*\\s?:?\\s?(\\d{2,3})(?![0-9])"),
     };
 
     /**
