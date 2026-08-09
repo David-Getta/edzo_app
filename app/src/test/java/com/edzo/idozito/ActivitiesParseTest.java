@@ -1445,4 +1445,25 @@ public class ActivitiesParseTest {
         for (Activities.Plan p : Activities.parse("8x 60 km").plans)
             assertTrue("életszerűtlen táv: " + p.km, p.km <= 400);
     }
+
+    /**
+     * A „k" rövidítés és a szóközös ezres tagolás.
+     *
+     * A „10k" nem mindig ugyanaz: lépésnél tízezer LÉPÉS, futásnál tíz
+     * KILOMÉTER – és eddig egyik sem létezett. A „10 000 lépés" pedig
+     * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
+     */
+    @Test public void theKShorthandAndSpacedThousands() {
+        assertEquals(7.5, Activities.parse("10k lépés").plans.get(0).km, 0.01);
+        assertEquals(7.5, Activities.parse("10 000 lépés").plans.get(0).km, 0.01);
+        assertEquals(9.0, Activities.parse("12k lépés ma").plans.get(0).km, 0.01);
+        assertEquals(10.0, Activities.parse("10k futás").plans.get(0).km, 0.01);
+        assertEquals(21.0, Activities.parse("21k futás").plans.get(0).km, 0.01);
+        assertEquals(2.0, Activities.parse("2k úszás").plans.get(0).km, 0.01);
+        // A kiírt alakok változatlanok.
+        assertEquals(7.5, Activities.parse("10000 lépés").plans.get(0).km, 0.01);
+        assertEquals(5.0, Activities.parse("5 km futás").plans.get(0).km, 0.01);
+        assertEquals(30, Activities.parse("30 perc futás").plans.get(0).minutes);
+        assertEquals(75, Activities.parse("hétfőn 1 óra 15 perc kondi").plans.get(0).minutes);
+    }
 }

@@ -60,6 +60,7 @@ public final class Examples {
             "tegnap este kondi",
             "100 fekvőtámasz",
             "ma 10000 lépés",
+            "10k lépés",
             "lábnap volt, 1 óra",
             "padel 90 perc",
             "hétfőn és szerdán kondi",

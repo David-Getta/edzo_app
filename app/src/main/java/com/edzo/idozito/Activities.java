@@ -703,6 +703,21 @@ public final class Activities {
     }
 
     /**
+     * Rövidítések feloldása: „10k lépés", „10 000 lépés", „10k futás".
+     *
+     * A „k" ezerre rövidít, de nem mindig ugyanazt jelenti: lépésnél tízezer
+     * LÉPÉS, futásnál tíz KILOMÉTER. A szóközös ezres tagolás („10 000") pedig
+     * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
+     */
+    private static String shortForms(String s) {
+        // Szóközzel tagolt ezres: „10 000" → „10000".
+        s = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        boolean steps = s.contains("lepes") || s.contains("lepest") || s.contains("lepett");
+        return s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s?k(?![a-z0-9])",
+                steps ? "$1000" : "$1 km");
+    }
+
+    /**
      * Ezek a szavak a „nap"/„hét" szótövet tartalmazzák, de nem időszakot
      * jelentenek. Nélkülük a „hétfőn futottam" egy hetes időszaknak látszana.
      */
@@ -754,7 +769,7 @@ public final class Activities {
     static Parsed parse(String text, long now) {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0, 12);
-        char[] q = Foods.norm(text).toCharArray();
+        char[] q = shortForms(Foods.norm(text)).toCharArray();
         // A nyers, még semmilyen kimaszkolás előtti alak. Az osztó számpár
         // („2-2 óra") felismeréséhez kell: mire a mozgásokhoz érünk, a pár
         // egyik tagja már kifehérítve áll a munkapéldányban – így csak a
