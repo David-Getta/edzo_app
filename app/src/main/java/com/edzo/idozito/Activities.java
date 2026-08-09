@@ -3181,7 +3181,10 @@ public final class Activities {
                 || w.startsWith("tanulas") || w.startsWith("olvasas")
                 || w.startsWith("fozes") || w.startsWith("meeting")
                 || w.startsWith("ertekezlet") || w.startsWith("gepeles")
-                || w.startsWith("telefonal");
+                || w.startsWith("telefonal")
+                // A PIHENÉS is a mozdulatlan idő neve: az „1 óra pihenés után
+                // 30 perc bringa" egy óráját eddig a bringa kapta meg.
+                || w.startsWith("pihen") || w.startsWith("szunet");
         return desk && !s.contains("kerti munka") && !s.contains("fizikai munka")
                 && !s.contains("haz koruli");
     }

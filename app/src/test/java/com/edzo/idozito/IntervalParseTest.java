@@ -698,4 +698,19 @@ public class IntervalParseTest {
         assertEquals(8, IntervalParse.parse("20-30 mp munka, 10 mp pihenő, "
                 + "8 kör").rounds);
     }
+
+    /**
+     * A „pihenő" a terv szava, a „pihenés" a hétköznapi szó.
+     *
+     * Az „1 óra pihenés után 30 perc bringa" tervnek látszott – egy óra munka,
+     * egy óra pihenő –, és az „aktív pihenőnap: 30 perc séta" félórája is
+     * munka-pihenő párrá vált.
+     */
+    @Test public void anEverydayRestIsNotAPlannedRest() {
+        assertNull(IntervalParse.parse("1 óra pihenés után 30 perc bringa"));
+        assertNull(IntervalParse.parse("aktív pihenőnap: 30 perc séta"));
+        // A terv-alak ragozva is terv.
+        assertEquals(20, IntervalParse.parse("8 kör 40 mp munka 20 mp pihenés").rest);
+        assertEquals(30, IntervalParse.parse("30 mp munka 30 mp pihenő 8 kör").rest);
+    }
 }

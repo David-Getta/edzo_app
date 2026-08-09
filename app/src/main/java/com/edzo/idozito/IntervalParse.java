@@ -742,12 +742,19 @@ public final class IntervalParse {
      * („körben", „sorozatot").
      */
     private static boolean saysPlan(String s) {
-        for (String w : new String[]{"kor", "round", "munka", "pihen", "tabata",
+        // A „pihenő" a terv szava, a „pihenés" a hétköznapi szó: az „1 óra
+        // pihenés után 30 perc bringa" tervnek látszott – egy óra munka, egy
+        // óra pihenő. A terv-alak ragozva is „pihenő" marad.
+        for (String w : new String[]{"kor", "round", "munka", "piheno", "tabata",
                 "emom", "amrap", "intervall", "interval", "hiit", "szett", "sorozat",
                 "fartlek", "sprint", "ismetles"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
-                if (p == 0 || !Character.isLetter(s.charAt(p - 1))) return true;
+                // A PIHENŐNAP nem terv: az „aktív pihenőnap: 30 perc séta"
+                // félórája egykörös, munka-pihenő párrá vált.
+                boolean dayOff = w.equals("piheno") && s.startsWith("nap", p + w.length());
+                if (!dayOff && (p == 0 || !Character.isLetter(s.charAt(p - 1))))
+                    return true;
                 p = s.indexOf(w, p + 1);
             }
         }

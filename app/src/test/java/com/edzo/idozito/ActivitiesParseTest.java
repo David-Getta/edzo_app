@@ -2664,5 +2664,8 @@ public class ActivitiesParseTest {
                 + "este 30 perc futás").plans.get(0).minutes);
         assertEquals(25, Activities.parse("1,5 óra meeting, aztán "
                 + "25 perc futópad").plans.get(0).minutes);
+        // A pihenés is a mozdulatlan idő neve.
+        assertEquals(30, Activities.parse("1 óra pihenés után 30 perc bringa")
+                .plans.get(0).minutes);
     }
 }

@@ -150,6 +150,14 @@ Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" val
 bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
 étellel végigpróbálva egyikből sem lesz napló-sor.
 
+A nap **ülő órái** sem edzésidők: a „hosszú nap, 11 óra munka, este 20 perc
+nyújtás" tizenegy órája a munkáé, a „2 óra tv, 30 perc séta" két órája a
+tévéé, a „8 óra ülés az irodában, este 30 perc futás" nyolc órája az ülésé –
+eddig mind a MOZGÁS nevére íródott, a valódi hossz meg elveszett. Csak a szám
+UTÁN álló szó számít, mert magyarul így birtokolja az időt a tevékenység: a
+„munka 30 perc kondi" harminc perce a kondié. A kerti és a fizikai munka
+mozgás marad.
+
 Ennek a párja, hogy a **pihenő UTÁN** már megint edzés van: a „két hét pihi
 után visszaültem a bringára, 25 km" mondatban a pihi szava eddig elvitte a
 bringát – a gazdátlan huszonöt kilométerből futás lett, a két hetet meg
