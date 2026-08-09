@@ -126,7 +126,11 @@ public final class Activities {
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",
                     "capoeira", "muay thai", "muaythai", "krav maga", "kravmaga",
-                    "szambo", "sumo", "szumo", "kendo"),
+                    // A szumó és a szambó szándékosan hiányzik: a
+                    // „kompromisszumot" és a „számból" is tartalmazza őket,
+                    // és egy hétköznapi szóból lett harcművészet-bejegyzés
+                    // rosszabb, mint egy fel nem ismert ritka sportág.
+                    "kendo"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
                     "pole dance", "poledance", "rudtanc"),
@@ -167,7 +171,10 @@ public final class Activities {
                     // a „kaszáltam a kertben 90 percet" és a „3 órát
                     // cipekedtem" válasz nélkül maradt.
                     "kaszal", "kaszalas", "cipeked", "cipekedes", "cipeltem",
-                    "pakolas", "bepakol", "kipakol", "metszes", "metszet",
+                    "pakolas", "bepakol", "kipakol",
+                    // A „metszet" szándékosan nem tő: a KERESZTmetszet nem
+                    // kerti munka. A ragozott igealakok viszont igen.
+                    "metszes", "metszettem", "metszeni", "fat metsz",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     // A „kardió" edzés-szó: enélkül a „45 perc kardió" semmi
