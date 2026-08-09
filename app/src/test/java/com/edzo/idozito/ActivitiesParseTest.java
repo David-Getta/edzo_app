@@ -276,6 +276,21 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void goalsEntriesAndConditionalsAreNotLogs() {
+        // A CÉL nem napló: az „a heti célom 4 edzés" négy megtörtént edzésként
+        // került be – a hét elején, amikor még egy sem volt.
+        assertEquals("1d+0: ", summary("a heti célom 4 edzés"));
+        assertEquals("1d+0: ", summary("célom a 100 kg-os fekvenyomás"));
+        // A NEVEZÉS nem futás: a „beneveztem egy félmaratonra" huszonegy
+        // kilométert írt a naplóba egy meg sem kezdett versenyről.
+        assertEquals("1d+0: ", summary("beneveztem egy félmaratonra"));
+        // A FELTÉTELES mondat múlt idejű ige nélkül terv.
+        assertEquals("1d+0: ", summary("ha esik, futópadon futok"));
+        // …de a múlt idő megvédi a valódi bejegyzést.
+        assertEquals("1d+0: 1×futas/30", summary("hazafelé futottam 5 km-t"));
+        assertEquals("1d+1: 1×futas/30", summary("ha jól emlékszem, 5 km-t futottam tegnap"));
+    }
+
     @Test public void aSuggestionIsNotALog() {
         // A felszólítás terv: a „csináljunk egy tabatát" javaslat. Az
         // időzítő-terv ilyenkor is elkészül – csak a bejegyzés nem.

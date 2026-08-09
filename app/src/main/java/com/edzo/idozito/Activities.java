@@ -1667,7 +1667,14 @@ public final class Activities {
                 "gondolkodom", "gondolkozom", "igerem", "eltokel", "nekiallok",
                 "raveszem magam", "ossze kell szedn",
                 // A kiírt TERV szó is: „a terv: guggolás 5x5 100 kg".
-                "a terv", "terv:", "tervem"})
+                "a terv", "terv:", "tervem",
+                // A CÉL sem napló: az „a heti célom 4 edzés" négy megtörtént
+                // edzésként került be – a hét elején, amikor még egy sem volt.
+                "celom", "celunk", "celja a", "heti cel", "napi cel", "cel:",
+                // A NEVEZÉS nem futás: a „beneveztem egy félmaratonra"
+                // huszonegy kilométert írt a naplóba egy olyan versenyről,
+                // ami még el sem kezdődött.
+                "benevez", "beneveztem", "nevezes", "jelentkeztem egy"})
             if (s.contains(w)) return true;
         // A mondat ELEJÉN álló „majd" és a FŐNÉVI IGENÉV együtt jövő idő:
         // „majd futni 30 percet", „talán elmenni a terembe". Külön-külön
@@ -1676,6 +1683,12 @@ public final class Activities {
         // de a kettő együtt csak szándékot jelenthet.
         for (String w : new String[]{"majd ", "esetleg ", "talan "})
             if (s.startsWith(w) && hasInfinitive(s)) return true;
+        // FELTÉTELES mondat múlt idejű ige nélkül: a „ha esik, futópadon
+        // futok" terv, nem napló – eddig negyvenöt perces futás lett belőle.
+        // A múlt idő megvédi a valódi bejegyzést: a „ha jól emlékszem, 5
+        // km-t futottam tegnap" megtörtént.
+        if ((" " + s.replaceAll("[^a-z0-9]", " ") + " ").contains(" ha ")
+                && !s.matches(".*\\b\\w{3,}(tam|tem|tunk)\\b.*")) return true;
         // Egyes szám első személyű jelen idő. A „futok" és az „edzek"
         // SZÁNDÉKOSAN kimarad: az előbbi a futás szótöve (a „három kört futok"
         // is futás), az utóbbi pedig szinte mindig tagadásban áll („nem
