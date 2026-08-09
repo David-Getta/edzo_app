@@ -267,7 +267,7 @@ public final class Foods {
         new Food("Szőlő", 70, 0.7, 100, "szolo"),
         new Food("Eper", 33, 0.7, 100, "eper"),
         new Food("Avokádó", 160, 2, 70, "avokado"),
-        new Food("Dió", 650, 15, 30, "dio"),
+        new Food("Dió", 650, 15, 30, "dio", "makadamia", "makadamdio"),
         new Food("Mandula", 580, 21, 30, "mandula"),
         new Food("Mogyoró", 570, 25, 30, "mogyoro"),
         new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade", "kinder", "milka", "twix",
@@ -625,7 +625,11 @@ public final class Foods {
         new Food("Cseresznye / meggy", 60, 1, 150, "cseresznye", "meggy"),
         new Food("Datolya", 280, 2.5, 30, "datolya"),
         new Food("Tökmag / napraforgómag", 570, 22, 30, "tokmag", "napraforgomag",
-                "napraforgo", "fenyomag", "magvak", "vegyes mag"),
+                "napraforgo", "fenyomag", "magvak", "vegyes mag",
+                // Százhuszonnyolc további fogást átnézve ez a kettő hiányzott
+                // a magvak közül. (A „mák" szándékosan marad ki: három betű,
+                // és a makaróniban is ott van.)
+                "szezammag", "szezam"),
         new Food("Chia / lenmag", 490, 17, 15, "chia", "lenmag", "lenmagliszt"),
         new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.

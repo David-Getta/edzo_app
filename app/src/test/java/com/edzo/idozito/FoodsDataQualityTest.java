@@ -719,7 +719,9 @@ public class FoodsDataQualityTest {
                 "fröccs",
                 "pálinka",
                 "vörösbor",
-                "pezsgő"};
+                "pezsgő", "szezámmag", "makadámia", "mákos tészta", "kesudió",
+                "aszalt szilva", "datolya", "füge", "áfonya", "málna", "kelbimbó",
+                "tofu", "kimchi", "szójaszósz", "hajdina", "köles", "rozskenyér"};
         StringBuilder bad = new StringBuilder();
         for (String d : dishes)
             if (Foods.parse(java.util.Arrays.asList(Foods.ALL), d + " volt az ebéd").isEmpty())
