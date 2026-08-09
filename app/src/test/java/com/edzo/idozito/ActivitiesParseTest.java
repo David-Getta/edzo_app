@@ -2356,4 +2356,24 @@ public class ActivitiesParseTest {
         assertEquals("kerekpar", Activities.parse("indoor cycling 40 perc")
                 .plans.get(0).kind.id);
     }
+
+    /**
+     * Az úszásnem neve is kimondja a sportot.
+     *
+     * Aki medencében edz, a hosszakat úszásnemre bontva írja: „medence:
+     * 1000 m gyorson". A puszta táv magyarul futást jelent, így ez eddig
+     * egykilométeres FUTÁS lett – 9,8-as MET-tel, majdnem másfélszeres
+     * kalóriával.
+     */
+    @Test public void theSwimStrokeNamesTheSport() {
+        assertEquals("uszas", Activities.parse("medence: 1000 m gyorson, 30 perc")
+                .plans.get(0).kind.id);
+        assertEquals(1.0, Activities.parse("medence: 1000 m gyorson, 30 perc")
+                .plans.get(0).km, 0.01);
+        assertEquals("uszas", Activities.parse("pillangózás 200 m")
+                .plans.get(0).kind.id);
+        // A mellény nem mellúszás, a „háton fekve" nem hátúszás – ezért nem
+        // lett tő a puszta „mellen" és „haton".
+        assertTrue(Activities.parse("vettem egy új mellényt").plans.isEmpty());
+    }
 }

@@ -320,9 +320,9 @@ public final class StrengthParse {
         // fekvőtámaszt" eddig bekerült az erősítő naplóba – és onnantól a
         // progresszió-javaslat is arra épült.
         if (Activities.someoneElsesDoing(text)) return out;
-        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskClock(maskLyingDown(
-                kgBeforeMultiplier(joinRepList(
-                        stripPercent(stripListMarkers(Hu.correction(Foods.norm(text))))))))))));
+        String clean = maskDistance(maskClock(maskLyingDown(kgBeforeMultiplier(joinRepList(
+                stripPercent(stripListMarkers(Hu.correction(Foods.norm(text)))))))));
+        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(clean))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
@@ -1002,6 +1002,18 @@ public final class StrengthParse {
      */
     private static String maskClock(String s) {
         return s.replaceAll("(?<![\\d:])\\d{1,2}:[0-5]\\d(?::[0-5]\\d)?(?![\\d:])", "#");
+    }
+
+    /**
+     * A MÉTER nem ismétlésszám.
+     *
+     * Az erőgépek neve közül nem egy vizes szó is („pillangó"), és a
+     * „pillangózás 200 m" kétszáz ismétléses MELLGÉP lett a naplóban. Aki
+     * métert ír, az távot mond – abból ismétlés soha nem lesz. A takarás a
+     * kg-ot nem érinti (a szám után ott nem m betű áll).
+     */
+    private static String maskDistance(String s) {
+        return s.replaceAll("(?<![\\d,.:])\\d{1,4}(?:[.,]\\d+)?\\s*(?:km|m)(?![a-z])", "#");
     }
 
     /**

@@ -70,6 +70,13 @@ public final class Activities {
                     // A vizes sportok is ide: a vízilabda és a vizitorna a
                     // medencés mozgások közül az úszáshoz áll a legközelebb.
                     "vizilabda", "aquafit", "vizitorna",
+                    // Az ÚSZÁSNEM neve is kimondja a sportot: „medence:
+                    // 1000 m gyorson" eddig egykilométeres FUTÁS lett. A
+                    // puszta „mellen" és „háton" viszont nem lehet tő: az
+                    // egyik a MELLÉNY-ben is benne van, a másik a „háton
+                    // fekve" hasizomgyakorlatban.
+                    "gyorson", "gyorsuszo", "melluszo", "hatuszo",
+                    "pillangozas", "pillangoztam",
                     // A felszíni és a felszín alatti vizes sportok is ide:
                     // a snorkeling és a kitesurf ugyanabban a közegben zajlik.
                     "snorkel", "kitesurf", "kiteszorf"),

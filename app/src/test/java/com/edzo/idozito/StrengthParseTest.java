@@ -1171,4 +1171,19 @@ public class StrengthParseTest {
         // A csillag NEM felsorolás-jel, a szám előtti gondolatjel sem.
         assertEquals(3, StrengthParse.parse("fekvenyomás 3 * 10 60 kg").get(0).sets.size());
     }
+
+    /**
+     * A méter nem ismétlésszám.
+     *
+     * Az erőgépek között ott a „pillangó", ami vizes szó is: a „pillangózás
+     * 200 m" kétszáz ismétléses MELLGÉP lett a naplóban. Aki métert ír, az
+     * távot mond.
+     */
+    @Test public void metersAreNeverReps() {
+        assertTrue(StrengthParse.parse("pillangózás 200 m").isEmpty());
+        assertTrue(StrengthParse.parse("farmerséta 40 m").isEmpty());
+        // A kilogramm viszont marad: a szám után ott nem m betű áll.
+        assertEquals(60.0, StrengthParse.parse("fekvenyomás 3x10, 60 kg")
+                .get(0).topWeight(), 0.01);
+    }
 }
