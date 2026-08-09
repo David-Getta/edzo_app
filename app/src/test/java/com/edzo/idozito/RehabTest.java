@@ -745,4 +745,23 @@ public class RehabTest {
         assertEquals("terd", Rehab.forComplaint("műtét után vagyok, "
                 + "térdprotézis").id);
     }
+
+    /**
+     * A sérülés és a kopás neve is diagnózis.
+     *
+     * A „meniszkusz műtéten estem át", a „keresztszalag szakadás után vagyok"
+     * és a „csigolya kopás a nyakamban" eddig válasz nélkül maradt. A
+     * DUZZANAT pedig a legfontosabb jel: a „vizesedik a térdem edzés után"
+     * pont az a mondat, amire a lap piros zászlója szól.
+     */
+    @Test public void theInjuryNameFindsTheArea() {
+        assertEquals("terd", Rehab.forComplaint("meniszkusz műtéten estem át").id);
+        assertEquals("terd", Rehab.forComplaint("keresztszalag szakadás "
+                + "után vagyok").id);
+        assertEquals("nyak", Rehab.forComplaint("csigolya kopás a nyakamban").id);
+        assertEquals("terd", Rehab.forComplaint("vizesedik a térdem "
+                + "edzés után").id);
+        assertEquals("torzs", Rehab.forComplaint("diasztázisom van, "
+                + "mit csinálhatok").id);
+    }
 }

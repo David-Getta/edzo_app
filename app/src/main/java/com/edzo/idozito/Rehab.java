@@ -434,7 +434,16 @@ public final class Rehab {
                 // mondatok kérnek a leghatározottabban óvatos tornát.
                 "servem", "serve ", "porckorongserv", "csigolyaserv",
                 "gerincserv", "protezis", "mutet utan", "muteti utan",
-                "operacio utan", "mutottek"}) {
+                "operacio utan", "mutottek",
+                // A SÉRÜLÉS és a KOPÁS neve is diagnózis: a „meniszkusz
+                // műtéten estem át", a „keresztszalag szakadás után vagyok"
+                // és a „csigolya kopás a nyakamban" eddig válasz nélkül
+                // maradt. A DUZZANAT pedig a legfontosabb jel: a „vizesedik
+                // a térdem edzés után" pont az a mondat, amire a lap piros
+                // zászlója szól.
+                "kopas", "meniszkusz", "keresztszalag", "szalagszakadas",
+                "diasztazis", "diastasis", "duzzad", "bedagadt", "megdagadt",
+                "vizesedik", "befolyosodott"}) {
             int i = s.indexOf(w);
             while (i >= 0) {
                 boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
@@ -650,6 +659,9 @@ public final class Rehab {
                 {"itszalag", "it szalag", "it-szalag", "itszalag", "iliotibialis", "kulso terd",
                         "terd kulso", "terdem kulso", "futoterd"},
                 {"terd", "terdem", "terde", "ugroterd", "terdfaj", "terdprotezis",
+                        // A térd két leggyakoribb sérülésének a NEVE is a
+                        // térdre mutat, a testrész kimondása nélkül.
+                        "meniszkusz", "keresztszalag", "szalagszakadas",
                         "terd"},
                 // A HÁTI gerinc a derék elé kerül: a „felső hátam" és a
                 // „lapockáim között" nem ágyéki panasz, és a derék-sor
@@ -718,7 +730,8 @@ public final class Rehab {
                 {"torzs", "torzsizm", "torzsem", "torzs stabil", "torzsstabil",
                         "core", "melyizom", "mely izom", "harant hasizom",
                         "medencefenek", "medencem", "medence stabil", "hasizmom",
-                        "hasizmaim", "hasfalam", "rectus diastasis", "diastasis"},
+                        "hasizmaim", "hasfalam", "rectus diastasis", "diastasis",
+                        "diasztazis"},
         };
         for (String[] m : map)
             for (int i = 1; i < m.length; i++)
