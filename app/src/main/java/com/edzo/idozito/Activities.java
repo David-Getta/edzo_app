@@ -1598,6 +1598,11 @@ public final class Activities {
                 // a „meg kell" pedig a teendő – ezek is tervek, nem naplók.
                 // A feltételes „ha lesz" ugyanígy: a „ha lesz idő, futok
                 // egyet" mondatból eddig negyvenöt perc futás lett.
+                // A FELSZÓLÍTÁS is terv: a „csináljunk egy tabatát" és a
+                // „menjünk futni" javaslat, nem napló – az időzítő-terv
+                // ilyenkor is elkészül, csak a bejegyzés nem.
+                "csinaljunk", "menjunk", "fussunk", "edzunk egy", "kezdjunk",
+                "nyomjunk", "tekerjunk", "usszunk", "gyakoroljunk", "vagjunk bele",
                 "kene", "kell csinalnom", "kell mennem", "meg kell", "ha lesz",
                 "ha lesz ido", "ha birom", "ha sikerul",
                 // A kimondott AKARAT a legtisztább szándék-alak, és eddig

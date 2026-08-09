@@ -184,6 +184,16 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×kondi/45", summary("ma elkezdtem edzeni, 45 perc kondi"));
     }
 
+    @Test public void aSuggestionIsNotALog() {
+        // A felszólítás terv: a „csináljunk egy tabatát" javaslat. Az
+        // időzítő-terv ilyenkor is elkészül – csak a bejegyzés nem.
+        assertEquals("1d+0: ", summary("csináljunk egy tabatát"));
+        assertEquals("1d+0: ", summary("menjünk futni"));
+        assertEquals("1d+0: ", summary("fussunk egy kört"));
+        // A múlt idő viszont megtörtént.
+        assertEquals("1d+0: 1×kondi/60", summary("csináltunk egy tabatát"));
+    }
+
     @Test public void aComplaintIsNotAWorkout() {
         // A mozgás neve itt a KÖRÜLMÉNY, nem a napló: a „ropog a térdem
         // guggolásnál" eddig hatvanperces kondi-bejegyzés lett.

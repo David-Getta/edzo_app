@@ -267,6 +267,13 @@ public final class IntervalParse {
             work = firstSeconds(s);
             if (rest <= 0 && work > 600) return null;
         }
+        // A körszám a HOSSZBÓL is kijön: az „1 perc gyors, 1 perc laza,
+        // felváltva 20 percig" tíz kör. Eddig egyetlen kör lett belőle,
+        // vagyis a húszperces edzésből kétperces – és az időzítő a második
+        // kör előtt leállt. Csak kimondott össz-idő mellett lép be
+        // („percig", „alatt", „összesen"), így a szakasz-hosszal nem
+        // téveszthető össze.
+        if (rounds <= 0) rounds = roundsFromTotal(s, work + rest);
         return build(rounds, work, rest, warmIn(s), coolIn(s));
     }
 

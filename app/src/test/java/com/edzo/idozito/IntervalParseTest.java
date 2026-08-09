@@ -508,6 +508,24 @@ public class IntervalParseTest {
     }
 
     /**
+     * A körszám a HOSSZBÓL is kijön.
+     *
+     * Az „1 perc gyors, 1 perc laza, felváltva 20 percig" tíz kör – eddig
+     * egyetlen kör lett belőle, vagyis a húszperces edzésből kétperces, és
+     * az időzítő a második kör előtt leállt.
+     */
+    @Test public void theRoundCountCanComeFromTheTotalLength() {
+        IntervalParse.Plan a = IntervalParse.parse("1 perc gyors 1 perc laza felváltva 20 percig");
+        assertEquals(10, a.rounds);
+        assertEquals(60, a.work);
+        assertEquals(60, a.rest);
+        IntervalParse.Plan b = IntervalParse.parse("30 mp munka 30 mp pihi 10 percig");
+        assertEquals(10, b.rounds);
+        // A kimondott körszám erősebb marad a hossznál.
+        assertEquals(8, IntervalParse.parse("8 kör 20 másodperc munka 10 pihi").rounds);
+    }
+
+    /**
      * A zárójeles csoport körszáma nem veszhet el.
      *
      * A „8x (30 mp munka + 30 mp pihenő)" nyolc kör – de a zárójel helyére
