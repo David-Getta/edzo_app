@@ -276,6 +276,16 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void insteadOfCanCompareJustTheNumber() {
+        // A „csak 5 km-t futottam 10 helyett" öt kilométere MEGTÖRTÉNT –
+        // eddig az egész mondat eltűnt, mert a tíz kilométer maradt el.
+        assertEquals("1d+0: 1×futas/30",
+                summary("meleg volt, ezért csak 5 km-t futottam 10 helyett"));
+        assertEquals("1d+0: 1×futas/40", summary("futottam 40 percet 60 helyett"));
+        // A mozgásformát cserélő alak változatlan: ott a KONDI maradt el.
+        assertEquals("1d+0: 1×futas/30", summary("kondi helyett futás 30 perc"));
+    }
+
     @Test public void goalsEntriesAndConditionalsAreNotLogs() {
         // A CÉL nem napló: az „a heti célom 4 edzés" négy megtörtént edzésként
         // került be – a hét elején, amikor még egy sem volt.

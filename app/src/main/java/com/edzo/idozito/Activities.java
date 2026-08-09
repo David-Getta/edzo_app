@@ -1800,6 +1800,16 @@ public final class Activities {
         while (h >= 0) {
             int a = h;
             while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.') a--;
+            // Ha a „helyett" előtt CSAK egy szám áll, akkor az összehasonlítás
+            // a számra vonatkozik, nem az egész tagmondatra: a „csak 5 km-t
+            // futottam 10 helyett" öt kilométere MEGTÖRTÉNT – eddig az egész
+            // mondat eltűnt, mert a tíz kilométer maradt el. A szorzójel
+            // utáni szám kivétel: a „3x10 helyett" egésze a régi sorozat.
+            java.util.regex.Matcher nm = java.util.regex.Pattern
+                    .compile("(?<![\\dx×.,])\\d{1,3}(?:[.,]\\d{1,2})?"
+                            + "(?:\\s?-?\\s?(?:km|m|perc|ora|kg|kilo)\\w*)?\\s*$")
+                    .matcher(s.substring(a, h));
+            if (nm.find()) a += nm.start();
             blank(q, a, h + 7);
             h = s.indexOf("helyett", h + 1);
         }
