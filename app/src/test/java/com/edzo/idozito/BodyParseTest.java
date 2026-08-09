@@ -288,6 +288,26 @@ public class BodyParseTest {
         kg("100 kg", 100);
     }
 
+    /** Az izomtömeg nem a testsúly – a mérleg egy sorban írja ki mindkettőt. */
+    @Test public void muscleMassIsNotBodyWeight() {
+        BodyParse.Body b = BodyParse.parse("testzsír 19,5%, izomtömeg 62 kg");
+        assertEquals(19.5, b.fatPct, 0.01);
+        assertEquals(0, b.kg, 0.01);
+        assertEquals(0, BodyParse.parse("csonttömeg 3,2 kg, izomtömeg 62 kg").kg, 0.01);
+        // A valódi súly mellett kiírt izomtömeg nem viszi el a mérést.
+        assertEquals(80.0, BodyParse.parse("80 kg, izomtömeg 62 kg").kg, 0.01);
+    }
+
+    /** A birtokos alak is mérés: „derékbőségem 82 cm", „22% a testzsírom". */
+    @Test public void possessiveFormsAreStillMeasurements() {
+        BodyParse.Body a = BodyParse.parse("derékbőségem 82 cm lett");
+        assertEquals(82.0, a.cm[0], 0.01);
+        assertEquals(82.0, BodyParse.parse("derékbőség 82 cm").cm[0], 0.01);
+        assertEquals(22.0, BodyParse.parse("22% a testzsírom").fatPct, 0.01);
+        assertEquals(22.0,
+                BodyParse.parse("az inbody szerint 22% a testzsírom").fatPct, 0.01);
+    }
+
     /** A láz nem testsúly – pont egy beteg napon rontaná el a trendet. */
     @Test public void aFeverIsNotAWeight() {
         none("beteg vagyok, 38 fokos lázam van");

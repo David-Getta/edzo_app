@@ -115,6 +115,11 @@ public final class IntervalParse {
         if (text == null) return null;
         String s = digits(Foods.norm(text).replace('\n', ' '));
         if (s.trim().isEmpty()) return null;
+        // A VÉRNYOMÁS nem ritmus: a „160/95 a vérnyomásom" ugyanúgy néz ki,
+        // mint egy munka/pihenő pár, és eddig időzítő-tervet ajánlott rá az
+        // app – száznegyven másodperc munka, kilencvenöt pihenő.
+        if (s.contains("vernyomas") || s.contains("ver nyomas")
+                || s.contains("higanymilli") || s.contains("hgmm")) return null;
         // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
         // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
         s = clockToSeconds(s);

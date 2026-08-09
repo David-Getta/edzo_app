@@ -36,10 +36,14 @@ public final class BodyParse {
     public static final String[] PART_NAMES = {"Derék", "Csípő", "Mellkas", "Comb", "Kar"};
     /** A mondatban keresett szótövek részenként. */
     private static final String[][] PART_STEMS = {
-            {"derek", "derekam", "derekbosege", "has", "hasam", "hasbosege"},
-            {"csipo", "csipom", "csipobosege", "fenek"},
-            {"mellkas", "mell", "mellbosege"},
-            {"comb", "combom", "combbosege"},
+            // A „bőség" alapalakja is kell: a „derékbőség 82 cm" és a
+            // „derékbőségem" a birtokos alakot kereső tővel nem egyezett, és
+            // az egész mérés elveszett.
+            {"derek", "derekam", "derekboseg", "derekbosege", "has", "hasam",
+                    "hasboseg", "hasbosege", "haskorfogat"},
+            {"csipo", "csipom", "csipoboseg", "csipobosege", "fenek"},
+            {"mellkas", "mell", "mellboseg", "mellbosege"},
+            {"comb", "combom", "combboseg", "combbosege"},
             {"kar", "karom", "bicepszem", "felkar", "bicepsz"},
     };
     /** Életszerű körfogat-határok centiben. */
@@ -88,6 +92,10 @@ public final class BodyParse {
     private static final String[] BODY_WORDS = {
             "testsuly", "testsulyom", "sulyom", "suly", "merleg", "merlegen", "merlegre",
             "vagyok", "lettem", "nyomok", "fogytam", "hiztam", "leadtam", "testzsir",
+            // Birtokos és összetett alakok: a szóhatáros keresés miatt a
+            // „testzsírom" nem ugyanaz, mint a „testzsír" – a „22% a
+            // testzsírom" eddig teljesen elveszett.
+            "testzsirom", "testzsira", "zsirszazalek", "testzsirszazalek",
             // Az igekötős alakok külön: a szóhatáros keresés miatt a
             // „lefogytam" nem ugyanaz, mint a „fogytam". Huszonhat valós
             // mérés-mondattal próbálva ezek maradtak ki.
@@ -240,6 +248,19 @@ public final class BodyParse {
             // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
             // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
             if (rest.startsWith("fok")) continue;
+            // Az IZOMTÖMEG nem a testsúly. A mérleg ugyanabban a sorban írja
+            // ki mindkettőt, és a „testzsír 19,5%, izomtömeg 62 kg" hatvankét
+            // kilós méréssé vált a súlytrendben – nyolcvan helyett.
+            String head = s.substring(0, m.start());
+            boolean other = false;
+            for (String w : new String[]{"izomtomeg", "izom tomeg", "izomsuly",
+                    "csonttomeg", "csont tomeg", "zsirtomeg", "zsir tomeg",
+                    "zsigeri", "vizmennyiseg", "testviz"}) {
+                int p = head.lastIndexOf(w);
+                // Csak akkor az övé a szám, ha semmi más nem áll közöttük.
+                if (p >= 0 && head.substring(p + w.length()).matches("[\\s:=-]*")) other = true;
+            }
+            if (other) continue;
             return v;
         }
         return 0;
@@ -293,7 +314,11 @@ public final class BodyParse {
                         // pont és vessző zárja ki a találatot – enélkül az
                         // első körfogat kiesett, és a nyolcvannégy centiből a
                         // súly-felismerőnél nyolcvannégy kiló lett.
-                        ? "(?<![a-z])" + stem + "(?:\\s?korfogat\\w*)?(?![a-z])\\s?:?\\s?"
+                        // A birtokos rag a szó VÉGÉN áll, és a mérés-mondat
+                        // majdnem mindig birtokos: a „derékbőségem 82 cm"
+                        // eddig teljesen elveszett, mert a tő után betű állt.
+                        ? "(?<![a-z])" + stem + "(?:em|ed|e|unk|etek|uk)?"
+                                + "(?:\\s?korfogat\\w*)?(?![a-z])\\s?:?\\s?"
                                 + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg)\\s?(cm|centi\\w*)?"
                         : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
                                 + "(?<![a-z])" + stem + "(?![a-z])");
@@ -342,6 +367,11 @@ public final class BodyParse {
                         // „éhgyomorra" és a „zuhany után" ugyanúgy nem adat,
                         // mint a napszak – a mérés MELLETT állnak, nem helyette.
                         + "ehgyomorra|ehgyomor|zuhany|utan|inbody|szerint|"
+                        // A mérleg többi sora is csak kíséret: az izom- és
+                        // csonttömeg mellett a testsúly ugyanúgy mérés marad,
+                        // csak épp nem az a szám.
+                        + "izomtomeg\\w*|izomsuly\\w*|csonttomeg\\w*|zsirtomeg\\w*|"
+                        + "testviz\\w*|zsigeri|vizmennyiseg\\w*|"
                         // A megnevezett nap ugyanolyan időpont, mint a napszak:
                         // a „kedden 80 kg voltam" ugyanaz a mérés, mint a „ma".
                         + "hetfon|kedden|szerdan|csutortokon|penteken|szombaton|"

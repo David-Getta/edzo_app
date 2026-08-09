@@ -760,7 +760,7 @@ public final class Foods {
             "farizom", "farizmo", "allcsusz", "allcsusztat",
             // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
             // ásványvíz: a panaszból eddig italbejegyzés lett.
-            "vizesed", "vizeny", "vizretencio",
+            "vizesed", "vizeny", "vizretencio", "vizhajto",
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
             "kaveskanal", "evokanal", "teaskanal",
             // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,

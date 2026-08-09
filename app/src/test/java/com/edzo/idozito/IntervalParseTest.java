@@ -507,6 +507,14 @@ public class IntervalParseTest {
         assertEquals(120, b.rest);
     }
 
+    /** A vérnyomás nem ritmus: a „160/95" nem munka/pihenő pár. */
+    @Test public void bloodPressureIsNotAPlan() {
+        assertNull(IntervalParse.parse("160/95 a vérnyomásom"));
+        assertNull(IntervalParse.parse("vérnyomás 140/90 higanymilliméter"));
+        // A valódi ritmus változatlan.
+        assertEquals(8, IntervalParse.parse("8x 40/20").rounds);
+    }
+
     /**
      * A körszám a HOSSZBÓL is kijön.
      *

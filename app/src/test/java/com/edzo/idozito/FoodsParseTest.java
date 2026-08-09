@@ -200,7 +200,8 @@ public class FoodsParseTest {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
         // ásványvíz – eddig italbejegyzés lett belőle.
         for (String q : new String[]{"vizesedik a térdem edzés után",
-                "vizenyős a bokám", "vízretenció miatt nőtt a súlyom"})
+                "vizenyős a bokám", "vízretenció miatt nőtt a súlyom",
+                "vízhajtó miatt 2 kilót estem"})
             assertTrue(q + " -> " + hits(q), hits(q).isEmpty());
         // A valódi ivás viszont marad.
         assertEquals(1, hits("ittam két pohár vizet edzés után").size());
