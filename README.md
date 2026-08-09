@@ -122,6 +122,13 @@ ismétlés veszett el). Most van harmadik gomb: mindkettő. Az edzés-előzmény
 csak a kimondott táv és lépésszám megy át, mert a fekvőtámaszból becsült
 „kondi" perc kétszer számítana.
 
+A **többnapos pótlás** minden távja megmarad: a „tegnapelőtt 5 km, tegnap
+8 km, ma 3 km" mondatban egy mozgásforma egyszer szerepelhetett, tehát a
+nyolc és a három kilométer gazdátlanul maradt – és némán el is veszett. A
+napok is szétnyílnak: három napról szól, nem háromszor tegnapelőttről. A
+részlet viszont nem külön edzés („futottam 10 km-t, **ebből** 5 km tempó"),
+és a méterben írt szintemelkedés sem egy második séta.
+
 Az **óraállás mögötti szám** sem tagolás: a „túra 14,8 km **3:45:00** 620 m
 emelkedés" mondatban a „00 620" szóközzel tagolt ezresnek látszott, és a
 kimondott három és háromnegyed óra helyére a tempóból becsült

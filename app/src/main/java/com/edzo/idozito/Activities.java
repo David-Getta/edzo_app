@@ -1303,6 +1303,53 @@ public final class Activities {
             out.add(new Plan(run, 1, said > 0 ? said : est, km0));
         }
 
+        // A TÖBBNAPOS pótlás: „tegnapelőtt 5 km, tegnap 8 km, ma 3 km".
+        //
+        // Egy mozgásforma egyszer szerepel a listában, tehát a második és a
+        // harmadik táv gazdátlanul maradt – és némán el is veszett. Aki
+        // hétvégén pótolja a hét futásait, annak eddig a nyolc és a három
+        // kilométere sehol nem jelent meg: sem a naplóban, sem a heti
+        // összegben, sem az XP-ben.
+        //
+        // Szándékosan szűk: EGYETLEN, távval megnevezett mozgás mellett élünk
+        // vele, és csak akkor, ha az alkalomszám egy. A több mozgásformás
+        // mondat („bicikli 20 km, futás 5 km") már eddig is helyesen működött,
+        // a „két futás: 5 km és 8 km" alkalomszáma pedig ki van mondva.
+        // A RÉSZLET nem külön edzés: a „futottam 10 km-t, ebből 5 km tempó"
+        // öt kilométere a tíznek a része. Egyetlen ilyen szó elég ahhoz, hogy
+        // a mondat ne felsorolás legyen, hanem bontás.
+        boolean partOfIt = false;
+        for (String w : new String[]{"ebbol", "abbol", "amibol", "ezen belul",
+                "beleertve", "kozte", "kozuluk", "ebben"})
+            if (s.contains(w)) { partOfIt = true; break; }
+        if (!partOfIt && out.size() == 1 && out.get(0).count == 1 && out.get(0).kind.distance
+                && out.get(0).km > 0 && kms.size() > 1) {
+            Plan p0 = out.get(0);
+            for (double[] t : kms) {
+                double km2 = t[1];
+                if (km2 <= 0) continue;
+                boolean taken = false;
+                for (Plan p : out) if (Math.abs(p.km - km2) < 0.001) taken = true;
+                if (taken) continue;
+                // A SZINTEMELKEDÉS méterben áll, és nem táv: a „túra 14,8 km
+                // 3:45:00 620 m emelkedés" hatszázhúsz métere nem egy második
+                // séta. A többnapos pótlást viszont mindenki kilométerben
+                // írja – ezért csak a kiírt km-es adatot vesszük át.
+                int te = (int) t[2];
+                String tail = beforeBlank.substring(Math.min(beforeBlank.length(), (int) t[0]),
+                        Math.min(beforeBlank.length(), te + 4));
+                if (!tail.contains("km")) continue;
+                int said2 = minutesFor(mins, (int) t[0], (int) t[2],
+                        -1, Integer.MAX_VALUE, 0);
+                int est2 = Math.max(1, (int) Math.round(km2 * pace(beforeBlank, p0.kind)));
+                out.add(new Plan(p0.kind, 1, Math.min(24 * 60, said2 > 0 ? said2 : est2), km2));
+            }
+            // A napok is szétnyílnak: a „tegnapelőtt 5 km, tegnap 8 km, ma
+            // 3 km" három napról szól, nem háromszor tegnapelőttről. Csak
+            // múltba nyúló mondatnál, mert a mai két futás ma volt.
+            if (offset > 0 && out.size() > days) days = out.size();
+        }
+
         // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még
         // menthető: egyéb mozgásként. Csak tartalékként, mert a „3 futó edzés"
         // szóban is benne van az „edzés" – ott a futás a helyes válasz.

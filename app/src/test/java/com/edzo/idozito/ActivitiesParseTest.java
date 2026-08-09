@@ -1966,4 +1966,33 @@ public class ActivitiesParseTest {
         assertEquals(10000, Activities.parse("ma 10 000 lépést mentem")
                 .plans.get(0).steps);
     }
+
+    /**
+     * A többnapos pótlás minden távja megmarad.
+     *
+     * A „tegnapelőtt 5 km, tegnap 8 km, ma 3 km" tipikus hétvégi pótlás. Egy
+     * mozgásforma egyszer szerepel a listában, tehát a nyolc és a három
+     * kilométer gazdátlanul maradt – és némán el is veszett: sem a naplóban,
+     * sem a heti összegben, sem az XP-ben nem jelent meg.
+     */
+    @Test public void everyDistanceOfAMultiDayCatchUpSurvives() {
+        Activities.Parsed p = Activities.parse("tegnapelőtt 5 km, tegnap 8 km, ma 3 km");
+        assertEquals(3, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.001);
+        assertEquals(8.0, p.plans.get(1).km, 0.001);
+        assertEquals(3.0, p.plans.get(2).km, 0.001);
+        // A napok is szétnyílnak: három napról szól, nem háromszor
+        // tegnapelőttről.
+        assertEquals(3, p.days);
+        assertEquals(2, p.offset);
+        assertEquals(2, Activities.parse("futottam 5 km-t és 8 km-t").plans.size());
+        // A RÉSZLET nem külön edzés: az „ebből" bontás, nem felsorolás.
+        assertEquals(1, Activities.parse("futottam 10 km-t, ebből 5 km tempó")
+                .plans.size());
+        // A szintemelkedés méterben áll, és nem egy második séta.
+        assertEquals(1, Activities.parse("túra 14,8 km 3:45:00 620 m emelkedés")
+                .plans.size());
+        assertEquals(1, Activities.parse("bringa 45 km 2:10:00 800 m szint")
+                .plans.size());
+    }
 }
