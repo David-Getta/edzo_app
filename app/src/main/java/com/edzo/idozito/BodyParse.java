@@ -334,6 +334,10 @@ public final class BodyParse {
                         // A magasság a mérés MELLETT szokott állni: a
                         // „80 kg, 180 cm" nyolcvan kiló – eddig egyik sem.
                         + "cm|centi\\w*|magassag|magas|"
+                        // A mérés KÖRÜLMÉNYE is csak körülmény: az
+                        // „éhgyomorra" és a „zuhany után" ugyanúgy nem adat,
+                        // mint a napszak – a mérés MELLETT állnak, nem helyette.
+                        + "ehgyomorra|ehgyomor|zuhany|utan|inbody|szerint|"
                         // A megnevezett nap ugyanolyan időpont, mint a napszak:
                         // a „kedden 80 kg voltam" ugyanaz a mérés, mint a „ma".
                         + "hetfon|kedden|szerdan|csutortokon|penteken|szombaton|"
