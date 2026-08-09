@@ -67,6 +67,11 @@ public final class Activities {
                     "snorkel", "kitesurf", "kiteszorf"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
+                    // A beszélt alakok és a leggyakoribb elgépelés: enélkül a
+                    // „biciglizteem 20 km-t" HÚSZ KILOMÉTERES FUTÁS lett, mert
+                    // a puszta táv futást jelent. Egy elütés nem érhet ennyit.
+                    "bicigli", "bicikl", "bicig", "bico", "bicoz", "biczik",
+
                     // A spinning teremben zajlik, de a lába ugyanazt csinálja:
                     // a tánc MET-je alábecsülte.
                     "spinning", "szobabicikli", "spinning ora",

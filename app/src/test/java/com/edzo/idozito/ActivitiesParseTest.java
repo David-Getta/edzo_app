@@ -373,6 +373,11 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 2×kondi/60", summary("2 konditerem"));
         assertEquals("1d+0: 1×kosarlabda/60", summary("kosaraztam"));
         assertEquals("1d+0: 2×tura/90", summary("2 séta"));
+        // A beszélt alak és az elütés is bringa: enélkül a puszta táv miatt
+        // HÚSZ KILOMÉTERES FUTÁS lett belőle, dupla idővel és rossz kalóriával.
+        assertEquals("1d+0: 1×kerekpar/60", summary("bicigliztem 20 km"));
+        assertEquals("1d+0: 1×kerekpar/60", summary("biciglizteem 20 km"));
+        assertEquals("1d+0: 1×kerekpar/60", summary("bicóztam 20 km"));
     }
 
     @Test public void theDurationCanAlsoComeBeforeTheSport() {
