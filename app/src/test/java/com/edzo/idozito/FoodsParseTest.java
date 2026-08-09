@@ -241,6 +241,15 @@ public class FoodsParseTest {
         assertTrue(hits("vettem két kiló almát").isEmpty());
     }
 
+    /** A szórás nem ital: a kakaópor nem két és fél deci kakaó. */
+    @Test public void aSprinkleIsNotADrink() {
+        assertEquals(1, hits("tejbegríz kakaóporral").size());
+        assertEquals("Tejbegríz", hits("tejbegríz kakaóporral").get(0).food.name);
+        assertEquals(1, hits("palacsinta porcukorral").size());
+        // A valódi kakaó marad.
+        assertEquals("Kakaó (tejes)", hits("ittam egy kakaót").get(0).food.name);
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci

@@ -764,6 +764,10 @@ public final class Foods {
             // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
             // ásványvíz: a panaszból eddig italbejegyzés lett.
             "vizesed", "vizeny", "vizretencio", "vizhajto",
+            // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
+            // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
+            // naplóba, százötven kalóriával.
+            "kakaopor", "kakao por", "kavepor", "vanilias cukor", "porcukor",
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
             "kaveskanal", "evokanal", "teaskanal",
             // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,
