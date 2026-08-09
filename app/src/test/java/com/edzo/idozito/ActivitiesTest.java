@@ -250,8 +250,9 @@ public class ActivitiesTest {
                 "futópad", "evezőgép", "szobabicikli", "sport", "edzés",
                 "délelőtt", "délután", "hajnal", "alvás", "pihenő", "labda",
                 "kötél", "medence", "úszik", "biciklizik", "edz", "fut", "jár",
-                // A kertépítés VALÓDI fizikai munka – szándékosan mozgás.
-                "kertépítés",
+                // A kertépítés VALÓDI fizikai munka, az uszoda pedig úszás –
+                // mindkettő szándékosan mozgás.
+                "kertépítés", "uszoda", "uszodában",
                 "pihen", "megy");
         for (String w : FoodsTest.EVERYDAY) {
             if (skip.contains(w)) continue;

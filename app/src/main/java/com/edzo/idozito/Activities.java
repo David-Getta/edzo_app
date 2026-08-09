@@ -55,6 +55,10 @@ public final class Activities {
                     "futoverseny", "terepfutas", "spartan", "parkrun"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
+                    // Az USZODA maga is úszás: az „a helyi uszodában 1 km"
+                    // eddig egykilométeres FUTÁS lett, mert a puszta táv
+                    // magyarul futást jelent.
+                    "uszoda", "tanmedence", "strandon usz",
                     "uszoverseny",
                     // A medence RAGOZOTT alakja: a puszta „medence" a súlyzós
                     // medenceemelés szava is, azt nem vesszük el tőle.
