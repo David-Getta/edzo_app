@@ -117,7 +117,14 @@ public class Sopres {
             BodyParse.Body b = BodyParse.parse(q);
             if (!b.isEmpty()) sb.append("meres:").append(b.label()).append(" ");
             Rehab.Area rh = Rehab.forComplaint(q);
-            if (rh != null) sb.append("rehab:").append(rh.id);
+            if (rh != null) sb.append("rehab:").append(rh.id).append(" ");
+            Rehab.Area rg = Rehab.forGoal(q);
+            if (rg != null) sb.append("rehab-cel:").append(rg.id).append(" ");
+            if (Rehab.redFlag(q) != null) sb.append("piros-zaszlo ");
+            double sl = Sleep.parse(q);
+            if (sl > 0) sb.append("alvas:").append(sl).append(" ");
+            int pu = Pulse.parse(q);
+            if (pu > 0) sb.append("pulzus:").append(pu).append(" ");
             if (sb.length() > 0) { w.println(q + "  ->  " + sb); n++; }
         }
         w.println("--- " + total + " szo, " + n + " talalat");
@@ -126,7 +133,7 @@ public class Sopres {
 JAVA
 
 # 3) A tiszta Java osztályok (ugyanaz a válogatás, mint a gyorsteszté).
-for f in Rehab Kcal BodyParse Sentence Days Hu Muscles Activities StrengthParse IntervalParse Load Progression Warmup Mobility Routines; do
+for f in Rehab Kcal BodyParse Sentence Days Hu Muscles Activities StrengthParse IntervalParse Load Progression Warmup Mobility Routines Sleep Pulse; do
   [ -f "$SRC/$f.java" ] && cp "$SRC/$f.java" "$PKG/"
 done
 python3 - "$SRC/Foods.java" "$PKG/Foods.java" <<'PY'

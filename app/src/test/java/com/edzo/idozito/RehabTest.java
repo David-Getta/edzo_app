@@ -552,5 +552,9 @@ public class RehabTest {
                 Sentence.of("Lábnap: guggolás, lábtolás, kitörés", all, now));
         assertNull(Rehab.forGoal("bemelegítés 10 perc"));
         assertNull(Rehab.forGoal("gyakorlatok"));
+        // A NYÚJTÁS önálló, naplózható mozgásforma – nem cél-szó.
+        assertNull(Rehab.forGoal("combnyújtás 30 perc"));
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.of("45 perc nyújtás", all, now));
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.of("combnyújtás 30 perc", all, now));
     }
 }

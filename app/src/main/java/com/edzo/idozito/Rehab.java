@@ -489,7 +489,10 @@ public final class Rehab {
                 "rehab", "gyogytorna", "megeloz", "prevenc",
                 // Ahogy az ember tényleg kéri: „váll gyakorlatok", „mit
                 // csináljak a vállammal", „nyak lazítás", „váll bemelegítés".
-                "gyakorlat", "lazit", "bemelegit", "atmozgat", "nyujtas",
+                // A NYÚJTÁS szándékosan nincs itt: az önálló, naplózható
+                // mozgásforma („45 perc nyújtás", „combnyújtás 30 perc"), és
+                // cél-szóként elvenné az edzés-naplótól.
+                "gyakorlat", "lazit", "bemelegit", "atmozgat",
                 "mit csinaljak", "mit ajanlasz", "mit javasolsz",
                 // Az ERŐSÍTÉS is ide került: a „boka erősítés" korábban egy
                 // hatvanperces kondi-bejegyzés lett a naplóban – vagyis egy
