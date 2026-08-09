@@ -208,6 +208,10 @@ public class RehabTest {
         assertEquals("achilles", Rehab.forGoal("achilles megelőzés").id);
         assertEquals("terd", Rehab.forGoal("térd stabilizálás").id);
         assertEquals("comb", Rehab.forGoal("comb rehab").id);
+        // A lábszár ugyanaz a panasz, csak hétköznapibb néven – a kezdő
+        // futók leggyakoribb baja eddig válasz nélkül maradt.
+        assertEquals("sipcsont", Rehab.forComplaint("lábszárfájás futás után").id);
+        assertEquals("sipcsont", Rehab.forComplaint("fáj a lábszáram futás közben").id);
         // A „háti" jelzőként is egyértelmű – így kéri, aki egész nap ül.
         assertEquals("hati", Rehab.forGoal("kéne valami háti gyakorlat").id);
         assertEquals("hati", Rehab.forGoal("háti mobilizálás kellene").id);

@@ -622,7 +622,11 @@ public final class Rehab {
                 // Achillesé: a fájdalom a talp elülső-belső élén ébred, és a
                 // talpi szalagot kell terhelni hozzá.
                 {"talp", "talpam", "talpa", "talpfaj", "plantaris", "sarkantyu", "talp"},
-                {"sipcsont", "sipcsontom", "sipcsontja", "sipcsont"},
+                // A LÁBSZÁR ugyanaz a panasz, csak hétköznapibb néven: a
+                // „lábszárfájás futás után" eddig válasz nélkül maradt, pedig
+                // a kezdő futók leggyakoribb baja.
+                {"sipcsont", "sipcsontom", "sipcsontja", "sipcsont", "labszaram",
+                        "labszarfaj", "labszar", "shin splint", "shinsplint"},
                 {"comb", "combom", "combhajlito", "hatso comb", "comb hatulja"},
         };
         for (String[] m : map)
