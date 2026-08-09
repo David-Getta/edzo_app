@@ -2285,4 +2285,21 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("elmaradt a foci, helyette kondi 45 perc")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * Az aktív pihenőnap mozgás.
+     *
+     * Az „aktív pihenőnap: 30 perc séta" harminc perce a pihenő szavával
+     * együtt eltűnt – pedig a séta megvolt, és épp az ilyen napokból áll
+     * össze a heti alap.
+     */
+    @Test public void anActiveRestDayIsStillMovement() {
+        assertEquals(30, Activities.parse("aktív pihenőnap: 30 perc séta")
+                .plans.get(0).minutes);
+        assertEquals("joga", Activities.parse("aktív pihenés: 20 perc jóga")
+                .plans.get(0).kind.id);
+        // A sima pihenőnap marad pihenőnap.
+        assertTrue(Activities.parse("ma pihenőnap volt").isEmpty());
+        assertTrue(Activities.looksLikeRest("ma pihenőnap volt"));
+    }
 }

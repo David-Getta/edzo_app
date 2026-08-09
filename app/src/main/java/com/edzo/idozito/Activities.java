@@ -2172,6 +2172,10 @@ public final class Activities {
                         || w.equals("kishijan"))
                         && s.substring(Math.min(s.length(), p + w.length()))
                             .matches("^\\s*\\d.*")) boundary = false;
+                // Az AKTÍV pihenőnap mozgás: az „aktív pihenőnap: 30 perc
+                // séta" harminc perce eddig a pihenő szavával együtt eltűnt.
+                if (boundary && w.startsWith("pihen")
+                        && p >= 6 && s.startsWith("aktiv ", p - 6)) boundary = false;
                 if (boundary && w.equals("berlet")) {
                     int e2 = p;
                     while (e2 < s.length() && Character.isLetter(s.charAt(e2))) e2++;
