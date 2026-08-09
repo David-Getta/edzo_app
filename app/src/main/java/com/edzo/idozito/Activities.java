@@ -2063,7 +2063,7 @@ public final class Activities {
     /** Tagadó / pihenőnapos mondat: az üres eredmény oka nem értetlenség. */
     public static boolean looksLikeRest(String text) {
         String s = Foods.norm(text == null ? "" : text);
-        for (String w : new String[]{"nem ", "megsem ", "sem ",
+        for (String w : new String[]{"nem ", "megsem ", "sem ", "se ",
                 "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "pihenonap", "pihenes", "pihentem", "rest day"}) {
             int p = s.indexOf(w);
@@ -2110,7 +2110,8 @@ public final class Activities {
                 // edzettem" mondatból eddig negyvenöt perces „egyéb mozgás"
                 // lett – vagyis pont az ellenkezője annak, amit leírt. A
                 // „semmi" nem esik ide: ott a tő után betű áll, nem szóköz.
-                "sem ",
+                // A rövid „se" ugyanaz: „ott se voltam a teremben".
+                "sem ", "se ",
                 "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
                 // Az edzés LEFÚJÁSA is elmaradás: „a futást lefújtam az eső
@@ -2184,7 +2185,7 @@ public final class Activities {
                     // megy („a foci elmaradt", „foci vb-t néztem").
                     int a = p;
                     boolean forward = w.equals("nem ") || w.equals("megsem ")
-                            || w.equals("sem ");
+                            || w.equals("sem ") || w.equals("se ");
                     if (!forward)
                         while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.'
                                 && s.charAt(a - 1) != ';') a--;

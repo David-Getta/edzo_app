@@ -2203,6 +2203,9 @@ public class ActivitiesParseTest {
     @Test public void theOtherNegationWordCountsToo() {
         assertTrue(Activities.parse("ma sem edzettem").isEmpty());
         assertTrue(Activities.parse("ma sem futottam").isEmpty());
+        // A rövid „se" ugyanaz: „ott se voltam a teremben".
+        assertTrue(Activities.parse("ott se voltam a teremben").isEmpty());
+        assertTrue(Activities.parse("el se mentem futni").isEmpty());
         // Csak előre töröl: a mondat másik fele megmarad.
         assertEquals("tura", Activities.parse("ma sem volt edzés, de 8000 lépést mentem")
                 .plans.get(0).kind.id);
