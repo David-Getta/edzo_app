@@ -269,4 +269,21 @@ public class KcalTest {
         // Az evés-ige felülír.
         assertEquals(600, Kcal.stated("edzés után ettem 600 kcal-t"));
     }
+
+    /**
+     * A mértékegység a cél tagmondatában is állhat.
+     *
+     * A magyar egyszer mondja ki az egységet: a „napi cél 1800 kcal, ma 1750
+     * lett" ezerhétszázötvene eddig elveszett, mert a kcal a KIDOBOTT
+     * tagmondattal ment el. Csak akkor lép be, ha a maradékban pontosan egy
+     * életszerű szám áll – találgatni itt sem szabad.
+     */
+    @Test public void theUnitMayStayInTheGoalClause() {
+        assertEquals(1750, Kcal.stated("napi cél 1800 kcal, ma 1750 lett"));
+        assertEquals(1750, Kcal.stated("napi cél 1800 kcal, ma összesen 1750"));
+        // A kiírt egység változatlanul működik.
+        assertEquals(1750, Kcal.stated("napi cél 1800 kcal, ma 1750 kcal lett"));
+        // Cél-szó nélkül nincs mit átvinni.
+        assertEquals(-1, Kcal.stated("ma 1750 lett"));
+    }
 }

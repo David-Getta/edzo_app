@@ -191,6 +191,11 @@ public final class Kcal {
         // ma 1750 lett" második fele valódi bevitel.
         boolean anyGoal = false;
         for (Pattern w : GOAL_P) if (w.matcher(s).find()) { anyGoal = true; break; }
+        // A mértékegység a CÉL tagmondatában állhat, a valódi szám mellett
+        // meg már nem: a „napi cél 1800 kcal, ma 1750 lett" ezerhétszázötvene
+        // eddig elveszett, mert a kcal a kidobott tagmondattal ment el. A
+        // magyar egyszer mondja ki az egységet – a második szám ugyanaz.
+        boolean unitSeen = anyGoal && NUM.matcher(s).find();
         if (anyGoal) {
             StringBuilder keep = new StringBuilder();
             for (String cl : s.split("\\s*[,;]\\s*")) {
@@ -220,6 +225,19 @@ public final class Kcal {
         // mégis csak az első szám került be – a napi bevitel harmada. Csak
         // akkor lép be, ha van legalább egy kiírt kalória, és csak étkezés-szó
         // után álló, mértékegység nélküli szám adódik hozzá.
+        // Egyetlen jelöletlen szám a cél-tagmondat után: az a valódi érték.
+        if (sum == 0 && unitSeen) {
+            java.util.regex.Matcher bare = Pattern
+                    .compile("(?<![\\d.,])(\\d{2,4})(?![\\d.,])").matcher(s);
+            double only = 0;
+            int n = 0;
+            while (bare.find()) {
+                double v = Double.parseDouble(bare.group(1));
+                if (v < MIN || v > MAX) continue;
+                only = v; n++;
+            }
+            if (n == 1) sum = only;
+        }
         if (sum > 0) {
             m = MEAL_NUM.matcher(s);
             while (m.find()) {
