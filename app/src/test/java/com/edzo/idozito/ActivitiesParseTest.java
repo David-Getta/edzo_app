@@ -276,6 +276,15 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void intervalSegmentsAreNotSeparateWorkouts() {
+        // A „20 mp sprint 40 mp séta, 12 kör" a futásnak és a sétának is a
+        // mozgásforma szokásos hosszát adta: negyvenöt plusz kilencven percet
+        // egy tizenkét perces edzésre.
+        assertEquals("1d+0: ", summary("20 mp sprint 40 mp séta, 12 kör"));
+        // A kimondott idővel megadott mozgás viszont marad.
+        assertEquals("1d+0: 1×futas/30", summary("futás 30 perc"));
+    }
+
     @Test public void floorsBecomeMinutes() {
         // A lépcsőzést emeletben mondjuk, nem percben – az app viszont a
         // mozgásforma alapértelmezett hosszát adta hozzá, vagyis húsz

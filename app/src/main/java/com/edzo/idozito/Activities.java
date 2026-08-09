@@ -1354,6 +1354,18 @@ public final class Activities {
         // alkalom. Az előnézet ki is írja, hány napra kerül.
         if (days <= 1 && offset == 0 && out.size() == 1 && out.get(0).count > 3)
             days = Math.min(365, out.get(0).count);
+        // Az INTERVALL-terv szakaszai nem külön edzések. A „20 mp sprint 40 mp
+        // séta, 12 kör" a futásnak és a sétának is a MOZGÁSFORMA szokásos
+        // hosszát adta – negyvenöt plusz kilencven percet egy tizenkét perces
+        // edzésre. Ahol másodperces munka/pihenő pár áll, ott a hossz nem az
+        // alapértelmezett: a kimondott idővel vagy távval megadott mozgás
+        // viszont marad.
+        if (rawText.split("(?<![a-z])\\d{1,3}\\s?mp(?![a-z])", -1).length >= 3) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out)
+                if (p.km > 0 || p.minutes != p.kind.defaultMin) kept.add(p);
+            if (!kept.isEmpty() || out.size() > 1) out = kept;
+        }
         return new Parsed(out, days, offset, findHour(s));
     }
 
