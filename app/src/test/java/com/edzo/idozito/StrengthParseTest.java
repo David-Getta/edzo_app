@@ -934,5 +934,15 @@ public class StrengthParseTest {
         // A burpee szándékosan marad kardió: az izomcsoport-kimutatásba
         // beszámítva azt hazudná, hogy a láb erősítő munkát kapott.
         assertTrue(StrengthParse.parse("burpee 3x10").isEmpty());
+        // A magyar terem fordított szórenddel is mondja: „nyomtam 100 kilót
+        // fekve ötöt". A „fekve" magában is fekvenyomás – a fekvőtámasz
+        // szótöve más, tehát nem ütközik vele.
+        List<StrengthParse.Item> f = StrengthParse.parse("nyomtam 100 kilót fekve ötöt");
+        assertEquals(1, f.size());
+        assertEquals("Fekvenyomás", f.get(0).name);
+        assertEquals(5, f.get(0).sets.get(0).reps);
+        assertEquals(100.0, f.get(0).sets.get(0).weight, 0.001);
+        assertEquals("Fekvőtámasz", StrengthParse.parse("fekvőtámasz 3x20").get(0).name);
+        assertEquals("Fekvőtámasz", StrengthParse.parse("3 kör 10 fekvőtámasz").get(0).name);
     }
 }

@@ -74,7 +74,10 @@ public final class StrengthParse {
     // Csomag-szintű, hogy a ragozás-söprés tesztje végig tudjon menni rajta.
     static final String[][] MOVES = {
             {"Guggolás", "guggol", "szkvot", "squat"},
-            {"Fekvenyomás", "fekvenyom", "fekve nyom", "bench", "mellet nyom"},
+            // A „fekve" magában is fekvenyomás: a magyar terem fordított
+            // szórenddel is mondja („nyomtam 100 kilót fekve ötöt"), és a
+            // fekvőtámasz szótöve más, tehát nem ütközik vele.
+            {"Fekvenyomás", "fekvenyom", "fekve nyom", "fekve", "bench", "mellet nyom"},
             // A jelzős változatok KÜLÖN gyakorlatok, nem a bázis becézései: a
             // román felhúzás jóval könnyebb súllyal megy, mint a holtemelés, a
             // bolgár kitörés pedig egy lábra. Egy vödörbe téve a
