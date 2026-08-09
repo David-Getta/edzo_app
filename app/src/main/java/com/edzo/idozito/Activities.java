@@ -3138,13 +3138,43 @@ public final class Activities {
             while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
             if (e == i) break;
             if (isSleepWord(s.substring(i, e))) return true;
+            if (isDeskWord(s, s.substring(i, e))) return true;
             i = e;
         }
         return false;
     }
 
+    /**
+     * Alvás- vagy ÜLŐ elfoglaltság szava: ami mellette áll, az nem edzésidő.
+     *
+     * A „hosszú nap, 11 óra munka, este 20 perc nyújtás" tizenegy órája a
+     * MUNKÁÉ – eddig a nyújtás kapta meg, vagyis tizenegy óra jóga került a
+     * naplóba, a valódi húsz perc meg elveszett. (A „kerti munka" saját
+     * mozgásforma, azt a szótöve viszi.)
+     */
     private static boolean isSleepWord(String w) {
         return w.startsWith("alud") || w.startsWith("alvas") || w.startsWith("alszo");
+    }
+
+    /**
+     * ÜLŐ elfoglaltság szava: ami mellette áll, az nem edzésidő.
+     *
+     * A „hosszú nap, 11 óra munka, este 20 perc nyújtás" tizenegy órája a
+     * MUNKÁÉ – eddig a nyújtás kapta meg, vagyis tizenegy óra jóga került a
+     * naplóba, a valódi húsz perc meg elveszett. A KERTI és a FIZIKAI munka
+     * viszont mozgás: ott a szótő a mozgásformát is kimondja, és a hossz az
+     * övé.
+     *
+     * Csak a szám UTÁN álló szó számít – magyarul így birtokolja az időt a
+     * tevékenység („11 óra munka"). Elöl állva csak zaj: a „munka 30 perc
+     * kondi" harminc perce a kondié.
+     */
+    private static boolean isDeskWord(String s, String w) {
+        boolean desk = w.equals("munka") || w.equals("munkaban") || w.equals("munkat")
+                || w.equals("melo") || w.equals("meloban") || w.startsWith("utaz")
+                || w.startsWith("vezetes");
+        return desk && !s.contains("kerti munka") && !s.contains("fizikai munka")
+                && !s.contains("haz koruli");
     }
 
     /** Sebességet jelölő szó: ami utána áll, az perc/km, nem perc. */

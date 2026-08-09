@@ -2636,4 +2636,26 @@ public class ActivitiesParseTest {
         assertEquals(210, Activities.parse("3 és fél óra futás")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * A munkaóra nem edzésidő.
+     *
+     * A „hosszú nap, 11 óra munka, este 20 perc nyújtás" tizenegy órája a
+     * MUNKÁÉ – eddig a nyújtás kapta meg, vagyis tizenegy óra jóga került a
+     * naplóba, a valódi húsz perc meg elveszett. Csak a szám UTÁN álló szó
+     * számít: a „munka 30 perc kondi" harminc perce a kondié.
+     */
+    @Test public void theWorkingHoursAreNotTrainingTime() {
+        List<Activities.Plan> p = Activities.parse("hosszú nap, 11 óra munka, "
+                + "este 20 perc nyújtás").plans;
+        assertEquals(1, p.size());
+        assertEquals(20, p.get(0).minutes);
+        assertEquals(30, Activities.parse("2 óra utazás, aztán 30 perc futás")
+                .plans.get(0).minutes);
+        // A kerti és a fizikai munka viszont mozgás, a hossz az övé.
+        assertEquals(90, Activities.parse("kerti munka 90 perc")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("munka 30 perc kondi")
+                .plans.get(0).minutes);
+    }
 }
