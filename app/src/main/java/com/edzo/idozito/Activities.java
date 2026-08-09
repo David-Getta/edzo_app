@@ -1872,7 +1872,10 @@ public final class Activities {
         // bekerült a naplóba, a szériába és az XP-be. A múlt idő ragja más
         // („futottam"), így ezek a szótövek nem ütköznek vele.
         for (String w : new String[]{"holnap", "jovo het", "jovo hon", "fogok",
-                "tervez", "szeretne", "megyek", "lesz idom", "majd lesz",
+                // Igealakban: a „TERVEZETT 10 helyett 6 lett" megtörtént
+                // edzésről szól, és a puszta „tervez" tő elvitte az egészet.
+                "tervezek", "tervezem", "tervezunk", "tervezi", "tervezni",
+                "szeretne", "megyek", "lesz idom", "majd lesz",
                 // Szándék és VÉLEMÉNY: a „szeretek futni" nem egy futás, a
                 // „jó lenne egy futás" pláne nem, és az „el kellene menni"
                 // pont az ellenkezője. Mind a naplóba került, negyvenöt
@@ -1907,7 +1910,9 @@ public final class Activities {
                 "gondolkodom", "gondolkozom", "igerem", "eltokel", "nekiallok",
                 "raveszem magam", "ossze kell szedn",
                 // A kiírt TERV szó is: „a terv: guggolás 5x5 100 kg".
-                "a terv", "terv:", "tervem",
+                // Szóhatárral: a „TERVezett 10 helyett" egy megtörtént
+                // edzésről szól, és eddig az egész mondat kiesett tőle.
+                "a terv ", "a terv:", "terv:", "tervem", "a tervek",
                 // A CÉL sem napló: az „a heti célom 4 edzés" négy megtörtént
                 // edzésként került be – a hét elején, amikor még egy sem volt.
                 "celom", "celunk", "celja a", "heti cel", "napi cel", "cel:",

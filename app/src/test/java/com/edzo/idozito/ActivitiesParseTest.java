@@ -2247,4 +2247,21 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.parse("bementem a terembe és nyomtam 3x10 fekvenyomást")
                 .plans.size());
     }
+
+    /**
+     * A „tervezett" nem terv – megtörtént edzésről szól.
+     *
+     * A „csak 3 km lett a tervezett 10 helyett" egésze kiesett: a puszta
+     * „terv"/„tervez" szótő elvitte a mondatot, pedig a három kilométer
+     * megvolt. A valódi terv-mondatok érintetlenek.
+     */
+    @Test public void thePlannedAmountIsNotAPlan() {
+        assertEquals(3.0, Activities.parse("csak 3 km lett a tervezett 10 helyett")
+                .plans.get(0).km, 0.01);
+        // A terv marad terv.
+        assertTrue(Activities.parse("a terv: guggolás 5x5 100 kg").isEmpty());
+        assertTrue(Activities.parse("tervezek futni holnap").isEmpty());
+        assertTrue(Activities.parse("azt tervezem, hogy elmegyek edzeni").isEmpty());
+        assertTrue(Activities.parse("a tervem holnap futni").isEmpty());
+    }
 }
