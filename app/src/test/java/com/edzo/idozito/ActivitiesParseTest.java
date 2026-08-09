@@ -2617,4 +2617,23 @@ public class ActivitiesParseTest {
         assertEquals("kondi", Activities.parse("teremben edzettem")
                 .plans.get(0).kind.id);
     }
+
+    /**
+     * A mértékegység egyszer van kimondva, a szám kétszer.
+     *
+     * A „reggel és délután is futottam, 5 és 7 km" ötöse eddig némán
+     * elveszett – az egyik futás teljesen hiányzott a naplóból. A magyar így
+     * sorol: az egység a végén áll, és mindkét számra vonatkozik. A törtre
+     * nem él, a „három és fél óra" egyetlen időtartam.
+     */
+    @Test public void theSharedUnitBelongsToBothNumbers() {
+        List<Activities.Plan> p = Activities.parse("reggel és délután is "
+                + "futottam, 5 és 7 km").plans;
+        assertEquals(2, p.size());
+        assertEquals(5.0, p.get(0).km, 0.01);
+        assertEquals(7.0, p.get(1).km, 0.01);
+        // A tört nem két szám: a „3 és fél óra futás" háromszáztíz perc.
+        assertEquals(210, Activities.parse("3 és fél óra futás")
+                .plans.get(0).minutes);
+    }
 }

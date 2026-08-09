@@ -853,6 +853,16 @@ public final class Activities {
         // lett időtartam – a kimondott három és háromnegyed óra helyére a
         // tempóból becsült százhetvennyolc perc lépett.
         s = s.replaceAll("(?<![\\d.,:])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        // A MÉRTÉKEGYSÉG egyszer van kimondva, a szám kétszer: a „két edzés
+        // ma, 45 és 60 perc" negyvenöte és a „reggel és délután is futottam,
+        // 5 és 7 km" ötöse eddig némán elveszett – az egyik alkalom teljesen
+        // hiányzott a naplóból. A magyar így sorol: az egység a végén áll,
+        // és mindkét számra vonatkozik. A törtre nem él (a „3 és fél óra"
+        // egyetlen időtartam), ezért a második szám nem kezdődhet nullával.
+        s = s.replaceAll("(?<![\\d.,])(\\d{1,3}(?:[.,]\\d)?)\\s+es\\s+"
+                + "(?!0[.,])(\\d{1,3}(?:[.,]\\d)?)\\s*"
+                + "(perc|percet|percig|ora|orat|oraig|km|kilometer|kilometert)"
+                + "(?![a-z])", "$1 $3 es $2 $3");
         // Az „N alkalommal" ugyanaz, mint az „N-szor". A szám ELŐL állva
         // eddig is darabszám volt („a héten 3 alkalommal futottam"), a
         // mozgás MÖGÉ kerülve viszont elveszett: az „a héten futottam 3

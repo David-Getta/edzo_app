@@ -690,4 +690,12 @@ public class IntervalParseTest {
         assertEquals(60, IntervalParse.parse("1 perc gyors, 1 perc laza, "
                 + "felváltva 20 percig").rest);
     }
+
+    /** A tartomány sem ritmus: a „10-15 perc nyújtás" egyetlen hossz. */
+    @Test public void aRangeIsNotAWorkRestPair() {
+        assertNull(IntervalParse.parse("10-15 perc nyújtás"));
+        // Kimondott terv mellett a tartomány nem zavar.
+        assertEquals(8, IntervalParse.parse("20-30 mp munka, 10 mp pihenő, "
+                + "8 kör").rounds);
+    }
 }

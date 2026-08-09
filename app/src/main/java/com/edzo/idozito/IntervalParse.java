@@ -135,6 +135,13 @@ public final class IntervalParse {
         // csak akkor van terv, ha a mondat ki is mondja.
         if (java.util.regex.Pattern.compile("\\d\\s?-?(?:km|kilometer)(?![a-z])")
                 .matcher(s).find() && !saysPlan(s)) return null;
+        // A TARTOMÁNY sem ritmus: a „10-15 perc nyújtás" egyetlen, körülbelüli
+        // hossz – eddig tíz másodperc munka lett belőle tizenöt perc
+        // pihenővel. A kötőjeles pár mellett csak akkor van terv, ha a mondat
+        // ki is mondja.
+        if (java.util.regex.Pattern
+                .compile("\\d{1,3}\\s?-\\s?\\d{1,3}\\s*(?:perc|mp|masodperc|ora)")
+                .matcher(s).find() && !saysPlan(s)) return null;
         // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
         // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
         s = clockToSeconds(s);
