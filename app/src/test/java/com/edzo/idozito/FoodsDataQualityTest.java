@@ -790,4 +790,25 @@ public class FoodsDataQualityTest {
         assertTrue(!Foods.parse(all, "150 g rizs").isEmpty());
         assertTrue(!Foods.parse(all, "túrós csusza").isEmpty());
     }
+
+    /**
+     * És fordítva: az ÉTELNEVEKBŐL se legyen edzés, sorozat vagy panasz.
+     *
+     * Mind a 352 ételnevet átfuttatva egy maradt: a csirKENUggetben ott a
+     * kenu, és evezés-bejegyzés lett belőle.
+     */
+    @Test public void noFoodNameIsAlsoAWorkoutOrAComplaint() {
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL) {
+            String n = f.name;
+            Activities.Parsed p = Activities.parse(n);
+            if (!p.isEmpty()) bad.append("\n  edzés: ").append(n)
+                    .append(" -> ").append(p.plans.get(0).kind.id);
+            if (!StrengthParse.parse(n + " 3x10").isEmpty())
+                bad.append("\n  sorozat: ").append(n);
+            if (Rehab.forComplaint(n) != null || Rehab.forGoal(n) != null)
+                bad.append("\n  rehab: ").append(n);
+        }
+        assertEquals("ételnévből bejegyzés lenne:" + bad, 0, bad.length());
+    }
 }

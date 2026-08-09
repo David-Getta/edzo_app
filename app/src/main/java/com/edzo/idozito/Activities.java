@@ -602,6 +602,9 @@ public final class Activities {
             // kézírás nem kézilabda, a jogaim nem jóga. Ötvenezer magyar szót
             // átfuttatva ezek maradtak.
             "keziras", "kezirat", "kezikonyv", "keziszer", "kezimunka", "kezifek",
+            // A csirKENUggetben ott a kenu: mind a 352 ételnevet átfuttatva
+            // ez az egy csinált edzést.
+            "csirkenugget", "nugget",
             "jogai", "jogaim", "jogod", "joguk", "jogot", "jogok", "jogos", "jogi",
             "jogsza", "jogilag", "jogtalan", "jogert",
 
