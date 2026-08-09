@@ -427,7 +427,14 @@ public final class Rehab {
                 // az nem érdeklődik, hanem fáj neki. Eddig ezekre a mondat
                 // egyáltalán nem talált semmit – pedig a lap pont róluk szól.
                 "golfkonyok", "teniszkonyok", "futoterd", "ugroterd", "sarkantyu",
-                "plantaris"}) {
+                "plantaris",
+                // A SÉRV, a PROTÉZIS és a friss MŰTÉT ugyanígy a diagnózis
+                // neve: a „csigolyasérvem van" és a „műtét után vagyok,
+                // térdprotézis" eddig válasz nélkül maradt – pedig ezek a
+                // mondatok kérnek a leghatározottabban óvatos tornát.
+                "servem", "serve ", "porckorongserv", "csigolyaserv",
+                "gerincserv", "protezis", "mutet utan", "muteti utan",
+                "operacio utan", "mutottek"}) {
             int i = s.indexOf(w);
             while (i >= 0) {
                 boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
@@ -642,7 +649,8 @@ public final class Rehab {
                 // pontosabb megnevezés ezért előbb áll a puszta „térd"-nél.
                 {"itszalag", "it szalag", "it-szalag", "itszalag", "iliotibialis", "kulso terd",
                         "terd kulso", "terdem kulso", "futoterd"},
-                {"terd", "terdem", "terde", "ugroterd", "terdfaj", "terd"},
+                {"terd", "terdem", "terde", "ugroterd", "terdfaj", "terdprotezis",
+                        "terd"},
                 // A HÁTI gerinc a derék elé kerül: a „felső hátam" és a
                 // „lapockáim között" nem ágyéki panasz, és a derék-sor
                 // (madár-kutya, curl-up) nem is szól róla. A puszta „hátam"
@@ -662,7 +670,10 @@ public final class Rehab {
                         "lapocka", "hat kozepe", "hatam kozepe", "mellkasi gerinc",
                         "gorbe hat", "gorbult hat", "gorbe a hat"},
                 {"derek", "derekam", "dereka", "derek", "hatam", "hatfaj", "also hat",
-                        "gerincem", "gerinc"},
+                        "gerincem", "gerinc",
+                        // A porckorong- és csigolyasérv a deréké: ott is a
+                        // törzs stabilizálása a dolog, csak még óvatosabban.
+                        "porckorong", "csigolyaserv", "gerincserv"},
                 {"vall", "vallam", "valla", "vall"},
                 {"konyok-belso", "konyokom belso", "belso konyok", "golfkonyok"},
                 {"konyok-kulso", "kulso konyok", "teniszkonyok"},
@@ -687,7 +698,8 @@ public final class Rehab {
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
                 // A FARIZOM a csípő ügye: az „erősíteni kéne a farizmom"
                 // eddig válasz nélkül maradt.
-                {"csipo", "csipom", "csipoje", "csipo", "farizom", "farizmo",
+                {"csipo", "csipom", "csipoje", "csipoprotezis", "csipo",
+                        "farizom", "farizmo",
                         "farpofa", "gluteusz"},
                 {"achilles", "achilles", "vadlim", "sarkam", "sarok faj", "sarokfaj"},
                 // A sarkantyú és a plantaris fasciitis a TALP sora, nem az

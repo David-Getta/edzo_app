@@ -730,4 +730,19 @@ public class RehabTest {
                 + "a derekam").id);
         assertEquals("nyak", Rehab.forComplaint("merevség a nyakamban").id);
     }
+
+    /**
+     * A diagnózis neve maga a panasz.
+     *
+     * A „csigolyasérvem van, mit csinálhatok?" és a „műtét után vagyok,
+     * térdprotézis" eddig válasz nélkül maradt – pedig ezek a mondatok kérik
+     * a leghatározottabban az óvatos, felépítő tornát.
+     */
+    @Test public void theDiagnosisNameIsTheComplaint() {
+        assertEquals("derek", Rehab.forComplaint("csigolyasérvem van, "
+                + "mit csinálhatok?").id);
+        assertEquals("derek", Rehab.forComplaint("porckorongsérvem van").id);
+        assertEquals("terd", Rehab.forComplaint("műtét után vagyok, "
+                + "térdprotézis").id);
+    }
 }

@@ -675,6 +675,11 @@ public final class Activities {
             // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
             // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés
             // lett a naplóban. (A „konditerem" és a „tornaterem" saját tő.)
+            // A GYÓGYTORNÁSZ nem torna: a „gyógytornász szerint gyenge a
+            // középső farizmom" panasz-mondatból eddig negyvenöt perces jóga
+            // került a naplóba. (A gyógytorna MAGA marad – abból a „20 perc
+            // gyógytorna" valódi mozgás.)
+            "gyogytornasz",
             "targyaloterem", "targyalo", "tanterem", "eloadoterem", "varoterem",
             "szinhazterem", "konferenciaterem", "gyulesterem", "birosag",
             // A TÖRTÉNTekért közepén ott a teker.
@@ -962,6 +967,18 @@ public final class Activities {
         // egyik tagja már kifehérítve áll a munkapéldányban – így csak a
         // maradék szám látszik, az osztó jelentés nem.
         final String rawText = new String(q);
+        // A KÉRDÉS nem napló: a „terhes vagyok, milyen mozgás ajánlott?"
+        // mozgás szavából eddig negyvenöt perces „egyéb mozgás" került a
+        // naplóba – egy olyan mondatból, ami épp azt kérdezi, hogy mit
+        // lehetne csinálni. Szám nélküli kérdésben nincs mit felvenni; a
+        // számmal írt „30 perc futás után fájt a térdem, mit tegyek?" viszont
+        // megtörtént edzés is.
+        if (text != null && text.indexOf('?') >= 0) {
+            boolean digit = false;
+            for (int i = 0; i < rawText.length(); i++)
+                if (Character.isDigit(rawText.charAt(i))) { digit = true; break; }
+            if (!digit) return new Parsed(out, 1, 0, 12);
+        }
         // A jövő nem napló: a „jövő héten 3 futás" vagy a „holnap futok"
         // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
         // a szándék máris bekerülne a szériába és az XP-be.

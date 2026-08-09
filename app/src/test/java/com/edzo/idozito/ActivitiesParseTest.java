@@ -2474,4 +2474,26 @@ public class ActivitiesParseTest {
         assertEquals("si", Activities.parse("3 óra sítalpon").plans.get(0).kind.id);
         assertEquals(180, Activities.parse("3 óra sítalpon").plans.get(0).minutes);
     }
+
+    /**
+     * A gyógytornász nem torna, a kérdés nem napló.
+     *
+     * Két fabrikáció ugyanabból a mondatkörből: a „gyógytornász szerint
+     * gyenge a középső farizmom" TORNA-szótagjából negyvenöt perces jóga
+     * lett, a „terhes vagyok, milyen mozgás ajánlott?" MOZGÁS szavából meg
+     * negyvenöt perc egyéb mozgás – egy olyan mondatból, ami épp azt kérdezi,
+     * hogy mit lehetne csinálni.
+     */
+    @Test public void neitherTheTherapistNorTheQuestionIsAWorkout() {
+        assertTrue(Activities.parse("a gyógytornász szerint gyenge "
+                + "a középső farizmom").plans.isEmpty());
+        assertTrue(Activities.parse("terhes vagyok, milyen mozgás "
+                + "ajánlott?").plans.isEmpty());
+        // A gyógytorna MAGA marad mozgás.
+        assertEquals(20, Activities.parse("20 perc gyógytorna")
+                .plans.get(0).minutes);
+        // És a számmal írt kérdés mögött megtörtént edzés is állhat.
+        assertEquals(30, Activities.parse("30 perc futás után fájt a térdem, "
+                + "mit tegyek?").plans.get(0).minutes);
+    }
 }
