@@ -2598,4 +2598,23 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("ma 14 000 lépés és futottam "
                 + "5 km-t").plans.size());
     }
+
+    /**
+     * A terem csak helyszín.
+     *
+     * A „45 perc spinning óra a teremben" a negyvenöt perces kerékpározás
+     * MELLÉ egy hatvanperces kondit is beírt – ugyanannak az órának a
+     * helyszínéből, kimondatlan hosszal. A teremben VÉGZETT edzés viszont
+     * marad.
+     */
+    @Test public void theGymIsOnlyAPlace() {
+        List<Activities.Plan> p = Activities.parse("45 perc spinning óra "
+                + "a teremben").plans;
+        assertEquals(1, p.size());
+        assertEquals("kerekpar", p.get(0).kind.id);
+        assertEquals(60, Activities.parse("a teremben 60 perc kondi")
+                .plans.get(0).minutes);
+        assertEquals("kondi", Activities.parse("teremben edzettem")
+                .plans.get(0).kind.id);
+    }
 }

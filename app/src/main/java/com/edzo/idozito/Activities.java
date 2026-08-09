@@ -1649,6 +1649,27 @@ public final class Activities {
                 if (p.km > 0 || p.minutes != p.kind.defaultMin) kept.add(p);
             if (!kept.isEmpty() || out.size() > 1) out = kept;
         }
+        // A TEREM csak HELYSZÍN: a „45 perc spinning óra a teremben" a
+        // negyvenöt perces kerékpározás MELLÉ egy hatvanperces kondit is
+        // beírt – ugyanannak az órának a helyszínéből, kimondatlan hosszal.
+        // Ha a teremre a mondatban semmi más nem utal, és van mellette
+        // kimondott hosszúságú edzés, a helyszín nem külön bejegyzés.
+        if (out.size() > 1 && onlyGymPlace(rawText)) {
+            boolean stated = false;
+            for (Plan p : out)
+                if (p.km > 0 || p.steps > 0 || p.minutes != p.kind.defaultMin)
+                    stated = true;
+            if (stated) {
+                List<Plan> kept = new ArrayList<>();
+                for (Plan p : out) {
+                    if ("kondi".equals(p.kind.id) && p.count == 1 && p.km <= 0
+                            && p.steps <= 0 && p.minutes == p.kind.defaultMin)
+                        continue;
+                    kept.add(p);
+                }
+                if (!kept.isEmpty()) out = kept;
+            }
+        }
         // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót
         // sem mond ki: a „ma 14 000 lépés, 9,8 km" a tíz és fél kilométeres
         // gyaloglás MELLÉ egy tíz kilométeres FUTÁST is beírt – húsz
@@ -2932,6 +2953,16 @@ public final class Activities {
             out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
         }
         return out;
+    }
+
+    /** Csak a terem HELYSZÍNE utal kondira, más semmi? */
+    private static boolean onlyGymPlace(String s) {
+        if (!s.contains("terem")) return false;
+        String rest = s.replaceAll("\\p{L}*terem\\p{L}*", " ");
+        Kind k = byId("kondi");
+        if (k == null) return false;
+        for (String w : k.words) if (rest.contains(w)) return false;
+        return true;
     }
 
     /** Kimondott körszám a köredzésben („4 kör", „3 sorozat"), különben 1. */
