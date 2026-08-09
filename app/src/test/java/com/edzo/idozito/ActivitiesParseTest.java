@@ -194,6 +194,19 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×munka/120", summary("metszettem a fákat 2 órát"));
     }
 
+    @Test public void aHabitIsNotASingleSession() {
+        // A „hetente háromszor járok kondiba" a heti rendet írja le, nem egy
+        // megtörtént edzést – eddig mindegyikből teljes bejegyzés lett.
+        assertEquals("1d+0: ", summary("hetente háromszor járok kondiba"));
+        assertEquals("1d+0: ", summary("minden másodnap futok"));
+        assertEquals("1d+0: ", summary("szoktam futni reggelente"));
+        assertEquals("1d+0: ", summary("általában 5 km-t futok"));
+        // A múlt idő viszont napló, gyakorisággal együtt is.
+        assertEquals("7d+0: 2×futas/45", summary("hetente kétszer futottam"));
+        assertEquals("1d+1: 1×kondi/60", summary("jártam kondiba tegnap"));
+        assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
+    }
+
     @Test public void aSuggestionIsNotALog() {
         // A felszólítás terv: a „csináljunk egy tabatát" javaslat. Az
         // időzítő-terv ilyenkor is elkészül – csak a bejegyzés nem.

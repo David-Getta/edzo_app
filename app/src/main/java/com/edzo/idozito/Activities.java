@@ -1643,7 +1643,12 @@ public final class Activities {
                 // A „majd kondizok" ugyanolyan szándék, mint a „majd úszok".
                 // (A puszta „majd" NEM lehet jelzőszó: a „futottam, majd
                 // úsztam" két megtörtént edzés.)
-                "kondizok", "kondizom", "uszom", "biciklizem", "sportolok"}) {
+                "kondizok", "kondizom", "uszom", "biciklizem", "sportolok",
+                // A SZOKÁS soha nem egy alkalom: a „szoktam futni" és a
+                // „hetente háromszor járok kondiba" arról szól, hogy MIT
+                // csinál az ember általában – eddig mindkettőből egy teljes
+                // bejegyzés lett, alapértelmezett hosszal.
+                "szoktam", "szoktunk", "jarok", "jarunk", "jaro"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 int e = p + w.length();
@@ -1652,6 +1657,18 @@ public final class Activities {
                 p = s.indexOf(w, p + 1);
             }
         }
+        // A „futok" és az „edzek" magában szándékosan NEM jelzőszó (lásd
+        // fent) – GYAKORISÁG mellett viszont egyértelmű szokás: a „minden
+        // másodnap futok" nem egy futás, hanem a heti rend leírása.
+        boolean often = false;
+        for (String w : new String[]{"hetente", "naponta", "havonta", "masodnaponta",
+                "minden nap", "minden masodnap", "altalaban", "rendszeresen",
+                "mostanaban", "manapsag"})
+            if (s.contains(w)) { often = true; break; }
+        if (often)
+            for (String w : new String[]{"futok", "edzek", "megyek", "csinalom",
+                    "tekerek", "jogazok", "sulyzozok", "gyakorlok"})
+                if (s.matches(".*(?<![a-z])" + w + "(?![a-z]).*")) return true;
         return false;
     }
 

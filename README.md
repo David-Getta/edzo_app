@@ -54,6 +54,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   pulzusom"
 - az **időpont** nem tevékenység: az „edzés után ittam egy turmixot" a
   turmixról szól, nem egy edzésről
+- a **szokás** nem egy alkalom: „hetente háromszor járok kondiba", „minden
+  másodnap futok", „szoktam futni reggelente" a heti rendet írja le. A múlt
+  idő viszont napló, gyakorisággal együtt is: „hetente kétszer futottam"
+- a **felszólítás** terv: „csináljunk egy tabatát", „menjünk futni" – az
+  időzítő-terv elkészül, a bejegyzés nem
 - a **kimondott akarat** sem edzés: „erősíteni akarom a bokám", „el akarok
   kezdeni futni", „remélem tudok futni 30 percet", „készülök elmenni a terembe"
 - a **bevásárlólista** és a **kifogyott étel** sem vacsora: „bevásárlólista:
