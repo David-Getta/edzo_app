@@ -888,7 +888,12 @@ public final class Activities {
     static Parsed parse(String text, long now) {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0, 12);
-        char[] q = shortForms(Foods.norm(text)).toCharArray();
+        // A LISTA sorszáma nem darabszám: az „1. 5 km futás / 2. 30 perc
+        // kondi" kettese a felsorolás második pontja, és eddig KÉT
+        // kondi-edzés lett belőle. A sor eleje csak a normalizálás ELŐTT
+        // látszik – az egymás utáni szóközöket (és a sortörést) a norm()
+        // egyetlen szóközzé vonja össze.
+        char[] q = shortForms(Foods.norm(maskListMarkers(text))).toCharArray();
         // A kiírt számnév-pár is tartomány: „húsz-huszonöt perc kondi". A
         // nyers alak ELŐTT fut, mert az osztó pár felismerése („öt-öt km")
         // is számjegyet keres.
@@ -3079,6 +3084,27 @@ public final class Activities {
         String part = s.substring(from, to);
         for (Kind k : ALL) for (String w : k.words) if (part.contains(w)) return true;
         return false;
+    }
+
+    /**
+     * Felsorolás-sorszám kitakarva: „1.", „2)", „Nap 3:".
+     *
+     * A sor elejére írt sorszám darabszámnak látszott: az „1. 5 km futás /
+     * 2. 30 perc kondi" második pontjából KÉT kondi-edzés lett, a megosztott
+     * terv „Nap 2:" fejlécéből pedig ugyanígy kettő.
+     */
+    private static String maskListMarkers(String text) {
+        if (text == null) return "";
+        StringBuilder sb = new StringBuilder(text);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?m)^[ \\t\\-*•]*(\\d{1,2})[.)][ \\t]").matcher(text);
+        while (m.find())
+            for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
+        m = java.util.regex.Pattern
+                .compile("(?i)(?<![a-zöüó])nap\\s?(\\d{1,2})\\s*[:.]").matcher(text);
+        while (m.find())
+            for (int i = m.start(1); i < m.end(1); i++) sb.setCharAt(i, ' ');
+        return sb.toString();
     }
 
     /**

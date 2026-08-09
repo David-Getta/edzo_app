@@ -1154,4 +1154,21 @@ public class StrengthParseTest {
         assertEquals("Felhúzás", StrengthParse.parse("meglett a 140 kg-os felhúzás")
                 .get(0).name);
     }
+
+    /**
+     * A gondolatjeles felsorolás utolsó tétele sem veszhet el.
+     *
+     * A sorhatár a normalizálás után eltűnik („- 10 fekvőtámasz / - 20
+     * guggolás / - 30 mp plank" egyetlen sorrá olvad), és a plank elveszett
+     * vele. A jel helyére vessző kerül: onnantól ugyanaz, mint a vesszős
+     * felsorolás.
+     */
+    @Test public void aBulletListKeepsItsLastItem() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "- 10 fekvőtámasz\n- 20 guggolás\n- 30 mp plank");
+        assertEquals(3, it.size());
+        assertEquals("Plank", it.get(2).name);
+        // A csillag NEM felsorolás-jel, a szám előtti gondolatjel sem.
+        assertEquals(3, StrengthParse.parse("fekvenyomás 3 * 10 60 kg").get(0).sets.size());
+    }
 }

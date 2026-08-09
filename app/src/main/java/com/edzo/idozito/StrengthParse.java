@@ -234,6 +234,15 @@ public final class StrengthParse {
      * A tizedes szám így érintetlen („12.5 kg”), és a mondatvégi pont is az.
      */
     static String stripListMarkers(String s) {
+        // A GONDOLATJELES felsorolás sorhatára a normalizálás után eltűnik
+        // („- 10 fekvőtámasz / - 20 guggolás / - 30 mp plank" egyetlen sorrá
+        // olvad), és az utolsó tétel elveszett vele. A jel helyére vessző
+        // kerül: onnantól ugyanaz, mint a vesszős felsorolás, amit értünk.
+        // A csillag NEM felsorolás-jel: a „3 * 10" szorzás. A gondolatjel
+        // előtt pedig nem állhat szám, különben a „3 - 10" tartomány esne
+        // szét.
+        s = s.replaceAll("(?:^|(?<=[^0-9]\\s))[-–—•]\\s+(?=[a-z0-9])", ", ");
+        if (s.startsWith(", ")) s = s.substring(2);
         return s.replaceAll("(?<![\\d,.])(\\d{1,2})[.)]\\s+(?=[a-z])", " ");
     }
 

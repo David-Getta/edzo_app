@@ -128,6 +128,11 @@ ismétlés veszett el). Most van harmadik gomb: mindkettő. Az edzés-előzmény
 csak a kimondott táv és lépésszám megy át, mert a fekvőtámaszból becsült
 „kondi" perc kétszer számítana.
 
+A **felsorolás sorszáma** nem darabszám: az „1. 5 km futás / 2. 30 perc
+kondi" ketteséből eddig két kondi-edzés lett, a megosztott terv „Nap 2:"
+fejlécéből ugyanígy. A **gondolatjeles lista** utolsó tétele pedig elveszett,
+mert a sorhatár a normalizálás után eltűnik – a jel helyére most vessző kerül.
+
 A **gazdátlan táv** akkor sem veszhet el, ha van mellette edzés: a „ma reggel
 **5 km**, délután 40 perc kondi" öt kilométere eltűnt, mert a kondi elfoglalta
 a listát, és távot tárolni nem tud. A kimondott alvás pedig erősebb két

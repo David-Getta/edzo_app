@@ -2065,4 +2065,24 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("10 km futás és 30 perc kondi").plans.size());
         assertEquals(1, Activities.parse("60 perc kondi").plans.size());
     }
+
+    /**
+     * A felsorolás sorszáma nem darabszám.
+     *
+     * Az „1. 5 km futás / 2. 30 perc kondi" kettese a lista második pontja,
+     * és eddig KÉT kondi-edzés lett belőle. A „Nap 2:" a megosztott tervek
+     * írásmódjában ugyanígy.
+     */
+    @Test public void aListNumberIsNotACount() {
+        Activities.Parsed p = Activities.parse("1. 5 km futás\n2. 30 perc kondi");
+        assertEquals(2, p.plans.size());
+        assertEquals(1, p.plans.get(1).count);
+        assertEquals(1, Activities.parse("1) 5 km futás\n2) 30 perc kondi")
+                .plans.get(1).count);
+        assertEquals(1, Activities.parse("Nap 1: futás 5 km. Nap 2: kondi 45 perc.")
+                .plans.get(1).count);
+        // A valódi darabszám marad: „2 fekvőtámasz edzés" két edzés.
+        assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
+        assertEquals(3, Activities.parse("3 futás a héten").plans.get(0).count);
+    }
 }
