@@ -103,6 +103,18 @@ mennyiséget tartalmazó tagmondat nem lehet másé – de csak akkor lép be, h
 mondat elején pontosan egy étel áll („csirkemell rizzsel, 200 g" marad
 kétértelmű, ott nem találgatunk).
 
+A **sorozat mellé írt táv** ugyanígy: a „reggel **5 km futás**, utána 20
+fekvőtámasz" mondatra eddig választani kellett – vagy az erősítő napló kapta
+meg (és a kilométerek eltűntek), vagy sima edzésként ment be (és a súly meg az
+ismétlés veszett el). Most van harmadik gomb: mindkettő. Az edzés-előzményekbe
+csak a kimondott táv és lépésszám megy át, mert a fekvőtámaszból becsült
+„kondi" perc kétszer számítana.
+
+A kimondott **összeg** nem külön edzés: a „ma 90 percet edzettem összesen:
+30 perc kondi, 60 perc futás" kilencvenese a másik két szám összege – eddig
+harmadikként állt sorba, és százötven perc mozgás került a naplóba kilencven
+helyett.
+
 Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 km futás,
 **78,5 kg a mérlegen**", az „aludtam 7 órát **és futottam 10 km-t**" és az
 „ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul
@@ -285,7 +297,9 @@ sem talált, tehát ha talál, az tényleg ott van.
   „feküdtem"-mel mondjuk) –
   a kivonást ne a felhasználó végezze el. A magyar „fél tizenegy" tíz harminc,
   és ha a délelőtti óraszámból képtelen hossz jönne ki, este értendő; az
-  „alvás 6:30" pedig hossz, nem időpont
+  „alvás 6:30" pedig hossz, nem időpont. Az ébredés állhat elöl is („ma
+  reggel 6:30-kor keltem, 22:45-kor feküdtem le") – a lefekvés- és
+  ébredés-szó helye dönti el a sorrendet
 - **„Nyugalmi pulzus 52"** – ugyanígy: napi egy érték, heti átlag, görbe és
   léptetős gyorsbevitel; az edzés-adat („átlagpulzus 165") nem téveszti meg
 - **A szokásosnál jóval magasabb reggeli pulzusnál** a kezdőlap szól:

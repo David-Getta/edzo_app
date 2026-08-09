@@ -997,6 +997,7 @@ public final class Activities {
         mergeTimeRanges(beforeBlank, mins, q);
         dropWarmupTimes(beforeBlank, mins);
         dropSleepTimes(beforeBlank, mins);
+        dropTotalTime(beforeBlank, mins);
 
         // 3) Mozgásformák a maradék szövegben.
         String s = new String(q);
@@ -2507,6 +2508,31 @@ public final class Activities {
             out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
         }
         return out;
+    }
+
+    /**
+     * Az ÖSSZESÍTETT idő nem külön edzés.
+     *
+     * A „ma 90 percet edzettem összesen: 30 perc kondi, 60 perc futás"
+     * kilencvenese a másik két szám összege – eddig mégis harmadik
+     * időtartamként állt sorba, a kondi kapta meg, a harminc pedig elveszett.
+     * Százötven perc mozgás került a naplóba kilencven helyett.
+     *
+     * Szándékosan szűk: kimondott „összesen" kell hozzá, és a számnak PONTOSAN
+     * a többi összegének kell lennie. A „60 perc futás, 30 perc kondi, 30 perc
+     * úszás" hatvanasa enélkül is összegnek látszana, pedig nem az.
+     */
+    private static void dropTotalTime(String s, List<int[]> mins) {
+        if (mins.size() < 3) return;
+        if (!s.contains("osszesen") && !s.contains("osszesitve")
+                && !s.contains("osszesseg")) return;
+        int sum = 0;
+        for (int[] m : mins) sum += m[1];
+        for (int i = 0; i < mins.size(); i++) {
+            if (mins.get(i)[1] * 2 != sum) continue;
+            mins.remove(i);
+            return;
+        }
     }
 
     /**

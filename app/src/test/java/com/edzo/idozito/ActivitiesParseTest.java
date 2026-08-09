@@ -1857,4 +1857,29 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.cardioOnly(
                 Activities.parse("tegnap 5 km futás és 20 fekvőtámasz")).offset);
     }
+
+    /**
+     * Az összesített idő nem külön edzés.
+     *
+     * A „ma 90 percet edzettem összesen: 30 perc kondi, 60 perc futás"
+     * kilencvenese a másik két szám összege. Eddig harmadik időtartamként
+     * állt sorba, a kondi kapta meg, a harminc pedig elveszett – százötven
+     * perc mozgás került a naplóba kilencven helyett.
+     */
+    @Test public void theStatedTotalIsNotAThirdSession() {
+        Activities.Parsed p = Activities.parse(
+                "ma 90 percet edzettem összesen: 30 perc kondi, 60 perc futás");
+        assertEquals(90, p.plans.get(0).minutes + p.plans.get(1).minutes);
+        assertEquals(2, p.plans.size());
+        Activities.Parsed q = Activities.parse(
+                "összesen 120 perc mozgás: 45 perc futás, 45 perc bringa, 30 perc kondi");
+        int sum = 0;
+        for (Activities.Plan pl : q.plans) sum += pl.minutes;
+        assertEquals(120, sum);
+        // „Összesen" nélkül nem találgatunk: a hatvan itt a futás ideje, nem
+        // a másik kettő összege.
+        Activities.Parsed r = Activities.parse("60 perc futás, 30 perc kondi, 30 perc úszás");
+        assertEquals(3, r.plans.size());
+        assertEquals(60, r.plans.get(0).minutes);
+    }
 }
