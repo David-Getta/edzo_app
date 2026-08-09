@@ -203,6 +203,20 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×uszas/30", summary("mégsem futottam, de úsztam 30 percet"));
     }
 
+    @Test public void aBreakIsNotAPeriodAndOccasionsCountFromBehind() {
+        // A „3 hét UTÁN" a kihagyás hossza, nem időszak: a mai edzés eddig
+        // huszonegy napra terült szét, vagyis a mai nap kimaradt a szériából.
+        assertEquals("1d+0: 1×futas/30",
+                summary("ma volt az első edzésem 3 hét után, 30 perc könnyű futás"));
+        assertEquals("1d+0: 1×futas/30", summary("két hét után újra futottam 5 km-t"));
+        // Az „N alkalommal" a mozgás MÖGÖTT is darabszám – eddig egyetlen
+        // futásként került be, vagyis a hét kétharmada eltűnt.
+        assertEquals("7d+0: 3×futas/45", summary("a héten futottam 3 alkalommal"));
+        assertEquals("7d+0: 3×futas/45", summary("a héten 3 alkalommal futottam"));
+        // A valódi időszak változatlan.
+        assertEquals("21d+0: 6×egyeb/45", summary("az elmúlt 3 hétben 6 edzés"));
+    }
+
     @Test public void theDistributivePairWorksWithDistanceToo() {
         // A „reggel és este is futottam 5-5 km-t" két ötkilométeres futás. Az
         // osztó alakot eddig csak az időtartamnál értettük – a napi tíz

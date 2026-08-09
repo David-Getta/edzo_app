@@ -135,7 +135,10 @@ public final class Activities {
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
-                    "legzo gyakorlat"),
+                    "legzo gyakorlat",
+                    // A hengerezés is regeneráció, és sokan naplózzák: eddig
+                    // egyetlen alakját sem ismertük.
+                    "habhenger", "hengerez", "foam roll", "foamroll", "sms henger"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
@@ -732,6 +735,12 @@ public final class Activities {
     private static String shortForms(String s) {
         // Szóközzel tagolt ezres: „10 000" → „10000".
         s = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        // Az „N alkalommal" ugyanaz, mint az „N-szor". A szám ELŐL állva
+        // eddig is darabszám volt („a héten 3 alkalommal futottam"), a
+        // mozgás MÖGÉ kerülve viszont elveszett: az „a héten futottam 3
+        // alkalommal" egyetlen futásként került be, vagyis a hét
+        // kétharmada eltűnt a naplóból.
+        s = s.replaceAll("(?<![\\d.,])(\\d{1,2})\\s?alkalo?m(?:mal|at)(?![a-z])", "$1-szor");
         // A kiírt számnév ÓRÁS összetételben: a „kétórás túra" két óra, nem a
         // túra alapértelmezett kilencven perce. A számnév-szótár szóhatárt
         // vár, így az összetételt nem látta.
@@ -2161,6 +2170,12 @@ public final class Activities {
             String word = wordAt(s, p);
             if (word.equals(unit + "ja") || word.equals(unit + "je")
                     || word.equals(unit + "e")) continue;
+            // A „3 hét UTÁN" nem időszak, hanem a kihagyás hossza: a „ma volt
+            // az első edzésem 3 hét után, 30 perc könnyű futás" EGY mai edzés.
+            // Eddig huszonegy napra terült szét, vagyis a mai nap kimaradt a
+            // szériából, a heti terhelés meg három hétre hígult.
+            if (s.substring(end).matches("^\\s*(utan|mulva|kihagyas\\w*|szunet\\w*).*"))
+                continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {
                 // Szám nélkül csak a hét és a hónap időszak („a héten",
