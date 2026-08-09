@@ -32,8 +32,13 @@ public final class Sleep {
             // „aludtam 8 órát", „aludtam kb 6,5 órát", „aludtam vagy 7 órát" –
             // a szám és az ige közé pár rövid szó beférhet, de csak kevés:
             // messzebbről a szám már másról szólhat.
+            // A tagmondat-határ és az ÓRA-SZÓ is kell: a „7,5 órát aludtam, de
+            // 3-szor felébredtem" hármasa az ébredések száma, nem az alvás
+            // hossza – eddig három órás éjszaka került a naplóba a hét és fél
+            // helyett.
             java.util.regex.Pattern.compile(
-                    "aludtam[^0-9]{0,12}?(\\d{1,2}([.,]\\d)?)"),
+                    "aludtam[^0-9,;.]{0,12}?(\\d{1,2}([.,]\\d)?)"
+                            + "\\s?(?:ora|h(?![a-z])|$|[,.;])"),
             // „8 óra alvás", „7,5 óra alvás"
             java.util.regex.Pattern.compile(
                     "(\\d{1,2}([.,]\\d)?)\\s?ora(?:t)?\\s?alvas"),

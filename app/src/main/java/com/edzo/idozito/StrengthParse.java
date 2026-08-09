@@ -284,9 +284,9 @@ public final class StrengthParse {
         // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
         if (Activities.looksLikeFuture(text)) return out;
-        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(
+        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(
-                        stripPercent(stripListMarkers(Foods.norm(text)))))))));
+                        stripPercent(stripListMarkers(Foods.norm(text))))))))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
@@ -950,6 +950,22 @@ public final class StrengthParse {
      */
     private static String stripPercent(String s) {
         return s.replaceAll("@?\\s?(?<![\\d.,])\\d{1,3}(?:[.,]\\d)?\\s?%(?:-?[a-z]{1,4})?", " ");
+    }
+
+    /**
+     * A LEFEKVÉS nem fekvenyomás.
+     *
+     * A „fekve" szótő a fordított szórendet fogja („nyomtam 100 kilót fekve
+     * ötöt"), de az alvás-mondat is tartalmazza: a „lefekvés 23:15, ébredés
+     * 6:45" huszonhárom ismétléses fekvenyomás lett a naplóban. A takarás a
+     * tagmondat-vágás ELŐTT történik, mert a névtalálat onnan is átszivárog
+     * a következő tagmondatba.
+     */
+    private static String maskLyingDown(String s) {
+        for (String w : new String[]{"lefekves", "lefekudt", "fekudni", "lefekudni",
+                "fekve maradt", "fekve alszom"})
+            s = s.replace(w, "#");
+        return s;
     }
 
     /**

@@ -136,6 +136,20 @@ public class SleepTest {
      * hagyja a szót. A szám és az ige közé viszont csak a tárgyrag férhet be,
      * így a mondat többi száma nem eshet ide.
      */
+    /**
+     * A SZORZÓ nem óra: az ébredések száma nem az alvás hossza.
+     *
+     * A „7,5 órát aludtam, de 3-szor felébredtem" mondatból HÁROM óra alvás
+     * lett – a legelső minta elvitte a mondatot a valódi hossz elől.
+     */
+    @Test public void theWakeUpCountIsNotTheLength() {
+        assertEquals(7.5, Sleep.parse("reggel 7,5 órát aludtam, de 3-szor felébredtem"), 0.01);
+        assertEquals(7.0, Sleep.parse("aludtam 7 órát, kétszer felébredtem"), 0.01);
+        // A szám és az ige közé beférő rövid szavak változatlanok.
+        assertEquals(6.5, Sleep.parse("aludtam kb 6,5 órát"), 0.01);
+        assertEquals(8.0, Sleep.parse("aludtam 8 órát"), 0.01);
+    }
+
     @Test public void theHourWordMayBeLeftOut() {
         assertEquals(8.0, Sleep.parse("nyolcat aludtam"), 0.01);
         assertEquals(8.0, Sleep.parse("kb 8-at aludtam"), 0.01);

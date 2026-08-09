@@ -287,6 +287,16 @@ public class StrengthParseTest {
         assertEquals("Fekvenyomás 3×10/10/10@0", sum("fekvenyomás 3x10, majd 20 perc futás"));
     }
 
+    @Test public void lyingDownIsNotBenchPressing() {
+        // A „fekve" szótő a fordított szórendet fogja, de az alvás-mondat is
+        // tartalmazza: a „lefekvés 23:15, ébredés 6:45" huszonhárom
+        // ismétléses fekvenyomás lett a naplóban.
+        assertEquals(0, StrengthParse.parse("lefekvés 23:15, ébredés 6:45").size());
+        assertEquals(0, StrengthParse.parse("lefeküdtem 23-kor").size());
+        // A fordított szórendű valódi sorozat változatlan.
+        assertEquals("Fekvenyomás 1×5@100", sum("nyomtam 100 kilót fekve ötöt"));
+    }
+
     @Test public void aMeasurementUnitIsNotAWeight() {
         // A „ládaugrás 4x8 60 cm" hatvanas száma a doboz MAGASSÁGA – eddig
         // hatvan kilós ládaugrás került a rekordba.
