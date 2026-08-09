@@ -252,4 +252,21 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("a célom napi 2000 kcal"));
         assertEquals(650, Kcal.stated("vacsora 650 kcal"));
     }
+
+    /**
+     * Az óra-export kalóriája elégetett, nem megevett.
+     *
+     * A „polar: 55 perc, 610 kcal, átlag hr 138" hatszáztízét eddig a napi
+     * BEVITELHEZ adtuk – pont az ellenkező előjellel, mint ahogy a mondat
+     * érti, és a mondat ráadásul étkezésként is kötött ki. Az evés-ige
+     * erősebb: az „edzés után ettem 600 kcal-t" valódi bevitel.
+     */
+    @Test public void theWatchExportBurnsCaloriesItDoesNotEatThem() {
+        assertEquals(-1, Kcal.stated("polar: 55 perc, 610 kcal, átlag hr 138"));
+        assertEquals(610, Kcal.burned("polar: 55 perc, 610 kcal, átlag hr 138"));
+        assertEquals(-1, Kcal.stated("ma reggel 6 km futás, 32 perc, "
+                + "átlagpulzus 152, 420 kcal"));
+        // Az evés-ige felülír.
+        assertEquals(600, Kcal.stated("edzés után ettem 600 kcal-t"));
+    }
 }

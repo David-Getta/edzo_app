@@ -109,7 +109,25 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
+        // Az ÓRA-EXPORT kalóriája ELÉGETETT, nem megevett: a „polar: 55 perc,
+        // 610 kcal, átlag hr 138" hatszáztízét eddig a napi BEVITELHEZ adtuk –
+        // pont az ellenkező előjellel, mint ahogy a mondat érti. Ha viszont
+        // evés-ige is van a mondatban, az erősebb: az „edzés után ettem
+        // 600 kcal-t" valódi bevitel.
+        if (fromWatch(q)) return -1;
         return amount(q, NOT_EATEN_P, EATEN_P);
+    }
+
+    /** Óra- vagy alkalmazás-export-e a mondat, evés-ige nélkül? */
+    private static boolean fromWatch(String q) {
+        if (q == null) return false;
+        String s = Hu.digits(Foods.norm(q));
+        for (Pattern w : EATEN_P) if (w.matcher(s).find()) return false;
+        for (String w : new String[]{"polar", "garmin", "suunto", "fitbit",
+                "strava", "apple watch", "coros", "aktiv kalori", "atlag hr",
+                "atlagpulzus", "atlag pulzus", "elegetett"})
+            if (s.contains(w)) return true;
+        return false;
     }
 
     /**
