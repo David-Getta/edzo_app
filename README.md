@@ -210,7 +210,8 @@ sem talált, tehát ha talál, az tényleg ott van.
   nézetni – a hallgatás rosszabb válasz lenne, mint a nemleges
 - **A cél-mondat is**: „boka stabilitás", „váll mobilizálás", „derék rehab" –
   nem kell megvárni, hogy fájjon. És ahogy az ember tényleg kéri: „váll
-  gyakorlatok", „mit csináljak a vállamra", „nyak lazítás", „boka erősítés"
+  gyakorlatok", „mit csináljak a vállamra", „nyak lazítás", „boka erősítés",
+  „erősebb bokát szeretnék", „stabilabb térdet akarok", „jobb tartás"
 - **Vezetett mód**: a telefon időzíti és bemondja a gyakorlatokat, a
   kétoldalasokat bal/jobb bontásban, a kör-szám a 10–20 perces kerethez áll be
 - **Heti fókusz**: kitűzhetsz egy testtájat, az app heti 3 alkalmat számol
@@ -477,7 +478,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~873 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~874 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.

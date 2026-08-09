@@ -601,4 +601,27 @@ public class RehabTest {
             assertTrue("nincs próba-mondat ehhez a testtájhoz: " + ar.id, covered);
         }
     }
+
+    /**
+     * A cél melléknévvel, a panasz a reggeli első lépéssel.
+     *
+     * Az „erősebb bokát szeretnék" ugyanaz a kérés, mint a „boka
+     * stabilitás", csak melléknévvel – és eddig egyikre sem jött válasz. A
+     * „jobb tartás" a háti szakasz ügye. A reggeli ELSŐ LÉPÉS fájdalma pedig
+     * a talpi ín klasszikus jele, nem az Achillesé: a puszta sarok-szó
+     * viszont az Achilleshez visz, ezért a pontosabb megfogalmazás nyer.
+     */
+    @Test public void adjectiveGoalsAndTheFirstStepOfTheMorning() {
+        assertEquals("boka", Rehab.forGoal("erősebb bokát szeretnék").id);
+        assertEquals("terd", Rehab.forGoal("stabilabb térdet akarok").id);
+        assertEquals("csipo", Rehab.forGoal("mozgékonyabb csípő kellene").id);
+        assertEquals("hati", Rehab.forGoal("jobb tartás").id);
+        assertEquals("talp", Rehab.forComplaint("reggel az első lépés fáj a sarkamban").id);
+        assertEquals("talp", Rehab.forComplaint("első lépésnél fáj a talpam").id);
+        // A sarok magában továbbra is az Achillesé.
+        assertEquals("achilles", Rehab.forComplaint("fáj a sarkam").id);
+        // A tartásos GYAKORLAT viszont az erősítő naplóé.
+        assertEquals(Sentence.Kind.STRENGTH, Sentence.of("plank tartás 3x60",
+                java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
+    }
 }

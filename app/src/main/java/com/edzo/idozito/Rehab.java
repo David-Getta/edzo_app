@@ -492,6 +492,13 @@ public final class Rehab {
         boolean want = false;
         for (String w : new String[]{"stabilit", "stabiliz", "mobiliz", "mobilit",
                 "rehab", "gyogytorna", "megeloz", "prevenc",
+                // A cél melléknévvel is kimondható: „erősebb bokát szeretnék",
+                // „stabilabb térdet akarok", „mozgékonyabb csípő kellene".
+                "erosebb", "stabilabb", "mozgekonyabb", "rugalmasabb", "egyenesebb",
+                // A TARTÁS magában is cél: a „jobb tartás" és a „helyes
+                // tartás" a háti szakasz ügye. (A „plank tartás 3x60" az
+                // erősítő naplóé – az a felismerő hamarabb szólal meg.)
+                "tartas",
                 // Ahogy az ember tényleg kéri: „váll gyakorlatok", „mit
                 // csináljak a vállammal", „nyak lazítás", „váll bemelegítés".
                 // A NYÚJTÁS szándékosan nincs itt: az önálló, naplózható
@@ -520,6 +527,13 @@ public final class Rehab {
 
     /** A normalizált mondatban megnevezett testtáj sora, vagy null. */
     private static Area areaOf(String s) {
+        // A reggeli ELSŐ LÉPÉS fájdalma a talpi ín klasszikus jele, nem az
+        // Achillesé – a sarok szó magában viszont az Achilleshez visz. A
+        // pontosabb megfogalmazás nyer.
+        if ((s.contains("elso lepes") || s.contains("elso lepesnel")
+                || s.contains("elso lepeskor"))
+                && (s.contains("sarok") || s.contains("sarkam") || s.contains("talp")))
+            return byId("talp");
         // A „csípős" étel és a „vállal" ige nem testtáj – kitakarjuk, mielőtt
         // a rövid tövek („csipo", „vall") beleakadnának. A „fáj a hasam a
         // csípős kajától" panasz, de nem csípő-ügy.
@@ -538,6 +552,9 @@ public final class Rehab {
                 // marad a deréknál: aki csak annyit mond, hogy fáj a háta,
                 // az magyarul legtöbbször az ágyéki szakaszra gondol.
                 {"hati", "hati gerinc", "hati csigolya", "felso hat", "felso hatam",
+                        // A TARTÁS a háti szakasz ügye: „jobb tartás",
+                        // „helyes tartás", „tartásjavítás".
+                        "jobb tartas", "helyes tartas", "tartasjavit", "rossz tartas",
                         "lapocka", "hat kozepe", "hatam kozepe", "mellkasi gerinc",
                         "gorbe hat", "gorbult hat", "gorbe a hat"},
                 {"derek", "derekam", "dereka", "derek", "hatam", "hatfaj", "also hat",
