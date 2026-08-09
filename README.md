@@ -165,6 +165,12 @@ Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 k
 „ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul
 eltűnt.
 
+A hosszú mondat **minden** naplója előkerül: a „ma reggel 6-kor keltem,
+**79,2 kg** volt a mérleg, futottam 8 km-t, utána **zabkása**" négy adatot
+mond ki, és az edzés mentése mellett mindegyik célképernyő felajánlja magát
+(a Profil a mérést, az alvást és a pulzust egyszerre menti, ezért azok egy
+gombra kerülnek).
+
 Szándékosan szűk a lista: csak azok a párok, amelyek nem eshetnek egymás
 rovására. Huszonkét valódi edzés-mondaton az étel-felismerő egyetlen ételt
 sem talált, tehát ha talál, az tényleg ott van.

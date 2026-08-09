@@ -789,15 +789,25 @@ public class HistoryActivity extends Activity {
         // A mondat MÁSIK fele: a „futottam 30 percet és ettem egy banánt"
         // banánja eddig csendben elveszett – az edzés mentése után nyoma sem
         // maradt, és a felhasználó nem is tudta meg, hogy volt ott étel.
-        final Sentence.Kind other = Sentence.also(text, Foods.all(this),
+        final java.util.List<Sentence.Kind> more = Sentence.extras(text, Foods.all(this),
                 System.currentTimeMillis());
         Sheet sh = new Sheet(this, p.total() + " edzés mentése", sb.toString())
                 .addPrimary("Mentés", () -> saveBulk(p, text));
-        if (other == Sentence.Kind.MEAL)
-            sh.addNeutral("Az étel is – mentés + Étrend", () -> {
+        // Több adat is lehet a mondatban: az étel az Étrendé, a mérés, az
+        // alvás és a pulzus a Profilé. A Profil mindhármat egyszerre menti,
+        // ezért a CÉLKÉPERNYŐ szerint vonjuk össze őket – így legfeljebb két
+        // gomb kerül a mentés mellé, nem öt.
+        java.util.List<String> seen = new java.util.ArrayList<>();
+        for (final Sentence.Kind other : more) {
+            String dest = Sentence.where(other);
+            if (seen.contains(dest)) continue;
+            seen.add(dest);
+            sh.addNeutral((other == Sentence.Kind.MEAL ? "Az étel is" : "Ez is")
+                    + " – mentés + " + dest, () -> {
                 saveBulk(p, text);
                 Ux.openFor(this, other, text);
             });
+        }
         sh.addNeutral("Átírom", () -> bulkSheet(text))
                 .addCancel()
                 .show();

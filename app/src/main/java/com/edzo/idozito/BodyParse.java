@@ -124,6 +124,19 @@ public final class BodyParse {
     };
 
     /**
+     * Az IDŐ „alatt"-ja nem összehasonlítás.
+     *
+     * A „70 kg alatt vagyok" tényleg nem mérés – de a „79,2 kg volt a mérleg,
+     * futottam 8 km-t 45 perc alatt" mondatban az „alatt" a negyvenöt PERCÉ,
+     * és eddig ettől az egész mérés kiesett. Ugyanígy tűnt el a
+     * „haskörfogatom 92 cm-ről 88-ra ment le fél év alatt" is.
+     */
+    private static String maskTimeUnder(String s) {
+        return s.replaceAll("(?<![a-z])(perc|ora|orat|mp|masodperc|het|honap|ev|nap)"
+                + "\\s+alatt(?![a-z])", "$1 #");
+    }
+
+    /**
      * A -ról/-re pár MÁSODIK száma a mai érték.
      *
      * A „haskörfogatom 92 cm-ről 88-ra ment le" és a „testzsír 22-ről 18
@@ -144,7 +157,7 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
         // mérleget sokan hangosan olvassák fel, és úgy is írják le.
-        String s = keepTheNewValue(dropOtherLogs(Hu.digits(Foods.norm(q))));
+        String s = maskTimeUnder(keepTheNewValue(dropOtherLogs(Hu.digits(Foods.norm(q)))));
         if (s.isEmpty()) return new Body(0, 0);
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.

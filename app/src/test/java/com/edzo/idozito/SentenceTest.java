@@ -318,4 +318,27 @@ public class SentenceTest {
                 Sentence.of("120 g fehérjét vittem be ma", all, now));
         assertEquals(Sentence.Kind.MEAL, Sentence.of("fehérje 95 g", all, now));
     }
+
+    /**
+     * A hosszú mondat MINDEN naplója előkerül.
+     *
+     * A „ma reggel 6-kor keltem, 79,2 kg volt a mérleg, futottam 8 km-t, utána
+     * zabkása" négy adatot mond ki. Az `also` csak az elsőt adta vissza, a
+     * többi nyomtalanul eltűnt – pedig a képernyő fel tudja ajánlani őket.
+     */
+    @Test public void everyLogOfALongSentenceIsFound() {
+        long now = System.currentTimeMillis();
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String q = "ma reggel 6-kor keltem, 79,2 kg volt a mérleg, "
+                + "futottam 8 km-t 45 perc alatt, utána zabkása";
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.of(q, all, now));
+        java.util.List<Sentence.Kind> more = Sentence.extras(q, all, now);
+        assertTrue(more.contains(Sentence.Kind.MEAL));
+        assertTrue(more.contains(Sentence.Kind.BODY));
+        // Az `also` továbbra is a legfontosabbat adja: a lista első eleme.
+        assertEquals(more.get(0), Sentence.also(q, all, now));
+        // Ahol nincs második napló, ott üres a lista.
+        assertTrue(Sentence.extras("30 perc futás", all, now).isEmpty());
+        assertTrue(Sentence.extras(null, all, now).isEmpty());
+    }
 }

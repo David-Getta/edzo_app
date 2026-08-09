@@ -129,6 +129,21 @@ public final class Sentence {
      * ott van.
      */
     public static Kind also(String q, List<Foods.Food> foods, long now) {
+        List<Kind> all = extras(q, foods, now);
+        return all.isEmpty() ? Kind.NONE : all.get(0);
+    }
+
+    /**
+     * A mondat ÖSSZES további naplója, fontossági sorrendben.
+     *
+     * Az {@link #also} csak az elsőt adja vissza, és egy hosszabb mondat
+     * ennél többről szól: a „ma reggel 6-kor keltem, 79,2 kg volt a mérleg,
+     * futottam 8 km-t, utána zabkása" négy adatot mond ki, és eddig kettő
+     * közülük nyomtalanul eltűnt. A képernyő ebből annyit ajánl fel, amennyi
+     * elfér – de legalább tudja, mi van még a mondatban.
+     */
+    public static List<Kind> extras(String q, List<Foods.Food> foods, long now) {
+        List<Kind> out = new java.util.ArrayList<>();
         Kind k = of(q, foods, now);
         switch (k) {
             case WORKOUT: case STRENGTH: case INTERVAL: case ROUTINE:
@@ -140,42 +155,49 @@ public final class Sentence {
                 // lépésszám) számít: a puszta „edzés" szóból becsült hatvan
                 // perc kétszer kerülne be, egyszer sorozatként, egyszer
                 // mozgásként.
-                if (k == Kind.STRENGTH && hasDistance(q, now)) return Kind.WORKOUT;
-                if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
+                if (k == Kind.STRENGTH && hasDistance(q, now)) out.add(Kind.WORKOUT);
+                if (foods != null && !Foods.parse(foods, q).isEmpty()) out.add(Kind.MEAL);
                 // Az edzés mellé a reggeli MÉRÉS is odaférhet: a „10 km futás,
                 // 78,5 kg a mérlegen" és az „aludtam 7 órát és futottam 10
                 // km-t" második fele eddig nyomtalanul eltűnt. A sorrend a
                 // biztosból a bizonytalan felé megy: a mérleg száma a
                 // legegyértelműbb, a pulzus a legrövidebb.
-                if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
-                if (Sleep.parse(q) > 0) return Kind.SLEEP;
-                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+                if (!BodyParse.parse(q).isEmpty()) out.add(Kind.BODY);
+                if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
+                if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
+                break;
             // A reggeli három adat egy mondatban: „ma reggel 78,4 kg, aludtam
             // 7 órát, nyugalmi pulzus 52". Mindhárom a Profil naplója, és
             // eddig csak egy került be közülük.
             case SLEEP:
-                if (Pulse.parse(q) > 0) return Kind.PULSE;
-                return BodyParse.parse(q).isEmpty() ? Kind.NONE : Kind.BODY;
+                if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
+                if (!BodyParse.parse(q).isEmpty()) out.add(Kind.BODY);
+                break;
             case PULSE:
-                if (Sleep.parse(q) > 0) return Kind.SLEEP;
-                return BodyParse.parse(q).isEmpty() ? Kind.NONE : Kind.BODY;
+                if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
+                if (!BodyParse.parse(q).isEmpty()) out.add(Kind.BODY);
+                break;
             case BODY:
-                if (Sleep.parse(q) > 0) return Kind.SLEEP;
-                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+                if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
+                if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
+                break;
             // Az étkezés mellé is odaférhet a mérés: az „ettem egy pizzát és
             // aludtam 9 órát" kilenc órája eddig sehol nem jelent meg.
             case MEAL:
-                if (Sleep.parse(q) > 0) return Kind.SLEEP;
-                if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
-                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+                if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
+                if (!BodyParse.parse(q).isEmpty()) out.add(Kind.BODY);
+                if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
+                break;
             // A panasz mellett is ott lehet a napi mérés.
             case REHAB:
-                if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
-                if (Sleep.parse(q) > 0) return Kind.SLEEP;
-                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+                if (!BodyParse.parse(q).isEmpty()) out.add(Kind.BODY);
+                if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
+                if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
+                break;
             default:
-                return Kind.NONE;
+                break;
         }
+        return out;
     }
 
     /**

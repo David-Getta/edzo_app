@@ -449,4 +449,21 @@ public class BodyParseTest {
         assertEquals(78, BodyParse.parse("34 éves vagyok és 78 kg").kg, 0.01);
         assertEquals(78, BodyParse.parse("78 kg vagyok").kg, 0.01);
     }
+
+    /**
+     * Az idő „alatt"-ja nem összehasonlítás.
+     *
+     * A „70 kg alatt vagyok" tényleg nem mérés – de a „79,2 kg volt a mérleg,
+     * futottam 8 km-t 45 perc alatt" mondatban az „alatt" a negyvenöt PERCÉ,
+     * és eddig ettől az egész reggeli mérés kiesett.
+     */
+    @Test public void theUnderOfADurationIsNotAComparison() {
+        assertEquals(79.2, BodyParse.parse(
+                "79,2 kg volt a mérleg, futottam 8 km-t 45 perc alatt").kg, 0.01);
+        assertEquals(88, BodyParse.parse(
+                "a haskörfogatom 92 cm-ről 88-ra ment le fél év alatt").cm[0], 0.01);
+        // A valódi összehasonlítás továbbra sem mérés.
+        assertEquals(0, BodyParse.parse("70 kg alatt vagyok").kg, 0.01);
+        assertEquals(0, BodyParse.parse("80 kg alatt szeretnék lenni").kg, 0.01);
+    }
 }
