@@ -2855,7 +2855,10 @@ public final class Activities {
                 "sajog", "nyilall", "nyilallt", "zsibbad", "elzsibbadt"})
             if (t.contains(" " + w + " ")) return true;
         for (String w : new String[]{"fajdalm", "megfajdul", "gyulladt", "gyulladas",
-                "belenyilall", "szakadas", "elpattant", "megpattant"})
+                "belenyilall", "szakadas", "elpattant", "megpattant",
+                // Az instabilitás és a merevség is panasz: a „gyakran húzódik
+                // a combom sprintnél" eddig negyvenöt perces futás lett.
+                "huzodik", "kifordul", "kibicsaklik", "megbicsaklik", "instabil"})
             if (cl.contains(w)) return true;
         return false;
     }

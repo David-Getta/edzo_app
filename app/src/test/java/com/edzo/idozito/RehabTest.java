@@ -212,6 +212,11 @@ public class RehabTest {
         // futók leggyakoribb baja eddig válasz nélkül maradt.
         assertEquals("sipcsont", Rehab.forComplaint("lábszárfájás futás után").id);
         assertEquals("sipcsont", Rehab.forComplaint("fáj a lábszáram futás közben").id);
+        // Az INSTABILITÁS és a RÖVIDÜLÉS is panasz, fájdalom-szó nélkül –
+        // pedig pont ezekre való a megelőző sor.
+        assertEquals("boka", Rehab.forComplaint("a bokám gyakran kifordul futás közben").id);
+        assertEquals("terd", Rehab.forComplaint("instabil a térdem oldalra").id);
+        assertEquals("comb", Rehab.forComplaint("rövid a combhajlítóm").id);
         // A „háti" jelzőként is egyértelmű – így kéri, aki egész nap ül.
         assertEquals("hati", Rehab.forGoal("kéne valami háti gyakorlat").id);
         assertEquals("hati", Rehab.forGoal("háti mobilizálás kellene").id);

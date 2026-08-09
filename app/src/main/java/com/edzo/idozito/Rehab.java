@@ -378,6 +378,13 @@ public final class Rehab {
                 // A „pattant" a szakadás magyar szava: az „elpattant valami a
                 // vádlimban" mondatra eddig semmi nem jött.
                 "elpattant", "megpattant", "elszakadt", "beszakadt",
+                // Az INSTABILITÁS is panasz, fájdalom-szó nélkül: a „bokám
+                // gyakran kifordul futás közben" és az „instabil a térdem"
+                // eddig válasz nélkül maradt – pedig pont ezekre való a sor.
+                "kifordul", "kibicsaklik", "megbicsaklik", "bebicsaklik",
+                "kicsuszik", "instabil", "bizonytalan a", "megrogyik",
+                // A RÖVIDÜLÉS ugyanígy: „rövid a combhajlítóm", „feszes a vádlim".
+                "rovid a", "roviduelt", "roviduelt", "beszukult",
                 "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
                 "meghuztam", "becsipodott", "belovellt", "lumbago", "merev",
                 // A diagnózis NEVE maga a panasz: aki azt írja, „golfkönyök",
