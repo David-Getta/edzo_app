@@ -195,6 +195,20 @@ public class FoodsParseTest {
         assertEquals(2, hits("csirkemell rizzsel, 200 g").size());
     }
 
+    /**
+     * A tápérték-sor „protein"-je nem turmix.
+     *
+     * A „reggeli 400 kcal 25 g protein" mellé eddig háromszáz gramm
+     * proteinturmix került a naplóba – a reggeli kalóriájának duplája.
+     */
+    @Test public void theMacroWordIsNotADrink() {
+        assertTrue(hits("reggeli 400 kcal 25 g protein").isEmpty());
+        assertTrue(hits("ebéd 750 kcal, 45 g protein").isEmpty());
+        // A valódi étel viszont marad.
+        assertEquals("Protein turmix", hits("150 g protein turmix").get(0).food.name);
+        assertEquals("Proteinszelet", hits("150 g proteinszelet").get(0).food.name);
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci

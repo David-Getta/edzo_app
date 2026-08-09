@@ -139,6 +139,27 @@ public class KcalTest {
     }
 
     /**
+     * A megevett kalória nem elégetett kalória.
+     *
+     * Az elégetett számot csak edzés-mondatban kérdezzük, de a vegyes mondat
+     * („futottam 45 percet, ebéd 750 kcal") számát az evés IGÉJE dönti el.
+     */
+    @Test public void whatWasEatenWasNotBurned() {
+        assertEquals(-1, Kcal.burned("ma 2200 kcal-t ettem"));
+        assertEquals(-1, Kcal.burned("futottam 45 percet, ebéd 750 kcal"));
+        assertEquals(-1, Kcal.burned("megittam egy 250 kcal-s turmixot"));
+        // A valódi égetés marad – a „reggeli" jelzőként napszak, nem étkezés.
+        assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
+        assertEquals(520, Kcal.burned("reggeli futás 45 perc 520 kcal"));
+    }
+
+    /** A cél nyelve nem a bevitelé: a deficit szám nem elfogyasztott kalória. */
+    @Test public void aDeficitIsNotAMeal() {
+        assertEquals(-1, Kcal.stated("500 kalóriás deficitben vagyok"));
+        assertEquals(-1, Kcal.stated("ma 300 kcal többletben vagyok"));
+    }
+
+    /**
      * A hétköznapi étel-mondatok NEM lesznek kalóriás bejegyzések.
      *
      * A kettő ugyanabban a mezőben találkozik: ha a „150 g csirkemell rizzsel"

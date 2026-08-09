@@ -718,7 +718,10 @@ public final class Foods {
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
         // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.
-        new Food("Víz / ásványvíz", 0, 0, 250, "viz", "asvanyviz", "szoda"),
+        // A „folyadék" a napi bevitel hétköznapi szava: a „2,5 liter folyadék
+        // ment le ma" eddig sehol nem jelent meg.
+        new Food("Víz / ásványvíz", 0, 0, 250, "viz", "asvanyviz", "szoda",
+                "folyadek", "folyadekot", "folyadekbevitel"),
         // A rizling BOR, nem rizs – a hosszabb tő menti meg a „rizs"-től.
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor",
                 "rizling", "furmint", "kekfrankos", "cabernet", "chardonnay",
@@ -2082,6 +2085,25 @@ public final class Foods {
     }
 
     /**
+     * A TÁPÉRTÉK-sor „protein"-je nem turmix.
+     *
+     * A „reggeli 400 kcal 25 g protein" mondatban a protein a fehérje neve,
+     * nem egy megivott shaké – eddig háromszáz gramm proteinturmix került a
+     * naplóba mellé, vagyis a reggeli kalóriájának a duplája. A grammal
+     * kimondott alak egyértelmű: ott a szó a tápértéket nevezi meg.
+     */
+    private static String maskMacroWords(String query) {
+        String s = norm(query);
+        if (!s.contains("protein")) return query;
+        // A „protein" csak MAGÁBAN tápérték: a „150 g protein turmix" és a
+        // „150 g proteinszelet" valódi étel, azokhoz nem nyúlunk.
+        String out = s.replaceAll("(\\d{1,3})\\s?(g|gr|gramm)\\s?protein(?![a-z])"
+                + "(?!\\s?(?:turmix|shake|sejk|por|italpor|pudding|joghurt|szelet))",
+                "$1 $2 #");
+        return out.equals(s) ? query : out;
+    }
+
+    /**
      * A mennyiség a mondat MÁSIK felében: „ebédre töltött káposzta volt,
      * két adag".
      *
@@ -2114,6 +2136,7 @@ public final class Foods {
         // és mennyiséget, mint egy bejegyzés – csak épp egyikből sem lett
         // falat. Eddig mindkettő bement, háromszáz, illetve ezer kalóriával.
         if (looksUneaten(query)) return new ArrayList<>();
+        query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);
         List<Match> ms = matches(list, query);
         List<Hit> out = new ArrayList<>();

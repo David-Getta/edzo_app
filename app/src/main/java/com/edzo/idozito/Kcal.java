@@ -52,6 +52,27 @@ public final class Kcal {
             "cel", "celom", "celt", "celja", "celig", "keret", "keretbe", "keretem",
             "limit", "maradt", "marad", "fer", "ferek", "hianyzik", "hianyzo",
             "szeretnek", "akarok", "legyen", "napi",
+            // A DEFICIT és a többlet a cél nyelve, nem a bevitelé: az „500
+            // kalóriás deficitben vagyok" ötszáz elfogyasztott kalóriaként
+            // került a naplóba – a napi keret negyedeként.
+            "deficit", "deficitben", "deficittel", "tobbletben", "szufficit",
+    };
+
+    /**
+     * Csak az ELÉGETETT kalóriánál tiltó szavak.
+     *
+     * Az elégetett kalóriát csak akkor kérdezzük, ha a mondatban van edzés –
+     * de a vegyes mondatban („futottam 45 percet, ebéd 750 kcal") a szám az
+     * evésé. Az evés IGÉJE dönt; a napszak-főnév nem, mert a „reggeli futás
+     * 45 perc 520 kcal" ugyanúgy reggeli.
+     */
+    private static final String[] EATEN = {
+            "ettem", "megettem", "eszem", "eszunk", "bevittem", "bevitel",
+            "elfogyasztottam", "megittam", "ittam",
+            // Az ebéd és a vacsora főnévként is étkezés – a „reggeli"
+            // szándékosan kimarad, mert jelzőként a napszakot mondja
+            // („reggeli futás 45 perc 520 kcal").
+            "ebed", "ebedre", "vacsora", "vacsorara", "uzsonna", "tizorai",
     };
 
     /**
@@ -83,7 +104,7 @@ public final class Kcal {
      * kcal", annak a számát nem illik a saját becslésünkre cserélni.
      */
     public static int burned(String q) {
-        return amount(q, NONE_P);
+        return amount(q, EATEN_P);
     }
 
     /**
@@ -93,7 +114,7 @@ public final class Kcal {
      * mintát fordítani karakterenként fölösleges munka a telefonon.
      */
     private static final Pattern[] GOAL_P = words(GOAL), NOT_EATEN_P = words(NOT_EATEN),
-            NONE_P = new Pattern[0];
+            EATEN_P = words(EATEN);
 
     private static Pattern[] words(String[] ws) {
         Pattern[] out = new Pattern[ws.length];
@@ -140,7 +161,10 @@ public final class Kcal {
      * ÉTEL neve, nem a tápérték-táblázat sora.
      */
     private static final Pattern PROT_AFTER = Pattern.compile(
-            "(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?\\s*(?<![a-z])(feherje|feherjet|protein|proteint)(?![a-z])");
+            "(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?\\s*(?<![a-z])(feherje|feherjet|protein|proteint)"
+            // A „150 g protein turmix" száz-ötven grammja a TURMIXÉ, nem a
+            // fehérjéé: az étel neve folytatódik, tehát nem tápérték-sor.
+            + "(?![a-z])(?!\\s?(?:turmix|shake|sejk|por|italpor|szelet|pudding))");
     private static final Pattern PROT_BEFORE = Pattern.compile(
             "(?<![a-z])(?:feherje|protein)(?![a-z])\\s*:?\\s*(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?(?![a-z])");
 
