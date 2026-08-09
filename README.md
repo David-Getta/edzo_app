@@ -59,6 +59,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   idő viszont napló, gyakorisággal együtt is: „hetente kétszer futottam"
 - a **felszólítás** terv: „csináljunk egy tabatát", „menjünk futni" – az
   időzítő-terv elkészül, a bejegyzés nem
+- a **cél** és a **nevezés** sem edzés: „a heti célom 4 edzés", „célom a
+  100 kg-os fekvenyomás", „beneveztem egy félmaratonra"
+- a **feltételes mondat** múlt idejű ige nélkül terv: „ha esik, futópadon
+  futok". A múlt idő megvédi a valódi bejegyzést: „ha jól emlékszem, 5 km-t
+  futottam tegnap"
 - a **kimondott akarat** sem edzés: „erősíteni akarom a bokám", „el akarok
   kezdeni futni", „remélem tudok futni 30 percet", „készülök elmenni a terembe"
 - a **bevásárlólista** és a **kifogyott étel** sem vacsora: „bevásárlólista:
