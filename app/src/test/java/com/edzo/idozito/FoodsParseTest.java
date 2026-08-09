@@ -369,4 +369,23 @@ public class FoodsParseTest {
         // A javítás nélküli mondat változatlan: három kávé az három.
         assertEquals(600, Foods.parse(all, "ittam 3 kávét").get(0).grams, 1);
     }
+
+    /**
+     * A hangzóhiányos tő is ragozás: „epret", „retket", „cukrot".
+     *
+     * A magyar kidobja a tő utolsó magánhangzóját ragozáskor, és a szótő
+     * ettől nem illeszkedik: az „ettem epret" és az „ettem 5 szaloncukrot"
+     * üres választ kapott – pedig ez a szó rendes tárgyesete.
+     */
+    @Test public void theElidedStemIsStillTheSameFood() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals("Eper", Foods.parse(all, "ettem epret").get(0).food.name);
+        assertEquals("Retek", Foods.parse(all, "ettem retket").get(0).food.name);
+        assertEquals("Cukor", Foods.parse(all, "tettem bele cukrot").get(0).food.name);
+        assertEquals("Szaloncukor",
+                Foods.parse(all, "ettem 5 szaloncukrot").get(0).food.name);
+        // Az alapalak és a többi összetétel változatlan.
+        assertEquals("Eper", Foods.parse(all, "eper 200 g").get(0).food.name);
+        assertEquals("Szörp (hígítva)", Foods.parse(all, "eperszörp").get(0).food.name);
+    }
 }

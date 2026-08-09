@@ -265,7 +265,11 @@ public final class Foods {
         // (a „tökmag" és a „tökéletes" is tartalmazza).
         new Food("Sütőtök", 40, 1, 200, "sutotok", "suto tok", "tokfozelek nyers"),
         new Food("Szőlő", 70, 0.7, 100, "szolo"),
-        new Food("Eper", 33, 0.7, 100, "eper"),
+        new Food("Eper", 33, 0.7, 100, "eper",
+                // Hangzóhiányos tő: az „epret" a magyar ragozás rendes
+                // alakja, a szótő viszont nem illeszkedik rá. Az „ettem
+                // epret" eddig üres választ kapott.
+                "epret", "eprek", "eperbol", "eprem"),
         new Food("Avokádó", 160, 2, 70, "avokado"),
         new Food("Dió", 650, 15, 30, "dio", "makadamia", "makadamdio"),
         new Food("Mandula", 580, 21, 30, "mandula"),
@@ -304,11 +308,11 @@ public final class Foods {
                 "sos rud", "sospalcika", "sos palcika"),
         new Food("Pisztácia", 580, 20, 30, "pisztaci"),
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
-        new Food("Szaloncukor", 450, 3, 15, "szaloncukor"),
+        new Food("Szaloncukor", 450, 3, 15, "szaloncukor", "szaloncukr"),
         new Food("Nutella", 540, 6, 30, "nutella", "mogyorokrem"),
         new Food("Lekvár", 250, 0.4, 25, "lekvar"),
         new Food("Méz", 320, 0.3, 20, "mez"),
-        new Food("Cukor", 400, 0, 10, "cukor"),
+        new Food("Cukor", 400, 0, 10, "cukor", "cukrot", "cukrok", "cukrom"),
         new Food("Vattacukor", 400, 0, 30, "vattacukor"),
         new Food("Sült gesztenye", 210, 2.4, 100, "sult gesztenye"),
         // A bolti jeges tea cukros – nem a cukrozatlan tea 3 kalóriája.
@@ -599,7 +603,8 @@ public final class Foods {
                 "csalamade", "vegyes savanyusag"),
         new Food("Spárga", 20, 2.2, 150, "sparga"),
         new Food("Karalábé", 27, 1.7, 150, "karalabe"),
-        new Food("Retek", 16, 0.7, 50, "retek", "jegcsapretek"),
+        new Food("Retek", 16, 0.7, 50, "retek", "jegcsapretek",
+                "retket", "retkek", "retkem"),
         new Food("Zeller", 18, 0.7, 100, "zeller"),
         new Food("Zöldbab", 35, 1.8, 150, "zoldbab"),
         new Food("Spenót / paraj", 25, 2.9, 200, "spenot", "paraj"),
