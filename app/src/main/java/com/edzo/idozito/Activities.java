@@ -123,6 +123,12 @@ public final class Activities {
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    // A SAJÁT TESTSÚLYOS edzés a legolcsóbb edzésforma, és
+                    // eddig nem volt szótő: az „otthon 30 perc saját testsúly"
+                    // válasz nélkül maradt. A puszta „testsúly" nem lehet tő –
+                    // az a mérleg szava.
+                    "sajat testsul", "sajattestsul", "testsulyos edzes",
+                    "testsulyos gyakorlat", "sajat testtomeg",
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
@@ -2275,7 +2281,16 @@ public final class Activities {
                 "majdnem", "kis hijan", "kishijan",
                 // Az „éppen csak benéztem a terembe" nem edzés: a terem szava
                 // hatvanperces bejegyzést csinált belőle.
-                "csak beneztem", "csak benezt", "eppen csak"}) {
+                "csak beneztem", "csak benezt", "eppen csak",
+                // A MÚLT IDEJŰ akarat is meghiúsult szándék: az „akartam
+                // futni, de esett" negyvenöt perces futás lett. Tagmondatra
+                // szűkítve, hogy a mondat másik fele megmaradjon: az
+                // „akartam még futni, de csak 3 km-t bírtam" három kilométere
+                // valódi.
+                "akartam", "akartunk", "szerettem volna", "szerettunk volna",
+                // Az ELFELEJTETT edzés meg sem történt, a ZÁRVA tartó terem
+                // pedig épp az oka annak, hogy nem lett belőle semmi.
+                "elfelejtettem", "elfelejtettuk", "zarva", "be volt zar"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));

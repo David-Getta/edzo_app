@@ -2550,4 +2550,33 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("sprint edzés: 10x100 m, köztük "
                 + "20 perc séta").plans.size());
     }
+
+    /**
+     * A meghiúsult szándék és a zárva tartó terem nem edzés.
+     *
+     * Az „akartam futni, de esett" negyvenöt perces futás lett, az
+     * „elfelejtettem elmenni edzeni" és az „edzőterem zárva volt" pedig
+     * negyvenöt, illetve hatvan perces bejegyzés – mindhárom olyan mondatból,
+     * ami épp azt mondja el, hogy nem lett belőle semmi. Tagmondatra
+     * szűkítve, hogy a mondat másik fele megmaradjon.
+     */
+    @Test public void theFailedIntentionIsNotAWorkout() {
+        assertTrue(Activities.parse("akartam futni, de esett").plans.isEmpty());
+        assertTrue(Activities.parse("elfelejtettem elmenni edzeni").plans.isEmpty());
+        assertTrue(Activities.parse("az edzőterem zárva volt").plans.isEmpty());
+        // A mondat másik fele megmarad.
+        assertEquals(3.0, Activities.parse("akartam még futni, de csak 3 km-t "
+                + "bírtam").plans.get(0).km, 0.01);
+        assertEquals(30, Activities.parse("az edzőterem zárva volt, ezért "
+                + "otthon 30 perc saját testsúly").plans.get(0).minutes);
+    }
+
+    /** A saját testsúlyos edzés is edzés – a puszta „testsúly" viszont mérleg. */
+    @Test public void bodyweightTrainingIsAWorkout() {
+        assertEquals("kondi", Activities.parse("otthon 30 perc saját testsúly")
+                .plans.get(0).kind.id);
+        assertEquals(40, Activities.parse("saját testsúllyal edzettem "
+                + "40 percet").plans.get(0).minutes);
+        assertTrue(Activities.parse("reggel 78,4 kg a testsúlyom").plans.isEmpty());
+    }
 }
