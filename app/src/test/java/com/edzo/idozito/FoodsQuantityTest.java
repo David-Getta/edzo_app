@@ -428,4 +428,22 @@ public class FoodsQuantityTest {
         assertEquals(0, grams("negyedévente pizza"), 0.01);
         assertEquals(100, grams("harmadik szelet pizza"), 0.01);
     }
+
+    /**
+     * A kanál csak a kencéknél egy adag.
+     *
+     * A méz, a mogyoróvaj és a tejföl adagja eleve kanálnyi – a nagyobb adagú
+     * ételeknél viszont a kanál a KISEBB mérték. A „3 evőkanál zabpehely"
+     * eddig három ADAGOT jelentett, vagyis százötven grammot: ötszáz kalória
+     * egy százas helyett.
+     */
+    @Test public void aSpoonOfOatsIsNotThreePortions() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(45.0, Foods.parse(all, "3 evőkanál zabpehely").get(0).grams, 0.01);
+        assertEquals(30.0, Foods.parse(all, "két kanál rizs").get(0).grams, 0.01);
+        // A kencéknél marad az adag: egy kanál méz pont egy adagnyi.
+        assertEquals(20.0, Foods.parse(all, "egy kanál méz").get(0).grams, 0.01);
+        // A tányér és a marék sem változik.
+        assertEquals(30.0, Foods.parse(all, "egy marék dió").get(0).grams, 0.01);
+    }
 }

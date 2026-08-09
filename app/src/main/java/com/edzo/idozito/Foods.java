@@ -2002,6 +2002,13 @@ public final class Foods {
         return false;
     }
 
+    /** Kanál-mérőszó („evőkanál", „teáskanál", „kanálnyi"). */
+    private static boolean isSpoon(String w) {
+        return w.equals("kanal") || w.equals("kanalnyi") || w.equals("evokanal")
+                || w.equals("evokanalnyi") || w.equals("teaskanal")
+                || w.equals("teaskanalnyi") || w.equals("kaveskanal");
+    }
+
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
     static int pieceGrams(Food f) {
         for (String[] p : PIECE_GRAMS)
@@ -2565,6 +2572,11 @@ public final class Foods {
         if (waterMl(f, unit) > 0) return waterMl(f, unit);
         if (unit.equals("tabla")) return 100;                // egy tábla csoki
         if (unit.equals("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
+        // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
+        // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a
+        // kisebb mérték – a „3 evőkanál zabpehely" eddig három ADAGOT, vagyis
+        // százötven grammot jelentett, ötszáz kalóriát egy százas helyett.
+        if (isSpoon(unit) && f.portion >= 40) return unit.startsWith("teas") ? 5 : 15;
         if (unit.startsWith("adag") || unit.equals("porcio") || isPortionWord(unit))
             return f.portion;
         return pieceGrams(f);
