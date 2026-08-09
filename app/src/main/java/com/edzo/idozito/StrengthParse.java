@@ -104,7 +104,10 @@ public final class StrengthParse {
             {"Bicepsz", "bicepsz", "kalapacs", "predikator", "scott pad", "hammer curl"},
             {"Tricepsz", "tricepsz", "francia nyom", "skull crusher", "skullcrusher"},
             {"Kitörés", "kitores", "lunge", "kitort"},
-            {"Lábtolás", "labtolas", "leg press", "legpress"},
+            // A gép NEVE a teremben „lábtoló", nem „lábtolás": a
+            // „lábtoló 3x12 120" eddig válasz nélkül maradt.
+            {"Lábtolás", "labtolas", "labtolo", "labtologep", "leg press",
+                    "legpress"},
             {"Vádliemelés", "vadliemel", "vadli"},
             {"Fekvőtámasz", "fekvotamasz", "push up", "pushup"},
             {"Tolódzkodás", "tolodzkod", "dipp", "dips", "dip"},

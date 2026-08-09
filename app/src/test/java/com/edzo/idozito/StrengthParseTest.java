@@ -1199,4 +1199,13 @@ public class StrengthParseTest {
         assertEquals("Vádliemelés", StrengthParse.parse("vádliemelés 4x15")
                 .get(0).name);
     }
+
+    /** A gép neve a teremben „lábtoló", nem „lábtolás". */
+    @Test public void theLegPressIsCalledByItsGymName() {
+        List<StrengthParse.Item> it = StrengthParse.parse("kondi 70 perc: "
+                + "mellnyomás 4x8 70, húzódzkodás 4x6, lábtoló 3x12 120");
+        assertEquals(3, it.size());
+        assertEquals("Lábtolás", it.get(2).name);
+        assertEquals(120.0, it.get(2).topWeight(), 0.01);
+    }
 }

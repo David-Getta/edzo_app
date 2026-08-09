@@ -567,4 +567,23 @@ public class BodyParseTest {
         assertEquals(0.0, b.kg, 0.01);
         assertEquals(58.0, b.cm[3], 0.01);
     }
+
+    /**
+     * A mozgás és az étkezés tagmondata is másé.
+     *
+     * A napi összefoglaló egyetlen mondat: „tegnap este 3 pohár bort ittam,
+     * ma reggel 79,8 kg". A mérésből eddig SEMMI nem lett, mert a bor szavai
+     * miatt a „csak számok maradtak" vizsgálat megbukott – pedig a kilogramm
+     * ott állt kiírva. Az alvás- és pulzus-tagmondatot már eddig is
+     * elhagytuk; a mozgás és az étkezés ugyanilyen.
+     */
+    @Test public void theWorkoutAndMealClausesBelongElsewhereToo() {
+        assertEquals(79.8, BodyParse.parse("tegnap este 3 pohár bort ittam, "
+                + "ma reggel 79,8 kg").kg, 0.01);
+        assertEquals(78.4, BodyParse.parse("reggel 78,4 kg, 7 óra alvás, "
+                + "54 nyugalmi. Délelőtt 45 perc futás 8 km, ebédre csirke "
+                + "rizzsel.").kg, 0.01);
+        // A „reggeli" szándékosan nem tiltó szó: az még mérés is lehet.
+        assertEquals(80.1, BodyParse.parse("reggeli mérés: 80,1 kg").kg, 0.01);
+    }
 }

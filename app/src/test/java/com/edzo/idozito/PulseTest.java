@@ -151,4 +151,10 @@ public class PulseTest {
         // Szám nélkül nincs mérés.
         assertEquals(-1, Pulse.parse("nyugalmi állapotban voltam"));
     }
+
+    /** A szórend fordítva is jó a pulzus-szó nélkül: „54 nyugalmi". */
+    @Test public void theNumberMayComeFirstWithoutTheWordPulse() {
+        assertEquals(54, Pulse.parse("reggel 78,4 kg, 7 óra alvás, 54 nyugalmi"));
+        assertEquals(47, Pulse.parse("ma reggel 47 volt a nyugalmi pulzusom"));
+    }
 }

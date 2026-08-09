@@ -50,6 +50,11 @@ public final class Pulse {
             // nyugalmi értéket senki nem ír egy edzésnaplóba.
             java.util.regex.Pattern.compile(
                     "(?<![a-z])nyugalmi\\w*\\s?:?\\s?(\\d{2,3})(?![0-9])"),
+            // Ugyanez fordított szórenddel: „reggel 78,4 kg, 7 óra alvás,
+            // 54 nyugalmi". A szám és a szó között itt semmi nem állhat –
+            // távolabbról a szám már máshoz tartozhatna.
+            java.util.regex.Pattern.compile(
+                    "(\\d{2,3})\\s?-?[ae]?s?\\s?nyugalmi(?![a-z])"),
     };
 
     /**

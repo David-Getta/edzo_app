@@ -203,14 +203,23 @@ public final class BodyParse {
      * ezért itt vágunk.
      */
     private static String dropOtherLogs(String s) {
-        if (s.indexOf(',') < 0 && s.indexOf(';') < 0) return s;
+        if (s.indexOf(',') < 0 && s.indexOf(';') < 0 && s.indexOf('.') < 0) return s;
         StringBuilder keep = new StringBuilder();
         boolean dropped = false;
         // A vessző magyarul tizedesjel is: a „78,4" NEM két tagmondat.
-        for (String part : s.split("[,;](?!\\d)")) {
+        for (String part : s.split("[,;.](?!\\d)")) {
             boolean other = false;
             for (String w : new String[]{"alud", "alvas", "pulzus", "rhr", "nyugalmi",
-                    "ebredtem", "keltem", "fekudtem"})
+                    "ebredtem", "keltem", "fekudtem",
+                    // A MOZGÁS és az ÉTKEZÉS tagmondata ugyanígy másé: a
+                    // „tegnap este 3 pohár bort ittam, ma reggel 79,8 kg"
+                    // méréséből eddig semmi nem lett, mert a bor szavai
+                    // miatt a „csak számok maradtak" vizsgálat megbukott.
+                    // A REGGELI szándékosan hiányzik: a „reggeli mérés:
+                    // 80,1 kg" épp hogy mérés.
+                    "futas", "futottam", "edzes", "edzettem", "km", "lepes",
+                    "perc", "ittam", "ettem", "ebed", "vacsora", "uzsonna",
+                    "kcal", "kalori"})
                 if (part.contains(w)) { other = true; break; }
             if (other) { dropped = true; continue; }
             if (keep.length() > 0) keep.append(' ');
