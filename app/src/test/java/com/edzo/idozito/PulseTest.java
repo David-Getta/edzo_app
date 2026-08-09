@@ -1,6 +1,8 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -118,5 +120,21 @@ public class PulseTest {
         assertEquals(50, Pulse.parse("pulzus volt 50"));
         // Az edzés-pulzus továbbra sem nyugalmi.
         assertEquals(-1, Pulse.parse("futás átlagpulzus 165"));
+    }
+
+    /**
+     * A pulzus-tartomány nem munka/pihenő ritmus.
+     *
+     * Az „50-55 között van a nyugalmi pulzusom" tartománya pontosan úgy néz
+     * ki, mint egy időzítő-pár, és eddig ötven másodperc munka, ötvenöt
+     * pihenő tervet ajánlott rá az app.
+     */
+    @Test public void aPulseRangeIsNotATimerPlan() {
+        assertNull(IntervalParse.parse("50-55 között van a nyugalmi pulzusom"));
+        assertNull(IntervalParse.parse("a pulzusom 60-65 között mozog"));
+        assertTrue(Pulse.parse("50-55 között van a nyugalmi pulzusom") > 0);
+        // A kimondott terv erősebb: ott a pulzus csak megjegyzés mellette.
+        assertNotNull(IntervalParse.parse("4 kör 4 perc, pulzus 165 körül"));
+        assertNotNull(IntervalParse.parse("3 kör 40 mp munka 20 mp pihenő"));
     }
 }

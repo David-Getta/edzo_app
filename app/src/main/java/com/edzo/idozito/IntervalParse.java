@@ -120,6 +120,19 @@ public final class IntervalParse {
         // app – száznegyven másodperc munka, kilencvenöt pihenő.
         if (s.contains("vernyomas") || s.contains("ver nyomas")
                 || s.contains("higanymilli") || s.contains("hgmm")) return null;
+        // A PULZUS sem ritmus: az „50-55 között van a nyugalmi pulzusom"
+        // tartománya munka/pihenő párnak látszott, és ötven másodperc munka,
+        // ötvenöt pihenő terv lett belőle. Ha viszont a mondat ki is mondja
+        // az intervall-szerkezetet („4 kör, pulzus 165"), az erősebb: ott a
+        // pulzus csak megjegyzés a terv mellett.
+        if (s.contains("pulzus") || s.contains("nyugalmi") || s.contains("bpm")
+                || s.contains("hrv")) {
+            boolean saysPlan = false;
+            for (String w : new String[]{"kor", "round", "munka", "pihen", "tabata",
+                    "emom", "amrap", "intervall", "interval", "hiit", "szett", "sorozat"})
+                if (s.contains(w)) { saysPlan = true; break; }
+            if (!saysPlan) return null;
+        }
         // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
         // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
         s = clockToSeconds(s);

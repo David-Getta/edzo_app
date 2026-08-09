@@ -356,6 +356,9 @@ sem talált, tehát ha talál, az tényleg ott van.
 - **A -ról/-re pár második száma a mai érték**: a „derékbőségem 90-ről 86-ra
   csökkent" és a „testzsír 22-ről 18 százalékra" mondatból eddig a RÉGI szám
   került be – pont az, ami már nem igaz
+- **A pulzus-tartomány nem időzítő**: az „50-55 között van a nyugalmi
+  pulzusom" párja pontosan úgy néz ki, mint egy munka/pihenő ritmus – eddig
+  ötven másodperc munka, ötvenöt pihenő tervet ajánlott rá az app
 - **„Nyugalmi pulzus 52"** – ugyanígy: napi egy érték, heti átlag, görbe és
   léptetős gyorsbevitel; az edzés-adat („átlagpulzus 165") nem téveszti meg
 - **A szokásosnál jóval magasabb reggeli pulzusnál** a kezdőlap szól:
