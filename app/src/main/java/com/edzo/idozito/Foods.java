@@ -2912,6 +2912,12 @@ public final class Foods {
                 // Vágy és kíváncsiság: „megkívántam a csokit", „meg akarok
                 // kóstolni egy tiramisut", „receptet keresek".
                 "megkivantam", "megkivanom", "kostolni", "recept",
+                // A KIHAGYÁS beszámolója sem étkezés: a „3 hetet bírtam ki
+                // cukor nélkül" büszkeség, nem adag – eddig háromszázharminc
+                // gramm cukormentes étel lett belőle. Ugyanígy a lemondás:
+                // „lemondtam a csokiról".
+                "birtam ki", "kibirtam", "lemondtam a", "lemondok a",
+                "tartozkodom", "bojtolok", "bojtoltem",
                 // Feltételes mód: a „rendelnék egy pizzát" nem rendelés.
                 "rendelnek", "sutnek", "foznek", "keszitenek", "ennek egy"})
             if (s.contains(w)) { intent = true; break; }

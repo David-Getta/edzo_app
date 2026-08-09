@@ -338,4 +338,19 @@ public class FoodsParseTest {
         assertFalse(Foods.looksUneaten("edzés előtt bevettem egy kreatint"));
         assertTrue(Foods.looksUneaten("vettem egy pizzát"));
     }
+
+    /**
+     * A kihagyás beszámolója nem étkezés.
+     *
+     * A „3 hetet bírtam ki cukor nélkül" büszkeség, nem adag – eddig
+     * háromszázharminc gramm cukormentes étel lett belőle a naplóban.
+     */
+    @Test public void anAbstinenceReportIsNotAMeal() {
+        assertTrue(Foods.looksUneaten("eddig 3 hetet bírtam ki cukor nélkül"));
+        assertTrue(Foods.looksUneaten("lemondtam a csokiról"));
+        assertTrue(Foods.looksUneaten("böjtöltem délig"));
+        // A valódi étkezés marad.
+        assertFalse(Foods.looksUneaten("ettem egy csokit"));
+        assertFalse(Foods.looksUneaten("cukormentes üdítő 5 dl"));
+    }
 }
