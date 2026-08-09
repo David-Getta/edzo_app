@@ -276,6 +276,18 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void anAbilityIsNotALog() {
+        // A „fáj a térdem 2 hete, de futni TUDOK" arról szól, mi megy és mi
+        // nem – eddig negyvenöt perces futás lett belőle, pont egy sérült
+        // térd mellé.
+        assertEquals("1d+0: ", summary("fáj a térdem 2 hete, de futni tudok"));
+        assertEquals("1d+0: ", summary("már tudok futni 30 percet"));
+        assertEquals("1d+0: ", summary("terhesség alatt csak sétálok"));
+        // A MÚLT idejű „tudtam" nem képesség, hanem siker: az megtörtént.
+        assertEquals("1d+0: 1×futas/30", summary("el tudtam menni futni, 5 km"));
+        assertEquals("1d+0: 1×tura/40", summary("sétáltam 40 percet"));
+    }
+
     @Test public void aProgressNoteIsNotAWorkout() {
         // Az „5 km-ről 10 km-re növeltem a távot" a tervről szól, nem egy
         // megtörtént futásról – eddig bejegyzés lett belőle, ráadásul a RÉGI

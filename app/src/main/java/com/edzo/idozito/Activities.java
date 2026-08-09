@@ -1727,6 +1727,15 @@ public final class Activities {
         // de a kettő együtt csak szándékot jelenthet.
         for (String w : new String[]{"majd ", "esetleg ", "talan "})
             if (s.startsWith(w) && hasInfinitive(s)) return true;
+        // A KÉPESSÉG nem napló: a „fáj a térdem 2 hete, de futni TUDOK" arról
+        // szól, mi megy és mi nem – eddig negyvenöt perces futás lett belőle,
+        // pont egy sérült térd mellé.
+        // A MÚLT idejű „tudtam" nem képesség, hanem siker: az „el tudtam menni
+        // futni, 5 km" megtörtént. Csak a jelen és a feltételes alak marad.
+        if (s.matches(".*(?<![a-z])(?:tudok|tudunk|tudnek|tudnank)\\s+\\w{3,}ni(?![a-z]).*")
+                || s.matches(".*(?<![a-z])\\w{3,}ni\\s+(?:tudok|tudunk|tudnek|tudnank)"
+                        + "(?![a-z]).*"))
+            return true;
         // A HALADÁS leírása nem edzés: az „5 km-ről 10 km-re növeltem a
         // távot" a tervről szól, nem egy megtörtént futásról – eddig ötven
         // kilométeres… illetve öt kilométeres futás lett belőle, ráadásul a
@@ -1750,7 +1759,7 @@ public final class Activities {
                 // A „majd kondizok" ugyanolyan szándék, mint a „majd úszok".
                 // (A puszta „majd" NEM lehet jelzőszó: a „futottam, majd
                 // úsztam" két megtörtént edzés.)
-                "kondizok", "kondizom", "uszom", "biciklizem", "sportolok",
+                "kondizok", "kondizom", "uszom", "biciklizem", "sportolok", "setalok",
                 // A SZOKÁS soha nem egy alkalom: a „szoktam futni" és a
                 // „hetente háromszor járok kondiba" arról szól, hogy MIT
                 // csinál az ember általában – eddig mindkettőből egy teljes
