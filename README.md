@@ -129,10 +129,31 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - a **tagadás** végig érvényes, a **„sem"** ugyanúgy, mint a „nem" („ma sem
   edzettem"): „ma nem ettem csokit", „nem fáj már a térdem" –
   a **„mégsem"** ugyanígy: „mégsem futottam ma", „mégsem ettem a csokit"
+- a **kérdés** sem napló: a „terhes vagyok, milyen mozgás ajánlott?" MOZGÁS
+  szavából eddig negyvenöt perc „egyéb mozgás" lett – egy olyan mondatból,
+  ami épp azt kérdezi, mit lehetne csinálni. A számmal írt kérdés mögött
+  viszont állhat megtörtént edzés: „30 perc futás után fájt a térdem, mit
+  tegyek?"
+- a **panasz helyszíne** sem edzés: a gyógytornász első kérdése az, hogy
+  MIKOR fáj, és a térdre a válasz majdnem mindig az, hogy „lépcsőn lefelé" –
+  ebből eddig másfél órás TÚRA került a naplóba. A **gyógytornász** maga sem
+  torna: a „gyógytornász szerint gyenge a középső farizmom" negyvenöt perc
+  jóga lett. A megtörtént lépcsőzés és a valódi gyógytorna marad
+- a **„már N hete"** tartam, nem dátum: a „minden reggel 10 perc nyújtás,
+  már 2 hete" nyújtása két héttel EZELŐTTRE került – a mai napra semmi, egy
+  régi napra meg egy soha meg nem történt edzés
+- a **mérőszalag** sem edzés: a „combom 58 cm, vádli 38" harmincnyolcasa a
+  vádli körfogata, mégis harmincnyolc kilós mérés lett belőle a
+  súlytrendben – és mellette harmincnyolc ismétléses vádliemelés
 
 Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
 bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
 étellel végigpróbálva egyikből sem lesz napló-sor.
+
+Ennek a párja, hogy a **pihenő UTÁN** már megint edzés van: a „két hét pihi
+után visszaültem a bringára, 25 km" mondatban a pihi szava eddig elvitte a
+bringát – a gazdátlan huszonöt kilométerből futás lett, a két hetet meg
+ráterítettük az edzésre.
 
 ### 🧩 Ami a mondat MÁSIK felében van
 Az ellenkező hiba ugyanolyan csendes: a mondat egyik fele bekerül, a másik
@@ -214,7 +235,17 @@ ismert étel sincs, mégis a naplóba való.
 Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 km futás,
 **78,5 kg a mérlegen**", az „aludtam 7 órát **és futottam 10 km-t**" és az
 „ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul
-eltűnt.
+eltűnt. A **napi összefoglaló** ugyanígy: a „tegnap este 3 pohár bort ittam,
+**ma reggel 79,8 kg**" méréséből semmi nem lett, mert a bor szavai miatt a
+„csak számok maradtak" vizsgálat megbukott – pedig a kilogramm ott állt
+kiírva.
+
+Az **alváshossz** a vessző után is számít: a „rosszul aludtam, **kb 5 órát**,
+kétszer felébredtem" mondatból eddig semmi nem lett. Az ige melletti szám
+elől a vessző szándékos határ – ott az ébredések száma állna –, csak épp az
+óra-szó különbözteti meg a kettőt. A **„nyugalmi"** pedig magában is kimondja,
+miről van szó: a „hrv 62 ms, **nyugalmi 49**" a sportóra-leolvasás legrövidebb
+alakja.
 
 A **panasz mellett** is ott lehet a megtörtént edzés: a „fájt a térdem, ezért
 csak **bicikliztem 40 percet**" negyven perce eltűnt, mert a rehab-lap nem
