@@ -151,7 +151,12 @@ public final class Activities {
                     "tenisz", "squash", "fallabda", "tollaslabda", "tollas", "pingpong",
                     // A squash angol írásmódja gyakran elgépelve érkezik – a
                     // „sqash 45 perc" eddig válasz nélkül maradt.
-                    "ping pong", "asztalitenisz", "padel", "sqash", "skvos", "szkvos"),
+                    // A ping-pong KÖTŐJELLEL is jár, és a magyar ige is így
+                    // ragozódik: a „ping-pongoztunk egy órát" eddig válasz
+                    // nélkül maradt, pedig a kötőjeles alak legalább olyan
+                    // gyakori, mint az egybeírt.
+                    "ping pong", "ping-pong", "asztalitenisz", "padel", "sqash",
+                    "skvos", "szkvos"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
                     "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
@@ -189,7 +194,10 @@ public final class Activities {
                     // A „sízem/síztem/sízni" alakok is: a puszta „si" nem
                     // lehet szótő (a HASIZOMban is benne van).
                     "siel", "sizes", "siztem", "sizni", "sizunk", "sizik", "sizel",
-                    "snowboard", "sifutas", "sifut"),
+                    // A FELSZERELÉS neve is kimondja a sportot: a „3 óra
+                    // sítalpon" és a „deszkán voltunk" ugyanaz a nap.
+                    "snowboard", "sifutas", "sifut", "sitalp", "sipalya",
+                    "sielni", "sielt", "sielunk"),
             // A triatlon és a duatlon NEM futás: a versenytáv órákig tart, és a
             // három (két) sportág együtt más terhelés, mint bármelyik külön. A
             // saját tétele nélkül vagy elveszne, vagy hamis névvel kerülne be.
@@ -1298,11 +1306,30 @@ public final class Activities {
                 for (int[] m : mins) if (m[0] > h[0] && m[0] < next) local = true;
                 if (!local) minutes = 0;
             }
+            // A KÖREDZÉS hossza az EGÉSZ körből jön, és annyiszor, ahány kör
+            // van. A „körkörös edzés: 4 kör, 10 fekvőtámasz, 15 guggolás,
+            // 20 hasizom" eddig öt percet kapott – az első szám ötöde –,
+            // pedig ez négyszer negyvenöt ismétlés, jó fél óra munka.
+            int estReps = reps;
+            if (minutes <= 0 && reps > 0) {
+                int total = 0;
+                boolean expanded = false;
+                for (StrengthParse.Item it : StrengthParse.parse(rawText)) {
+                    total += it.totalReps();
+                    if (it.sets.size() > 1) expanded = true;
+                }
+                if (total > estReps) estReps = total;
+                // A körszámmal csak akkor szorzunk, ha az erő-felismerő még
+                // NEM tette bele: a „3 kör: 20 guggolás" sorozatai ott már
+                // háromszor szerepelnek, itt megszorozni kilencszeres edzés
+                // lenne.
+                if (!expanded) estReps *= roundsSaid(beforeBlank);
+            }
             if (minutes <= 0)
                 // Nincs kimondott időtartam: távból vagy ismétlésből becsülünk,
                 // anélkül a mozgásforma szokásos hossza jön.
                 minutes = reps > 0
-                        ? Math.max(5, Math.min(60, reps / 5))
+                        ? Math.max(5, Math.min(60, estReps / 5))
                         : kmOf[i] > 0
                         ? Math.max(1, (int) Math.round(kmOf[i] * pace(beforeBlank, kind)))
                         : kind.defaultMin;
@@ -2819,6 +2846,15 @@ public final class Activities {
             out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
         }
         return out;
+    }
+
+    /** Kimondott körszám a köredzésben („4 kör", „3 sorozat"), különben 1. */
+    private static int roundsSaid(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![a-z0-9])(\\d{1,2})\\s*(?:kor|kort|korben|korrel"
+                        + "|sorozat\\w*|szett\\w*|round\\w*)(?![a-z])").matcher(s);
+        int n = m.find() ? Integer.parseInt(m.group(1)) : 1;
+        return Math.max(1, Math.min(20, n));
     }
 
     /** A felismert gyakorlatok egyike adta-e ennek a mozgásformának a nevét? */

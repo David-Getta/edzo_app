@@ -2441,4 +2441,37 @@ public class ActivitiesParseTest {
         // A kimondott idő megvédi magát: az alapértéktől eltérő hossz marad.
         assertEquals(40, Activities.parse("40 perc evezőgép").plans.get(0).minutes);
     }
+
+    /**
+     * A köredzés hossza az EGÉSZ körből jön.
+     *
+     * A „körkörös edzés: 4 kör, 10 fekvőtámasz, 15 guggolás, 20 hasizom"
+     * eddig öt percet kapott – az ELSŐ szám ötödét –, pedig ez négyszer
+     * negyvenöt ismétlés, jó fél óra munka. A körszámmal csak akkor szorzunk,
+     * ha az erő-felismerő még nem tette bele a sorozatokba.
+     */
+    @Test public void aCircuitLastsAsLongAsTheWholeCircuit() {
+        assertEquals(36, Activities.parse("körkörös edzés: 4 kör, "
+                + "10 fekvőtámasz, 15 guggolás, 20 hasizom").plans.get(0).minutes);
+        // Ahol a sorozatok már megvannak, ott nem szorzunk újra.
+        assertEquals(18, Activities.parse("3 kör: 20 guggolás, 10 fekvőtámasz")
+                .plans.get(0).minutes);
+        // Az egyszerű ismétlésszám becslése változatlan.
+        assertEquals(5, Activities.parse("10 fekvőtámasz").plans.get(0).minutes);
+        assertEquals(10, Activities.parse("50 fekvőtámasz").plans.get(0).minutes);
+    }
+
+    /**
+     * A ping-pong kötőjellel is ping-pong, a sítalp is sí.
+     *
+     * A magyar ige a kötőjeles alakot ragozza tovább („ping-pongoztunk"), a
+     * télen meg a felszerelés neve mondja ki a sportot („3 óra sítalpon").
+     * Mindkettő válasz nélkül maradt.
+     */
+    @Test public void theHyphenAndTheGearNameTheSport() {
+        assertEquals("tenisz", Activities.parse("ping-pongoztunk egy órát "
+                + "a munkahelyen").plans.get(0).kind.id);
+        assertEquals("si", Activities.parse("3 óra sítalpon").plans.get(0).kind.id);
+        assertEquals(180, Activities.parse("3 óra sítalpon").plans.get(0).minutes);
+    }
 }
