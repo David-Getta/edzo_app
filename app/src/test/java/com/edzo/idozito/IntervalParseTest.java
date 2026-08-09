@@ -633,4 +633,22 @@ public class IntervalParseTest {
         assertEquals("5×180/60", sum("5 rounds of 3 min on 1 min off"));
         assertEquals("8×20/10", sum("8 rounds 20 sec work 10 sec rest"));
     }
+
+    /**
+     * Egy szám nem terv.
+     *
+     * A „séta" a körök közti laza szakasz neve is, ezért a „sétáltam 20
+     * percet" húsz perce EGYSZERRE lett munka és pihenő: húsz-húsz perc,
+     * vagyis negyvenperces időzítő egy húszperces sétából. Ha a körszám sincs
+     * kimondva, a mondatban semmi nem utal szakaszokra.
+     */
+    @Test public void oneNumberIsNotAPlan() {
+        assertNull(IntervalParse.parse("sétáltam 20 percet"));
+        assertNull(IntervalParse.parse("csak sétáltam 20 percet"));
+        // Két kimondott idő viszont már ritmus.
+        assertEquals(60, IntervalParse.parse("1 perc gyors, 1 perc laza, "
+                + "felváltva 20 percig").work);
+        // És az egyblokkos AMRAP sem sérül: ott nincs pihenő.
+        assertEquals(1200, IntervalParse.parse("amrap 20 perc").work);
+    }
 }

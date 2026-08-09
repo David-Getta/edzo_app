@@ -292,7 +292,24 @@ public final class IntervalParse {
         // („percig", „alatt", „összesen"), így a szakasz-hosszal nem
         // téveszthető össze.
         if (rounds <= 0) rounds = roundsFromTotal(s, work + rest);
+        // Egy szám nem terv. A „sétáltam 20 percet" húsz perce EGYETLEN
+        // kimondott idő, a séta szava viszont pihenő-szó is (a körök közti
+        // laza szakasz neve) – így lett belőle húszperces munka húszperces
+        // pihenővel, vagyis negyvenperces időzítő egy húszperces sétából.
+        // Ha a körszám sincs kimondva, akkor a mondatban semmi nem utal
+        // szakaszokra: ez nem intervall, hanem egy sima séta.
+        if (rounds <= 1 && rest > 0 && work == rest && timeCount(s) < 2) return null;
         return build(rounds, work, rest, warmIn(s), coolIn(s));
+    }
+
+    /** Hány KÜLÖN kimondott idő van a mondatban („30 mp", „2 perc"). */
+    private static int timeCount(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.])\\d+(?:[.,]\\d+)?\\s*"
+                        + "(?:mp|masodperc|perc|min|s)(?![a-z])").matcher(s);
+        int n = 0;
+        while (m.find()) n++;
+        return n;
     }
 
     /**

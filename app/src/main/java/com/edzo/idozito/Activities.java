@@ -2204,6 +2204,14 @@ public final class Activities {
                 // séta" harminc perce eddig a pihenő szavával együtt eltűnt.
                 if (boundary && w.startsWith("pihen")
                         && p >= 6 && s.startsWith("aktiv ", p - 6)) boundary = false;
+                // A pihenő UTÁN már megint edzés van: a „két hét pihi után
+                // visszaültem a bringára, 25 km" huszonöt kilométere eddig
+                // gazdátlan távként FUTÁS lett, mert a pihi szava elvitte a
+                // bringát. A szünet vége pont az ellenkezőjét mondja annak,
+                // amit a szó önmagában.
+                if (boundary && (w.startsWith("pih") || w.equals("rest day"))
+                        && s.substring(Math.min(s.length(), p + w.length()))
+                            .matches("^[a-z]*\\s+utan.*")) boundary = false;
                 if (boundary && w.equals("berlet")) {
                     int e2 = p;
                     while (e2 < s.length() && Character.isLetter(s.charAt(e2))) e2++;
@@ -2564,7 +2572,12 @@ public final class Activities {
             // az első edzésem 3 hét után, 30 perc könnyű futás" EGY mai edzés.
             // Eddig huszonegy napra terült szét, vagyis a mai nap kimaradt a
             // szériából, a heti terhelés meg három hétre hígult.
-            if (s.substring(end).matches("^\\s*(utan|mulva|kihagyas\\w*|szunet\\w*).*"))
+            // A kihagyás NEVE beékelődhet a szám és az „után" közé: „két hét
+            // pihi után", „három hét betegség után", „egy hónap szabadság
+            // után". Ugyanaz a mondat, ugyanaz a jelentés – egy szónyi rés
+            // sem törheti meg.
+            if (s.substring(end).matches(
+                    "^\\s*(\\p{L}+\\s+)?(utan|mulva|kihagyas\\w*|szunet\\w*).*"))
                 continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {

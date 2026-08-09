@@ -2376,4 +2376,30 @@ public class ActivitiesParseTest {
         // lett tő a puszta „mellen" és „haton".
         assertTrue(Activities.parse("vettem egy új mellényt").plans.isEmpty());
     }
+
+    /**
+     * A pihenő UTÁN már megint edzés van.
+     *
+     * A „pihi" a kihagyás szava, ezért a mondat innentől nem edzés – csakhogy
+     * a „két hét pihi után visszaültem a bringára, 25 km" pont az ellenkezőjét
+     * mondja: a szünet VÉGE után jön a mozgás. Eddig a pihi elvitte a
+     * bringát, a gazdátlan huszonöt kilométerből meg FUTÁS lett, és a két
+     * hetet is ráterítettük az edzésre – tizennégy napnyi bringázás egyetlen
+     * délutánból.
+     */
+    @Test public void aBreakThatIsOverIsNotADenial() {
+        Activities.Parsed p = Activities.parse("két hét pihi után visszaültem "
+                + "a bringára, 25 km");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(25.0, p.plans.get(0).km, 0.01);
+        assertEquals(1, p.days);
+        assertEquals(1, Activities.parse("három hét betegség után 30 perc "
+                + "könnyű futás").days);
+        // A pihenőnap magában viszont marad tagadás.
+        assertTrue(Activities.parse("ma pihenőnap volt").plans.isEmpty());
+        // És a valódi időszak sem sérül.
+        assertEquals(14, Activities.parse("az elmúlt két hétben 50 km-t "
+                + "futottam").days);
+    }
 }
