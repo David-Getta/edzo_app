@@ -682,4 +682,12 @@ public class IntervalParseTest {
         assertEquals(120, IntervalParse.parse("2 perc").work);
         assertEquals(5, IntervalParse.parse("5 körben 30 másodperc").rounds);
     }
+
+    /** Két különböző tevékenység nem munka/pihenő pár. */
+    @Test public void twoActivitiesAreNotAWorkRestPair() {
+        assertNull(IntervalParse.parse("20 perc jóga és 10 perc meditáció"));
+        // A kimondott ritmus viszont marad.
+        assertEquals(60, IntervalParse.parse("1 perc gyors, 1 perc laza, "
+                + "felváltva 20 percig").rest);
+    }
 }

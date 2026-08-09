@@ -383,6 +383,11 @@ sem talált, tehát ha talál, az tényleg ott van.
   nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles,
   **háti gerinc (ülőmunka ellen)** és **törzs/medence (mélyizom-stabilitás)** –
   kész, 10–15 perces megelőző sorok
+- **A diagnózis NEVE is elég**: a „csigolyasérvem van", a „műtét után vagyok,
+  térdprotézis", a „meniszkusz műtéten estem át" és a „keresztszalag szakadás
+  után vagyok" eddig válasz nélkül maradt – pedig ezek a mondatok kérik a
+  leghatározottabban a felépítő tornát. A duzzanat pedig a legfontosabb jel:
+  a „vizesedik a térdem edzés után" pont az, amire a lap piros zászlója szól
 - **A törzs saját lapja**: a derék, a csípő és a térd sora mind a mély
   stabilizálókra hivatkozik, de saját lapjuk nem volt. A „gyenge a
   törzsizmom" válasz nélkül maradt, a „core erősítés" pedig hatvanperces

@@ -305,6 +305,11 @@ public final class IntervalParse {
         // épp ezt kéri – ott a mondatban semmi más nincs.
         if (rounds <= 1 && timeCount(s) < 2 && !saysPlan(s) && !onlyTime(s))
             return null;
+        // Két KÜLÖNBÖZŐ tevékenység nem munka/pihenő pár: a „20 perc jóga és
+        // 10 perc meditáció" húsz percéből húszperces munka lett húszperces
+        // pihenővel – negyvenperces időzítő egy félórás estére. Egyenlő
+        // munka és pihenő egyetlen körben sosem valódi terv.
+        if (rounds <= 1 && rest > 0 && work == rest && !saysPlan(s)) return null;
         return build(rounds, work, rest, warmIn(s), coolIn(s));
     }
 
