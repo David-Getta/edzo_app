@@ -46,6 +46,11 @@ public final class Sleep {
             // így írta le, semmit nem kapott vissza.
             java.util.regex.Pattern.compile(
                     "(\\d{1,2}([.,]\\d)?)\\s?ora\\w*[^0-9]{0,14}?aludtam"),
+            // Óra-szó NÉLKÜL is: „nyolcat aludtam", „kb 8-at aludtam". A
+            // magyar az órát ilyenkor elhagyja, mert magától értetődik – a
+            // szám és az ige közé viszont csak a tárgyrag férhet be.
+            java.util.regex.Pattern.compile(
+                    "(\\d{1,2}([.,]\\d)?)\\s?-?(?:[oae]t)?\\s*aludtam"),
     };
 
     /** Alvásról szól-e egyáltalán a mondat. */

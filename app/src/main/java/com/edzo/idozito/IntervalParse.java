@@ -367,7 +367,12 @@ public final class IntervalParse {
     /** „1:30” → „90 mp”. Csak érvényes perc:másodperc alak, 0–59 másodperccel. */
     static String clockToSeconds(String s) {
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d:])(\\d{1,2}):([0-5]\\d)(?![\\d:])").matcher(s);
+                // A NAPSZAK nem hossz: a „7:15-kor keltem" hét óra tizenöt,
+                // nem négyszázharmincöt másodperc munka. A „-kor" (és az
+                // „órakor", a „-tól", a „-ig") ragos alak időpont – abból
+                // eddig időzítő-terv lett, a felkelés órájából.
+                .compile("(?<![\\d:])(\\d{1,2}):([0-5]\\d)(?![\\d:])"
+                        + "(?!\\s?-?\\s?(?:kor|orakor|tol|to\'l|ig|kortol|koreig))").matcher(s);
         StringBuffer b = new StringBuffer();
         while (m.find()) {
             int sec = Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));

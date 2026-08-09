@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -122,5 +123,37 @@ public class SleepTest {
         // Alvás-szó nélkül nincs bejegyzés: az edzés-időpont nem éjszaka.
         assertEquals(-1, Sleep.parse("18:00-tól 19:30-ig kondi"), 0.01);
         assertEquals(-1, Sleep.parse("edzés 6-kor és 18-kor"), 0.01);
+    }
+
+    /**
+     * Az óra-szó elhagyható: „nyolcat aludtam".
+     *
+     * A magyar magától értetődőnek veszi, hogy órákról van szó, és el is
+     * hagyja a szót. A szám és az ige közé viszont csak a tárgyrag férhet be,
+     * így a mondat többi száma nem eshet ide.
+     */
+    @Test public void theHourWordMayBeLeftOut() {
+        assertEquals(8.0, Sleep.parse("nyolcat aludtam"), 0.01);
+        assertEquals(8.0, Sleep.parse("kb 8-at aludtam"), 0.01);
+        assertEquals(7.0, Sleep.parse("hetet aludtam"), 0.01);
+        assertEquals(6.5, Sleep.parse("6,5-öt aludtam"), 0.01);
+        // Az életszerűtlen érték itt sem megy át, és a feltételes mód sem.
+        assertEquals(-1, Sleep.parse("20-at aludtam"), 0.01);
+        assertEquals(-1, Sleep.parse("aludtam volna nyolcat"), 0.01);
+    }
+
+    /**
+     * A NAPSZAK nem hossz.
+     *
+     * A „ma reggel 7:15-kor keltem" hét óra tizenöt perckor, nem
+     * négyszázharmincöt másodperc munka – ebből eddig időzítő-terv lett, a
+     * felkelés órájából.
+     */
+    @Test public void aClockTimeWithACaseSuffixIsNotAPlan() {
+        assertNull(IntervalParse.parse("ma reggel 7:15-kor keltem"));
+        assertNull(IntervalParse.parse("este 23:40-kor feküdtem le"));
+        // A valódi ritmus és a verseny-idő változatlan.
+        assertEquals(6, IntervalParse.parse("1:30 munka 0:30 pihenő 6 kör").rounds);
+        assertEquals(7.75, Sleep.parse("22:30-tól 6:15-ig aludtam"), 0.05);
     }
 }
