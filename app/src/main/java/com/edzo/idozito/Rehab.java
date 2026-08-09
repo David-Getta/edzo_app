@@ -486,7 +486,17 @@ public final class Rehab {
         String s = Foods.norm(q);
         boolean want = false;
         for (String w : new String[]{"stabilit", "stabiliz", "mobiliz", "mobilit",
-                "rehab", "gyogytorna", "megeloz", "prevenc"})
+                "rehab", "gyogytorna", "megeloz", "prevenc",
+                // Ahogy az ember tényleg kéri: „váll gyakorlatok", „mit
+                // csináljak a vállammal", „nyak lazítás", „váll bemelegítés".
+                "gyakorlat", "lazit", "bemelegit", "atmozgat", "nyujtas",
+                "mit csinaljak", "mit ajanlasz", "mit javasolsz",
+                // Az ERŐSÍTÉS is ide került: a „boka erősítés" korábban egy
+                // hatvanperces kondi-bejegyzés lett a naplóban – vagyis egy
+                // meg nem történt edzés. A testtájnév itt is kötelező, a
+                // súlyzós mondat pedig továbbra is az erősítő naplóé, mert
+                // az a felismerő hamarabb szólal meg.
+                "erosit"})
             if (s.contains(w)) { want = true; break; }
         if (!want) return null;
         Area a = areaOf(s);
@@ -511,7 +521,7 @@ public final class Rehab {
                 // A térd KÜLSŐ oldala más panasz, mint az elülső – az
                 // IT-szalag sora a csípő távolítóit erősíti. A hosszabb,
                 // pontosabb megnevezés ezért előbb áll a puszta „térd"-nél.
-                {"itszalag", "it szalag", "itszalag", "iliotibialis", "kulso terd",
+                {"itszalag", "it szalag", "it-szalag", "itszalag", "iliotibialis", "kulso terd",
                         "terd kulso", "terdem kulso", "futoterd"},
                 {"terd", "terdem", "terde", "ugroterd", "terdfaj", "terd"},
                 // A HÁTI gerinc a derék elé kerül: a „felső hátam" és a

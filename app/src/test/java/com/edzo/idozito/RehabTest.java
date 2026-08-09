@@ -202,7 +202,14 @@ public class RehabTest {
         // A csirkecomb cél-mondatban sem testtáj.
         assertNull(Rehab.forGoal("csirkecomb rehab"));
         assertNull(Rehab.forGoal("core stabilitás"));   // nincs testtáj
-        assertNull(Rehab.forGoal("váll erősítés"));     // konditermi mondat
+        // Az ERŐSÍTÉS is ide tartozik: a „boka erősítés" korábban egy
+        // hatvanperces kondi-BEJEGYZÉS lett a naplóban – vagyis egy meg nem
+        // történt edzés. A súlyzós mondat továbbra is az erősítő naplóé.
+        assertEquals("vall", Rehab.forGoal("váll erősítés").id);
+        assertEquals("boka", Rehab.forGoal("boka erősítés").id);
+        assertEquals(Sentence.Kind.STRENGTH,
+                Sentence.of("vállból nyomás 3x10 20 kg",
+                        java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
         assertNull(Rehab.forGoal("boka 3x10"));         // nincs szándék-szó
         assertNull(Rehab.forGoal("30 perc futás"));
         assertNull(Rehab.forGoal(""));
@@ -519,5 +526,31 @@ public class RehabTest {
         assertNotNull(Rehab.forComplaint("fáj a vállam"));
         assertNotNull(Rehab.forComplaint("fájás a derekamban"));
         assertNotNull(Rehab.forComplaint("derékfájás"));
+    }
+
+    /**
+     * Ahogy az ember tényleg kéri a gyakorlatsort.
+     *
+     * A „váll gyakorlatok", a „mit csináljak a vállamra", a „nyak lazítás"
+     * és a „boka erősítés" mind ugyanazt kérdezi – és eddig egyikre sem jött
+     * válasz. A „boka erősítés" ráadásul hatvanperces kondi-BEJEGYZÉS lett a
+     * naplóban: egy meg nem történt edzés.
+     */
+    @Test public void theEverydayWaysOfAskingForASequence() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        long now = 1_753_869_600_000L;
+        for (String q : new String[]{"it-szalag rehab", "váll gyakorlatok",
+                "mit csináljak a vállamra", "gyakorlat a derekamra", "boka erősítés",
+                "nyak lazítás", "váll bemelegítés", "mit ajánlasz a bokámra"})
+            assertEquals(q, Sentence.Kind.REHAB, Sentence.of(q, all, now));
+        // A többi ajtó változatlan – a szándék-szó testtájnév nélkül semmi.
+        assertEquals(Sentence.Kind.STRENGTH, Sentence.of("3x10 fekvenyomás 60 kg", all, now));
+        assertEquals(Sentence.Kind.INTERVAL,
+                Sentence.of("2 perc bemelegítés, 6 kör 40/20", all, now));
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.of("45 perc nyújtás", all, now));
+        assertEquals(Sentence.Kind.ROUTINE,
+                Sentence.of("Lábnap: guggolás, lábtolás, kitörés", all, now));
+        assertNull(Rehab.forGoal("bemelegítés 10 perc"));
+        assertNull(Rehab.forGoal("gyakorlatok"));
     }
 }
