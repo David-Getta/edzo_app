@@ -112,6 +112,13 @@ public final class Activities {
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
+                    // A termi napok ANGOL neve legalább olyan gyakori a
+                    // magyar edzők és edzettek szájában, mint a magyar: a
+                    // „kemény leg day, 75 perc" eddig üres választ kapott.
+                    "leg day", "legday", "push day", "pushday", "pull day",
+                    "pullday", "upper body", "lower body", "full body",
+                    "fullbody", "chest day", "back day", "arm day",
+                    "shoulder day", "leg nap", "push nap", "pull nap",
                     // Termi óranevek és gépek: enélkül a bejegyzés elveszett.
                     // (Az elliptikus és a crosstrainer az „egyéb" alatt van.)
                     "body pump", "bodypump", "stepper",

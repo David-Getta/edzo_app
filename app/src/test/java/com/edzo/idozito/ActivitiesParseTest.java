@@ -2321,4 +2321,20 @@ public class ActivitiesParseTest {
         assertEquals(5.0, Activities.parse("megnéztem a meccset, utána futottam 5 km-t")
                 .plans.get(0).km, 0.01);
     }
+
+    /**
+     * A termi napok angol neve is edzés.
+     *
+     * A „lábnap" és a „tolónap" már szótő volt, a „leg day" és a „push day"
+     * nem – pedig a magyar edzőtermekben legalább olyan gyakori. A „kemény
+     * leg day, 75 perc" üres választ kapott.
+     */
+    @Test public void theEnglishGymDayNamesAreWorkoutsToo() {
+        assertEquals(75, Activities.parse("kemény leg day, 75 perc").plans.get(0).minutes);
+        assertEquals("kondi", Activities.parse("ma leg day volt").plans.get(0).kind.id);
+        assertEquals(50, Activities.parse("pull day, 50 perc").plans.get(0).minutes);
+        assertEquals(45, Activities.parse("full body 45 perc").plans.get(0).minutes);
+        assertEquals("kondi", Activities.parse("push day: 4 gyakorlat")
+                .plans.get(0).kind.id);
+    }
 }
