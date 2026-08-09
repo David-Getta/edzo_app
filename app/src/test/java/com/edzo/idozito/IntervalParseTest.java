@@ -651,4 +651,19 @@ public class IntervalParseTest {
         // És az egyblokkos AMRAP sem sérül: ott nincs pihenő.
         assertEquals(1200, IntervalParse.parse("amrap 20 perc").work);
     }
+
+    /**
+     * A tempó sem ritmus.
+     *
+     * A „10 km @ 5:30" és a „10 km-t futottam 5:30-as tempóval" órán mért
+     * futás, nem szakaszos terv – eddig mindkettőből egykörös, öt és fél
+     * perces időzítő lett.
+     */
+    @Test public void aPaceIsNotAnIntervalPlan() {
+        assertNull(IntervalParse.parse("10 km @ 5:30"));
+        assertNull(IntervalParse.parse("10 km-t futottam 5:30-as tempóval"));
+        // A kimondott terv viszont marad, távval együtt is.
+        assertEquals(8, IntervalParse.parse("8x400 m, köztük 200 m lazán, "
+                + "8 kör 90 mp munka 60 mp pihenő").rounds);
+    }
 }

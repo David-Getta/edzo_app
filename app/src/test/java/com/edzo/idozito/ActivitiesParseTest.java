@@ -2514,4 +2514,23 @@ public class ActivitiesParseTest {
         // A napszakkal mondott szokás sem napló.
         assertTrue(Activities.parse("minden este sétálok egyet").plans.isEmpty());
     }
+
+    /**
+     * A kukacos tempó is tempó.
+     *
+     * A futó-appok „10 km @ 5:30" alakja ugyanaz, mint az „5:30-as tempóval" –
+     * eddig öt és fél ÓRA került a naplóba egy ötvenöt perces futásra. A
+     * perjel a másik oldalon is tempót jelöl: az „5:30/km" harmincasából egy
+     * harminc kilométeres MÁSODIK futás lett.
+     */
+    @Test public void theAtSignMarksThePaceToo() {
+        assertEquals(55, Activities.parse("10 km @ 5:30").plans.get(0).minutes);
+        List<Activities.Plan> p = Activities.parse("futás 10 km @ 5:30/km").plans;
+        assertEquals(1, p.size());
+        assertEquals(55, p.get(0).minutes);
+        // A kimondott idő és a napszak nem sérül.
+        assertEquals(55, Activities.parse("10 km 55:00").plans.get(0).minutes);
+        assertEquals(25, Activities.parse("futás 5 km 24:59 tempó 5:00")
+                .plans.get(0).minutes);
+    }
 }

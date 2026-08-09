@@ -2805,6 +2805,11 @@ public final class Activities {
                 // A „km/h" SEBESSÉG, nem táv: a „futás 28 km/h" huszonnyolc
                 // kilométeres futásnak számított – majdnem három óra a
                 // naplóban egy tempó-adat miatt.
+                // A PER-JEL a másik oldalon is tempót jelöl: az „5:30/km"
+                // nem harminc kilométer. Eddig a perjel elé eső szám lett a
+                // táv, és a „futás 10 km @ 5:30/km" mondatba bekerült egy
+                // harminc kilométeres második futás is.
+                if (p > 0 && s.charAt(p - 1) == '/') continue;
                 int ue = p + unit.length();
                 if (ue < s.length() && s.charAt(ue) == '/' ) continue;
                 if (s.startsWith(" per ora", ue) || s.startsWith("h", ue)
@@ -2953,6 +2958,12 @@ public final class Activities {
             double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;
             if (p >= 2 && p <= 20) return p;
         }
+        // A futó-appok kukacos alakja ugyanazt mondja: „10 km @ 5:30".
+        m = java.util.regex.Pattern.compile("@\\s?(\\d{1,2}):([0-5]\\d)").matcher(s);
+        if (m.find()) {
+            double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;
+            if (p >= 2 && p <= 20) return p;
+        }
         return minPerKm(kind);
     }
 
@@ -3073,6 +3084,10 @@ public final class Activities {
             if (s.startsWith("-kor", m.end()) || s.startsWith(" kor", m.end())) continue;
             int first = Integer.parseInt(m.group(1));
             // A tempó sem időtartam: „5:30-as tempóval", „4:45/km".
+            // A KUKAC is tempót jelöl: a futó-appok „10 km @ 5:30" alakja
+            // ugyanaz, mint az „5:30-as tempóval". Enélkül öt és fél ÓRA
+            // került a naplóba egy ötvenöt perces futásra.
+            if (m.start() >= 1 && s.substring(0, m.start()).trim().endsWith("@")) continue;
             if (s.startsWith("-as", m.end()) || s.startsWith("-es", m.end())
                     || s.startsWith("/km", m.end())
                     // A „ tempo" utótag is csak tempó-tartományú számra:

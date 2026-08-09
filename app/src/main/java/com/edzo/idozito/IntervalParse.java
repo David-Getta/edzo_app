@@ -127,12 +127,14 @@ public final class IntervalParse {
         // pulzus csak megjegyzés a terv mellett.
         if (s.contains("pulzus") || s.contains("nyugalmi") || s.contains("bpm")
                 || s.contains("hrv")) {
-            boolean saysPlan = false;
-            for (String w : new String[]{"kor", "round", "munka", "pihen", "tabata",
-                    "emom", "amrap", "intervall", "interval", "hiit", "szett", "sorozat"})
-                if (s.contains(w)) { saysPlan = true; break; }
-            if (!saysPlan) return null;
+            if (!saysPlan(s)) return null;
         }
+        // A TEMPÓ sem ritmus: a „10 km @ 5:30" és a „10 km-t futottam 5:30-as
+        // tempóval" órán mért futás, nem szakaszos terv – eddig mindkettőből
+        // egykörös, öt és fél perces időzítő lett. A táv kimondása mellett
+        // csak akkor van terv, ha a mondat ki is mondja.
+        if (java.util.regex.Pattern.compile("\\d\\s?-?(?:km|kilometer)(?![a-z])")
+                .matcher(s).find() && !saysPlan(s)) return null;
         // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
         // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
         s = clockToSeconds(s);
@@ -705,6 +707,15 @@ public final class IntervalParse {
             // recovery" hármasa eddig elveszett, és pihenő nélküli tervet
             // ajánlott az app.
             "recovery", "easy", "jog", "walk", "break"};
+
+    /** Kimondja-e a mondat magát a szakaszos szerkezetet? */
+    private static boolean saysPlan(String s) {
+        for (String w : new String[]{"kor", "round", "munka", "pihen", "tabata",
+                "emom", "amrap", "intervall", "interval", "hiit", "szett", "sorozat",
+                "fartlek", "sprint", "ismetles"})
+            if (s.contains(w)) return true;
+        return false;
+    }
 
     /** A munkaszakaszt jelölő szavak – a pihenőnek ez a határa, és fordítva. */
     private static final String[] WORK_WORDS = {"munka", "aktiv", "terheles",
