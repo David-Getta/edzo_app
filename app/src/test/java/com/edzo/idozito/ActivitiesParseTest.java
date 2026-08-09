@@ -2192,4 +2192,22 @@ public class ActivitiesParseTest {
         // Táv nélküli alkalomszám érintetlen.
         assertEquals(3, Activities.parse("3 futás a héten").plans.get(0).count);
     }
+
+    /**
+     * A „sem" ugyanolyan tagadás, mint a „nem".
+     *
+     * A „ma sem edzettem" mondatból negyvenöt perces „egyéb mozgás" lett –
+     * vagyis pont az ellenkezője annak, amit a felhasználó leírt. A magyarban
+     * a „sem" a megszokott alak, ha a tegnap is kimaradt.
+     */
+    @Test public void theOtherNegationWordCountsToo() {
+        assertTrue(Activities.parse("ma sem edzettem").isEmpty());
+        assertTrue(Activities.parse("ma sem futottam").isEmpty());
+        // Csak előre töröl: a mondat másik fele megmarad.
+        assertEquals("tura", Activities.parse("ma sem volt edzés, de 8000 lépést mentem")
+                .plans.get(0).kind.id);
+        // A „semmi" nem esik ide: ott a tő után betű áll, nem szóköz.
+        assertEquals(45, Activities.parse("ma 45 perc kondi és semmi más")
+                .plans.get(0).minutes);
+    }
 }

@@ -2054,7 +2054,8 @@ public final class Activities {
     /** Tagadó / pihenőnapos mondat: az üres eredmény oka nem értetlenség. */
     public static boolean looksLikeRest(String text) {
         String s = Foods.norm(text == null ? "" : text);
-        for (String w : new String[]{"nem ", "megsem ", "kihagytam", "kimaradt", "elmarad",
+        for (String w : new String[]{"nem ", "megsem ", "sem ",
+                "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "pihenonap", "pihenes", "pihentem", "rest day"}) {
             int p = s.indexOf(w);
             if (p >= 0 && (p == 0 || !Character.isLetter(s.charAt(p - 1)))) return true;
@@ -2095,7 +2096,13 @@ public final class Activities {
             h = s.indexOf("helyett", h + 1);
         }
         s = new String(q);
-        for (String w : new String[]{"nem ", "megsem ", "kihagytam", "kimaradt", "elmarad",
+        for (String w : new String[]{"nem ", "megsem ",
+                // A „SEM" ugyanolyan tagadás, mint a „nem": a „ma sem
+                // edzettem" mondatból eddig negyvenöt perces „egyéb mozgás"
+                // lett – vagyis pont az ellenkezője annak, amit leírt. A
+                // „semmi" nem esik ide: ott a tő után betű áll, nem szóköz.
+                "sem ",
+                "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
                 // A pihenőnap nem edzés. Megnevezett napok mellett ez különösen
                 // fontos: a „szombaton túráztam 4 órát, vasárnap pihentem" két
@@ -2151,7 +2158,8 @@ public final class Activities {
                     // az elmaradt/nézett/vásárolt edzésnél az EGÉSZ tagmondat
                     // megy („a foci elmaradt", „foci vb-t néztem").
                     int a = p;
-                    boolean forward = w.equals("nem ") || w.equals("megsem ");
+                    boolean forward = w.equals("nem ") || w.equals("megsem ")
+                            || w.equals("sem ");
                     if (!forward)
                         while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.'
                                 && s.charAt(a - 1) != ';') a--;
