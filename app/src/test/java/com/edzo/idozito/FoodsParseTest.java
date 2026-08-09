@@ -218,6 +218,29 @@ public class FoodsParseTest {
         assertEquals("Proteinszelet", hits("150 g proteinszelet").get(0).food.name);
     }
 
+    /**
+     * A felsorolásban a „sör" nem mértékszó.
+     *
+     * Az „egy sor csoki" sora mennyiséget mond, de a „pizza, sör, fagyi"
+     * vesszője új tételt nyit – a sör eddig némán kimaradt belőle.
+     */
+    @Test public void theBeerInAListIsStillABeer() {
+        assertEquals(3, hits("pizza, sör, fagyi").size());
+        assertEquals("Sör", hits("pizza, sör, fagyi").get(1).food.name);
+        // A mértékszó változatlan: az „egy sor csoki" egy csoki.
+        assertEquals(1, hits("egy sor csoki").size());
+        assertEquals("Csokoládé", hits("egy sor csoki").get(0).food.name);
+    }
+
+    /** A „bevettem" a vásárlás igéjét tartalmazza, mégis elfogyasztás. */
+    @Test public void takingASupplementIsEating() {
+        assertEquals("Étrend-kiegészítő",
+                hits("edzés előtt bevettem egy kreatint").get(0).food.name);
+        assertEquals(1, hits("bevettem a D-vitamint").size());
+        // A valódi vásárlás továbbra sem étkezés.
+        assertTrue(hits("vettem két kiló almát").isEmpty());
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci

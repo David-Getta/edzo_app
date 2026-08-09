@@ -1251,9 +1251,16 @@ public final class Foods {
                 String acc = accentedOf(q.substring(m.pos, m.pos + m.len));
                 if (acc != null && !acc.equals(q.substring(m.pos, m.pos + m.len))
                         && !qAcc.regionMatches(m.pos, acc, 0, acc.length()))
-                    for (Match o : in)
-                        if (o != m && o.pos > m.pos + m.len && o.pos <= m.pos + m.len + 2)
+                    for (Match o : in) {
+                        int gapA = m.pos + m.len, gapB = o.pos;
+                        // A köztük álló rész CSAK szóköz lehet: az „egy sor
+                        // csoki" mértékszó, a „pizza, sör, fagyi" viszont
+                        // felsorolás – ott a vessző új tételt nyit, és a sör
+                        // eddig némán kimaradt belőle.
+                        if (o != m && gapB > gapA && gapB <= gapA + 2
+                                && q.substring(gapA, gapB).trim().isEmpty())
                             drop = true;
+                    }
                 if (drop) {
                     // „egy sor csoki és egy sör”: a mértékszó után máshol
                     // OTT LEHET a valódi ital – ilyenkor nem eldobjuk a
@@ -2898,7 +2905,12 @@ public final class Foods {
         for (String w : new String[]{"ettem", "ettel", "evett", "eszem", "ittam",
                 "ittal", "ivott", "iszom", "megettem", "megittam", "elfogyasztottam",
                 "bekaptam", "haraptam", "reggeliztem", "ebedeltem", "vacsoraztam",
-                "uzsonnaztam", "nassoltam", "faltam", "kertem", "rendeltem"})
+                "uzsonnaztam", "nassoltam", "faltam", "kertem", "rendeltem",
+                // A „bevettem" a VÁSÁRLÁS igéjét tartalmazza, pedig pont az
+                // ellenkezőjét jelenti: az „edzés előtt bevettem egy
+                // kreatint" elfogyasztott étrend-kiegészítő, és eddig
+                // bevásárlásnak látszott.
+                "bevettem", "beszedtem", "lenyeltem"})
             if (wholeWord(s, w)) return false;
         return true;
     }
