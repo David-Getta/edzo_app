@@ -1735,7 +1735,7 @@ public final class Activities {
     /** Tagadó / pihenőnapos mondat: az üres eredmény oka nem értetlenség. */
     public static boolean looksLikeRest(String text) {
         String s = Foods.norm(text == null ? "" : text);
-        for (String w : new String[]{"nem ", "kihagytam", "kimaradt", "elmarad",
+        for (String w : new String[]{"nem ", "megsem ", "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "pihenonap", "pihenes", "pihentem", "rest day"}) {
             int p = s.indexOf(w);
             if (p >= 0 && (p == 0 || !Character.isLetter(s.charAt(p - 1)))) return true;
@@ -1766,7 +1766,7 @@ public final class Activities {
             h = s.indexOf("helyett", h + 1);
         }
         s = new String(q);
-        for (String w : new String[]{"nem ", "kihagytam", "kimaradt", "elmarad",
+        for (String w : new String[]{"nem ", "megsem ", "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
                 // A pihenőnap nem edzés. Megnevezett napok mellett ez különösen
                 // fontos: a „szombaton túráztam 4 órát, vasárnap pihentem" két
@@ -1809,7 +1809,8 @@ public final class Activities {
                     // az elmaradt/nézett/vásárolt edzésnél az EGÉSZ tagmondat
                     // megy („a foci elmaradt", „foci vb-t néztem").
                     int a = p;
-                    if (!w.equals("nem "))
+                    boolean forward = w.equals("nem ") || w.equals("megsem ");
+                    if (!forward)
                         while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != '.'
                                 && s.charAt(a - 1) != ';') a--;
                     int e = p;
@@ -1819,7 +1820,7 @@ public final class Activities {
                     // néztem és futottam 30 percet" futása megtörtént, a
                     // „vettem egy cipőt és futottam 5 km-t" öt kilométere
                     // szintén. Enélkül a kötőszó utáni valódi edzés is eltűnt.
-                    if (!w.equals("nem ")) {
+                    if (!forward) {
                         for (String c : LINKERS) {
                             int k = s.indexOf(c, p);
                             if (k >= 0 && k < e) e = k;
@@ -1831,7 +1832,7 @@ public final class Activities {
                     // ÚJ állítást nyit, nem folytatja a tagadást. Csak akkor
                     // fut tovább a törlés, ha a másik fele is tagadva van
                     // („nem futottam és nem úsztam").
-                    if (w.equals("nem ")) {
+                    if (forward) {
                         int es = s.indexOf(" es ", p);
                         if (es >= 0 && es < e && !s.startsWith("nem ", es + 4)) e = es;
                         // A KÍSÉRŐ megmarad: a „nem futottam a kondi mellett"

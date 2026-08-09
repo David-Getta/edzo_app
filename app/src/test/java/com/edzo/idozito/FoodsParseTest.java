@@ -238,6 +238,12 @@ public class FoodsParseTest {
         for (String q : new String[]{"csokit nem ettem", "sört nem ittam",
                 "pizzát nem kértem", "kenyeret nem eszem", "nem ettem csokit"})
             assertTrue(q + " -> " + Foods.parse(all, q), Foods.parse(all, q).isEmpty());
+        // A „mégsem" ugyanaz a tagadás: a „mégsem ettem a csokit" eddig
+        // huszonöt gramm csokoládét írt a naplóba.
+        for (String q : new String[]{"mégsem ettem a csokit", "mégsem ittam meg a sört"})
+            assertTrue(q + " -> " + Foods.parse(all, q), Foods.parse(all, q).isEmpty());
+        assertEquals("Alma", Foods.parse(all, "mégsem ettem csokit, de almát igen")
+                .get(0).food.name);
         // A tagadás nem eszi meg a szomszéd tagmondat ételét.
         java.util.List<Foods.Hit> h = Foods.parse(all, "csokit nem, almát igen");
         assertEquals(1, h.size());

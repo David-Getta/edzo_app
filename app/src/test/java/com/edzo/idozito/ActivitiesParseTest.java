@@ -194,6 +194,15 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×munka/120", summary("metszettem a fákat 2 órát"));
     }
 
+    @Test public void afterAllMeansItDidNotHappen() {
+        // A „mégsem" ugyanaz a tagadás, csak megfordított szándékkal – eddig
+        // negyvenöt perces futás lett belőle, vagyis pont az, ami elmaradt.
+        assertEquals("1d+0: ", summary("mégsem futottam ma"));
+        assertEquals("1d+0: ", summary("mégsem mentem el edzeni"));
+        // A mondat másik fele viszont megtörtént.
+        assertEquals("1d+0: 1×uszas/30", summary("mégsem futottam, de úsztam 30 percet"));
+    }
+
     @Test public void aDateAtTheStartOfTheLineIsADate() {
         // A naplóból kimásolt sor így néz ki. Rag és évszám nélkül eddig nem
         // dátumnak számított, hanem darabszámnak: a „01.15 futás 8 km"-ből

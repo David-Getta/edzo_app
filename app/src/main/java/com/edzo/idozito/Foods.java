@@ -2985,6 +2985,11 @@ public final class Foods {
         // igen: a „nem ettem semmit, de ittam kávét" kávéja megmarad.
         for (String w : new String[]{"nem ettem", "nem eszem", "nem ittam",
                 "nem iszom", "nem kertem", "nem kerek", "kihagytam",
+                // A „mégsem" ugyanaz a tagadás, csak megfordított szándékkal:
+                // a „mégsem ettem a csokit" eddig huszonöt gramm csokoládét
+                // írt a naplóba – pont azt, amit az ember nem evett meg.
+                "megsem ettem", "megsem eszem", "megsem ittam", "megsem iszom",
+                "megsem kertem", "megsem vettem",
                 "elutasitottam", "visszautasitottam"}) {
             int p = q.indexOf(w);
             while (p >= 0) {
