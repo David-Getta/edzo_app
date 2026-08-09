@@ -85,7 +85,14 @@ public final class Hu {
                 // számából. („A mérleg 79,6-ot mutatott" időzítő-terv volt.)
                 boolean caseSuffix = p > 1 && out.charAt(p - 1) == '-'
                         && Character.isDigit(out.charAt(p - 2));
-                boolean glued = caseSuffix
+                // A „hát" nem hat. Ékezet nélkül a testtáj és a számnév
+                // egybeesik, és a „felső hát erősítés" hat darab hatvanperces
+                // kondi-bejegyzés lett hat napra elosztva. A jelző dönti el:
+                // a „felső/alsó hát" testrész.
+                boolean bodyPart = w[0].equals("hat")
+                        && ((p >= 6 && out.startsWith("felso ", p - 6))
+                            || (p >= 5 && out.startsWith("also ", p - 5)));
+                boolean glued = caseSuffix || bodyPart
                         || (p > 0 && Character.isLetter(out.charAt(p - 1)))
                         || (e < out.length() && Character.isLetter(out.charAt(e)) && !mult);
                 if (glued) {

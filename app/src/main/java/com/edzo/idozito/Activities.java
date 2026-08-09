@@ -800,6 +800,10 @@ public final class Activities {
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.
         maskNotSport(q);
+        // A „hát" nem hat: a „felső hát erősítés" hat darab hatvanperces
+        // kondi-bejegyzés lett hat napra elosztva. Ékezet nélkül a testtáj és
+        // a számnév egybeesik, a jelző viszont eldönti.
+        maskBackNoun(q);
         // Ami nem történt meg, az nem kerül a naplóba: a „nem futottam", a
         // „kihagytam", az „elmaradt" és az „X helyett" edzése kitakarva.
         stripNegated(q);
@@ -1707,6 +1711,7 @@ public final class Activities {
     private static void stripNegated(char[] q) {
         stripBackwardNegation(q);
         stripOtherPerson(q);
+        stripStartOfHabit(q);
         String s = new String(q);
         int h = s.indexOf("helyett");
         while (h >= 0) {
@@ -2755,6 +2760,50 @@ public final class Activities {
             blank(q, st, dash + 1);
             if (lo == hi || lo > hi || hi > lo * 3) continue;
             t[1] = t[1] * (lo + hi) / (2 * hi);
+        }
+    }
+
+    /** A „felső/alsó hát" testtáj – a benne lakó számnév kitakarva. */
+    private static void maskBackNoun(char[] q) {
+        String s = new String(q);
+        for (String w : new String[]{"felso hat", "also hat"}) {
+            int p = s.indexOf(w);
+            while (p >= 0) {
+                int h = p + w.length() - 3;
+                if (h + 3 >= s.length() || !Character.isLetter(s.charAt(h + 3)))
+                    blank(q, h, h + 3);
+                p = s.indexOf(w, p + 1);
+            }
+        }
+    }
+
+    /**
+     * A SZOKÁS KEZDETE nem egy edzés: „három hónapja kezdtem el edzeni".
+     *
+     * A mondat egy időpontról szól – arról, hogy mióta sportol az ember –,
+     * nem egy megtörtént alkalomról. Eddig kilencven nappal ezelőttre bekerült
+     * egy negyvenöt perces „egyéb mozgás", vagyis egy soha meg nem történt
+     * edzés, ráadásul a sorozat- és a heti statisztikába is.
+     *
+     * Csak akkor lép be, ha a tagmondat egy „ennyi ideje" alakot tartalmaz
+     * (ez teszi visszatekintéssé), és nincs benne se időtartam, se táv – a
+     * „két hete kezdtem el futni, azóta 40 km" második fele megmarad.
+     */
+    private static void stripStartOfHabit(char[] q) {
+        String s = new String(q);
+        if (!s.contains("kezdt")) return;
+        int a = 0;
+        while (a < s.length()) {
+            int e = a;
+            while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
+                    && s.charAt(e) != ';') e++;
+            String cl = s.substring(a, e);
+            if (cl.contains("kezdt")
+                    && cl.matches(".*\\b(\\d{1,3}|egy|ket|ketto|harom|negy|ot|hat|het|"
+                            + "nyolc|kilenc|tiz)\\s?(napja|hete|honapja|eve)\\b.*")
+                    && !cl.matches(".*\\d\\s?(perc|ora|km|m|meter|kilometer).*"))
+                blank(q, a, e);
+            a = e + 1;
         }
     }
 

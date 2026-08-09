@@ -172,6 +172,27 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    @Test public void theStartOfAHabitIsNotAWorkout() {
+        // A „három hónapja kezdtem el edzeni" arról szól, hogy MIÓTA sportol
+        // az ember – eddig kilencven nappal ezelőttre bekerült egy negyvenöt
+        // perces „egyéb mozgás", ami sosem történt meg.
+        assertEquals("1d+0: ", summary("három hónapja kezdtem el edzeni"));
+        assertEquals("1d+0: ", summary("két éve kezdtem futni"));
+        // A mondat másik fele viszont megmarad, és a mai kezdés is edzés.
+        assertEquals("1d+0: 1×futas/240",
+                summary("két hete kezdtem el futni, azóta 40 km-t futottam"));
+        assertEquals("1d+0: 1×kondi/45", summary("ma elkezdtem edzeni, 45 perc kondi"));
+    }
+
+    @Test public void theUpperBackIsNotTheNumberSix() {
+        // Ékezet nélkül a „hát" és a „hat" egybeesik: a „felső hát erősítés"
+        // hat darab hatvanperces kondi-bejegyzés lett, hat napra elosztva.
+        assertEquals("1d+0: 1×kondi/60", summary("felső hát erősítés"));
+        assertEquals("1d+0: ", summary("alsó hát gyakorlatok"));
+        // A számnév attól még szám marad, ha tényleg az.
+        assertEquals("6d+0: 6×kondi/60", summary("hat kondi edzés"));
+    }
+
     @Test public void stepCountsBecomeAWalk() {
         // A „10000 lépés" túra/gyaloglás: ~130 lépés/perc, ~75 cm/lépés.
         Activities.Plan p = Activities.parse("ma 10000 lépés").plans.get(0);

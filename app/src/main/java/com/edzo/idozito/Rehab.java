@@ -551,7 +551,10 @@ public final class Rehab {
                 // (madár-kutya, curl-up) nem is szól róla. A puszta „hátam"
                 // marad a deréknál: aki csak annyit mond, hogy fáj a háta,
                 // az magyarul legtöbbször az ágyéki szakaszra gondol.
-                {"hati", "hati gerinc", "hati csigolya", "felso hat", "felso hatam",
+                // A „háti" jelzőként is egyértelmű („háti gyakorlat", „háti
+                // mobilizálás") – szóközzel a végén, hogy a „hátizsák" ne
+                // essen ide.
+                {"hati", "hati ", "hati gerinc", "hati csigolya", "felso hat", "felso hatam",
                         // A TARTÁS a háti szakasz ügye: „jobb tartás",
                         // „helyes tartás", „tartásjavítás".
                         "jobb tartas", "helyes tartas", "tartasjavit", "rossz tartas",

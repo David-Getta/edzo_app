@@ -198,6 +198,11 @@ public class RehabTest {
         assertEquals("achilles", Rehab.forGoal("achilles megelőzés").id);
         assertEquals("terd", Rehab.forGoal("térd stabilizálás").id);
         assertEquals("comb", Rehab.forGoal("comb rehab").id);
+        // A „háti" jelzőként is egyértelmű – így kéri, aki egész nap ül.
+        assertEquals("hati", Rehab.forGoal("kéne valami háti gyakorlat").id);
+        assertEquals("hati", Rehab.forGoal("háti mobilizálás kellene").id);
+        // De a hátizsák nem a háti gerinc.
+        assertNull(Rehab.forGoal("hátizsákos gyakorlatok"));
         assertEquals("csuklo", Rehab.forGoal("csukló mobilizálás").id);
         // A csirkecomb cél-mondatban sem testtáj.
         assertNull(Rehab.forGoal("csirkecomb rehab"));
