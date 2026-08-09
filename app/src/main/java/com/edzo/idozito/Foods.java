@@ -1027,6 +1027,11 @@ public final class Foods {
      * gnocchi. A ragozás rendre gyárt ilyen véletlen betűsorokat.
      */
     private static final String[] START_ONLY = {"gin", "pho", "chia", "kesu", "stek", "zab",
+            // A BAB a magyar „-ában/-ába" ragban is előáll: a hibÁBAn, a
+            // lábÁBAn, a szobÁBAn és a próbÁBAn is tartalmazza. Szó elején
+            // viszont félreérthetetlen – a bableves, a babfőzelék és a
+            // zöldbab saját tővel él tovább.
+            "bab",
             // A „rozé" a SÖRÖZÉS közepén is ott van – abból eddig egy pohár
             // bor lett a három korsó sör helyett.
             "roze"};

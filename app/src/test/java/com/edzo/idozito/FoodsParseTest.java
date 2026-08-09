@@ -263,6 +263,17 @@ public class FoodsParseTest {
         assertEquals("Tojás", hits("ettem 2 tojást").get(0).food.name);
     }
 
+    /** A magyar „-ában/-ába" rag BABot gyárt: a hibában, a lábában, a próbában. */
+    @Test public void theBeanOnlyCountsAtTheWordStart() {
+        for (String q : new String[]{"hibában voltam", "fáj a lábában",
+                "próbában vettem részt"})
+            assertTrue(q + " -> " + hits(q), hits(q).isEmpty());
+        // A valódi bab marad – összetételben is.
+        assertEquals("Bab (főtt)", hits("ettem egy tányér babot").get(0).food.name);
+        assertEquals("Zöldbab", hits("zöldbab köret").get(0).food.name);
+        assertEquals("Chilis bab (con carne)", hits("chilis bab vacsorára").get(0).food.name);
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
