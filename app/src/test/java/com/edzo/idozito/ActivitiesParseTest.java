@@ -2337,4 +2337,23 @@ public class ActivitiesParseTest {
         assertEquals("kondi", Activities.parse("push day: 4 gyakorlat")
                 .plans.get(0).kind.id);
     }
+
+    /**
+     * A termi órák nevét is fel kell ismerni.
+     *
+     * A „spin óra" ugyanaz, mint a szobabicikli, az „aqua fitness" a vízben
+     * történik, a „pole fitness" pedig tánc. Aki órára jár, az óra nevét írja
+     * be, nem a mozgásformát – eddig mindhárom üres választ kapott.
+     */
+    @Test public void theGymClassNamesAreUnderstood() {
+        assertEquals("kerekpar", Activities.parse("spin óra 50 perc")
+                .plans.get(0).kind.id);
+        assertEquals(50, Activities.parse("spin óra 50 perc").plans.get(0).minutes);
+        assertEquals("uszas", Activities.parse("aqua fitness 45 perc")
+                .plans.get(0).kind.id);
+        assertEquals("tanc", Activities.parse("pole fitness 60 perc")
+                .plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("indoor cycling 40 perc")
+                .plans.get(0).kind.id);
+    }
 }

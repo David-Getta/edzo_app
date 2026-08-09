@@ -232,6 +232,8 @@ rovására. Huszonkét valódi edzés-mondaton az étel-felismerő egyetlen éte
 sem talált, tehát ha talál, az tényleg ott van.
 
 ### 📝 Kézi edzés-felvétel
+- **A termi napok angol neve is edzés**: „leg day”, „push day”, „pull day”,
+  „full body”, „upper body” – a magyar edzőtermek nyelve
 - **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
   kondi, foci, tenisz, jóga, kenu, búvárkodás, salsa, barlangászat… –
   20 mozgásforma, sportág szerinti

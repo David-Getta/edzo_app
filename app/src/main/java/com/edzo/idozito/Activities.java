@@ -55,6 +55,10 @@ public final class Activities {
                     "futoverseny", "terepfutas", "spartan", "parkrun"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
+                    // A vizes termi óra is a medencében van: „aqua fitness
+                    // 45 perc", „aqua aerobik".
+                    "aqua fitness", "aquafitness", "aqua aerobik", "aquaaerobik",
+                    "aqua zumba",
                     // Az USZODA maga is úszás: az „a helyi uszodában 1 km"
                     // eddig egykilométeres FUTÁS lett, mert a puszta táv
                     // magyarul futást jelent.
@@ -79,6 +83,9 @@ public final class Activities {
                     // A spinning teremben zajlik, de a lába ugyanazt csinálja:
                     // a tánc MET-je alábecsülte.
                     "spinning", "szobabicikli", "spinning ora",
+                    // A termi óra rövid neve: „spin óra 50 perc". A puszta
+                    // „spin" nem tő – az óra-szó teszi félreérthetetlenné.
+                    "spin ora", "spinora", "spin-ora", "indoor cycling",
                     // A „bringatúra" egyben fedi a „bringa" és a „túra" tövet is.
                     "bringatura", "biciklitura", "kerekpartura",
                     // A terepkerékpár a hazai szóhasználatban angolul él:
@@ -151,7 +158,8 @@ public final class Activities {
                     "tai chi", "taichi"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
-                    "pole dance", "poledance", "rudtanc"),
+                    "pole dance", "poledance", "rudtanc", "pole fitness",
+                    "polefitness"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
