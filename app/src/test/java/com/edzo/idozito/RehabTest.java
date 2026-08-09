@@ -703,4 +703,18 @@ public class RehabTest {
         // A kimondott hosszúságú core-edzés viszont megtörtént mozgás marad.
         assertEquals(30, Activities.parse("core edzés 30 perc").plans.get(0).minutes);
     }
+
+    /**
+     * A tartás ragozott alakja is ugyanaz a kérés.
+     *
+     * A „jobb tartás" már a háti szakaszhoz vitt, a „hogyan javítsam a
+     * tartásomat?" viszont válasz nélkül maradt – pedig ez a leggyakoribb
+     * megfogalmazás, és a kérdőjel a rehab-lapon nem akadály.
+     */
+    @Test public void thePostureQuestionFindsItsArea() {
+        assertEquals("hati", Rehab.forGoal("hogyan javítsam a tartásomat?").id);
+        assertEquals("hati", Rehab.forGoal("rossz a tartásom").id);
+        assertEquals("hati", Rehab.forGoal("roskadt a tartásom a gép előtt").id);
+        assertEquals("hati", Rehab.forGoal("tartásjavító gyakorlatok").id);
+    }
 }

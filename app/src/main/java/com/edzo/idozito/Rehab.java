@@ -654,6 +654,10 @@ public final class Rehab {
                         // A TARTÁS a háti szakasz ügye: „jobb tartás",
                         // „helyes tartás", „tartásjavítás".
                         "jobb tartas", "helyes tartas", "tartasjavit", "rossz tartas",
+                        // A ragozott alak is ugyanaz a kérés: „hogyan
+                        // javítsam a tartásomat?" eddig válasz nélkül maradt.
+                        "tartasom", "tartasod", "tartasa javul", "a tartason",
+                        "tartas javit", "egyenes tartas", "roskadt", "roggyant",
                         "lapocka", "hat kozepe", "hatam kozepe", "mellkasi gerinc",
                         "gorbe hat", "gorbult hat", "gorbe a hat"},
                 {"derek", "derekam", "dereka", "derek", "hatam", "hatfaj", "also hat",
