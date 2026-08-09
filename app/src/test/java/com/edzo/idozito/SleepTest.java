@@ -124,6 +124,14 @@ public class SleepTest {
         // az „ágyba bújtam" ugyanaz a pillanat.
         assertEquals(8.0, Sleep.parse("este 10-re ágyban voltam, reggel 6-kor keltem"), 0.01);
         assertEquals(9.0, Sleep.parse("ágyba bújtam 22-kor, 7-kor keltem"), 0.01);
+        // Az ébredés állhat elöl is – ugyanaz az éjszaka, fordított sorrendben
+        // elmesélve. Eddig a különbség tizenhat óra lett, és a tizenkét órás
+        // igazítás négy és negyed órányi alvást hazudott rá.
+        assertEquals(7.8, Sleep.parse("ma reggel 6:30-kor keltem, 22:45-kor feküdtem le"), 0.05);
+        assertEquals(7.0, Sleep.parse("6-kor ébredtem, előtte 23-kor feküdtem le"), 0.01);
+        // A kettősponttal kiírt óra huszonnégy órás adat: azt nem toljuk el
+        // tizenkettővel, hogy „életszerűbb" hossz jöjjön ki belőle.
+        assertEquals(8.0, Sleep.parse("23:00-kor feküdtem le, 7:00-kor keltem"), 0.01);
         // Alvás-szó nélkül nincs bejegyzés: az edzés-időpont nem éjszaka.
         assertEquals(-1, Sleep.parse("18:00-tól 19:30-ig kondi"), 0.01);
         assertEquals(-1, Sleep.parse("edzés 6-kor és 18-kor"), 0.01);

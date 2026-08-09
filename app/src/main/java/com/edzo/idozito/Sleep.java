@@ -132,6 +132,16 @@ public final class Sleep {
         return -1;
     }
 
+    /** A felsorolt szavak közül a legkorábbi előfordulás helye, vagy -1. */
+    private static int firstOf(String s, String[] words) {
+        int best = -1;
+        for (String w : words) {
+            int p = s.indexOf(w);
+            if (p >= 0 && (best < 0 || p < best)) best = p;
+        }
+        return best;
+    }
+
     /**
      * Két időpont közti alvás, vagy -1: „este 11-kor feküdtem, 7-kor keltem".
      *
@@ -156,6 +166,10 @@ public final class Sleep {
         boolean ctx = s.contains("alud") || s.contains("alvas") || (bed && up);
         if (!ctx) return -1;
         java.util.List<Integer> mins = new java.util.ArrayList<>();
+        // Melyik óra volt kettősponttal, teljes alakban kiírva? A „22:45"
+        // huszonnégy órás adat, azon nincs mit igazítani – a tizenkét órás
+        // eltolás csak a csupasz óraszámnak („10-kor feküdtem le") szól.
+        java.util.List<Boolean> exact = new java.util.ArrayList<>();
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 // „22:30" – óra és perc kettősponttal
                 "(?<![\\d,])(\\d{1,2}):(\\d{2})"
@@ -174,9 +188,21 @@ public final class Sleep {
             int b = m.start();
             if (b >= 4 && s.startsWith("0,5 ", b - 4)) { h = (h + 23) % 24; mi = 30; }
             mins.add((h % 24) * 60 + mi);
+            exact.add(m.group(1) != null);
         }
         if (mins.size() < 2) return -1;
-        for (int shift : new int[]{0, 12 * 60}) {
+        // Az ébredés is állhat elöl: a „reggel 6:30-kor keltem, 22:45-kor
+        // feküdtem le" ugyanaz az éjszaka, csak fordított sorrendben mondva.
+        // Enélkül a különbség tizenhat óra lett, és a tizenkét órás igazítás
+        // négy és negyed órányi alvást hazudott rá.
+        int bedAt = firstOf(s, new String[]{"fekudtem", "fekszem", "lefeku",
+                "agyban volt", "agyba bujt", "agyban vagyok"});
+        int upAt = firstOf(s, new String[]{"keltem", "ebredtem"});
+        if (bedAt >= 0 && upAt >= 0 && upAt < bedAt) {
+            java.util.Collections.reverse(mins);
+            java.util.Collections.reverse(exact);
+        }
+        for (int shift : new int[]{0, exact.get(0) ? 0 : 12 * 60}) {
             int from = (mins.get(0) + shift) % (24 * 60);
             int to = mins.get(1);
             int diff = to - from;
