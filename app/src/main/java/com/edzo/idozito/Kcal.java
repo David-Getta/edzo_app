@@ -34,6 +34,18 @@ public final class Kcal {
             "(\\d+(?:[.,]\\d+)?)\\s*(kcal|kkal|k cal|kalori[a-z]*|cal)(?![a-z])");
 
     /**
+     * Étkezés-szó után álló, mértékegység NÉLKÜLI szám: „…, ebéd 700".
+     *
+     * A „reggeli" itt is szerepel – étkezés-szóként –, de a minta megköveteli
+     * a közvetlenül utána álló számot, így a „reggeli futás 45 perc 520 kcal"
+     * nem esik ide.
+     */
+    private static final Pattern MEAL_NUM = Pattern.compile(
+            "(?<![a-z])(?:reggeli|tizorai|ebed|uzsonna|vacsora|nassolas|snack)"
+                    + "\\s*:?\\s*(\\d{2,4})(?!\\d)(?![.,]\\d)"
+                    + "(?!\\s?(?:kcal|kkal|k cal|kalori|cal|g|gr|gramm|%|perc|km|kg))");
+
+    /**
      * Kilojoule: az EU-s címke ezt írja ELSŐ helyen, és van doboz, amin csak
      * ez szerepel. 4,184 kJ = 1 kcal.
      */
@@ -135,6 +147,20 @@ public final class Kcal {
             try { v = Double.parseDouble(m.group(1).replace(',', '.')); }
             catch (NumberFormatException e) { continue; }
             sum += v;
+        }
+        // A FELSOROLÁSBAN a mértékegység csak egyszer szerepel: a „reggeli
+        // 350 kcal, ebéd 700, vacsora 600" magyarul teljesen világos, eddig
+        // mégis csak az első szám került be – a napi bevitel harmada. Csak
+        // akkor lép be, ha van legalább egy kiírt kalória, és csak étkezés-szó
+        // után álló, mértékegység nélküli szám adódik hozzá.
+        if (sum > 0) {
+            m = MEAL_NUM.matcher(s);
+            while (m.find()) {
+                double v;
+                try { v = Double.parseDouble(m.group(1)); }
+                catch (NumberFormatException e) { continue; }
+                if (v >= MIN && v <= MAX) sum += v;
+            }
         }
         // Kilojoule csak akkor, ha kalória nincs: a doboz mindkettőt írja, és
         // a kettő ugyanaz az érték kétszer – összeadni dupla ebéd lenne.

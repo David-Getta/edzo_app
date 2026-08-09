@@ -153,6 +153,22 @@ public class KcalTest {
         assertEquals(520, Kcal.burned("reggeli futás 45 perc 520 kcal"));
     }
 
+    /**
+     * A felsorolásban a mértékegység csak egyszer szerepel.
+     *
+     * A „reggeli 350 kcal, ebéd 700, vacsora 600" magyarul teljesen világos,
+     * eddig mégis csak az első szám került be – a napi bevitel harmada.
+     */
+    @Test public void aMealListSharesTheUnit() {
+        assertEquals(1650, Kcal.stated("reggeli 350 kcal, ebéd 700, vacsora 600"));
+        assertEquals(1050, Kcal.stated("reggeli 350 kcal, ebéd 700 kcal"));
+        // Kiírt kalória nélkül nem találgatunk.
+        assertEquals(-1, Kcal.stated("reggeli 350, ebéd 700"));
+        // A napszak-jelző nem étkezés: a „reggeli futás 45 perc 520 kcal"
+        // ötszázhúsz marad.
+        assertEquals(520, Kcal.stated("reggeli futás 45 perc 520 kcal"));
+    }
+
     /** A cél nyelve nem a bevitelé: a deficit szám nem elfogyasztott kalória. */
     @Test public void aDeficitIsNotAMeal() {
         assertEquals(-1, Kcal.stated("500 kalóriás deficitben vagyok"));
