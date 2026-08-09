@@ -1649,6 +1649,29 @@ public final class Activities {
                 if (p.km > 0 || p.minutes != p.kind.defaultMin) kept.add(p);
             if (!kept.isEmpty() || out.size() > 1) out = kept;
         }
+        // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót
+        // sem mond ki: a „ma 14 000 lépés, 9,8 km" a tíz és fél kilométeres
+        // gyaloglás MELLÉ egy tíz kilométeres FUTÁST is beírt – húsz
+        // kilométer abból a tízből, amit az ember tényleg megtett. A
+        // „14 000 lépés és futottam 5 km-t" viszont két külön dolog, mert ott
+        // a futás ki van mondva.
+        if (out.size() == 2) {
+            Plan stepPlan = null, kmPlan = null;
+            for (Plan p : out) {
+                if (p.steps > 0) stepPlan = p;
+                else if (p.km > 0 && "futas".equals(p.kind.id)) kmPlan = p;
+            }
+            boolean saidRun = false;
+            Kind run = byId("futas");
+            if (run != null)
+                for (String w : run.words) if (rawText.contains(w)) { saidRun = true; break; }
+            if (stepPlan != null && kmPlan != null && !saidRun) {
+                List<Plan> one = new ArrayList<>();
+                one.add(new Plan(stepPlan.kind, 1, stepPlan.minutes,
+                        kmPlan.km, stepPlan.steps));
+                out = one;
+            }
+        }
         // Ugyanez TÁVBAN kiírt szakaszoknál: a „sprint edzés: 10x100 m,
         // köztük séta vissza" sétája a szakaszok közti visszasétálás, nem
         // másfél órás túra – eddig kilencven perc gyaloglás került a naplóba

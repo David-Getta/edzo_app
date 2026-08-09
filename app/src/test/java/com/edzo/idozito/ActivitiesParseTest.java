@@ -2579,4 +2579,23 @@ public class ActivitiesParseTest {
                 + "40 percet").plans.get(0).minutes);
         assertTrue(Activities.parse("reggel 78,4 kg a testsúlyom").plans.isEmpty());
     }
+
+    /**
+     * A lépés és a táv ugyanaz a séta.
+     *
+     * A „ma 14 000 lépés, 9,8 km" a tíz és fél kilométeres gyaloglás MELLÉ
+     * egy tíz kilométeres FUTÁST is beírt – húsz kilométer abból a tízből,
+     * amit az ember tényleg megtett. A „14 000 lépés és futottam 5 km-t"
+     * viszont két külön dolog: ott a futás ki van mondva.
+     */
+    @Test public void theStepsAndTheDistanceAreTheSameWalk() {
+        List<Activities.Plan> p = Activities.parse("ma 14 000 lépés, 9,8 km").plans;
+        assertEquals(1, p.size());
+        assertEquals("tura", p.get(0).kind.id);
+        assertEquals(9.8, p.get(0).km, 0.01);
+        assertEquals(14000, p.get(0).steps);
+        // Kimondott futás mellett marad a két bejegyzés.
+        assertEquals(2, Activities.parse("ma 14 000 lépés és futottam "
+                + "5 km-t").plans.size());
+    }
 }
