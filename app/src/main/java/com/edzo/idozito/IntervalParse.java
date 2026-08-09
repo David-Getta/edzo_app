@@ -207,6 +207,10 @@ public final class IntervalParse {
                     : m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
             int work = Integer.parseInt(m.group(2)) * ("perc".equals(m.group(3)) ? 60 : 1);
             int rest = Integer.parseInt(m.group(4)) * ("perc".equals(m.group(5)) ? 60 : 1);
+            // Tíz másodpercnél rövidebb MUNKA nem ritmus: az „5/3/1" egy
+            // ismert erőemelő program neve, nem öt másodperc munka három
+            // másodperc pihenővel. A legrövidebb valódi alak a tabata 20/10.
+            if (work < 10) return null;
             if (rounds <= 0) {
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");

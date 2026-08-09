@@ -559,4 +559,21 @@ public class IntervalParseTest {
         assertEquals(10, p.rounds);
         assertEquals(300, p.warm);
     }
+
+    /**
+     * Tíz másodpercnél rövidebb munka nem ritmus.
+     *
+     * Az „5/3/1" egy ismert erőemelő program NEVE, nem öt másodperc munka
+     * három másodperc pihenővel – abból eddig időzítő-terv lett. A
+     * legrövidebb valódi alak a tabata húsz-tíze, az megmarad.
+     */
+    @Test public void aRhythmShorterThanTenSecondsIsNotARhythm() {
+        assertNull(IntervalParse.parse("5/3/1 ciklus 3. hete"));
+        assertNull(IntervalParse.parse("5/3/1"));
+        assertNull(IntervalParse.parse("8/4"));
+        assertEquals(20, IntervalParse.parse("20/10").work);
+        assertEquals(8, IntervalParse.parse("8x20/10").rounds);
+        assertEquals(6, IntervalParse.parse("45/15 x 6").rounds);
+        assertEquals(10, IntervalParse.parse("10 kör 30/30").rounds);
+    }
 }

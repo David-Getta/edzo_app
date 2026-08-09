@@ -563,6 +563,12 @@ public final class StrengthParse {
         // sorozat és súly nélkül.
         if (name == null && s.contains("kettlebell")) name = "Kettlebell lendítés";
         if (name == null) return null;
+        // A TEMPÓ-jelölés nem ismétlés: a „tempó 3-1-1-0" négy szakasz
+        // másodperce (le, alul, fel, fent), nem négy sorozat. Kimondott
+        // tempó-szó nélkül a kötőjeles lista továbbra is piramis („12-10-8").
+        if (s.contains("tempo"))
+            s = s.replaceAll("(?<![\\d.,])\\d{1,2}[-/]\\d{1,2}[-/]\\d{1,2}([-/]\\d{1,2})?"
+                    + "(?![\\d.,])", " ");
 
         // Tartásnál a perc percet jelent, és a szám másodperc: a „plank 3×1
         // perc" három egyperces tartás. Átváltás nélkül a bejegyzés csendben

@@ -963,6 +963,13 @@ public class StrengthParseTest {
         assertEquals(10, sl.get(0).sets.get(0).reps);
         assertEquals(60.0, sl.get(0).sets.get(0).weight, 0.001);
         assertEquals(80.0, sl.get(0).topWeight(), 0.001);
+        // A TEMPÓ-jelölés nem ismétlés: a „tempó 3-1-1-0" négy szakasz
+        // másodperce (le, alul, fel, fent), nem négy sorozat.
+        assertTrue(StrengthParse.parse("tempó 3-1-1-0 fekvenyomás").isEmpty());
+        assertTrue(StrengthParse.parse("fekvenyomás 3-1-1-0 tempóval").isEmpty());
+        // Tempó-szó nélkül a kötőjeles lista továbbra is piramis.
+        assertEquals(3, StrengthParse.parse("bicepsz 12-10-8 15 kg").get(0).sets.size());
+        assertEquals(5, StrengthParse.parse("piramis: 10-8-6-4-2 guggolás").get(0).sets.size());
         // A RITMUS-jelölés nem súly/ismétlés: a „40/20" időzítő marad.
         assertTrue(StrengthParse.parse("8x20/10").isEmpty());
         assertTrue(StrengthParse.parse("40/20 8 kör").isEmpty());
