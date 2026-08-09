@@ -276,6 +276,17 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void floorsBecomeMinutes() {
+        // A lépcsőzést emeletben mondjuk, nem percben – az app viszont a
+        // mozgásforma alapértelmezett hosszát adta hozzá, vagyis húsz
+        // emeletből MÁSFÉL ÓRA gyaloglás lett.
+        assertEquals("1d+0: 1×tura/10", summary("lépcsőztem 20 emeletet"));
+        assertEquals("1d+0: 1×tura/8", summary("15 emeletet lépcsőztem"));
+        assertEquals("1d+0: 1×tura/15", summary("30 emelet lépcsőzés"));
+        // A lépcsőház nem mozgás.
+        assertEquals("1d+0: ", summary("a lépcsőházban találkoztunk"));
+    }
+
     @Test public void theWeekendAdjectiveIsNotAWeek() {
         // A „hétvégi" JELZŐ: a „hétvégi hosszú futás 18 km" tizennyolc
         // kilométere hét napra terült szét, és a heti statisztikában hétszer

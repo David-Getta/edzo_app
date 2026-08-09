@@ -82,7 +82,10 @@ public final class Activities {
                     "mountain bike", "mountainbike", "mtb", "gravel"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
-                    "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi",
+                    "hegymasz", "megmaszt", "gyalog", "lepcsoz",
+                    // A ragozott lépcső is lépcsőzés – a „lépcsőház" viszont
+                    // nem mozgás, ezért a puszta tő szándékosan kimarad.
+                    "lepcsot", "lepcson", "lepcsomasz", "lepcsofutas", "babakocsi",
                     "barlangasz", "via ferrata",
                     // A magyar szétszedi az összetételt: „hegyet másztunk",
                     // „hegyre másztam" – a „hegymászás" tövét ez nem fedi.
@@ -847,6 +850,8 @@ public final class Activities {
         java.util.List<int[]> mults = stripMultiplicative(q);
         // Az óra-tartomány időtartammá válik: „18:00-19:30 foci" másfél óra.
         mergeClockRange(q);
+        // A lépcsőzés emeletben mérhető: „20 emeletet lépcsőztem" tíz perc.
+        mergeFloors(q);
         // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
         mergeIntervalDistances(q);
         // Az úszók hosszban mérnek: „40 hosszt úsztam" ezer méter.
@@ -2947,6 +2952,30 @@ public final class Activities {
             if (mins < 0) mins += 24 * 60;
             if (mins < 5 || mins > 600) continue;
             String rep = mins + " perc";
+            if (rep.length() > m.end() - m.start()) continue;
+            blank(q, m.start(), m.end());
+            for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
+        }
+    }
+
+    /**
+     * Emelet → perc: „lépcsőztem 20 emeletet" tíz perc.
+     *
+     * A lépcsőzést emeletben mondjuk, nem percben – az app viszont a
+     * mozgásforma alapértelmezett hosszát adta hozzá, vagyis húsz emeletből
+     * MÁSFÉL ÓRA gyaloglás lett. Egy emelet lendületes tempóval nagyjából
+     * fél perc; ennél kevesebbet nem írunk, mert a mozgás akkor is megvolt.
+     */
+    private static void mergeFloors(char[] q) {
+        String s = new String(q);
+        if (!s.contains("lepcso") && !s.contains("emelet")) return;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d.,])(\\d{1,3})\\s?emelet\\w*").matcher(s);
+        while (m.find()) {
+            int floors;
+            try { floors = Integer.parseInt(m.group(1)); } catch (NumberFormatException e) { continue; }
+            if (floors < 1 || floors > 300) continue;
+            String rep = Math.max(2, Math.round(floors * 0.5f)) + " perc";
             if (rep.length() > m.end() - m.start()) continue;
             blank(q, m.start(), m.end());
             for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
