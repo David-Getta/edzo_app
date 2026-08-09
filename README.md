@@ -185,7 +185,7 @@ sem talált, tehát ha talál, az tényleg ott van.
   tippel és videóval: boka-stabilitás, térd, IT-szalag (a térd külső oldala),
   derék (McGill-hármas), váll, golf- és teniszkönyök, csukló és kéz (egérkéz),
   nyak, csípő, combhajlító, talp (plantar fasciitis), sípcsont, Achilles,
-  **háti gerinc (ülőmunka ellen)** – kész, 10–20 perces megelőző sorok
+  **háti gerinc (ülőmunka ellen)** – kész, 10–15 perces megelőző sorok
 - **A háti gerinc saját sort kapott**: a napi nyolc óra ülés a mellkasi
   szakaszt merevíti be, és ennek árát a nyak és a váll fizeti meg – oda
   vándorol a mozgás, ami innen hiányzik. A „merev a felső hátam", a „fáj a

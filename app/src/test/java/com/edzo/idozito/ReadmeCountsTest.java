@@ -52,6 +52,8 @@ public class ReadmeCountsTest {
                 {"gyakorlat és gép", StrengthParse.names().length + " gyakorlat és gép"},
                 {"testtáj", "**" + Rehab.AREAS.length + " testtáj, " + rehabMoves
                         + " gyógytornász-ihletésű gyakorlat**"},
+                {"beépített program", "**" + Programs.BUILT_IN.length
+                        + " beépített program**"},
         };
         StringBuilder bad = new StringBuilder();
         for (String[] w : want)
