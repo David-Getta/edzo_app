@@ -2168,4 +2168,28 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("szoktam futni reggelente").isEmpty());
         assertTrue(Activities.parse("minden másodnap futok").isEmpty());
     }
+
+    /**
+     * Ahány alkalom, annyi táv – mindegyik a sajátját kapja.
+     *
+     * A „hétvégén két túra: szombaton 12 km, vasárnap 18 km" tizennyolc
+     * kilométere elveszett, és MINDKÉT bejegyzés tizenkettőt kapott: a
+     * kimondott alkalomszám csak sokszorozott, a második számot nem kereste.
+     */
+    @Test public void asManyDistancesAsSessions() {
+        Activities.Parsed p = Activities.parse(
+                "hétvégén két túra: szombaton 12 km, vasárnap 18 km");
+        assertEquals(2, p.plans.size());
+        assertEquals(12.0, p.plans.get(0).km, 0.01);
+        assertEquals(18.0, p.plans.get(1).km, 0.01);
+        Activities.Parsed r = Activities.parse("ma két futás: 5 km és 8 km");
+        assertEquals(2, r.plans.size());
+        assertEquals(8.0, r.plans.get(1).km, 0.01);
+        // Az OSZTÓ pár nem ez: az „5-5 km" alkalmanként öt kilométer.
+        Activities.Parsed d = Activities.parse("reggel és este is futottam 5-5 km-t");
+        assertEquals(1, d.plans.size());
+        assertEquals(2, d.plans.get(0).count);
+        // Táv nélküli alkalomszám érintetlen.
+        assertEquals(3, Activities.parse("3 futás a héten").plans.get(0).count);
+    }
 }

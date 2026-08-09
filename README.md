@@ -149,6 +149,11 @@ kondi" ketteséből eddig két kondi-edzés lett, a megosztott terv „Nap 2:"
 fejlécéből ugyanígy. A **gondolatjeles lista** utolsó tétele pedig elveszett,
 mert a sorhatár a normalizálás után eltűnik – a jel helyére most vessző kerül.
 
+Ahány alkalom, annyi táv: a „hétvégén két túra: szombaton 12 km, **vasárnap
+18 km**" tizennyolc kilométere elveszett, és mindkét bejegyzés tizenkettőt
+kapott – a kimondott alkalomszám csak sokszorozott, a második számot nem
+kereste.
+
 A **gazdátlan táv** akkor sem veszhet el, ha van mellette edzés: a „ma reggel
 **5 km**, délután 40 perc kondi" öt kilométere eltűnt, mert a kondi elfoglalta
 a listát, és távot tárolni nem tud. A kimondott alvás pedig erősebb két

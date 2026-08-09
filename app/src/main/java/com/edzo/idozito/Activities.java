@@ -1340,9 +1340,29 @@ public final class Activities {
         for (String w : new String[]{"ebbol", "abbol", "amibol", "ezen belul",
                 "beleertve", "kozte", "kozuluk", "ebben"})
             if (s.contains(w)) { partOfIt = true; break; }
-        if (!partOfIt && out.size() == 1 && out.get(0).count == 1 && out.get(0).kind.distance
+        if (!partOfIt && out.size() == 1 && out.get(0).kind.distance
                 && out.get(0).km > 0 && kms.size() > 1) {
             Plan p0 = out.get(0);
+            // A kimondott alkalomszám is stimmelhet: a „hétvégén két túra:
+            // szombaton 12 km, vasárnap 18 km" kettese a két túra, és a
+            // tizennyolc kilométer eddig elveszett – mindkét bejegyzés
+            // tizenkettőt kapott. Ha annyi táv van, ahány alkalom, akkor a
+            // számok a saját alkalmukhoz tartoznak.
+            int free = 0;
+            for (double[] t : kms) {
+                boolean taken = false;
+                for (Plan p : out) if (Math.abs(p.km - t[1]) < 0.001) taken = true;
+                if (!taken && t[1] > 0) free++;
+            }
+            if (p0.count > 1 && p0.count == free + 1) {
+                out.set(0, new Plan(p0.kind, 1, p0.minutes, p0.km, p0.steps));
+                p0 = out.get(0);
+            }
+            if (p0.count != 1) {
+                // Marad a régi viselkedés: a kimondott alkalomszám erősebb.
+                free = -1;
+            }
+            if (free >= 0)
             for (double[] t : kms) {
                 double km2 = t[1];
                 if (km2 <= 0) continue;
