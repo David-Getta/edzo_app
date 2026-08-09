@@ -308,6 +308,23 @@ public class BodyParseTest {
                 BodyParse.parse("az inbody szerint 22% a testzsírom").fatPct, 0.01);
     }
 
+    /**
+     * A napi összefoglalóban is ott a mérés.
+     *
+     * A „78,2 kg voltam" ugyanaz a mérés, mint a „78,2 kg vagyok" – egy
+     * hosszabb, több mondatos napi bejegyzésben eddig elveszett, mert a
+     * létige múlt ideje nem számított kimondásnak.
+     */
+    @Test public void aWholeDayEntryStillCarriesTheMeasurement() {
+        kg("78,2 kg voltam", 78.2);
+        kg("Ma reggel 6-kor keltem, 78,2 kg voltam. Reggeli: zabkása 60 g tejjel. "
+                + "Délelőtt 45 perc kondi. Este 5 km futás 28 perc.", 78.2);
+        // A konyhai mértékegység nem testsúly: a „zabkása 60 g" hatvanas
+        // száma az adag, nem a mérleg száma.
+        none("zabkása 60 g");
+        none("150 g csirkemell");
+    }
+
     /** Az idő és a táv sem kiló – az edzés száma nem a mérlegé. */
     @Test public void minutesAndKilometresAreNotKilograms() {
         // Az „este 45 perc jóga, aztán 78,9 kg a mérlegen" negyvenöt PERCE

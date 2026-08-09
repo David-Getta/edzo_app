@@ -101,7 +101,11 @@ public final class BodyParse {
             // mérés-mondattal próbálva ezek maradtak ki.
             "lefogytam", "felmentem", "lementem", "felszedtem",
             // A mérés IGÉJE is kimondás: „reggel megmértem magam, 78,4".
-            "megmertem", "mertem", "megmerve", "merem"
+            "megmertem", "mertem", "megmerve", "merem",
+            // A múlt idejű létige is kimondás: a „78,2 kg voltam" ugyanaz a
+            // mérés, mint a „78,2 kg vagyok" – egy hosszabb napi
+            // összefoglalóban eddig elveszett.
+            "voltam", "voltunk"
     };
 
     /**
@@ -261,7 +265,10 @@ public final class BodyParse {
             // Az IDŐ és a TÁV sem kiló. Az „este 45 perc jóga, aztán 78,9 kg
             // a mérlegen" negyvenöt PERCE lett a testsúly – a valódi mérés
             // pedig, ami ott állt a mondat másik felében, elveszett.
-            for (String u : new String[]{"perc", "ora", "mp", "masodperc", "km", "lepes"})
+            for (String u : new String[]{"perc", "ora", "mp", "masodperc", "km", "lepes",
+                    // A KONYHAI mértékegység sem testsúly: a „zabkása 60 g"
+                    // hatvanas száma az adag, nem a mérleg száma.
+                    "g ", "gramm", "dkg", "dl", "ml", "liter"})
                 if (rest.startsWith(u)) { rest = "#"; break; }
             if (rest.equals("#")) continue;
             // Az IZOMTÖMEG nem a testsúly. A mérleg ugyanabban a sorban írja
