@@ -2101,4 +2101,19 @@ public class ActivitiesParseTest {
         // Szám nélküli tagadásra nem él: ott a mondat tagadás marad.
         assertTrue(Activities.parse("nem futottam ma").isEmpty());
     }
+
+    /**
+     * A görgőzés levezetés, nem időzítő-terv.
+     *
+     * A „10 perc görgőzés edzés után" mondatra az app tíz perces ablakot
+     * ajánlott – egy megtörtént levezetés helyett. A habhengerezés és a foam
+     * rolling már szótő volt, a hétköznapi magyar neve nem.
+     */
+    @Test public void foamRollingIsACoolDown() {
+        assertEquals("joga", Activities.parse("10 perc görgőzés edzés után")
+                .plans.get(0).kind.id);
+        assertEquals(10, Activities.parse("görgőztem 10 percet").plans.get(0).minutes);
+        assertEquals("joga", Activities.parse("20 perc habhengerezés")
+                .plans.get(0).kind.id);
+    }
 }

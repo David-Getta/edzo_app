@@ -153,7 +153,12 @@ public final class Activities {
                     "legzo gyakorlat",
                     // A hengerezés is regeneráció, és sokan naplózzák: eddig
                     // egyetlen alakját sem ismertük.
-                    "habhenger", "hengerez", "foam roll", "foamroll", "sms henger"),
+                    // A GÖRGŐZÉS ugyanaz, csak hétköznapibb néven – enélkül a
+                    // „10 perc görgőzés edzés után" időzítő-TERVNEK látszott,
+                    // és tíz perces ablakot ajánlott rá az app egy megtörtént
+                    // levezetés helyett. (A „görget" scrollozás, az nem tő.)
+                    "habhenger", "hengerez", "foam roll", "foamroll", "sms henger",
+                    "gorgozes", "gorgoztem", "gorgozok", "gorgozni"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
