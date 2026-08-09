@@ -117,6 +117,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   nyolcvan kilót a súlytrendbe: pont azt, amit a mondat tagad. A „nem
   futottam 10 km-t, csak 3-at" hármasa viszont teljesen elveszett. Ugyanez az
   étrendben: a „nem ittam 3 kávét, csak 1-et" hármat naplózott
+- a **megnézett** maraton nem lefutott maraton: a „megnéztem a maratont a
+  tv-ben" negyvenkét kilométert írt a naplóba, a „megvan a rajtszámom a
+  félmaratonra" pedig huszonegyet – egy meg sem futott versenyre
 - a **feltételes múlt** sem: a „ha lett volna időm, **futottam volna**"
   negyvenöt perces bejegyzés lett – és a lefújt edzés is („a futást lefújtam
   az eső miatt")

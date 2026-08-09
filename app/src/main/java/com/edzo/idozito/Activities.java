@@ -2114,6 +2114,12 @@ public final class Activities {
                 "sem ", "se ",
                 "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
+                // A MEGnéztem is nézés: a „megnéztem a maratont a tv-ben"
+                // negyvenkét kilométeres futás lett a naplóban. Az OLVASÁS és
+                // a RAJTSZÁM ugyanígy: a „megvan a rajtszámom a félmaratonra"
+                // huszonegy kilométert írt be egy még meg nem futott versenyre.
+                "megneztem", "megneztuk", "olvastam", "olvastuk", "cikket",
+                "rajtszam", "rajtcsomag", "nevezesi", "streamelt",
                 // Az edzés LEFÚJÁSA is elmaradás: „a futást lefújtam az eső
                 // miatt" eddig negyvenöt perces futás lett.
                 "lefujtam", "lefujtuk", "lemondtuk", "torolve lett",

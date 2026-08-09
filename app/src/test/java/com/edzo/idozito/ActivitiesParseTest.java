@@ -2302,4 +2302,23 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("ma pihenőnap volt").isEmpty());
         assertTrue(Activities.looksLikeRest("ma pihenőnap volt"));
     }
+
+    /**
+     * A megnézett maraton nem lefutott maraton.
+     *
+     * A „megnéztem a maratont a tv-ben" NEGYVENKÉT kilométeres futás lett a
+     * naplóban – a „néztem" ott volt a listán, a „megnéztem" nem. Az olvasás
+     * és a rajtszám ugyanígy: a „megvan a rajtszámom a félmaratonra"
+     * huszonegy kilométert írt be egy még meg nem futott versenyre.
+     */
+    @Test public void theWatchedMarathonIsNotRun() {
+        assertTrue(Activities.parse("megnéztem a maratont a tv-ben").isEmpty());
+        assertTrue(Activities.parse("olvastam egy cikket a futásról").isEmpty());
+        assertTrue(Activities.parse("megvan a rajtszámom a félmaratonra").isEmpty());
+        // A lefutott maraton marad maraton.
+        assertEquals(42.2, Activities.parse("lefutottam a maratont").plans.get(0).km, 0.01);
+        // És a nézés utáni valódi edzés is megmarad.
+        assertEquals(5.0, Activities.parse("megnéztem a meccset, utána futottam 5 km-t")
+                .plans.get(0).km, 0.01);
+    }
 }
