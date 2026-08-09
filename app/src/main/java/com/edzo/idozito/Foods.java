@@ -1590,6 +1590,12 @@ public final class Foods {
                         // pizza fele". A puszta „fel" tő ezt nem fogta, mert
                         // betű követi.
                         {"fele", "0.5"},
+                        // A többi birtokos tört is: „a pizza negyede", „a
+                        // szendvics harmada". Eddig a NEGYEDE-ből egész pizza
+                        // lett – négyszerese annak, amit megevett.
+                        {"negyede", "0.25"}, {"harmada", "0.34"},
+                        {"harmad", "0.34"}, {"ketharmad", "0.67"},
+                        {"ketharmada", "0.67"}, {"haromnegyede", "0.75"},
                         // A „dupla adag" és a „tripla eszpresszó" is szám: a
                         // szorzó nélkül a tipikus adag ment be, vagyis fele
                         // vagy harmada annak, amit az ember megevett.

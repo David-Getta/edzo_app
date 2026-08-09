@@ -123,8 +123,9 @@ bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot 
   marék, tábla, szelet, szem, karéj, szál, kupica, üveg, kancsó, korty) és az **adagot** („fél adag gyros", „grillcsirke fél adag").
   A **negyed** és a **dupla adag** is számít, a mérőszó szám nélkül egy
   darabot jelent („tábla csoki" = egy tábla), a **tartomány** közepe megy be
-  („2-3 szelet kenyér" = két és fél), és a birtokos „fele" is fél
-  („az alma fele", „a fele adag rizs")
+  („2-3 szelet kenyér" = két és fél), és a birtokos tört is tört
+  („az alma fele", „a fele adag rizs", „a pizza negyede", „a szendvics
+  harmada", „a pizza háromnegyede")
 - **A mennyiség a név után is állhat**: „banán 2 db", „tojás (3 db)",
   „kenyér (2 szelet)" – a bevásárlólista-szórend legalább olyan gyakori,
   mint a fordítottja
@@ -457,7 +458,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~862 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~863 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.

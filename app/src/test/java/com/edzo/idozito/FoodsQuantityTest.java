@@ -410,4 +410,22 @@ public class FoodsQuantityTest {
         assertEquals(150.0, Foods.parse(all, "150 gramm protein turmix").get(0).grams, 0.01);
         assertEquals(250.0, Foods.parse(all, "250 ml protein turmix").get(0).grams, 0.01);
     }
+
+    /**
+     * A birtokos tört: „a pizza negyede", „a szendvics harmada".
+     *
+     * A FELE régóta ment, a többi tört nem: a „pizza negyede" egész pizzának
+     * számított – négyszerese annak, amit megevett. A negyedév és a
+     * harmadik viszont nem tört.
+     */
+    @Test public void possessiveFractionsAreUnderstood() {
+        assertEquals(75, grams("a pizza negyede"), 0.01);
+        assertEquals(150, grams("a pizza fele"), 0.01);
+        assertEquals(225, grams("a pizza háromnegyede"), 0.01);
+        assertEquals(51, grams("a szendvics harmada"), 0.5);
+        // Ami nem tört, az nem is lesz az: a negyedév nem mennyiség, tehát
+        // marad a tipikus adag (a nulla itt azt jelenti: nincs kimondva).
+        assertEquals(0, grams("negyedévente pizza"), 0.01);
+        assertEquals(100, grams("harmadik szelet pizza"), 0.01);
+    }
 }
