@@ -294,14 +294,27 @@ public final class IntervalParse {
         // („percig", „alatt", „összesen"), így a szakasz-hosszal nem
         // téveszthető össze.
         if (rounds <= 0) rounds = roundsFromTotal(s, work + rest);
-        // Egy szám nem terv. A „sétáltam 20 percet" húsz perce EGYETLEN
-        // kimondott idő, a séta szava viszont pihenő-szó is (a körök közti
-        // laza szakasz neve) – így lett belőle húszperces munka húszperces
-        // pihenővel, vagyis negyvenperces időzítő egy húszperces sétából.
-        // Ha a körszám sincs kimondva, akkor a mondatban semmi nem utal
-        // szakaszokra: ez nem intervall, hanem egy sima séta.
-        if (rounds <= 1 && rest > 0 && work == rest && timeCount(s) < 2) return null;
+        // Egy szám nem terv. A „sétáltam 20 percet", a „csípő mobilitás
+        // gyakorlatok 15 perc" és a „hengereltem a hátamat 10 percet"
+        // egyetlen kimondott időt tartalmaz – a séta és a gyakorlat szava
+        // viszont szakasz-szó is, így mindháromból egykörös időzítő-terv
+        // lett. Ha se körszám, se második idő, se szakasz-szó nincs, akkor a
+        // mondatban semmi nem utal szakaszokra. (A tabata, a hiit, az amrap
+        // és a fartlek fentebb, a saját ágán tér vissza.)
+        // A PUSZTA időtartam viszont marad: az időzítő mezőjébe beírt „2 perc"
+        // épp ezt kéri – ott a mondatban semmi más nincs.
+        if (rounds <= 1 && timeCount(s) < 2 && !saysPlan(s) && !onlyTime(s))
+            return null;
         return build(rounds, work, rest, warmIn(s), coolIn(s));
+    }
+
+    /** Csak időtartam áll a mondatban, más szó nélkül („2 perc", „90 mp"). */
+    private static boolean onlyTime(String s) {
+        String rest = s.replaceAll("\\d+([.,]\\d+)?", " ")
+                .replaceAll("(?<![a-z])(mp|masodperc|perc|percet|percig|min|s|ora|orat"
+                        + "|orai|orara|orán)(?![a-z])", " ")
+                .replaceAll("[^a-z]", " ").trim();
+        return rest.isEmpty();
     }
 
     /** Hány KÜLÖN kimondott idő van a mondatban („30 mp", „2 perc"). */
@@ -708,12 +721,24 @@ public final class IntervalParse {
             // ajánlott az app.
             "recovery", "easy", "jog", "walk", "break"};
 
-    /** Kimondja-e a mondat magát a szakaszos szerkezetet? */
+    /**
+     * Kimondja-e a mondat magát a szakaszos szerkezetet?
+     *
+     * A szó ELEJÉHEZ kötve: a „gyaKORlat" közepén ott a „kör", és enélkül a
+     * „csípő mobilitás gyakorlatok 15 perc" tervnek látszott – egykörös,
+     * tizenöt perces időzítőnek. A szó VÉGE szabad, mert a magyar ragoz
+     * („körben", „sorozatot").
+     */
     private static boolean saysPlan(String s) {
         for (String w : new String[]{"kor", "round", "munka", "pihen", "tabata",
                 "emom", "amrap", "intervall", "interval", "hiit", "szett", "sorozat",
-                "fartlek", "sprint", "ismetles"})
-            if (s.contains(w)) return true;
+                "fartlek", "sprint", "ismetles"}) {
+            int p = s.indexOf(w);
+            while (p >= 0) {
+                if (p == 0 || !Character.isLetter(s.charAt(p - 1))) return true;
+                p = s.indexOf(w, p + 1);
+            }
+        }
         return false;
     }
 

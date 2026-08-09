@@ -666,4 +666,20 @@ public class IntervalParseTest {
         assertEquals(8, IntervalParse.parse("8x400 m, köztük 200 m lazán, "
                 + "8 kör 90 mp munka 60 mp pihenő").rounds);
     }
+
+    /**
+     * A GYAKORLAT szó közepén ott a KÖR.
+     *
+     * A „csípő mobilitás gyakorlatok 15 perc" tervnek látszott – egykörös,
+     * tizenöt perces időzítőnek –, mert a szakasz-szavakat a szó belsejében is
+     * elfogadtuk. A szó eleje mostantól kötött, a vége szabad, hogy a magyar
+     * ragozás („körben", „sorozatot") megmaradjon.
+     */
+    @Test public void theWordExerciseDoesNotContainARound() {
+        assertNull(IntervalParse.parse("csípő mobilitás gyakorlatok 15 perc"));
+        assertNull(IntervalParse.parse("hengereltem a hátamat 10 percet"));
+        // A puszta időtartam viszont marad: az időzítő mezője épp ezt kéri.
+        assertEquals(120, IntervalParse.parse("2 perc").work);
+        assertEquals(5, IntervalParse.parse("5 körben 30 másodperc").rounds);
+    }
 }

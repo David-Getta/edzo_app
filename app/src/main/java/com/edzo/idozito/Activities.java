@@ -191,7 +191,12 @@ public final class Activities {
                     // és tíz perces ablakot ajánlott rá az app egy megtörtént
                     // levezetés helyett. (A „görget" scrollozás, az nem tő.)
                     "habhenger", "hengerez", "foam roll", "foamroll", "sms henger",
-                    "gorgozes", "gorgoztem", "gorgozok", "gorgozni"),
+                    "gorgozes", "gorgoztem", "gorgozok", "gorgozni",
+                    // Ugyanez a mozdulat a másik nevén: aki SMR-hengerrel
+                    // dolgozik, „hengerelni" szokott. A „hengereltem a hátamat
+                    // 10 percet" eddig válasz nélkül maradt.
+                    "hengereles", "hengereltem", "hengerezes", "hengereztem",
+                    "foam roller", "foamroller", "smr henger"),
             new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
                     "jegkorong", "hoki", "curling"),
