@@ -621,4 +621,16 @@ public class IntervalParseTest {
         // A munka- és pihenő-oldalra írt perc sem a hossz.
         assertEquals("1×30/30", sum("fél perc munka fél perc pihenő"));
     }
+
+    /**
+     * Az internetről másolt angol terv szótára.
+     *
+     * A „4x4 min at threshold, 3 min recovery" hármasa elveszett, és pihenő
+     * NÉLKÜLI tervet ajánlott az app – vagyis a norvég 4x4 felét.
+     */
+    @Test public void theEnglishRestWordsAreUnderstood() {
+        assertEquals("4×240/180", sum("4x4 min at threshold, 3 min recovery"));
+        assertEquals("5×180/60", sum("5 rounds of 3 min on 1 min off"));
+        assertEquals("8×20/10", sum("8 rounds 20 sec work 10 sec rest"));
+    }
 }

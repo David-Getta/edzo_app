@@ -20,7 +20,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „hiit 20 perc, 30/30” és „15 perc, 40 mp munka 20 mp pihenő” (az egyetlen
   perc-adat a terv hossza – a körszám kijön belőle),
   „40 mp / 20 mp, 10 kör”, „emom 12”, „10x(40s/20s)”,
-  „8 rounds 20 sec work 10 sec rest” (az internetről másolt angol terv),
+  „8 rounds 20 sec work 10 sec rest” és „4x4 min at threshold, 3 min recovery”
+  (az internetről másolt angol terv – a „recovery" és az „easy" is pihenő),
   „négyszer negyven másodperc munka húsz másodperc pihenő” – a teremben kapott edzésterv szövegként érkezik, nem
   csúszkaállásként; egy koppintással sablonként is elmenthető
 - 📅 **Edzésnap megosztása**: „Lábnap: Guggolás, Lábtolás, Kitörés" – az

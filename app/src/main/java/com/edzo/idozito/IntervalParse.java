@@ -682,13 +682,20 @@ public final class IntervalParse {
             // Az intervall-edzés másik szótára a KÖNNYŰ és a KEMÉNY: a
             // „3 perc kemény, 2 perc könnyű" ugyanaz a ritmus, csak épp
             // egyetlen munka-szakasszá olvadt, pihenő nélkül.
-            "konnyu", "laza", "konnyed", "levezetes"};
+            "konnyu", "laza", "konnyed", "levezetes",
+            // Az internetről másolt angol terv szótára: a „recovery" és az
+            // „easy" ugyanaz a szünet. A „4x4 min at threshold, 3 min
+            // recovery" hármasa eddig elveszett, és pihenő nélküli tervet
+            // ajánlott az app.
+            "recovery", "easy", "jog", "walk", "break"};
 
     /** A munkaszakaszt jelölő szavak – a pihenőnek ez a határa, és fordítva. */
     private static final String[] WORK_WORDS = {"munka", "aktiv", "terheles",
             "gyakorlat", "work",
             // A könnyű szakasz párja: a „kemény", az „erős" és a „gyors".
-            "kemeny", "eros", "gyors", "hajra"};
+            "kemeny", "eros", "gyors", "hajra",
+            // Ugyanez angolul: a „hard", a „threshold" és az „on" a munka.
+            "hard", "threshold", "fast", "effort"};
 
     /** Perjellel elválasztott második idő: „3 perc / 1 perc” → 60. */
     private static int secondsAfterSlash(String s, int from) {
