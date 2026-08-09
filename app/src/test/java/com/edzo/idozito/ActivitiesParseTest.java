@@ -276,6 +276,17 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void theBackDayIsNotSixDays() {
+        // A „hát nap:" edzésnap NEVE, nem hat nap: a „hát nap: húzódzkodás,
+        // evezés…" hatnapos időszakká vált, és a húzódzkodás hat ismétlést
+        // kapott. A kettőspont dönt.
+        Activities.Parsed p = Activities.parse("hát nap: húzódzkodás, evezés, lehúzás");
+        assertEquals(1, p.days);
+        assertEquals(0, StrengthParse.parse("hát nap: húzódzkodás, evezés, lehúzás").size());
+        // A valódi hat nap marad hat nap.
+        assertEquals(6, Activities.parse("hat nap alatt 6 edzés").days);
+    }
+
     @Test public void duringTrainingIsATimestampToo() {
         // Az „edzés ALATT ittam egy izotóniást" ugyanolyan időpont, mint az
         // „edzés után" – eddig negyvenöt perces bejegyzés lett belőle az ital

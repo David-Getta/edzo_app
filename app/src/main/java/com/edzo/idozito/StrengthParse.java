@@ -965,7 +965,10 @@ public final class StrengthParse {
         for (String w : new String[]{"lefekves", "lefekudt", "fekudni", "lefekudni",
                 "fekve maradt", "fekve alszom"})
             s = s.replace(w, "#");
-        return s;
+        // Ugyanez a „hát nap:" edzésnap-névvel: ékezet nélkül a testtáj és a
+        // hatos számnév egybeesik, és a „hát nap: húzódzkodás, evezés…"
+        // hatismétléses húzódzkodássá vált.
+        return s.replaceAll("(?<![a-z])hat(?=\\s+nap\\s*[:–-])", "#");
     }
 
     /**

@@ -3001,6 +3001,13 @@ public final class Activities {
     /** A „felső/alsó hát" testtáj – a benne lakó számnév kitakarva. */
     private static void maskBackNoun(char[] q) {
         String s = new String(q);
+        // A „hát nap:" edzésnap NEVE, nem hat nap: a „hát nap: húzódzkodás,
+        // evezés…" hatnapos időszakká vált, és a húzódzkodás hat ismétlést
+        // kapott. A kettőspont dönt – a „hat nap alatt 6 edzés" marad hat nap.
+        java.util.regex.Matcher dm = java.util.regex.Pattern
+                .compile("(?<![a-z])hat(?=\\s+nap\\s*[:–-])").matcher(s);
+        while (dm.find()) blank(q, dm.start(), dm.end());
+        s = new String(q);
         for (String w : new String[]{"felso hat", "also hat"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
