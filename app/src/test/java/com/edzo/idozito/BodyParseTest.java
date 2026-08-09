@@ -520,4 +520,21 @@ public class BodyParseTest {
         assertEquals(84, BodyParse.parse("84 cm derék").cm[0], 0.01);
         assertEquals(92, BodyParse.parse("haskörfogatom 92").cm[0], 0.01);
     }
+
+    /**
+     * Az időtáv csak kíséret a mérés mellett.
+     *
+     * A „79,8 kg egy hét alatt" és a „78 kg két hónap után" mérés – eddig a
+     * mellette álló szavaktól az egész mondat kiesett. (A kiírt számnév miatt
+     * a maskTimeUnder a fordítás ELŐTT fut: az „egy hét" a digits() után már
+     * „1 7", és ott az „alatt" összehasonlításnak látszana.)
+     */
+    @Test public void theTimeSpanIsOnlyCompanyForTheMeasurement() {
+        assertEquals(79.8, BodyParse.parse("79,8 kg egy hét alatt").kg, 0.01);
+        assertEquals(79.8, BodyParse.parse("79,8 kg, -1,2 kg egy hét alatt").kg, 0.01);
+        assertEquals(78, BodyParse.parse("78 kg két hónap után").kg, 0.01);
+        // A valódi összehasonlítás továbbra sem mérés.
+        assertEquals(0, BodyParse.parse("70 kg alatt vagyok").kg, 0.01);
+        assertEquals(0, BodyParse.parse("80 kg alatt szeretnék lenni").kg, 0.01);
+    }
 }

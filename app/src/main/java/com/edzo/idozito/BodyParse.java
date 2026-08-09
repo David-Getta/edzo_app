@@ -157,8 +157,11 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
         // mérleget sokan hangosan olvassák fel, és úgy is írják le.
-        String s = maskTimeUnder(keepTheNewValue(dropOtherLogs(
-                Hu.digits(Hu.correction(Foods.norm(q))))));
+        // A maskTimeUnder a SZÁMNÉV-fordítás előtt fut: az „egy hét alatt"
+        // hete a digits() után már „7", és a szabály nem ismerné fel benne az
+        // időtartamot – az „alatt" pedig összehasonlításnak látszana.
+        String s = keepTheNewValue(dropOtherLogs(
+                Hu.digits(maskTimeUnder(Hu.correction(Foods.norm(q))))));
         if (s.isEmpty()) return new Body(0, 0);
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
@@ -465,7 +468,12 @@ public final class BodyParse {
                         // A megnevezett nap ugyanolyan időpont, mint a napszak:
                         // a „kedden 80 kg voltam" ugyanaz a mérés, mint a „ma".
                         + "hetfon|kedden|szerdan|csutortokon|penteken|szombaton|"
-                        + "vasarnap|hetfo|kedd|szerda|csutortok|pentek|szombat)"
+                        + "vasarnap|hetfo|kedd|szerda|csutortok|pentek|szombat|"
+                        // Az IDŐTÁV is csak kíséret: a „79,8 kg egy hét alatt"
+                        // és a „78 kg két hónap után" mérés – eddig a mellette
+                        // álló szavaktól az egész mondat kiesett.
+                        + "egy|ket|harom|negy|ot|hat|het|honap|ev|nap|"
+                        + "hete|honapja|eve|napja|hetre|honapra|evre)"
                         + "(?![a-z])", " ")
                 .replaceAll("[^a-z]", " ").trim();
         return rest.isEmpty();
