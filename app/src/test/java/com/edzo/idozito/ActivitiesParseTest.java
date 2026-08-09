@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * Több edzés felvétele egyetlen mondatból.
  *
@@ -2420,5 +2422,23 @@ public class ActivitiesParseTest {
         assertEquals(20, Activities.parse("20 perc lépcsőzés, közben fájt "
                 + "a térdem").plans.get(0).minutes);
         assertEquals(1, Activities.parse("20 emeletet lépcsőztem").plans.size());
+    }
+
+    /**
+     * A gyakorlat NEVE nem külön kardió-edzés.
+     *
+     * A „súlyzós: guggolás 3×8 80, evezés 3×10 50" evezése egy sorozat a
+     * teremben, nem félórányi evezőgépezés – eddig a hatvan perc kondi MELLÉ
+     * bekerült egy harmincperces evezés is: ugyanaz a mozdulat kétszer,
+     * ráadásul olyan hosszal, amit ki sem mondott senki.
+     */
+    @Test public void aLiftNameIsNotACardioSession() {
+        List<Activities.Plan> p = Activities.parse("súlyzós: guggolás 3x8 80, "
+                + "fekve 3x8 60, evezés 3x10 50").plans;
+        assertEquals(1, p.size());
+        assertEquals("kondi", p.get(0).kind.id);
+        assertTrue(Activities.parse("evezés 3x10 50 kg").plans.isEmpty());
+        // A kimondott idő megvédi magát: az alapértéktől eltérő hossz marad.
+        assertEquals(40, Activities.parse("40 perc evezőgép").plans.get(0).minutes);
     }
 }

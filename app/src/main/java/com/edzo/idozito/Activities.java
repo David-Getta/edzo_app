@@ -1619,6 +1619,16 @@ public final class Activities {
                     // swing" húsz napra osztva) – az sem áll meg nélküle.
                     if (days == p.count) days = 1;
                     any = true;
+                } else if (!generic && p.count == 1 && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin && namedByLift(lifts, p.kind)) {
+                    // A GYAKORLAT NEVE nem külön kardió-edzés: a „súlyzós:
+                    // guggolás 3×8 80, evezés 3×10 50" evezése egy sorozat a
+                    // teremben, nem félórányi evezőgépezés. Eddig a hatvan
+                    // perc kondi MELLÉ bekerült egy harmincperces evezés is –
+                    // ugyanaz a mozdulat kétszer, ráadásul olyan hosszal,
+                    // amit ki sem mondott senki. A kimondott idő megvédi
+                    // magát: a „40 perc evezőgép" hossza nem az alapérték.
+                    any = true;
                 } else fixed.add(p);
             }
             if (any) out = fixed;
@@ -2809,6 +2819,15 @@ public final class Activities {
             out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
         }
         return out;
+    }
+
+    /** A felismert gyakorlatok egyike adta-e ennek a mozgásformának a nevét? */
+    private static boolean namedByLift(List<StrengthParse.Item> lifts, Kind k) {
+        for (StrengthParse.Item it : lifts) {
+            String n = Foods.norm(it.name);
+            for (String w : k.words) if (n.contains(w)) return true;
+        }
+        return false;
     }
 
     /** Van-e olyan felismert sorozat, amelynek ennyi az ismétlésszáma? */
