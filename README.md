@@ -194,7 +194,8 @@ sem talált, tehát ha talál, az tényleg ott van.
   „kificamodott a bokám" bármelyik beviteli mezőből a megfelelő sorhoz visz.
   Egy szóban is elég, ahogy a magyar mondja: „derékfájás", „csípőfájdalom" –
   és a diagnózis neve is („golfkönyök", „teniszkönyök", „futótérd",
-  „sarkantyú", „gerincferdülés"). Nem csak a „fáj": „húz a vádlim",
+  „sarkantyú", „gerincferdülés"). A HANG is panasz: „ropog a térdem",
+  „recseg a vállam", „kattog a csípőm". És nem csak a „fáj": „húz a vádlim",
   „görcsöl a lábam", „szúr a derekam", „feszül a nyakam", „reggelre
   elgémberedik a kezem" – ahogy a magyar tényleg mondja. A tagadott panasz
   („már nem fáj", „fájdalommentes") nem nyit sort

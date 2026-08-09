@@ -472,6 +472,15 @@ public class RehabTest {
         assertNotNull("elgémberedik a kezem",
                 Rehab.forComplaint("reggelre elgémberedik a kezem"));
         assertNotNull("gerincferdülés", Rehab.forComplaint("gerincferdülésem van"));
+        // A HANG is panasz: „ropog a térdem", „recseg a vállam", „kattog a
+        // csípőm". A térd lapja épp azt mondja ki, hogy a kattogás önmagában
+        // nem baj – de ezt hallania kell tőlünk, nem egy „nem értem"-et.
+        assertNotNull("ropog", Rehab.forComplaint("ropog a térdem guggolásnál"));
+        assertNotNull("recseg", Rehab.forComplaint("recseg a vállam körzésnél"));
+        assertNotNull("kattog", Rehab.forComplaint("kattog a csípőm"));
+        assertNotNull("húzódott", Rehab.forComplaint("húzódott a hátsó combom sprintnél"));
+        // A ROPOGÓS étel viszont nem panasz.
+        assertNull(Rehab.forComplaint("ropogós csirkecomb sült krumplival"));
         // A kéz panasza a csukló sorára fut.
         assertEquals("csuklo", Rehab.forComplaint("fáj a kezem").id);
         assertEquals("csuklo", Rehab.forComplaint("merevek az ujjaim").id);

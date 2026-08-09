@@ -371,6 +371,11 @@ public final class Rehab {
                 "serules", "megserult", "kificamodott", "ficam", "gyullad",
                 // A magyar bőven tud panaszt mondani fájdalom-szó nélkül is.
                 "beallt", "megrandult", "randult", "nyilallik", "nyilall", "sajog",
+                // A hang is panasz: a „ropog a térdem", a „recseg a vállam" és
+                // a „kattog a csípőm" ugyanúgy ide hoz, mint a fájdalom – a
+                // térd lapja épp azt mondja ki, hogy a kattogás önmagában nem
+                // baj. A „húzódott" a „húzódik" múlt ideje.
+                "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
                 "meghuztam", "becsipodott", "belovellt", "lumbago", "merev",
                 // A diagnózis NEVE maga a panasz: aki azt írja, „golfkönyök",
                 // az nem érdeklődik, hanem fáj neki. Eddig ezekre a mondat
