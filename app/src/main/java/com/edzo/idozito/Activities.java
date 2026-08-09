@@ -78,7 +78,10 @@ public final class Activities {
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
                     "hegymasz", "megmaszt", "gyalog", "lepcsoz", "babakocsi",
-                    "barlangasz", "via ferrata"),
+                    "barlangasz", "via ferrata",
+                    // A magyar szétszedi az összetételt: „hegyet másztunk",
+                    // „hegyre másztam" – a „hegymászás" tövét ez nem fedi.
+                    "hegyet masz", "hegyre masz", "hegyi tura", "hegyet megmasz"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
                     "raftin", "sarkanyhajo", "sarkany hajo",
@@ -601,6 +604,7 @@ public final class Activities {
             "keziras", "kezirat", "kezikonyv", "keziszer", "kezimunka", "kezifek",
             "jogai", "jogaim", "jogod", "joguk", "jogot", "jogok", "jogos", "jogi",
             "jogsza", "jogilag", "jogtalan", "jogert",
+
             "boxutca", "tancsics", "kosarka",
             // Az „olvasás" közepén ott az „ásás": a fotelban töltött este
             // eddig kerti munkaként került a naplóba. A megTAKARÍTás nem
@@ -1691,7 +1695,19 @@ public final class Activities {
                 // fontos: a „szombaton túráztam 4 órát, vasárnap pihentem" két
                 // NAPOT nevez meg, és eddig mindkettőre bekerült a négyórás
                 // túra – vagyis nyolc óra mozgás abból, ami négy volt.
-                "pihentem", "pihentunk", "pihenonap", "pihi"}) {
+                "pihentem", "pihentunk", "pihenonap", "pihi",
+                // Az „alig mozogtam" pont az ellenkezőjét mondja annak, amit
+                // a mozgás-szó jelent: a home office napjából eddig egy
+                // negyvenöt perces „egyéb mozgás" lett a naplóban. Csak a
+                // MOZGÁS-igével együtt tagadás: az „alig bírtam végigcsinálni
+                // a 30 perc futást" megtörtént edzés, csak nehéz volt.
+                "alig mozog", "alig mozdul", "alig edzet", "alig csinaltam",
+                "semennyit", "semmit sem",
+                // MÁS edzése nem az enyém: „a gyerek edzésén voltam" eddig
+                // negyvenöt perces bejegyzés lett. A saját „edzésen voltam"
+                // viszont marad.
+                "gyerek edzes", "gyereket vittem", "fiam edzes", "lanyom edzes",
+                "gyerek meccs"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));

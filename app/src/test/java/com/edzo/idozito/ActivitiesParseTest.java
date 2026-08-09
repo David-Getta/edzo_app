@@ -1466,4 +1466,38 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("30 perc futás").plans.get(0).minutes);
         assertEquals(75, Activities.parse("hétfőn 1 óra 15 perc kondi").plans.get(0).minutes);
     }
+
+    /**
+     * Ami NEM az én mozgásom, az nem az én naplóm.
+     *
+     * A „home office, alig mozogtam" negyvenöt perces „egyéb mozgás" lett, „a
+     * gyerek edzésén voltam" szintén – pedig az egyik pont az ellenkezőjét
+     * mondja, a másik meg valaki másról szól. Az „alig" csak a mozgás-igével
+     * együtt tagadás: az „alig bírtam végigcsinálni a 30 perc futást"
+     * megtörtént edzés, csak nehéz volt.
+     */
+    @Test public void someoneElsesTrainingAndNotMovingAreNotEntries() {
+        assertTrue(Activities.parse("home office, alig mozogtam").isEmpty());
+        assertTrue(Activities.parse("alig mozogtam ma").isEmpty());
+        assertTrue(Activities.parse("a gyerek edzésén voltam").isEmpty());
+        // A sajátom viszont marad.
+        assertEquals(60, Activities.parse("edzésen voltam 1 órát").plans.get(0).minutes);
+        assertEquals(30, Activities.parse("alig bírtam végigcsinálni a 30 perc futást")
+                .plans.get(0).minutes);
+        assertEquals(60, Activities.parse("gyerekkel bicikliztünk 1 órát")
+                .plans.get(0).minutes);
+    }
+
+    /**
+     * A magyar szétszedi az összetételt: „hegyet másztunk".
+     *
+     * A „hegymászás" tövét ez nem fedi, így az ötórás hegymászásból semmi
+     * nem került a naplóba.
+     */
+    @Test public void theSplitCompoundOfMountainClimbing() {
+        assertEquals(300, Activities.parse("hegyet másztunk 5 órát").plans.get(0).minutes);
+        assertEquals(120, Activities.parse("hegyre másztam 2 órát").plans.get(0).minutes);
+        assertEquals(240, Activities.parse("hegyi túra 4 óra").plans.get(0).minutes);
+        assertEquals("tura", Activities.parse("hegyet másztunk 5 órát").plans.get(0).kind.id);
+    }
 }

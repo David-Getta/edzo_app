@@ -59,6 +59,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - a **bevásárlólista** és a **kifogyott étel** sem vacsora: „bevásárlólista:
   pizza, tej", „kifogyott a tej", „el kell tennem a maradékot", „receptet
   keresek", „megkívántam a csokit", „rendelnék egy pizzát"
+- ami **nem az én mozgásom**, az nem az én naplóm: „a gyerek edzésén voltam",
+  „home office, alig mozogtam" (az „alig" viszont csak a mozgás-igével együtt
+  tagadás – az „alig bírtam végigcsinálni a 30 perc futást" megtörtént edzés)
 - a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem"
 
 Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
@@ -473,7 +476,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~868 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~870 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.
