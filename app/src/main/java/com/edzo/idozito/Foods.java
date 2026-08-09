@@ -768,6 +768,14 @@ public final class Foods {
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
             // naplóba, százötven kalóriával.
             "kakaopor", "kakao por", "kavepor", "vanilias cukor", "porcukor",
+            // Hétköznapi szavak, amikben étel-szótő lakik: a kertÉPÍTÉSben a
+            // pite, a tojásKERESÉSben a tojás. Mindkettőből étkezés lett.
+            "epites", "epitkezes", "epitesz", "epito", "tojaskeres", "tojasfestes",
+            // Az összetett alakok külön: a token ELEJÉT nézzük, tehát a
+            // „kertépítés" és az „izomépítés" nem ugyanaz a szó, mint az
+            // „építés" – pedig mindegyikben ott a PITE.
+            "kertepites", "hazepites", "izomepites", "testepites", "ujjaepites",
+            "epitese", "epiteset", "epitesen",
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
             "kaveskanal", "evokanal", "teaskanal",
             // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,

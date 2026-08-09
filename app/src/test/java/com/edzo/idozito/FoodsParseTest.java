@@ -253,6 +253,16 @@ public class FoodsParseTest {
         assertEquals("Kakaó (tejes)", hits("ittam egy kakaót").get(0).food.name);
     }
 
+    /** A kertÉPÍTÉSben ott a PITE, a tojásKERESÉSben a tojás. */
+    @Test public void everydayWordsHidingAFoodStemAreNotMeals() {
+        for (String q : new String[]{"kertépítés egész hétvégén", "izomépítés a cél",
+                "testépítés edzés 60 perc", "húsvéti tojáskeresés a kertben"})
+            assertTrue(q + " -> " + hits(q), hits(q).isEmpty());
+        // A valódi étel marad.
+        assertEquals("Pite (almás/gyümölcsös)", hits("almás pite desszertnek").get(0).food.name);
+        assertEquals("Tojás", hits("ettem 2 tojást").get(0).food.name);
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci

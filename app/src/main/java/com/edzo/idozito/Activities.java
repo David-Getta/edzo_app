@@ -181,6 +181,7 @@ public final class Activities {
                     // A „metszet" szándékosan nem tő: a KERESZTmetszet nem
                     // kerti munka. A ragozott igealakok viszont igen.
                     "metszes", "metszettem", "metszeni", "fat metsz",
+                    "kertepites", "kert epites", "epitkezes",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     // A „kardió" edzés-szó: enélkül a „45 perc kardió" semmi
