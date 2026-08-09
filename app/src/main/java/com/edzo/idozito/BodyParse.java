@@ -230,6 +230,16 @@ public final class BodyParse {
      * („18% testzsír, 78,4”) miatt a kihagyás akkor is kell.
      */
     private static double weight(String s, double fat, double[] cm) {
+        // A VÁLTOZÁS mondatában a MÁSODIK szám a mai súly: a „80-ról 76-ra
+        // fogytam" mai értéke hetvenhat, nem nyolcvan. Eddig a régi súly
+        // került a trendbe – vagyis a fogyás napján egy súlygyarapodás.
+        java.util.regex.Matcher ch = java.util.regex.Pattern
+                .compile("(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?-?r[oó]l\\b[^0-9]{0,12}?"
+                        + "(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?-?r[ae]\\b").matcher(s);
+        if (ch.find()) {
+            double v = num(ch.group(2));
+            if (v >= MIN_KG && v <= MAX_KG && !(fat > 0 && Math.abs(v - fat) < 0.001)) return v;
+        }
         java.util.regex.Matcher m = java.util.regex.Pattern
                 // A szám két oldalán számjegy-határ kell. Enélkül a minta a
                 // HOSSZABB szám elejét is elkapta: az „1500" első három

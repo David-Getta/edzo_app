@@ -325,6 +325,17 @@ public class BodyParseTest {
         none("150 g csirkemell");
     }
 
+    /** A változás mondatában a MÁSODIK szám a mai súly. */
+    @Test public void fromToKeepsTheNewValue() {
+        // A „80-ról 76-ra fogytam" mai értéke hetvenhat – eddig a RÉGI súly
+        // került a trendbe, vagyis a fogyás napján egy súlygyarapodás.
+        kg("80-ról 76-ra fogytam", 76);
+        kg("76-ról 80-ra híztam", 80);
+        kg("82,5-ről 79,8-ra fogytam", 79.8);
+        // A testzsír számát nem viszi el.
+        assertEquals(15, BodyParse.parse("testzsír 18-ról 15%-ra ment le").fatPct, 0.01);
+    }
+
     /** Az idő és a táv sem kiló – az edzés száma nem a mérlegé. */
     @Test public void minutesAndKilometresAreNotKilograms() {
         // Az „este 45 perc jóga, aztán 78,9 kg a mérlegen" negyvenöt PERCE
