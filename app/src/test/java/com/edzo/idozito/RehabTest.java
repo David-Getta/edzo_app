@@ -223,6 +223,15 @@ public class RehabTest {
         assertEquals("vall", Rehab.forComplaint("már egy hete húzza a vállam").id);
         assertEquals("terd", Rehab.forComplaint("megint bejött a régi térdproblémám").id);
         assertEquals("vall", Rehab.forComplaint("krónikus a vállpanaszom").id);
+        // Ahogy segítséget kérünk: a kimondott kérés mellett a nyújtás is
+        // szándék-szó, a farizom pedig a csípő ügye.
+        assertEquals("csipo", Rehab.forGoal("erősíteni kéne a farizmom").id);
+        assertEquals("comb", Rehab.forGoal("nyújtani kéne a combhajlítót").id);
+        assertEquals("talp", Rehab.forGoal("kell valami a talpamra").id);
+        assertEquals("terd", Rehab.forGoal("hogyan erősítsem a térdem").id);
+        // A puszta nyújtás továbbra sem cél – az naplózható mozgásforma.
+        assertNull(Rehab.forGoal("45 perc nyújtás"));
+        assertNull(Rehab.forGoal("combnyújtás 30 perc"));
         // A „háti" jelzőként is egyértelmű – így kéri, aki egész nap ül.
         assertEquals("hati", Rehab.forGoal("kéne valami háti gyakorlat").id);
         assertEquals("hati", Rehab.forGoal("háti mobilizálás kellene").id);

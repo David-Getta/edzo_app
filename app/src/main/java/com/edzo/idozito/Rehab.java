@@ -564,7 +564,14 @@ public final class Rehab {
                 // meg nem történt edzés. A testtájnév itt is kötelező, a
                 // súlyzós mondat pedig továbbra is az erősítő naplóé, mert
                 // az a felismerő hamarabb szólal meg.
-                "erosit"})
+                "erosit",
+                // Ahogy segítséget kérünk: „nyújtani kéne a combhajlítót",
+                // „kell valami a talpamra". A puszta NYÚJTÁS továbbra sem
+                // szándék-szó (az naplózható mozgásforma), de a kimondott
+                // kérés mellett félreérthetetlen.
+                "nyujtani kene", "nyujtani kell", "nyujtani kellene",
+                "kell valami", "kene valami", "adj gyakorlat", "adj valami",
+                "hogyan erosit", "hogy erosit"})
             if (s.contains(w)) { want = true; break; }
         if (!want) return null;
         Area a = areaOf(s);
@@ -637,7 +644,10 @@ public final class Rehab {
                         // Panasznak továbbra is fájdalom-szó kell mellé.
                         "csuklo"},
                 {"nyak", "nyakam", "nyaka", "nyak", "tarkom"},
-                {"csipo", "csipom", "csipoje", "csipo"},
+                // A FARIZOM a csípő ügye: az „erősíteni kéne a farizmom"
+                // eddig válasz nélkül maradt.
+                {"csipo", "csipom", "csipoje", "csipo", "farizom", "farizmo",
+                        "farpofa", "gluteusz"},
                 {"achilles", "achilles", "vadlim", "sarkam", "sarok faj", "sarokfaj"},
                 // A sarkantyú és a plantaris fasciitis a TALP sora, nem az
                 // Achillesé: a fájdalom a talp elülső-belső élén ébred, és a
