@@ -78,7 +78,15 @@ public final class Hu {
                 // pedig „2szeres": egyik sem szám, csak véletlenül úgy néz ki.
                 boolean mult = (out.startsWith("szor", e) || out.startsWith("szer", e))
                         && (e + 4 >= out.length() || !Character.isLetter(out.charAt(e + 4)));
-                boolean glued = (p > 0 && Character.isLetter(out.charAt(p - 1)))
+                // A SZÁM UTÁNI kötőjeles toldalék nem számnév: a „6-ot" hatot
+                // jelent, nem „6 öt"-öt. Ékezet nélkül az „öt" és az „-ot"
+                // rag egybeesik, és a „6-ot" ebből 6-5 lett – vagyis egy
+                // hatmásodperces munka ötmásodperces pihenővel, a mérleg
+                // számából. („A mérleg 79,6-ot mutatott" időzítő-terv volt.)
+                boolean caseSuffix = p > 1 && out.charAt(p - 1) == '-'
+                        && Character.isDigit(out.charAt(p - 2));
+                boolean glued = caseSuffix
+                        || (p > 0 && Character.isLetter(out.charAt(p - 1)))
                         || (e < out.length() && Character.isLetter(out.charAt(e)) && !mult);
                 if (glued) {
                     p = out.indexOf(w[0], p + 1);

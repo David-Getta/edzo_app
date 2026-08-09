@@ -211,4 +211,26 @@ public class HuTest {
         assertEquals("ezermester", Hu.digits("ezermester"));
         assertEquals("ezerjo", Hu.digits("ezerjo"));
     }
+
+    /**
+     * A szám utáni kötőjeles rag nem számnév.
+     *
+     * Ékezet nélkül az „öt" és az „-ot" tárgyrag egybeesik, így a „6-ot"
+     * hatból „6 5" lett – és a „mérleg 79,6-ot mutatott" mondatból egy
+     * hatmásodperces munka ötmásodperces pihenővel: időzítő-terv a
+     * testsúlyból. A kiírt számnév viszont továbbra is szám.
+     */
+    @Test public void aCaseSuffixAfterADigitIsNotANumber() {
+        assertEquals("6-ot", Hu.digits("6-ot"));
+        assertEquals("79,6-ot mutatott", Hu.digits("79,6-ot mutatott"));
+        assertEquals("csinaltam 10-et", Hu.digits("csinaltam 10-et"));
+        // A kiírt alak marad szám.
+        assertEquals("5 nyomtam", Hu.digits("otot nyomtam"));
+        assertEquals("5", Hu.digits("ot"));
+        // A tartomány és a ritmus sem sérül.
+        assertEquals("45-15 x 6", Hu.digits("45-15 x 6"));
+        assertEquals("2-3 szelet kenyer", Hu.digits("2-3 szelet kenyer"));
+        // És a mérleg száma mérés marad.
+        assertEquals(79.6, BodyParse.parse("a mérleg 79,6-ot mutatott").kg, 0.001);
+    }
 }
