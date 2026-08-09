@@ -2747,8 +2747,12 @@ public final class Activities {
         // „5 napja futottam", „két hete kondi": a magyar leggyakoribb
         // visszatekintő alakja, és eddig mindegyik a MAI napra került. Az
         // étkezésnél ez régóta megvan (TimeHint), itt hiányzott.
+        // A MÁR nem visszatekintés, hanem tartam: a „minden reggel 10 perc
+        // nyújtás, már 2 hete" nem KÉT HETE történt egyszer, hanem két hete
+        // tart. Eddig két héttel ezelőttre került a mai nyújtás – vagyis a
+        // mai napra semmi, egy régi napra meg egy soha meg nem történt edzés.
         java.util.regex.Matcher ago = java.util.regex.Pattern
-                .compile("(?<![\\d.,a-z])(\\d{1,2}|egy|ket|ketto|harom|negy|ot|hat|"
+                .compile("(?<![\\d.,a-z])(?<!mar )(\\d{1,2}|egy|ket|ketto|harom|negy|ot|hat|"
                         + "nyolc|kilenc|tiz)\\s?(nap|het|honap)(ja|je|e)\\b").matcher(s);
         if (ago.find()) {
             int n = numWord(ago.group(1));
@@ -3324,6 +3328,12 @@ public final class Activities {
         String rest = null;
         for (String w : new String[]{"hetente", "naponta", "havonta", "masodnaponta",
                 "minden nap", "minden masodnap", "szoktam", "szoktunk",
+                // A NAPSZAKKAL mondott szokás ugyanaz: a „minden reggel
+                // 10 perc nyújtás, már 2 hete" nem egy megtörtént edzés –
+                // eddig egy tíz perces bejegyzés lett belőle, ráadásul két
+                // héttel EZELŐTTRE, mert a „2 hete" időpontnak látszott.
+                "minden reggel", "minden este", "minden delutan",
+                "minden delelott", "minden hajnalban", "minden ebedszunet",
                 "altalaban", "rendszeresen"})
             if (cl.contains(w)) { rest = cl.replace(w, " "); break; }
         // A gyakoriság-szót ki kell venni a múlt idő vizsgálata elől: a

@@ -2496,4 +2496,22 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("30 perc futás után fájt a térdem, "
                 + "mit tegyek?").plans.get(0).minutes);
     }
+
+    /**
+     * A „már" nem visszatekintés, hanem tartam.
+     *
+     * A „minden reggel 10 perc nyújtás, már 2 hete" nem KÉT HETE történt
+     * egyszer, hanem két hete tart. Eddig két héttel ezelőttre került a mai
+     * nyújtás – vagyis a mai napra semmi, egy régi napra meg egy soha meg nem
+     * történt edzés.
+     */
+    @Test public void theWordAlreadyMeansDurationNotADateInThePast() {
+        assertEquals(0, Activities.parse("minden reggel 10 perc nyújtás, "
+                + "már 2 hete").offset);
+        // A puszta „2 hete" viszont marad visszatekintés.
+        assertEquals(14, Activities.parse("2 hete futottam utoljára").offset);
+        assertEquals(5, Activities.parse("5 napja úszás 1 km").offset);
+        // A napszakkal mondott szokás sem napló.
+        assertTrue(Activities.parse("minden este sétálok egyet").plans.isEmpty());
+    }
 }
