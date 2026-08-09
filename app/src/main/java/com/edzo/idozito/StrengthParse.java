@@ -406,7 +406,9 @@ public final class StrengthParse {
         // ige. Ezeket – és CSAK ezeket – leszedjük, a minta marad szigorú:
         // bármi MÁS szó azt jelenti, hogy nem sorozatról van szó.
         String t = trimPunct(s).trim();
-        t = t.replaceAll("^(?:es\\s+|majd\\s+|aztan\\s+|utana\\s+|azutan\\s+|meg\\s+)+", "");
+        t = t.replaceAll("^(?:es\\s+|majd\\s+|aztan\\s+|utana\\s+|azutan\\s+|meg\\s+|"
+                + "munkasorozat\\s+|munkaszett\\s+|munkasuly\\s+|bemelegites\\s+|"
+                + "felvezetes\\s+|sorozatok\\s+)+", "");
         t = t.replaceAll("(?:\\s+(?:dolgoztam|nyomtam|toltam|huztam|csinaltam|mentem|"
                 + "ment|jott|kovetkezett|volt))+$", "");
         t = t.replaceAll("-?(?:mal|vel|nal|nel)$", "");
@@ -643,7 +645,11 @@ public final class StrengthParse {
             // Mértékegység nélkül írt súly a sorozat után: „3x10 60”.
             if (weight == 0 && m.group(3) == null) {
                 java.util.regex.Matcher w2 = java.util.regex.Pattern
-                        .compile("^\\s*(\\d{1,3}(?:[.,]\\d{1,2})?)(?![\\dx×])")
+                        // A MÉRTÉKEGYSÉG kizárja: a „ládaugrás 4x8 60 cm"
+                        // hatvanas száma a doboz MAGASSÁGA, nem hatvan kiló –
+                        // eddig hatvan kilós ládaugrás került a rekordba.
+                        .compile("^\\s*(\\d{1,3}(?:[.,]\\d{1,2})?)(?![\\dx×])"
+                                + "(?!\\s?(?:cm|centi|mm|m(?![a-z])|meter|perc|mp|masodperc))")
                         .matcher(s.substring(m.end()));
                 if (w2.find()) {
                     try {

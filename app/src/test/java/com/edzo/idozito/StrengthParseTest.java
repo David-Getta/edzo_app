@@ -279,8 +279,20 @@ public class StrengthParseTest {
      */
     @Test public void aContinuationMaySpeakHungarian() {
         assertEquals("Guggolás 5×10/10/10/8/8@70", sum("guggolás 3x10, aztán 2x8 70 kg"));
+        // A bemelegítés utáni MUNKASOROZAT is folytatás – eddig csak a
+        // felvezető sorozat került be, a valódi munka nem.
+        assertEquals("Fekvenyomás 4×10/8/8/8@70",
+                sum("fekvenyomás bemelegítés 40x10, munkasorozat 3x8 70"));
         // A húsz perc futás továbbra sem húsz ismétlés.
         assertEquals("Fekvenyomás 3×10/10/10@0", sum("fekvenyomás 3x10, majd 20 perc futás"));
+    }
+
+    @Test public void aMeasurementUnitIsNotAWeight() {
+        // A „ládaugrás 4x8 60 cm" hatvanas száma a doboz MAGASSÁGA – eddig
+        // hatvan kilós ládaugrás került a rekordba.
+        assertEquals("Ládaugrás 4×8/8/8/8@0", sum("ládaugrás 4x8 60 cm"));
+        // A mértékegység nélküli szám továbbra is súly.
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60"));
     }
 
     @Test public void aPercentageIsNotAWeight() {
