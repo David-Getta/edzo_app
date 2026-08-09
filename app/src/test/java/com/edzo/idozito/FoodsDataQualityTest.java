@@ -755,4 +755,39 @@ public class FoodsDataQualityTest {
         assertEquals("kezilabda", Activities.parse("kézilabda edzés").plans.get(0).kind.id);
         assertEquals(78.4, BodyParse.parse("ma reggel 78,4 kg").kg, 0.001);
     }
+
+    /**
+     * A GYAKORLATNEVEKBEN lakó étel-szótövek.
+     *
+     * A rehab-lap és a programok a gyakorlatok NEVÉT mutatják, tehát pont
+     * ezeket másolja be az ember a mezőkbe. A faRIZOMban a rizs, az
+     * állCSÚSZÁSban a csusza – mindkettőből étel-bejegyzés lett. Egyetlen
+     * kivétel marad: a KAGYLÓ tényleg tengeri étel is, ott a szó a hibás
+     * helyen áll, nem a felismerő.
+     */
+    @Test public void noExerciseNameIsAlsoAMealOrAMeasurement() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.List<String> names = new java.util.ArrayList<>();
+        for (Rehab.Area ar : Rehab.AREAS) {
+            names.add(ar.name);
+            for (Rehab.Ex e : ar.moves) names.add(e.name);
+        }
+        for (Programs.P p : Programs.BUILT_IN) {
+            names.add(p.name);
+            java.util.Collections.addAll(names, p.ex);
+        }
+        StringBuilder bad = new StringBuilder();
+        for (String n : names) {
+            if (n.toLowerCase(new java.util.Locale("hu")).contains("kagyló")) continue;
+            java.util.List<Foods.Hit> h = Foods.parse(all, n);
+            if (!h.isEmpty()) bad.append("\n  étel: ").append(n)
+                    .append(" -> ").append(h.get(0).food.name);
+            if (Sleep.parse(n) > 0 || Pulse.parse(n) > 0 || !BodyParse.parse(n).isEmpty())
+                bad.append("\n  mérés: ").append(n);
+        }
+        assertEquals("gyakorlatnévből bejegyzés lenne:" + bad, 0, bad.length());
+        // A valódi étel változatlan.
+        assertTrue(!Foods.parse(all, "150 g rizs").isEmpty());
+        assertTrue(!Foods.parse(all, "túrós csusza").isEmpty());
+    }
 }

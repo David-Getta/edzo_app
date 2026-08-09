@@ -752,6 +752,10 @@ public final class Foods {
      * ne csússzanak el.
      */
     private static final String[] NOT_FOOD = {
+            // IZOM- és GYAKORLATNEVEK, amikben étel-szótő lakik: a faRIZOMban
+            // a rizs, az állCSÚSZÁSban a csusza. A rehab-lap ezeket a neveket
+            // mutatja, tehát pont ezeket másolja be az ember.
+            "farizom", "farizmo", "allcsusz", "allcsusztat",
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
             "kaveskanal", "evokanal", "teaskanal",
             // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,
