@@ -1882,4 +1882,25 @@ public class ActivitiesParseTest {
         assertEquals(3, r.plans.size());
         assertEquals(60, r.plans.get(0).minutes);
     }
+
+    /**
+     * Az ismétlésszám nem alkalomszám.
+     *
+     * A „20 kettlebell swing és 10 burpee" húszasa a lendítések száma – a
+     * kettlebell viszont kondi-szótő is, így húsz darab hatvanperces edzés
+     * lett belőle, húsz napra szétosztva: húsz óra mozgás egy negyedórás
+     * körből. Ha a mondatban felismert sorozat is van, és a szám PONTOSAN
+     * annak az ismétlésszáma, akkor a szám azé.
+     */
+    @Test public void theRepCountIsNotAnOccasionCount() {
+        Activities.Parsed p = Activities.parse("20 kettlebell swing és 10 burpee");
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(1, p.days);
+        assertEquals("1d+0: 1×evezes/3, 1×kondi/60",
+                summary("5 kör: 500 m evezés, 15 kettlebell swing"));
+        // A kimondott alkalom megvédi magát: ott a szám után az edzés szó áll.
+        assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
+        // A saját nevén futó mozgás sem sérül: a „3 futás" három futás.
+        assertEquals("7d+0: 3×futas/45", summary("3 futás és 3x10 fekvenyomás a héten"));
+    }
 }

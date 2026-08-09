@@ -1418,6 +1418,38 @@ public final class Activities {
                 if (p.km > 0 || p.minutes != p.kind.defaultMin) kept.add(p);
             if (!kept.isEmpty() || out.size() > 1) out = kept;
         }
+        // Az ISMÉTLÉSSZÁM nem alkalomszám. Az „5 kör: 500 m evezés, 15
+        // kettlebell swing" tizenötöse a lendítések száma – a kettlebell
+        // viszont kondi-szótő is, így tizenöt darab hatvanperces edzés lett
+        // belőle: tizenöt óra mozgás egy negyedórás körből. Ha a mondatban
+        // felismert SOROZAT is van, a szorzószám azé, és nem a naplóé.
+        // A kimondott gyakoriság („hetente 3 futás") megvédi magát: ott a
+        // gyakoriság-szó adja a napokat, nem a szám melletti mozgásforma.
+        // A kimondott ALKALOM megvédi magát: a „2 fekvőtámasz edzés" két
+        // edzés, mert ott a szám után az edzés szó áll, nem a gyakorlaté.
+        boolean saysSessions = rawText.matches(".*\\d{1,2}\\s+\\w+\\s+edzes\\w*.*");
+        List<StrengthParse.Item> lifts = StrengthParse.parse(rawText);
+        if (!lifts.isEmpty() && !saysSessions) {
+            List<Plan> fixed = new ArrayList<>();
+            boolean any = false;
+            for (Plan p : out) {
+                // Csak az általános gyűjtő-mozgásformát javítjuk: a „3 futás"
+                // hármasát senki nem sorozatnak szánta, a futás a saját neve
+                // alatt fut. A számnak pedig EGYEZNIE kell egy felismert
+                // sorozat ismétlésszámával – így csak az kerül vissza a
+                // helyére, amit tényleg a gyakorlattól vettünk el.
+                boolean generic = "kondi".equals(p.kind.id) || "egyeb".equals(p.kind.id);
+                if (generic && p.count > 1 && p.km <= 0
+                        && p.minutes == p.kind.defaultMin && repsMatch(lifts, p.count)) {
+                    fixed.add(new Plan(p.kind, 1, p.minutes, p.km, p.steps));
+                    // A napok száma is ebből a számból jött („20 kettlebell
+                    // swing" húsz napra osztva) – az sem áll meg nélküle.
+                    if (days == p.count) days = 1;
+                    any = true;
+                } else fixed.add(p);
+            }
+            if (any) out = fixed;
+        }
         return new Parsed(out, days, offset, findHour(s));
     }
 
@@ -2508,6 +2540,14 @@ public final class Activities {
             out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
         }
         return out;
+    }
+
+    /** Van-e olyan felismert sorozat, amelynek ennyi az ismétlésszáma? */
+    private static boolean repsMatch(List<StrengthParse.Item> lifts, int n) {
+        for (StrengthParse.Item it : lifts)
+            for (StrengthParse.Set st : it.sets)
+                if (st.reps == n) return true;
+        return false;
     }
 
     /**

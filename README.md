@@ -115,6 +115,12 @@ A kimondott **összeg** nem külön edzés: a „ma 90 percet edzettem összesen
 harmadikként állt sorba, és százötven perc mozgás került a naplóba kilencven
 helyett.
 
+Az **ismétlésszám sem alkalomszám**: a „20 kettlebell swing és 10 burpee"
+húszasa a lendítések száma, a kettlebell viszont kondi-szótő is – eddig húsz
+darab hatvanperces edzés lett belőle, húsz napra szétosztva. Ha a mondatban
+felismert sorozat is van, és a szám pontosan annak az ismétlésszáma, a szám
+azé. A „2 fekvőtámasz edzés" viszont marad két edzés.
+
 Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 km futás,
 **78,5 kg a mérlegen**", az „aludtam 7 órát **és futottam 10 km-t**" és az
 „ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul
