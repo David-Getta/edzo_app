@@ -537,4 +537,34 @@ public class BodyParseTest {
         assertEquals(0, BodyParse.parse("70 kg alatt vagyok").kg, 0.01);
         assertEquals(0, BodyParse.parse("80 kg alatt szeretnék lenni").kg, 0.01);
     }
+
+    /**
+     * A mérés FŐNEVE is kimondás, és a mértékegység nem tolja el az új értéket.
+     *
+     * A „reggeli mérés: 80,1 kg" eddig teljesen elveszett: a „mérés" szó miatt
+     * a „csak számok maradtak" vizsgálat megbukott, a mérés-szavak listáján
+     * meg nem volt ott. A „haskörfogat 92-ről 88 cm-re" pedig a RÉGI értéket
+     * tartotta meg – vagyis a fogyás napján egy hízást írt a naplóba.
+     */
+    @Test public void theWordMeasurementCountsAndTheNewValueWins() {
+        assertEquals(80.1, BodyParse.parse("reggel mérés: 80,1 kg, "
+                + "izomtömeg 35,2 kg").kg, 0.01);
+        assertEquals(88.0, BodyParse.parse("haskörfogat 92-ről 88 cm-re").cm[0], 0.01);
+        // A régi, egység nélküli alak sem sérül.
+        assertEquals(76.0, BodyParse.parse("80-ról 76-ra fogytam").kg, 0.01);
+    }
+
+    /**
+     * A méretlen testrész száma nem testsúly.
+     *
+     * A „combom 58 cm, vádli 38" harmincnyolcasa a vádli körfogata – a
+     * naplóba viszont harmincnyolc kilós mérésként került, egy felnőtt
+     * súlytrendjébe. (A vádlinak nincs saját mezője, de attól még nem a
+     * mérleg száma áll mellette.)
+     */
+    @Test public void anUnmeasuredBodyPartIsNotAWeight() {
+        BodyParse.Body b = BodyParse.parse("combom 58 cm, vádli 38");
+        assertEquals(0.0, b.kg, 0.01);
+        assertEquals(58.0, b.cm[3], 0.01);
+    }
 }

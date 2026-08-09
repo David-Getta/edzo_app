@@ -320,6 +320,7 @@ public final class StrengthParse {
         // fekvőtámaszt" eddig bekerült az erősítő naplóba – és onnantól a
         // progresszió-javaslat is arra épült.
         if (Activities.someoneElsesDoing(text)) return out;
+        if (looksLikeMeasurement(Foods.norm(text))) return out;
         String clean = maskDistance(maskClock(maskLyingDown(kgBeforeMultiplier(joinRepList(
                 stripPercent(stripListMarkers(Hu.correction(Foods.norm(text)))))))));
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(clean))));
@@ -1014,6 +1015,22 @@ public final class StrengthParse {
      */
     private static String maskDistance(String s) {
         return s.replaceAll("(?<![\\d,.:])\\d{1,4}(?:[.,]\\d+)?\\s*(?:km|m)(?![a-z])", "#");
+    }
+
+    /**
+     * A MÉRŐSZALAG nem edzés.
+     *
+     * A „combom 58 cm, vádli 38" egy testkörfogat-mérés – eddig
+     * harmincnyolc ismétléses VÁDLIEMELÉS lett belőle, mert a vádli
+     * gyakorlatnév is. A centiméter és a megmért testrész neve együtt
+     * egyértelmű: ilyen mondatot senki nem edzésnek szán.
+     */
+    private static boolean looksLikeMeasurement(String s) {
+        if (!s.matches(".*\\d\\s?-?(?:cm|centi)\\b.*")) return false;
+        for (String w : new String[]{"comb", "derek", "csipo", "mellkas", "vadli",
+                "korfogat", "boseg", "felkar"})
+            if (s.contains(w)) return true;
+        return false;
     }
 
     /**

@@ -39,7 +39,8 @@ public final class BodyParse {
             // A „bőség" alapalakja is kell: a „derékbőség 82 cm" és a
             // „derékbőségem" a birtokos alakot kereső tővel nem egyezett, és
             // az egész mérés elveszett.
-            {"derek", "derekam", "derekboseg", "derekbosege", "has", "hasam",
+            {"derek", "derekam", "derekboseg", "derekbosege", "derekbosegem",
+                    "has", "hasam",
                     "hasboseg", "hasbosege", "haskorfogat"},
             {"csipo", "csipom", "csipoboseg", "csipobosege", "fenek"},
             {"mellkas", "mell", "mellboseg", "mellbosege"},
@@ -102,6 +103,10 @@ public final class BodyParse {
             "lefogytam", "felmentem", "lementem", "felszedtem",
             // A mérés IGÉJE is kimondás: „reggel megmértem magam, 78,4".
             "megmertem", "mertem", "megmerve", "merem",
+            // A mérés FŐNEVE is kimondás: a „reggeli mérés: 80,1 kg" eddig
+            // teljesen elveszett – a szó miatt a „csak számok maradtak"
+            // vizsgálat megbukott, a listán meg nem volt ott.
+            "meres", "meresem", "merese", "meresek",
             // A múlt idejű létige is kimondás: a „78,2 kg voltam" ugyanaz a
             // mérés, mint a „78,2 kg vagyok" – egy hosszabb napi
             // összefoglalóban eddig elveszett.
@@ -149,7 +154,12 @@ public final class BodyParse {
         return s.replaceAll(
                 "(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:cm|centi|kg|kilo|%|szazalek)?"
                         + "\\s?-?r[o\u00f3]l\\b([^0-9]{0,12}?)"
-                        + "(\\d{1,3}(?:[.,]\\d{1,2})?\\s?-?r[ae]\\b)", "$2");
+                        // A MÉRTÉKEGYSÉG a két szám között is ott állhat: a
+                        // „haskörfogat 92-ről 88 cm-re" nyolcvannyolcasa
+                        // eddig nem illeszkedett, és a RÉGI érték maradt a
+                        // naplóban – vagyis a fogyás napján egy hízás.
+                        + "(\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                        + "(?:cm|centi|kg|kilo|%|szazalek)?\\s?-?r[ae]\\b)", "$2");
     }
 
     /** A mondatban rejlő mérés, vagy egy üres Body. */
@@ -295,6 +305,14 @@ public final class BodyParse {
             // százalékból nyolcvan kiló lenne. A centiméter ugyanígy: a
             // „180 cm és 80 kg vagyok" mondatban a magasság áll elöl, és a
             // testsúly sávjába is beleesik.
+            // A MÉRETLEN testrész száma sem kiló: a „combom 58 cm, vádli 38"
+            // harmincnyolcasa a vádli körfogata – a naplóba viszont
+            // harmincnyolc kilós mérésként került, egy felnőtt súlytrendjébe.
+            // (Ezekhez a testrészekhez nincs saját mező, de attól még nem a
+            // mérleg száma áll mellettük.)
+            if (s.substring(0, m.start()).trim().matches(".*(?:vadli|boka|nyak"
+                    + "|csuklo|alkar|labszar|labfej|fejkorfogat)\\w*\\s*[:=-]?"))
+                continue;
             String rest = s.substring(m.end()).trim();
             if (rest.startsWith("%") || rest.startsWith("szazalek")) continue;
             if (rest.startsWith("cm") || rest.startsWith("centi")) continue;

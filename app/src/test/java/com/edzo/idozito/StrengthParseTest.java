@@ -1186,4 +1186,17 @@ public class StrengthParseTest {
         assertEquals(60.0, StrengthParse.parse("fekvenyomás 3x10, 60 kg")
                 .get(0).topWeight(), 0.01);
     }
+
+    /**
+     * A mérőszalag nem edzés.
+     *
+     * A „combom 58 cm, vádli 38" egy testkörfogat-mérés – eddig harmincnyolc
+     * ismétléses VÁDLIEMELÉS lett belőle, mert a vádli gyakorlatnév is.
+     */
+    @Test public void aTapeMeasureIsNotAWorkout() {
+        assertTrue(StrengthParse.parse("combom 58 cm, vádli 38").isEmpty());
+        // A valódi vádliemelés viszont marad.
+        assertEquals("Vádliemelés", StrengthParse.parse("vádliemelés 4x15")
+                .get(0).name);
+    }
 }
