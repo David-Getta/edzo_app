@@ -88,7 +88,8 @@ sem talált, tehát ha talál, az tényleg ott van.
   6 kézi edzés", „10 km futás", „tegnap 1,5 óra bringa", „a héten minden
   nap futottam", „hétvégén 1-1 túra", „hétfőn és szerdán kondi", „kétszer úsztam",
   „futottam háromszor a héten" (a szorzószám hátul is állhat),
-  „múlt kedden kondi", „tegnap hajnalban futás",
+  „múlt kedden kondi", „tegnap hajnalban futás", „5 napja futottam",
+  „két hete kondi" (a birtokos alak IDŐPONT, nem időszak), „kétórás túra",
   „reggel 5 km futás, este 8 km futás" (két külön edzés), „leúsztam 1500
   métert", „tegnap este kondi", „ma 10000 lépés", „10k lépés" és „10 000
   lépés" (a rövidítés és a szóközös ezres tagolás is), „10k futás" (tíz
@@ -476,7 +477,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~871 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~873 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.

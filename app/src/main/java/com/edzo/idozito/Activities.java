@@ -716,6 +716,13 @@ public final class Activities {
     private static String shortForms(String s) {
         // Szóközzel tagolt ezres: „10 000" → „10000".
         s = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        // A kiírt számnév ÓRÁS összetételben: a „kétórás túra" két óra, nem a
+        // túra alapértelmezett kilencven perce. A számnév-szótár szóhatárt
+        // vár, így az összetételt nem látta.
+        for (String[] w : new String[][]{{"felora", "0,5 ora"}, {"ketora", "2 ora"},
+                {"haromora", "3 ora"}, {"negyora", "4 ora"}, {"otora", "5 ora"},
+                {"hatora", "6 ora"}, {"nyolcora", "8 ora"}})
+            s = s.replaceAll("(?<![a-z])" + w[0] + "(s|st|sat|sra|ban|n|t)?(?![a-z])", w[1]);
         boolean steps = s.contains("lepes") || s.contains("lepest") || s.contains("lepett");
         return s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s?k(?![a-z0-9])",
                 steps ? "$1000" : "$1 km");
@@ -2079,6 +2086,13 @@ public final class Activities {
             // hangzású, szó eleji alakokat (hétfő, napló) a NOT_SPAN zárja ki.
             if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
             if (isNotSpan(wordAt(s, p))) continue;
+            // Az „5 napja", a „két hete" és a „két hónapja" IDŐPONT, nem
+            // időszak: nem öt napra osztjuk szét az edzést, hanem öt nappal
+            // ezelőttre tesszük. A birtokos alakot itt engedjük tovább, hogy
+            // a nap-kereső kaphassa meg.
+            String word = wordAt(s, p);
+            if (word.equals(unit + "ja") || word.equals(unit + "je")
+                    || word.equals(unit + "e")) continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {
                 // Szám nélkül csak a hét és a hónap időszak („a héten",
@@ -2146,6 +2160,15 @@ public final class Activities {
         return new int[]{p, end, offset, days};
     }
 
+    /** Számjegy vagy kiírt számnév értéke egytől tízig (különben 0). */
+    private static int numWord(String w) {
+        String[][] map = {{"egy", "1"}, {"ket", "2"}, {"ketto", "2"}, {"harom", "3"},
+                {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"nyolc", "8"},
+                {"kilenc", "9"}, {"tiz", "10"}};
+        for (String[] m : map) if (m[0].equals(w)) return Integer.parseInt(m[1]);
+        try { return Integer.parseInt(w); } catch (NumberFormatException e) { return 0; }
+    }
+
     /**
      * Konkrét nap megnevezve → {kezdet, vég, hány napja}.
      *
@@ -2156,6 +2179,19 @@ public final class Activities {
      */
     private static int[] findSingleDay(char[] q, long now) {
         String s = new String(q);
+        // „5 napja futottam", „két hete kondi": a magyar leggyakoribb
+        // visszatekintő alakja, és eddig mindegyik a MAI napra került. Az
+        // étkezésnél ez régóta megvan (TimeHint), itt hiányzott.
+        java.util.regex.Matcher ago = java.util.regex.Pattern
+                .compile("(?<![\\d.,a-z])(\\d{1,2}|egy|ket|ketto|harom|negy|ot|hat|"
+                        + "nyolc|kilenc|tiz)\\s?(nap|het|honap)(ja|je|e)\\b").matcher(s);
+        if (ago.find()) {
+            int n = numWord(ago.group(1));
+            int mul = ago.group(2).equals("nap") ? 1 : ago.group(2).equals("het") ? 7 : 30;
+            int back = n * mul;
+            if (back >= 1 && back <= 365)
+                return new int[]{ago.start(), ago.end(), back};
+        }
         String[][] words = {{"tegnapelott", "2"}, {"tegnapi", "1"}, {"tegnap", "1"}};
         for (String[] w : words) {
             int p = s.indexOf(w[0]);

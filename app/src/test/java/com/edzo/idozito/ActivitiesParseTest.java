@@ -1526,4 +1526,38 @@ public class ActivitiesParseTest {
         // A „hetes bérlet" pedig továbbra sem időszak.
         assertEquals(1, Activities.parse("hetes bérlettel kondi", sat).days);
     }
+
+    /**
+     * „5 napja futottam" – IDŐPONT, nem időszak.
+     *
+     * A birtokos alak („napja", „hete", „hónapja") a magyar leggyakoribb
+     * visszatekintője, és eddig időszaknak számított: az öt nappal ezelőtti
+     * futás öt napra elosztva került a naplóba, vagyis a mai napra is. Az
+     * étkezésnél ez a szabály régóta megvan.
+     */
+    @Test public void thePossessiveDayFormIsAPointInTime() {
+        Activities.Parsed p = Activities.parse("5 napja futottam utoljára");
+        assertEquals(5, p.offset);
+        assertEquals(1, p.days);
+        assertEquals(3, Activities.parse("3 napja úsztam").offset);
+        assertEquals(14, Activities.parse("két hete kondi").offset);
+        assertEquals(7, Activities.parse("1 hete futottam").offset);
+        // Az „alatt" viszont továbbra is időszak.
+        assertEquals(3, Activities.parse("3 nap alatt 2 futás").days);
+        assertEquals(7, Activities.parse("a héten minden nap futottam").days);
+    }
+
+    /**
+     * A „kétórás túra" két óra.
+     *
+     * A számnév ÓRÁS összetételben áll, a szótár viszont szóhatárt vár – így
+     * a mondat időtartam nélkül maradt, és a túra alapértelmezett kilencven
+     * perce került a naplóba a százhúsz helyett.
+     */
+    @Test public void theHourCompoundIsADuration() {
+        assertEquals(120, Activities.parse("kétórás túra").plans.get(0).minutes);
+        assertEquals(180, Activities.parse("háromórás kirándulás").plans.get(0).minutes);
+        assertEquals(30, Activities.parse("félórás séta").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("1 órás kondi").plans.get(0).minutes);
+    }
 }
