@@ -227,6 +227,9 @@ public class FoodsParseTest {
     @Test public void theBeerInAListIsStillABeer() {
         assertEquals(3, hits("pizza, sör, fagyi").size());
         assertEquals("Sör", hits("pizza, sör, fagyi").get(1).food.name);
+        // A „TRX sor 3x12" sora SOROZAT, nem sör – a sorozatjelölés követi.
+        assertTrue(hits("TRX sor 3x12").isEmpty());
+        assertTrue(hits("kábel sor 4x10").isEmpty());
         // A mértékszó változatlan: az „egy sor csoki" egy csoki.
         assertEquals(1, hits("egy sor csoki").size());
         assertEquals("Csokoládé", hits("egy sor csoki").get(0).food.name);

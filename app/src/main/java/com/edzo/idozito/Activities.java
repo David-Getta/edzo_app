@@ -187,6 +187,10 @@ public final class Activities {
                     // volt. (Az étel-oldalon ugyanez a szó a diót hozta.)
                     // A puszta „tekez" nem elég: az érTEKEZletben is benne van.
                     "kardio", "bowling", "tekepalya", "tekezes", "tekeztem", "tekezni",
+                    // Termi eszközök, amik magukban is edzést jelentenek.
+                    "medicinlabda", "bosu", "battle rope", "kotelezes",
+                    "szankotolas", "szanko tolas", "traktorgumi", "step pad",
+                    "steppad", "step ora",
                     "tekezunk", "tekezik",
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",

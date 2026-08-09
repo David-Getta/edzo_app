@@ -1265,6 +1265,11 @@ public final class Foods {
                                 && q.substring(gapA, gapB).trim().isEmpty())
                             drop = true;
                     }
+                    // A „TRX sor 3x12" sora SOROZAT, nem sör: a sorozatjelölés
+                    // követi. Csak az ékezet nélkül írt alaknál – aki „sört"
+                    // ír, annak a sörét nem vesszük el.
+                    if (!drop && q.substring(Math.min(m.pos + m.len, q.length()))
+                            .matches("^\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3}.*")) drop = true;
                 if (drop) {
                     // „egy sor csoki és egy sör”: a mértékszó után máshol
                     // OTT LEHET a valódi ital – ilyenkor nem eldobjuk a
