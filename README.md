@@ -127,7 +127,12 @@ sem talált, tehát ha talál, az tényleg ott van.
   becslés), „futás 1:05:23" (óra-kijelző alak), „kondi és futás, összesen
   másfél óra" (az összesen OSZTJA az időt), „10-15 perc futás" és „5-8 km
   futás" (a tartomány közepe), „reggel és este 30-30 perc kondi" (két edzés),
-  „futás és úszás 30-30 perc" (mindkettő harminc perc – órában is: „2-2 óra")
+  „futás és úszás 30-30 perc" (mindkettő harminc perc – órában is: „2-2 óra"),
+  „reggel és este is futottam 5-5 km-t" (két ötkilométeres futás),
+  „18:00-19:30 foci" és „18:00-tól 19:30-ig kondi" (a naptárból másolt
+  óra-tartomány másfél óra), „01.15 futás 8 km" (a sor elején álló szám dátum),
+  „a héten futottam 3 alkalommal" (a darabszám hátul is állhat),
+  „ma volt az első edzésem 3 hét után, 30 perc futás" (a kihagyás nem időszak)
   – mentés előtt megmutatja, mit értett; a tervekre („jövő
   héten…") őszintén szól, hogy a napló a megtörtént edzéseké, a tagadást
   is érti („ma nem futottam", „kondi helyett futás"; a „nem futottam és
