@@ -2150,4 +2150,22 @@ public class ActivitiesParseTest {
         assertEquals(5.0, Activities.parse("a fiammal futottunk 5 km-t")
                 .plans.get(0).km, 0.01);
     }
+
+    /**
+     * A szokás tagmondata nem viszi el a mellette álló valódi edzést.
+     *
+     * A „szoktam futni, ma 8 km-t futottam" nyolc kilométere és a „hetente
+     * háromszor edzek, ma 45 perc kondi volt" negyvenöt perce nyomtalanul
+     * eltűnt: a szokás-szabály az EGÉSZ mondatra élt.
+     */
+    @Test public void theHabitClauseDoesNotSwallowTheRealSession() {
+        assertEquals(8.0, Activities.parse("szoktam futni, ma 8 km-t futottam")
+                .plans.get(0).km, 0.01);
+        assertEquals(45, Activities.parse("hetente háromszor edzek, ma 45 perc kondi volt")
+                .plans.get(0).minutes);
+        // Múlt idejű fél nélkül a szokás marad szokás.
+        assertTrue(Activities.parse("hetente futok").isEmpty());
+        assertTrue(Activities.parse("szoktam futni reggelente").isEmpty());
+        assertTrue(Activities.parse("minden másodnap futok").isEmpty());
+    }
 }

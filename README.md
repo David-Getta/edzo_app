@@ -59,7 +59,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   turmixról szól, nem egy edzésről
 - a **szokás** nem egy alkalom: „hetente háromszor járok kondiba", „minden
   másodnap futok", „szoktam futni reggelente" a heti rendet írja le. A múlt
-  idő viszont napló, gyakorisággal együtt is: „hetente kétszer futottam"
+  idő viszont napló, gyakorisággal együtt is: „hetente kétszer futottam" – és
+  a szokás TAGMONDATA nem viszi el a mellette álló valódi edzést sem:
+  a „szoktam futni, **ma 8 km-t futottam**" nyolc kilométere megmarad
 - a **felszólítás** terv: „csináljunk egy tabatát", „menjünk futni" – az
   időzítő-terv elkészül, a bejegyzés nem
 - a **cél** és a **nevezés** sem edzés: „a heti célom 4 edzés", „célom a

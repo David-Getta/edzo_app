@@ -911,6 +911,10 @@ public final class Activities {
         // A jövő nem napló: a „jövő héten 3 futás" vagy a „holnap futok"
         // terv, nem megtörtént edzés – ezekből semmit sem mentünk, különben
         // a szándék máris bekerülne a szériába és az XP-be.
+        // A SZOKÁS tagmondata nem viheti el a mellette álló valódi edzést: a
+        // „szoktam futni, ma 8 km-t futottam" nyolc kilométere eddig
+        // nyomtalanul eltűnt, mert a szokás-szabály az EGÉSZ mondatra élt.
+        stripHabitClause(q);
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.
@@ -3095,6 +3099,41 @@ public final class Activities {
         String part = s.substring(from, to);
         for (Kind k : ALL) for (String w : k.words) if (part.contains(w)) return true;
         return false;
+    }
+
+    /**
+     * A szokás tagmondata kitakarva – ha van mellette megtörtént fél.
+     *
+     * A „hetente háromszor edzek, ma 45 perc kondi volt" első fele a heti
+     * rendet írja le, a második egy valódi edzést. A szokás-szabály eddig az
+     * egész mondatra élt, és a negyvenöt perc elveszett vele. Múlt idejű
+     * tagmondat nélkül semmit nem takarunk ki: a puszta „hetente futok"
+     * továbbra sem napló.
+     */
+    private static void stripHabitClause(char[] q) {
+        String s = new String(q);
+        if (!s.matches(".*(?<![a-z])\\w{3,}(?:tam|tem|tunk)(?![a-z]).*")
+                && !s.contains(" volt")) return;
+        int a = 0;
+        while (a < s.length()) {
+            int e = a;
+            while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != ';') e++;
+            if (habitClause(s.substring(a, e))) blank(q, a, e);
+            a = e + 1;
+        }
+    }
+
+    /** Gyakoriság-szó + jelen idő: a tagmondat a heti rendről szól. */
+    private static boolean habitClause(String cl) {
+        String rest = null;
+        for (String w : new String[]{"hetente", "naponta", "havonta", "masodnaponta",
+                "minden nap", "minden masodnap", "szoktam", "szoktunk",
+                "altalaban", "rendszeresen"})
+            if (cl.contains(w)) { rest = cl.replace(w, " "); break; }
+        // A gyakoriság-szót ki kell venni a múlt idő vizsgálata elől: a
+        // „szoktam" maga is -tam végű, pedig épp a szokás szava.
+        return rest != null
+                && !rest.matches(".*(?<![a-z])\\w{3,}(?:tam|tem|tunk)(?![a-z]).*");
     }
 
     /**
