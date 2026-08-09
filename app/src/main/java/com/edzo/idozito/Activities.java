@@ -96,6 +96,9 @@ public final class Activities {
                     "allo evezes", "sup-ozas", "sup-oz", "supoz", "szupoz"),
             new Kind("kondi", "🏋", "Kondi / súlyzós edzés", 5.0, false, 60,
                     "kondi", "konditerem", "terem", "sulyzo", "gym", "gepterem", "gyur",
+                    // A „core" a törzsizom edzése – konditermi szó, magyarul
+                    // is így mondják.
+                    "core edzes", "core-edzes", "coretrening",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
@@ -767,6 +770,10 @@ public final class Activities {
     private static final String[] NOT_SPAN = {
             "napi", "naplo", "naploban", "naplot", "naptar", "napozas", "napsutes",
             "hetfo", "hetfon", "hetfoi", "hetvege", "hetvegen", "hetkoznap", "hetkoznapon",
+            // A „hétvégi" JELZŐ, nem egyhetes időszak: a „hétvégi hosszú
+            // futás 18 km" tizennyolc kilométere hét napra terült szét, és a
+            // heti statisztikában hétszer annyi napnak látszott.
+            "hetvegi", "hetvegere", "hetvegeig", "hetvegehez",
             // A „hetes" sorszám vagy jelző, nem időszak: a „hetes bérlettel
             // kondi" és a „futás a hetes buszmegállóig" egyaránt EGY napról
             // szól, eddig viszont mindkettő egyhetes időszakra terült szét.

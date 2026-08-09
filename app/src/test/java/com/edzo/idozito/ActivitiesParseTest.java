@@ -276,6 +276,18 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void theWeekendAdjectiveIsNotAWeek() {
+        // A „hétvégi" JELZŐ: a „hétvégi hosszú futás 18 km" tizennyolc
+        // kilométere hét napra terült szét, és a heti statisztikában hétszer
+        // annyi napnak látszott. A hétvége két nap, nem hét.
+        Activities.Parsed p = Activities.parse("hétvégi hosszú futás 18 km 1:45");
+        assertEquals(2, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(18, p.plans.get(0).km, 0.001);
+        // A valódi egyhetes időszak változatlan.
+        assertEquals("7d+0: 3×futas/45", summary("a héten futottam 3-szor"));
+    }
+
     @Test public void insteadOfCanCompareJustTheNumber() {
         // A „csak 5 km-t futottam 10 helyett" öt kilométere MEGTÖRTÉNT –
         // eddig az egész mondat eltűnt, mert a tíz kilométer maradt el.
