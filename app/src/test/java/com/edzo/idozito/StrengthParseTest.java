@@ -251,6 +251,26 @@ public class StrengthParseTest {
         assertEquals("Kettlebell lendítés 5×15/15/15/15/15@16", sum("kettlebell 16 kg 5x15"));
     }
 
+    @Test public void aPercentageIsNotAWeight() {
+        // A „@70%" a maximum arányát mondja, nem a rúdon lévő súlyt – a
+        // mondat meg sem mondja, mennyi volt. Hetven kilóként viszont bekerült
+        // a rekordba, az 1RM-becslésbe és a progresszió-javaslatba is.
+        assertEquals("Guggolás 3×8/8/8@0", sum("guggolás 3x8 @70%"));
+        assertEquals("Fekvenyomás 5×3/3/3/3/3@0", sum("fekvenyomás 5x3 85%-on"));
+        // A kukac utáni szám mértékegység nélkül továbbra is súly.
+        assertEquals("Guggolás 3×8/8/8@100", sum("guggolás 3x8 @ 100"));
+    }
+
+    @Test public void aSpacedRepListIsStillAList() {
+        // A tagmondat-vágó a vesszőnél vág, ha szóköz követi: a „12, 10, 8"
+        // tízese és nyolcasa külön, névtelen tagmondatba került, és némán
+        // elveszett – a naplóban a sorozatok harmada maradt.
+        assertEquals("Húzódzkodás 3×12/10/8@0", sum("húzódzkodás max ismétlés: 12, 10, 8"));
+        assertEquals("Bicepsz 3×12/10/8@0", sum("bicepsz 12, 10, 8"));
+        // Két szám még lehet tizedes vagy két külön dolog – ahhoz nem nyúlunk.
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60 kg"));
+    }
+
     @Test public void aThreeDigitNumberOnABarbellMoveIsKilograms() {
         // A „leguggoltam 140-et" száznegyven KILÓ – száznegyven guggolás nem
         // létezik egy rúddal. Eddig ismétlésnek olvastuk, és a rekord, az 1RM

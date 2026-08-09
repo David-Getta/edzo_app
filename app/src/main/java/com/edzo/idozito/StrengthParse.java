@@ -285,7 +285,8 @@ public final class StrengthParse {
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
         if (Activities.looksLikeFuture(text)) return out;
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(
-                kgBeforeMultiplier(stripListMarkers(Foods.norm(text)))))));
+                kgBeforeMultiplier(joinRepList(
+                        stripPercent(stripListMarkers(Foods.norm(text)))))))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
@@ -895,6 +896,39 @@ public final class StrengthParse {
     }
 
     /**
+     * Szóközös ismétlés-felsorolás összehúzása: „12, 10, 8" → „12,10,8".
+     *
+     * A tagmondat-vágó a vesszőnél vág, ha szóköz követi – így a „húzódzkodás
+     * max ismétlés: 12, 10, 8" első száma után a tíz és a nyolc külön,
+     * névtelen tagmondatba került, és NÉMÁN elveszett. A szóköz nélküli alak
+     * („12,10,8") viszont mindig működött. Csak HÁROM vagy több puszta szám
+     * húzódik össze: két szám még lehet tizedes vagy két külön dolog.
+     */
+    private static String joinRepList(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d.,])\\d{1,3}(?:,\\s+\\d{1,3}){2,}(?![\\d.,])").matcher(s);
+        StringBuffer sb = new StringBuffer();
+        while (m.find())
+            m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(
+                    m.group().replaceAll(",\\s+", ",")));
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * A SZÁZALÉK nem kiló és nem ismétlés.
+     *
+     * A „guggolás 3x8 @70%" és a „fekvenyomás 5x3 85%-on" a maximum arányát
+     * mondja ki, nem a rúdon lévő súlyt – a mondat meg sem mondja, mennyi
+     * volt. Hetvenöt kilós guggolásként viszont bekerült a rekordba, az
+     * 1RM-becslésbe és a progresszió-javaslatba is. Kimaszkoljuk: a sorozat
+     * és az ismétlés megmarad, a súly marad ismeretlen.
+     */
+    private static String stripPercent(String s) {
+        return s.replaceAll("@?\\s?(?<![\\d.,])\\d{1,3}(?:[.,]\\d)?\\s?%(?:-?[a-z]{1,4})?", " ");
+    }
+
+    /**
      * Vessző nélküli felsorolás: „5 kör 10 fekvőtámasz 15 guggolás 20 hasizom".
      *
      * A megosztott köredzés így néz ki – a magyar felsorolásban a vessző
@@ -981,7 +1015,12 @@ public final class StrengthParse {
         // A kukac az edzésnaplók nemzetközi rövidítése a súlyra: „5x5 @ 100”.
         // Mértékegység nélkül eddig ismétlésszámnak látszott, és a „5,5,5 @ 100”
         // egyetlen, száz ismétléses sorozat lett.
-        m = java.util.regex.Pattern.compile("@\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)").matcher(s);
+        // A SZÁZALÉK nem kiló: a „guggolás 3x8 @70%" és a „fekvenyomás 5x3
+        // 85%-on" a maximum arányát mondja, nem a rúdon lévő súlyt. Hetven
+        // kilós guggolásként a rekordba és a progresszió-javaslatba is
+        // beszámított volna – pedig a mondat meg sem mondja, mennyi volt.
+        m = java.util.regex.Pattern.compile("@\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)(?!\\s?%)")
+                .matcher(s);
         if (m.find()) {
             try {
                 double w = Double.parseDouble(m.group(1).replace(',', '.'));
