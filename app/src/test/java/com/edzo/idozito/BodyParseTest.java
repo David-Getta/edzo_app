@@ -495,4 +495,29 @@ public class BodyParseTest {
         assertEquals(76.5, BodyParse.parse("nem 79 kg lettem, hanem 76,5").kg, 0.01);
         assertEquals(80, BodyParse.parse("80 kg vagyok").kg, 0.01);
     }
+
+    /**
+     * A körfogat-felsorolásban minden érték a SAJÁT testrészéhez tartozik.
+     *
+     * A „92 cm derék, 100 cm csípő, 38 cm comb, 34 cm kar" felsorolásban
+     * minden szám egyet csúszott: a derék a csípő számát vitte el, a csípő a
+     * combét. A felsorolás szórendje egységes, és a mondat EGÉSZÉBŐL derül
+     * ki – testrészenként dönteni hibás volt, mert a lista közepén mindkét
+     * alak illeszkedik.
+     */
+    @Test public void everyGirthKeepsItsOwnNumber() {
+        BodyParse.Body b = BodyParse.parse(
+                "78 kg, 18% zsír, 92 cm derék, 100 cm csípő, 38 cm comb, 34 cm kar");
+        assertEquals(78, b.kg, 0.01);
+        assertEquals(92, b.cm[0], 0.01);
+        assertEquals(100, b.cm[1], 0.01);
+        assertEquals(38, b.cm[3], 0.01);
+        assertEquals(34, b.cm[4], 0.01);
+        // A másik szórend is a sajátját kapja.
+        BodyParse.Body c = BodyParse.parse("derék 84 cm, csípő 95 cm");
+        assertEquals(84, c.cm[0], 0.01);
+        assertEquals(95, c.cm[1], 0.01);
+        assertEquals(84, BodyParse.parse("84 cm derék").cm[0], 0.01);
+        assertEquals(92, BodyParse.parse("haskörfogatom 92").cm[0], 0.01);
+    }
 }

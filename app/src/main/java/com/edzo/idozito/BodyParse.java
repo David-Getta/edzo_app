@@ -340,6 +340,16 @@ public final class BodyParse {
         return 0;
     }
 
+    /** Hány testrész illeszkedik ebben a szórendben? A többség dönt. */
+    private static int styleCount(String s, java.util.regex.Pattern[][] pats) {
+        int n = 0;
+        for (java.util.regex.Pattern[] row : pats) {
+            for (java.util.regex.Pattern p : row)
+                if (p.matcher(s).find()) { n++; break; }
+        }
+        return n;
+    }
+
     /**
      * Körfogatok: „derék 84 cm”, „csípő: 96”, „84 cm derék”.
      *
@@ -350,14 +360,20 @@ public final class BodyParse {
      */
     private static double[] circumferences(String s) {
         double[] out = new double[PART_KEYS.length];
+        boolean numberFirst = styleCount(s, PART_BEFORE) > styleCount(s, PART_AFTER);
         for (int i = 0; i < PART_STEMS.length; i++)
             for (int j = 0; j < PART_STEMS[i].length; j++) {
                 if (out[i] > 0) break;
-                java.util.regex.Matcher m = PART_AFTER[i][j].matcher(s);
+                // A felsorolás SZÓRENDJE egységes, és a mondat egészéből
+                // derül ki: a „92 cm derék, 100 cm csípő, 38 cm comb"
+                // számmal kezd, a „derék 84 cm, csípő 95 cm" a testrésszel.
+                // Testrészenként dönteni hibás volt: mindkét alak illeszkedik
+                // a felsorolás közepén, és minden érték egyet csúszott.
+                java.util.regex.Matcher m = numberFirst
+                        ? PART_BEFORE[i][j].matcher(s) : PART_AFTER[i][j].matcher(s);
                 if (m.find()) { out[i] = inRange(num(m.group(1))); continue; }
-                // Fordított szórend, de csak mértékegységgel: a „84 cm derék"
-                // egyértelmű, a puszta „84 derék" nem mondat.
-                m = PART_BEFORE[i][j].matcher(s);
+                m = numberFirst
+                        ? PART_AFTER[i][j].matcher(s) : PART_BEFORE[i][j].matcher(s);
                 if (m.find()) out[i] = inRange(num(m.group(1)));
             }
         return out;
