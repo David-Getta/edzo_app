@@ -265,6 +265,22 @@ public class StrengthParseTest {
                 sum("megdöntöttem a rekordomat guggolásban: 150 kg"));
         // Csúcs-szó nélkül továbbra sem találunk ki ismétlést.
         assertEquals(0, StrengthParse.parse("100 kg-os fekvenyomás").size());
+        // A csúcs UTÁN jövő munkasorozatok sem veszhetnek el.
+        assertEquals("Fekvenyomás 4×1/8/8/8@100",
+                sum("végre lement a 100 kg-os fekvenyomás, és utána 3x8 80 kg-mal dolgoztam"));
+    }
+
+    /**
+     * A folytatás magyar mondatban kötőszóval és igével érkezik.
+     *
+     * A minta szigorú marad – bármi MÁS szó azt jelenti, hogy nem sorozatról
+     * van szó –, de a kötőszót és a záró igét leszedjük: az „…és utána 3x8
+     * 80 kg-mal dolgoztam" ugyanaz a folytatás, mint a puszta „3x8 80".
+     */
+    @Test public void aContinuationMaySpeakHungarian() {
+        assertEquals("Guggolás 5×10/10/10/8/8@70", sum("guggolás 3x10, aztán 2x8 70 kg"));
+        // A húsz perc futás továbbra sem húsz ismétlés.
+        assertEquals("Fekvenyomás 3×10/10/10@0", sum("fekvenyomás 3x10, majd 20 perc futás"));
     }
 
     @Test public void aPercentageIsNotAWeight() {

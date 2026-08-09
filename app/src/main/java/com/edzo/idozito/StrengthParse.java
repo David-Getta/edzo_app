@@ -401,10 +401,19 @@ public final class StrengthParse {
      * futás" húsz perce nem húsz ismétlés.
      */
     private static List<Set> continuationSets(String s, Item prev) {
+        // A magyar mondat nem áll meg a számnál: az „…és utána 3x8 80 kg-mal
+        // dolgoztam" ugyanaz a folytatás, csak van előtte kötőszó és mögötte
+        // ige. Ezeket – és CSAK ezeket – leszedjük, a minta marad szigorú:
+        // bármi MÁS szó azt jelenti, hogy nem sorozatról van szó.
+        String t = trimPunct(s).trim();
+        t = t.replaceAll("^(?:es\\s+|majd\\s+|aztan\\s+|utana\\s+|azutan\\s+|meg\\s+)+", "");
+        t = t.replaceAll("(?:\\s+(?:dolgoztam|nyomtam|toltam|huztam|csinaltam|mentem|"
+                + "ment|jott|kovetkezett|volt))+$", "");
+        t = t.replaceAll("-?(?:mal|vel|nal|nel)$", "");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")
-                .matcher(trimPunct(s));
+                .matcher(t);
         if (!m.matches()) return null;
         double a;
         try { a = Double.parseDouble(m.group(1).replace(',', '.')); }
