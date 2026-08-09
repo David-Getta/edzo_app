@@ -557,4 +557,39 @@ public class RehabTest {
         assertEquals(Sentence.Kind.WORKOUT, Sentence.of("45 perc nyújtás", all, now));
         assertEquals(Sentence.Kind.WORKOUT, Sentence.of("combnyújtás 30 perc", all, now));
     }
+
+    /**
+     * MINDEN testtáj elérhető egy hétköznapi panasz-mondattal.
+     *
+     * Egy gyakorlatsor, amit senki nem talál meg, nem létezik. A táblázat
+     * kötelezi a jövőt is: új testtájhoz ide kell írni egy mondatot, amivel
+     * az ember tényleg megszólítaná – és ha egy szótő-szigorítás elvágná az
+     * utat, az itt derül ki, nem a felhasználónál.
+     */
+    @Test public void everyAreaIsReachableByAPlainComplaint() {
+        String[][] t = {
+                {"boka", "fáj a bokám"}, {"terd", "fáj a térdem"},
+                {"itszalag", "fáj a térdem külső oldala"}, {"derek", "fáj a derekam"},
+                {"vall", "fáj a vállam"}, {"konyok-belso", "golfkönyök fájdalom"},
+                {"konyok-kulso", "teniszkönyök"}, {"csuklo", "fáj a csuklóm"},
+                {"nyak", "fáj a nyakam"}, {"csipo", "fáj a csípőm"},
+                {"achilles", "fáj az Achillesem"}, {"talp", "fáj a talpam"},
+                {"sipcsont", "fáj a sípcsontom"}, {"comb", "húzódik a combom"},
+                {"hati", "merev a felső hátam"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] r : t) {
+            Rehab.Area c = Rehab.forComplaint(r[1]);
+            String got = c == null ? "-" : c.id;
+            if (!got.equals(r[0]))
+                bad.append("\n  ").append(r[1]).append(" -> ").append(got)
+                   .append(" (várt: ").append(r[0]).append(")");
+        }
+        assertEquals("elérhetetlen testtáj:" + bad, 0, bad.length());
+        // És fordítva: minden területhez tartozzon próba-mondat.
+        for (Rehab.Area ar : Rehab.AREAS) {
+            boolean covered = false;
+            for (String[] r : t) if (r[0].equals(ar.id)) covered = true;
+            assertTrue("nincs próba-mondat ehhez a testtájhoz: " + ar.id, covered);
+        }
+    }
 }
