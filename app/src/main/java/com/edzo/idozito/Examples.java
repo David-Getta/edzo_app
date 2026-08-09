@@ -159,6 +159,7 @@ public final class Examples {
             // A pihenés is idetartozik: az alvás és a reggeli pulzus a
             // Profil naplója.
             "aludtam 8 órát",
+            "este 11-kor feküdtem, reggel 7-kor keltem",
             "nyugalmi pulzus 52",
     };
 

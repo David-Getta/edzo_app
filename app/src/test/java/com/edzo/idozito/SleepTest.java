@@ -101,4 +101,26 @@ public class SleepTest {
         assertEquals(-1, Sleep.parse("aludtam volna nyolc órát"), 0.01);
         assertEquals(-1, Sleep.parse("bárcsak aludtam volna 9 órát"), 0.01);
     }
+
+    /**
+     * Lefekvés és ébredés: a kivonást ne a felhasználó végezze el.
+     *
+     * Sokan nem a hosszat írják le, hanem két időpontot – az óra is így
+     * méri. Eddig ezekből semmi nem lett: „este 11-kor feküdtem, reggel
+     * 7-kor keltem" ugyanolyan üres válasz volt, mint egy értelmetlen szöveg.
+     */
+    @Test public void twoClockTimesBecomeALength() {
+        assertEquals(8.0, Sleep.parse("este 11-kor feküdtem, reggel 7-kor keltem"), 0.01);
+        assertEquals(7.8, Sleep.parse("22:30-tól 6:15-ig aludtam"), 0.05);
+        assertEquals(7.5, Sleep.parse("23:00-kor aludtam el, 6:30-kor ébredtem"), 0.01);
+        assertEquals(8.0, Sleep.parse("lefeküdtem 23 órakor, felkeltem 7 órakor"), 0.01);
+        assertEquals(8.0, Sleep.parse("este 10 és reggel 6 között aludtam"), 0.01);
+        // A magyar „fél tizenegy" tíz harminc – és este értendő.
+        assertEquals(7.5, Sleep.parse("fél 11-kor feküdtem le és 6-kor keltem"), 0.01);
+        // Az óra-app kiírása hossz, nem időpont: a perc sem veszhet el.
+        assertEquals(6.5, Sleep.parse("alvás 6:30"), 0.01);
+        // Alvás-szó nélkül nincs bejegyzés: az edzés-időpont nem éjszaka.
+        assertEquals(-1, Sleep.parse("18:00-tól 19:30-ig kondi"), 0.01);
+        assertEquals(-1, Sleep.parse("edzés 6-kor és 18-kor"), 0.01);
+    }
 }

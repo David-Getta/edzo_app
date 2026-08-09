@@ -66,10 +66,22 @@ public final class Sleep {
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
             return -1;
+        // Lefekvés és ébredés: „este 11-kor feküdtem, reggel 7-kor keltem".
+        // Sokan nem hosszat írnak, hanem két időpontot – az óra is így méri.
+        double span = betweenTimes(s);
+        if (span > 0) return span;
         // Óra ÉS perc: a „6 óra 30 perc alvás" fél órája eddig elveszett –
         // sőt az egész mondat, mert a perc a szám mellé állva elrontotta a
         // mintát. Alvás-szó nélkül ez az ág nem él.
         if (saysSleep(s)) {
+            // Az „alvás 6:30" hossz, nem időpont: az óra-appok így írják ki.
+            // A perc eddig elveszett belőle – fél óra, minden éjszakán.
+            java.util.regex.Matcher cm = java.util.regex.Pattern
+                    .compile("alvas\\w*\\s?:?\\s?(\\d{1,2}):(\\d{2})").matcher(s);
+            if (cm.find()) {
+                double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
             java.util.regex.Matcher hm = java.util.regex.Pattern
                     .compile("(\\d{1,2})\\s?ora\\w*\\s?(\\d{1,2})\\s?perc").matcher(s);
             if (hm.find()) {
@@ -105,6 +117,55 @@ public final class Sleep {
             catch (NumberFormatException e) { continue; }
             // „7 es 0,5 orat aludtam": a tört külön számként áll a fő szám után.
             if (s.contains(m.group(1) + " es 0,5")) v += 0.5;
+            if (v >= MIN_H && v <= MAX_H) return v;
+        }
+        return -1;
+    }
+
+    /**
+     * Két időpont közti alvás, vagy -1: „este 11-kor feküdtem, 7-kor keltem".
+     *
+     * Sokan nem a hosszat írják le, hanem a lefekvést és az ébredést – az óra
+     * is így méri, és a fejben kivonás pont az a lépés, amit egy appnak el
+     * kellene végeznie. A kimondott lefekvés-ébredés páros kötelező, hogy egy
+     * edzés-időpont („18:00-tól 19:30-ig kondi") ne váljon alvássá.
+     *
+     * A délelőtti óraszám (a „fél 11-kor feküdtem" tíz-harmincja) este
+     * értendő: ha az első időpontból képtelen hossz jön ki, tizenkét órát
+     * hozzáadva próbáljuk újra.
+     */
+    private static double betweenTimes(String s) {
+        boolean ctx = s.contains("alud") || s.contains("alvas")
+                || ((s.contains("fekudtem") || s.contains("fekszem"))
+                    && (s.contains("keltem") || s.contains("ebredtem")));
+        if (!ctx) return -1;
+        java.util.List<Integer> mins = new java.util.ArrayList<>();
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                // „22:30" – óra és perc kettősponttal
+                "(?<![\\d,])(\\d{1,2}):(\\d{2})"
+                // „11-kor", „23 órakor", „este 10"
+                + "|(?<![\\d,:])(\\d{1,2})\\s?-?\\s?(?:orakor|kor)"
+                + "|(?:este|reggel|ejjel|hajnalban|delelott)\\s(\\d{1,2})(?![\\d:,])")
+                .matcher(s);
+        while (m.find() && mins.size() < 2) {
+            int h, mi = 0;
+            if (m.group(1) != null) { h = Integer.parseInt(m.group(1)); mi = Integer.parseInt(m.group(2)); }
+            else if (m.group(3) != null) h = Integer.parseInt(m.group(3));
+            else h = Integer.parseInt(m.group(4));
+            if (h > 24) continue;
+            // A magyar „fél tizenegy" tíz óra harminc – a számnév-fordítás
+            // után a „0,5" külön számként áll az óra ELŐTT.
+            int b = m.start();
+            if (b >= 4 && s.startsWith("0,5 ", b - 4)) { h = (h + 23) % 24; mi = 30; }
+            mins.add((h % 24) * 60 + mi);
+        }
+        if (mins.size() < 2) return -1;
+        for (int shift : new int[]{0, 12 * 60}) {
+            int from = (mins.get(0) + shift) % (24 * 60);
+            int to = mins.get(1);
+            int diff = to - from;
+            if (diff <= 0) diff += 24 * 60;
+            double v = Math.round(diff / 6.0) / 10.0;
             if (v >= MIN_H && v <= MAX_H) return v;
         }
         return -1;
