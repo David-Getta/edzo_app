@@ -1426,4 +1426,23 @@ public class ActivitiesParseTest {
         assertEquals(60, Activities.parse("10 km reggel 7:30").plans.get(0).minutes);
         assertEquals(55, Activities.parse("10 km-t futottam 5:30-as tempóval").plans.get(0).minutes);
     }
+
+    /**
+     * A „8x 60 km" nem intervallum.
+     *
+     * Az intervall-ismétlés rövid: kétszáz métertől néhány kilométerig. A
+     * szorzat viszont vakon összeszorzott, és a „8x 60 km"-ből
+     * négyszáznyolcvan kilométeres futás lett, huszonnégy órás becsült
+     * idővel. Egymillió véletlenül összerakott mondatban ez a két eset
+     * maradt – a többi felismerő nulla hibával ment végig.
+     */
+    @Test public void anIntervalRepIsShort() {
+        assertEquals(60, Activities.parse("8x 60 km").plans.get(0).km, 0.01);
+        assertEquals(4, Activities.parse("10x400 métert futottam").plans.get(0).km, 0.01);
+        assertEquals(6, Activities.parse("6x1 km").plans.get(0).km, 0.01);
+        assertEquals(8, Activities.parse("4x2 km futás").plans.get(0).km, 0.01);
+        assertEquals(15, Activities.parse("5x 3 km").plans.get(0).km, 0.01);
+        for (Activities.Plan p : Activities.parse("8x 60 km").plans)
+            assertTrue("életszerűtlen táv: " + p.km, p.km <= 400);
+    }
 }

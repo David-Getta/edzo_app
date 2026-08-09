@@ -1791,7 +1791,16 @@ public final class Activities {
                 d = Double.parseDouble(m.group(2).replace(',', '.'));
             } catch (NumberFormatException e) { continue; }
             if (n < 2 || d <= 0) continue;
+            // Az intervall-ismétlés RÖVID: kétszáz métertől néhány
+            // kilométerig. A „8x 60 km" nem intervallum – összeszorozva
+            // négyszáznyolcvan kilométeres futás lett belőle, huszonnégy
+            // órás becsült idővel. Egymillió véletlen mondatból ez a
+            // két eset maradt.
+            if (m.group(3).equals("km") && d > 10) continue;
             double total = n * d;
+            // A szorzat sem lehet életszerűtlen: egy edzés távja a
+            // kerékpáros felső határig hihető, azon túl nem.
+            if (total > 400 && m.group(3).equals("km")) continue;
             String rep;
             if (m.group(3).equals("km")) {
                 rep = (total == Math.rint(total) ? String.valueOf((long) total)

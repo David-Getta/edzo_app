@@ -1271,6 +1271,23 @@ public class DietActivity extends Activity {
         }
         if (awardDailyLogXp(ts)) msg += "  ·  +5 XP";
         Ux.blazeCard(this, "🍽 " + msg);
+        // A mondat MÁSIK fele: az „ettem egy banánt és futottam 30 percet"
+        // futása eddig nyomtalanul elveszett – az étel bekerült, az edzés nem,
+        // és a felhasználó nem is tudta meg. Csak akkor kérdezünk, ha a
+        // mondatot a másik felismerő is érti; a puszta ételnév („gyros tál")
+        // sosem edzés, ezt százhuszonnégy fogással végigpróbáltam.
+        if (existing == null) {
+            final String said = meal.name;
+            final Sentence.Kind other = Sentence.of(said, Foods.all(this), ts);
+            if (other == Sentence.Kind.WORKOUT || other == Sentence.Kind.STRENGTH)
+                new Sheet(this, "Edzés is volt a mondatban 🏃",
+                        "„" + said.trim() + "”\n\nAz étel megvan. A mondat másik fele a(z) "
+                                + Sentence.where(other) + " naplójába való – "
+                                + "viszem magammal a szöveget, nem kell újra begépelni.")
+                        .addPrimary(Sentence.where(other), () -> Ux.openFor(this, other, said))
+                        .addCancel()
+                        .show();
+        }
     }
 
     /**
