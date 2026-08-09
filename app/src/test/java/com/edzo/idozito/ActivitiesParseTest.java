@@ -2012,4 +2012,21 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("ma 45 perc kondi és semmi más")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * A kiírt számnév-pár is tartomány.
+     *
+     * A számjegyes „20-25 perc kondi" már huszonhárom perc volt, a kiírt
+     * „húsz-huszonöt perc kondi" viszont HÚSZ külön edzés, húsz napra osztva,
+     * egyenként huszonöt perccel: nyolc óra mozgás abból, ami húsz perc.
+     */
+    @Test public void aSpelledOutRangeIsARangeToo() {
+        assertEquals("1d+0: 1×kondi/23", summary("húsz-huszonöt perc kondi"));
+        assertEquals("1d+0: 1×futas/13", summary("tíz-tizenöt perc futás"));
+        assertEquals(5.5, Activities.parse("öt-hat km futás").plans.get(0).km, 0.01);
+        // A számjegyes alak változatlan.
+        assertEquals("1d+0: 1×kondi/23", summary("20-25 perc kondi"));
+        // Az egyszerű számnév sem sérül.
+        assertEquals("1d+0: 1×futas/30", summary("harminc perc futás"));
+    }
 }

@@ -199,7 +199,7 @@ sem talált, tehát ha talál, az tényleg ott van.
   „10 km-t futottam 5:30-as tempóval" (a kimondott tempó pontosabb, mint a
   becslés), „futás 1:05:23" (óra-kijelző alak), „kondi és futás, összesen
   másfél óra" (az összesen OSZTJA az időt), „10-15 perc futás" és „5-8 km
-  futás" (a tartomány közepe), „reggel és este 30-30 perc kondi" (két edzés),
+  futás" (a tartomány közepe – kiírva is: „húsz-huszonöt perc kondi"), „reggel és este 30-30 perc kondi" (két edzés),
   „futás és úszás 30-30 perc" (mindkettő harminc perc – órában is: „2-2 óra"),
   „reggel és este is futottam 5-5 km-t" (két ötkilométeres futás),
   „18:00-19:30 foci" és „18:00-tól 19:30-ig kondi" (a naptárból másolt

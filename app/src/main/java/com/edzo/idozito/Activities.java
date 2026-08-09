@@ -889,6 +889,10 @@ public final class Activities {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0, 12);
         char[] q = shortForms(Foods.norm(text)).toCharArray();
+        // A kiírt számnév-pár is tartomány: „húsz-huszonöt perc kondi". A
+        // nyers alak ELŐTT fut, mert az osztó pár felismerése („öt-öt km")
+        // is számjegyet keres.
+        wordRangeToDigits(q);
         // A nyers, még semmilyen kimaszkolás előtti alak. Az osztó számpár
         // („2-2 óra") felismeréséhez kell: mire a mozgásokhoz érünk, a pár
         // egyik tagja már kifehérítve áll a munkapéldányban – így csak a
@@ -3029,6 +3033,44 @@ public final class Activities {
         String part = s.substring(from, to);
         for (Kind k : ALL) for (String w : k.words) if (part.contains(w)) return true;
         return false;
+    }
+
+    /**
+     * Kiírt számnév-pár számjeggyé: „húsz-huszonöt perc" → „20-25 perc".
+     *
+     * A számjegyes tartományt („20-25 perc") már értettük, a kiírtat nem: a
+     * „húsz-huszonöt perc kondi" HÚSZ külön edzés lett, húsz napra osztva,
+     * egyenként huszonöt perccel. Nyolc óra mozgás abból, ami húsz perc.
+     *
+     * A számokat jobbra igazítva írjuk be, hogy a mértékegység közvetlenül a
+     * második szám mögött maradjon – a többi szabály a KÖZ-re épül.
+     */
+    private static void wordRangeToDigits(char[] q) {
+        String s = new String(q);
+        int i = 0;
+        while (i < s.length()) {
+            if (s.charAt(i) != '-') { i++; continue; }
+            int lb = i;
+            while (lb > 0 && Character.isLetter(s.charAt(lb - 1))) lb--;
+            int re = i + 1;
+            while (re < s.length() && Character.isLetter(s.charAt(re))) re++;
+            String lo = numWordDigits(s.substring(lb, i));
+            String hi = numWordDigits(s.substring(i + 1, re));
+            if (lo == null || hi == null) { i++; continue; }
+            String rep = lo + "-" + hi;
+            if (rep.length() > re - lb) { i++; continue; }
+            int start = re - rep.length();
+            for (int k = lb; k < start; k++) q[k] = ' ';
+            for (int k = 0; k < rep.length(); k++) q[start + k] = rep.charAt(k);
+            i = re;
+        }
+    }
+
+    /** A számnév számjegyes alakja, vagy null, ha nem számnév. */
+    private static String numWordDigits(String w) {
+        if (w.isEmpty()) return null;
+        for (String[] n : NUM_WORDS) if (n[0].equals(w)) return n[1];
+        return null;
     }
 
     /**
