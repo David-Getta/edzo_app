@@ -2938,8 +2938,29 @@ public final class Foods {
                 // kreatint" elfogyasztott étrend-kiegészítő, és eddig
                 // bevásárlásnak látszott.
                 "bevettem", "beszedtem", "lenyeltem"})
-            if (wholeWord(s, w)) return false;
+            if (ateForReal(s, w)) return false;
         return true;
+    }
+
+    /**
+     * Az evés-ige TAGADVA nem evés.
+     *
+     * A „vettem egy kiflit, de nem ettem meg" mondatban ott az „ettem", és a
+     * kivétel-lista eddig felmentette a bevásárlást: az meg nem evett kifli
+     * bekerült a naplóba. A tagadó szó közvetlenül az ige előtt áll.
+     */
+    private static boolean ateForReal(String s, String w) {
+        for (int i = s.indexOf(w); i >= 0; i = s.indexOf(w, i + 1)) {
+            if (i > 0 && Character.isLetter(s.charAt(i - 1))) continue;
+            int e = i + w.length();
+            if (e < s.length() && Character.isLetter(s.charAt(e))) continue;
+            int b = i;
+            while (b > 0 && s.charAt(b - 1) == ' ') b--;
+            if (b >= 3 && (s.startsWith("nem", b - 3) || s.startsWith("sem", b - 3))
+                    && (b == 3 || !Character.isLetter(s.charAt(b - 4)))) continue;
+            return true;
+        }
+        return false;
     }
 
     /** Tápérték-szó áll-e a megadott helytől (szóközöket átlépve). */

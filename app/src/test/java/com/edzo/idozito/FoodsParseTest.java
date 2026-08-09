@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -320,5 +321,21 @@ public class FoodsParseTest {
         h = Foods.parse(all, "csirkemellet ettem, csokit nem");
         assertEquals(1, h.size());
         assertEquals("Csirkemell (sült/grill)", h.get(0).food.name);
+    }
+
+    /**
+     * A tagadott evés-ige nem menti fel a bevásárlást.
+     *
+     * A „vettem egy kiflit, de nem ettem meg" mondatban ott az „ettem", és a
+     * kivétel-lista eddig felmentette a vásárlást: a meg nem evett kifli
+     * bekerült a naplóba.
+     */
+    @Test public void aNegatedEatingVerbDoesNotUndoTheShopping() {
+        assertTrue(Foods.looksUneaten("vettem egy kiflit, de nem ettem meg"));
+        assertTrue(Foods.looksUneaten("bevásároltam, de még semmit nem ettem"));
+        // Ami tényleg megtörtént, az marad bejegyzés.
+        assertFalse(Foods.looksUneaten("vettem egy kiflit és megettem"));
+        assertFalse(Foods.looksUneaten("edzés előtt bevettem egy kreatint"));
+        assertTrue(Foods.looksUneaten("vettem egy pizzát"));
     }
 }

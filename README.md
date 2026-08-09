@@ -85,6 +85,8 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - a **szokás kezdete** nem egy edzés: a „három hónapja kezdtem el edzeni"
   arról szól, mióta sportol az ember – de a „két hete kezdtem el futni,
   **azóta 40 km-t futottam**" negyven kilométere valódi
+- a **tagadott evés-ige** nem menti fel a bevásárlást: a „vettem egy kiflit,
+  **de nem ettem meg**" mondatban ott az „ettem", és eddig ettől bejegyzés lett
 - a **tagadás** végig érvényes: „ma nem ettem csokit", „nem fáj már a térdem" –
   a **„mégsem"** ugyanígy: „mégsem futottam ma", „mégsem ettem a csokit"
 
