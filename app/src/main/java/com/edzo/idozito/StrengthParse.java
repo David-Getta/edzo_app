@@ -98,11 +98,21 @@ public final class StrengthParse {
                     "allhuzodzkodas", "all fole huzas"},
             {"Vállból nyomás", "vallbol nyom", "vallnyom", "vallbol", "ohp", "mellrol nyom",
                     "vallgep",
+                    // A TOLÓNYOMÁS ugyanez a gyakorlat lendülettel (push
+                    // press) – a magyar terem így hívja, és eddig válasz
+                    // nélkül maradt.
+                    "tolonyom", "tolo nyom", "push press", "pushpress",
                     "nyak moge nyom", "katonai nyomas", "military press", "shoulder press"},
             {"Evezés", "evezes", "evezo", "rowing", "evezt", "evezni", "evezek",
                     "cable row", "pendlay"},
             {"Bicepsz", "bicepsz", "kalapacs", "predikator", "scott pad", "hammer curl"},
-            {"Tricepsz", "tricepsz", "francia nyom", "skull crusher", "skullcrusher"},
+            // A FRANCIA FEKVENYOMÁS tricepsz-gyakorlat, nem fekvenyomás: a
+            // rövidebb „fekvenyom" tő eddig elvitte, és a huszonöt kilós
+            // francia a fekvenyomás rekordjai közé került. A hosszabb tő nyer,
+            // ezért elég felvenni ide.
+            {"Tricepsz", "tricepsz", "francia nyom", "franciafekvenyom",
+                    "francia fekvenyom", "skull crusher", "skullcrusher",
+                    "tricepsz lenyom", "nyujtott karu lenyom"},
             {"Kitörés", "kitores", "lunge", "kitort"},
             // A gép NEVE a teremben „lábtoló", nem „lábtolás": a
             // „lábtoló 3x12 120" eddig válasz nélkül maradt.
@@ -111,7 +121,10 @@ public final class StrengthParse {
             {"Vádliemelés", "vadliemel", "vadli"},
             {"Fekvőtámasz", "fekvotamasz", "push up", "pushup"},
             {"Tolódzkodás", "tolodzkod", "dipp", "dips", "dip"},
-            {"Lehúzás", "lehuzas", "latpull", "lat pull", "lat huzas", "athuzas", "pullover",
+            // A „kábelhúzás" a magyar termek gyűjtőneve a csigás húzásra – a
+            // leggyakoribb változata a hátnak szóló lehúzás.
+            {"Lehúzás", "lehuzas", "kabelhuz", "kabel huz",
+                    "latpull", "lat pull", "lat huzas", "athuzas", "pullover",
                     "pulover"},
             {"Oldalemelés", "oldalemel", "eloreemel", "vallemel", "elulso vall"},
             {"Plank", "plank", "deszka", "oldaltamasz", "alkartamasz"},

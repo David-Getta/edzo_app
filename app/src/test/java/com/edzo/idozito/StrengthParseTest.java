@@ -1208,4 +1208,23 @@ public class StrengthParseTest {
         assertEquals("Lábtolás", it.get(2).name);
         assertEquals(120.0, it.get(2).topWeight(), 0.01);
     }
+
+    /**
+     * A francia fekvenyomás tricepsz, nem fekvenyomás.
+     *
+     * A rövidebb „fekvenyom" tő eddig elvitte, és a huszonöt kilós francia a
+     * FEKVENYOMÁS rekordjai közé került – ott pedig a progresszió-javaslat is
+     * ebből számol tovább. A tolónyomás és a kábelhúzás egyszerűen hiányzott.
+     */
+    @Test public void theFrenchPressIsATricepsExercise() {
+        assertEquals("Tricepsz", StrengthParse.parse("franciafekvenyomás "
+                + "3x12 25 kg").get(0).name);
+        assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x8 80 kg")
+                .get(0).name);
+        List<StrengthParse.Item> it = StrengthParse.parse("tolónyomás 3x8 40 kg, "
+                + "oldalemelés 3x12 8 kg");
+        assertEquals(2, it.size());
+        assertEquals("Vállból nyomás", it.get(0).name);
+        assertEquals("Lehúzás", StrengthParse.parse("kábelhúzás 3x15").get(0).name);
+    }
 }
