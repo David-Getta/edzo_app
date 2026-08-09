@@ -1103,4 +1103,22 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("8x20/10").isEmpty());
         assertTrue(StrengthParse.parse("40/20 8 kör").isEmpty());
     }
+
+    /**
+     * Az óraállás nem ismétlésszám.
+     *
+     * Az óra-export így írja le a kardiót: „evezőgép 5000 m 21:45". A
+     * huszonegy eddig ismétlésszám lett, és a húszperces evezésből
+     * huszonegy ismétléses gyakorlat került az erősítő naplóba – a rekordok
+     * és a progresszió-javaslat közé.
+     */
+    @Test public void aClockTimeIsNotARepCount() {
+        assertTrue(StrengthParse.parse("evezőgép 5000 m 21:45").isEmpty());
+        assertTrue(StrengthParse.parse("úszás 1500 m 32:10").isEmpty());
+        // A valódi sorozat marad, időponttal együtt is.
+        List<StrengthParse.Item> it = StrengthParse.parse("18:00-kor fekvenyomás 3x8 60 kg");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(60, it.get(0).sets.get(0).weight, 0.01);
+    }
 }

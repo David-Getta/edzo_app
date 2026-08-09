@@ -302,9 +302,9 @@ public final class StrengthParse {
         // rekordok közé. Kimondott sorozat vagy súly viszont megvédi a
         // valódi többnapos naplót: „hétfőn guggolás 3x5, szerdán 4x8 60 kg".
         if (looksLikeSplit(Foods.norm(text))) return out;
-        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskLyingDown(
+        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(
-                        stripPercent(stripListMarkers(Foods.norm(text))))))))));
+                        stripPercent(stripListMarkers(Foods.norm(text)))))))))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
@@ -968,6 +968,19 @@ public final class StrengthParse {
      */
     private static String stripPercent(String s) {
         return s.replaceAll("@?\\s?(?<![\\d.,])\\d{1,3}(?:[.,]\\d)?\\s?%(?:-?[a-z]{1,4})?", " ");
+    }
+
+    /**
+     * Az ÓRAÁLLÁS nem ismétlésszám.
+     *
+     * Az óra-export így írja le a kardiót: „evezőgép 5000 m 21:45". A
+     * huszonegy eddig ismétlésszám lett, és a húszperces evezésből
+     * huszonegy ismétléses gyakorlat került az erősítő naplóba – a rekordok
+     * és a progresszió-javaslat közé. Kettősponttal írt számpár sorozatot
+     * sosem jelöl, tehát ez nem vesz el semmit.
+     */
+    private static String maskClock(String s) {
+        return s.replaceAll("(?<![\\d:])\\d{1,2}:[0-5]\\d(?::[0-5]\\d)?(?![\\d:])", "#");
     }
 
     /**
