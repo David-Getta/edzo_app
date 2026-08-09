@@ -2440,6 +2440,13 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("evezés 3x10 50 kg").plans.isEmpty());
         // A kimondott idő megvédi magát: az alapértéktől eltérő hossz marad.
         assertEquals(40, Activities.parse("40 perc evezőgép").plans.get(0).minutes);
+        // Az ISMÉTLÉSSZÁM sem alkalomszám: a „3x12 evezés 60 kg" tizenkettese
+        // az ismétlés, és eddig TIZENKÉT harmincperces evezés lett belőle –
+        // hat óra mozgás egy sorozatból.
+        List<Activities.Plan> q = Activities.parse("3x8 guggolás 100 kg, "
+                + "3x10 fekvenyomás 70 kg, 3x12 evezés 60 kg").plans;
+        assertEquals(1, q.size());
+        assertEquals("kondi", q.get(0).kind.id);
     }
 
     /**

@@ -2169,6 +2169,12 @@ public final class Foods {
         String macro = !macroLine ? s : s.replaceAll("(\\d{1,3})\\s?(g|gr|gramm)\\s?"
                 + "(zsir|szenhidrat|ch|rost|telitett)(?![a-z])", "$1 $2 #");
         if (!macro.equals(s)) { s = macro; query = macro; }
+        // A SZÁZALÉKBAN mért zsír a TESTZSÍR, nem konyhai olaj: a „80,2 kg,
+        // 18% zsír, derék 86 cm" mérés-mondatból eddig tíz gramm olaj is
+        // bekerült az étrendbe.
+        String fatPct = s.replaceAll("(\\d{1,3}([.,]\\d)?)\\s?%\\s?zsir(?![a-z])",
+                "$1 % #");
+        if (!fatPct.equals(s)) { s = fatPct; query = fatPct; }
         if (!s.contains("protein")) return query;
         // A „protein" csak MAGÁBAN tápérték: a „150 g protein turmix" és a
         // „150 g proteinszelet" valódi étel, azokhoz nem nyúlunk.

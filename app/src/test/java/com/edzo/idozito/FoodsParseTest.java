@@ -434,4 +434,17 @@ public class FoodsParseTest {
         assertEquals("Rizs (főtt)", Foods.parse(all, "csirke rizzsel")
                 .get(1).food.name);
     }
+
+    /**
+     * A százalékban mért zsír a TESTZSÍR, nem konyhai olaj.
+     *
+     * A „80,2 kg, 18% zsír, derék 86 cm" mérés-mondatból eddig tíz gramm olaj
+     * is bekerült az étrendbe. A grammban mért zsír viszont valódi étel.
+     */
+    @Test public void fatInPercentIsBodyFatNotOil() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "80,2 kg, 18% zsír, derék 86 cm").isEmpty());
+        assertEquals(100.0, Foods.parse(all, "100 g zsírt használtam "
+                + "a sütihez").get(0).grams, 0.01);
+    }
 }

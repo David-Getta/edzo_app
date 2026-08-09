@@ -1745,8 +1745,9 @@ public final class Activities {
                     // swing" húsz napra osztva) – az sem áll meg nélküle.
                     if (days == p.count) days = 1;
                     any = true;
-                } else if (!generic && p.count == 1 && p.km <= 0 && p.steps <= 0
-                        && p.minutes == p.kind.defaultMin && namedByLift(lifts, p.kind)) {
+                } else if (!generic && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin && namedByLift(lifts, p.kind)
+                        && (p.count == 1 || repsMatch(lifts, p.count))) {
                     // A GYAKORLAT NEVE nem külön kardió-edzés: a „súlyzós:
                     // guggolás 3×8 80, evezés 3×10 50" evezése egy sorozat a
                     // teremben, nem félórányi evezőgépezés. Eddig a hatvan
