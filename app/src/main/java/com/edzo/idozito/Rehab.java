@@ -382,6 +382,11 @@ public final class Rehab {
                 // gyakran kifordul futás közben" és az „instabil a térdem"
                 // eddig válasz nélkül maradt – pedig pont ezekre való a sor.
                 "kifordul", "kibicsaklik", "megbicsaklik", "bebicsaklik",
+                // Harmadik személyű alak és a panasz FŐNEVE: a „már egy hete
+                // húzza a vállam" és a „megint bejött a régi térdproblémám"
+                // eddig válasz nélkül maradt.
+                "huzza", "huzza a", "problema", "problemam", "panaszom",
+                "baj van a", "kiujult", "elojott",
                 "kicsuszik", "instabil", "bizonytalan a", "megrogyik",
                 // A RÖVIDÜLÉS ugyanígy: „rövid a combhajlítóm", „feszes a vádlim".
                 "rovid a", "roviduelt", "roviduelt", "beszukult",
@@ -405,7 +410,11 @@ public final class Rehab {
         // esik – a szókezdet-vizsgálat így mindet elutasította. Pedig a
         // magyar leggyakrabban pont így mondja el, mi a baj.
         if (!pain && (s.contains("fajas") || s.contains("fajdalom")
-                || s.contains("fajdit"))) pain = true;
+                || s.contains("fajdit")
+                // A „térdproblémám" és a „vállpanaszom" ugyanígy egy szó: a
+                // „megint bejött a régi térdproblémám" eddig válasz nélkül
+                // maradt.
+                || s.contains("problem") || s.contains("panasz"))) pain = true;
         // Panasz-szavak, amiket a magyar igekötővel mond: az „elgémberedik",
         // a „megfeszül" és a „bemerevedett" a szótő ELÉ tesz egy szótagot,
         // így a szókezdet-vizsgálat mindet elutasította. Ezek elég hosszúak
@@ -461,6 +470,11 @@ public final class Rehab {
             {"sugarzo", "sugárzó fájdalom"}, {"sugarzik", "sugárzó fájdalom"},
             {"nem tudok ralepni", "terhelhetetlenség"},
             {"nem birok ralepni", "terhelhetetlenség"},
+            {"nem tudok ralepni", "terhelhetetlenség"},
+            {"nem tudok lepni", "terhelhetetlenség"},
+            {"nem tudok rendesen lepni", "terhelhetetlenség"},
+            {"nem tudok rendesen jarni", "terhelhetetlenség"},
+            {"nem tudok jarni", "terhelhetetlenség"},
             {"nem tudom mozgatni", "mozgásképtelenség"},
     };
 

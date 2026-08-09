@@ -217,6 +217,12 @@ public class RehabTest {
         assertEquals("boka", Rehab.forComplaint("a bokám gyakran kifordul futás közben").id);
         assertEquals("terd", Rehab.forComplaint("instabil a térdem oldalra").id);
         assertEquals("comb", Rehab.forComplaint("rövid a combhajlítóm").id);
+        // Harmadik személyű alak és a panasz FŐNEVE: a „már egy hete húzza a
+        // vállam" és a „megint bejött a régi térdproblémám" eddig válasz
+        // nélkül maradt.
+        assertEquals("vall", Rehab.forComplaint("már egy hete húzza a vállam").id);
+        assertEquals("terd", Rehab.forComplaint("megint bejött a régi térdproblémám").id);
+        assertEquals("vall", Rehab.forComplaint("krónikus a vállpanaszom").id);
         // A „háti" jelzőként is egyértelmű – így kéri, aki egész nap ül.
         assertEquals("hati", Rehab.forGoal("kéne valami háti gyakorlat").id);
         assertEquals("hati", Rehab.forGoal("háti mobilizálás kellene").id);
