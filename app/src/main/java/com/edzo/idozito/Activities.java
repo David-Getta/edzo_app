@@ -3172,7 +3172,16 @@ public final class Activities {
     private static boolean isDeskWord(String s, String w) {
         boolean desk = w.equals("munka") || w.equals("munkaban") || w.equals("munkat")
                 || w.equals("melo") || w.equals("meloban") || w.startsWith("utaz")
-                || w.startsWith("vezetes");
+                || w.startsWith("vezetes")
+                // Ugyanez a nap többi ÜLŐ órájával: a „2 óra tv, 30 perc
+                // séta" két órája a tévéé, a „8 óra ülés az irodában, este
+                // 30 perc futás" nyolc órája az ülésé. Mind ugyanaz a hiba:
+                // a mozdulatlan idő a mozgás nevére íródott.
+                || w.equals("tv") || w.startsWith("tevez") || w.startsWith("ules")
+                || w.startsWith("tanulas") || w.startsWith("olvasas")
+                || w.startsWith("fozes") || w.startsWith("meeting")
+                || w.startsWith("ertekezlet") || w.startsWith("gepeles")
+                || w.startsWith("telefonal");
         return desk && !s.contains("kerti munka") && !s.contains("fizikai munka")
                 && !s.contains("haz koruli");
     }

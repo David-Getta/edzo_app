@@ -2657,5 +2657,12 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
         assertEquals(30, Activities.parse("munka 30 perc kondi")
                 .plans.get(0).minutes);
+        // A nap többi ülő órája ugyanígy: tv, ülés, tanulás, főzés, meeting.
+        assertEquals(30, Activities.parse("2 óra tv, 30 perc séta")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("8 óra ülés az irodában, "
+                + "este 30 perc futás").plans.get(0).minutes);
+        assertEquals(25, Activities.parse("1,5 óra meeting, aztán "
+                + "25 perc futópad").plans.get(0).minutes);
     }
 }
