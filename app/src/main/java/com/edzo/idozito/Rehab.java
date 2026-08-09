@@ -452,7 +452,8 @@ public final class Rehab {
         // és elég egyediek ahhoz, hogy a szó belsejében is biztosak legyünk.
         if (!pain)
             for (String w : new String[]{"gemberedik", "gemberedett", "feszul", "gorcsol",
-                    "gorcsbe", "merevedett", "gerincferdul", "szkolioz", "zsugorod",
+                    "gorcsbe", "merevedett", "merevedik", "merevedes", "merevseg",
+                    "gerincferdul", "szkolioz", "zsugorod",
                     "gorbe", "gorbul"})
                 if (s.contains(w)) { pain = true; break; }
         // A legrövidebb panasz-igék csak EGÉSZ szóként: a „húz" a

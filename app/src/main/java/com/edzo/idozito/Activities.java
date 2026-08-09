@@ -771,6 +771,30 @@ public final class Activities {
         return false;
     }
 
+    /**
+     * A lépcső a PANASZ helyszíne, nem edzés.
+     *
+     * A gyógytornász első kérdése az, hogy MIKOR fáj – és a térdre a válasz
+     * majdnem mindig az, hogy „lépcsőn lefelé". A lépcsőzés viszont mozgásforma
+     * is, így a „lépcsőn lefelé fájdul a térdem" mondatból eddig egy
+     * MÁSFÉLÓRÁS TÚRA került a naplóba, olyan napra, amikor a panasz miatt épp
+     * hogy nem mozgott az ember.
+     *
+     * Csak akkor takarunk, ha a mondat panasz, és nincs benne se szám, se
+     * emelet: a „20 perc lépcsőzés, közben fájt a térdem" megtörtént edzés,
+     * annak a húsz perce marad.
+     */
+    private static void maskSymptomStairs(char[] q) {
+        String s = new String(q);
+        if (!s.contains("lepcso")) return;
+        if (Rehab.forComplaint(s) == null) return;
+        if (s.contains("emelet")) return;
+        for (int i = 0; i < s.length(); i++) if (Character.isDigit(s.charAt(i))) return;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("lepcso\\p{L}*").matcher(s);
+        while (m.find()) blank(q, m.start(), m.end());
+    }
+
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
     private static void maskNotSport(char[] q) {
         String s = new String(q);
@@ -940,6 +964,7 @@ public final class Activities {
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.
+        maskSymptomStairs(q);
         maskNotSport(q);
         // A „hát" nem hat: a „felső hát erősítés" hat darab hatvanperces
         // kondi-bejegyzés lett hat napra elosztva. Ékezet nélkül a testtáj és

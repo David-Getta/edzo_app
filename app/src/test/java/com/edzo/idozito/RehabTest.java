@@ -717,4 +717,17 @@ public class RehabTest {
         assertEquals("hati", Rehab.forGoal("roskadt a tartásom a gép előtt").id);
         assertEquals("hati", Rehab.forGoal("tartásjavító gyakorlatok").id);
     }
+
+    /**
+     * A reggeli bemerevedés panasz.
+     *
+     * A „bemerevedett" alak megvolt, a jelen idejű „bemerevedik" nem – pedig
+     * a reggeli merevség a derékpanasz egyik legjellemzőbb mondata.
+     */
+    @Test public void theMorningStiffnessIsAComplaint() {
+        assertNotNull(Rehab.forComplaint("reggelre bemerevedik a derekam"));
+        assertEquals("derek", Rehab.forComplaint("reggelre bemerevedik "
+                + "a derekam").id);
+        assertEquals("nyak", Rehab.forComplaint("merevség a nyakamban").id);
+    }
 }

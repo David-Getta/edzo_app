@@ -2402,4 +2402,23 @@ public class ActivitiesParseTest {
         assertEquals(14, Activities.parse("az elmúlt két hétben 50 km-t "
                 + "futottam").days);
     }
+
+    /**
+     * A lépcső a panasz helyszíne, nem edzés.
+     *
+     * A gyógytornász első kérdése az, hogy MIKOR fáj – és a térdre a válasz
+     * majdnem mindig az, hogy „lépcsőn lefelé". A lépcsőzés viszont
+     * mozgásforma is, így ebből eddig egy másfél órás TÚRA került a naplóba,
+     * pont olyan napra, amikor a panasz miatt épp hogy nem mozgott az ember.
+     */
+    @Test public void theStairsInAComplaintAreNotAHike() {
+        assertTrue(Activities.parse("lépcsőn lefelé fájdul a térdem")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("lépcsőn felfelé húz a combhajlítóm")
+                .plans.isEmpty());
+        // A megtörtént lépcsőzés viszont marad – ott szám is van.
+        assertEquals(20, Activities.parse("20 perc lépcsőzés, közben fájt "
+                + "a térdem").plans.get(0).minutes);
+        assertEquals(1, Activities.parse("20 emeletet lépcsőztem").plans.size());
+    }
 }
