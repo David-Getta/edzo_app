@@ -388,7 +388,8 @@ sem talált, tehát ha talál, az tényleg ott van.
 - **„Aludtam 8 órát"** – egy mondat vagy egy koppintás a Profilban: napi egy
   érték, heti átlag, két hét görbe, minősítés; a vasárnapi összegzésben is
 - **Két időpont is elég**: „este 11-kor feküdtem, reggel 7-kor keltem",
-  „22:30-tól 6:15-ig aludtam", „lefeküdtem 23 órakor, felkeltem 7 órakor",
+  „22:30-tól 6:15-ig aludtam", „10-től 6-ig aludtam", „aludtam 7h30"
+  (sportóra-írásmód), „lefeküdtem 23 órakor, felkeltem 7 órakor",
   „este 10-re ágyban voltam, reggel 6-kor keltem" (a lefekvést nem csak
   „feküdtem"-mel mondjuk) –
   a kivonást ne a felhasználó végezze el. A magyar „fél tizenegy" tíz harminc,

@@ -214,4 +214,24 @@ public class SleepTest {
         assertEquals(8.0, Sleep.parse("aludtam 8 órát"), 0.01);
         assertEquals(-1, Sleep.parse("nem aludtam eleget"), 0.01);
     }
+
+    /**
+     * Három hétköznapi alak, ami eddig üres választ kapott.
+     *
+     * A „10-től 6-ig aludtam" tól-ig párját rag jelöli, nem a „-kor". Az
+     * „aludtam 7h30" a sportórák írásmódja, és a perce elveszett. Az
+     * „összesen talán 5 órát" pedig a harmadik tagmondatban áll – az ige
+     * mellől szándékosan nem vesszük el a számot, mert az az ébredések
+     * száma lenne.
+     */
+    @Test public void threeEverydayFormsAreUnderstood() {
+        assertEquals(8.0, Sleep.parse("10-től 6-ig aludtam"), 0.01);
+        assertEquals(7.5, Sleep.parse("aludtam 7h30"), 0.01);
+        assertEquals(5.0, Sleep.parse(
+                "rosszul aludtam, 3-szor felébredtem, összesen talán 5 órát"), 0.01);
+        // Az ébredésszám továbbra sem alváshossz.
+        assertEquals(7.5, Sleep.parse("reggel 7,5 órát aludtam, de 3-szor felébredtem"), 0.01);
+        // Alvás-szó nélkül nincs bejegyzés.
+        assertEquals(-1, Sleep.parse("18:00-tól 19:30-ig kondi"), 0.01);
+    }
 }

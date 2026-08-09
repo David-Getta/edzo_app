@@ -88,6 +88,24 @@ public final class Sleep {
                 double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
             }
+            // Óra-jeles rövidítés: „aludtam 7h30", „7h 30m". Az óra-appok és a
+            // sportórák így írják ki, és a perc eddig elveszett belőle.
+            java.util.regex.Matcher sm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?h\\s?(\\d{2})(?![0-9])").matcher(s);
+            if (sm.find()) {
+                double v = Integer.parseInt(sm.group(1)) + Integer.parseInt(sm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // „Rosszul aludtam, 3-szor felébredtem, összesen talán 5 órát": a
+            // hossz a HARMADIK tagmondatban áll, az ige mellől pedig
+            // szándékosan nem vesszük el a számot (az az ébredések száma
+            // lenne). Az „összesen" viszont félreérthetetlen.
+            java.util.regex.Matcher tm = java.util.regex.Pattern
+                    .compile("ossze\\w*[^0-9]{0,15}?(\\d{1,2}([.,]\\d)?)\\s?ora").matcher(s);
+            if (tm.find()) {
+                double v = Double.parseDouble(tm.group(1).replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return v;
+            }
             java.util.regex.Matcher hm = java.util.regex.Pattern
                     .compile("(\\d{1,2})\\s?ora\\w*\\s?(\\d{1,2})\\s?perc").matcher(s);
             if (hm.find()) {
@@ -180,13 +198,17 @@ public final class Sleep {
                 "(?<![\\d,])(\\d{1,2}):(\\d{2})"
                 // „11-kor", „23 órakor", „este 10"
                 + "|(?<![\\d,:])(\\d{1,2})\\s?-?\\s?(?:orakor|kor)"
-                + "|(?:este|reggel|ejjel|hajnalban|delelott)\\s(\\d{1,2})(?![\\d:,])")
+                + "|(?:este|reggel|ejjel|hajnalban|delelott)\\s(\\d{1,2})(?![\\d:,])"
+                // „10-től 6-ig aludtam": a tól-ig pár ugyanaz a két időpont,
+                // csak rag jelöli őket – eddig egyikből sem lett hossz.
+                + "|(?<![\\d,:])(\\d{1,2})\\s?-?\\s?(?:tol|ig)(?![a-z])")
                 .matcher(s);
         while (m.find() && mins.size() < 2) {
             int h, mi = 0;
             if (m.group(1) != null) { h = Integer.parseInt(m.group(1)); mi = Integer.parseInt(m.group(2)); }
             else if (m.group(3) != null) h = Integer.parseInt(m.group(3));
-            else h = Integer.parseInt(m.group(4));
+            else if (m.group(4) != null) h = Integer.parseInt(m.group(4));
+            else h = Integer.parseInt(m.group(5));
             if (h > 24) continue;
             // A magyar „fél tizenegy" tíz óra harminc – a számnév-fordítás
             // után a „0,5" külön számként áll az óra ELŐTT.
