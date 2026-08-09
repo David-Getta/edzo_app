@@ -2203,6 +2203,10 @@ public final class Foods {
         // és mennyiséget, mint egy bejegyzés – csak épp egyikből sem lett
         // falat. Eddig mindkettő bement, háromszáz, illetve ezer kalóriával.
         if (looksUneaten(query)) return new ArrayList<>();
+        // A HELYESBÍTÉS második száma az igazi: a „nem ettem 3 szeletet, csak
+        // 1-et" mondatból eddig semmi nem lett – a tagadás elvitte az egészet,
+        // pedig az egy szelet megvolt.
+        query = Hu.correction(query);
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);
         List<Match> ms = matches(list, query);

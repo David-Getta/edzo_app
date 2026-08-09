@@ -353,4 +353,20 @@ public class FoodsParseTest {
         assertFalse(Foods.looksUneaten("ettem egy csokit"));
         assertFalse(Foods.looksUneaten("cukormentes üdítő 5 dl"));
     }
+
+    /**
+     * A helyesbítés második száma az igazi – az étrendben is.
+     *
+     * A „nem ittam 3 kávét, csak 1-et" mondatból eddig három kávé került a
+     * naplóba: pont az, amit a mondat tagad.
+     */
+    @Test public void theCorrectedAmountIsWhatCounts() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "nem ittam 3 kávét, csak 1-et");
+        assertEquals(1, h.size());
+        assertEquals(200, h.get(0).grams, 1);
+        assertEquals(150, Foods.parse(all, "nem 2 alma volt, hanem 1").get(0).grams, 1);
+        // A javítás nélküli mondat változatlan: három kávé az három.
+        assertEquals(600, Foods.parse(all, "ittam 3 kávét").get(0).grams, 1);
+    }
 }

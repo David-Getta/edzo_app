@@ -249,14 +249,17 @@ public final class Hu {
      * írja át – onnantól minden meglévő szabály érti a mondatot. Szám
      * nélküli tagadásra („nem futottam ma, csak sétáltam") nem él.
      *
-     * @param s már normalizált (ékezet nélküli, kisbetűs) szöveg
+     * @param s a mondat – normalizálva vagy nyersen, mindkettő jó
      */
     public static String correction(String s) {
         if (s == null || s.isEmpty()) return s == null ? "" : s;
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
-                "(?<![a-z])nem\\s+([^,;0-9]{0,30}?)(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                // Ékezetre és kis-nagybetűre érzéketlen: a nyers, még
+                // normalizálatlan mondaton is futnia kell (az étel-oldal a
+                // saját szövegével dolgozik tovább).
+                "(?iu)(?<!\\p{L})nem\\s+([^,;0-9]{0,30}?)(\\d{1,3}(?:[.,]\\d{1,2})?)"
                         + "([^,;0-9]{0,25}?)\\s*[,;]?\\s*(?:csak|hanem)\\s+"
-                        + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*-?\\s*[a-z]{0,4}(?![a-z])")
+                        + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*-?\\s*\\p{L}{0,4}(?!\\p{L})")
                 .matcher(s);
         if (!m.find()) return s;
         return s.substring(0, m.start()) + m.group(1) + m.group(4) + m.group(3)
