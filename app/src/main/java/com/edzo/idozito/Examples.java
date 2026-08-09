@@ -42,6 +42,7 @@ public final class Examples {
             "2 karéj kenyér",
             "egy evőkanál méz",
             // Ami a dobozon áll, azt elhisszük – étel-felismerés nélkül is.
+            "a pizza negyede",
             "vacsora 650 kcal",
             "müzliszelet 180 kcal",
     };
@@ -79,6 +80,7 @@ public final class Examples {
             "40 hosszt úsztam",
             "10x400 métert futottam",
             "triatlon 2 óra",
+            "kertben dolgoztam 3 órát",
     };
 
     /** Erősítő sorozatok egy mondatból. */
@@ -115,6 +117,7 @@ public final class Examples {
             // Ahogy a legtöbb edzés-app exportál, és ahogy a köredzést írják.
             "fekvenyomás 60 kg x 10, 70 kg x 8, 80 kg x 6",
             "5 kör: 15 fekvőtámasz, 10 húzódzkodás",
+            "guggolás 3-szor 10-et 80 kilóval",
     };
 
     /** Intervallum-beállítás egy mondatból. */
@@ -196,6 +199,7 @@ public final class Examples {
             "váll mobilizálás",
             "nyak gyógytorna",
             "háti gerinc mobilizálás",
+            "váll gyakorlatok",
     };
 
     /**
