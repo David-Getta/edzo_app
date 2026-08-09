@@ -2231,4 +2231,20 @@ public class ActivitiesParseTest {
                 "majdnem elaludtam a moziban, de utána futottam 5 km-t")
                 .plans.get(0).km, 0.01);
     }
+
+    /**
+     * A hátravetett „nem lett" és az „éppen csak benéztem".
+     *
+     * A „csak átöltöztem, edzés nem lett" mondatból negyvenöt perces
+     * bejegyzés lett a semmiből: a hátravetett tagadás leggyakoribb magyar
+     * alakja hiányzott a listából. Az „éppen csak benéztem a terembe" pedig
+     * a terem szavából csinált hatvan percet.
+     */
+    @Test public void theAlmostTrainingSentencesAreNotLogs() {
+        assertTrue(Activities.parse("csak átöltöztem, edzés nem lett").isEmpty());
+        assertTrue(Activities.parse("éppen csak benéztem a terembe").isEmpty());
+        // A valódi edzés marad, ugyanabban a szórendben.
+        assertEquals(1, Activities.parse("bementem a terembe és nyomtam 3x10 fekvenyomást")
+                .plans.size());
+    }
 }

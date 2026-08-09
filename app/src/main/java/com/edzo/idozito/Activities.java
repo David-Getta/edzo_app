@@ -2138,7 +2138,10 @@ public final class Activities {
                 // „kis híján elmentem edzeni" negyvenöt perces bejegyzés
                 // lett. (A „majdnem 10 km-t futottam" viszont megtörtént –
                 // ott a szó a SZÁMOT pontosítja, nem az igét tagadja.)
-                "majdnem", "kis hijan", "kishijan"}) {
+                "majdnem", "kis hijan", "kishijan",
+                // Az „éppen csak benéztem a terembe" nem edzés: a terem szava
+                // hatvanperces bejegyzést csinált belőle.
+                "csak beneztem", "csak benezt", "eppen csak"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));
@@ -3574,7 +3577,11 @@ public final class Activities {
                 boolean undone = false;
                 for (String v : new String[]{"voltam", "volt", "mentem", "ment",
                         "jutottam", "sikerult", "tudtam", "birtam", "ertem ra",
-                        "jott ossze", "lett belole"})
+                        "jott ossze", "lett belole",
+                        // „Csak átöltöztem, edzés nem lett": a hátravetett
+                        // tagadás leggyakoribb magyar alakja hiányzott, és
+                        // negyvenöt perces bejegyzés lett a semmiből.
+                        "lett", "keszult", "valt belole"})
                     if (s.startsWith(v, p + 4)) { undone = true; break; }
                 if (undone) {
                     int a = p;
