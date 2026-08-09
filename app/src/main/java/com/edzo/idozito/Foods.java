@@ -2143,6 +2143,17 @@ public final class Foods {
      */
     private static String maskMacroWords(String query) {
         String s = norm(query);
+        // A ZSÍR és a SZÉNHIDRÁT tápérték-sora sem étel: a „ma 1850 kcal,
+        // 140 g fehérje, 180 g szénhidrát, 60 g zsír" hatvan grammjából
+        // hatvan gramm OLAJ lett a naplóban – a makró-sor mellé.
+        // Csak TÁPÉRTÉK-SORBAN: a „100 g zsír" magában konyhai zsír, vagyis
+        // valódi étel. A kalória vagy a másik makró melletti hatvan gramm
+        // viszont a doboz sora.
+        boolean macroLine = s.contains("kcal") || s.contains("kalori")
+                || s.contains("feherje") || s.contains("szenhidrat");
+        String macro = !macroLine ? s : s.replaceAll("(\\d{1,3})\\s?(g|gr|gramm)\\s?"
+                + "(zsir|szenhidrat|ch|rost|telitett)(?![a-z])", "$1 $2 #");
+        if (!macro.equals(s)) { s = macro; query = macro; }
         if (!s.contains("protein")) return query;
         // A „protein" csak MAGÁBAN tápérték: a „150 g protein turmix" és a
         // „150 g proteinszelet" valódi étel, azokhoz nem nyúlunk.

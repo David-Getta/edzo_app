@@ -180,6 +180,12 @@ darab hatvanperces edzés lett belőle, húsz napra szétosztva. Ha a mondatban
 felismert sorozat is van, és a szám pontosan annak az ismétlésszáma, a szám
 azé. A „2 fekvőtámasz edzés" viszont marad két edzés.
 
+A **cél** is csak a saját tagmondatát viszi el: a „napi cél 1800 kcal, **ma
+1750 kcal lett**" második fele valódi bevitel. A **tápérték-sor** zsírja pedig
+nem konyhai zsír: a „ma 1850 kcal, 140 g fehérje, 180 g szénhidrát, **60 g
+zsír**" hatvan grammjából hatvan gramm olaj lett a naplóban – a makró-sor
+mellé, még egyszer.
+
 A **jelöletlen tagmondat** a mondat másik felével tart: a „ma megettem 2
 tányér levest, **összesen 900 kcal**" kilencszáza az evésé, nem elégetett
 kalória – hiába nincs a záró tagmondatban egyetlen ige sem.

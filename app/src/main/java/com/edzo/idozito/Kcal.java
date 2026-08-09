@@ -31,7 +31,10 @@ public final class Kcal {
      * lookahead nélkül a „calvados"-ba is beleakadna.
      */
     private static final Pattern NUM = Pattern.compile(
-            "(\\d+(?:[.,]\\d+)?)\\s*(kcal|kkal|k cal|kalori[a-z]*|cal)(?![a-z])");
+            // A tárgyrag hozzátapad: a „ma 2200 kcalt ettem" és a „elégettem
+            // 750 kcalt" magyarul így hangzik, és eddig egyik sem lett szám.
+            "(\\d+(?:[.,]\\d+)?)\\s*(kcal|kkal|k cal|kalori[a-z]*|cal)"
+                    + "(?:-?[oöea]?t)?(?![a-z])");
 
     /**
      * Étkezés-szó után álló, mértékegység NÉLKÜLI szám: „…, ebéd 700".
@@ -166,7 +169,20 @@ public final class Kcal {
     private static int amount(String q, Pattern[] block, Pattern[] want) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
-        for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
+        // A CÉL is csak a saját tagmondatát viszi el: a „napi cél 1800 kcal,
+        // ma 1750 lett" második fele valódi bevitel.
+        boolean anyGoal = false;
+        for (Pattern w : GOAL_P) if (w.matcher(s).find()) { anyGoal = true; break; }
+        if (anyGoal) {
+            StringBuilder keep = new StringBuilder();
+            for (String cl : s.split("\\s*[,;]\\s*")) {
+                boolean bad = false;
+                for (Pattern w : GOAL_P) if (w.matcher(cl).find()) { bad = true; break; }
+                if (!bad) keep.append(keep.length() > 0 ? ", " : "").append(cl);
+            }
+            s = keep.toString();
+            if (s.isEmpty()) return -1;
+        }
         // A tiltó szó csak a SAJÁT tagmondatát viszi el. A „ma 2100 kcal-t
         // ettem, elégettem 600-at" mindkét számot kimondja, de az „elégettem"
         // eddig az egész mondatot elnémította: a kétezer-száz sehol nem jelent

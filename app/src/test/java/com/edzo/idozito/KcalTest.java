@@ -236,4 +236,20 @@ public class KcalTest {
         assertEquals(2100, Kcal.stated("ma 2100 kcal-t ettem, elégettem 600-at"));
         assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
     }
+
+    /**
+     * A tárgyrag és a cél-tagmondat.
+     *
+     * A „ma 2200 kcalt ettem" magyarul így hangzik, és eddig egyáltalán nem
+     * lett belőle szám. A „napi cél 1800 kcal, ma 1750 kcal lett" második
+     * fele pedig valódi bevitel – a cél-szó eddig az egész mondatot elvitte.
+     */
+    @Test public void theAccusativeAndTheGoalClause() {
+        assertEquals(2200, Kcal.stated("ma 2200 kcalt ettem"));
+        assertEquals(750, Kcal.burned("elégettem 750 kcalt az edzésen"));
+        assertEquals(1750, Kcal.stated("napi cél 1800 kcal, ma 1750 kcal lett"));
+        // A puszta cél továbbra sem bejegyzés.
+        assertEquals(-1, Kcal.stated("a célom napi 2000 kcal"));
+        assertEquals(650, Kcal.stated("vacsora 650 kcal"));
+    }
 }

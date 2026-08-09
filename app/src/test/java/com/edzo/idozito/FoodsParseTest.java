@@ -388,4 +388,18 @@ public class FoodsParseTest {
         assertEquals("Eper", Foods.parse(all, "eper 200 g").get(0).food.name);
         assertEquals("Szörp (hígítva)", Foods.parse(all, "eperszörp").get(0).food.name);
     }
+
+    /**
+     * A tápérték-sor zsírja nem konyhai zsír.
+     *
+     * A „ma 1850 kcal, 140 g fehérje, 180 g szénhidrát, 60 g zsír" hatvan
+     * grammjából hatvan gramm OLAJ lett a naplóban – a makró-sor mellé, még
+     * egyszer. A „100 g zsír" magában viszont valódi étel.
+     */
+    @Test public void theNutrientLineFatIsNotCookingFat() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all,
+                "ma 1850 kcal, 140 g fehérje, 180 g szénhidrát, 60 g zsír").isEmpty());
+        assertEquals("Olaj", Foods.parse(all, "100 g zsír").get(0).food.name);
+    }
 }
