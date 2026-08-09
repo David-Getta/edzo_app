@@ -301,6 +301,12 @@ public final class BodyParse {
             // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
             // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
             if (rest.startsWith("fok")) continue;
+            // Láz-szó mellett a HŐMÉRSÉKLET-tartomány sem testsúly: a „beteg
+            // vagyok, lázam van 38,5" harmincnyolc és fél kilós mérésként
+            // került a súlytrendbe – pont egy olyan napon, amikor a
+            // felhasználó beteg, és senki nem áll mérlegre.
+            if (v >= 35 && v <= 42.5 && (s.contains("laz") || s.contains("hoemelkedes")
+                    || s.contains("homerseklet") || s.contains("lazas"))) continue;
             // Az ÉLETKOR sem testsúly: a „férfi vagyok, 34 éves, 182 cm"
             // harmincnégyese az évek száma – eddig harmincnégy kilós mérésként
             // került a súlytrendbe, egy bemutatkozó mondatból.

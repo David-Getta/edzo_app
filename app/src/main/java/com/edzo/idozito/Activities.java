@@ -1922,6 +1922,22 @@ public final class Activities {
         // eddig hat negyvenöt perces bejegyzés lett belőle, egy hétre
         // elosztva. Múlt idejű ige megvédi a valódi beszámolót: a „heti 3
         // edzés volt a héten" bejegyzés marad.
+        // A PROGRAM elkezdése maga még nem edzés: az „elkezdtem a couch to 5k
+        // programot" ötkilométeres futásként került be – abból a névből, ami
+        // épp azt jelenti, hogy ODÁIG még el kell jutni. A megtörtént első
+        // alkalom viszont marad: „elkezdtem a programot, ma 3 km".
+        if (s.contains("program") || s.contains("kihivas")) {
+            boolean started = false;
+            for (String w : new String[]{"elkezdt", "belevagt", "nekiallt", "beneveztem",
+                    "jelentkeztem", "elindult", "indul a", "csatlakoztam"})
+                if (s.contains(w)) { started = true; break; }
+            // A program NEVÉBEN álló szám nem teljesítmény: a „couch to 5k"
+            // ötöse maga a cél, nem a ma megtett táv.
+            boolean didSomething = java.util.regex.Pattern
+                    .compile("\\d+\\s?(?:km|perc|ora|lepes)(?!\\s*programm?\\w*)")
+                    .matcher(s).find();
+            if (started && !didSomething) return true;
+        }
         if (s.matches(".*heti \\d{1,2} edzes.*")
                 && !s.matches(".*(?<![a-z])(volt|voltak|megvolt|sikerult"
                         + "|\\w{3,}(?:tam|tem|tunk))(?![a-z]).*")) return true;

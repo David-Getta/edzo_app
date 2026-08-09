@@ -842,7 +842,10 @@ public final class StrengthParse {
         // szeretne látni a naplóban. Eddig egyik sem került be.
         if (sets.isEmpty() && weight > 0)
             for (String w : new String[]{"rekord", "csucs", "sikerult", "lement",
-                    "vegre", "megdontott", "eloszor", "elso alkalommal", "pr "})
+                    "vegre", "megdontott", "eloszor", "elso alkalommal", "pr ",
+                    // A „megvan a 100 kg-os guggolás" ugyanaz a mondat,
+                    // csak a legrövidebb magyar alakjában.
+                    "megvan", "meglett", "osszejott", "bevallalt"})
                 if (s.contains(w)) { sets.add(new Set(1, weight)); break; }
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);

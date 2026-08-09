@@ -1139,4 +1139,19 @@ public class StrengthParseTest {
         assertEquals("Felhúzás", StrengthParse.parse("holtemelés 3x5 150 kg")
                 .get(0).name);
     }
+
+    /**
+     * A „megvan a 100 kg-os guggolás" is csúcs-mondat.
+     *
+     * A csúcs-alakok közül a legrövidebb magyar forma hiányzott, és épp ez
+     * az a bejegyzés, amit az ember a legjobban szeretne látni a naplóban.
+     */
+    @Test public void theShortestRecordFormIsUnderstood() {
+        List<StrengthParse.Item> it = StrengthParse.parse("megvan a 100 kg-os guggolás, végre");
+        assertEquals(1, it.size());
+        assertEquals("Guggolás", it.get(0).name);
+        assertEquals(100, it.get(0).sets.get(0).weight, 0.01);
+        assertEquals("Felhúzás", StrengthParse.parse("meglett a 140 kg-os felhúzás")
+                .get(0).name);
+    }
 }

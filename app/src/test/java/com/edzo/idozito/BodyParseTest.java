@@ -466,4 +466,20 @@ public class BodyParseTest {
         assertEquals(0, BodyParse.parse("70 kg alatt vagyok").kg, 0.01);
         assertEquals(0, BodyParse.parse("80 kg alatt szeretnék lenni").kg, 0.01);
     }
+
+    /**
+     * A láz nem testsúly – „fok" nélkül sem.
+     *
+     * A „beteg vagyok, lázam van 38,5" harmincnyolc és fél kilós mérésként
+     * került a súlytrendbe. Pont egy olyan napon, amikor senki nem áll
+     * mérlegre – és a görbe utána hetekig hamis maradt.
+     */
+    @Test public void aFeverIsNotAWeightWithoutTheDegreeWord() {
+        assertEquals(0, BodyParse.parse("beteg vagyok, lázam van 38,5").kg, 0.01);
+        assertEquals(0, BodyParse.parse("38 fokos lázam van").kg, 0.01);
+        assertEquals(0, BodyParse.parse("hőemelkedésem van, 37,8").kg, 0.01);
+        // Láz-szó nélkül ugyanez a szám valódi mérés marad.
+        assertEquals(38.5, BodyParse.parse("38,5 kg vagyok").kg, 0.01);
+        assertEquals(79.2, BodyParse.parse("reggel 79,2 kg").kg, 0.01);
+    }
 }

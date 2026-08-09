@@ -90,6 +90,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   belőle hat ismétléssel (a „hát" számnévként hattá vált). A „push pull legs,
   heti 6 edzés" hat bejegyzést csinált. Kimondott sorozat, súly vagy múlt idő
   megvédi a valódi naplót: „hétfőn guggolás 3x5, szerdán 4x8 60 kg"
+- a **program elkezdése** még nem edzés: az „elkezdtem a couch to 5k
+  programot" ötkilométeres futásként került be – abból a névből, ami épp azt
+  jelenti, hogy odáig még el kell jutni
 - a **kimondott nulla** is tagadás: a „nehéz nap: 10 óra munka, **semmi
   mozgás**, este két sör" mondatból eddig tízórás „egyéb mozgás" lett – pont
   abból a szóból, amivel az ember azt mondja, hogy nem mozgott

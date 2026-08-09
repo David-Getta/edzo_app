@@ -2029,4 +2029,19 @@ public class ActivitiesParseTest {
         // Az egyszerű számnév sem sérül.
         assertEquals("1d+0: 1×futas/30", summary("harminc perc futás"));
     }
+
+    /**
+     * A program elkezdése még nem edzés.
+     *
+     * Az „elkezdtem a couch to 5k programot" ötkilométeres futásként került
+     * be – abból a névből, ami épp azt jelenti, hogy odáig még el kell jutni.
+     */
+    @Test public void startingAProgrammeIsNotASession() {
+        assertTrue(Activities.parse("elkezdtem a couch to 5k programot").isEmpty());
+        assertTrue(Activities.parse("belevágtam a 30 napos kihívásba").isEmpty());
+        // A megtörtént első alkalom viszont marad.
+        assertEquals(3.0, Activities.parse("elkezdtem a programot, ma 3 km futás")
+                .plans.get(0).km, 0.01);
+        assertEquals(1, Activities.parse("elkezdtem futni").plans.size());
+    }
 }
