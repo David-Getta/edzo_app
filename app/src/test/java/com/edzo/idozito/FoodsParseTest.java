@@ -274,6 +274,16 @@ public class FoodsParseTest {
         assertEquals("Chilis bab (con carne)", hits("chilis bab vacsorára").get(0).food.name);
     }
 
+    /** Melléknévként nem étel: „vizes lett a cipőm", „combos edzés volt". */
+    @Test public void adjectivesAreNotMeals() {
+        for (String q : new String[]{"vizes lett a cipőm az esőben",
+                "combos edzés volt ma", "sajtoltam a gépen"})
+            assertTrue(q + " -> " + hits(q), hits(q).isEmpty());
+        // A valódi ivás és a valódi csirkecomb marad.
+        assertEquals("Víz / ásványvíz", hits("ittam egy pohár vizet").get(0).food.name);
+        assertEquals("Csirkecomb", hits("két csirkecomb").get(0).food.name);
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci

@@ -509,7 +509,12 @@ public class FoodsDataQualityTest {
             "haltol", "kolaja", "kolajat", "majas", "marhara", "mezos", "mezt", "meztol",
             "phoes", "phon", "phonak", "phonal", "phot", "photol", "pokera", "pokerol",
             "ruditol", "rumba", "rumban", "soras", "sorba", "sorban", "sorbol", "sornak",
-            "sornal", "soros", "sorra", "tarjan", "tarjanak", "tarjanal"));
+            "sornal", "soros", "sorra", "tarjan", "tarjanak", "tarjanal",
+            // Melléknévként ezek nem ételek, és pont így gyakoriak: a „VIZES
+            // lett a cipőm" és a „COMBOS edzés volt" eddig két és fél deci
+            // vizet, illetve egy csirkecombot írt a naplóba. Vizet inni
+            // magyarul „vizet iszom", nem „vizes".
+            "vizes", "combos"));
         String[] suf = {"t", "ba", "bol", "ban", "val", "hoz", "nak", "ja",
                 "jat", "k", "kat", "n", "ra", "rol", "tol", "nal", "os", "as", "es"};
         StringBuilder bad = new StringBuilder();

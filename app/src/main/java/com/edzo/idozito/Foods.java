@@ -771,6 +771,11 @@ public final class Foods {
             // Hétköznapi szavak, amikben étel-szótő lakik: a kertÉPÍTÉSben a
             // pite, a tojásKERESÉSben a tojás. Mindkettőből étkezés lett.
             "epites", "epitkezes", "epitesz", "epito", "tojaskeres", "tojasfestes",
+            // Melléknévként ezek nem ételek: a „VIZES lett a cipőm", a
+            // „COMBOS edzés volt" és a „SAJTOLtam a gépen" mind bejegyzést
+            // csinált – két és fél deci vizet, egy csirkecombot, egy szelet
+            // sajtot.
+            "vizes", "vizesblokk", "combos", "sajtol", "sajtolas",
             // Az összetett alakok külön: a token ELEJÉT nézzük, tehát a
             // „kertépítés" és az „izomépítés" nem ugyanaz a szó, mint az
             // „építés" – pedig mindegyikben ott a PITE.
