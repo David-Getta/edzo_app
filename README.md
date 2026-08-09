@@ -86,6 +86,12 @@ eddig sehol nem jelent meg – az app most megkérdezi, viszi-e az Étrendbe,
 és fordítva is: a mentett étkezés után felajánlja az edzést. A Profil
 mondat-mezője pedig egyszerre menti a súlyt, az alvást és a pulzust.
 
+A mennyiség is a másik felében lehet: az „ebédre töltött káposzta volt,
+**két adag**" eddig egy adagot mentett kettő helyett. Az utolsó, csupán
+mennyiséget tartalmazó tagmondat nem lehet másé – de csak akkor lép be, ha a
+mondat elején pontosan egy étel áll („csirkemell rizzsel, 200 g" marad
+kétértelmű, ott nem találgatunk).
+
 Szándékosan szűk a lista: csak azok a párok, amelyek nem eshetnek egymás
 rovására. Huszonkét valódi edzés-mondaton az étel-felismerő egyetlen ételt
 sem talált, tehát ha talál, az tényleg ott van.

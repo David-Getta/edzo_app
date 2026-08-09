@@ -546,7 +546,9 @@ public final class Foods {
         new Food("Túrógombóc", 210, 9, 200, "turogomboc"),
         new Food("Szilvás gombóc", 190, 3, 250, "szilvas gomboc", "szilvasgomboc"),
         new Food("Káposztás tészta", 150, 4, 330, "kaposztas teszta", "kaposztasteszta",
-                "cvekedli", "kaposztas cvekedli"),
+                "cvekedli", "kaposztas cvekedli",
+                // Ugyanaz a tál, más néven: a menzán „káposztás kocka".
+                "kaposztas kocka", "kaposztaskocka", "kaposztas nudli"),
         new Food("Quiche", 300, 9, 200, "quiche"),
         new Food("Poke bowl", 120, 8, 400, "poke"),
         new Food("Caprese saláta", 130, 7, 250, "caprese salata", "caprese"),
@@ -2079,12 +2081,40 @@ public final class Foods {
         return parse(all(c), query);
     }
 
+    /**
+     * A mennyiség a mondat MÁSIK felében: „ebédre töltött káposzta volt,
+     * két adag".
+     *
+     * A mennyiség szándékosan nem ugrik át tagmondat-határon – a „csirkemell
+     * rizzsel, 200 g" kétszáz grammja nem tartozhat mindkettőhöz. Az utolsó,
+     * CSUPÁN mennyiséget tartalmazó tagmondat viszont nem lehet másé: ott
+     * nincs mit félreérteni, és eddig egy adag ment be kettő helyett.
+     *
+     * Két feltétel véd: a fejben pontosan egy étel álljon, és ne legyen benne
+     * saját szám. A mennyiséget egyszerűen a fej elé írjuk – onnantól a
+     * megszokott „két adag töltött káposzta" alakot olvassuk.
+     */
+    private static String amountFromTheOtherClause(List<Food> list, String query) {
+        String s = norm(query);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "[,;]\\s*(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
+                        + "kanal|marek|falat)\\w*\\s*$").matcher(s);
+        if (!m.find()) return query;
+        String head = s.substring(0, m.start());
+        if (head.matches(".*\\d.*")) return query;
+        if (matches(list, head).size() != 1) return query;
+        // A ragos alakot alapalakra írjuk („két tányérral" → „két tányér"):
+        // a mennyiség-olvasó a mértékegység alapalakját ismeri.
+        return m.group(1) + " " + m.group(2) + " " + head;
+    }
+
     static List<Hit> parse(List<Food> list, String query) {
         // Ami nem került a tányérra, az a naplóba se kerüljön: a „szeretnék
         // egy pizzát" és a „vettem két kiló almát" ugyanúgy tartalmaz ételt
         // és mennyiséget, mint egy bejegyzés – csak épp egyikből sem lett
         // falat. Eddig mindkettő bement, háromszáz, illetve ezer kalóriával.
         if (looksUneaten(query)) return new ArrayList<>();
+        query = amountFromTheOtherClause(list, query);
         List<Match> ms = matches(list, query);
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {

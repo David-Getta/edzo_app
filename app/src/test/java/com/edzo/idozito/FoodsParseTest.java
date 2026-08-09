@@ -176,6 +176,25 @@ public class FoodsParseTest {
         assertTrue(hits("zzzqqq 100 g").isEmpty());
     }
 
+    /**
+     * A mennyiség a mondat MÁSIK felében: „…, két adag".
+     *
+     * A mennyiség szándékosan nem ugrik át tagmondat-határon, de az utolsó,
+     * CSUPÁN mennyiséget tartalmazó tagmondat nem lehet másé – ott nincs mit
+     * félreérteni, és eddig egy adag ment be kettő helyett.
+     */
+    @Test public void aTrailingAmountBelongsToTheOnlyFood() {
+        java.util.List<Foods.Hit> h = hits("ebédre töltött káposzta volt, két adag");
+        assertEquals(1, h.size());
+        assertEquals(700.0, h.get(0).grams, 0.5);
+        assertEquals(800.0, hits("gulyásleves, két tányérral").get(0).grams, 0.5);
+        assertEquals(105.0, hits("reggelire kenyeret ettem, három szelet").get(0).grams, 0.5);
+        assertEquals(400.0, hits("kávé, két bögrével").get(0).grams, 0.5);
+        // Két étel mellett nem találgatunk: a „csirkemell rizzsel, 200 g"
+        // kétszáz grammja nem tartozhat mindkettőhöz.
+        assertEquals(2, hits("csirkemell rizzsel, 200 g").size());
+    }
+
     /** A panasz szavában lakó étel-szótő nem étkezés. */
     @Test public void complaintWordsAreNotFood() {
         // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
