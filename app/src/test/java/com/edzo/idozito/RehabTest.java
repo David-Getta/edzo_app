@@ -499,4 +499,25 @@ public class RehabTest {
         assertTrue("a leírás nem mondja ki, hova vándorol a hiányzó mozgás",
                 goal.contains("nyak") && goal.contains("váll"));
     }
+
+    /**
+     * A „faj" szótő hétköznapi álruhái nem panaszok.
+     *
+     * Ötvenezer magyar szót a testtájak mellé téve a fájl, a fajta, a faji
+     * és a fajok maradtak: mind a szó elején hordozza a „faj"-t, akárcsak a
+     * „fáj". A „milyen fajta nyújtás a vállamra" így panasz lett.
+     */
+    @Test public void everydayWordsHidingThePainStemAreNotComplaints() {
+        assertNull(Rehab.forComplaint("milyen fajta nyújtás a vállamra"));
+        assertNull(Rehab.forComplaint("a fájl a vállamon"));
+        assertNull(Rehab.forComplaint("fajok a térdem körül"));
+        // A jó hír sem panasz.
+        assertNull(Rehab.forComplaint("fájdalommentes a vállam"));
+        assertNull(Rehab.forComplaint("fájdalom nélkül mozog a vállam"));
+        assertNull(Rehab.forComplaint("már nem fáj a vállam"));
+        // A valódi panasz változatlan.
+        assertNotNull(Rehab.forComplaint("fáj a vállam"));
+        assertNotNull(Rehab.forComplaint("fájás a derekamban"));
+        assertNotNull(Rehab.forComplaint("derékfájás"));
+    }
 }

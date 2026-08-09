@@ -595,6 +595,12 @@ public final class Activities {
             "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
+            // A KÉZI és a JOG szótöve hétköznapi szavak elején is ott van: a
+            // kézírás nem kézilabda, a jogaim nem jóga. Ötvenezer magyar szót
+            // átfuttatva ezek maradtak.
+            "keziras", "kezirat", "kezikonyv", "keziszer", "kezimunka", "kezifek",
+            "jogai", "jogaim", "jogod", "joguk", "jogot", "jogok", "jogos", "jogi",
+            "jogsza", "jogilag", "jogtalan", "jogert",
             "boxutca", "tancsics", "kosarka",
             // Az „olvasás" közepén ott az „ásás": a fotelban töltött este
             // eddig kerti munkaként került a naplóba. A megTAKARÍTás nem

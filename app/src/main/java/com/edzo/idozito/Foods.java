@@ -1044,6 +1044,18 @@ public final class Foods {
             "aranyalma", "csipkebogyoalma"};
 
     /**
+     * Az ÁLOM ragozott alakjai ékezet nélkül ALMÁnak látszanak.
+     *
+     * Az „álmaim", az „álmod" és az „álmos" a normalizálás után „almaim",
+     * „almod", „almos" – mind a szó ELEJÉN hordozza az almát, ezért az
+     * összetétel-szabály sem fogta meg őket. Az alma valódi ragjai (almát,
+     * almák, almával, almás) egyikkel sem esnek egybe.
+     */
+    private static final String[] ALOM = {"almai", "almaim", "almaid", "almaink",
+            "almatok", "almuk", "almunk", "almod", "almom", "almok", "almot",
+            "almos", "almatlan", "almodoz", "almodik", "almodt"};
+
+    /**
      * Valódi májas összetételek – ezekben a „mája" tényleg máj.
      *
      * Az „almája" is itt van: ott a betűsor az ALMA és a birtokos „-ja"
@@ -1099,6 +1111,7 @@ public final class Foods {
     }
 
     private static boolean startsWithBad(String tok) {
+        for (String bad : ALOM) if (tok.startsWith(bad)) return true;
         for (String bad : NOT_FOOD) if (tok.startsWith(bad)) return true;
         for (String bad : START_BAD_EXTRA) if (tok.startsWith(bad)) return true;
         return false;

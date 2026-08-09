@@ -726,4 +726,29 @@ public class FoodsDataQualityTest {
                 bad.append("\n  ").append(d);
         assertEquals("nem ismert fogás:" + bad, 0, bad.length());
     }
+
+    /**
+     * Az ÁLOM nem alma, a kézírás nem kézilabda, a „45-kor" nem mérés.
+     *
+     * Ötvenezer magyar szót átfuttatva a felismerőkön ez a három maradt.
+     * Mindhárom ugyanaz a hiba: az ékezet elhagyása után a hétköznapi szó
+     * ELEJÉN áll egy rövid szótő, és eddig semmi nem állította meg.
+     */
+    @Test public void everydayWordsAreNotFoodSportOrMeasurement() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"álmaim", "álmos vagyok", "álmodtam egy jót",
+                "álmot láttam", "álmaidban"})
+            assertTrue(q, Foods.parse(all, q).isEmpty());
+        for (String q : new String[]{"kézírása szép", "jogaimat gyakorlom", "jogi kérdés"})
+            assertTrue(q, Activities.parse(q).isEmpty());
+        for (String q : new String[]{"45-kor", "45 kör", "30-kor"})
+            assertTrue(q, BodyParse.parse(q).isEmpty());
+        // A valódi alma, jóga, kézilabda és mérés változatlan.
+        assertTrue(!Foods.parse(all, "almát ettem").isEmpty());
+        assertTrue(!Foods.parse(all, "almás pite").isEmpty());
+        assertTrue(!Foods.parse(all, "gránátalma").isEmpty());
+        assertEquals("joga", Activities.parse("jógát csináltam").plans.get(0).kind.id);
+        assertEquals("kezilabda", Activities.parse("kézilabda edzés").plans.get(0).kind.id);
+        assertEquals(78.4, BodyParse.parse("ma reggel 78,4 kg").kg, 0.001);
+    }
 }

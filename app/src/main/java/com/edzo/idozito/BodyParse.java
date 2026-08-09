@@ -205,6 +205,9 @@ public final class BodyParse {
             String rest = s.substring(m.end()).trim();
             if (rest.startsWith("%") || rest.startsWith("szazalek")) continue;
             if (rest.startsWith("cm") || rest.startsWith("centi")) continue;
+            // A „-kor" időpont vagy körszám, sosem kiló: a „45-kor" és a
+            // „45 kör" negyvenöt kilós mérésként került volna a súlytrendbe.
+            if (rest.startsWith("kor") || rest.startsWith("-kor")) continue;
             return v;
         }
         return 0;

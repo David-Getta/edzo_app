@@ -341,6 +341,20 @@ public final class Rehab {
     }
 
     /**
+     * A „faj" szótő hétköznapi álruhái: fajta, fájl, faji, fajok.
+     *
+     * Ötvenezer magyar szót a testtájak mellé téve ezek maradtak: a „fájl"
+     * és a „fajta" ugyanúgy a szó elején hordozza a „faj"-t, mint a „fáj".
+     * Egy „milyen fajta nyújtás a vállamra" mondatból így panasz lett.
+     */
+    private static boolean falsePain(String s, int i) {
+        for (String w : new String[]{"fajta", "fajl", "faji", "fajok", "fajank",
+                "fajzat", "fajul", "fajsuly", "fajlagos", "fajkent"})
+            if (s.startsWith(w, i)) return true;
+        return false;
+    }
+
+    /**
      * Panaszból testtáj: „fáj a vállam" → a váll-sor.
      *
      * Az app mondat-elvű: ha a felhasználó bármelyik mezőbe beírja, hogy mi
@@ -366,7 +380,7 @@ public final class Rehab {
             int i = s.indexOf(w);
             while (i >= 0) {
                 boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
-                if (l) { pain = true; break; }
+                if (l && !falsePain(s, i)) { pain = true; break; }
                 i = s.indexOf(w, i + 1);
             }
             if (pain) break;
@@ -405,7 +419,7 @@ public final class Rehab {
         // A tagadott vagy elmúlt panasz jó hír, nem kérés: a „nem fáj a
         // vállam" és a „már nem fáj" után nincs mit ajánlani.
         for (String neg : new String[]{"nem faj", "mar nem", "elmult", "meggyogyult",
-                "nem fajt"})
+                "nem fajt", "fajdalommentes", "fajdalom nelkul"})
             if (s.contains(neg)) return null;
         // A piros zászlós panaszra nem sort ajánlunk: arra a redFlag()
         // figyelmeztetése a válasz, és azt a képernyő mutatja meg.
