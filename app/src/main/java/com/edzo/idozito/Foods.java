@@ -2130,7 +2130,7 @@ public final class Foods {
         String s = norm(query);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "[,;]\\s*(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
-                        + "kanal|marek|falat|gomboc)\\w*\\s*$").matcher(s);
+                        + "kanal|marek|falat|gomboc|db|darab)\\w*\\s*$").matcher(s);
         String head, amount;
         if (m.find()) {
             head = s.substring(0, m.start());

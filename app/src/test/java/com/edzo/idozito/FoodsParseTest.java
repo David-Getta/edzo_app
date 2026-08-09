@@ -196,6 +196,9 @@ public class FoodsParseTest {
                 hits("sütöttem egy adag palacsintát, megettem hatot").get(0).grams, 0.5);
         assertEquals(360.0, hits("ettem palacsintát, hatot").get(0).grams, 0.5);
         assertEquals(3000.0, hits("ittam egy sört, hatot").get(0).grams, 0.5);
+        // A darab is mértékegység: „sushi vacsora, 12 darab".
+        assertEquals(360.0, hits("sushi vacsora, 12 darab").get(0).grams, 0.5);
+        assertEquals(180.0, hits("ettem palacsintát, 3 db").get(0).grams, 0.5);
         // Két étel mellett nem találgatunk: a „csirkemell rizzsel, 200 g"
         // kétszáz grammja nem tartozhat mindkettőhöz.
         assertEquals(2, hits("csirkemell rizzsel, 200 g").size());
