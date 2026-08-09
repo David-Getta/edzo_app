@@ -140,9 +140,15 @@ public final class Sleep {
      * hozzáadva próbáljuk újra.
      */
     private static double betweenTimes(String s) {
-        boolean ctx = s.contains("alud") || s.contains("alvas")
-                || ((s.contains("fekudtem") || s.contains("fekszem"))
-                    && (s.contains("keltem") || s.contains("ebredtem")));
+        // A lefekvést nem csak „feküdtem"-mel mondjuk: az „ágyban voltam", a
+        // „lefeküdtem" és az „ágyba bújtam" ugyanaz a pillanat. Enélkül az
+        // „este 10-re ágyban voltam, reggel 6-kor keltem" egésze elveszett,
+        // pedig a nyolc óra ki van mondva benne.
+        boolean bed = s.contains("fekudtem") || s.contains("fekszem")
+                || s.contains("lefeku") || s.contains("agyban volt")
+                || s.contains("agyba bujt") || s.contains("agyban vagyok");
+        boolean up = s.contains("keltem") || s.contains("ebredtem");
+        boolean ctx = s.contains("alud") || s.contains("alvas") || (bed && up);
         if (!ctx) return -1;
         java.util.List<Integer> mins = new java.util.ArrayList<>();
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(

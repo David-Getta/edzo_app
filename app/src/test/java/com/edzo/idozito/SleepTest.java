@@ -120,6 +120,10 @@ public class SleepTest {
         assertEquals(7.5, Sleep.parse("fél 11-kor feküdtem le és 6-kor keltem"), 0.01);
         // Az óra-app kiírása hossz, nem időpont: a perc sem veszhet el.
         assertEquals(6.5, Sleep.parse("alvás 6:30"), 0.01);
+        // A lefekvést nem csak „feküdtem"-mel mondjuk – az „ágyban voltam" és
+        // az „ágyba bújtam" ugyanaz a pillanat.
+        assertEquals(8.0, Sleep.parse("este 10-re ágyban voltam, reggel 6-kor keltem"), 0.01);
+        assertEquals(9.0, Sleep.parse("ágyba bújtam 22-kor, 7-kor keltem"), 0.01);
         // Alvás-szó nélkül nincs bejegyzés: az edzés-időpont nem éjszaka.
         assertEquals(-1, Sleep.parse("18:00-tól 19:30-ig kondi"), 0.01);
         assertEquals(-1, Sleep.parse("edzés 6-kor és 18-kor"), 0.01);
