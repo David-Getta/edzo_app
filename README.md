@@ -103,6 +103,11 @@ mennyiséget tartalmazó tagmondat nem lehet másé – de csak akkor lép be, h
 mondat elején pontosan egy étel áll („csirkemell rizzsel, 200 g" marad
 kétértelmű, ott nem találgatunk).
 
+Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 km futás,
+**78,5 kg a mérlegen**", az „aludtam 7 órát **és futottam 10 km-t**" és az
+„ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul
+eltűnt.
+
 Szándékosan szűk a lista: csak azok a párok, amelyek nem eshetnek egymás
 rovására. Huszonkét valódi edzés-mondaton az étel-felismerő egyetlen ételt
 sem talált, tehát ha talál, az tényleg ott van.

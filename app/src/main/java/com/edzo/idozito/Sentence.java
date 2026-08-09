@@ -128,7 +128,14 @@ public final class Sentence {
         switch (k) {
             case WORKOUT: case STRENGTH: case INTERVAL: case ROUTINE:
                 if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
-                return Kind.NONE;
+                // Az edzés mellé a reggeli MÉRÉS is odaférhet: a „10 km futás,
+                // 78,5 kg a mérlegen" és az „aludtam 7 órát és futottam 10
+                // km-t" második fele eddig nyomtalanul eltűnt. A sorrend a
+                // biztosból a bizonytalan felé megy: a mérleg száma a
+                // legegyértelműbb, a pulzus a legrövidebb.
+                if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
+                if (Sleep.parse(q) > 0) return Kind.SLEEP;
+                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
             // A reggeli három adat egy mondatban: „ma reggel 78,4 kg, aludtam
             // 7 órát, nyugalmi pulzus 52". Mindhárom a Profil naplója, és
             // eddig csak egy került be közülük.
@@ -139,6 +146,17 @@ public final class Sentence {
                 if (Sleep.parse(q) > 0) return Kind.SLEEP;
                 return BodyParse.parse(q).isEmpty() ? Kind.NONE : Kind.BODY;
             case BODY:
+                if (Sleep.parse(q) > 0) return Kind.SLEEP;
+                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+            // Az étkezés mellé is odaférhet a mérés: az „ettem egy pizzát és
+            // aludtam 9 órát" kilenc órája eddig sehol nem jelent meg.
+            case MEAL:
+                if (Sleep.parse(q) > 0) return Kind.SLEEP;
+                if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
+                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+            // A panasz mellett is ott lehet a napi mérés.
+            case REHAB:
+                if (!BodyParse.parse(q).isEmpty()) return Kind.BODY;
                 if (Sleep.parse(q) > 0) return Kind.SLEEP;
                 return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
             default:

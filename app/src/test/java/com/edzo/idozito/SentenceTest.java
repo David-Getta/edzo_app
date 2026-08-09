@@ -259,6 +259,18 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.SLEEP,
                 Sentence.also("ma reggel 78,4 kg, aludtam 7 órát", all, now));
         assertEquals(Sentence.Kind.SLEEP, Sentence.also("aludtam 8 órát, 78 kg", all, now));
+        // Az edzés és az étkezés mellé is odaférhet a reggeli MÉRÉS: ezek
+        // második fele eddig nyomtalanul eltűnt.
+        assertEquals(Sentence.Kind.BODY,
+                Sentence.also("10 km futás, 78,5 kg a mérlegen", all, now));
+        assertEquals(Sentence.Kind.SLEEP,
+                Sentence.also("aludtam 7 órát és futottam 10 km-t", all, now));
+        assertEquals(Sentence.Kind.PULSE,
+                Sentence.also("nyugalmi pulzus 50, ma 45 perc bringa", all, now));
+        assertEquals(Sentence.Kind.SLEEP,
+                Sentence.also("ettem egy pizzát és aludtam 9 órát", all, now));
+        assertEquals(Sentence.Kind.BODY,
+                Sentence.also("fáj a vállam, 78 kg vagyok", all, now));
         // Ahol nincs második napló, ott ne találgassunk. Huszonkét valódi
         // edzés-mondaton az étel-felismerő egyetlen ételt sem talált.
         for (String q : new String[]{"30 perc futás", "guggolás 5x5 100 kg",
