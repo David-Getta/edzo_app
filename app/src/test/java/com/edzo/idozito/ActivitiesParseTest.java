@@ -148,6 +148,30 @@ public class ActivitiesParseTest {
         assertEquals("kerekpar", q.plans.get(0).kind.id);
     }
 
+    @Test public void someoneElsesWorkoutIsNotMine() {
+        // A „néztem" csak a SAJÁT tagmondatát törli – a focit a másik
+        // tagmondat mondta ki, és eddig kilencven perces bejegyzés lett belőle.
+        assertEquals("1d+0: ", summary("a fiam focizott, én csak néztem"));
+        assertEquals("1d+0: ", summary("a párom jógázott, én addig főztem"));
+        assertEquals("1d+0: ", summary("a csapat edzett, én sérült voltam"));
+        // A közös edzésben viszont benne vagyok: a birtokos ragos alak és az
+        // első személyű ige is azt mondja, hogy megtörtént – velem.
+        assertEquals("1d+0: 1×futas/30", summary("a fiammal futottam 5 km-t"));
+        assertEquals("1d+0: 1×futas/30", summary("a fiam és én futottunk 5 km-t"));
+        assertEquals("1d+0: 1×kondi/45", summary("a párom jógázott, én kondiztam 45 percet"));
+    }
+
+    @Test public void aRoundCountMultipliesTheDistance() {
+        // A „3 kör 400 m" ezerkétszáz méter: eddig a kör-szám elveszett, és a
+        // naplóba a táv harmada került.
+        assertEquals(1.2, Activities.parse("3 kör 400 m futás").plans.get(0).km, 0.001);
+        assertEquals(1.0, Activities.parse("5 kör 200 métert futottam").plans.get(0).km, 0.001);
+        // Az órakor NEM szorzó: ott kötőjel áll a szám után, nem szóköz.
+        assertEquals(5.0, Activities.parse("6-kor 5 km futás").plans.get(0).km, 0.001);
+        assertEquals(10.0, Activities.parse("reggel 7 órakor 10 km-t futottam")
+                .plans.get(0).km, 0.001);
+    }
+
     @Test public void stepCountsBecomeAWalk() {
         // A „10000 lépés" túra/gyaloglás: ~130 lépés/perc, ~75 cm/lépés.
         Activities.Plan p = Activities.parse("ma 10000 lépés").plans.get(0);

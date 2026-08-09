@@ -232,6 +232,23 @@ public class StrengthParseTest {
         }
     }
 
+    @Test public void anInjuryReportIsNotAWorkoutLog() {
+        // A „vádlimba” szóban ott a „vádli” szótő, ismétlésszám viszont nincs:
+        // a sérülés bejelentéséből eddig „Vádliemelés · 1 · saját testsúly”
+        // lett, és az bekerült a naplóba.
+        for (String q : new String[]{"kaptam egy húzódást a vádlimba futás közben",
+                "fáj a vállam a tegnapi fekvenyomástól",
+                "megrándult a bokám guggolás közben",
+                "gyulladt a könyököm a bicepsztől"}) {
+            assertEquals("kitalált sorozat panaszból: " + q, 0, StrengthParse.parse(q).size());
+        }
+        // De ami MEGTÖRTÉNT, az megtörtént – a fájdalom nem törli a sorozatot.
+        assertEquals("Fekvenyomás 3×8/8/8@60",
+                sum("fájt a vállam, mégis fekvenyomás 3x8 60 kg"));
+        assertEquals("Guggolás 3×10/10/10@0",
+                sum("guggolás 3x10, közben megrándult a térdem"));
+    }
+
     @Test public void similarNamesDoNotCollide() {
         // A „fekvenyomás” nem fekvőtámasz, és fordítva.
         assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x5 100 kg").get(0).name);

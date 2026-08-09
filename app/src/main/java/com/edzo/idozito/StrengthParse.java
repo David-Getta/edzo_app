@@ -354,7 +354,41 @@ public final class StrengthParse {
                     for (int i = 1; i < rounds; i++) it.sets.add(new Set(base.reps, base.weight));
                 }
         }
+        // A PANASZ nem gyakorlat. A „kaptam egy húzódást a vádlimba futás
+        // közben" mondatban a „vádli" szótő ott van, ismétlésszám viszont
+        // nincs – eddig ebből „Vádliemelés · 1 · saját testsúly" lett, vagyis
+        // a sérülés bejelentéséből edzésnapló. Csak a puszta névtalálatot
+        // dobjuk el: ha a mondatban tényleges sorozat van („fájt a vállam,
+        // mégis nyomtam 3x8 60 kg"), az megtörtént, az marad.
+        if (hurts(whole)) {
+            List<Item> kept = new ArrayList<>();
+            for (Item it : merged) {
+                if (it.sets.size() == 1 && it.sets.get(0).reps <= 1
+                        && it.sets.get(0).weight <= 0) continue;
+                kept.add(it);
+            }
+            merged = kept;
+        }
         return merged;
+    }
+
+    /**
+     * Panaszmondat-e: fájdalomról, sérülésről szól.
+     *
+     * A „fáj" szótő egész szóként szerepel, mert a „fajta", „fájl" és „faji"
+     * nem fájdalom – a részleges egyezés miatt egy receptmondat is panasznak
+     * látszana.
+     */
+    private static boolean hurts(String s) {
+        String t = " " + s.replaceAll("[^a-z0-9]", " ") + " ";
+        for (String x : new String[]{"faj", "fajt", "fajnak", "fajos", "huzodas",
+                "huzodast", "huzodott", "huzodtam", "megrandult", "berandult",
+                "serules", "serultem", "megserult"})
+            if (t.contains(" " + x + " ")) return true;
+        for (String x : new String[]{"fajdalm", "megfajdul", "gyulladt", "gyulladas",
+                "belenyilall", "szakadas"})
+            if (s.contains(x)) return true;
+        return false;
     }
 
     /**

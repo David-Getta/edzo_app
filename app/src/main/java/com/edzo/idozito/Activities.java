@@ -1706,6 +1706,7 @@ public final class Activities {
      */
     private static void stripNegated(char[] q) {
         stripBackwardNegation(q);
+        stripOtherPerson(q);
         String s = new String(q);
         int h = s.indexOf("helyett");
         while (h >= 0) {
@@ -1837,8 +1838,12 @@ public final class Activities {
                 // A mértékegység ragozott alakja is ide tartozik („8x400
                 // métert futottam"): a toldalék nélkül a szorzat kiesett, és
                 // a táv vagy elveszett, vagy tíz külön edzéssé esett szét.
-                .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,4}(?:[.,]\\d+)?)\\s?"
-                        + "(km|meter[a-z]*|m)(?![a-z])")
+                // A „kör" ugyanaz a szorzó, csak kimondva: a „3 kör 400 m"
+                // ezerkétszáz méter. Eddig a kör-szám elveszett, és a naplóba
+                // a táv harmada került. A kötőjeles „5-kor" (órakor) nem esik
+                // ide: ott szóköz helyett kötőjel áll a szám után.
+                .compile("(\\d{1,2})(?:\\s?[x×]\\s?|\\s+kor\\s+)"
+                        + "(\\d{1,4}(?:[.,]\\d+)?)\\s?(km|meter[a-z]*|m)(?![a-z])")
                 .matcher(s);
         while (m.find()) {
             int n;
@@ -2751,6 +2756,55 @@ public final class Activities {
             if (lo == hi || lo > hi || hi > lo * 3) continue;
             t[1] = t[1] * (lo + hi) / (2 * hi);
         }
+    }
+
+    /** Alany, aki nem én vagyok: az ő mozgása nem az én naplóm. */
+    private static final String[] OTHER_SUBJECT = {
+            "fiam", "lanyom", "ferjem", "felesegem", "parom", "testverem", "ocsem",
+            "batyam", "hugom", "novverem", "anyam", "apam", "anyukam", "apukam",
+            "kollegam", "fonokom", "szomszedom", "kutyam", "csapat", "csapatom",
+            "gyerekek", "gyerekem", "unokam", "baratom", "baratnom", "edzom"};
+
+    /**
+     * MÁS mozgása: „a fiam focizott, én csak néztem".
+     *
+     * A „néztem" tagadó szó csak a SAJÁT tagmondatát törli – a focit a másik
+     * tagmondat mondta ki, és eddig kilencven perces bejegyzés lett belőle.
+     * Itt az alany dönt: ha a tagmondatban harmadik személy áll (a fiam, a
+     * párom, a csapat) és NINCS benne első személyű ige, akkor a mozgás nem az
+     * enyém.
+     *
+     * A birtokos ragos alak („a fiammal futottam") nem egész szó, tehát nem
+     * esik ide; az első személyű ige („a fiam és én futottunk") pedig kivédi a
+     * közös edzés törlését – abban tényleg benne vagyok.
+     */
+    private static void stripOtherPerson(char[] q) {
+        String s = new String(q);
+        int a = 0;
+        while (a < s.length()) {
+            int e = a;
+            while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
+                    && s.charAt(e) != ';') e++;
+            String cl = s.substring(a, e);
+            if (!firstPerson(cl) && otherSubject(cl)) blank(q, a, e);
+            a = e + 1;
+        }
+    }
+
+    /** Van-e a tagmondatban első személyű (rám vonatkozó) alak? */
+    private static boolean firstPerson(String cl) {
+        String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
+        if (cl.matches(".*\\b\\w{3,}(tam|tem|tunk)\\b.*")) return true;
+        for (String w : new String[]{"en", "velem", "engem", "nekem", "magam", "sajat"})
+            if (t.contains(" " + w + " ")) return true;
+        return false;
+    }
+
+    /** Harmadik személyű alany egész szóként. */
+    private static boolean otherSubject(String cl) {
+        String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
+        for (String w : OTHER_SUBJECT) if (t.contains(" " + w + " ")) return true;
+        return false;
     }
 
     /**
