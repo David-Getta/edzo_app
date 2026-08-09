@@ -308,6 +308,16 @@ public class BodyParseTest {
                 BodyParse.parse("az inbody szerint 22% a testzsírom").fatPct, 0.01);
     }
 
+    /** A másik napló folytatása nem mérés: az esti pulzus nem testsúly. */
+    @Test public void theOtherLogsContinuationIsNotAWeight() {
+        none("nyugalmi pulzus reggel 47, este 62");
+        none("aludtam 7 órát, éjjel 3");
+        // A valódi mérés a másik napló mellett is megmarad.
+        kg("78,4 kg, aludtam 7 órát", 78.4);
+        kg("ma reggel 78,4, aludtam 7 órát", 78.4);
+        kg("aludtam 7 órát, súlyom 80 kg", 80);
+    }
+
     /** A láz nem testsúly – pont egy beteg napon rontaná el a trendet. */
     @Test public void aFeverIsNotAWeight() {
         none("beteg vagyok, 38 fokos lázam van");

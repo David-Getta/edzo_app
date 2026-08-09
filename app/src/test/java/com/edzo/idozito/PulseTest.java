@@ -103,4 +103,20 @@ public class PulseTest {
         assertEquals(50, Pulse.parse("nyugalmi pulzus 50"));
         assertEquals(48, Pulse.parse("ma reggel 48 volt a nyugalmi pulzusom"));
     }
+
+    /**
+     * A napszak beékelődhet a pulzus-szó és a szám közé.
+     *
+     * A „nyugalmi pulzus reggel 47" a legtermészetesebb magyar alak, és eddig
+     * egyáltalán nem létezett: a mérés némán elveszett, a szám pedig a
+     * súlytrendbe csúszott át.
+     */
+    @Test public void theTimeOfDayMayStandBetween() {
+        assertEquals(47, Pulse.parse("nyugalmi pulzus reggel 47"));
+        assertEquals(47, Pulse.parse("nyugalmi pulzus reggel 47, este 62"));
+        assertEquals(52, Pulse.parse("pulzus este 52"));
+        assertEquals(50, Pulse.parse("pulzus volt 50"));
+        // Az edzés-pulzus továbbra sem nyugalmi.
+        assertEquals(-1, Pulse.parse("futás átlagpulzus 165"));
+    }
 }

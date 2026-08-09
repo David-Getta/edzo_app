@@ -25,8 +25,14 @@ public final class Pulse {
      */
     private static final java.util.regex.Pattern[] FORMS = {
             // „pulzus 52", „pulzusom: 48", „nyugalmi pulzus 55 volt"
+            // A NAPSZAK beékelődhet a pulzus-szó és a szám közé: a „nyugalmi
+            // pulzus reggel 47" a legtermészetesebb alak, és eddig egyáltalán
+            // nem létezett – a mérés némán elveszett. Csak a napszak fér be,
+            // más szó nem: attól a szám már máshoz tartozhatna.
             java.util.regex.Pattern.compile(
-                    "(?<![a-z])pulzus\\w*\\s?:?\\s?(\\d{2,3})"),
+                    "(?<![a-z])pulzus\\w*\\s?:?\\s?"
+                            + "(?:(?:ma\\s)?(?:reggel|este|ejjel|hajnalban|delben|"
+                            + "ebredeskor|ebredes utan|most|volt)\\s?)?(\\d{2,3})"),
             // „52-es pulzus", „48 as nyugalmi pulzus"
             java.util.regex.Pattern.compile(
                     "(\\d{2,3})[- ]?[ae]s\\s(?:nyugalmi\\s)?pulzus"),

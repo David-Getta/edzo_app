@@ -158,18 +158,28 @@ public final class BodyParse {
     private static String dropOtherLogs(String s) {
         if (s.indexOf(',') < 0 && s.indexOf(';') < 0) return s;
         StringBuilder keep = new StringBuilder();
+        boolean dropped = false;
         // A vessző magyarul tizedesjel is: a „78,4" NEM két tagmondat.
         for (String part : s.split("[,;](?!\\d)")) {
             boolean other = false;
             for (String w : new String[]{"alud", "alvas", "pulzus", "rhr", "nyugalmi",
                     "ebredtem", "keltem", "fekudtem"})
                 if (part.contains(w)) { other = true; break; }
-            if (other) continue;
+            if (other) { dropped = true; continue; }
             if (keep.length() > 0) keep.append(' ');
             keep.append(part.trim());
         }
         String out = keep.toString().trim();
-        return out.isEmpty() ? s : out;
+        if (out.isEmpty()) return s;
+        // A MÁSIK napló folytatása nem mérés. A „nyugalmi pulzus reggel 47,
+        // este 62" hatvankettője az esti PULZUS – eddig hatvankét kilós
+        // méréssé vált a súlytrendben. Ha a mondatból eldobtunk egy másik
+        // naplóba tartozó tagmondatot, a maradék csak akkor mérés, ha ki is
+        // mondja: mértékegység, mérés-szó vagy tizedesjegy (a mérleg így ír).
+        if (dropped && !out.matches(".*(kg|kilo|kila|cm|centi|szazalek|testzsir|suly|"
+                + "merleg|mertem|megmertem|vagyok|lettem|%|\\d[.,]\\d).*"))
+            return "";
+        return out;
     }
 
     /**
