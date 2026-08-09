@@ -96,6 +96,11 @@ public final class Sentence {
         // Kimondott kalória étel nélkül („vacsora 650 kcal"): ez is étkezés,
         // csak épp nincs benne olyan szó, amit az adatbázis ismerne.
         if (Kcal.stated(q) > 0) return Kind.MEAL;
+        // A fehérje ugyanígy: a „120 g fehérjét vittem be ma" étkezés-mondat,
+        // csak épp egyetlen étel nincs benne, amit az adatbázis ismerne. Eddig
+        // semmi nem lett belőle – pedig a napi fehérje a saját sávjával együtt
+        // ott van a naplóban.
+        if (Kcal.protein(q) > 0) return Kind.MEAL;
         // A mérés a legvégén: a kilogramm a legterheltebb mértékegység az
         // appban, ezért a testsúly csak arra a maradékra jelentkezik, amit
         // senki más nem kért magának.

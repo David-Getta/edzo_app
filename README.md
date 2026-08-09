@@ -121,6 +121,12 @@ darab hatvanperces edzés lett belőle, húsz napra szétosztva. Ha a mondatban
 felismert sorozat is van, és a szám pontosan annak az ismétlésszáma, a szám
 azé. A „2 fekvőtámasz edzés" viszont marad két edzés.
 
+A **tiltó szó** is csak a saját tagmondatát viszi el: a „ma 2100 kcal-t
+ettem, **elégettem 600-at**" mindkét számot kimondja, de az „elégettem" eddig
+az egész mondatot elnémította – a kétezer-száz sehol nem jelent meg. És a
+puszta fehérje is étkezés: a „120 g fehérjét vittem be ma" mondatban egyetlen
+ismert étel sincs, mégis a naplóba való.
+
 Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 km futás,
 **78,5 kg a mérlegen**", az „aludtam 7 órát **és futottam 10 km-t**" és az
 „ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul

@@ -202,4 +202,22 @@ public class KcalTest {
         assertEquals(287, Kcal.stated("szelet 1200 kJ / 287 kcal"));
         assertEquals("Szelet", Kcal.label("szelet 1200 kJ"));
     }
+
+    /**
+     * A tiltó szó csak a saját tagmondatát viszi el.
+     *
+     * A „ma 2100 kcal-t ettem, elégettem 600-at" mindkét számot kimondja, de
+     * az „elégettem" eddig az egész mondatot elnémította: a kétezer-száz sehol
+     * nem jelent meg, és a felhasználó nem is tudta meg, hogy elveszett.
+     */
+    @Test public void theBlockingWordOnlyTakesItsOwnClause() {
+        assertEquals(2100, Kcal.stated("ma 2100 kcal-t ettem, elégettem 600-at"));
+        assertEquals(-1, Kcal.stated("elégettem 800 kcal-t az edzésen"));
+        // Ami eddig is működött, ne változzon: a felsorolás összeadódik, a
+        // cél nem bejegyzés, az óra száma pedig elégetett kalória.
+        assertEquals(1800, Kcal.stated("reggeli 450, ebéd 700, vacsora 650 kcal"));
+        assertEquals(650, Kcal.stated("vacsora 650 kcal"));
+        assertEquals(-1, Kcal.stated("a célom napi 2000 kcal"));
+        assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
+    }
 }

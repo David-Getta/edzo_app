@@ -304,4 +304,18 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.NONE,
                 Sentence.also("edzés: guggolás 5x5 100 kg", all, now));
     }
+
+    /**
+     * A fehérje-mondat is étkezés.
+     *
+     * A „120 g fehérjét vittem be ma" étkezés-mondat, csak épp egyetlen étel
+     * nincs benne, amit az adatbázis ismerne – eddig semmi nem lett belőle.
+     */
+    @Test public void aProteinOnlySentenceIsAMeal() {
+        long now = System.currentTimeMillis();
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(Sentence.Kind.MEAL,
+                Sentence.of("120 g fehérjét vittem be ma", all, now));
+        assertEquals(Sentence.Kind.MEAL, Sentence.of("fehérje 95 g", all, now));
+    }
 }

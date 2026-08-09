@@ -135,11 +135,35 @@ public final class Kcal {
         return out;
     }
 
+    /**
+     * A tiltó szót tartalmazó tagmondatok elhagyva.
+     *
+     * Ha egyetlen tagmondat sincs tiltva, a mondat változatlanul megy tovább –
+     * a felsorolások összeadása („reggeli 450, ebéd 700") így nem sérül.
+     */
+    private static String withoutBlockedClauses(String s, Pattern[] block) {
+        boolean any = false;
+        for (Pattern w : block) if (w.matcher(s).find()) { any = true; break; }
+        if (!any) return s;
+        StringBuilder out = new StringBuilder();
+        for (String cl : s.split("\\s*[,;]\\s*|\\s+es\\s+|\\s+de\\s+")) {
+            boolean bad = false;
+            for (Pattern w : block) if (w.matcher(cl).find()) { bad = true; break; }
+            if (!bad) out.append(out.length() > 0 ? ", " : "").append(cl);
+        }
+        return out.toString();
+    }
+
     private static int amount(String q, Pattern[] block) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
         for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
-        for (Pattern w : block) if (w.matcher(s).find()) return -1;
+        // A tiltó szó csak a SAJÁT tagmondatát viszi el. A „ma 2100 kcal-t
+        // ettem, elégettem 600-at" mindkét számot kimondja, de az „elégettem"
+        // eddig az egész mondatot elnémította: a kétezer-száz sehol nem jelent
+        // meg, és a felhasználó nem is tudta meg, hogy elveszett.
+        s = withoutBlockedClauses(s, block);
+        if (s.isEmpty()) return -1;
         double sum = 0;
         Matcher m = NUM.matcher(s);
         while (m.find()) {
