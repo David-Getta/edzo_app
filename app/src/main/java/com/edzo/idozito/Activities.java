@@ -1893,6 +1893,10 @@ public final class Activities {
                 "nyomjunk", "tekerjunk", "usszunk", "gyakoroljunk", "vagjunk bele",
                 "gyurunk egyet", "gyurjunk", "sportoljunk", "mozogjunk",
                 "guggoljunk", "toljunk egyet", "huzzunk egyet", "setaljunk",
+                // A FELTÉTELES MÚLT sosem megtörtént: a „ha lett volna időm,
+                // futottam volna" negyvenöt perces bejegyzés lett – abból a
+                // mondatból, ami épp azt mondja ki, hogy nem futott.
+                "volna",
                 "kene", "kell csinalnom", "kell mennem", "meg kell", "ha lesz",
                 "ha lesz ido", "ha birom", "ha sikerul",
                 // A kimondott AKARAT a legtisztább szándék-alak, és eddig
@@ -2109,6 +2113,9 @@ public final class Activities {
                 "sem ",
                 "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
+                // Az edzés LEFÚJÁSA is elmaradás: „a futást lefújtam az eső
+                // miatt" eddig negyvenöt perces futás lett.
+                "lefujtam", "lefujtuk", "lemondtuk", "torolve lett",
                 // A pihenőnap nem edzés. Megnevezett napok mellett ez különösen
                 // fontos: a „szombaton túráztam 4 órát, vasárnap pihentem" két
                 // NAPOT nevez meg, és eddig mindkettőre bekerült a négyórás

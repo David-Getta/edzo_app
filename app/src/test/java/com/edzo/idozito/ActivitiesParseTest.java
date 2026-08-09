@@ -2264,4 +2264,22 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("azt tervezem, hogy elmegyek edzeni").isEmpty());
         assertTrue(Activities.parse("a tervem holnap futni").isEmpty());
     }
+
+    /**
+     * A feltételes múlt és a lefújt edzés.
+     *
+     * A „ha lett volna időm, futottam volna" negyvenöt perces bejegyzés lett
+     * – abból a mondatból, ami épp azt mondja ki, hogy nem futott. A
+     * „futást lefújtam az eső miatt" ugyanígy.
+     */
+    @Test public void theConditionalPastAndTheCalledOffSession() {
+        assertTrue(Activities.parse("ha lett volna időm, futottam volna").isEmpty());
+        assertTrue(Activities.parse("a futást lefújtam az eső miatt").isEmpty());
+        assertTrue(Activities.parse("jó volna futni egyet").isEmpty());
+        // A CSERE viszont megtörtént mozgás.
+        assertEquals(20.0, Activities.parse("futás helyett bicikliztem 20 km-t")
+                .plans.get(0).km, 0.01);
+        assertEquals(45, Activities.parse("elmaradt a foci, helyette kondi 45 perc")
+                .plans.get(0).minutes);
+    }
 }
