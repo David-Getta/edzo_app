@@ -2533,4 +2533,21 @@ public class ActivitiesParseTest {
         assertEquals(25, Activities.parse("futás 5 km 24:59 tempó 5:00")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * A szakaszok közti séta nem külön túra.
+     *
+     * A „sprint edzés: 10x100 m, köztük séta vissza" sétája a szakaszok közti
+     * visszasétálás – eddig KILENCVEN PERC gyaloglás került a naplóba egy
+     * néhány perces sprint-edzés mellé. A KÖZTÜK szó pont ezt mondja ki.
+     */
+    @Test public void theWalkBetweenTheRepsIsNotAHike() {
+        List<Activities.Plan> p = Activities.parse("sprint edzés: 10x100 m, "
+                + "köztük séta vissza").plans;
+        assertEquals(1, p.size());
+        assertEquals("futas", p.get(0).kind.id);
+        // A kimondott hosszal megadott séta viszont marad.
+        assertEquals(2, Activities.parse("sprint edzés: 10x100 m, köztük "
+                + "20 perc séta").plans.size());
+    }
 }

@@ -1635,6 +1635,20 @@ public final class Activities {
                 if (p.km > 0 || p.minutes != p.kind.defaultMin) kept.add(p);
             if (!kept.isEmpty() || out.size() > 1) out = kept;
         }
+        // Ugyanez TÁVBAN kiírt szakaszoknál: a „sprint edzés: 10x100 m,
+        // köztük séta vissza" sétája a szakaszok közti visszasétálás, nem
+        // másfél órás túra – eddig kilencven perc gyaloglás került a naplóba
+        // egy néhány perces sprint-edzés mellé. A KÖZTÜK szó pont ezt mondja
+        // ki; a kimondott idővel vagy távval megadott mozgás itt is marad.
+        if (rawText.matches(".*\\d\\s?x\\s?\\d.*")
+                && (rawText.contains("koztuk") || rawText.contains("kozte")
+                    || rawText.contains("kozott"))) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out)
+                if (p.km > 0 || p.steps > 0 || p.minutes != p.kind.defaultMin)
+                    kept.add(p);
+            if (!kept.isEmpty()) out = kept;
+        }
         // Az ISMÉTLÉSSZÁM nem alkalomszám. Az „5 kör: 500 m evezés, 15
         // kettlebell swing" tizenötöse a lendítések száma – a kettlebell
         // viszont kondi-szótő is, így tizenöt darab hatvanperces edzés lett
