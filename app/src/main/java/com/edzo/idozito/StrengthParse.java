@@ -83,12 +83,17 @@ public final class StrengthParse {
             // bolgár kitörés pedig egy lábra. Egy vödörbe téve a
             // progresszió-javaslat a nehezebbik súlyát kínálná a könnyebbik
             // gyakorlathoz, a rekord meg sosem dőlne meg a könnyebbikkel.
-            {"Román felhúzás", "roman felhuzas", "roman holtemel", "roman huzas", "rdl"},
+            {"Román felhúzás", "roman felhuzas", "roman holtemel", "roman holt emel",
+                    "roman huzas", "rdl"},
             {"Bolgár kitörés", "bolgar kitores", "bolgar guggolas", "bolgar split",
                     "bolgar szplit"},
             {"Ferde fekvenyomás", "ferde fekvenyom", "ferde pad", "ferde nyomas",
                     "incline"},
-            {"Felhúzás", "felhuzas", "holtemel", "deadlift"},
+            // A „holt emelés" külön írva is ugyanaz a gyakorlat – és sokan
+            // így írják. Nélküle a „holt emelés 1x5 140 kg" mondatból SEMMI
+            // nem lett: se sorozat, se edzés.
+            {"Felhúzás", "felhuzas", "holtemel", "holt emel",
+                    "deadlift", "dead lift"},
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk", "chin up", "chinup",
                     "allhuzodzkodas", "all fole huzas"},
             {"Vállból nyomás", "vallbol nyom", "vallnyom", "vallbol", "ohp", "mellrol nyom",

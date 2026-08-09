@@ -1121,4 +1121,22 @@ public class StrengthParseTest {
         assertEquals(3, it.get(0).sets.size());
         assertEquals(60, it.get(0).sets.get(0).weight, 0.01);
     }
+
+    /**
+     * A „holt emelés" külön írva is ugyanaz a gyakorlat.
+     *
+     * Sokan így írják, és eddig SEMMI nem lett a mondatból: se sorozat, se
+     * edzés – a „holt emelés 1x5 140 kg" üres választ kapott.
+     */
+    @Test public void theDeadliftIsRecognisedSpelledApart() {
+        assertEquals("Felhúzás", StrengthParse.parse("holt emelés 1x5 140 kg")
+                .get(0).name);
+        assertEquals("Felhúzás", StrengthParse.parse("dead lift 5x5 120 kg")
+                .get(0).name);
+        assertEquals("Román felhúzás",
+                StrengthParse.parse("román holt emelés 3x10 80 kg").get(0).name);
+        // Az egybeírt alak változatlanul működik.
+        assertEquals("Felhúzás", StrengthParse.parse("holtemelés 3x5 150 kg")
+                .get(0).name);
+    }
 }
