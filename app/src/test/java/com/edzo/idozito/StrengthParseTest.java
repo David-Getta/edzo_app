@@ -232,6 +232,21 @@ public class StrengthParseTest {
         }
     }
 
+    @Test public void aThreeDigitNumberOnABarbellMoveIsKilograms() {
+        // A „leguggoltam 140-et" száznegyven KILÓ – száznegyven guggolás nem
+        // létezik egy rúddal. Eddig ismétlésnek olvastuk, és a rekord, az 1RM
+        // és a progresszió-javaslat is ebből számolt.
+        assertEquals("Guggolás 1×1@140", sum("leguggoltam 140-et először életemben"));
+        assertEquals("Fekvenyomás 1×1@120", sum("fekvenyomás 120"));
+        assertEquals("Felhúzás 1×1@180", sum("felhúzás 180-at húztam"));
+        assertEquals("Fekvenyomás 1×1@100", sum("nyomtam 100-at fekve"));
+        // De ha a szám a gyakorlat nevét jelzi, az darabszám – magyarul csak
+        // így mondjuk –, és a saját testsúlyos mozdulatokat sem érinti.
+        assertEquals("Guggolás 1×100@0", sum("csináltam 100 guggolást"));
+        assertEquals("Fekvőtámasz 1×100@0", sum("100 fekvőtámasz"));
+        assertEquals("Guggolás 1×20@0", sum("guggolás 20"));
+    }
+
     @Test public void anInjuryReportIsNotAWorkoutLog() {
         // A „vádlimba” szóban ott a „vádli” szótő, ismétlésszám viszont nincs:
         // a sérülés bejelentéséből eddig „Vádliemelés · 1 · saját testsúly”

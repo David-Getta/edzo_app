@@ -774,6 +774,20 @@ public final class StrengthParse {
                 if (isWeightSuffixed(s, e)) continue;
                 if (isAtWeight(s, bare.start())) continue;
                 int r = Integer.parseInt(bare.group(1));
+                // A rúddal terhelt gyakorlatnál a magában álló háromjegyű szám
+                // kiló, nem ismétlés: a „leguggoltam 140-et" száznegyven kilós
+                // guggolás, nem száznegyven guggolás, és a „nyomtam 100-at
+                // fekve" sem száz fekvenyomás. Kivétel, ha a szám közvetlenül
+                // a gyakorlat nevét jelzi („csináltam 100 guggolást") – az
+                // tényleg darabszám, és magyarul csak így mondjuk.
+                if (r >= 100 && r <= 500 && weight == 0 && isLoaded(name)) {
+                    int at = moveAt(s, name);
+                    boolean modifiesName = at >= e && at - e <= 2;
+                    if (!modifiesName) {
+                        sets.add(new Set(1, r));
+                        break;
+                    }
+                }
                 if (r >= 1 && r <= maxRep) { sets.add(new Set(r, weight)); break; }
             }
         }
@@ -878,6 +892,32 @@ public final class StrengthParse {
                     bestLen = row[i].length();
                 }
         return best;
+    }
+
+    /** A gyakorlatnév szótövének első helye a tagmondatban, vagy -1. */
+    private static int moveAt(String s, String name) {
+        int at = -1;
+        for (String[] row : MOVES) {
+            if (!row[0].equals(name)) continue;
+            for (int i = 1; i < row.length; i++) {
+                int p = s.indexOf(row[i]);
+                if (p >= 0 && (at < 0 || p < at)) at = p;
+            }
+        }
+        return at;
+    }
+
+    /**
+     * Rúddal terhelt gyakorlat: itt a háromjegyű szám kiló, nem ismétlés.
+     *
+     * Szűk a lista: csak azok a mozdulatok, ahol a százas nagyságrend a
+     * súlyban hétköznapi, az ismétlésben viszont képtelenség.
+     */
+    private static boolean isLoaded(String name) {
+        for (String n : new String[]{"Guggolás", "Fekvenyomás", "Felhúzás",
+                "Vállból nyomás", "Lábtolás", "Román felhúzás", "Ferde fekvenyomás"})
+            if (n.equals(name)) return true;
+        return false;
     }
 
     /** Súly kilóban: „60 kg”, „60kg”, „60 kilóval”, „60-nal”. 0 = nincs. */
