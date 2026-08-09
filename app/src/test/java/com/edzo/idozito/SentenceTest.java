@@ -341,4 +341,25 @@ public class SentenceTest {
         assertTrue(Sentence.extras("30 perc futás", all, now).isEmpty());
         assertTrue(Sentence.extras(null, all, now).isEmpty());
     }
+
+    /**
+     * A panasz mellett ott lehet a megtörtént edzés is.
+     *
+     * A „fájt a térdem, ezért csak bicikliztem 40 percet" negyven perce
+     * nyomtalanul eltűnt: a rehab-lap nem naplóz. Csak a KIMONDOTT mennyiség
+     * számít – a mozgásforma szokásos hossza egy panasz-mondatban találgatás
+     * lenne.
+     */
+    @Test public void aComplaintCanCarryARealWorkout() {
+        long now = System.currentTimeMillis();
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        String q = "fájt a térdem, ezért csak bicikliztem 40 percet";
+        assertEquals(Sentence.Kind.REHAB, Sentence.of(q, all, now));
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.also(q, all, now));
+        assertEquals(Sentence.Kind.WORKOUT,
+                Sentence.also("húzódott a combom, de végigcsináltam a 8 km-t", all, now));
+        // Kimondott mennyiség nélkül nincs mit felajánlani.
+        assertEquals(Sentence.Kind.NONE, Sentence.also("fáj a térdem futás után", all, now));
+        assertEquals(Sentence.Kind.NONE, Sentence.also("merev a nyakam", all, now));
+    }
 }

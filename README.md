@@ -193,6 +193,11 @@ Az edzés és az étkezés mellé a reggeli **mérés** is odaférhet: a „10 k
 „ettem egy pizzát **és aludtam 9 órát**" második fele eddig nyomtalanul
 eltűnt.
 
+A **panasz mellett** is ott lehet a megtörtént edzés: a „fájt a térdem, ezért
+csak **bicikliztem 40 percet**" negyven perce eltűnt, mert a rehab-lap nem
+naplóz. Csak a kimondott mennyiség számít – a mozgásforma szokásos hossza egy
+panasz-mondatban találgatás lenne.
+
 A hosszú mondat **minden** naplója előkerül: a „ma reggel 6-kor keltem,
 **79,2 kg** volt a mérleg, futottam 8 km-t, utána **zabkása**" négy adatot
 mond ki, és az edzés mentése mellett mindegyik célképernyő felajánlja magát

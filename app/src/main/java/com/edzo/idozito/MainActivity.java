@@ -3799,12 +3799,24 @@ public class MainActivity extends Activity {
                 return;
             }
             if (k == Sentence.Kind.INTERVAL) { intervalSentenceSheet(text); return; }
-            new Sheet(this, "Megosztott szöveg 🧭",
+            Sheet sh = new Sheet(this, "Megosztott szöveg 🧭",
                     "Ezt a(z) " + Sentence.where(k) + " érti meg – átviszem oda a "
                             + "szöveggel együtt.\n\n„" + shortened(text) + "”")
-                    .addPrimary(Sentence.where(k), () -> Ux.openFor(this, k, text))
-                    .addCancel()
-                    .show();
+                    .addPrimary(Sentence.where(k), () -> Ux.openFor(this, k, text));
+            // A mondat MÁSIK fele is elférhet: a „fájt a térdem, ezért csak
+            // bicikliztem 40 percet" negyven perce eddig nyomtalanul eltűnt,
+            // mert a rehab-lap nem naplóz. A célképernyő szerint vonjuk össze
+            // őket, hogy ne legyen öt gomb.
+            java.util.List<String> seen = new java.util.ArrayList<>();
+            seen.add(Sentence.where(k));
+            for (final Sentence.Kind other
+                    : Sentence.extras(text, Foods.all(this), System.currentTimeMillis())) {
+                String dest = Sentence.where(other);
+                if (seen.contains(dest)) continue;
+                seen.add(dest);
+                sh.addNeutral("Ez is: " + dest, () -> Ux.openFor(this, other, text));
+            }
+            sh.addCancel().show();
         }, 350);
     }
 

@@ -190,6 +190,12 @@ public final class Sentence {
                 break;
             // A panasz mellett is ott lehet a napi mérés.
             case REHAB:
+                // A panasz mellett ott lehet a megtörtént edzés is: a „fájt a
+                // térdem, ezért csak bicikliztem 40 percet" negyven perce
+                // eddig nyomtalanul eltűnt – a rehab-lap nem naplóz. Csak a
+                // KIMONDOTT mennyiség számít: a mozgásforma szokásos hossza
+                // ilyenkor találgatás lenne egy panasz-mondatban.
+                if (hasRealAmount(q, now)) out.add(Kind.WORKOUT);
                 if (!BodyParse.parse(q).isEmpty()) out.add(Kind.BODY);
                 if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
                 if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
@@ -212,6 +218,21 @@ public final class Sentence {
         if (a == null) return false;
         for (Activities.Plan p : a.plans)
             if (p.km > 0 || p.steps > 0) return true;
+        return false;
+    }
+
+    /**
+     * Van-e a mondatban KIMONDOTT mennyiségű mozgás?
+     *
+     * A táv, a lépésszám és a kimondott időtartam számít – a mozgásforma
+     * szokásos hossza nem: abból egy panasz-mondat mellé negyvenöt perces
+     * bejegyzés lenne, ami meg sem történt.
+     */
+    private static boolean hasRealAmount(String q, long now) {
+        Activities.Parsed a = Activities.parse(q, now);
+        if (a == null) return false;
+        for (Activities.Plan p : a.plans)
+            if (p.km > 0 || p.steps > 0 || p.minutes != p.kind.defaultMin) return true;
         return false;
     }
 
