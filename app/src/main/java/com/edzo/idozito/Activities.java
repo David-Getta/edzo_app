@@ -1862,6 +1862,14 @@ public final class Activities {
             for (String w : new String[]{"futok", "edzek", "megyek", "csinalom",
                     "tekerek", "jogazok", "sulyzozok", "gyakorlok"})
                 if (s.matches(".*(?<![a-z])" + w + "(?![a-z]).*")) return true;
+        // A HETI BEOSZTÁS is a rend leírása: a „push pull legs, heti 6 edzés"
+        // hatosa a rendszer neve mellett álló ütem, nem hat megtörtént edzés –
+        // eddig hat negyvenöt perces bejegyzés lett belőle, egy hétre
+        // elosztva. Múlt idejű ige megvédi a valódi beszámolót: a „heti 3
+        // edzés volt a héten" bejegyzés marad.
+        if (s.matches(".*heti \\d{1,2} edzes.*")
+                && !s.matches(".*(?<![a-z])(volt|voltak|megvolt|sikerult"
+                        + "|\\w{3,}(?:tam|tem|tunk))(?![a-z]).*")) return true;
         return false;
     }
 

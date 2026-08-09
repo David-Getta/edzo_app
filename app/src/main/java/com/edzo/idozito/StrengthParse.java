@@ -270,6 +270,17 @@ public final class StrengthParse {
         return b.toString();
     }
 
+    /** Heti beosztás: két vagy több napnév, sorozat- és súlyadat nélkül. */
+    private static boolean looksLikeSplit(String s) {
+        int days = 0;
+        for (String d : new String[]{"hetfo", "kedd", "szerda", "csutortok",
+                "pentek", "szombat", "vasarnap"})
+            if (s.contains(d)) days++;
+        if (days < 2) return false;
+        return !s.matches(".*\\d\\s?[x\u00d7]\\s?\\d.*") && !s.contains("kg")
+                && !s.contains("ismetles") && !s.contains("sorozat");
+    }
+
     /**
      * A mondat feldolgozása. Tagmondatonként (vessző, pontosvessző, „és”,
      * „majd”, „utána”) egy-egy gyakorlat; ami tagmondatban nincs felismert
@@ -284,6 +295,13 @@ public final class StrengthParse {
         // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
         if (Activities.looksLikeFuture(text)) return out;
+        // A HETI BEOSZTÁS sem napló: a „hétfő mell és tricepsz, kedd hát és
+        // bicepsz" azt írja le, mikor mit edz az ember – sorozatszám nincs
+        // benne sehol. Eddig egyetlen tricepsz-gyakorlat lett belőle hat
+        // ismétléssel (a „hát" számnévként hattá vált), és bekerült a
+        // rekordok közé. Kimondott sorozat vagy súly viszont megvédi a
+        // valódi többnapos naplót: „hétfőn guggolás 3x5, szerdán 4x8 60 kg".
+        if (looksLikeSplit(Foods.norm(text))) return out;
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(
                         stripPercent(stripListMarkers(Foods.norm(text))))))))));

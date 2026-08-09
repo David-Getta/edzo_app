@@ -85,6 +85,11 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
 - a **szokás kezdete** nem egy edzés: a „három hónapja kezdtem el edzeni"
   arról szól, mióta sportol az ember – de a „két hete kezdtem el futni,
   **azóta 40 km-t futottam**" negyven kilométere valódi
+- a **heti beosztás** terv: a „hétfő mell és tricepsz, kedd hát és bicepsz"
+  azt írja le, mikor mit edz az ember – eddig egy tricepsz-gyakorlat lett
+  belőle hat ismétléssel (a „hát" számnévként hattá vált). A „push pull legs,
+  heti 6 edzés" hat bejegyzést csinált. Kimondott sorozat, súly vagy múlt idő
+  megvédi a valódi naplót: „hétfőn guggolás 3x5, szerdán 4x8 60 kg"
 - a **kihagyás beszámolója** sem étkezés: a „3 hetet bírtam ki cukor nélkül"
   büszkeség, nem adag – eddig háromszázharminc gramm cukormentes étel lett
   belőle

@@ -1923,4 +1923,25 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("gyúrunk egyet").isEmpty());
         assertTrue(Activities.parse("sportoljunk egy kicsit").isEmpty());
     }
+
+    /**
+     * A heti beosztás terv, nem napló.
+     *
+     * A „hétfő mell és tricepsz, kedd hát és bicepsz" azt írja le, mikor mit
+     * edz az ember – egyetlen sorozatszám sincs benne. Eddig egy tricepsz-
+     * gyakorlat lett belőle hat ismétléssel (a „hát" számnévként hattá vált),
+     * és bekerült a rekordok közé. A „push pull legs, heti 6 edzés" pedig hat
+     * negyvenöt perces bejegyzést csinált, egy hétre elosztva.
+     */
+    @Test public void aWeeklySplitIsAPlanNotALog() {
+        assertTrue(StrengthParse.parse("hétfő mell és tricepsz, kedd hát és bicepsz")
+                .isEmpty());
+        assertTrue(Activities.parse("push pull legs, heti 6 edzés").isEmpty());
+        // Kimondott sorozat vagy súly megvédi a valódi többnapos naplót.
+        assertEquals(2, StrengthParse.parse(
+                "hétfőn guggolás 3x5, szerdán fekvenyomás 4x8 60 kg").size());
+        assertEquals(2, Activities.parse("hétfőn és szerdán futottam").total());
+        // A múlt idő megvédi a beszámolót is.
+        assertFalse(Activities.parse("heti 3 edzés volt a héten").isEmpty());
+    }
 }
