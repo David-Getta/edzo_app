@@ -64,6 +64,7 @@ public final class Examples {
             "lábnap volt, 1 óra",
             "padel 90 perc",
             "hétfőn és szerdán kondi",
+            "hétfőtől péntekig futottam",
             "kedden úszás, csütörtökön futás",
             "3x10 fekvenyomás 60 kg",
             "futottam háromszor a héten",

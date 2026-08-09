@@ -732,6 +732,10 @@ public final class Activities {
             // kondi" és a „futás a hetes buszmegállóig" egyaránt EGY napról
             // szól, eddig viszont mindkettő egyhetes időszakra terült szét.
             "hetes", "hetesben", "hetessel", "hetedik", "hetediken", "hetedike",
+            // A hétfő RAGOS alakjai is napnevek, nem hetek: a „hétfőtől
+            // péntekig futottam" egyhetes IDŐSZAKKÁ vált, egyetlen futással –
+            // pedig öt napot nevez meg.
+            "hetfotol", "hetfoig", "hetfore", "hetfoje", "hetfotol pentekig",
     };
 
     /**
@@ -836,6 +840,18 @@ public final class Activities {
                     if (wds.size() >= 2) {
                         for (int[] w : wds) blank(q, w[0], w[1]);
                         wdBacks = wds;
+                        // „Hétfőtől péntekig futottam": a kettő között MINDEN
+                        // nap benne van, nem csak a két megnevezett. Eddig két
+                        // futás lett belőle öt helyett.
+                        if (wds.size() == 2 && rawText.matches(".*\\b\\w+tol\\b.*\\b\\w+ig\\b.*")) {
+                            int b1 = wds.get(0)[2], b2 = wds.get(1)[2];
+                            int lo = Math.min(b1, b2), hi = Math.max(b1, b2);
+                            if (hi - lo >= 1 && hi - lo <= 6) {
+                                java.util.List<int[]> all = new java.util.ArrayList<>();
+                                for (int b = hi; b >= lo; b--) all.add(new int[]{0, 0, b});
+                                wdBacks = all;
+                            }
+                        }
                     } else {
                         // Konkrét nap megnevezve: „tegnap", „tegnapelőtt", „ma".
                         int[] one = findSingleDay(q, now);

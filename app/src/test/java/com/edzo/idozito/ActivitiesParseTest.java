@@ -1500,4 +1500,30 @@ public class ActivitiesParseTest {
         assertEquals(240, Activities.parse("hegyi túra 4 óra").plans.get(0).minutes);
         assertEquals("tura", Activities.parse("hegyet másztunk 5 órát").plans.get(0).kind.id);
     }
+
+    /**
+     * „Hétfőtől péntekig futottam": a kettő között minden nap benne van.
+     *
+     * Eddig kétféleképp is rosszul járt: a „hétfőtől" a HÉT szótövét adta, így
+     * a mondat egyhetes időszakká vált EGYETLEN futással; a napneveket
+     * felismerve pedig csak a két megnevezett napra került be egy-egy edzés.
+     * Öt napból kettő.
+     */
+    @Test public void aWeekdayRangeCoversEveryDayBetween() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.set(2026, java.util.Calendar.AUGUST, 8, 12, 0, 0);   // szombat
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        long sat = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse("hétfőtől péntekig futottam", sat);
+        assertEquals(1, p.plans.size());
+        assertEquals(5, p.plans.get(0).count);
+        assertEquals(5, p.exactDays.length);
+        assertEquals(3, Activities.parse("keddtől csütörtökig kondi", sat)
+                .plans.get(0).count);
+        // A felsorolás változatlan: két megnevezett nap két edzés.
+        assertEquals(2, Activities.parse("hétfőn és szerdán kondi", sat)
+                .plans.get(0).count);
+        // A „hetes bérlet" pedig továbbra sem időszak.
+        assertEquals(1, Activities.parse("hetes bérlettel kondi", sat).days);
+    }
 }
