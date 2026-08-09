@@ -435,4 +435,18 @@ public class BodyParseTest {
         assertEquals(84, BodyParse.parse("derék 84 cm, csípő 95 cm").cm[0], 0.01);
         assertEquals(78, BodyParse.parse("78 kg 18% zsír").kg, 0.01);
     }
+
+    /**
+     * Az életkor nem testsúly.
+     *
+     * A „férfi vagyok, 34 éves, 182 cm" bemutatkozó mondat harmincnégyese az
+     * évek száma – eddig harmincnégy kilós mérésként került a súlytrendbe.
+     */
+    @Test public void ageIsNotAWeight() {
+        assertEquals(0, BodyParse.parse("férfi vagyok, 34 éves, 182 cm").kg, 0.01);
+        assertEquals(0, BodyParse.parse("42 éves lettem ma").kg, 0.01);
+        // A mellette álló valódi mérés viszont marad.
+        assertEquals(78, BodyParse.parse("34 éves vagyok és 78 kg").kg, 0.01);
+        assertEquals(78, BodyParse.parse("78 kg vagyok").kg, 0.01);
+    }
 }

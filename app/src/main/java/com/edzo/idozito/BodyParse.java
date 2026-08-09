@@ -288,6 +288,11 @@ public final class BodyParse {
             // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
             // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
             if (rest.startsWith("fok")) continue;
+            // Az ÉLETKOR sem testsúly: a „férfi vagyok, 34 éves, 182 cm"
+            // harmincnégyese az évek száma – eddig harmincnégy kilós mérésként
+            // került a súlytrendbe, egy bemutatkozó mondatból.
+            if (rest.startsWith("eves") || rest.startsWith("ev ")
+                    || rest.equals("ev") || rest.startsWith("evesen")) continue;
             // Az IDŐ és a TÁV sem kiló. Az „este 45 perc jóga, aztán 78,9 kg
             // a mérlegen" negyvenöt PERCE lett a testsúly – a valódi mérés
             // pedig, ami ott állt a mondat másik felében, elveszett.
