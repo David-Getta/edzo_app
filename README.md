@@ -485,6 +485,16 @@ amit az ember írt (a KÉPERNYŐben az eper, a TARTALMAzban az alma, a „150
 graMMAl"-ban a harcművészet). Korpuszt csinál a forrás magyar kommentjeiből,
 és az összes felismerőn átfuttatja; a találatokat végig kell nézni, mert a
 java részük jogos.
+A söprés mind a nyolc felismerőt nézi: étel, mozgás, sorozat, időzítő,
+mérés, alvás, pulzus és a rehab panasz/cél-mondatai.
+
+**Véletlen mondatok.** A tesztek azt őrzik, amire gondoltunk; a maradékra a
+fuzz való. Egymillió véletlenül összerakott mondat fut végig az összes
+felismerőn, és minden eredményre ugyanaz a kérdés: életszerű-e? (Legfeljebb
+ötven kör, négy óránál rövidebb edzés, húsz kiló alatti adag, harminc és
+kétszázötven kiló közti testsúly, két és tizenhat óra közti alvás.) Ami
+ezekből kilóg, az mind valódi hiba volt – így került elő a „8x 60 km"
+négyszáznyolcvan kilométeres futása és a „8x 60 perc" nyolcórás időzítője.
 
 Tiszta natív Android app (Java, `Activity` + programozott felület), külső
 függőségek nélkül (a JUnit csak teszthez). `minSdk 24`, `targetSdk 33`.
