@@ -65,6 +65,17 @@ Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" val
 bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
 étellel végigpróbálva egyikből sem lesz napló-sor.
 
+### 🧩 Ami a mondat MÁSIK felében van
+Az ellenkező hiba ugyanolyan csendes: a mondat egyik fele bekerül, a másik
+nyomtalanul eltűnik. A „futottam 30 percet **és ettem egy banánt**" banánja
+eddig sehol nem jelent meg – az app most megkérdezi, viszi-e az Étrendbe,
+és fordítva is: a mentett étkezés után felajánlja az edzést. A Profil
+mondat-mezője pedig egyszerre menti a súlyt, az alvást és a pulzust.
+
+Szándékosan szűk a lista: csak azok a párok, amelyek nem eshetnek egymás
+rovására. Huszonkét valódi edzés-mondaton az étel-felismerő egyetlen ételt
+sem talált, tehát ha talál, az tényleg ott van.
+
 ### 📝 Kézi edzés-felvétel
 - **Olyan edzés is naplózható, amit nem a telefon mért**: kézilabda, úszás,
   kondi, foci, tenisz, jóga, kenu, búvárkodás, salsa, barlangászat… –
