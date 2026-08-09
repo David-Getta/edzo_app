@@ -319,4 +319,21 @@ public class BodyParseTest {
         none("vettem 2 kg almát");
         none("80 kg-os súllyal nyomtam");
     }
+
+    /**
+     * A kimondott tizedes és a mérés igéje.
+     *
+     * Diktálva senki nem mond vesszőt: „hetvennyolc egész négy". És aki
+     * megmérte magát, azt le is írja – a „megmértem magam" ugyanolyan
+     * kimondás, mint a „mérleg".
+     */
+    @Test public void aSpokenDecimalIsAMeasurement() {
+        kg("reggel megmértem magam hetvennyolc egész négy kiló voltam", 78.4);
+        kg("hetvennyolc egész négy", 78.4);
+        kg("megmértem magam: 79,2", 79.2);
+        // A felsorolás nem tizedestört: a tört csak EGY jegyű lehet.
+        none("3 egész 12 darab");
+        // Az alvás is érti a kimondott törtet.
+        assertEquals(7.5, Sleep.parse("hét egész öt órát aludtam"), 0.01);
+    }
 }

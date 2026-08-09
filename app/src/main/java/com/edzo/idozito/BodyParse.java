@@ -91,7 +91,9 @@ public final class BodyParse {
             // Az igekötős alakok külön: a szóhatáros keresés miatt a
             // „lefogytam" nem ugyanaz, mint a „fogytam". Huszonhat valós
             // mérés-mondattal próbálva ezek maradtak ki.
-            "lefogytam", "felmentem", "lementem", "felszedtem"
+            "lefogytam", "felmentem", "lementem", "felszedtem",
+            // A mérés IGÉJE is kimondás: „reggel megmértem magam, 78,4".
+            "megmertem", "mertem", "megmerve", "merem"
     };
 
     /**

@@ -88,6 +88,11 @@ public final class Hu {
                 }
             }
         }
+        // A kimondott tizedes: „hetvennyolc egész négy" a mérlegről leolvasott
+        // 78,4. A szótár után jön, mert addigra mindkét oldal számjegy –
+        // csak az EGY jegyű tört számít, hogy egy felsorolás („3 egész 12
+        // darab") ne váljon tizedestörtté.
+        out = out.replaceAll("(?<![\\d.,])(\\d{1,3})\\s?egesz\\s?(\\d)(?![\\d.,])", "$1,$2");
         return out;
     }
 
