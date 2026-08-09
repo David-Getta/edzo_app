@@ -128,6 +128,12 @@ ismétlés veszett el). Most van harmadik gomb: mindkettő. Az edzés-előzmény
 csak a kimondott táv és lépésszám megy át, mert a fekvőtámaszból becsült
 „kondi" perc kétszer számítana.
 
+A **gazdátlan táv** akkor sem veszhet el, ha van mellette edzés: a „ma reggel
+**5 km**, délután 40 perc kondi" öt kilométere eltűnt, mert a kondi elfoglalta
+a listát, és távot tárolni nem tud. A kimondott alvás pedig erősebb két
+időpontnál: ugyanennek a mondatnak az „este 8 óra alvás" része eddig három
+órát jelentett, mert a „reggel 5" és az „este 8" időpont-párnak látszott.
+
 A **többnapos pótlás** minden távja megmarad: a „tegnapelőtt 5 km, tegnap
 8 km, ma 3 km" mondatban egy mozgásforma egyszer szerepelhetett, tehát a
 nyolc és a három kilométer gazdátlanul maradt – és némán el is veszett. A

@@ -2044,4 +2044,25 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
         assertEquals(1, Activities.parse("elkezdtem futni").plans.size());
     }
+
+    /**
+     * A gazdátlan táv akkor sem veszhet el, ha van mellette edzés.
+     *
+     * A „nyomtam egy 5 km-t" magában már futásnak számított. A „ma reggel
+     * 5 km, délután 40 perc kondi" öt kilométere viszont eltűnt: a kondi
+     * elfoglalta a listát, és távot tárolni nem tud.
+     */
+    @Test public void anOrphanDistanceSurvivesNextToAWorkout() {
+        Activities.Parsed p = Activities.parse(
+                "ma reggel 5 km, délután 40 perc kondi, este 8 óra alvás");
+        assertEquals(2, p.plans.size());
+        assertEquals(40, p.plans.get(0).minutes);
+        assertEquals("futas", p.plans.get(1).kind.id);
+        assertEquals(5.0, p.plans.get(1).km, 0.001);
+        // A kondi negyven perce a kondié marad – a futás hossza tempóból jön.
+        assertEquals(30, p.plans.get(1).minutes);
+        // Ahol a mozgásnak SAJÁT távja van, ott nincs mit pótolni.
+        assertEquals(2, Activities.parse("10 km futás és 30 perc kondi").plans.size());
+        assertEquals(1, Activities.parse("60 perc kondi").plans.size());
+    }
 }

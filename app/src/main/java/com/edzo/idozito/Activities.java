@@ -1345,6 +1345,7 @@ public final class Activities {
                 if (!tail.contains("km")) continue;
                 int said2 = minutesFor(mins, (int) t[0], (int) t[2],
                         -1, Integer.MAX_VALUE, 0);
+                for (Plan p : out) if (p.minutes == said2) said2 = 0;
                 int est2 = Math.max(1, (int) Math.round(km2 * pace(beforeBlank, p0.kind)));
                 out.add(new Plan(p0.kind, 1, Math.min(24 * 60, said2 > 0 ? said2 : est2), km2));
             }
@@ -1352,6 +1353,35 @@ public final class Activities {
             // 3 km" három napról szól, nem háromszor tegnapelőttről. Csak
             // múltba nyúló mondatnál, mert a mai két futás ma volt.
             if (offset > 0 && out.size() > days) days = out.size();
+        }
+
+        // Gazdátlan táv mozgásforma nélkül: „ma reggel 5 km, délután 40 perc
+        // kondi". Az öt kilométer mellett nincs sportszó, a kondi pedig nem
+        // tud távot tárolni – eddig nyomtalanul eltűnt. Magában a „nyomtam
+        // egy 5 km-t" már futásnak számított; itt csak az volt a különbség,
+        // hogy a mondat MÁSIK felében volt egy edzés is.
+        if (!partOfIt && !kms.isEmpty() && !out.isEmpty()) {
+            boolean anyKm = false;
+            for (Plan p : out) if (p.km > 0) anyKm = true;
+            if (!anyKm) {
+                Kind run = byId("futas");
+                for (double[] t : kms) {
+                    double km2 = t[1];
+                    if (km2 <= 0) continue;
+                    String tail = beforeBlank.substring(
+                            Math.min(beforeBlank.length(), (int) t[0]),
+                            Math.min(beforeBlank.length(), (int) t[2] + 4));
+                    if (!tail.contains("km")) continue;
+                    int said2 = minutesFor(mins, (int) t[0], (int) t[2],
+                            -1, Integer.MAX_VALUE, 0);
+                    // Amit egy másik mozgás már elvitt, azt nem vesszük el
+                    // tőle: a „40 perc kondi" negyvene a kondié marad, a
+                    // futás hosszát a tempóból becsüljük.
+                    for (Plan p : out) if (p.minutes == said2) said2 = 0;
+                    int est2 = Math.max(1, (int) Math.round(km2 * pace(beforeBlank, run)));
+                    out.add(new Plan(run, 1, Math.min(24 * 60, said2 > 0 ? said2 : est2), km2));
+                }
+            }
         }
 
         // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még

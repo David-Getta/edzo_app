@@ -182,4 +182,21 @@ public class SleepTest {
         assertEquals(6, IntervalParse.parse("1:30 munka 0:30 pihenő 6 kör").rounds);
         assertEquals(7.75, Sleep.parse("22:30-tól 6:15-ig aludtam"), 0.05);
     }
+
+    /**
+     * A kimondott hossz erősebb a két időpontnál.
+     *
+     * A „ma reggel 5 km, délután 40 perc kondi, este 8 óra alvás" mondatban
+     * a „reggel 5" és az „este 8" időpont-párnak látszott, és három óra
+     * alvás került a naplóba a nyolc helyett – egy olyan mondatból, amelyik
+     * kimondja a nyolcat.
+     */
+    @Test public void theStatedLengthBeatsTwoClockTimes() {
+        assertEquals(8.0, Sleep.parse(
+                "ma reggel 5 km, délután 40 perc kondi, este 8 óra alvás"), 0.01);
+        assertEquals(8.0, Sleep.parse("8 óra alvás"), 0.01);
+        // A két időpont változatlanul működik, ahol nincs kimondott hossz.
+        assertEquals(8.0, Sleep.parse("este 11-kor feküdtem, reggel 7-kor keltem"), 0.01);
+        assertEquals(7.8, Sleep.parse("22:30-tól 6:15-ig aludtam"), 0.05);
+    }
 }

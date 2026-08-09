@@ -76,10 +76,6 @@ public final class Sleep {
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
             return -1;
-        // Lefekvés és ébredés: „este 11-kor feküdtem, reggel 7-kor keltem".
-        // Sokan nem hosszat írnak, hanem két időpontot – az óra is így méri.
-        double span = betweenTimes(s);
-        if (span > 0) return span;
         // Óra ÉS perc: a „6 óra 30 perc alvás" fél órája eddig elveszett –
         // sőt az egész mondat, mert a perc a szám mellé állva elrontotta a
         // mintát. Alvás-szó nélkül ez az ág nem él.
@@ -129,6 +125,15 @@ public final class Sleep {
             if (s.contains(m.group(1) + " es 0,5")) v += 0.5;
             if (v >= MIN_H && v <= MAX_H) return v;
         }
+        // Lefekvés és ébredés: „este 11-kor feküdtem, reggel 7-kor keltem".
+        // Sokan nem hosszat írnak, hanem két időpontot – az óra is így méri.
+        //
+        // A KIMONDOTT hossz viszont erősebb, ezért ez az ág a legvégén áll: a
+        // „ma reggel 5 km, délután 40 perc kondi, este 8 óra alvás" mondatban
+        // a „reggel 5" és az „este 8" időpont-párnak látszott, és három óra
+        // alvás került a naplóba a nyolc helyett.
+        double span = betweenTimes(s);
+        if (span > 0) return span;
         return -1;
     }
 
