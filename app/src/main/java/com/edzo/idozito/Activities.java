@@ -632,6 +632,13 @@ public final class Activities {
             "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
+            // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
+            // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés
+            // lett a naplóban. (A „konditerem" és a „tornaterem" saját tő.)
+            "targyaloterem", "targyalo", "tanterem", "eloadoterem", "varoterem",
+            "szinhazterem", "konferenciaterem", "gyulesterem", "birosag",
+            // A TÖRTÉNTekért közepén ott a teker.
+            "tortentek",
             // A KÉZI és a JOG szótöve hétköznapi szavak elején is ott van: a
             // kézírás nem kézilabda, a jogaim nem jóga. Ötvenezer magyar szót
             // átfuttatva ezek maradtak.

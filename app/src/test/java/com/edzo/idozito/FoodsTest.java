@@ -231,6 +231,11 @@ public class FoodsTest {
      */
     static final String[] EVERYDAY = {
             "abban", "addig", "ahol", "ajtó", "akkor", "alatt", "annyi", "anya", "apa",
+            // A korpusz-söprés friss találatai: mindegyikben egy étel- vagy
+            // sport-szótő lakik (hibÁBAn a bab, kertÉPÍTÉSben a pite,
+            // tárgyalóTEREMben a terem, VIZES a víz, COMBOS a comb).
+            "hiba", "hibában", "próba", "szoba", "kertépítés", "izomépítés",
+            "tárgyalóterem", "tanterem", "vizes", "combos", "tojáskeresés",
             "arc", "asztal", "átlag", "autó", "bal", "barát", "beszéd", "biztos",
             "busz", "cél", "cipő", "család", "csend", "csoport", "derék", "döntés",
             "edzés", "egészség", "együtt", "elég", "élet", "ellen", "előtt", "ember",

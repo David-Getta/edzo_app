@@ -446,7 +446,11 @@ public class StrengthParseTest {
         StringBuilder mg = new StringBuilder();
         for (String w : FoodsTest.EVERYDAY) {
             if (Arrays.asList("kar", "váll", "térd", "boka", "csukló", "könyök",
-                    "medence", "izom", "gerinc", "nyak", "derék").contains(w)) continue;
+                    "medence", "izom", "gerinc", "nyak", "derék",
+                    // A „combos" melléknév a comb tövét viseli: az
+                    // izomcsoport-címke ára itt egy jelző, nem egy kitalált
+                    // bejegyzés – a naplóba semmi nem kerül tőle.
+                    "combos").contains(w)) continue;
             String g = Muscles.groupOf(w);
             if (g != null) mg.append("\n  ").append(w).append(" -> ").append(g);
         }
