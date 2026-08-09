@@ -93,7 +93,7 @@ public final class Foods {
         new Food("Tonhal", 130, 24, 100, "tonhal"),
         new Food("Lazac", 210, 20, 150, "lazac"),
         new Food("Makréla / szardínia", 220, 20, 100, "makrela", "szardinia", "sprotni"),
-        new Food("Tojás", 155, 13, 110, "tojas"),
+        new Food("Tojás", 155, 13, 110, "tojas", "tojcsi"),
         // A „tojásfehérje" eddig egész tojás volt: 33 g helyett 55 g, és 17 kcal
         // helyett 78 – négy és félszeres túlszámolás egy sportolós alapdarabon.
         new Food("Tojásfehérje", 52, 11, 33, "tojasfeherje", "tojas feherje", "feherje tojas"),
@@ -115,7 +115,7 @@ public final class Foods {
         new Food("Quinoa (főtt)", 120, 4.4, 200, "quinoa"),
         new Food("Kenyér", 250, 8, 70, "kenyer", "piritos", "bagett",
                 "ciabatta", "focaccia", "bruschetta", "toast", "tosztkenyer"),
-        new Food("Zsemle", 280, 9, 55, "zsemle"),
+        new Food("Zsemle", 280, 9, 55, "zsemle", "zsemi"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
                 "brios", "molnark", "bagel"),
@@ -131,7 +131,7 @@ public final class Foods {
         new Food("Pizza", 260, 11, 300, "pizza", "calzone", "quattro formaggi",
                 "quattro stagioni"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
-                "whopper", "cheeseburger"),
+                "whopper", "cheeseburger", "hambi"),
         new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal",
                 // Ahogy a magyar mondja: „mekis kaja", „kfc kosár". A puszta
                 // márkanév is menüt jelent – aki csak a helyet írja le, az a
@@ -213,10 +213,10 @@ public final class Foods {
         new Food("Feta", 270, 14, 50, "feta"),
         new Food("Mascarpone", 435, 4, 50, "mascarpone"),
         new Food("Ricotta", 150, 11, 50, "ricotta"),
-        new Food("Túró", 100, 12, 100, "turo"),
+        new Food("Túró", 100, 12, 100, "turo", "turcsi"),
         new Food("Krémtúró / túródesszert", 180, 8, 90,
                 "kremturo", "turodesszert", "turokrem"),
-        new Food("Joghurt", 60, 4, 150, "joghurt"),
+        new Food("Joghurt", 60, 4, 150, "joghurt", "joghi"),
         new Food("Ivójoghurt", 75, 3, 200, "ivojoghurt", "joghurtital", "actimel"),
         new Food("Puding", 120, 3, 200, "puding", "csokipuding", "protein puding",
                 "vaniliasodo", "vanilias sodo", "madartejsodo",
@@ -659,7 +659,10 @@ public final class Foods {
         // --- Magyar klasszikusok ---
         new Food("Bundás kenyér", 260, 9, 120, "bundas kenyer", "bundaskenyer"),
         // A „sajtos pogácsa" sajtra és pogácsára esett szét: két tétel egy sütiből.
-        new Food("Pogácsa", 400, 8, 60, "sajtos pogacsa", "pogacsa"),
+        // A beszélt nyelv rövidít: „pogi", „zsemi", „hambi", „tojcsi". A
+        // három-négy betűs alakok közül csak azok kerültek be, amelyek nem
+        // laknak hétköznapi szó elején (a „kifi" például a KIFIzetésben is).
+        new Food("Pogácsa", 400, 8, 60, "sajtos pogacsa", "pogacsa", "pogi"),
         new Food("Zsíros kenyér", 330, 6, 100, "zsiros kenyer", "zsiroskenyer",
                 "velos piritos"),
         new Food("Hurka", 300, 12, 120, "hurka"),

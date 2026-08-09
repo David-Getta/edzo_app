@@ -721,7 +721,9 @@ public class FoodsDataQualityTest {
                 "vörösbor",
                 "pezsgő", "szezámmag", "makadámia", "mákos tészta", "kesudió",
                 "aszalt szilva", "datolya", "füge", "áfonya", "málna", "kelbimbó",
-                "tofu", "kimchi", "szójaszósz", "hajdina", "köles", "rozskenyér"};
+                "tofu", "kimchi", "szójaszósz", "hajdina", "köles", "rozskenyér",
+                // A beszélt nyelv rövidítései: „pogi", „zsemi", „hambi".
+                "pogi", "zsemi", "hambi", "tojcsi", "joghi", "túrcsi"};
         StringBuilder bad = new StringBuilder();
         for (String d : dishes)
             if (Foods.parse(java.util.Arrays.asList(Foods.ALL), d + " volt az ebéd").isEmpty())
