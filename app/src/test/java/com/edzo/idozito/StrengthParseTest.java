@@ -903,4 +903,36 @@ public class StrengthParseTest {
         assertEquals(1, d.size());
         assertEquals(0.0, d.get(0).sets.get(0).weight, 0.001);
     }
+
+    /**
+     * Hetvenhárom gyakorlatnév végigpróbálva: ezek hiányoztak.
+     *
+     * A nordic curl és a madár-kutya a rehab-sorokból ismerős, a hasgurító
+     * és a holt bogár a törzs klasszikusai, a kábeles keresztezés pedig
+     * ugyanaz a mozgás, mint a tárogatás, csak más eszközzel. Mind a
+     * naplóban is ugyanazon a néven él.
+     */
+    @Test public void theSecondSweepOfExerciseNames() {
+        String[][] want = {
+                {"kábeles keresztezés 3x12 20 kg", "Mellgép"},
+                {"arcra húzás 3x15", "Fordított tárogatás"},
+                {"kerékkel gurítás 3x10", "Hasgurító"},
+                {"box ugrás 4x5", "Ládaugrás"},
+                {"nordic curl 3x5", "Nordic curl"},
+                {"dead bug 3x10", "Holt bogár"},
+                {"madár-kutya 3x8", "Madár-kutya"},
+                {"medvejárás 3x20", "Medvejárás"},
+                {"vállgép 3x12 30 kg", "Vállból nyomás"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] w : want) {
+            List<StrengthParse.Item> i = StrengthParse.parse(w[0]);
+            String got = i.isEmpty() ? "-" : i.get(0).name;
+            if (!got.equals(w[1]))
+                bad.append("\n  ").append(w[0]).append(" -> ").append(got);
+        }
+        assertEquals("hiányzó vagy rossz gyakorlatnév:" + bad, 0, bad.length());
+        // A burpee szándékosan marad kardió: az izomcsoport-kimutatásba
+        // beszámítva azt hazudná, hogy a láb erősítő munkát kapott.
+        assertTrue(StrengthParse.parse("burpee 3x10").isEmpty());
+    }
 }

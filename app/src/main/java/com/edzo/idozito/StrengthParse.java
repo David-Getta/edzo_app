@@ -89,6 +89,7 @@ public final class StrengthParse {
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk", "chin up", "chinup",
                     "allhuzodzkodas", "all fole huzas"},
             {"Vállból nyomás", "vallbol nyom", "vallnyom", "vallbol", "ohp", "mellrol nyom",
+                    "vallgep",
                     "nyak moge nyom", "katonai nyomas", "military press", "shoulder press"},
             {"Evezés", "evezes", "evezo", "rowing", "evezt", "evezni", "evezek",
                     "cable row", "pendlay"},
@@ -113,11 +114,13 @@ public final class StrengthParse {
                     "medenceemel", "medence emel", "farizom"},
             {"Arnold nyomás", "arnold"},
             {"Fordított tárogatás", "forditott tarogat", "hatso vall", "hatso deltoid",
-                    "face pull", "facepull"},
+                    "face pull", "facepull", "arcra huz"},
             {"Csuklyás emelés", "csuklyas", "shrug"},
             {"Hátizom gép", "hatizom", "hatgep"},
             {"Mellgép", "mellgep", "tarogat", "pillango", "mellnyom", "mellrepul", "butterfly",
-                    "chest press", "pec deck", "pecdeck"},
+                    "chest press", "pec deck", "pecdeck",
+                    // A kábeles keresztezés ugyanaz a mozgás, más eszközzel.
+                    "keresztez", "cable cross", "crossover", "kabelkereszt"},
             {"Hegymászó", "hegymaszo"},
             {"Hátfeszítés", "hiperextenzi", "hiperextension", "hyperextension", "hatfeszit",
                     "back extension"},
@@ -145,6 +148,18 @@ public final class StrengthParse {
             {"Good morning", "good morning", "gudmorning", "jo reggelt"},
             {"Farmerjárás", "farmerjaras", "farmer jaras", "farmers walk", "farmer walk"},
             {"Szakítás", "szakitas", "snatch"},
+            // Hetvenhárom gyakorlatnévvel végigpróbálva ezek hiányoztak
+            // teljesen. A nordic curl és a madár-kutya a rehab-sorokból is
+            // ismerős – jó, ha a naplóban ugyanazon a néven él, mint a
+            // gyakorlatsorban. (A burpee szándékosan marad ki: az kardió, és
+            // az izomcsoport-kimutatásba beszámítva azt hazudná, hogy a láb
+            // erősítő munkát kapott – erről külön teszt szól.)
+            {"Ládaugrás", "ladaugras", "box jump", "boxjump", "box ugras", "dobozugras"},
+            {"Hasgurító", "hasgurit", "ab wheel", "abwheel", "kerekkel gurit", "abroncs gurit"},
+            {"Nordic curl", "nordic curl", "nordikus curl", "nordic hamstring"},
+            {"Holt bogár", "dead bug", "deadbug", "holt bogar", "holtbogar"},
+            {"Madár-kutya", "madar-kutya", "madar kutya", "bird dog", "birddog"},
+            {"Medvejárás", "medvejaras", "medve jaras", "bear crawl", "bearcrawl"},
             {"Lökés", "lokes", "clean and jerk", "clean & jerk", "clean es jerk"},
     };
 

@@ -199,6 +199,11 @@ public final class Programs {
             case "Farmerjárás": return "Két nehéz súly a kézben, váll hátra, has feszes. Kis lépések, egyenes vonal – a fogásod fárad el először.";
             case "Szakítás": return "Egy mozdulatban a földről a fej fölé. Technikás fogás: könnyű súllyal tanuld, és csak pihenten csináld.";
             case "Lökés": return "Földről a vállra, onnan a fej fölé. Két külön mozdulat, két külön ritmus – ne told össze őket.";
+            case "Ládaugrás": return "Alacsony ládával kezdd, és LÉPJ vissza, ne ugorj: a leérkezés terhel, nem a felugrás.";
+            case "Hasgurító": return "Térdről indulj, a derék végig feszes és egyenes – ha homorít, ott a határod. Kis távolsággal kezdd.";
+            case "Nordic curl": return "Térdelve, bokát rögzítve dőlj előre lassan, ameddig tartani tudod, kézzel told vissza magad. Az excentrikus rész a lényeg.";
+            case "Holt bogár": return "Hanyatt, derék a talajon: ellentétes kar-láb nyúlik ki lassan. A derék nem emelkedhet el – ez a gyakorlat egésze.";
+            case "Medvejárás": return "Négykézláb, térd egy tenyérnyire a talajtól: ellentétes kéz és láb lép. Lassan, a csípő maradjon alacsonyan.";
             case "Hátfeszítés": return "Csípő a párnán, a hát egyenes: csak addig emelkedj, "
                     + "amíg a törzsed vonalba ér – ne feszítsd hátra.";
             case "Hátizom gép": return "Mellkas a párnán, a könyököd húzd hátra a bordáid mellé, lapockák össze.";

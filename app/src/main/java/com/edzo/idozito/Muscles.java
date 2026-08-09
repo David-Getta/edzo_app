@@ -38,7 +38,11 @@ public final class Muscles {
                     "kettlebell", "swing",
                     // A súlyemelő fogások és a farmerjárás is csípőből mennek.
                     "good morning", "gudmorning", "szakitas", "snatch", "lokes",
-                    "clean and jerk", "farmerjaras", "farmer jaras", "farmers walk"},
+                    "clean and jerk", "farmerjaras", "farmer jaras", "farmers walk",
+                    // A robbanékony és a comb hátulját terhelő gyakorlatok is
+                    // láb-munkák: a ládaugrás és a nordic curl.
+                    "ladaugras", "dobozugras", "box jump", "boxjump", "box ugras",
+                    "nordic"},
             {HAT, "huzodzkod", "felhuzas", "holtemel", "evezes", "lehuzas", "csuklyas",
                     "hatizom", "hatgep", "gerincnyujt", "hiperextenzi", "hatfeszit",
                     "szuperman", "superman",
@@ -56,7 +60,10 @@ public final class Muscles {
                     // Az „alkartámasz" plank, nem alkar: a rövidebb „alkar"
                     // különben karnak vette volna.
                     "oroszcsav", "orosz csav", "oldaltamasz", "alkartamasz", "torzs", "labemel",
-                    "hegymaszo", "madar-kutya", "madarkutya", "madar kutya"},
+                    "hegymaszo", "madar-kutya", "madarkutya", "madar kutya",
+                    "hasgurit", "ab wheel", "abwheel", "kerekkel gurit",
+                    "dead bug", "deadbug", "holt bogar", "holtbogar",
+                    "medvejaras", "medve jaras", "bear crawl", "bearcrawl"},
     };
 
     /**
