@@ -136,11 +136,12 @@ public final class Activities {
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",
                     "capoeira", "muay thai", "muaythai", "krav maga", "kravmaga",
-                    // A szumó és a szambó szándékosan hiányzik: a
-                    // „kompromisszumot" és a „számból" is tartalmazza őket,
-                    // és egy hétköznapi szóból lett harcművészet-bejegyzés
-                    // rosszabb, mint egy fel nem ismert ritka sportág.
-                    "kendo"),
+                    // A szumó, a szambó és a kendó szándékosan hiányzik: a
+                    // „kompromisszumot", a „számból" és a „kendőt" is
+                    // tartalmazza őket, és egy hétköznapi szóból lett
+                    // harcművészet-bejegyzés rosszabb, mint egy fel nem
+                    // ismert ritka sportág.
+                    "tai chi", "taichi"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
                     "pole dance", "poledance", "rudtanc"),
@@ -679,7 +680,13 @@ public final class Activities {
             // A „részleTEKÉRT" végén a tekerés, a MEGERŐSÍTésben az erősítés,
             // a TÖLTEKEZÜNKben a tekézés, a KÖRGYŰRŰben (az app saját sávja)
             // a gyűrű.
+            // A karikaGYŰRŰ sem gyúrás: a „gyűrűm", a „gyűrűt" és a „gyűrűs"
+            // is a „gyur" tövön ült, és egy ékszerből hatvanperces kondi-edzés
+            // lett. (Szósöprés találta.) A ragozott alakokat egyenként soroljuk
+            // fel: a puszta „gyuru" a „gyúrunk"-ot is elvágná.
             "reszlet", "megerosit", "toltekez", "korgyuru",
+            "gyurum", "gyurut", "gyurud", "gyuruje", "gyurus", "gyuruvel",
+            "gyuruben", "gyuruk ", "gyurure",
             // Ötvenezer szavas magyar gyakorisági listával végigsöpörve.
             // A paSASban az ásás, a naGYÚRban a gyúrás, a TEREMtésben és a
             // TEREMtményben az edzőterem, az EGYÉBKÉNTben az „egyéb mozgás".
@@ -1762,6 +1769,8 @@ public final class Activities {
                 // ilyenkor is elkészül, csak a bejegyzés nem.
                 "csinaljunk", "menjunk", "fussunk", "edzunk egy", "kezdjunk",
                 "nyomjunk", "tekerjunk", "usszunk", "gyakoroljunk", "vagjunk bele",
+                "gyurunk egyet", "gyurjunk", "sportoljunk", "mozogjunk",
+                "guggoljunk", "toljunk egyet", "huzzunk egyet", "setaljunk",
                 "kene", "kell csinalnom", "kell mennem", "meg kell", "ha lesz",
                 "ha lesz ido", "ha birom", "ha sikerul",
                 // A kimondott AKARAT a legtisztább szándék-alak, és eddig

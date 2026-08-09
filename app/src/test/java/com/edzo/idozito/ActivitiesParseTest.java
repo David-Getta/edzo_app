@@ -1903,4 +1903,24 @@ public class ActivitiesParseTest {
         // A saját nevén futó mozgás sem sérül: a „3 futás" három futás.
         assertEquals("7d+0: 3×futas/45", summary("3 futás és 3x10 fekvenyomás a héten"));
     }
+
+    /**
+     * A szósöprés két új találata: a gyűrű és a kendő.
+     *
+     * A „gyur" tő a karikagyűrűt is elkapta, a kendó harcművészet-tő pedig a
+     * kendőt – egy ékszerből és egy sálból hatvanperces edzés lett. A gyúrás
+     * igealakjai és a tai chi maradnak.
+     */
+    @Test public void aRingAndAScarfAreNotWorkouts() {
+        assertTrue(Activities.parse("elvesztettem a gyűrűmet").isEmpty());
+        assertTrue(Activities.parse("kendőt vettem").isEmpty());
+        assertTrue(Activities.parse("gyűrűs a kezem").isEmpty());
+        // A gyúrás igealakjai maradnak – ez a konditerem szlengje.
+        assertEquals("kondi", Activities.parse("ma gyúrtam egy jót").plans.get(0).kind.id);
+        assertEquals(45, Activities.parse("gyúrás 45 perc").plans.get(0).minutes);
+        assertEquals("harcmuveszet", Activities.parse("tai chi 40 perc").plans.get(0).kind.id);
+        // A felszólítás terv marad: a „gyúrunk egyet" javaslat, nem napló.
+        assertTrue(Activities.parse("gyúrunk egyet").isEmpty());
+        assertTrue(Activities.parse("sportoljunk egy kicsit").isEmpty());
+    }
 }
