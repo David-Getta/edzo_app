@@ -1830,4 +1830,31 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("félórás séta").plans.get(0).minutes);
         assertEquals(60, Activities.parse("1 órás kondi").plans.get(0).minutes);
     }
+
+    /**
+     * A sorozat mellé írt táv külön kiemelhető.
+     *
+     * A vegyes mondat két naplóba való. Ha az edzés-oldal mindent elment, a
+     * fekvőtámaszból becsült „kondi" perc kétszer számít – egyszer
+     * sorozatként, egyszer mozgásként. A szűrő azt hagyja meg, amit az
+     * erősítő napló nem tud tárolni: a kimondott távot.
+     */
+    @Test public void onlyTheStatedDistanceCrossesOver() {
+        Activities.Parsed p = Activities.parse("reggel 5 km futás, utána 20 fekvőtámasz");
+        Activities.Parsed c = Activities.cardioOnly(p);
+        assertEquals(1, c.plans.size());
+        assertEquals("futas", c.plans.get(0).kind.id);
+        assertEquals(5.0, c.plans.get(0).km, 0.01);
+        // A lépésszám ugyanígy átjön: azt sem tudja tárolni a sorozat-napló.
+        Activities.Parsed s = Activities.cardioOnly(
+                Activities.parse("ma 12000 lépés és 3x10 fekvenyomás"));
+        assertEquals(1, s.plans.size());
+        assertEquals(12000, s.plans.get(0).steps);
+        // Táv nélkül nem marad semmi – nincs mit átvinni.
+        assertTrue(Activities.cardioOnly(Activities.parse("60 perc kondi")).isEmpty());
+        assertTrue(Activities.cardioOnly(null).isEmpty());
+        // A nap és az eltolás megmarad: a tegnapi futás tegnapi marad.
+        assertEquals(1, Activities.cardioOnly(
+                Activities.parse("tegnap 5 km futás és 20 fekvőtámasz")).offset);
+    }
 }

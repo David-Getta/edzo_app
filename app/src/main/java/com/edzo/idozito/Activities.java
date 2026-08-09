@@ -838,6 +838,41 @@ public final class Activities {
         return parse(text, System.currentTimeMillis());
     }
 
+    /**
+     * Csak a KIMONDOTT távot (vagy lépésszámot) tartalmazó tételek.
+     *
+     * A vegyes mondat („reggel 5 km futás, utána 20 fekvőtámasz") két naplóba
+     * való: a sorozat az erősítőbe, a kilométer az előzményekbe. Ha mindkettőt
+     * elmentjük, a fekvőtámaszból becsült „kondi" bejegyzés kétszer számítana –
+     * egyszer sorozatként, egyszer mozgásként. Ez a szűrő azt hagyja meg, amit
+     * az erősítő napló nem tud tárolni: a távot.
+     *
+     * @return üres Parsed, ha nincs ilyen tétel (null soha)
+     */
+    public static Parsed cardioOnly(Parsed p) {
+        List<Plan> keep = new ArrayList<>();
+        List<Integer> days = new ArrayList<>();
+        if (p != null) {
+            for (int i = 0; i < p.plans.size(); i++) {
+                Plan pl = p.plans.get(i);
+                if (pl.km <= 0 && pl.steps <= 0) continue;
+                keep.add(pl);
+                // A megnevezett napok alkalmanként állnak: ha tételt dobunk,
+                // a hozzá tartozó napot is dobni kell, különben elcsúszik.
+                if (p.exactDays != null && i < p.exactDays.length)
+                    days.add(p.exactDays[i]);
+            }
+        }
+        int[] ex = null;
+        if (p != null && p.exactDays != null && days.size() == keep.size()
+                && !days.isEmpty()) {
+            ex = new int[days.size()];
+            for (int i = 0; i < ex.length; i++) ex[i] = days.get(i);
+        }
+        return p == null ? new Parsed(keep, 1, 0)
+                : new Parsed(keep, p.days, p.offset, p.hour, ex);
+    }
+
     /** Tesztelhető változat: a „most" kívülről jön (a hétköznapnevekhez kell). */
     static Parsed parse(String text, long now) {
         List<Plan> out = new ArrayList<>();

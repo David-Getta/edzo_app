@@ -692,8 +692,22 @@ public class HistoryActivity extends Activity {
                     ? "\n\n📅 Dátum: " + Routines.lastDoneLabel(Days.ago(when,
                             System.currentTimeMillis())) + "."
                     : "\n\n📅 Dátum: ma.");
-            Sheet sh = new Sheet(this, "Ez erősítő sorozatnak tűnik 🏋️", sb.toString())
+            // A mondat MÁSIK fele: a „reggel 5 km futás, utána 20 fekvőtámasz"
+            // kilométerei az erősítő naplóban nem férnek el sehol, és eddig a
+            // sorozat mentésekor nyomtalanul eltűntek. Csak a kimondott távot
+            // vesszük át: a fekvőtámaszból becsült „kondi" perc kétszer
+            // számítana.
+            final Activities.Parsed cardio = Activities.cardioOnly(p);
+            Sheet sh = new Sheet(this, "Ez erősítő sorozatnak tűnik 🏋️",
+                    cardio.isEmpty() ? sb.toString()
+                            : sb + "\n🏃 Van benne mozgás is: "
+                                    + cardio.plans.get(0).label() + ".")
                     .addPrimary("Erősítő naplóba", () -> saveLifts(lifts, when));
+            if (!cardio.isEmpty())
+                sh.addNeutral("A mozgás is – mindkettő", () -> {
+                    saveBulk(cardio, text);
+                    saveLifts(lifts, when);
+                });
             if (!p.isEmpty()) sh.addNeutral("Sima edzésként", () -> bulkPreviewPlain(p, text));
             sh.addCancel().show();
             return;
