@@ -520,4 +520,22 @@ public class IntervalParseTest {
         assertEquals(30, p.work);
         assertEquals(30, p.rest);
     }
+
+    /**
+     * Négy óránál hosszabb edzést nem állítunk be.
+     *
+     * A szakaszok külön-külön hihetőek lehetnek, együtt mégsem: a „8x 60
+     * perc" nyolc órás időzítő, a „8x 22:30" hat. Egy kétszázezer mondatos
+     * véletlen-futtatásban pontosan ez a kilenc eset maradt – mind olyan
+     * óra, ami egész nap ketyegett volna.
+     */
+    @Test public void noPlanRunsLongerThanFourHours() {
+        assertNull(IntervalParse.parse("8x 60 perc"));
+        assertNull(IntervalParse.parse("10 kör 40 perc munka 20 perc pihenő"));
+        // A határon belüli hosszú edzés viszont marad.
+        IntervalParse.Plan p = IntervalParse.parse("4 kör 30 perc munka 5 perc pihenő");
+        assertEquals(4, p.rounds);
+        assertTrue(p.totalSec() <= 4 * 3600);
+        assertEquals(20, IntervalParse.parse("amrap 20 perc").work / 60);
+    }
 }

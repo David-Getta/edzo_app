@@ -300,6 +300,9 @@ public final class BodyParse {
                         + "eppen|epp|ebredes|felkeles|utan|kor|orakor|volt|voltam|"
                         // Az ébredés igéje is csak időpont: „79 kilóval keltem".
                         + "keltem|felkeltem|ebredtem|felebredtem|mertem|merve|"
+                        // A magasság a mérés MELLETT szokott állni: a
+                        // „80 kg, 180 cm" nyolcvan kiló – eddig egyik sem.
+                        + "cm|centi\\w*|magassag|magas|"
                         // A megnevezett nap ugyanolyan időpont, mint a napszak:
                         // a „kedden 80 kg voltam" ugyanaz a mérés, mint a „ma".
                         + "hetfon|kedden|szerdan|csutortokon|penteken|szombaton|"

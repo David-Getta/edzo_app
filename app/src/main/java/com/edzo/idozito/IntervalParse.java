@@ -19,6 +19,15 @@ public final class IntervalParse {
     /** Épeszű határok: ezeken kívül nem állítunk be semmit. */
     static final int MAX_ROUNDS = 50, MIN_SEC = 5, MAX_SEC = 3600;
 
+    /**
+     * A teljes edzés felső határa: négy óra.
+     *
+     * A szakaszok külön-külön hihetőek lehetnek, együtt mégsem – a „8x 60
+     * perc" nyolc órás időzítő. A napló hazug bejegyzésénél is rosszabb egy
+     * olyan óra, ami egész nap ketyeg.
+     */
+    static final int MAX_TOTAL_SEC = 4 * 3600;
+
     public static final class Plan {
         public final int rounds;
         /** Munkaidő másodpercben. */
@@ -372,7 +381,13 @@ public final class IntervalParse {
         if (cool < 0 || cool > MAX_SEC) cool = 0;
         if (rounds <= 0) rounds = 1;
         if (rounds > MAX_ROUNDS) return null;
-        return new Plan(rounds, work, rest, warm, cool);
+        Plan p = new Plan(rounds, work, rest, warm, cool);
+        // A szakaszok külön-külön hihetőek lehetnek, EGYÜTT mégsem: a
+        // „8x 60 perc" nyolc órás időzítőt állítana be. Ilyen edzés nincs –
+        // az ilyen mondat félreértés, és jobb rá azt mondani, hogy nem
+        // értjük, mint egy egész napra elindítani az órát.
+        if (p.totalSec() > MAX_TOTAL_SEC) return null;
+        return p;
     }
 
     /**
