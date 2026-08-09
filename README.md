@@ -117,6 +117,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   nyolcvan kilót a súlytrendbe: pont azt, amit a mondat tagad. A „nem
   futottam 10 km-t, csak 3-at" hármasa viszont teljesen elveszett. Ugyanez az
   étrendben: a „nem ittam 3 kávét, csak 1-et" hármat naplózott
+- a **„majdnem"** nem történt meg: a „majdnem elmentem futni" negyvenöt perces
+  bejegyzés lett – a „majdnem 10 km-t futottam" viszont megtörtént, ott a szó
+  a SZÁMOT pontosítja
 - a **tagadás** végig érvényes, a **„sem"** ugyanúgy, mint a „nem" („ma sem
   edzettem"): „ma nem ettem csokit", „nem fáj már a térdem" –
   a **„mégsem"** ugyanígy: „mégsem futottam ma", „mégsem ettem a csokit"

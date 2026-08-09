@@ -2210,4 +2210,25 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("ma 45 perc kondi és semmi más")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * A „majdnem" nem történt meg.
+     *
+     * A „majdnem elmentem futni" negyvenöt perces bejegyzés lett – abból a
+     * mondatból, ami épp azt mondja ki, hogy nem sikerült. A „majdnem 10
+     * km-t futottam" viszont megtörtént: ott a szó a SZÁMOT pontosítja, nem
+     * az igét tagadja.
+     */
+    @Test public void almostIsNotDone() {
+        assertTrue(Activities.parse("majdnem elmentem futni").isEmpty());
+        assertTrue(Activities.parse("kis híján elmentem edzeni").isEmpty());
+        assertEquals(10.0, Activities.parse("majdnem 10 km-t futottam")
+                .plans.get(0).km, 0.01);
+        assertEquals(120, Activities.parse("majdnem 2 órát edzettem")
+                .plans.get(0).minutes);
+        // Csak előre töröl: a mondat másik fele megmarad.
+        assertEquals(5.0, Activities.parse(
+                "majdnem elaludtam a moziban, de utána futottam 5 km-t")
+                .plans.get(0).km, 0.01);
+    }
 }

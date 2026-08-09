@@ -2133,7 +2133,12 @@ public final class Activities {
                 // kizárva, a másikból negyvenöt perces bejegyzés lett.
                 "vittem a gyerek", "elvittem a gyerek", "kisertem a gyerek",
                 "vittem a fiam", "vittem a lanyom", "edzesre vittem",
-                "meccsre vittem", "gyereket kisertem"}) {
+                "meccsre vittem", "gyereket kisertem",
+                // A MAJDNEM nem történt meg: a „majdnem elmentem futni" és a
+                // „kis híján elmentem edzeni" negyvenöt perces bejegyzés
+                // lett. (A „majdnem 10 km-t futottam" viszont megtörtént –
+                // ott a szó a SZÁMOT pontosítja, nem az igét tagadja.)
+                "majdnem", "kis hijan", "kishijan"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));
@@ -2146,6 +2151,11 @@ public final class Activities {
                 // „a bérletemmel jártam el". Enélkül az egész tagmondat
                 // eltűnt, vagyis egy megtörtént edzés nem került a naplóba –
                 // márpedig Magyarországon a legtöbben bérlettel járnak.
+                // A „majdnem 10 km" mennyiséget pontosít, nem tagad.
+                if (boundary && (w.equals("majdnem") || w.startsWith("kis hijan")
+                        || w.equals("kishijan"))
+                        && s.substring(Math.min(s.length(), p + w.length()))
+                            .matches("^\\s*\\d.*")) boundary = false;
                 if (boundary && w.equals("berlet")) {
                     int e2 = p;
                     while (e2 < s.length() && Character.isLetter(s.charAt(e2))) e2++;
