@@ -127,6 +127,15 @@ public final class Sentence {
         Kind k = of(q, foods, now);
         switch (k) {
             case WORKOUT: case STRENGTH: case INTERVAL: case ROUTINE:
+                // A sorozat mellé odaírt FUTÁS is elveszett eddig: a „reggel 5
+                // km futás, utána 20 fekvőtámasz" mondatból csak a fekvőtámasz
+                // maradt meg, a kilométerek nyomtalanul eltűntek. Az erősítő
+                // napló nem tud távot tárolni, tehát ezt csak az előzmények
+                // őrizhetik meg. Szándékosan csak a KIMONDOTT táv (vagy
+                // lépésszám) számít: a puszta „edzés" szóból becsült hatvan
+                // perc kétszer kerülne be, egyszer sorozatként, egyszer
+                // mozgásként.
+                if (k == Kind.STRENGTH && hasDistance(q, now)) return Kind.WORKOUT;
                 if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
                 // Az edzés mellé a reggeli MÉRÉS is odaférhet: a „10 km futás,
                 // 78,5 kg a mérlegen" és az „aludtam 7 órát és futottam 10
@@ -162,6 +171,21 @@ public final class Sentence {
             default:
                 return Kind.NONE;
         }
+    }
+
+    /**
+     * Van-e a mondatban kimondott táv vagy lépésszám?
+     *
+     * Ez a legszigorúbb jele annak, hogy a mondatban egy önálló kardió-mozgás
+     * is van: a becsült időtartam még nem az, mert azt a mozgásforma neve
+     * magától is megadja.
+     */
+    private static boolean hasDistance(String q, long now) {
+        Activities.Parsed a = Activities.parse(q, now);
+        if (a == null) return false;
+        for (Activities.Plan p : a.plans)
+            if (p.km > 0 || p.steps > 0) return true;
+        return false;
     }
 
     /** A napló neve, ahová a mondat való („Erősítő napló"). */

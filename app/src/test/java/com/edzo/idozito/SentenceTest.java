@@ -281,4 +281,27 @@ public class SentenceTest {
             assertEquals(q, Sentence.Kind.NONE, Sentence.also(q, all, now));
         assertEquals(Sentence.Kind.NONE, Sentence.also(null, all, now));
     }
+
+    /**
+     * A sorozat mellé odaírt futás sem veszhet el.
+     *
+     * A vegyes edzésről egy mondatban szoktunk beszámolni: előbb a futás,
+     * utána a saját testsúlyos rész. A sorozat erősebb jel, tehát a mondat az
+     * erősítő naplóé – de a kilométerek ott nem férnek el sehol, és eddig
+     * egyszerűen eltűntek.
+     */
+    @Test public void theRunNextToTheSetsIsNotLost() {
+        long now = System.currentTimeMillis();
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(Sentence.Kind.STRENGTH,
+                Sentence.of("reggel 5 km futás, utána 20 fekvőtámasz", all, now));
+        assertEquals(Sentence.Kind.WORKOUT,
+                Sentence.also("reggel 5 km futás, utána 20 fekvőtámasz", all, now));
+        assertEquals(Sentence.Kind.WORKOUT,
+                Sentence.also("ma 12000 lépés és 3x10 fekvenyomás 60 kg", all, now));
+        // Táv nélkül nem: a puszta „edzés" szóból becsült hatvan perc kétszer
+        // kerülne be, egyszer sorozatként, egyszer mozgásként.
+        assertEquals(Sentence.Kind.NONE,
+                Sentence.also("edzés: guggolás 5x5 100 kg", all, now));
+    }
 }
