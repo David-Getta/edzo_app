@@ -203,6 +203,20 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×uszas/30", summary("mégsem futottam, de úsztam 30 percet"));
     }
 
+    @Test public void aClockRangeIsADuration() {
+        // A naptárból másolt sor: eddig egyetlen szabály sem értette, és a
+        // tizenkilenc-harmincból HARMINC darab kilencvenperces foci lett,
+        // harminc napra elosztva – negyvenöt óra mozgás egyetlen sorból.
+        assertEquals("1d+0: 1×foci/90", summary("18:00-19:30 foci"));
+        assertEquals("1d+0: 1×foci/90", summary("18:00 - 19:30 foci"));
+        assertEquals("1d+0: 1×futas/45", summary("6:30-7:15 futás"));
+        // A magyar rag is ide tartozik – eddig az alapértelmezett hossz jött.
+        assertEquals("1d+0: 1×kondi/90", summary("18:00-tól 19:30-ig kondi"));
+        // A tempó és az idő-kijelző nem tartomány.
+        assertEquals("1d+0: 1×futas/65", summary("futás 1:05:23"));
+        assertEquals("1d+0: 1×futas/55", summary("10 km-t futottam 5:30-as tempóval"));
+    }
+
     @Test public void aDateAtTheStartOfTheLineIsADate() {
         // A naplóból kimásolt sor így néz ki. Rag és évszám nélkül eddig nem
         // dátumnak számított, hanem darabszámnak: a „01.15 futás 8 km"-ből

@@ -822,6 +822,8 @@ public final class Activities {
         stripNegated(q);
         // A „kétszer", „3-szor" alakból szám lesz, mielőtt bármi más olvasná.
         java.util.List<int[]> mults = stripMultiplicative(q);
+        // Az óra-tartomány időtartammá válik: „18:00-19:30 foci" másfél óra.
+        mergeClockRange(q);
         // A „6x1 km" intervall-jelölés össztávvá válik, még a táv-olvasó előtt.
         mergeIntervalDistances(q);
         // Az úszók hosszban mérnek: „40 hosszt úsztam" ezer méter.
@@ -2849,6 +2851,44 @@ public final class Activities {
                 "belenyilall", "szakadas", "elpattant", "megpattant"})
             if (cl.contains(w)) return true;
         return false;
+    }
+
+    /**
+     * Óra-tartomány → időtartam: „18:00-19:30 foci" másfél óra.
+     *
+     * A naptárból másolt sor így néz ki. Eddig egyetlen szabály sem értette:
+     * a tizenkilenc-harmincból HARMINC darab kilencvenperces foci lett,
+     * harminc napra elosztva – negyvenöt óra mozgás egyetlen sorból.
+     *
+     * A csere csak akkor történik meg, ha az új szöveg elfér a régi helyén –
+     * a többi olvasó karakterpozíciókra épül.
+     */
+    private static void mergeClockRange(char[] q) {
+        String s = new String(q);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                // A magyar rag is ide tartozik: a „18:00-tól 19:30-ig kondi"
+                // ugyanaz a másfél óra, csak kimondva – eddig az alapértelmezett
+                // hatvan perc került a naplóba helyette.
+                .compile("(?<![\\d:])(\\d{1,2}):(\\d{2})(?:-?tol)?\\s?-?\\s?"
+                        + "(\\d{1,2}):(\\d{2})(?:-?ig)?(?![\\d:])")
+                .matcher(s);
+        while (m.find()) {
+            int h1, m1, h2, m2;
+            try {
+                h1 = Integer.parseInt(m.group(1)); m1 = Integer.parseInt(m.group(2));
+                h2 = Integer.parseInt(m.group(3)); m2 = Integer.parseInt(m.group(4));
+            } catch (NumberFormatException e) { continue; }
+            if (h1 > 23 || h2 > 23 || m1 > 59 || m2 > 59) continue;
+            int mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+            // Éjfél átlépése: az esti edzés hajnalban ér véget – de csak
+            // életszerű hosszig.
+            if (mins < 0) mins += 24 * 60;
+            if (mins < 5 || mins > 600) continue;
+            String rep = mins + " perc";
+            if (rep.length() > m.end() - m.start()) continue;
+            blank(q, m.start(), m.end());
+            for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
+        }
     }
 
     /** A „felső/alsó hát" testtáj – a benne lakó számnév kitakarva. */
