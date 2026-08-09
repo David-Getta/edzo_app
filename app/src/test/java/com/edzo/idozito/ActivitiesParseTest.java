@@ -203,6 +203,21 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×uszas/30", summary("mégsem futottam, de úsztam 30 percet"));
     }
 
+    @Test public void theDistributivePairWorksWithDistanceToo() {
+        // A „reggel és este is futottam 5-5 km-t" két ötkilométeres futás. Az
+        // osztó alakot eddig csak az időtartamnál értettük – a napi tíz
+        // kilométer fele eltűnt a naplóból, a statisztikából és az XP-ből.
+        Activities.Parsed p = Activities.parse("reggel és este is futottam 5-5 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(5, p.plans.get(0).km, 0.001);
+        assertEquals("1d+0: 2×futas/30", summary("reggel és este 5-5 km futás"));
+        // Az időtartamos alak változatlan.
+        assertEquals("1d+0: 2×kondi/30", summary("reggel és este 30-30 perc kondi"));
+        // Egy napszak, egy táv: egy edzés.
+        assertEquals("1d+0: 1×futas/30", summary("reggel futottam 5 km-t"));
+    }
+
     @Test public void aClockRangeIsADuration() {
         // A naptárból másolt sor: eddig egyetlen szabály sem értette, és a
         // tizenkilenc-harmincból HARMINC darab kilencvenperces foci lett,

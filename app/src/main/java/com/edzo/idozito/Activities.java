@@ -1172,6 +1172,13 @@ public final class Activities {
                 // „reggel és este is futottam 20-20 percet": az osztó alak
                 // ALKALMANKÉNT húsz percet jelent, nem összesen annyit.
                 out.set(0, new Plan(p.kind, 2, mins.get(0)[1], p.km));
+            } else if (mins.isEmpty() && kms.size() == 1 && p.km > 0
+                    && distributiveBefore(rawText, new int[]{(int) kms.get(0)[0]})) {
+                // Ugyanez TÁVVAL: a „reggel és este is futottam 5-5 km-t" két
+                // ötkilométeres futás. Az osztó alakot eddig csak az
+                // időtartamnál értettük, a távnál nem – a napi tíz kilométer
+                // fele eltűnt a naplóból, a statisztikából és az XP-ből.
+                out.set(0, new Plan(p.kind, 2, p.minutes, p.km));
             }
         }
 
