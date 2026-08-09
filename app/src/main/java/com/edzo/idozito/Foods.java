@@ -2084,6 +2084,16 @@ public final class Foods {
         return parse(all(c), query);
     }
 
+    /** Tárgyragos számnév alapalakja („hatot" → „hat", „6-ot" → „6"), vagy null. */
+    private static String plainNumber(String t) {
+        String[][] map = {{"egyet", "egy"}, {"kettot", "ket"}, {"harmat", "harom"},
+                {"negyet", "negy"}, {"otot", "ot"}, {"hatot", "hat"}, {"hetet", "het"},
+                {"nyolcat", "nyolc"}, {"kilencet", "kilenc"}, {"tizet", "tiz"}};
+        for (String[] r : map) if (r[0].equals(t)) return r[1];
+        String d = t.replaceAll("-?(?:ot|et|at)$", "");
+        return d.matches("\\d{1,2}") ? d : null;
+    }
+
     /**
      * A TÁPÉRTÉK-sor „protein"-je nem turmix.
      *
@@ -2120,14 +2130,37 @@ public final class Foods {
         String s = norm(query);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "[,;]\\s*(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
-                        + "kanal|marek|falat)\\w*\\s*$").matcher(s);
-        if (!m.find()) return query;
-        String head = s.substring(0, m.start());
+                        + "kanal|marek|falat|gomboc)\\w*\\s*$").matcher(s);
+        String head, amount;
+        if (m.find()) {
+            head = s.substring(0, m.start());
+            // A ragos alakot alapalakra írjuk („két tányérral" → „két
+            // tányér"): a mennyiség-olvasó a mértékegység alapalakját ismeri.
+            amount = m.group(1) + " " + m.group(2);
+        } else {
+            // Puszta DARABSZÁM a záró tagmondatban: „sütöttem egy adag
+            // palacsintát, megettem hatot". A tárgyrag itt a mértékegység
+            // helyét foglalja el, és eddig egyetlen adag ment be hat helyett.
+            java.util.regex.Matcher c = java.util.regex.Pattern.compile(
+                    "[,;]\\s*(?:megettem|ettem|megittam|ittam)?\\s*"
+                            + "(\\d{1,2}(?:-?(?:ot|et|at))?|egyet|kettot|harmat|negyet|"
+                            + "otot|hatot|hetet|nyolcat|kilencet|tizet)\\s*$").matcher(s);
+            if (!c.find()) return query;
+            head = s.substring(0, c.start());
+            amount = plainNumber(c.group(1));
+            if (amount == null) return query;
+        }
         if (head.matches(".*\\d.*")) return query;
-        if (matches(list, head).size() != 1) return query;
-        // A ragos alakot alapalakra írjuk („két tányérral" → „két tányér"):
-        // a mennyiség-olvasó a mértékegység alapalakját ismeri.
-        return m.group(1) + " " + m.group(2) + " " + head;
+        List<Match> hm = matches(list, head);
+        if (hm.size() != 1) return query;
+        // A mennyiséget közvetlenül az étel elé írjuk, és a fej SAJÁT
+        // határozatlan névelőjét („egy adag palacsintát", „egy fagyit")
+        // elhagyjuk – az „egy" különben a szomszédság jogán legyőzné a
+        // kimondott számot, és megint egy adag menne be hat helyett.
+        int pos = hm.get(0).pos;
+        String before = head.substring(0, pos)
+                .replaceAll("(?:^|\\s)egy(?:\\s+(?:adag|nagy|kis))?\\s*$", " ");
+        return before + amount + " " + head.substring(pos);
     }
 
     static List<Hit> parse(List<Food> list, String query) {

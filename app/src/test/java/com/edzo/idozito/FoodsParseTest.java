@@ -190,6 +190,12 @@ public class FoodsParseTest {
         assertEquals(800.0, hits("gulyásleves, két tányérral").get(0).grams, 0.5);
         assertEquals(105.0, hits("reggelire kenyeret ettem, három szelet").get(0).grams, 0.5);
         assertEquals(400.0, hits("kávé, két bögrével").get(0).grams, 0.5);
+        assertEquals(100.0, hits("kaptam egy fagyit, 2 gombócot").get(0).grams, 0.5);
+        // Puszta darabszám is: a tárgyrag a mértékegység helyét foglalja el.
+        assertEquals(360.0,
+                hits("sütöttem egy adag palacsintát, megettem hatot").get(0).grams, 0.5);
+        assertEquals(360.0, hits("ettem palacsintát, hatot").get(0).grams, 0.5);
+        assertEquals(3000.0, hits("ittam egy sört, hatot").get(0).grams, 0.5);
         // Két étel mellett nem találgatunk: a „csirkemell rizzsel, 200 g"
         // kétszáz grammja nem tartozhat mindkettőhöz.
         assertEquals(2, hits("csirkemell rizzsel, 200 g").size());
