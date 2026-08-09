@@ -17,6 +17,8 @@ Tiszta natív Android (Java, programozott felület, külső függőségek nélk�
   „tabata”, „emom 10 perc”, „norvég 4x4”, „20 perc alatt 40/20”, „négy kör 30 másodperc”,
   „20/10 nyolcszor”, „2 perc bemelegítés, 6 kör 40/20”,
   „1:30 munka 0:30 pihenő 6 kör” (edzőtermi tábla-írásmód),
+  „hiit 20 perc, 30/30” és „15 perc, 40 mp munka 20 mp pihenő” (az egyetlen
+  perc-adat a terv hossza – a körszám kijön belőle),
   „40 mp / 20 mp, 10 kör”, „emom 12”, „10x(40s/20s)”,
   „8 rounds 20 sec work 10 sec rest” (az internetről másolt angol terv),
   „négyszer negyven másodperc munka húsz másodperc pihenő” – a teremben kapott edzésterv szövegként érkezik, nem

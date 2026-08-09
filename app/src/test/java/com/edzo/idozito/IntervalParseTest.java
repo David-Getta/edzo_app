@@ -602,4 +602,23 @@ public class IntervalParseTest {
         assertEquals(6, IntervalParse.parse("45/15 x 6").rounds);
         assertEquals(10, IntervalParse.parse("10 kör 30/30").rounds);
     }
+
+    /**
+     * Egyetlen perc-adat a terv HOSSZA.
+     *
+     * A „hiit 20 perc, 30/30" húsz perce csak a terv hossza lehet – más nincs
+     * a mondatban, amire vonatkozhatna. Eddig egykörös terv lett belőle: fél
+     * perc munka, és kész. A jelölő szó („20 perc ALATT") eddig kötelező volt,
+     * pedig magyarul senki nem írja ki, ha úgyis egyértelmű.
+     */
+    @Test public void aLoneMinuteValueIsTheLength() {
+        assertEquals("20×30/30", sum("hiit 20 perc, 30/30"));
+        assertEquals("15×40/20", sum("15 perc, 40 mp munka 20 mp pihenő"));
+        // Amit a mondat kimond, az erősebb: a kimondott körszám nyer, és a
+        // bemelegítés perce nem a terv hossza.
+        assertEquals("10×60/30", sum("10 kör 1 perc munka 30 mp pihi, 3 perc bemelegítés"));
+        assertEquals("3×40/20", sum("3 kör 40 mp munka 20 mp pihenő"));
+        // A munka- és pihenő-oldalra írt perc sem a hossz.
+        assertEquals("1×30/30", sum("fél perc munka fél perc pihenő"));
+    }
 }

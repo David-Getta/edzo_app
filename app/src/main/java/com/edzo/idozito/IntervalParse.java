@@ -366,6 +366,26 @@ public final class IntervalParse {
             int r = total / cycle;
             if (r >= 2 && r <= MAX_ROUNDS) return r;
         }
+        // Jelölő szó nélkül is egyértelmű, ha EGYETLEN perc-adat van a
+        // mondatban: a „hiit 20 perc, 30/30" húsz perce csak a terv hossza
+        // lehet, más nincs, amire vonatkozhatna. Eddig egykörös terv lett
+        // belőle – fél perc munka, és kész. A bemelegítés és a levezetés
+        // saját szóval jelöli magát, azt kihagyjuk.
+        m = java.util.regex.Pattern.compile("(?<![\\d,.])(\\d{1,3})\\s?perc").matcher(s);
+        int only = 0, seen = 0;
+        while (m.find()) {
+            String after = s.substring(Math.min(s.length(), m.end()));
+            if (after.startsWith(" bemelegites") || after.startsWith(" levezetes")
+                    || after.startsWith(" pihen") || after.startsWith(" szunet")
+                    || after.startsWith(" munka") || after.startsWith(" sprint")) continue;
+            seen++;
+            try { only = Integer.parseInt(m.group(1)) * 60; }
+            catch (NumberFormatException e) { return 0; }
+        }
+        if (seen == 1) {
+            int r = only / cycle;
+            if (r >= 2 && r <= MAX_ROUNDS) return r;
+        }
         return 0;
     }
 
