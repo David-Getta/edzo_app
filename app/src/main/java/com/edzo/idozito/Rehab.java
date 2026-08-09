@@ -375,6 +375,9 @@ public final class Rehab {
                 // a „kattog a csípőm" ugyanúgy ide hoz, mint a fájdalom – a
                 // térd lapja épp azt mondja ki, hogy a kattogás önmagában nem
                 // baj. A „húzódott" a „húzódik" múlt ideje.
+                // A „pattant" a szakadás magyar szava: az „elpattant valami a
+                // vádlimban" mondatra eddig semmi nem jött.
+                "elpattant", "megpattant", "elszakadt", "beszakadt",
                 "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
                 "meghuztam", "becsipodott", "belovellt", "lumbago", "merev",
                 // A diagnózis NEVE maga a panasz: aki azt írja, „golfkönyök",
@@ -455,6 +458,24 @@ public final class Rehab {
     };
 
     /**
+     * Terhelés alatti mellkasi panasz – ez nem izomügy.
+     *
+     * Az app eddig ezt is csendben elengedte: az „erős fájdalom a
+     * mellkasomban futás közben" mondatra semmilyen válasz nem jött. Ez az
+     * egyetlen panasz, ahol nem elég időpontot kérni: itt abba kell hagyni a
+     * mozgást, és azonnal segítséget kérni. Szűk a lista – csak a mellkasi
+     * fájdalom/szorítás és az eszméletvesztés –, hogy a hétköznapi kifulladás
+     * ne riasszon feleslegesen.
+     */
+    private static final String[] HEART_SIGNS = {
+            "faj a mellkasom", "mellkasi fajdalom", "fajdalom a mellkasomban",
+            "faj a mellkasomban", "mellkasom faj", "szorit a mellkasom",
+            "osszeszorul a mellkasom", "elszorul a mellkasom",
+            "nyomo erzes a mellkasom", "szorito erzes a mellkasom",
+            "elajultam", "elvesztettem az eszmeletem", "elsotetult a vilag",
+    };
+
+    /**
      * Figyelmeztetés a piros zászlós panaszra, vagy null.
      *
      * Az app eddig HALLGATOTT ezekre: a „zsibbad a kezem" mondatra nem jött
@@ -465,6 +486,17 @@ public final class Rehab {
     public static String redFlag(String q) {
         if (q == null) return null;
         String s = Foods.norm(q);
+        // A mellkasi panasz a tagadás-szűrő ELŐTT áll: itt a tévedés ára
+        // aszimmetrikus. Egy felesleges figyelmeztetés kellemetlen, egy
+        // elmaradó viszont nem javítható.
+        for (String h : HEART_SIGNS)
+            if (s.contains(h))
+                return "Amit leírtál (mellkasi panasz), arra semmilyen "
+                        + "gyakorlatsor nem jó válasz. Hagyd abba a mozgást, ülj "
+                        + "vagy feküdj le, és kérj SÜRGŐS orvosi segítséget – ha "
+                        + "a panasz pár percen belül nem múlik, hívd a 112-t. Ez "
+                        + "akkor is így van, ha eddig egészséges voltál, és akkor "
+                        + "is, ha csak enyhének érzed.";
         for (String neg : new String[]{"nem zsibbad", "mar nem", "elmult", "nem dagadt"})
             if (s.contains(neg)) return null;
         for (String[] r : RED_SIGNS)

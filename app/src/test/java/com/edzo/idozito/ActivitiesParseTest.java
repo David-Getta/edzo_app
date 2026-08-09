@@ -184,6 +184,19 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×kondi/45", summary("ma elkezdtem edzeni, 45 perc kondi"));
     }
 
+    @Test public void aComplaintIsNotAWorkout() {
+        // A mozgás neve itt a KÖRÜLMÉNY, nem a napló: a „ropog a térdem
+        // guggolásnál" eddig hatvanperces kondi-bejegyzés lett.
+        assertEquals("1d+0: ", summary("ropog a térdem guggolásnál, de nem fáj"));
+        assertEquals("1d+0: ", summary("edzés közben fájt a bokám"));
+        assertEquals("1d+0: ", summary("sportolás közben elpattant valami a vádlimban"));
+        // A szám a védőkorlát: ami időtartammal vagy távval van kimondva,
+        // az megtörtént – csak fájt utána.
+        assertEquals("1d+0: 1×futas/20", summary("20 perc futás után fájt a térdem"));
+        assertEquals("1d+0: 1×futas/30", summary("fájt a lábam, de azért lefutottam 5 km-t"));
+        assertEquals("1d+0: 1×futas/30", summary("futottam 30 percet, utána sajgott a bokám"));
+    }
+
     @Test public void theUpperBackIsNotTheNumberSix() {
         // Ékezet nélkül a „hát" és a „hat" egybeesik: a „felső hát erősítés"
         // hat darab hatvanperces kondi-bejegyzés lett, hat napra elosztva.

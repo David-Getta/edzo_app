@@ -756,6 +756,9 @@ public final class Foods {
             // a rizs, az állCSÚSZÁSban a csusza. A rehab-lap ezeket a neveket
             // mutatja, tehát pont ezeket másolja be az ember.
             "farizom", "farizmo", "allcsusz", "allcsusztat",
+            // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
+            // ásványvíz: a panaszból eddig italbejegyzés lett.
+            "vizesed", "vizeny", "vizretencio",
             "reggeli", "tizorai", "ebed", "uzsonna", "vacsor", "vacsi",
             "kaveskanal", "evokanal", "teaskanal",
             // Étel-tövet rejtő, gyakori NEM-étel szavak. Szó ELEJÉT nézzük,

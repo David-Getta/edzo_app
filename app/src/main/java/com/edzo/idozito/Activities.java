@@ -1712,6 +1712,7 @@ public final class Activities {
         stripBackwardNegation(q);
         stripOtherPerson(q);
         stripStartOfHabit(q);
+        stripComplaintClauses(q);
         String s = new String(q);
         int h = s.indexOf("helyett");
         while (h >= 0) {
@@ -2761,6 +2762,48 @@ public final class Activities {
             if (lo == hi || lo > hi || hi > lo * 3) continue;
             t[1] = t[1] * (lo + hi) / (2 * hi);
         }
+    }
+
+    /**
+     * A PANASZ nem edzés: „ropog a térdem guggolásnál".
+     *
+     * A mozgás neve itt csak a körülményt mondja meg – azt, hogy MIKOR
+     * jelentkezik a panasz –, nem azt, hogy megtörtént egy edzés. Eddig egy
+     * hatvanperces kondi-bejegyzés lett belőle, és beleszámított a heti
+     * terhelésbe is.
+     *
+     * A szám a védőkorlát: ha a tagmondatban ott az időtartam vagy a táv
+     * („20 perc futás után fájt a térdem"), akkor az edzés tényleg
+     * megtörtént, csak fájt utána – az marad.
+     */
+    private static void stripComplaintClauses(char[] q) {
+        String s = new String(q);
+        int a = 0;
+        while (a < s.length()) {
+            int e = a;
+            while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
+                    && s.charAt(e) != ';') e++;
+            String cl = s.substring(a, e);
+            boolean digit = false;
+            for (int i = 0; i < cl.length(); i++)
+                if (Character.isDigit(cl.charAt(i))) { digit = true; break; }
+            if (!digit && complains(cl)) blank(q, a, e);
+            a = e + 1;
+        }
+    }
+
+    /** Panasz-tagmondat: fájdalomról, sérülésről vagy ízületi hangról szól. */
+    private static boolean complains(String cl) {
+        String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
+        for (String w : new String[]{"faj", "fajt", "fajnak", "fajos", "huzodas",
+                "huzodast", "huzodott", "huzodtam", "megrandult", "berandult",
+                "serules", "serultem", "megserult", "ropog", "recseg", "kattog",
+                "sajog", "nyilall", "nyilallt", "zsibbad", "elzsibbadt"})
+            if (t.contains(" " + w + " ")) return true;
+        for (String w : new String[]{"fajdalm", "megfajdul", "gyulladt", "gyulladas",
+                "belenyilall", "szakadas", "elpattant", "megpattant"})
+            if (cl.contains(w)) return true;
+        return false;
     }
 
     /** A „felső/alsó hát" testtáj – a benne lakó számnév kitakarva. */

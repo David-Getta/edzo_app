@@ -159,6 +159,16 @@ public class RehabTest {
             assertEquals(q, Sentence.Kind.REHAB,
                     Sentence.of(q, java.util.Arrays.asList(Foods.ALL), 1_753_869_600_000L));
         }
+        // A MELLKASI panasz külön ág: ott nem időpontot kell kérni, hanem
+        // abbahagyni a mozgást és azonnal segítséget kérni.
+        for (String q : new String[]{"erős fájdalom a mellkasomban futás közben",
+                "szorít a mellkasom edzés közben", "fáj a mellkasom",
+                "elájultam edzés közben"}) {
+            String w = Rehab.redFlag(q);
+            assertNotNull("nincs figyelmeztetés: " + q, w);
+            assertTrue("nem sürgős a szöveg: " + q, w.contains("112"));
+            assertNull("sort ajánlott rá: " + q, Rehab.forComplaint(q));
+        }
         // A hétköznapi panasz továbbra is sort kap, nem figyelmeztetést.
         assertNull(Rehab.redFlag("fáj a vállam"));
         assertNull(Rehab.redFlag("derékfájás"));

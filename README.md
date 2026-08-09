@@ -219,6 +219,10 @@ sem talált, tehát ha talál, az tényleg ott van.
 - **Piros zászló**: zsibbadásra, duzzanatra, éjszakai vagy sugárzó
   fájdalomra az app nem gyakorlatsort ad, hanem kimondja, hogy ezt meg kell
   nézetni – a hallgatás rosszabb válasz lenne, mint a nemleges
+- **Mellkasi panasz: külön ág.** A „fáj a mellkasom futás közben" és a
+  „szorít a mellkasom edzés közben" nem gyógytorna-ügy: az app abbahagyást,
+  sürgős orvosi segítséget és 112-t mond. Itt a tévedés ára aszimmetrikus –
+  egy felesleges figyelmeztetés kellemetlen, egy elmaradó nem javítható
 - **A cél-mondat is**: „boka stabilitás", „váll mobilizálás", „derék rehab" –
   nem kell megvárni, hogy fájjon. És ahogy az ember tényleg kéri: „váll
   gyakorlatok", „mit csináljak a vállamra", „nyak lazítás", „boka erősítés",
