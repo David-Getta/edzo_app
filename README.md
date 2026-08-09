@@ -249,7 +249,7 @@ bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot 
   „3 kör 10 fekvőtámasz" – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
-  45 gyakorlat és gép, a jelzős változatokkal
+  51 gyakorlat és gép, a jelzős változatokkal
   („kábeles tricepsz", „elöl guggolás") és a termi anglicizmusokkal
   („leg curl", „chest press", „skull crusher", „hammer curl"). Ahol a súly nagyságrendben más, ott
   külön gyakorlat: a „román felhúzás", a „bolgár kitörés" és a „ferde
@@ -456,7 +456,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~858 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~859 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.
