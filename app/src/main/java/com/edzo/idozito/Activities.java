@@ -3109,8 +3109,14 @@ public final class Activities {
         StringBuilder sb = new StringBuilder(text);
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(?m)^[ \\t\\-*•]*(\\d{1,2})[.)][ \\t]").matcher(text);
-        while (m.find())
+        while (m.find()) {
             for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
+            // A sorhatár helyére VESSZŐ kerül, nem üresség: a tagmondat-határ
+            // dönti el, melyik mozgáshoz tartozik a mellette álló időtartam.
+            // Enélkül az „1. 5 km futás / 2. 30 perc kondi" harminc perce
+            // gazdátlanul maradt, és a kondi a szokásos hatvan percét kapta.
+            if (m.start(1) > 0) sb.setCharAt(m.start(1), ',');
+        }
         m = java.util.regex.Pattern
                 .compile("(?i)(?<![a-zöüó])nap\\s?(\\d{1,2})\\s*[:.]").matcher(text);
         while (m.find())

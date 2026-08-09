@@ -2077,6 +2077,9 @@ public class ActivitiesParseTest {
         Activities.Parsed p = Activities.parse("1. 5 km futás\n2. 30 perc kondi");
         assertEquals(2, p.plans.size());
         assertEquals(1, p.plans.get(1).count);
+        // A sorhatár helyére vessző kerül, nem üresség: a harminc perc a
+        // kondié marad, nem esik gazdátlanul a mondat végére.
+        assertEquals(30, p.plans.get(1).minutes);
         assertEquals(1, Activities.parse("1) 5 km futás\n2) 30 perc kondi")
                 .plans.get(1).count);
         assertEquals(1, Activities.parse("Nap 1: futás 5 km. Nap 2: kondi 45 perc.")
