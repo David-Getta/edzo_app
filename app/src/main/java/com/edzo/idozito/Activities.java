@@ -1723,6 +1723,14 @@ public final class Activities {
         // de a kettő együtt csak szándékot jelenthet.
         for (String w : new String[]{"majd ", "esetleg ", "talan "})
             if (s.startsWith(w) && hasInfinitive(s)) return true;
+        // A HALADÁS leírása nem edzés: az „5 km-ről 10 km-re növeltem a
+        // távot" a tervről szól, nem egy megtörtént futásról – eddig ötven
+        // kilométeres… illetve öt kilométeres futás lett belőle, ráadásul a
+        // RÉGI értékkel. A tól-ig pár és a változás-ige együtt kell hozzá.
+        if (s.matches(".*\\d.*-?r[oó]l\\b.*\\d.*-?r[ae]\\b.*"))
+            for (String w : new String[]{"novelt", "novelem", "emelt", "csokkent",
+                    "javult", "nott", "valtott", "leptem fel"})
+                if (s.contains(w)) return true;
         // FELTÉTELES mondat múlt idejű ige nélkül: a „ha esik, futópadon
         // futok" terv, nem napló – eddig negyvenöt perces futás lett belőle.
         // A múlt idő megvédi a valódi bejegyzést: a „ha jól emlékszem, 5

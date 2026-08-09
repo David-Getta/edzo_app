@@ -276,6 +276,16 @@ public class ActivitiesParseTest {
         assertEquals("30d+0: 4×joga/45", summary("hetente egyszer jóga egész hónapban"));
     }
 
+    @Test public void aProgressNoteIsNotAWorkout() {
+        // Az „5 km-ről 10 km-re növeltem a távot" a tervről szól, nem egy
+        // megtörtént futásról – eddig bejegyzés lett belőle, ráadásul a RÉGI
+        // értékkel.
+        assertEquals("1d+0: ", summary("5 km-ről 10 km-re növeltem a távot"));
+        assertEquals("1d+0: ", summary("45 percről 60 percre nőtt az edzés"));
+        // A valódi edzés változatlan.
+        assertEquals("1d+0: 1×futas/60", summary("10 km futás"));
+    }
+
     @Test public void theBackDayIsNotSixDays() {
         // A „hát nap:" edzésnap NEVE, nem hat nap: a „hát nap: húzódzkodás,
         // evezés…" hatnapos időszakká vált, és a húzódzkodás hat ismétlést
