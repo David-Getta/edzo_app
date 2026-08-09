@@ -1415,7 +1415,16 @@ public final class Activities {
         while (m.find()) {
             boolean hasYear = m.group(1) != null;
             String suf = m.group(4);
-            if (!hasYear && (suf == null || !suf.startsWith("-"))) continue;
+            // A mondat ELEJÉN álló, mértékegység nélküli számpár dátum: a
+            // naplóból kimásolt sor így néz ki („01.15 futás 8 km"). Rag és
+            // évszám nélkül eddig nem dátumnak számított, hanem darabszámnak:
+            // tizenöt darab nyolckilométeres futás lett belőle, tizenöt napra
+            // elosztva – százhúsz kilométer egyetlen sorból.
+            boolean lineStart = m.start() == 0 && !hasYear
+                    && (suf == null || suf.equals("."))
+                    && m.end() < s.length() && s.charAt(m.end()) == ' '
+                    && !s.substring(m.end() + 1).matches("^(km|kg|m|perc|ora|dl|l|%).*");
+            if (!hasYear && !lineStart && (suf == null || !suf.startsWith("-"))) continue;
             int mo, d;
             try {
                 mo = Integer.parseInt(m.group(2));

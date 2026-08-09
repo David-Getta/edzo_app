@@ -194,6 +194,23 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×munka/120", summary("metszettem a fákat 2 órát"));
     }
 
+    @Test public void aDateAtTheStartOfTheLineIsADate() {
+        // A naplóból kimásolt sor így néz ki. Rag és évszám nélkül eddig nem
+        // dátumnak számított, hanem darabszámnak: a „01.15 futás 8 km"-ből
+        // TIZENÖT darab nyolckilométeres futás lett, tizenöt napra elosztva –
+        // százhúsz kilométer egyetlen sorból.
+        Activities.Parsed p = Activities.parse("01.15 futás 8 km");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(1, p.days);
+        assertEquals(8, p.plans.get(0).km, 0.001);
+        // A tizedespont viszont nem dátum: az „1.5 km futás" másfél kilométer.
+        Activities.Parsed q = Activities.parse("1.5 km futás");
+        assertEquals(1, q.plans.size());
+        assertEquals(1.5, q.plans.get(0).km, 0.001);
+        assertEquals(1, q.days);
+    }
+
     @Test public void aHabitIsNotASingleSession() {
         // A „hetente háromszor járok kondiba" a heti rendet írja le, nem egy
         // megtörtént edzést – eddig mindegyikből teljes bejegyzés lett.
