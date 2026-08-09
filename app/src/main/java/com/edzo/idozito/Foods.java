@@ -2611,6 +2611,10 @@ public final class Foods {
             // 270 helyett. (A „rántotta és 2 tojás" alak – ami ugyanannak a
             // fogásnak a kétszeri említése volna – szintén egy tételre olvad.)
             {"Rántotta", "tojas", "rantotta"},
+            // Ugyanaz a fogás a másik nevén: az „omlett három tojásból" eddig
+            // rántotta ÉS százhatvanöt gramm tojás lett, mert az összevonás
+            // csak a „rántotta" szót kereste. Az omlett is tojásból van.
+            {"Rántotta", "tojas", "omlett"},
     };
 
     /** Egy találat helye a szövegben (a leghosszabb illeszkedő szótő szerint). */

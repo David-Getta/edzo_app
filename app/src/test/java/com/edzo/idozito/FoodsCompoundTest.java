@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -220,5 +221,20 @@ public class FoodsCompoundTest {
         assertEquals("marhahús és pörkölt", 2, Foods.parse(all, "marhahús és pörkölt").size());
         assertEquals("külön mondva külön étel", 2,
                 Foods.parse(all, "ettem marhát, meg egy pörköltet").size());
+    }
+
+    /**
+     * Az omlett is tojásból van.
+     *
+     * A rántotta és a tojás összevonása megvolt, de csak a „rántotta" szóra:
+     * a „vacsorára omlett három tojásból" eddig rántotta ÉS százhatvanöt
+     * gramm tojás lett – a reggeli kalóriájának a másfélszerese.
+     */
+    @Test public void anOmeletteIsMadeOfEggs() {
+        List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "vacsorára omlett három tojásból, sonkával");
+        for (Foods.Hit x : h) assertNotEquals("Tojás", x.food.name);
+        assertEquals(2, h.size());
+        assertEquals("Rántotta", h.get(0).food.name);
     }
 }
