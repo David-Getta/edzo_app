@@ -1944,4 +1944,26 @@ public class ActivitiesParseTest {
         // A múlt idő megvédi a beszámolót is.
         assertFalse(Activities.parse("heti 3 edzés volt a héten").isEmpty());
     }
+
+    /**
+     * Az óraállás mögötti szám nem ezres tagolás.
+     *
+     * Az óra-export természetes alakja: „túra 14,8 km 3:45:00 620 m
+     * emelkedés". A „00 620" viszont szóközzel tagolt ezresnek látszott, a
+     * „3:45:00620"-ból pedig már nem lett időtartam – a kimondott három és
+     * háromnegyed óra helyére a tempóból becsült százhetvennyolc perc lépett.
+     * Ugyanez vitte el a „21,1 km 1:52:30 320 kcal" és a „45 km 2:10:00
+     * 800 m szint" idejét is.
+     */
+    @Test public void aNumberAfterTheClockIsNotAThousandsSeparator() {
+        assertEquals(225, Activities.parse("túra 14,8 km 3:45:00 620 m emelkedés")
+                .plans.get(0).minutes);
+        assertEquals(113, Activities.parse("futás 21,1 km 1:52:30 320 kcal")
+                .plans.get(0).minutes);
+        assertEquals(130, Activities.parse("bringa 45 km 2:10:00 800 m szint")
+                .plans.get(0).minutes);
+        // Az ezres tagolás viszont maradjon: a „10 000 lépés" tízezer lépés.
+        assertEquals(10000, Activities.parse("ma 10 000 lépést mentem")
+                .plans.get(0).steps);
+    }
 }

@@ -122,6 +122,13 @@ ismétlés veszett el). Most van harmadik gomb: mindkettő. Az edzés-előzmény
 csak a kimondott táv és lépésszám megy át, mert a fekvőtámaszból becsült
 „kondi" perc kétszer számítana.
 
+Az **óraállás mögötti szám** sem tagolás: a „túra 14,8 km **3:45:00** 620 m
+emelkedés" mondatban a „00 620" szóközzel tagolt ezresnek látszott, és a
+kimondott három és háromnegyed óra helyére a tempóból becsült
+százhetvennyolc perc lépett. Ugyanez vitte el a „21,1 km 1:52:30 320 kcal"
+és a „45 km 2:10:00 800 m szint" idejét – vagyis pont az óra-export
+legtermészetesebb alakjait.
+
 A kimondott **összeg** nem külön edzés: a „ma 90 percet edzettem összesen:
 30 perc kondi, 60 perc futás" kilencvenese a másik két szám összege – eddig
 harmadikként állt sorba, és százötven perc mozgás került a naplóba kilencven

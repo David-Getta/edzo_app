@@ -769,8 +769,12 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
-        // Szóközzel tagolt ezres: „10 000" → „10000".
-        s = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        // Szóközzel tagolt ezres: „10 000" → „10000". A KETTŐSPONT megvédi az
+        // óraállást: a „túra 14,8 km 3:45:00 620 m emelkedés" mondatban a
+        // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem
+        // lett időtartam – a kimondott három és háromnegyed óra helyére a
+        // tempóból becsült százhetvennyolc perc lépett.
+        s = s.replaceAll("(?<![\\d.,:])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
         // Az „N alkalommal" ugyanaz, mint az „N-szor". A szám ELŐL állva
         // eddig is darabszám volt („a héten 3 alkalommal futottam"), a
         // mozgás MÖGÉ kerülve viszont elveszett: az „a héten futottam 3
