@@ -90,6 +90,9 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   belőle hat ismétléssel (a „hát" számnévként hattá vált). A „push pull legs,
   heti 6 edzés" hat bejegyzést csinált. Kimondott sorozat, súly vagy múlt idő
   megvédi a valódi naplót: „hétfőn guggolás 3x5, szerdán 4x8 60 kg"
+- a **kimondott nulla** is tagadás: a „nehéz nap: 10 óra munka, **semmi
+  mozgás**, este két sör" mondatból eddig tízórás „egyéb mozgás" lett – pont
+  abból a szóból, amivel az ember azt mondja, hogy nem mozgott
 - a **kihagyás beszámolója** sem étkezés: a „3 hetet bírtam ki cukor nélkül"
   büszkeség, nem adag – eddig háromszázharminc gramm cukormentes étel lett
   belőle
@@ -146,6 +149,10 @@ húszasa a lendítések száma, a kettlebell viszont kondi-szótő is – eddig 
 darab hatvanperces edzés lett belőle, húsz napra szétosztva. Ha a mondatban
 felismert sorozat is van, és a szám pontosan annak az ismétlésszáma, a szám
 azé. A „2 fekvőtámasz edzés" viszont marad két edzés.
+
+A **jelöletlen tagmondat** a mondat másik felével tart: a „ma megettem 2
+tányér levest, **összesen 900 kcal**" kilencszáza az evésé, nem elégetett
+kalória – hiába nincs a záró tagmondatban egyetlen ige sem.
 
 A **tiltó szó** is csak a saját tagmondatát viszi el: a „ma 2100 kcal-t
 ettem, **elégettem 600-at**" mindkét számot kimondja, de az „elégettem" eddig

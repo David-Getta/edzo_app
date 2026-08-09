@@ -106,7 +106,7 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
-        return amount(q, NOT_EATEN_P);
+        return amount(q, NOT_EATEN_P, EATEN_P);
     }
 
     /**
@@ -116,7 +116,7 @@ public final class Kcal {
      * kcal", annak a számát nem illik a saját becslésünkre cserélni.
      */
     public static int burned(String q) {
-        return amount(q, EATEN_P);
+        return amount(q, EATEN_P, NOT_EATEN_P);
     }
 
     /**
@@ -141,20 +141,29 @@ public final class Kcal {
      * Ha egyetlen tagmondat sincs tiltva, a mondat változatlanul megy tovább –
      * a felsorolások összeadása („reggeli 450, ebéd 700") így nem sérül.
      */
-    private static String withoutBlockedClauses(String s, Pattern[] block) {
+    private static String withoutBlockedClauses(String s, Pattern[] block, Pattern[] want) {
         boolean any = false;
         for (Pattern w : block) if (w.matcher(s).find()) { any = true; break; }
         if (!any) return s;
+        // Ha a mondat egyik fele a MÁSIK értelemben beszél, a jelöletlen
+        // tagmondat is azé: a „ma megettem 2 tányér levest, összesen 900
+        // kcal" kilencszáza az evésé, nem elégetett kalória. Ezért ilyenkor
+        // csak azt a tagmondatot tartjuk meg, amelyik a KERESETT értelmet
+        // ki is mondja.
         StringBuilder out = new StringBuilder();
         for (String cl : s.split("\\s*[,;]\\s*|\\s+es\\s+|\\s+de\\s+")) {
             boolean bad = false;
             for (Pattern w : block) if (w.matcher(cl).find()) { bad = true; break; }
-            if (!bad) out.append(out.length() > 0 ? ", " : "").append(cl);
+            if (bad) continue;
+            boolean good = false;
+            for (Pattern w : want) if (w.matcher(cl).find()) { good = true; break; }
+            if (!good) continue;
+            out.append(out.length() > 0 ? ", " : "").append(cl);
         }
         return out.toString();
     }
 
-    private static int amount(String q, Pattern[] block) {
+    private static int amount(String q, Pattern[] block, Pattern[] want) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
         for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
@@ -162,7 +171,7 @@ public final class Kcal {
         // ettem, elégettem 600-at" mindkét számot kimondja, de az „elégettem"
         // eddig az egész mondatot elnémította: a kétezer-száz sehol nem jelent
         // meg, és a felhasználó nem is tudta meg, hogy elveszett.
-        s = withoutBlockedClauses(s, block);
+        s = withoutBlockedClauses(s, block, want);
         if (s.isEmpty()) return -1;
         double sum = 0;
         Matcher m = NUM.matcher(s);

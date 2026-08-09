@@ -2025,6 +2025,13 @@ public final class Activities {
                 // a 30 perc futást" megtörtént edzés, csak nehéz volt.
                 "alig mozog", "alig mozdul", "alig edzet", "alig csinaltam",
                 "semennyit", "semmit sem",
+                // A kimondott NULLA is tagadás: a „nehéz nap: 10 óra munka,
+                // semmi mozgás" mondatból eddig tízórás „egyéb mozgás" lett –
+                // pont abból a szóból, amivel az ember azt mondja, hogy nem
+                // mozgott.
+                "semmi mozgas", "semmilyen mozgas", "nulla mozgas",
+                "semmi edzes", "semmilyen edzes", "nulla edzes",
+                "semmi sport", "nem mozogtam", "nem mozdultam",
                 // MÁS edzése nem az enyém: „a gyerek edzésén voltam" eddig
                 // negyvenöt perces bejegyzés lett. A saját „edzésen voltam"
                 // viszont marad.

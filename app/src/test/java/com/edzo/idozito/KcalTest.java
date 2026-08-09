@@ -220,4 +220,20 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("a célom napi 2000 kcal"));
         assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
     }
+
+    /**
+     * A jelöletlen tagmondat a mondat MÁSIK felével tart.
+     *
+     * A „ma megettem 2 tányér levest, összesen 900 kcal" kilencszáza az
+     * evésé, nem elégetett kalória – hiába nincs a záró tagmondatban egyetlen
+     * ige sem. A mondat eleje eldönti, miről van szó.
+     */
+    @Test public void anUnlabelledClauseFollowsTheRestOfTheSentence() {
+        assertEquals(900, Kcal.stated(
+                "ma megettem 2 tányér levest és egy nagy adag rizst, összesen kb 900 kcal"));
+        assertEquals(-1, Kcal.burned(
+                "ma megettem 2 tányér levest és egy nagy adag rizst, összesen kb 900 kcal"));
+        assertEquals(2100, Kcal.stated("ma 2100 kcal-t ettem, elégettem 600-at"));
+        assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
+    }
 }

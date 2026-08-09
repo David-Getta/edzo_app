@@ -1995,4 +1995,21 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.parse("bringa 45 km 2:10:00 800 m szint")
                 .plans.size());
     }
+
+    /**
+     * A kimondott nulla is tagadás.
+     *
+     * A „nehéz nap: 10 óra munka, semmi mozgás, este két sör" mondatból eddig
+     * tízórás „egyéb mozgás" lett – pont abból a szóból, amivel az ember azt
+     * mondja, hogy nem mozgott.
+     */
+    @Test public void anExplicitZeroIsANegation() {
+        assertTrue(Activities.parse("nehéz nap: 10 óra munka, semmi mozgás, este két sör")
+                .isEmpty());
+        assertTrue(Activities.parse("ma semmi edzés, csak pihenés").isEmpty());
+        assertTrue(Activities.parse("ma nem mozogtam semmit").isEmpty());
+        // A „semmi más" viszont nem tagadás: ott a mozgás ki van mondva.
+        assertEquals(45, Activities.parse("ma 45 perc kondi és semmi más")
+                .plans.get(0).minutes);
+    }
 }
