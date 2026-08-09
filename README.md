@@ -229,6 +229,8 @@ bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot 
 - **Alvás ↔ edzés és alvás ↔ pulzus a saját adatból**: a Statisztika kimondja,
   ha edzésnapokon kevesebbet alszol, és hogy a rövid éjszakák utáni reggeleken
   mennyivel magasabb a pulzusod
+- **Három adat egy mondatból**: a „78,4 kg, aludtam 7 órát, nyugalmi pulzus 52"
+  mindhármat elmenti – eddig csak az elsőt, a többit az app szó nélkül eldobta
 - Mindkét napló **CSV-be exportálható**, és jelvény is jár értük
 
 ### 🏋️ Erősítő edzésnapló
@@ -454,7 +456,7 @@ Android SDK nélkül (bármilyen JDK-val) a tiszta Java logika tesztjei helyben
 is futtathatók, másodpercek alatt:
 
 ```bash
-bash tools/gyorsteszt.sh      # ~855 teszt: ételfelismerés, időzítő-számítások,
+bash tools/gyorsteszt.sh      # ~856 teszt: ételfelismerés, időzítő-számítások,
                               # mondat-alapú edzésfelvétel, progresszió…
 bash tools/szosopres.sh       # hétköznapi magyar szavak az összes felismerő
                               # ellen: melyikben lakik egy rövid szótő.

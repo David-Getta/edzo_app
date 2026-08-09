@@ -161,6 +161,7 @@ public final class Examples {
             "aludtam 8 órát",
             "este 11-kor feküdtem, reggel 7-kor keltem",
             "nyugalmi pulzus 52",
+            "78,4 kg, aludtam 7 órát, nyugalmi pulzus 52",
     };
 
     /** Edzésnap egy sorban – megosztáshoz és felvételhez. */

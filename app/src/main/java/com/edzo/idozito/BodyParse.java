@@ -114,7 +114,7 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
         // mérleget sokan hangosan olvassák fel, és úgy is írják le.
-        String s = Hu.digits(Foods.norm(q));
+        String s = dropOtherLogs(Hu.digits(Foods.norm(q)));
         if (s.isEmpty()) return new Body(0, 0);
         for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
@@ -134,6 +134,32 @@ public final class BodyParse {
         if (!said && !onlyNumbersLeft(s)) return new Body(0, 0);
         double kg = weight(s, fat, cm);
         return new Body(kg, fat, cm);
+    }
+
+    /**
+     * A MÁS naplóba tartozó tagmondatok le: „78,4 kg, aludtam 7 órát".
+     *
+     * A reggeli három adat egy mondatban érkezik – súly, alvás, pulzus –, és
+     * eddig a mérés esett ki közülük: az alvás-tagmondat szavai miatt a
+     * „csak számok maradtak" vizsgálat megbukott, a mondatban pedig nem volt
+     * kimondott mérés-szó. A tagmondat a magyar mondat természetes határa,
+     * ezért itt vágunk.
+     */
+    private static String dropOtherLogs(String s) {
+        if (s.indexOf(',') < 0 && s.indexOf(';') < 0) return s;
+        StringBuilder keep = new StringBuilder();
+        // A vessző magyarul tizedesjel is: a „78,4" NEM két tagmondat.
+        for (String part : s.split("[,;](?!\\d)")) {
+            boolean other = false;
+            for (String w : new String[]{"alud", "alvas", "pulzus", "rhr", "nyugalmi",
+                    "ebredtem", "keltem", "fekudtem"})
+                if (part.contains(w)) { other = true; break; }
+            if (other) continue;
+            if (keep.length() > 0) keep.append(' ');
+            keep.append(part.trim());
+        }
+        String out = keep.toString().trim();
+        return out.isEmpty() ? s : out;
     }
 
     /**

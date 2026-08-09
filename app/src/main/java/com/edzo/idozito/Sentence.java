@@ -108,6 +108,44 @@ public final class Sentence {
         return Kind.NONE;
     }
 
+    /**
+     * A mondat MÁSODIK naplója, vagy NONE.
+     *
+     * Egy mondat gyakran két dologról szól: „futottam 30 percet és ettem egy
+     * banánt", „aludtam 8 órát, nyugalmi pulzus 52". Az útbaigazító eddig
+     * eldöntötte, melyik a fontosabb, a másikat pedig csendben eldobta – a
+     * banán sehol nem jelent meg, és a felhasználó nem is tudta meg, hogy
+     * elveszett. Ez ugyanaz a csendes hiba, mint a meg nem történt bejegyzés,
+     * csak fordítva.
+     *
+     * Szándékosan szűk: csak azokat a párokat adjuk vissza, amelyek nem
+     * eshetnek egymás rovására. Az étel-felismerő huszonkét valódi
+     * edzés-mondaton egyetlen ételt sem talált, tehát ha talál, az tényleg
+     * ott van.
+     */
+    public static Kind also(String q, List<Foods.Food> foods, long now) {
+        Kind k = of(q, foods, now);
+        switch (k) {
+            case WORKOUT: case STRENGTH: case INTERVAL: case ROUTINE:
+                if (foods != null && !Foods.parse(foods, q).isEmpty()) return Kind.MEAL;
+                return Kind.NONE;
+            // A reggeli három adat egy mondatban: „ma reggel 78,4 kg, aludtam
+            // 7 órát, nyugalmi pulzus 52". Mindhárom a Profil naplója, és
+            // eddig csak egy került be közülük.
+            case SLEEP:
+                if (Pulse.parse(q) > 0) return Kind.PULSE;
+                return BodyParse.parse(q).isEmpty() ? Kind.NONE : Kind.BODY;
+            case PULSE:
+                if (Sleep.parse(q) > 0) return Kind.SLEEP;
+                return BodyParse.parse(q).isEmpty() ? Kind.NONE : Kind.BODY;
+            case BODY:
+                if (Sleep.parse(q) > 0) return Kind.SLEEP;
+                return Pulse.parse(q) > 0 ? Kind.PULSE : Kind.NONE;
+            default:
+                return Kind.NONE;
+        }
+    }
+
     /** A napló neve, ahová a mondat való („Erősítő napló"). */
     public static String where(Kind k) {
         switch (k) {

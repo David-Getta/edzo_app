@@ -312,6 +312,9 @@ public class BodyParseTest {
         kg("reggel 80,5 kilót mértem", 80.5);
         // A magasság a mérés mellett szokott állni – az sem ronthatja el.
         kg("80 kg, 180 cm", 80);
+        // A reggeli három adat egy mondatban: a mérés eddig kiesett közülük.
+        kg("ma reggel 78,4 kg, aludtam 7 órát", 78.4);
+        kg("aludtam 8 órát, 78 kg", 78);
         // A vásárlás és a munkasúly továbbra sem mérés.
         none("vettem 2 kg almát");
         none("80 kg-os súllyal nyomtam");

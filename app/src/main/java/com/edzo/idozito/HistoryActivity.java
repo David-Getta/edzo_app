@@ -772,9 +772,19 @@ public class HistoryActivity extends Activity {
         if (p.total() == 1 && Kcal.burned(text) > 0)
             sb.append("\nA megadott ").append(Kcal.burned(text))
               .append(" kcal-lal (nem becsüljük felül).");
-        new Sheet(this, p.total() + " edzés mentése", sb.toString())
-                .addPrimary("Mentés", () -> saveBulk(p, text))
-                .addNeutral("Átírom", () -> bulkSheet(text))
+        // A mondat MÁSIK fele: a „futottam 30 percet és ettem egy banánt"
+        // banánja eddig csendben elveszett – az edzés mentése után nyoma sem
+        // maradt, és a felhasználó nem is tudta meg, hogy volt ott étel.
+        final Sentence.Kind other = Sentence.also(text, Foods.all(this),
+                System.currentTimeMillis());
+        Sheet sh = new Sheet(this, p.total() + " edzés mentése", sb.toString())
+                .addPrimary("Mentés", () -> saveBulk(p, text));
+        if (other == Sentence.Kind.MEAL)
+            sh.addNeutral("Az étel is – mentés + Étrend", () -> {
+                saveBulk(p, text);
+                Ux.openFor(this, other, text);
+            });
+        sh.addNeutral("Átírom", () -> bulkSheet(text))
                 .addCancel()
                 .show();
     }

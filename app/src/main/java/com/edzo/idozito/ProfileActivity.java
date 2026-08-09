@@ -272,39 +272,14 @@ public class ProfileActivity extends Activity {
      * hogy egy elgépelt szám még mentés előtt javítható legyen.
      */
     void measurementSheet(final String sentence) {
-        // Az alvás-mondat is ide érkezik („aludtam 8 órát"): a Profil a
-        // pihenés naplója is, nem csak a mérlegé.
-        double slept = Sleep.parse(sentence);
-        if (slept > 0) {
-            new Sheet(this, "Alvás a mondatból 😴",
-                    "„" + sentence.trim() + "”\n\n→  " + Hu.kg(slept) + " óra – "
-                            + Sleep.verdict(slept))
-                    .addPrimary("Mentés a mai napra", () -> {
-                        Sleep.add(this, System.currentTimeMillis(), slept);
-                        refreshSleepCard();
-                        Ux.blazeCard(this, "😴 Alvás mentve ✔  " + Hu.kg(slept) + " óra");
-                    })
-                    .addCancel()
-                    .show();
-            return;
-        }
-        // A nyugalmi pulzus is a Profil naplója („nyugalmi pulzus 52").
+        // A reggeli három adat EGY mondatban érkezik: „78,4 kg, aludtam 7
+        // órát, nyugalmi pulzus 52". Mindhárom a Profil naplója, és eddig
+        // csak az első került be közülük – a többit az app szó nélkül
+        // eldobta. Ezért itt együtt nézzük meg, mit talált a mondatban.
+        final double slept = Sleep.parse(sentence);
         final int bpm = Pulse.parse(sentence);
-        if (bpm > 0) {
-            new Sheet(this, "Nyugalmi pulzus ❤️",
-                    "„" + sentence.trim() + "”\n\n→  " + bpm + " bpm – "
-                            + Pulse.verdict(bpm))
-                    .addPrimary("Mentés a mai napra", () -> {
-                        Pulse.add(this, System.currentTimeMillis(), bpm);
-                        refreshSleepCard();
-                        Ux.blazeCard(this, "❤️ Pulzus mentve ✔  " + bpm + " bpm");
-                    })
-                    .addCancel()
-                    .show();
-            return;
-        }
-        BodyParse.Body b = BodyParse.parse(sentence);
-        if (b.isEmpty()) {
+        final BodyParse.Body b = BodyParse.parse(sentence);
+        if (slept <= 0 && bpm <= 0 && b.isEmpty()) {
             // Lehet, hogy nem is mérés: a mondat itt is megtalálhatja a helyét.
             final Sentence.Kind k =
                     Sentence.of(sentence, Foods.all(this), System.currentTimeMillis());
@@ -326,14 +301,34 @@ public class ProfileActivity extends Activity {
                     .show();
             return;
         }
-        if (b.kg > 0) weightEt.setText(trim(b.kg));
-        if (b.fatPct > 0) bodyFatEt.setText(trim(b.fatPct));
-        pendingCm = b.hasCm() ? b.cm : null;
-        recompute();
-        new Sheet(this, "Mérés a mondatból ⚖️",
-                "„" + sentence.trim() + "”\n\n→  " + b.label()
-                        + "\n\nA mezőkbe már beírtam – ha stimmel, mentheted.")
-                .addPrimary("Mentés", this::saveMeasurement)
+        // A mezőket rögtön kitöltjük, hogy látszódjon, mit értett az app – és
+        // hogy egy elgépelt szám még mentés előtt javítható legyen.
+        if (!b.isEmpty()) {
+            if (b.kg > 0) weightEt.setText(trim(b.kg));
+            if (b.fatPct > 0) bodyFatEt.setText(trim(b.fatPct));
+            pendingCm = b.hasCm() ? b.cm : null;
+            recompute();
+        }
+        StringBuilder sb = new StringBuilder("„" + sentence.trim() + "”\n");
+        if (!b.isEmpty()) sb.append("\n→  ").append(b.label());
+        if (slept > 0) sb.append("\n→  ").append(Hu.kg(slept)).append(" óra alvás – ")
+                .append(Sleep.verdict(slept));
+        if (bpm > 0) sb.append("\n→  ").append(bpm).append(" bpm nyugalmi pulzus – ")
+                .append(Pulse.verdict(bpm));
+        if (!b.isEmpty()) sb.append("\n\nA mezőkbe már beírtam – ha stimmel, mentheted.");
+        String title = !b.isEmpty() ? "Mérés a mondatból ⚖️"
+                : slept > 0 ? "Alvás a mondatból 😴" : "Nyugalmi pulzus ❤️";
+        new Sheet(this, title, sb.toString())
+                .addPrimary(b.isEmpty() ? "Mentés a mai napra" : "Mentés", () -> {
+                    long now = System.currentTimeMillis();
+                    if (slept > 0) Sleep.add(this, now, slept);
+                    if (bpm > 0) Pulse.add(this, now, bpm);
+                    if (slept > 0 || bpm > 0) refreshSleepCard();
+                    if (!b.isEmpty()) saveMeasurement();
+                    else Ux.blazeCard(this, slept > 0
+                            ? "😴 Alvás mentve ✔  " + Hu.kg(slept) + " óra"
+                            : "❤️ Pulzus mentve ✔  " + bpm + " bpm");
+                })
                 .addCancel()
                 .show();
     }

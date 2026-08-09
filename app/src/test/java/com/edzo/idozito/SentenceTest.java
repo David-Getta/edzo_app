@@ -235,4 +235,38 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.NONE, Sentence.of("mit egyek edzés előtt?", all, now));
         assertEquals(Sentence.Kind.NONE, Sentence.of("hány kört fussak?", all, now));
     }
+
+    /**
+     * A mondat MÁSIK fele sem veszhet el.
+     *
+     * A „futottam 30 percet és ettem egy banánt" banánja eddig nyomtalanul
+     * eltűnt: az útbaigazító eldöntötte, hogy ez edzés, és a mondat többi
+     * részét eldobta. Ez ugyanaz a csendes hiba, mint a meg nem történt
+     * bejegyzés, csak fordítva – itt a napló KEVESEBBET tud a valóságnál.
+     */
+    @Test public void theOtherHalfOfTheSentenceIsOffered() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        long now = 1_753_869_600_000L;
+        String[] mixed = {"futottam 30 percet és ettem egy banánt",
+                "reggel 5 km futás, utána zabkása", "edzés és két tojás",
+                "1 óra bringa, utána egy alma",
+                "3x10 fekvenyomás 60 kg, utána protein turmix"};
+        for (String q : mixed)
+            assertEquals(q, Sentence.Kind.MEAL, Sentence.also(q, all, now));
+        // A pihenés adatai egymás mellett: mindhárom a Profil naplója.
+        assertEquals(Sentence.Kind.PULSE,
+                Sentence.also("aludtam 8 órát, nyugalmi pulzus 52", all, now));
+        assertEquals(Sentence.Kind.SLEEP,
+                Sentence.also("ma reggel 78,4 kg, aludtam 7 órát", all, now));
+        assertEquals(Sentence.Kind.SLEEP, Sentence.also("aludtam 8 órát, 78 kg", all, now));
+        // Ahol nincs második napló, ott ne találgassunk. Huszonkét valódi
+        // edzés-mondaton az étel-felismerő egyetlen ételt sem talált.
+        for (String q : new String[]{"30 perc futás", "guggolás 5x5 100 kg",
+                "8 kör 40 mp munka 20 mp pihenő", "150 g csirkemell rizzsel",
+                "78,4 kg", "fáj a vállam", "Lábnap: guggolás, lábtolás, kitörés",
+                "lábgép 3x12 80 kg és vádli 4x15", "mellgép 3x12",
+                "combhajlítás 3x12 40 kg", "kettlebell swing 5x20 24 kg"})
+            assertEquals(q, Sentence.Kind.NONE, Sentence.also(q, all, now));
+        assertEquals(Sentence.Kind.NONE, Sentence.also(null, all, now));
+    }
 }
