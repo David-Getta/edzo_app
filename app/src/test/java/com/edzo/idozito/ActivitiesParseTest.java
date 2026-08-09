@@ -184,6 +184,16 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1×kondi/45", summary("ma elkezdtem edzeni, 45 perc kondi"));
     }
 
+    @Test public void everydayPhysicalWorkCounts() {
+        // A kaszálás és a cipekedés ugyanaz a fizikai munka – eddig válasz
+        // nélkül maradtak, pedig a napi mozgás jó része ilyen.
+        assertEquals("1d+0: 1×munka/90", summary("kaszáltam a kertben 90 percet"));
+        assertEquals("1d+0: 1×munka/180",
+                summary("átrendeztem a bútorokat, 3 órát cipekedtem"));
+        assertEquals("1d+0: 1×munka/40", summary("bepakoltam a kocsit, 40 perc"));
+        assertEquals("1d+0: 1×munka/120", summary("metszettem a fákat 2 órát"));
+    }
+
     @Test public void aSuggestionIsNotALog() {
         // A felszólítás terv: a „csináljunk egy tabatát" javaslat. Az
         // időzítő-terv ilyenkor is elkészül – csak a bejegyzés nem.

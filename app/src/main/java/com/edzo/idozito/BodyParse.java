@@ -236,6 +236,10 @@ public final class BodyParse {
             // A „-kor" időpont vagy körszám, sosem kiló: a „45-kor" és a
             // „45 kör" negyvenöt kilós mérésként került volna a súlytrendbe.
             if (rest.startsWith("kor") || rest.startsWith("-kor")) continue;
+            // A LÁZ nem testsúly: a „38 fokos lázam van" harmincnyolca
+            // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
+            // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
+            if (rest.startsWith("fok")) continue;
             return v;
         }
         return 0;

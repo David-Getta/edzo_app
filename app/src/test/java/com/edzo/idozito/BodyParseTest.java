@@ -288,6 +288,15 @@ public class BodyParseTest {
         kg("100 kg", 100);
     }
 
+    /** A láz nem testsúly – pont egy beteg napon rontaná el a trendet. */
+    @Test public void aFeverIsNotAWeight() {
+        none("beteg vagyok, 38 fokos lázam van");
+        none("38,5 fokos láz");
+        none("39 fok");
+        // A valódi mérés változatlan.
+        kg("ma reggel 78,4 kg voltam", 78.4);
+    }
+
     /** A derék/magasság arány a szakirodalom hüvelykujjszabálya. */
     @Test public void waistToHeightRatio() {
         assertEquals(0.47, Profile.waistToHeight(84, 178), 0.005);

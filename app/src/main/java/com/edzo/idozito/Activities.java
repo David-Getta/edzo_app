@@ -152,6 +152,11 @@ public final class Activities {
                     "koltoz", "asas", "kapalas", "kapal", "gereblyez",
                     "lapatol", "kertben dolgoz", "kertben melo", "astam", "asni",
                     "sepreget", "felmostam", "felmosas",
+                    // A kaszálás és a cipekedés ugyanaz a fizikai munka: eddig
+                    // a „kaszáltam a kertben 90 percet" és a „3 órát
+                    // cipekedtem" válasz nélkül maradt.
+                    "kaszal", "kaszalas", "cipeked", "cipekedes", "cipeltem",
+                    "pakolas", "bepakol", "kipakol", "metszes", "metszet",
                     "ablakpucol", "porszivoz"),
             new Kind("egyeb", "🤸", "Egyéb mozgás", 6.0, false, 45,
                     // A „kardió" edzés-szó: enélkül a „45 perc kardió" semmi
