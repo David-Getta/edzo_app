@@ -291,7 +291,9 @@ sem talált, tehát ha talál, az tényleg ott van.
   szót el lehet hagyni), „guggolás ötször ötöt 100 kg",
   „fekvenyomás 60x10, 70x8, 80x6" és „fekvenyomás: 60/10, 70/8, 80/6"
   (súly × ismétlés, sorozatonként – szorzójellel és perjellel is),
-  „3 kör 10 fekvőtámasz", „leguggoltam 140-et" (rúddal terhelt
+  „3 kör 10 fekvőtámasz", „5 kör 10 fekvőtámasz 15 guggolás 20 hasizom"
+  (vessző nélkül is: a magyar felsorolásban a szám maga tagol),
+  „leguggoltam 140-et" (rúddal terhelt
   gyakorlatnál a magában álló háromjegyű szám kiló, nem ismétlés – de a
   „csináltam 100 guggolást" darabszám marad) – akár több
   gyakorlat egy mondatban,

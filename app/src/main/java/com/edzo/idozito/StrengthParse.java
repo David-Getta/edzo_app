@@ -284,8 +284,8 @@ public final class StrengthParse {
         // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
         if (Activities.looksLikeFuture(text)) return out;
-        String whole = stripInsteadOf(sets(slashWeightReps(
-                kgBeforeMultiplier(stripListMarkers(Foods.norm(text))))));
+        String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(
+                kgBeforeMultiplier(stripListMarkers(Foods.norm(text)))))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
@@ -892,6 +892,42 @@ public final class StrengthParse {
                     bestLen = row[i].length();
                 }
         return best;
+    }
+
+    /**
+     * Vessző nélküli felsorolás: „5 kör 10 fekvőtámasz 15 guggolás 20 hasizom".
+     *
+     * A megosztott köredzés így néz ki – a magyar felsorolásban a vessző
+     * elmarad, mert a szám maga tagol. A tagmondat-vágó viszont vesszőt
+     * keresett, így az EGÉSZ lista egy tagmondat lett: a guggolás megkapta a
+     * hasizom ismétlésszámát, a hasprés pedig egyáltalán nem került be.
+     *
+     * Csak akkor vágunk, ha a szám után közvetlenül gyakorlatnév áll, ÉS a
+     * mondatban már volt korábban gyakorlat – az első tétel elé nem kell
+     * határ, és a „3x10 fekvenyomás 60 kg" hatvanasa sem nyit új tételt.
+     */
+    private static String splitBareList(String s) {
+        StringBuilder out = new StringBuilder();
+        int last = 0;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d.,x×])(\\d{1,3})\\s+(?=[a-z])").matcher(s);
+        while (m.find()) {
+            if (moveAtStart(s.substring(m.end())) == null) continue;
+            if (moveIn(s.substring(0, m.start())) == null) continue;
+            out.append(s, last, m.start()).append(", ");
+            last = m.start();
+        }
+        if (last == 0) return s;
+        out.append(s.substring(last));
+        return out.toString();
+    }
+
+    /** A szöveg elején álló gyakorlat neve, vagy null. */
+    private static String moveAtStart(String s) {
+        for (String[] row : MOVES)
+            for (int i = 1; i < row.length; i++)
+                if (s.startsWith(row[i])) return row[0];
+        return null;
     }
 
     /** A gyakorlatnév szótövének első helye a tagmondatban, vagy -1. */

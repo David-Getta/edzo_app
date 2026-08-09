@@ -232,6 +232,25 @@ public class StrengthParseTest {
         }
     }
 
+    /**
+     * Vessző nélküli felsorolás: „5 kör 10 fekvőtámasz 15 guggolás 20 hasizom".
+     *
+     * A megosztott köredzés így néz ki – a magyar felsorolásban a vessző
+     * elmarad, mert a szám maga tagol. Eddig az EGÉSZ lista egy tagmondat
+     * volt: a guggolás megkapta a hasizom ismétlésszámát, a hasprés pedig
+     * egyáltalán nem került be.
+     */
+    @Test public void aListWithoutCommasIsStillAList() {
+        assertEquals("Fekvőtámasz 5×10/10/10/10/10@0 | Guggolás 5×15/15/15/15/15@0"
+                        + " | Hasprés 5×20/20/20/20/20@0",
+                sum("köredzés a parkban: 5 kör 10 fekvőtámasz 15 guggolás 20 hasizom"));
+        assertEquals("Fekvőtámasz 1×20@0 | Guggolás 1×30@0",
+                sum("20 fekvőtámasz 30 guggolás"));
+        // A súly nem nyit új tételt: a „3x10 fekvenyomás 60 kg" egy gyakorlat.
+        assertEquals("Fekvenyomás 3×10/10/10@60", sum("3x10 fekvenyomás 60 kg"));
+        assertEquals("Kettlebell lendítés 5×15/15/15/15/15@16", sum("kettlebell 16 kg 5x15"));
+    }
+
     @Test public void aThreeDigitNumberOnABarbellMoveIsKilograms() {
         // A „leguggoltam 140-et" száznegyven KILÓ – száznegyven guggolás nem
         // létezik egy rúddal. Eddig ismétlésnek olvastuk, és a rekord, az 1RM
