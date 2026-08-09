@@ -944,5 +944,16 @@ public class StrengthParseTest {
         assertEquals(100.0, f.get(0).sets.get(0).weight, 0.001);
         assertEquals("Fekvőtámasz", StrengthParse.parse("fekvőtámasz 3x20").get(0).name);
         assertEquals("Fekvőtámasz", StrengthParse.parse("3 kör 10 fekvőtámasz").get(0).name);
+        // A puszta „kettlebell" más gyakorlatnév mellett nem mond semmit, de
+        // egyedül mindenki a lendítésre gondol: a „kettlebell 16 kg 5x15"
+        // eddig edzés-bejegyzés lett, sorozat és súly nélkül.
+        List<StrengthParse.Item> kb = StrengthParse.parse("kettlebell 16 kg 5x15");
+        assertEquals("Kettlebell lendítés", kb.get(0).name);
+        assertEquals(5, kb.get(0).sets.size());
+        assertEquals(16.0, kb.get(0).sets.get(0).weight, 0.001);
+        assertEquals("Guggolás",
+                StrengthParse.parse("kettlebell guggolás 3x10 20 kg").get(0).name);
+        // Sorozat nélkül továbbra sincs bejegyzés.
+        assertTrue(StrengthParse.parse("kettlebell 24 kg").isEmpty());
     }
 }

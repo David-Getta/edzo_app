@@ -530,6 +530,11 @@ public final class StrengthParse {
     /** Egy tagmondat → gyakorlat + sorozatok, vagy null. */
     private static Item parseOne(String s) {
         String name = moveIn(s);
+        // A puszta „kettlebell" MÁS gyakorlatnév mellett nem mond semmit (a
+        // kettlebell-guggolás guggolás), egyedül viszont mindenki a lendítésre
+        // gondol: a „kettlebell 16 kg 5x15" eddig edzés-bejegyzés lett,
+        // sorozat és súly nélkül.
+        if (name == null && s.contains("kettlebell")) name = "Kettlebell lendítés";
         if (name == null) return null;
 
         // Tartásnál a perc percet jelent, és a szám másodperc: a „plank 3×1
