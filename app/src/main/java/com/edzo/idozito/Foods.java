@@ -2745,6 +2745,24 @@ public final class Foods {
                 for (Match x : ms) if (x.pos > m.pos) after++;
                 if (e < q.length() && q.charAt(e) == ':' && after >= 2) continue;
             }
+            // A -BÓL rag a hozzávalót jelöli: a „gyümölcsturmix banánból és
+            // eperből" egyetlen turmix – eddig a banán és az eper külön
+            // adagként is bement mellé. Ragos hozzávalónál a turmix adagja
+            // a mérvadó, a hozzávaló esik ki.
+            boolean anyShake = false;
+            for (Match x : ms)
+                if (x.food.name.startsWith("Gyümölcsturmix")
+                        || x.food.name.startsWith("Protein turmix")) anyShake = true;
+            if (anyShake && !shake) {
+                int e = m.pos + m.len;
+                boolean ragAfter = q.startsWith("bol", e)
+                        && (e + 3 >= q.length() || !Character.isLetter(q.charAt(e + 3)));
+                // A rag a TALÁLATBAN is lehet: az „eperből" saját ragozott
+                // szótővel került fel, ott a „ból" már a tő része.
+                boolean ragInside = q.substring(m.pos, Math.min(q.length(), e))
+                        .endsWith("bol");
+                if (ragAfter || ragInside) continue;
+            }
             out.add(m);
         }
         return out.isEmpty() ? ms : out;

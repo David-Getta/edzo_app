@@ -528,5 +528,8 @@ public class FoodsParseTest {
         assertEquals(4, h.size());
         // A puszta turmix hozzávaló-lista nélkül marad turmix.
         assertEquals(1, Foods.parse(all, "ittam egy smoothie-t").size());
+        // A -BÓL ragos hozzávaló is a turmixé: egyetlen tétel megy be.
+        assertEquals(1, Foods.parse(all, "gyümölcsturmix banánból "
+                + "és eperből").size());
     }
 }
