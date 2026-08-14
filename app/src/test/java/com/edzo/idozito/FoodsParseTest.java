@@ -528,6 +528,23 @@ public class FoodsParseTest {
     }
 
     /**
+     * A wrap tortillája maga a wrap – nem külön falat.
+     *
+     * A „csirkés wrap teljes kiőrlésű tortillában" a wrap mellé egy egész
+     * tortillát is beírt: az étel és az alapanyaga kétszer számolódott.
+     * A magában evett tortilla marad.
+     */
+    @Test public void aWrapsTortillaIsTheWrap() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "csirkés wrap teljes kiőrlésű "
+                + "tortillában");
+        assertEquals(1, h.size());
+        assertEquals("Csirkés wrap", h.get(0).food.name);
+        assertEquals("Tortilla / wrap", Foods.parse(all, "tortillát ettem "
+                + "tojással reggelire").get(0).food.name);
+    }
+
+    /**
      * A kelesztés és a dagasztás előkészület, nem evés.
      */
     @Test public void proofingDoughIsNotEating() {

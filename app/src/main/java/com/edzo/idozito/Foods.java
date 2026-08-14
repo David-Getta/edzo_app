@@ -2315,6 +2315,7 @@ public final class Foods {
         List<Match> ms = dropVenueMenu(matches(list, query), norm(query));
         ms = dropSmoothieDouble(ms, norm(query));
         ms = dropFakeMeat(ms, norm(query));
+        ms = dropWrapDouble(ms);
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {
             // Az „ittam másfél litert" ital-név nélkül is vizet jelent.
@@ -2805,6 +2806,26 @@ public final class Foods {
             out.add(m);
         }
         return out.isEmpty() ? ms : out;
+    }
+
+    /**
+     * A wrap tortillája maga a wrap – nem külön falat.
+     *
+     * A „csirkés wrap teljes kiőrlésű tortillában" a wrap MELLÉ egy egész
+     * tortillát is beírt: az étel és az alapanyaga kétszer számolódott,
+     * kétszáz plusz kalóriával. Ha egy wrap-étel már megvan, a külön
+     * tortilla-találat kiesik.
+     */
+    private static List<Match> dropWrapDouble(List<Match> ms) {
+        boolean wrapDish = false;
+        for (Match m : ms)
+            if (m.food.name.contains("wrap") && !m.food.name.startsWith("Tortilla"))
+                wrapDish = true;
+        if (!wrapDish) return ms;
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms)
+            if (!m.food.name.startsWith("Tortilla")) out.add(m);
+        return out;
     }
 
     /** Egy találat helye a szövegben (a leghosszabb illeszkedő szótő szerint). */
