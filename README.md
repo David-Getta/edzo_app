@@ -146,6 +146,22 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   vádli körfogata, mégis harmincnyolc kilós mérés lett belőle a
   súlytrendben – és mellette harmincnyolc ismétléses vádliemelés
 
+- ami **más tányérján** van, az sem az enyém: „a férjem pizzát evett, én
+  salátát" – a pizza a férjé. A közösen evett étel marad („a férjemmel
+  pizzát ettünk"), és a főzés nem evés: a „párom főzött gulyást, két
+  tányérral ettem" gulyása az enyém is
+- az **„ő" névmás** is alanyt vált: az „ő kardiózott, én súlyzóztam"
+  kardiója a párom edzése
+- a **visszaemlékezés** nem mai bejegyzés: a „terhesség alatt jógáztam", a
+  „régen sokat futottam" és a „régebben 100 kg-ot nyomtam fekve" hónapokkal
+  ezelőtti időkről szól – az utóbbi mai rekordként a progresszió-javaslatot
+  is elvitte volna
+- a **mondat közbeni sorszám** is sorszám: a „letudtam a heti 3. futást"
+  hármasa a hét harmadik futása, nem három futás; az „N napos kihívás" pedig
+  a kihívás hossza, nem időszak és nem ismétlésszám
+- a **diagnózis** nem étel: a „cukorbeteg vagyok" mondatból tíz gramm cukor
+  került az étrendbe – pont annak a naplójába, aki kerüli
+
 Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
 bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
 étellel végigpróbálva egyikből sem lesz napló-sor.
@@ -247,6 +263,12 @@ eltűnt. A **napi összefoglaló** ugyanígy: a „tegnap este 3 pohár bort itt
 **ma reggel 79,8 kg**" méréséből semmi nem lett, mert a bor szavai miatt a
 „csak számok maradtak" vizsgálat megbukott – pedig a kilogramm ott állt
 kiírva.
+
+A **szokás melletti mai mennyiség** megmenti a mondatot: az „úszni járok,
+ma 1 km" első fele szokás, a második egy megtörtént úszás – eddig az egész
+mondat elveszett, a kilométerrel együtt. És a **„lettem" nem „ettem"**: a
+„78 kg lettem, végre 80 alá mentem" mérése étkezés-tagmondatként esett ki,
+mert a szűrő a szó belsejében is talált.
 
 Az **alváshossz** a vessző után is számít: a „rosszul aludtam, **kb 5 órát**,
 kétszer felébredtem" mondatból eddig semmi nem lett. Az ige melletti szám
