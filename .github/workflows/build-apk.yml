@@ -123,7 +123,7 @@ jobs:
           name: "Grit – build ${{ github.run_number }}"
           make_latest: true
           body: |
-            Grit automatikus build (v93.9, build ${{ github.run_number }}).
+            Grit automatikus build (v94.0, build ${{ github.run_number }}).
 
             **Mi változott:** ${{ env.COMMIT_SUBJECT }}
 

@@ -2950,4 +2950,16 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(4.0, p.plans.get(0).km, 0.01);
     }
+
+    /**
+     * A „30 perccel" eltolás, nem időtartam.
+     *
+     * A „reggeli után 30 perccel edzettem 45 percet" edzése negyvenöt perc –
+     * eddig a harminc perces eltolást kapta meg, a valódi hossz meg
+     * elveszett.
+     */
+    @Test public void thirtyMinutesLaterIsNotTheDuration() {
+        assertEquals(45, Activities.parse("reggeli után 30 perccel edzettem "
+                + "45 percet").plans.get(0).minutes);
+    }
 }

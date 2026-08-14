@@ -3512,6 +3512,11 @@ public final class Activities {
                 from = p + 1;
                 // A „7 órakor" időpont, nem hét óra hosszú edzés.
                 if (unit.equals("ora") && s.startsWith("orakor", p)) continue;
+                // A „30 perccel" és az „1 órával" ELTOLÁS, nem időtartam: a
+                // „reggeli után 30 perccel edzettem 45 percet" edzése
+                // negyvenöt perc – eddig a harminc perces eltolást kapta meg.
+                if (s.startsWith(unit + "cel", p) || s.startsWith(unit + "vel", p)
+                        || s.startsWith(unit + "val", p)) continue;
                 // A „fél óra" és a „másfél óra" nem egész számnév – külön ág.
                 if (unit.equals("ora")) {
                     int we = p;
