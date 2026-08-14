@@ -384,6 +384,12 @@ public final class BodyParse {
             // – a mai a mondat végén áll, és eddig a régi nyerte a trendet.
             if (rest.startsWith("rol") || rest.startsWith("-rol")
                     || rest.startsWith("bol") || rest.startsWith("-bol")) continue;
+            // A KÜSZÖB sem a mai érték: a „végre lement a súlyom 80 alá,
+            // 79.6 kg" nyolcvanasa a lélektani határ, nem a mérés – mégis
+            // nyolcvan kiló került a trendbe a 79,6 helyett. Ugyanígy a
+            // „fölé": az átlépett határ száma sosem a mérleg száma.
+            if (rest.startsWith("ala") || rest.startsWith("-ala")
+                    || rest.startsWith("fole") || rest.startsWith("folott")) continue;
             // A LÁZ nem testsúly: a „38 fokos lázam van" harmincnyolca
             // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
             // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
@@ -560,6 +566,10 @@ public final class BodyParse {
                         // A BÜSZKESÉG szava is csak kíséret: a „77,7 kg –
                         // eddigi legjobb" mérés, a jelző nem veszi el.
                         + "eddigi|legjobb|rekord|csucs|uj|vegre|kerek|"
+                        // A „pont", a „kereken" és a „kg-nál tartok" is csak
+                        // kíséret: a „reggel éhgyomorra 68 kg pont" és a
+                        // „82 kg-nál tartok" mérés – eddig mindkettő kiesett.
+                        + "pont|pontosan|kereken|nal|nel|tartok|tartunk|"
                         // A DÁTUM is csak kíséret: az „aug. 14. reggel 78 kg"
                         // jegyzetből másolt sor, a hónapnév nem veszi el.
                         + "januar|februar|marcius|aprilis|majus|junius|julius|"

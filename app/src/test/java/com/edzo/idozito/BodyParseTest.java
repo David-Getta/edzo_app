@@ -663,4 +663,23 @@ public class BodyParseTest {
     @Test public void aBathTimeWeighInCounts() {
         assertEquals(79.2, BodyParse.parse("esti fürdés után 79,2 kg").kg, 0.01);
     }
+
+    /**
+     * Az átlépett küszöb száma nem a mérleg száma.
+     *
+     * A „végre lement a súlyom 80 alá, 79.6 kg" nyolcvanasa a lélektani
+     * határ – mégis nyolcvan kiló került a trendbe a 79,6 helyett: a
+     * fogyás ünnepének napján egy fél kilóval nagyobb súly.
+     */
+    @Test public void aThresholdIsNotTheMeasurement() {
+        assertEquals(79.6, BodyParse.parse("végre lement a súlyom 80 alá, "
+                + "79.6 kg").kg, 0.01);
+    }
+
+    /** A „pont" és a „kg-nál tartok" is csak kíséret a mérés mellett. */
+    @Test public void exactAndStandingAtPhrasesAreCompany() {
+        assertEquals(68.0, BodyParse.parse("reggel éhgyomorra "
+                + "68 kg pont").kg, 0.01);
+        assertEquals(82.0, BodyParse.parse("82 kg-nál tartok").kg, 0.01);
+    }
 }
