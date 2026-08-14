@@ -286,4 +286,20 @@ public class KcalTest {
         // Cél-szó nélkül nincs mit átvinni.
         assertEquals(-1, Kcal.stated("ma 1750 lett"));
     }
+
+    /**
+     * Az „egy protein" ital, nem egy gramm fehérje.
+     *
+     * Az „ittam egy proteint edzés után" egyese az italok DARABSZÁMA – eddig
+     * egy gramm fehérjeként bekerült a makró-naplóba. Mértékegység nélkül
+     * csak életszerű makró-szám lehet fehérje; grammal kiírva a kis szám is
+     * érvényes.
+     */
+    @Test public void oneProteinShakeIsNotOneGramOfProtein() {
+        assertEquals(-1, Kcal.protein("ittam egy proteint edzés után"));
+        assertEquals(-1, Kcal.protein("két proteint ittam ma"));
+        assertEquals(5, Kcal.protein("5 g fehérje"));
+        assertEquals(120, Kcal.protein("120 fehérje ma"));
+        assertEquals(140, Kcal.protein("fehérje: 140"));
+    }
 }

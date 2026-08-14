@@ -272,12 +272,12 @@ public final class Kcal {
      * ÉTEL neve, nem a tápérték-táblázat sora.
      */
     private static final Pattern PROT_AFTER = Pattern.compile(
-            "(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?\\s*(?<![a-z])(feherje|feherjet|protein|proteint)"
+            "(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?\\s*(?<![a-z])(feherje|feherjet|protein|proteint)"
             // A „150 g protein turmix" száz-ötven grammja a TURMIXÉ, nem a
             // fehérjéé: az étel neve folytatódik, tehát nem tápérték-sor.
             + "(?![a-z])(?!\\s?(?:turmix|shake|sejk|por|italpor|szelet|pudding))");
     private static final Pattern PROT_BEFORE = Pattern.compile(
-            "(?<![a-z])(?:feherje|protein)(?![a-z])\\s*:?\\s*(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramm)?(?![a-z])");
+            "(?<![a-z])(?:feherje|protein)(?![a-z])\\s*:?\\s*(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?(?![a-z])");
 
     /**
      * A mondatban kimondott fehérje grammban, vagy -1.
@@ -291,11 +291,17 @@ public final class Kcal {
         String s = Hu.digits(Foods.norm(q));
         for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
         double sum = 0;
+        // Mértékegység NÉLKÜL csak életszerű makró-szám lehet fehérje: az
+        // „ittam egy proteint" egyese az italok DARABSZÁMA, nem egy gramm
+        // fehérje – eddig mégis bekerült a makró-naplóba. Grammal kiírva a
+        // kis szám is érvényes („5 g fehérje").
         Matcher m = PROT_AFTER.matcher(s);
-        while (m.find()) sum += num(m.group(1));
+        while (m.find())
+            if (m.group(2) != null || num(m.group(1)) >= 10) sum += num(m.group(1));
         if (sum <= 0) {
             m = PROT_BEFORE.matcher(s);
-            while (m.find()) sum += num(m.group(1));
+            while (m.find())
+                if (m.group(2) != null || num(m.group(1)) >= 10) sum += num(m.group(1));
         }
         int r = (int) Math.round(sum);
         return r >= MIN_PROT && r <= MAX_PROT ? r : -1;
