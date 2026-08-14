@@ -3047,6 +3047,12 @@ public final class Foods {
                 // „lemondtam a csokiról".
                 "birtam ki", "kibirtam", "lemondtam a", "lemondok a",
                 "tartozkodom", "bojtolok", "bojtoltem",
+                // A HETI FŐZÉS nem mai evés: a „vasárnapi meal prep: 4 adag
+                // csirkés rizs a hétre" hatszáz gramm csirkét írt a MAI
+                // naplóba – abból az ételből, ami a jövő hét ebédje. Az
+                // „ettem" ige nélkül a prep csak előkészület.
+                "meal prep", "mealprep", "elore megfoz", "elore fozt",
+                "elore elkeszit", "bekeszitettem", "adagokra osztottam",
                 // Feltételes mód: a „rendelnék egy pizzát" nem rendelés.
                 "rendelnek", "sutnek", "foznek", "keszitenek", "ennek egy"})
             if (s.contains(w)) { intent = true; break; }

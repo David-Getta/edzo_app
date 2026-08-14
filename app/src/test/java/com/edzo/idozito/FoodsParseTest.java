@@ -495,4 +495,20 @@ public class FoodsParseTest {
         assertEquals("Cukor", Foods.parse(all, "egy teáskanál cukor "
                 + "a kávéba").get(0).food.name);
     }
+
+    /**
+     * A heti főzés nem mai evés.
+     *
+     * A „vasárnapi meal prep: 4 adag csirkés rizs a hétre" hatszáz gramm
+     * csirkét írt a MAI naplóba – abból az ételből, ami a jövő hét ebédje.
+     * A kimondott evés viszont marad: a „meal prepből ettem egy adagot" már
+     * falat.
+     */
+    @Test public void mealPrepIsNotEatenToday() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "vasárnapi meal prep: 4 adag csirkés "
+                + "rizs a hétre").isEmpty());
+        assertFalse(Foods.parse(all, "a meal prepből ettem egy adag csirkés "
+                + "rizst").isEmpty());
+    }
 }
