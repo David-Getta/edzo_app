@@ -2711,4 +2711,20 @@ public class ActivitiesParseTest {
         assertEquals(1, p.size());
         assertEquals("kondi", p.get(0).kind.id);
     }
+
+    /**
+     * Az utolsó szakasz nem második futás.
+     *
+     * A „vasárnapi hosszú futás: 18 km, 1:45:20, utolsó 3 km tempóban" eddig
+     * KÉT bejegyzés lett – tizennyolc plusz három kilométer, két napra
+     * szétosztva – pedig a három kilométer a tizennyolc utolsó szakasza.
+     */
+    @Test public void theLastSegmentIsNotASecondRun() {
+        Activities.Parsed p = Activities.parse("vasárnapi hosszú futás: 18 km, "
+                + "1:45:20, utolsó 3 km tempóban");
+        assertEquals(1, p.plans.size());
+        assertEquals(18.0, p.plans.get(0).km, 0.01);
+        assertEquals(105, p.plans.get(0).minutes);
+        assertEquals(1, p.days);
+    }
 }

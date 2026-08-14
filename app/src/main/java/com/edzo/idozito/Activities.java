@@ -1453,7 +1453,11 @@ public final class Activities {
         // a mondat ne felsorolás legyen, hanem bontás.
         boolean partOfIt = false;
         for (String w : new String[]{"ebbol", "abbol", "amibol", "ezen belul",
-                "beleertve", "kozte", "kozuluk", "ebben"})
+                "beleertve", "kozte", "kozuluk", "ebben",
+                // Az „utolsó 3 km tempóban" a futás UTOLSÓ szakasza, nem egy
+                // második futás: a „18 km, 1:45:20, utolsó 3 km tempóban"
+                // eddig két bejegyzés lett, huszonegy kilométerrel.
+                "utolso", "a masodik fele", "a vege"})
             if (s.contains(w)) { partOfIt = true; break; }
         if (!partOfIt && out.size() == 1 && out.get(0).kind.distance
                 && out.get(0).km > 0 && kms.size() > 1) {
