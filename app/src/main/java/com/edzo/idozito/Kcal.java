@@ -195,6 +195,15 @@ public final class Kcal {
     private static int amount(String q, Pattern[] block, Pattern[] want) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // A KALÓRIABEVITEL összetett szava egyben mondja ki az egységet és
+        // az irányt: a „kalóriabevitel: 2100" eddig elveszett, mert a szám
+        // mellől hiányzott a kcal, a „bevitel" meg a szó belsejében ült. A
+        // puszta „bevitel 2000" és „égetés 500" ugyanígy: az irány-szó után
+        // álló nagy szám csak kalória lehet.
+        s = s.replaceAll("kaloriabevitel\\w*\\s?:?\\s?(\\d{3,4})(?!\\d)(?![.,]\\d)",
+                "bevitel $1 kcal");
+        s = s.replaceAll("(?<![a-z])(bevitel|egetes)\\s?:?\\s?(\\d{3,4})(?!\\d)"
+                + "(?![.,]\\d)(?!\\s?kcal)", "$1 $2 kcal");
         // A CÉL is csak a saját tagmondatát viszi el: a „napi cél 1800 kcal,
         // ma 1750 lett" második fele valódi bevitel.
         boolean anyGoal = false;

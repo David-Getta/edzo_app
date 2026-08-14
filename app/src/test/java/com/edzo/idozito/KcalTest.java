@@ -320,4 +320,17 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("kalóriadeficitben vagyok, kb 400 kcal"));
         assertEquals(-1, Kcal.burned("kalóriadeficitben vagyok, kb 400 kcal"));
     }
+
+    /**
+     * Az irány-szó utáni nagy szám kcal-egység nélkül is kalória.
+     *
+     * A „kalóriabevitel: 2100" és a „bevitel 2000, égetés 500, nettó 1500"
+     * eddig teljesen elveszett: a szám mellől hiányzott a kcal, a
+     * „bevitel" pedig a szó belsejében ült. A jelöletlen nettó kimarad.
+     */
+    @Test public void theDirectionWordCarriesTheUnit() {
+        assertEquals(2100, Kcal.stated("kalóriabevitel: 2100, fehérje 140 g"));
+        assertEquals(2000, Kcal.stated("bevitel 2000, égetés 500, nettó 1500"));
+        assertEquals(500, Kcal.burned("bevitel 2000, égetés 500, nettó 1500"));
+    }
 }
