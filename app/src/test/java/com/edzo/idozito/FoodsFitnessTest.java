@@ -526,8 +526,9 @@ public class FoodsFitnessTest {
 
     @Test public void steakIsNotTeaAndFishAreKnown() {
         // A „steak" szóban benne van a „tea": a „tofu steak" egy csésze teát
-        // is naplózott. A hosszabb tő elnyeli.
-        assertEquals("Tofu + Marhahús", names("tofu steak"));
+        // is naplózott. A hosszabb tő elnyeli – a marha viszont már nem jár
+        // mellé: a tofu steak tofuból van.
+        assertEquals("Tofu", names("tofu steak"));
         assertEquals("Marhahús", names("steak"));
         assertEquals("Tea (cukrozatlan)", names("tea"));
         // Hazai halak és tenger gyümölcsei.

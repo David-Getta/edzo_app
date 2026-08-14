@@ -511,4 +511,22 @@ public class FoodsParseTest {
         assertFalse(Foods.parse(all, "a meal prepből ettem egy adag csirkés "
                 + "rizst").isEmpty());
     }
+
+    /**
+     * A turmix hozzávalói nem a turmix mellé számítanak.
+     *
+     * A „reggel smoothie: banán, spenót, zabtej" kettőspont utáni listája
+     * maga a turmix – eddig a háromszáz grammos átlag-turmix ÉS az összes
+     * hozzávaló is bement, közel dupla kalóriával.
+     */
+    @Test public void smoothieIngredientsAreTheSmoothie() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "reggel smoothie: banán, spenót, "
+                + "zabtej, egy kanál mogyoróvaj");
+        for (Foods.Hit x : h)
+            assertFalse(x.food.name.startsWith("Gyümölcsturmix"));
+        assertEquals(4, h.size());
+        // A puszta turmix hozzávaló-lista nélkül marad turmix.
+        assertEquals(1, Foods.parse(all, "ittam egy smoothie-t").size());
+    }
 }

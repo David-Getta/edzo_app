@@ -2302,6 +2302,8 @@ public final class Foods {
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);
         List<Match> ms = dropVenueMenu(matches(list, query), norm(query));
+        ms = dropSmoothieDouble(ms, norm(query));
+        ms = dropFakeMeat(ms, norm(query));
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {
             // Az „ittam másfél litert" ital-név nélkül is vizet jelent.
@@ -2715,6 +2717,61 @@ public final class Foods {
                 boolean plus = q.substring(Math.min(q.length(), m.pos + m.len))
                         .matches("^\\p{L}*\\s+(es|meg|plusz)\\s.*");
                 if (bareVenue && !plus) continue;
+            }
+            out.add(m);
+        }
+        return out.isEmpty() ? ms : out;
+    }
+
+    /**
+     * A TURMIX HOZZÁVALÓI nem a turmix MELLÉ számítanak.
+     *
+     * A „reggel smoothie: banán, spenót, zabtej" mondatban a kettőspont
+     * utáni lista maga a turmix – eddig a háromszáz grammos átlag-turmix ÉS
+     * az összes hozzávaló is bement, közel dupla kalóriával. Ha a turmix
+     * neve után kettőspont és legalább két másik étel áll, a pontosabb
+     * hozzávaló-lista nyer.
+     */
+    private static List<Match> dropSmoothieDouble(List<Match> ms, String q) {
+        if (ms.size() < 3) return ms;
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) {
+            boolean shake = m.food.name.startsWith("Gyümölcsturmix")
+                    || m.food.name.startsWith("Protein turmix");
+            if (shake) {
+                int e = m.pos + m.len;
+                while (e < q.length() && q.charAt(e) == ' ') e++;
+                int after = 0;
+                for (Match x : ms) if (x.pos > m.pos) after++;
+                if (e < q.length() && q.charAt(e) == ':' && after >= 2) continue;
+            }
+            out.add(m);
+        }
+        return out.isEmpty() ? ms : out;
+    }
+
+    /**
+     * A TOFU STEAK nem marhahús.
+     *
+     * A „steak" a marha szótöve, de a „tofu steak rizzsel" tofuból van –
+     * eddig százötven gramm marha is bement mellé. A húst helyettesítő jelző
+     * a közvetlenül előtte álló szó.
+     */
+    private static List<Match> dropFakeMeat(List<Match> ms, String q) {
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) {
+            boolean meat = m.food.name.startsWith("Marhah")
+                    || m.food.name.startsWith("Sertés")
+                    || m.food.name.startsWith("Csirke");
+            if (meat) {
+                int e = m.pos;
+                while (e > 0 && q.charAt(e - 1) == ' ') e--;
+                int a = e;
+                while (a > 0 && Character.isLetter(q.charAt(a - 1))) a--;
+                String prev = q.substring(a, e);
+                if (prev.equals("tofu") || prev.startsWith("szoja")
+                        || prev.equals("vegan") || prev.startsWith("noveny")
+                        || prev.startsWith("gomba")) continue;
             }
             out.add(m);
         }
