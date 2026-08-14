@@ -816,6 +816,10 @@ public final class Foods {
             // a kóla tövén ül, és üdítőt írt a naplóba. A helyes kettős l
             // („kollagen") sosem ütközött.
             "kolagen",
+            // A ZSÍRÉGETŐ óra a terem kardió-osztálya, nem egy kanál olaj:
+            // a „zsírégető órán voltam" a zsír tövén ült. Az edzés-oldal
+            // ugyanezt a szót sport-tőként ismeri.
+            "zsireget", "zsirgeto",
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",

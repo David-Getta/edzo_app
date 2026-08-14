@@ -325,6 +325,8 @@ public class FoodsTest {
             // biciklizés mellé egy pohár bor került. Ékezettel sosem ütközött
             // (a bőr nem bor), ékezet nélkül viszont pontosan a bor tövén ült.
             "borig aztam", "borig azott",
+            // A zsírégető óra a terem kardió-osztálya, nem egy kanál olaj.
+            "zsírégető óra", "zsírégető edzés",
             // Ötödik söprés: termi és táplálkozási szakszavak.
             "testzsír", "zsírbevitel", "edzésterv", "edzésnapló", "izomtömeg",
             "kalóriadeficit", "szálkásítás", "makró", "mikrotápanyag",

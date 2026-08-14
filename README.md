@@ -180,6 +180,13 @@ jelzője sem az. A **köredzés** hossza az egész körből jön, az **oda-vissz
 két fele pedig ugyanaz az út: a „munkába biciklivel: oda 25, vissza 28 perc"
 ötvenhárom perc egyben.
 
+A termek óraneveit is érti: a **jelzős osztálynév** egy edzés („alakformáló
+torna" = egy jóga-jellegű óra, nem tánc + jóga külön), a **„box edzés"**-ben
+viszont a konkrét sport nyer az általános „edzés" szó felett. A **zsírégető
+óra** kardió-osztály (nem egy kanál olaj az étel-naplóban), az **aqua
+fitnesz** is edzés, és az **edzővel töltött óra** is az – a vele folytatott
+beszélgetés viszont nem.
+
 A konditerem szlengjét is beszéli: a **„toltam a vasat"** súlyzózás (a puszta
 „vas" tilos tő – a vasárnap és a vasalás is tartalmazza), a **„leraktam 10
 kört a pályán"** pedig sportnév nélkül is futás, mert a kör + pálya páros az

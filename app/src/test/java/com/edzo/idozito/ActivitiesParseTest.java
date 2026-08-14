@@ -3024,6 +3024,59 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A jelzős osztálynév egy edzés – a fej-szó dönt.
+     *
+     * Az „alakformáló torna 50 perc" elejéből tánc, a végéből jóga lett:
+     * két bejegyzés egyetlen óráról. Magyarul a fej-szó áll hátul, ezért
+     * az egymás melletti két sport-tőből az első a jelző. Kivétel az
+     * általános fej-szó: a „box edzés" edzése csak annyit mond, hogy
+     * edzés volt – ott a konkrét sport nyer.
+     */
+    @Test public void aModifierClassNameIsOneWorkout() {
+        Activities.Parsed p = Activities.parse("alakformáló torna 50 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("joga", p.plans.get(0).kind.id);
+        assertEquals(50, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("box edzés 60 perc");
+        assertEquals(1, q.plans.size());
+        assertEquals("harcmuveszet", q.plans.get(0).kind.id);
+        // A vesszős felsorolás két külön edzés marad.
+        assertEquals(2, Activities.parse("futás, úszás: 5 km és 1 km")
+                .plans.size());
+    }
+
+    /**
+     * A termek óranevei is edzések: zsírégető óra, aqua fitnesz.
+     *
+     * A „zsírégető órán voltam, 45 perc" étel-oldalon egy kanál OLAJ lett
+     * (a zsír tövén ült), edzés-oldalon semmi. A puszta „zsírégető" nem
+     * lehet tő – az időzítős „Zsírégető HIIT" program neve program marad –,
+     * az óra szóval együtt viszont a terem kardió-osztálya. Az „aqua
+     * fitnesz" eddig üresen jött vissza, mert a puszta „fitnesz" nem volt
+     * sportszó.
+     */
+    @Test public void gymClassNamesAreWorkouts() {
+        Activities.Parsed p = Activities.parse("zsírégető órán voltam, 45 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("tanc", p.plans.get(0).kind.id);
+        Activities.Parsed q = Activities.parse("aqua fitnesz 45 perc");
+        assertEquals(1, q.plans.size());
+        assertEquals("egyeb", q.plans.get(0).kind.id);
+        assertEquals(null, Activities.kindByText("Zsírégető HIIT"));
+    }
+
+    /**
+     * Az edzővel TÖLTÖTT óra edzés – a vele folytatott beszélgetés nem.
+     */
+    @Test public void anHourSpentWithTheTrainerIsAWorkout() {
+        Activities.Parsed p = Activities.parse("edzővel töltöttem egy órát, "
+                + "láb nap");
+        assertEquals(1, p.plans.size());
+        assertEquals(0, Activities.parse("beszéltem az edzővel a heti "
+                + "tervről").plans.size());
+    }
+
+    /**
      * A „toltam a vasat" a súlyzózás szlengje – edzés, nem vasalás.
      *
      * A konditerem nyelvén a vas a súlyzó: a „toltam a vasat egy órát"

@@ -253,6 +253,8 @@ public class ActivitiesTest {
                 // A kertépítés VALÓDI fizikai munka, az uszoda pedig úszás –
                 // mindkettő szándékosan mozgás.
                 "kertépítés", "uszoda", "uszodában",
+                // A zsírégető óra a terem valódi kardió-osztálya lett.
+                "zsírégető óra", "zsírégető edzés",
                 "pihen", "megy");
         for (String w : FoodsTest.EVERYDAY) {
             if (skip.contains(w)) continue;

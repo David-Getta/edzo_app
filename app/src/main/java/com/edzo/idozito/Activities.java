@@ -129,6 +129,9 @@ public final class Activities {
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
+                    // „terem" (kondi) tövet – a hosszabb tő nyer, egy találat.
+                    "fitneszterem", "fitnessterem",
                     // A SAJÁT TESTSÚLYOS edzés a legolcsóbb edzésforma, és
                     // eddig nem volt szótő: az „otthon 30 perc saját testsúly"
                     // válasz nélkül maradt. A puszta „testsúly" nem lehet tő –
@@ -189,7 +192,12 @@ public final class Activities {
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
                     "pole dance", "poledance", "rudtanc", "pole fitness",
-                    "polefitness"),
+                    "polefitness",
+                    // A ZSÍRÉGETŐ ÓRA a termek kardió-osztálya – az étel-oldal
+                    // ugyanezt a szót az olajtól védi (a zsír tövén ült). A
+                    // puszta „zsírégető" NEM lehet tő: az időzítős „Zsírégető
+                    // HIIT" program neve program marad, nem sport.
+                    "zsireget ora", "zsiregeto ora", "zsirgeto ora"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
@@ -251,6 +259,10 @@ public final class Activities {
                     // volt. (Az étel-oldalon ugyanez a szó a diót hozta.)
                     // A puszta „tekez" nem elég: az érTEKEZletben is benne van.
                     "kardio", "bowling", "tekepalya", "tekezes", "tekeztem", "tekezni",
+                    // A puszta FITNESZ is edzés: az „aqua fitnesz 45 perc"
+                    // eddig üresen jött vissza. Az EDZŐVEL töltött óra csak a
+                    // kimondott igével tő – a „beszéltem az edzővel" nem az.
+                    "fitnesz", "fitness", "edzovel toltottem", "toltottem az edzovel",
                     // Termi eszközök, amik magukban is edzést jelentenek.
                     // A szabadtéri játékok is mozgás: a frizbi, a parkour és
                     // a slackline órákra viszi ki az embert a szabadba.
@@ -1281,6 +1293,35 @@ public final class Activities {
             if (!dup) uniq.add(h);
         }
         keep = uniq;
+        // A JELZŐS osztálynév EGY edzés: az „alakformáló torna 50 perc"
+        // elejéből tánc, a végéből jóga lett – két bejegyzés egyetlen
+        // óráról. Magyarul a fej-szó áll hátul („alakformáló TORNA"),
+        // ezért ha két KÜLÖNBÖZŐ sport-tő közvetlenül egymás mellett áll
+        // (csak szóköz vagy kötőjel van köztük), az első a jelző, és
+        // kiesik. Kivétel az általános fej-szó: a „box EDZÉS" edzése csak
+        // annyit mond, hogy edzés volt – ott a konkrét sport nyer, és a
+        // hátsó, „egyéb" tő esik ki. A vesszős felsorolás („futás, úszás")
+        // két külön edzés marad, ahogy az egy szóba írt sífutás is.
+        List<int[]> heads = new ArrayList<>();
+        for (int[] h : keep) {
+            boolean jelzo = false;
+            for (int[] o : keep) {
+                if (o == h || o[2] == h[2]) continue;
+                boolean hFirst = h[0] + h[1] < o[0];
+                int from = hFirst ? h[0] + h[1] : o[0] + o[1];
+                int to = hFirst ? o[0] : h[0];
+                int gap = to - from;
+                if (gap < 1 || gap > 2) continue;
+                boolean sep = true;
+                for (int i = from; i < to; i++)
+                    if (s.charAt(i) != ' ' && s.charAt(i) != '-') { sep = false; break; }
+                if (!sep) continue;
+                boolean laterGeneric = ALL[hFirst ? o[2] : h[2]].id.equals("egyeb");
+                if (laterGeneric ? !hFirst : hFirst) { jelzo = true; break; }
+            }
+            if (!jelzo) heads.add(h);
+        }
+        keep = heads;
 
         // 4) Távok hozzárendelése: a legközelebbi táv-alapú mozgáshoz. A magyar
         //    mindkét szórendet használja („10 km futás”, „futottam 10 km-t”),
