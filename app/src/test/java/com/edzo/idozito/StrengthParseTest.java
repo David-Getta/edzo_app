@@ -1227,4 +1227,22 @@ public class StrengthParseTest {
         assertEquals("Vállból nyomás", it.get(0).name);
         assertEquals("Lehúzás", StrengthParse.parse("kábelhúzás 3x15").get(0).name);
     }
+
+    /**
+     * A két kézisúlyzó nem két sorozat.
+     *
+     * A „2x15 kg kézisúlyzóval vállnyomás 3x10" első szorzata a FELSZERELÉS:
+     * két darab tizenöt kilós súlyzó. Eddig ez lett a sorozat (2×1, 15 kg),
+     * a valódi 3×10 meg elveszett.
+     */
+    @Test public void aPairOfDumbbellsIsNotTwoSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("súlyzózás otthon: "
+                + "2x15 kg kézisúlyzóval vállnyomás 3x10");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(15.0, it.get(0).topWeight(), 0.01);
+        // A valódi 2x15-ös sorozat súlyzó-szó nélkül marad sorozat.
+        assertEquals(2, StrengthParse.parse("guggolás 2x15 60 kg")
+                .get(0).sets.size());
+    }
 }

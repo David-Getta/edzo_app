@@ -346,8 +346,9 @@ public final class StrengthParse {
                 "fiatalkoromban", "gyerekkoromban", "evekkel ezelott"})
             if (nrm.contains(w) && !nrm.matches(".*(?<![a-z])(ma|most|tegnap)(?![a-z]).*"))
                 return out;
-        String clean = maskDistance(maskClock(maskLyingDown(kgBeforeMultiplier(joinRepList(
-                stripPercent(stripListMarkers(Hu.correction(Foods.norm(text)))))))));
+        String clean = dropDumbbellPair(maskDistance(maskClock(maskLyingDown(
+                kgBeforeMultiplier(joinRepList(stripPercent(stripListMarkers(
+                        Hu.correction(Foods.norm(text))))))))));
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(clean))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
@@ -1028,6 +1029,19 @@ public final class StrengthParse {
      */
     private static String maskClock(String s) {
         return s.replaceAll("(?<![\\d:])\\d{1,2}:[0-5]\\d(?::[0-5]\\d)?(?![\\d:])", "#");
+    }
+
+    /**
+     * A KÉT KÉZISÚLYZÓ nem két sorozat.
+     *
+     * A „2x15 kg kézisúlyzóval vállnyomás 3x10" első szorzata a FELSZERELÉS:
+     * két darab tizenöt kilós súlyzó. Eddig ez lett a sorozat (2×1, 15 kg), a
+     * valódi 3×10 meg elveszett. A súlyzó szava előtt álló szorzatból csak a
+     * súly marad.
+     */
+    private static String dropDumbbellPair(String s) {
+        return s.replaceAll("(?<![\\d,.])[12]\\s?x\\s?(\\d{1,3})\\s?kg"
+                + "(?:-os|-mal|-al|os)?\\s?(?=\\p{L}*sulyzo|kettlebell)", "$1 kg ");
     }
 
     /**
