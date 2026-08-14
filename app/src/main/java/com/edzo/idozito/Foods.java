@@ -2246,7 +2246,7 @@ public final class Foods {
         query = Hu.correction(query);
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);
-        List<Match> ms = matches(list, query);
+        List<Match> ms = dropVenueMenu(matches(list, query), norm(query));
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {
             // Az „ittam másfél litert" ital-név nélkül is vizet jelent.
@@ -2637,6 +2637,34 @@ public final class Foods {
             // csak a „rántotta" szót kereste. Az omlett is tojásból van.
             {"Rántotta", "tojas", "omlett"},
     };
+
+    /**
+     * A HELYSZÍN neve nem plusz menü a felsorolt étel mellé.
+     *
+     * A puszta „meki" tényleg menüt jelent, amikor csak a hely van leírva –
+     * de „a mekiben ettem: sajtburger, közepes krumpli, kóla" mondatban a
+     * tételek fel vannak sorolva, és a menü MELLÉJÜK került: ötszáz kalória
+     * kétszer. Ha a márkanév mellett másik étel is áll, a helyszín csak
+     * helyszín. A kimondott „menü" szó viszont marad.
+     */
+    private static List<Match> dropVenueMenu(List<Match> ms, String q) {
+        if (ms.size() < 2) return ms;
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) {
+            if (m.food.name.startsWith("Gyorséttermi")) {
+                String hit = q.substring(m.pos, Math.min(q.length(), m.pos + m.len));
+                boolean bareVenue = !hit.contains("menu") && !hit.contains("kaja")
+                        && !hit.contains("kosar") && !hit.contains("happy");
+                // A KÖTŐSZÓ hozzáadást jelent: a „meki és egy shake" menü
+                // PLUSZ turmix, ott a menü marad.
+                boolean plus = q.substring(Math.min(q.length(), m.pos + m.len))
+                        .matches("^\\p{L}*\\s+(es|meg|plusz)\\s.*");
+                if (bareVenue && !plus) continue;
+            }
+            out.add(m);
+        }
+        return out.isEmpty() ? ms : out;
+    }
 
     /** Egy találat helye a szövegben (a leghosszabb illeszkedő szótő szerint). */
     static final class Match {

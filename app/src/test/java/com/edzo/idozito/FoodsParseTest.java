@@ -447,4 +447,22 @@ public class FoodsParseTest {
         assertEquals(100.0, Foods.parse(all, "100 g zsírt használtam "
                 + "a sütihez").get(0).grams, 0.01);
     }
+
+    /**
+     * A helyszín neve nem plusz menü a felsorolt étel mellé.
+     *
+     * A puszta „meki" tényleg menüt jelent – de „a mekiben ettem: sajtburger,
+     * közepes krumpli, kóla" mondatban a tételek fel vannak sorolva, és a
+     * menü MELLÉJÜK került: ötszáz kalória kétszer.
+     */
+    @Test public void theVenueIsNotAnExtraMenu() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "a mekiben ettem: sajtburger, "
+                + "közepes krumpli, kóla");
+        for (Foods.Hit x : h) assertFalse(x.food.name.startsWith("Gyorséttermi"));
+        assertEquals(3, h.size());
+        // A puszta helyszín marad menü, a kötőszó pedig hozzáadást jelent.
+        assertEquals("Gyorséttermi menü", Foods.parse(all, "meki").get(0).food.name);
+        assertEquals(2, Foods.parse(all, "meki és egy shake").size());
+    }
 }
