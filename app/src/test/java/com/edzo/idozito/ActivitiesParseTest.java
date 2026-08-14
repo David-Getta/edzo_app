@@ -3024,6 +3024,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A tempó a szám előtt és jelzőként is tempó, nem időtartam.
+     *
+     * Az „átlagtempóm 5:20 volt a 10 kilométeren" öt-húsza percenkénti
+     * idő – eddig öt óra húsz perces futás lett belőle. A „4:45-ös
+     * kilométerekkel" ugyanígy: a nyolc kilométer a tempóval számolódik,
+     * nem négy és háromnegyed órával.
+     */
+    @Test public void paceBeforeTheNumberIsStillPace() {
+        Activities.Parsed p = Activities.parse("átlagtempóm 5:20 volt a "
+                + "10 kilométeren");
+        assertEquals(1, p.plans.size());
+        assertEquals(53, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("tempó futás 4:45-ös "
+                + "kilométerekkel, 8 km");
+        assertEquals(1, q.plans.size());
+        assertEquals(38, q.plans.get(0).minutes);
+    }
+
+    /**
      * A fát hordani és a házimunka is fizikai munka.
      *
      * A „fát hordtam be fél órát" és a „házimunka, kb 3 óra" eddig válasz

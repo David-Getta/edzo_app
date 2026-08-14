@@ -3348,6 +3348,20 @@ public final class Activities {
             double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;
             if (p >= 2 && p <= 20) return p;
         }
+        // A tempó-szó a szám ELŐTT is tempó: az „átlagtempóm 5:20 volt a
+        // 10 kilométeren" öt-húsza percenkénti idő – enélkül a tíz
+        // kilométer a mozgásforma átlagával számolódott. A jelzős
+        // kilométer ugyanez: „4:45-ös kilométerekkel".
+        m = java.util.regex.Pattern.compile("tempo\\w*\\s?:?\\s?"
+                + "(\\d{1,2}):([0-5]\\d)"
+                + "|(\\d{1,2}):([0-5]\\d)\\s?-?[oae]s\\s?(?:km|kilometer)")
+                .matcher(s);
+        if (m.find()) {
+            String g1 = m.group(1) != null ? m.group(1) : m.group(3);
+            String g2 = m.group(2) != null ? m.group(2) : m.group(4);
+            double p = Integer.parseInt(g1) + Integer.parseInt(g2) / 60.0;
+            if (p >= 2 && p <= 20) return p;
+        }
         return minPerKm(kind);
     }
 
@@ -3514,7 +3528,20 @@ public final class Activities {
             // ugyanaz, mint az „5:30-as tempóval". Enélkül öt és fél ÓRA
             // került a naplóba egy ötvenöt perces futásra.
             if (m.start() >= 1 && s.substring(0, m.start()).trim().endsWith("@")) continue;
+            // A TEMPÓ-SZÓ a szám ELŐTT is tempót jelent: az „átlagtempóm
+            // 5:20 volt a 10 kilométeren" öt-húsza percenkénti idő – eddig
+            // öt óra húsz perces futás lett belőle.
+            String prevWord = "";
+            int pe = m.start();
+            while (pe > 0 && s.charAt(pe - 1) == ' ') pe--;
+            int pa = pe;
+            while (pa > 0 && Character.isLetter(s.charAt(pa - 1))) pa--;
+            prevWord = s.substring(pa, pe);
+            if (prevWord.contains("tempo") || prevWord.startsWith("iram")) continue;
+            // Az „-os" rag is jelzős tempó: a „4:45-os kilométerekkel" a
+            // kilométerenkénti idő, nem négy és háromnegyed óra.
             if (s.startsWith("-as", m.end()) || s.startsWith("-es", m.end())
+                    || s.startsWith("-os", m.end())
                     || s.startsWith("/km", m.end())
                     // A „ tempo" utótag is csak tempó-tartományú számra:
                     // a „24:59 tempó 5:00" első száma a valódi idő, a tempó a
