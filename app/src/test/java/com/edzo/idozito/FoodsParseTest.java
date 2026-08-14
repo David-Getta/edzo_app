@@ -536,6 +536,13 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "szervizben volt az autó").isEmpty());
     }
 
+    /** A vízi jelző sport, nem ital – a megivott víz marad. */
+    @Test public void openWaterIsNotAGlassOfWater() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "nyílt vízi úszás a Balatonban").isEmpty());
+        assertFalse(Foods.parse(all, "vizet ittam az edzés alatt").isEmpty());
+    }
+
     /**
      * A wrap tortillája maga a wrap – nem külön falat.
      *

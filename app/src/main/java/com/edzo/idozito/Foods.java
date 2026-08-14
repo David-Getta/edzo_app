@@ -822,6 +822,9 @@ public final class Foods {
             "zsireget", "zsirgeto",
             // A SZERVIZ önálló szóként is a víz tövén ül.
             "szerviz",
+            // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
+            // „vízisí" mellé egy pohár ásványvíz került a naplóba.
+            "vizi",
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",

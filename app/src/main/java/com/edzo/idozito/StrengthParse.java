@@ -350,6 +350,13 @@ public final class StrengthParse {
                 "fiatalkoromban", "gyerekkoromban", "evekkel ezelott"})
             if (nrm.contains(w) && !nrm.matches(".*(?<![a-z])(ma|most|tegnap)(?![a-z]).*"))
                 return out;
+        // A PILLANGÓ az uszodában úszásnem, a teremben mellgép: a „pillangó
+        // technikát gyakoroltam, 4x50" négyszer ötven ismétléses mellgép
+        // lett – egy úszóedzésből. Úszó-szó vagy a „technika" mellett a
+        // pillangó a medencéé; a „pillangó gép" a teremben marad.
+        if (nrm.matches(".*(pillango|butterfly).*")
+                && nrm.matches(".*(?:usz|medence|technik)\\w*.*")
+                && !nrm.contains("gep")) return out;
         String clean = dropDumbbellPair(maskDistance(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(stripPercent(stripListMarkers(
                         Hu.correction(Foods.norm(text))))))))));

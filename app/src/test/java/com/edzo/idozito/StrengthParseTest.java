@@ -1264,6 +1264,19 @@ public class StrengthParseTest {
                 + "aztán 3x5 100").get(0).topWeight(), 0.01);
     }
 
+    /**
+     * A pillangó az uszodában úszásnem, a teremben mellgép.
+     *
+     * A „pillangó technikát gyakoroltam, 4x50" négyszer ötven ismétléses
+     * mellgép lett – egy úszóedzésből. A „pillangó gép" a teremben marad.
+     */
+    @Test public void butterflyStrokeIsNotAPecDeck() {
+        assertTrue(StrengthParse.parse("pillangó technikát gyakoroltam, "
+                + "4x50").isEmpty());
+        assertEquals("Mellgép", StrengthParse.parse("pillangó gép 3x12 "
+                + "40 kg").get(0).name);
+    }
+
     /** Az angol „biceps curl" z nélkül is bicepsz. */
     @Test public void englishBicepsCurlIsRecognised() {
         List<StrengthParse.Item> it = StrengthParse.parse("biceps curl "

@@ -3024,6 +3024,22 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az úszásnem főnévi alakja is úszás.
+     *
+     * A „mellúszás 800 m" és a „hátúszás 800 m" nyolcszáz méteres FUTÁS
+     * lett: az „uszas" tő szó belsejében szándékosan nem él, ezért az
+     * összetett úszásnem-szavak saját tövet kaptak.
+     */
+    @Test public void strokeNounsAreSwimming() {
+        for (String q : new String[]{"hátúszás 800 m bemelegítésnek",
+                "mellúszás 800 m", "gyorsúszás 800 m"}) {
+            Activities.Parsed p = Activities.parse(q);
+            assertEquals(q, 1, p.plans.size());
+            assertEquals(q, "uszas", p.plans.get(0).kind.id);
+        }
+    }
+
+    /**
      * A bringás szókincs sportnév nélkül is tekerés.
      *
      * Az „országúti kör 60 km" hatvan kilométeres FUTÁS lett, az „mtb

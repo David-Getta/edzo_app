@@ -83,6 +83,13 @@ public final class Activities {
                     // fekve" hasizomgyakorlatban.
                     "gyorson", "gyorsuszo", "melluszo", "hatuszo",
                     "pillangozas", "pillangoztam",
+                    // Az úszásnem FŐNÉVI alakja is: a „mellúszás 800 m" és a
+                    // „hátúszás 800 m" nyolcszáz méteres FUTÁS lett – az
+                    // „uszas" tő szó belsejében szándékosan nem él (a
+                    // beNEVEZve-féle hibák miatt), ezért az összetett szavak
+                    // saját tövet kapnak.
+                    "melluszas", "hatuszas", "gyorsuszas", "pillangouszas",
+                    "vegyesuszas",
                     // A felszíni és a felszín alatti vizes sportok is ide:
                     // a snorkeling és a kitesurf ugyanabban a közegben zajlik.
                     "snorkel", "kitesurf", "kiteszorf"),
