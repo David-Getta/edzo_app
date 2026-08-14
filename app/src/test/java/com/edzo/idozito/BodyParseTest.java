@@ -643,4 +643,19 @@ public class BodyParseTest {
         assertEquals(78.2, BodyParse.parse("83,5 kilóról indultam januárban, "
                 + "ma 78,2").kg, 0.01);
     }
+
+    /**
+     * Az étel tagmondata sem veszi el a mérést.
+     *
+     * A „ma reggel: 40 perc futás, zuhany, zabkása fahéjjal, 79,1 kg"
+     * zabkásája miatt az egész mérés elveszett – a „csak számok maradtak"
+     * vizsgálat a kása szavain bukott meg. A centivel írt tagmondat viszont
+     * mérés marad: a „38 cm comb" a comb körfogata, nem csirkecomb.
+     */
+    @Test public void aFoodClauseDoesNotHideTheWeight() {
+        assertEquals(79.1, BodyParse.parse("ma reggel: 40 perc futás, zuhany, "
+                + "zabkása fahéjjal, 79,1 kg").kg, 0.01);
+        assertEquals(38.0, BodyParse.parse("78 kg, 18% zsír, 92 cm derék, "
+                + "100 cm csípő, 38 cm comb, 34 cm kar").cm[3], 0.01);
+    }
 }

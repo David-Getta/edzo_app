@@ -262,6 +262,16 @@ public final class BodyParse {
             // 84, guggolás 3x5 100" száza a rúdon van, nem a mérlegen –
             // eddig száz kilós MÉRÉS lett belőle a súlytrendben.
             if (part.matches(".*\\d\\s?x\\s?\\d.*")) other = true;
+            // A MEGNEVEZETT étel tagmondata is az étrendé: a „ma reggel:
+            // 40 perc futás, zuhany, zabkása fahéjjal, 79,1 kg" zabkásája
+            // miatt az egész mérés elveszett – a „csak számok maradtak"
+            // vizsgálat a kása szavain bukott meg. A CENTIVEL vagy kilóval
+            // írt tagmondat viszont mérés marad: a „38 cm comb" a comb
+            // körfogata, nem csirkecomb.
+            if (!other && !part.contains("cm") && !part.contains("centi")
+                    && !part.contains("kg") && !part.contains("kilo")
+                    && !Foods.matches(java.util.Arrays.asList(Foods.ALL),
+                            part).isEmpty()) other = true;
             if (other) { dropped = true; continue; }
             if (keep.length() > 0) keep.append(' ');
             keep.append(part.trim());

@@ -129,6 +129,12 @@ public final class IntervalParse {
                 || s.contains("hrv")) {
             if (!saysPlan(s)) return null;
         }
+        // Az ALVÁS-NAPLÓ sem ritmus: a „reggel 5:45 ébredés, 20 perc jóga"
+        // ébredés-időpontjából munkaszakasz lett, a jógából pihenő – egy
+        // hajnali percből huszonöt perces időzítő.
+        if ((s.contains("ebredes") || s.contains("lefekves") || s.contains("alvas")
+                || s.contains("aludtam") || s.contains("keltem")
+                || s.contains("fekudtem")) && !saysPlan(s)) return null;
         // A TEMPÓ sem ritmus: a „10 km @ 5:30" és a „10 km-t futottam 5:30-as
         // tempóval" órán mért futás, nem szakaszos terv – eddig mindkettőből
         // egykörös, öt és fél perces időzítő lett. A táv kimondása mellett

@@ -713,4 +713,12 @@ public class IntervalParseTest {
         assertEquals(20, IntervalParse.parse("8 kör 40 mp munka 20 mp pihenés").rest);
         assertEquals(30, IntervalParse.parse("30 mp munka 30 mp pihenő 8 kör").rest);
     }
+
+    /** Az alvás-napló sem ritmus: az ébredés időpontjából nem lesz munkaszakasz. */
+    @Test public void aSleepJournalIsNotAPlan() {
+        assertNull(IntervalParse.parse("reggel 5:45 ébredés, 20 perc jóga, "
+                + "feketekávé"));
+        assertNull(IntervalParse.parse("esti rutin: 15 perc nyújtás, "
+                + "23:00 lefekvés"));
+    }
 }
