@@ -1138,6 +1138,7 @@ public final class Activities {
         // hogy a szám ne váljon darabszámmá; a terv a mozgások után épül rá.
         double steps = 0;
         double[] st = findSteps(q);
+        if (st == null) st = findStepsAfter(q);
         if (st != null) { steps = st[2]; blank(q, (int) st[0], (int) st[1]); }
 
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
@@ -2135,6 +2136,23 @@ public final class Activities {
         double steps = val * mult;
         if (steps < 500 || steps > 100000) return null;
         return new double[]{numStart, end, steps};
+    }
+
+    /**
+     * Lépésszám a szó MÖGÖTT, kettősponttal: „lépés: 21450".
+     *
+     * Az óra-app kijelzője így írja ki, és az „eddigi legtöbb lépés: 21 450"
+     * eddig némán elveszett – a szám a szó után állt, a kereső meg csak
+     * előtte nézte.
+     */
+    private static double[] findStepsAfter(char[] q) {
+        String s = new String(q);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("lepes\\w*\\s?:\\s?(\\d{3,6})(?![\\d.,])").matcher(s);
+        if (!m.find()) return null;
+        double steps = Double.parseDouble(m.group(1));
+        if (steps < 500 || steps > 100000) return null;
+        return new double[]{m.start(1), m.end(1), steps};
     }
 
     /**

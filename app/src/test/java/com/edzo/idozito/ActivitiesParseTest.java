@@ -2889,4 +2889,11 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("futottam 5 km-t és úsztam 1 km-t")
                 .plans.size());
     }
+
+    /** A lépésszám a szó mögött, kettősponttal is lépésszám. */
+    @Test public void stepsAfterTheColonCount() {
+        Activities.Parsed p = Activities.parse("eddigi legtöbb lépés: 21 450");
+        assertEquals(1, p.plans.size());
+        assertEquals(21450, p.plans.get(0).steps);
+    }
 }
