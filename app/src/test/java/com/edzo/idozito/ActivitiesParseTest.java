@@ -3024,6 +3024,26 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A fát hordani és a házimunka is fizikai munka.
+     *
+     * A „fát hordtam be fél órát" és a „házimunka, kb 3 óra" eddig válasz
+     * nélkül maradt. A puszta „munka" ülőmunka-szó marad: a „sok volt ma a
+     * munka, 10 óra ülés" továbbra sem mozgás.
+     */
+    @Test public void houseworkIsPhysicalWork() {
+        Activities.Parsed p = Activities.parse("fát hordtam be délután "
+                + "fél órát");
+        assertEquals(1, p.plans.size());
+        assertEquals("munka", p.plans.get(0).kind.id);
+        Activities.Parsed q = Activities.parse("házimunka egész délelőtt, "
+                + "kb 3 óra");
+        assertEquals(1, q.plans.size());
+        assertEquals(180, q.plans.get(0).minutes);
+        assertEquals(0, Activities.parse("sok volt ma a munka, 10 óra "
+                + "ülés").plans.size());
+    }
+
+    /**
      * A pótlás jelen ideje terv – a napló pótlása viszont megtörtént edzés.
      *
      * A „hétvégén pótolom az edzést" egy majdani edzés, mégis bekerült a

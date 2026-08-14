@@ -249,6 +249,11 @@ public final class Activities {
                     // cipekedtem" válasz nélkül maradt.
                     "kaszal", "kaszalas", "cipeked", "cipekedes", "cipeltem",
                     "pakolas", "bepakol", "kipakol",
+                    // A FÁT HORDANI és a HÁZIMUNKA is fizikai munka: a „fát
+                    // hordtam be fél órát" és a „házimunka, kb 3 óra" eddig
+                    // válasz nélkül maradt. A puszta „munka" ülőmunka-szó,
+                    // a „házimunka" hosszabb töve viszont mozgás.
+                    "fat hord", "tuzifat hord", "hazimunka", "hazimunkaz",
                     // A „metszet" szándékosan nem tő: a KERESZTmetszet nem
                     // kerti munka. A ragozott igealakok viszont igen.
                     "metszes", "metszettem", "metszeni", "fat metsz",
