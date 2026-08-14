@@ -980,6 +980,10 @@ public final class Foods {
             // A zsírégető edzés nem konyhai zsír. (A „zsírszegény" viszont
             // marad: az egy valódi tétel neve – zsírszegény tej.)
             "zsireget", "zsirtartalm",
+            // A CUKORBETEG nem cukor: a „cukorbeteg vagyok, figyelem a
+            // szénhidrátot" mondatból tíz gramm cukor került az étrendbe –
+            // pont annak a naplójába, aki kerüli.
+            "cukorbeteg", "vercukor", "cukorbetegseg",
             // A fRIZbiben és a fRIZurában a rizs: a „frizbi a parkban 1 óra"
             // kétszáz gramm főtt rizst írt a naplóba egy játszott óra helyett.
             "frizbi", "frizura", "frizsider", "frizko",

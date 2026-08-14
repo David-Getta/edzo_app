@@ -486,4 +486,13 @@ public class FoodsParseTest {
         assertEquals("Gulyásleves", Foods.parse(all, "a párom főzött gulyást, "
                 + "két tányérral ettem").get(0).food.name);
     }
+
+    /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
+    @Test public void aDiabeticIsNotSugar() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "cukorbeteg vagyok, figyelem "
+                + "a szénhidrátot").isEmpty());
+        assertEquals("Cukor", Foods.parse(all, "egy teáskanál cukor "
+                + "a kávéba").get(0).food.name);
+    }
 }

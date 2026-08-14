@@ -2764,4 +2764,38 @@ public class ActivitiesParseTest {
         assertEquals(50, StrengthParse.parse("3. nap a 30 napos kihívásból: "
                 + "50 guggolás").get(0).totalReps());
     }
+
+    /**
+     * A szokás melletti mai mennyiség megmenti a mondatot.
+     *
+     * Az „úszni járok, ma 1 km" első fele szokás, a második egy megtörtént
+     * úszás – eddig az egész mondat elveszett, a kilométerrel együtt. A
+     * puszta „úszni járok" marad terv-jellegű, nem bejegyzés.
+     */
+    @Test public void aTodayAmountRescuesTheHabitSentence() {
+        Activities.Parsed p = Activities.parse("úszni járok, ma 1 km");
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(1.0, p.plans.get(0).km, 0.01);
+        assertEquals(60, Activities.parse("kondiba járok, ma 60 perc")
+                .plans.get(0).minutes);
+        assertTrue(Activities.parse("úszni járok").plans.isEmpty());
+    }
+
+    /**
+     * A visszaemlékezés nem mai bejegyzés.
+     *
+     * A „terhesség alatt jógáztam" és a „régen sokat futottam" hónapokkal
+     * ezelőtti időkről szól – eddig mai, teljes hosszú bejegyzés lett
+     * belőlük.
+     */
+    @Test public void aMemoryIsNotATodayEntry() {
+        assertTrue(Activities.parse("terhesség alatt jógáztam, most 20 hetes "
+                + "vagyok").plans.isEmpty());
+        assertTrue(Activities.parse("régen sokat futottam, ma már csak "
+                + "sétálok").plans.isEmpty());
+        // A visszaemlékezett súly sem mai rekord.
+        assertTrue(StrengthParse.parse("régebben 100 kg-ot nyomtam fekve")
+                .isEmpty());
+    }
 }

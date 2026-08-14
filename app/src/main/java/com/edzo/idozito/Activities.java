@@ -2176,6 +2176,13 @@ public final class Activities {
                 // csinál az ember általában – eddig mindkettőből egy teljes
                 // bejegyzés lett, alapértelmezett hosszal.
                 "szoktam", "szoktunk", "jarok", "jarunk", "jaro"}) {
+            // A MAI mennyiség kimenti a mondatot: az „úszni járok, ma 1 km"
+            // első fele szokás, a második egy megtörtént úszás – eddig az
+            // egész mondat elveszett, a kilométerrel együtt. Ha a szokás
+            // mellett kimondott napon kimondott mennyiség áll, a mondat nem
+            // terv; a puszta „úszni járok" marad az.
+            if (s.matches(".*(?<![a-z])(ma|tegnap|most|delelott|delutan|"
+                    + "este|reggel)(?![a-z])[^,;.]*\\d.*")) break;
             int p = s.indexOf(w);
             while (p >= 0) {
                 int e = p + w.length();
@@ -2367,6 +2374,11 @@ public final class Activities {
                 // Az „éppen csak benéztem a terembe" nem edzés: a terem szava
                 // hatvanperces bejegyzést csinált belőle.
                 "csak beneztem", "csak benezt", "eppen csak",
+                // A VISSZAEMLÉKEZÉS nem ma történt: a „terhesség alatt
+                // jógáztam" és a „régen sokat futottam" hónapokkal-évekkel
+                // ezelőtti időkről szól – eddig mai bejegyzés lett belőlük.
+                "regen ", "regebben", "annak idejen", "fiatalkoromban",
+                "gyerekkoromban", "terhesseg alatt", "terhessegem alatt",
                 // A MÚLT IDEJŰ akarat is meghiúsult szándék: az „akartam
                 // futni, de esett" negyvenöt perces futás lett. Tagmondatra
                 // szűkítve, hogy a mondat másik fele megmaradjon: az

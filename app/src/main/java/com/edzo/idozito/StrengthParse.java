@@ -337,6 +337,15 @@ public final class StrengthParse {
         // progresszió-javaslat is arra épült.
         if (Activities.someoneElsesDoing(text)) return out;
         if (looksLikeMeasurement(Foods.norm(text))) return out;
+        // A VISSZAEMLÉKEZÉS nem mai sorozat: a „régebben 100 kg-ot nyomtam
+        // fekve" évekkel ezelőtti erőről szól – bekerülve mai rekord lenne,
+        // és a progresszió-javaslat is rá épülne. A kimondott mai fél
+        // („régen 90 volt, ma 100 kg-ot nyomtam") megvédi a mondatot.
+        String nrm = Foods.norm(text);
+        for (String w : new String[]{"regen ", "regebben", "annak idejen",
+                "fiatalkoromban", "gyerekkoromban", "evekkel ezelott"})
+            if (nrm.contains(w) && !nrm.matches(".*(?<![a-z])(ma|most|tegnap)(?![a-z]).*"))
+                return out;
         String clean = maskDistance(maskClock(maskLyingDown(kgBeforeMultiplier(joinRepList(
                 stripPercent(stripListMarkers(Hu.correction(Foods.norm(text)))))))));
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(clean))));
