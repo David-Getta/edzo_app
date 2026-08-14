@@ -252,4 +252,19 @@ public class SleepTest {
         // A „3 óra múlva" időpont, nem hossz.
         assertEquals(-1.0, Sleep.parse("aludtam, de 3 óra múlva felébredtem"), 0.01);
     }
+
+    /**
+     * Az óra-app kijelzőjéről másolt sor is alvás.
+     *
+     * A „22:15 lefekvés, 5:45 ébredés" FŐNÉVI alakban mondja ugyanazt, amit a
+     * „feküdtem/keltem" igében – és ige nélkül eddig teljesen elveszett. Az
+     * éjfél is időpont, csak nem számmal írják; a „felébredtem" pedig maga is
+     * alvás-szó, így az összegző tagmondat hossza is megvan.
+     */
+    @Test public void theNounFormsAndMidnightWork() {
+        assertEquals(7.5, Sleep.parse("22:15 lefekvés, 5:45 ébredés"), 0.01);
+        assertEquals(6.0, Sleep.parse("éjfél után feküdtem, 6-kor keltem"), 0.01);
+        assertEquals(5.0, Sleep.parse("éjszaka 3x felébredtem a gyerek miatt, "
+                + "összesen talán 5 óra"), 0.01);
+    }
 }

@@ -68,7 +68,11 @@ public final class Sleep {
 
     /** Alvásról szól-e egyáltalán a mondat. */
     private static boolean saysSleep(String s) {
-        return s.contains("alud") || s.contains("alvas") || s.contains("aludt");
+        // A „felébredtem" is alvásról szól: az „éjszaka 3x felébredtem,
+        // összesen talán 5 óra" összegző fele eddig elveszett, mert a
+        // mondatban egyetlen alud-tő sem volt.
+        return s.contains("alud") || s.contains("alvas") || s.contains("aludt")
+                || s.contains("felebred");
     }
 
     /**
@@ -192,8 +196,18 @@ public final class Sleep {
         // pedig a nyolc óra ki van mondva benne.
         boolean bed = s.contains("fekudtem") || s.contains("fekszem")
                 || s.contains("lefeku") || s.contains("agyban volt")
-                || s.contains("agyba bujt") || s.contains("agyban vagyok");
-        boolean up = s.contains("keltem") || s.contains("ebredtem");
+                || s.contains("agyba bujt") || s.contains("agyban vagyok")
+                || s.contains("lefekves");
+        // Az ÉJFÉL is időpont, csak nem számmal írják: az „éjfél után
+        // feküdtem, 6-kor keltem" bedagadt volna a szabályba, ha az éjfélt
+        // nullára fordítjuk – hát pont ezt tesszük.
+        s = s.replaceAll("(?<![a-z])ejfel(?:kor| utan| korul| tajban)?(?![a-z])",
+                "0:00-kor");
+        // A FŐNÉVI alak is ugyanaz a pillanat: a „22:15 lefekvés, 5:45
+        // ébredés" az óra-app kijelzőjéről másolt sor, és eddig teljesen
+        // elveszett – ige nélkül nem látszott alvás-mondatnak.
+        boolean up = s.contains("keltem") || s.contains("ebredtem")
+                || s.contains("ebredes");
         boolean ctx = s.contains("alud") || s.contains("alvas") || (bed && up);
         if (!ctx) return -1;
         java.util.List<Integer> mins = new java.util.ArrayList<>();
@@ -231,8 +245,8 @@ public final class Sleep {
         // Enélkül a különbség tizenhat óra lett, és a tizenkét órás igazítás
         // négy és negyed órányi alvást hazudott rá.
         int bedAt = firstOf(s, new String[]{"fekudtem", "fekszem", "lefeku",
-                "agyban volt", "agyba bujt", "agyban vagyok"});
-        int upAt = firstOf(s, new String[]{"keltem", "ebredtem"});
+                "agyban volt", "agyba bujt", "agyban vagyok", "lefekves"});
+        int upAt = firstOf(s, new String[]{"keltem", "ebredtem", "ebredes"});
         if (bedAt >= 0 && upAt >= 0 && upAt < bedAt) {
             java.util.Collections.reverse(mins);
             java.util.Collections.reverse(exact);
