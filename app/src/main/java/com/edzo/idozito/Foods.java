@@ -2239,6 +2239,47 @@ public final class Foods {
         return before + amount + " " + head.substring(pos);
     }
 
+    /**
+     * MÁS tányérja nem az én naplóm: „a férjem pizzát evett, én salátát".
+     *
+     * A pizza a férjé, mégis bekerült az étrendbe – háromszáz kalória olyan
+     * ételből, amit más evett meg. A mozgás-oldalon ez a szabály régóta
+     * megvan; itt a tagmondatot akkor hagyjuk el, ha harmadik személyű alany
+     * ÉS harmadik személyű evés-ige áll benne, első személyű ige nélkül. A
+     * „a párom főzött gulyást, két tányérral ettem" gulyása marad: a főzés
+     * nem evés, az étel közös.
+     */
+    private static String withoutOthersPlates(String query) {
+        String s = norm(query);
+        if (s.indexOf(',') < 0 && s.indexOf(';') < 0) return query;
+        boolean any = false;
+        StringBuilder keep = new StringBuilder();
+        for (String cl : s.split("[,;.]")) {
+            String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
+            boolean other = false, eats = false;
+            for (String w : OTHER_EATER) if (t.contains(" " + w + " ")) other = true;
+            for (String v : OTHER_EAT_VERB) if (t.contains(" " + v + " ")) eats = true;
+            boolean firstP = cl.matches(".*\\b\\w{3,}(tam|tem|tunk)\\b.*")
+                    || t.contains(" en ") || t.contains(" nekem ") || t.contains(" magam ");
+            if (other && eats && !firstP) { any = true; continue; }
+            if (keep.length() > 0) keep.append(", ");
+            keep.append(cl.trim());
+        }
+        return any && keep.length() > 0 ? keep.toString() : query;
+    }
+
+    private static final String[] OTHER_EATER = {
+            "ferjem", "felesegem", "parom", "fiam", "lanyom", "gyerek", "gyerekek",
+            "gyerekem", "anyam", "apam", "anyu", "apu", "nagyi", "nagymama",
+            "testverem", "baratom", "baratnom", "kollegam", "kollegak",
+            "mindenki", "edzom", "hugom", "batyam", "ocsem", "unokam"};
+
+    private static final String[] OTHER_EAT_VERB = {
+            "evett", "ettek", "eszik", "esznek", "megette", "megettek",
+            "fagyizott", "fagyiztak", "ivott", "ittak", "megitta", "megittak",
+            "nassolt", "nassoltak", "vacsorazott", "vacsoraztak",
+            "ebedelt", "ebedeltek", "reggelizett", "reggeliztek", "kert", "kertek"};
+
     static List<Hit> parse(List<Food> list, String query) {
         // Ami nem került a tányérra, az a naplóba se kerüljön: a „szeretnék
         // egy pizzát" és a „vettem két kiló almát" ugyanúgy tartalmaz ételt
@@ -2249,6 +2290,7 @@ public final class Foods {
         // 1-et" mondatból eddig semmi nem lett – a tagadás elvitte az egészet,
         // pedig az egy szelet megvolt.
         query = Hu.correction(query);
+        query = withoutOthersPlates(query);
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);
         List<Match> ms = dropVenueMenu(matches(list, query), norm(query));

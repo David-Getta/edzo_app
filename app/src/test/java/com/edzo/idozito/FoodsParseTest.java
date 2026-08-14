@@ -465,4 +465,25 @@ public class FoodsParseTest {
         assertEquals("Gyorséttermi menü", Foods.parse(all, "meki").get(0).food.name);
         assertEquals(2, Foods.parse(all, "meki és egy shake").size());
     }
+
+    /**
+     * Más tányérja nem az én naplóm.
+     *
+     * A „a férjem pizzát evett, én salátát" pizzája a férjé, mégis bekerült
+     * az étrendbe – háromszáz kalória olyan ételből, amit más evett meg. A
+     * mozgás-oldalon ez a szabály régóta megvan.
+     */
+    @Test public void someoneElsesPlateIsNotMyLog() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "a férjem pizzát evett, én salátát");
+        assertEquals(1, h.size());
+        assertEquals("Saláta (zöld)", h.get(0).food.name);
+        assertTrue(Foods.parse(all, "a gyerekek fagyiztak, én kihagytam").isEmpty());
+        // A közösen evett étel marad: az „ettünk" első személy.
+        assertEquals("Pizza", Foods.parse(all, "a férjemmel pizzát ettünk")
+                .get(0).food.name);
+        // A főzés nem evés: az étel közös, a gulyás marad.
+        assertEquals("Gulyásleves", Foods.parse(all, "a párom főzött gulyást, "
+                + "két tányérral ettem").get(0).food.name);
+    }
 }
