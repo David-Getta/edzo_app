@@ -88,6 +88,12 @@ public final class Sleep {
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
             return -1;
+        // Az ÁTLAG nem egy éjszaka: az „alvásátlagom 6,8 óra a héten" a hét
+        // összefoglalója – ma éjszakai alvásként rögzítve meghamisítaná a
+        // trendet. (Az „átlagpulzus" melletti alvás-adat marad.)
+        if (s.contains("alvasatlag") || s.contains("alvas atlag")
+                || s.contains("atlagosan alszom") || s.contains("atlag alvas"))
+            return -1;
         // Óra ÉS perc: a „6 óra 30 perc alvás" fél órája eddig elveszett –
         // sőt az egész mondat, mert a perc a szám mellé állva elrontotta a
         // mintát. Alvás-szó nélkül ez az ág nem él.

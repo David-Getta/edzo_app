@@ -267,4 +267,11 @@ public class SleepTest {
         assertEquals(5.0, Sleep.parse("éjszaka 3x felébredtem a gyerek miatt, "
                 + "összesen talán 5 óra"), 0.01);
     }
+
+    /** Az átlag nem egy éjszaka: a heti összefoglaló nem kerül a trendbe. */
+    @Test public void aWeeklyAverageIsNotOneNight() {
+        assertEquals(-1.0, Sleep.parse("az alvásátlagom 6,8 óra a héten"), 0.01);
+        // Az átlagpulzus melletti valódi alvás marad.
+        assertEquals(7.0, Sleep.parse("7 óra alvás, átlagpulzus 62"), 0.01);
+    }
 }
