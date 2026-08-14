@@ -822,6 +822,23 @@ public final class Activities {
         while (m.find()) blank(q, m.start(), m.end());
     }
 
+    /**
+     * A NÉVELŐS „a futás után" időpont, nem edzés.
+     *
+     * A „jégfürdő 5 perc a futás után" öt perce a jégfürdőé – mégis egy
+     * ötperces FUTÁS került a naplóba, a valódi jégfürdő helyett. A névelő
+     * a döntő: a „30 perc futás után fájt a térdem" mondatban nincs névelő,
+     * ott a harminc perc a futásé, és a bejegyzés marad.
+     */
+    private static void maskSportTimeReference(char[] q) {
+        String s = new String(q);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![a-z])az? ([a-z]+)\\s+utan(?![a-z])").matcher(s);
+        while (m.find())
+            if (kindWordIn(s, m.start(1), m.end(1)))
+                blank(q, m.start(1), m.end(1));
+    }
+
     /** A sportág-felismerés elől elrejtett szavak kimaszkolása. */
     private static void maskNotSport(char[] q) {
         String s = new String(q);
@@ -1014,6 +1031,7 @@ public final class Activities {
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.
         maskSymptomStairs(q);
+        maskSportTimeReference(q);
         maskNotSport(q);
         // A „hát" nem hat: a „felső hát erősítés" hat darab hatvanperces
         // kondi-bejegyzés lett hat napra elosztva. Ékezet nélkül a testtáj és

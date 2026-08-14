@@ -2813,4 +2813,23 @@ public class ActivitiesParseTest {
         assertEquals(45, p.plans.get(0).minutes);
         assertEquals(7, Activities.parse("a héten összesen 42 km futás").days);
     }
+
+    /**
+     * A névelős „a futás után" időpont, nem edzés.
+     *
+     * A „jégfürdő 5 perc a futás után" öt perce a jégfürdőé – mégis egy
+     * ötperces FUTÁS került a naplóba. A névelő a döntő: a „30 perc futás
+     * után fájt a térdem" mondatban nincs névelő, ott a bejegyzés marad.
+     */
+    @Test public void theArticledSportIsATimeReference() {
+        assertTrue(Activities.parse("jégfürdő 5 perc a futás után")
+                .plans.isEmpty());
+        List<Activities.Plan> p = Activities.parse("a futás után nyújtottam "
+                + "10 percet").plans;
+        assertEquals(1, p.size());
+        assertEquals("joga", p.get(0).kind.id);
+        // Névelő nélkül a futásé az idő.
+        assertEquals(30, Activities.parse("30 perc futás után fájt a térdem, "
+                + "mit tegyek?").plans.get(0).minutes);
+    }
 }
