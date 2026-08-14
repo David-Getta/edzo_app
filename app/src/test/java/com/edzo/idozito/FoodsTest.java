@@ -321,6 +321,10 @@ public class FoodsTest {
             "stúdió", "rádió", "audio", "periódus",
             "kardiológus", "stadion", "Gábor", "Boróka", "borúlátó", "bőrönd",
             "Salgótarján", "tortúra", "borotválkozás", "laboratórium",
+            // A „bőrig áztam" ékezet nélkül gépelve „borig aztam": az esős
+            // biciklizés mellé egy pohár bor került. Ékezettel sosem ütközött
+            // (a bőr nem bor), ékezet nélkül viszont pontosan a bor tövén ült.
+            "borig aztam", "borig azott",
             // Ötödik söprés: termi és táplálkozási szakszavak.
             "testzsír", "zsírbevitel", "edzésterv", "edzésnapló", "izomtömeg",
             "kalóriadeficit", "szálkásítás", "makró", "mikrotápanyag",

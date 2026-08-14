@@ -809,6 +809,9 @@ public final class Foods {
             // maszk a szó ELEJÉT nézi, és a „sajtos" ugyanígy kezdődik – egy
             // ritka szó kedvéért nem áldozzuk fel a sajtos tésztát.
             "halogat", "borostyan", "soreny", "soret",
+            // A „BŐRIG áztam" idióma ékezet nélkül gépelve „borig aztam" –
+            // az esős biciklizés mellé eddig egy pohár bor került a naplóba.
+            "borig",
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",
