@@ -2697,4 +2697,18 @@ public class ActivitiesParseTest {
         // Egyetlen idő mellett marad az alkalomszám.
         assertEquals(2, Activities.parse("2 edzés 45 perc").plans.get(0).count);
     }
+
+    /**
+     * A névmás is alany: „ő kardiózott, én súlyzóztam".
+     *
+     * A kardió a párom edzése volt, mégis bekerült az én naplómba – az „ő"
+     * ékezet nélkül egyetlen betű, de egész szóként a magyar mondatban
+     * szinte csak névmás lehet.
+     */
+    @Test public void thePronounSubjectIsSomeoneElse() {
+        List<Activities.Plan> p = Activities.parse("edzőterem a párommal: "
+                + "ő kardiózott, én súlyzóztam").plans;
+        assertEquals(1, p.size());
+        assertEquals("kondi", p.get(0).kind.id);
+    }
 }

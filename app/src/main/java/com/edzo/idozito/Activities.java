@@ -3816,7 +3816,12 @@ public final class Activities {
             "fiam", "lanyom", "ferjem", "felesegem", "parom", "testverem", "ocsem",
             "batyam", "hugom", "novverem", "anyam", "apam", "anyukam", "apukam",
             "kollegam", "fonokom", "szomszedom", "kutyam", "csapat", "csapatom",
-            "gyerekek", "gyerekem", "unokam", "baratom", "baratnom", "edzom"};
+            "gyerekek", "gyerekem", "unokam", "baratom", "baratnom", "edzom",
+            // A névmás a legrövidebb alany: az „ő kardiózott, én súlyzóztam"
+            // kardiója a párom edzése volt, mégis bekerült a naplómba.
+            // Ékezet nélkül egyetlen betű, de egész szóként a magyar
+            // mondatban szinte csak névmás lehet.
+            "o", "ok"};
 
     /**
      * MÁS mozgása: „a fiam focizott, én csak néztem".
