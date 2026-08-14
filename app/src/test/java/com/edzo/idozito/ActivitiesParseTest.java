@@ -3024,6 +3024,26 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A bringás szókincs sportnév nélkül is tekerés.
+     *
+     * Az „országúti kör 60 km" hatvan kilométeres FUTÁS lett, az „mtb
+     * túra az erdőben" gyalogtúra, a „zwift edzés" és az „e-bike" semmi.
+     * A defekt is bringát mond: az a kör a nyeregben történt.
+     */
+    @Test public void cyclingVocabularyMeansCycling() {
+        String[][] cases = {{"országúti kör 60 km 200 watt átlaggal", "kerekpar"},
+                {"zwift edzés 45 perc, 25 km virtuálisan", "kerekpar"},
+                {"mtb túra az erdőben, 35 km", "kerekpar"},
+                {"e-bike-kal 30 km, alig fáradtam el", "kerekpar"},
+                {"defekt miatt csak 15 km lett a tervezett 40-ből", "kerekpar"}};
+        for (String[] c : cases) {
+            Activities.Parsed p = Activities.parse(c[0]);
+            assertEquals(c[0], 1, p.plans.size());
+            assertEquals(c[0], c[1], p.plans.get(0).kind.id);
+        }
+    }
+
+    /**
      * A tempó a szám előtt és jelzőként is tempó, nem időtartam.
      *
      * Az „átlagtempóm 5:20 volt a 10 kilométeren" öt-húsza percenkénti

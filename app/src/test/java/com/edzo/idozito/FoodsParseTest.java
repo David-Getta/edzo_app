@@ -528,6 +528,15 @@ public class FoodsParseTest {
     }
 
     /**
+     * A szerviz végén nem ital a víz.
+     */
+    @Test public void aBikeShopIsNotAGlassOfWater() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "bringaszerviz után próbakör").isEmpty());
+        assertTrue(Foods.parse(all, "szervizben volt az autó").isEmpty());
+    }
+
+    /**
      * A wrap tortillája maga a wrap – nem külön falat.
      *
      * A „csirkés wrap teljes kiőrlésű tortillában" a wrap mellé egy egész

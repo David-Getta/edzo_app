@@ -92,6 +92,15 @@ public final class Activities {
                     // „biciglizteem 20 km-t" HÚSZ KILOMÉTERES FUTÁS lett, mert
                     // a puszta táv futást jelent. Egy elütés nem érhet ennyit.
                     "bicigli", "bicikl", "bicig", "bico", "bicoz", "biczik",
+                    // A bringás szókincs sportnév nélkül is tekerés: az
+                    // „országúti kör 60 km" eddig futás lett, a Zwift
+                    // virtuális tekerés és az e-bike pedig semmi. A DEFEKT
+                    // is bringát mond: a „defekt miatt csak 15 km lett" a
+                    // nyeregben történt. Az „mtb tura" egyben tő, hogy a
+                    // fej-szó szabály ne a gyalogtúrának adja.
+                    "orszaguti", "zwift", "mtb tura", "mtb-tura",
+                    "e-bike", "ebike", "e bike", "pedelec",
+                    "elektromos bicikli", "defekt",
 
                     // A spinning teremben zajlik, de a lába ugyanazt csinálja:
                     // a tánc MET-je alábecsülte.

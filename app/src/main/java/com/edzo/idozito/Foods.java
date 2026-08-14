@@ -820,6 +820,8 @@ public final class Foods {
             // a „zsírégető órán voltam" a zsír tövén ült. Az edzés-oldal
             // ugyanezt a szót sport-tőként ismeri.
             "zsireget", "zsirgeto",
+            // A SZERVIZ önálló szóként is a víz tövén ül.
+            "szerviz",
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",
@@ -1044,7 +1046,10 @@ public final class Foods {
             // karajt, a SZŐLŐ pedig a bokSZOLÓt és a gyáSZOLÓt hozta be.
             // Egyik tő sem áll összetétel második tagjaként az adatbázisban,
             // tehát a szó belsejében nyugodtan kitakarhatók.
-            "haboru", "sertes", "szolo", "kettej"};
+            "haboru", "sertes", "szolo", "kettej",
+            // A SZERVIZ végén a víz: a „bringaszerviz után próbakör" mellé
+            // egy pohár ásványvíz került a naplóba.
+            "szerviz"};
 
     /**
      * Tövek, amik CSAK a szó elején jelentenek ételt.
