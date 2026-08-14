@@ -637,4 +637,10 @@ public class BodyParseTest {
         assertEquals(78.0, BodyParse.parse("aug. 14. reggel 78 kg").kg, 0.01);
         assertEquals(78.0, BodyParse.parse("július 28-án 78 kg").kg, 0.01);
     }
+
+    /** A „-ról" a kiindulópont ragja, sosem a mai érték. */
+    @Test public void theStartingWeightIsNotToday() {
+        assertEquals(78.2, BodyParse.parse("83,5 kilóról indultam januárban, "
+                + "ma 78,2").kg, 0.01);
+    }
 }

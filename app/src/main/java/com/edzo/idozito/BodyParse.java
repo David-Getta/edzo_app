@@ -109,6 +109,10 @@ public final class BodyParse {
             // elnémította, pedig aki elérte, az épp most állt a mérlegen.
             // (A puszta „a célsúlyom 72 kg" kívánság marad, nem mérés.)
             "elertem",
+            // A KIINDULÓPONT ragozott kilója is testsúly-mondat: a „83,5
+            // kilóról indultam januárban, ma 78,2" mai értéke csak akkor
+            // kerülhet be, ha a mondat mérésnek látszik.
+            "kilorol", "kilobol", "kilotol",
             // A mérés IGÉJE is kimondás: „reggel megmértem magam, 78,4".
             "megmertem", "mertem", "megmerve", "merem",
             // A mérés FŐNEVE is kimondás: a „reggeli mérés: 80,1 kg" eddig
@@ -365,6 +369,11 @@ public final class BodyParse {
             // A „-kor" időpont vagy körszám, sosem kiló: a „45-kor" és a
             // „45 kör" negyvenöt kilós mérésként került volna a súlytrendbe.
             if (rest.startsWith("kor") || rest.startsWith("-kor")) continue;
+            // A „-ról" a KIINDULÓPONT ragja, sosem a mai érték: a „83,5
+            // kilóról indultam januárban, ma 78,2" első száma a januári súly
+            // – a mai a mondat végén áll, és eddig a régi nyerte a trendet.
+            if (rest.startsWith("rol") || rest.startsWith("-rol")
+                    || rest.startsWith("bol") || rest.startsWith("-bol")) continue;
             // A LÁZ nem testsúly: a „38 fokos lázam van" harmincnyolca
             // beleesik a súlysávba, és eddig harmincnyolc kilós méréssé vált
             // a trendben – pont egy olyan napon, amikor a felhasználó beteg.
