@@ -1041,7 +1041,8 @@ public final class StrengthParse {
     private static String maskDistance(String s) {
         // Az „N napos" és az „N hetes" jelző sem sorozat: a „30 napos
         // kihívás" harmincasa a kihívás hossza, nem ismétlésszám.
-        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:napos|hetes|honapos)(?![a-z])", "#");
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:napos|hetes|honapos"
+                + "|hettel|nappal|honappal)(?![a-z])", "#");
         return s.replaceAll("(?<![\\d,.:])\\d{1,4}(?:[.,]\\d+)?\\s*(?:km|m)(?![a-z])", "#");
     }
 

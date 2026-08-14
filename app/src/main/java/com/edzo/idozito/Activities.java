@@ -2890,6 +2890,12 @@ public final class Activities {
             // napra terült szét az aznapi ötven guggolás.
             if (word.startsWith(unit + "os") || word.startsWith(unit + "es"))
                 continue;
+            // Az ESZKÖZHATÁROZÓS alak időpont-eltolás, nem időszak: a
+            // „szalagszakadás után 6 héttel" a mai napról szól, mégis
+            // negyvenkét napra terült szét a bejegyzés.
+            if (word.startsWith(unit + "tel") || word.startsWith(unit + "vel")
+                    || word.startsWith(unit + "pal") || word.startsWith(unit + "al"))
+                continue;
             // A „3 hét UTÁN" nem időszak, hanem a kihagyás hossza: a „ma volt
             // az első edzésem 3 hét után, 30 perc könnyű futás" EGY mai edzés.
             // Eddig huszonegy napra terült szét, vagyis a mai nap kimaradt a

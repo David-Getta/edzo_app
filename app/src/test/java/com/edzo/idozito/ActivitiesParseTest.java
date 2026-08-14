@@ -2927,4 +2927,19 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(6.0, p.plans.get(0).km, 0.01);
     }
+
+    /**
+     * Az eszközhatározós „6 héttel" időpont-eltolás, nem időszak.
+     *
+     * A „szalagszakadás után 6 héttel: óvatos guggolások saját súllyal" a mai
+     * napról szól – mégis negyvenkét napra terült szét, és a hatos a guggolás
+     * ismétlésszáma is lett.
+     */
+    @Test public void sixWeeksLaterIsNotASixWeekSpan() {
+        Activities.Parsed p = Activities.parse("szalagszakadás után 6 héttel: "
+                + "óvatos guggolások saját súllyal");
+        assertEquals(1, p.days);
+        assertTrue(StrengthParse.parse("szalagszakadás után 6 héttel: óvatos "
+                + "guggolások saját súllyal").isEmpty());
+    }
 }
