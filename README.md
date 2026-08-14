@@ -161,10 +161,24 @@ ugyanazt az elvet követi – **a mondatnak MEGTÖRTÉNTRŐL kell szólnia**:
   a kihívás hossza, nem időszak és nem ismétlésszám
 - a **diagnózis** nem étel: a „cukorbeteg vagyok" mondatból tíz gramm cukor
   került az étrendbe – pont annak a naplójába, aki kerüli
+- a **meal prep** nem mai evés: a „vasárnapi meal prep: 4 adag csirkés rizs
+  a hétre" a jövő hét ebédje – hatszáz gramm csirke került a MAI naplóba
+- a **helyszín** neve nem plusz menü: „a mekiben ettem: sajtburger, krumpli,
+  kóla" tételei mellé egy Gyorséttermi menü is bekerült – ötszáz kalória
+  kétszer
 
 Az evés-ige mindig felülír: a „megkívántam a csokit **és megettem**" valódi
 bejegyzés. Tizenkilenc szándék-alakot ötféle edzéssel és tizenöt alakot húsz
 étellel végigpróbálva egyikből sem lesz napló-sor.
+
+A **névelős „a futás után"** időpont, nem edzés: a „jégfürdő 5 perc a futás
+után" öt perce a jégfürdőé – mégis egy ötperces futás került a naplóba. A
+névelő a döntő: a „30 perc futás után fájt a térdem" harminc perce a futásé.
+A **pulzuszóna** száma nem darabszám („zóna 2 futás" egy futás), a
+**„6 héttel" utána** időpont-eltolás, nem időszak, és az **„N napos" kihívás**
+jelzője sem az. A **köredzés** hossza az egész körből jön, az **oda-vissza**
+két fele pedig ugyanaz az út: a „munkába biciklivel: oda 25, vissza 28 perc"
+ötvenhárom perc egyben.
 
 A nap **ülő órái** sem edzésidők: a „hosszú nap, 11 óra munka, este 20 perc
 nyújtás" tizenegy órája a munkáé, a „2 óra tv, 30 perc séta" két órája a
