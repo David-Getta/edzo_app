@@ -2832,4 +2832,14 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("30 perc futás után fájt a térdem, "
                 + "mit tegyek?").plans.get(0).minutes);
     }
+
+    /** A pulzuszóna száma nem darabszám: a „zóna 2 futás" egy futás. */
+    @Test public void theZoneNumberIsNotACount() {
+        Activities.Parsed p = Activities.parse("zóna 2 futás 40 perc, "
+                + "pulzus 135 alatt");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(40, p.plans.get(0).minutes);
+        assertEquals(1, Activities.parse("z2 futás 60 perc").plans.get(0).count);
+    }
 }

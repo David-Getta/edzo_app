@@ -864,6 +864,12 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A PULZUSZÓNA száma nem darabszám: a „zóna 2 futás 40 perc" KÉT
+        // futássá vált. A zóna sorszáma a terhelést nevezi meg, nem az
+        // alkalmakat.
+        s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
+        s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
+        s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
         // Szóközzel tagolt ezres: „10 000" → „10000". A KETTŐSPONT megvédi az
         // óraállást: a „túra 14,8 km 3:45:00 620 m emelkedés" mondatban a
         // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem

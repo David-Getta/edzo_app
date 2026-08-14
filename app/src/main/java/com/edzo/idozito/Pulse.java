@@ -66,6 +66,11 @@ public final class Pulse {
     public static int parse(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // A VÁLTOZÁS mondatában a MÁSODIK szám a mai érték: a „nyugalmi
+        // pulzusom 48-ról 45-re javult" mai értéke negyvenöt – eddig a régi
+        // került a trendbe, vagyis a javulás napján egy romlás.
+        s = s.replaceAll("(\\d{2,3})\\s?-?r[o\u00f3]l\\b[^0-9]{0,12}?"
+                + "(\\d{2,3})\\s?-?r[ae]\\b", "$2");
         // A CÉL nem mérés: a „szeretném, ha 50 lenne a nyugalmi pulzusom" és
         // az „a cél 50-es nyugalmi pulzus" ugyanúgy tartalmaz számot és
         // pulzus-szót, mint egy bejegyzés – csak épp az ellenkezőjét mondja.

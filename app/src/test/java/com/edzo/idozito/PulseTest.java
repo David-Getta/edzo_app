@@ -157,4 +157,10 @@ public class PulseTest {
         assertEquals(54, Pulse.parse("reggel 78,4 kg, 7 óra alvás, 54 nyugalmi"));
         assertEquals(47, Pulse.parse("ma reggel 47 volt a nyugalmi pulzusom"));
     }
+
+    /** A változás mondatában a második szám a mai érték. */
+    @Test public void theNewRestingValueWins() {
+        assertEquals(45, Pulse.parse("nyugalmi pulzusom 48-ról 45-re javult "
+                + "egy hónap alatt"));
+    }
 }
