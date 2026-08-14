@@ -2553,6 +2553,16 @@ public final class Activities {
                 // séta" harminc perce eddig a pihenő szavával együtt eltűnt.
                 if (boundary && w.startsWith("pihen")
                         && p >= 6 && s.startsWith("aktiv ", p - 6)) boundary = false;
+                // A kimaradt BEJEGYZÉS nem kimaradt edzés: a „kimaradt a
+                // tegnapi bejegyzés: futottam 8 km-t" pótlás – a futás
+                // megtörtént, csak a napló maradt le róla. Az „elfelejtettem
+                // beírni" ugyanez.
+                if (boundary && (w.equals("kimaradt") || w.equals("kihagytam")
+                        || w.startsWith("elfelejtettem"))
+                        && s.substring(Math.min(s.length(), p))
+                            .matches("^\\S+(\\s+\\S+){0,3}?\\s*"
+                                + "(a\\s+)?\\w*(bejegyz|beir|napl|rogzit)\\w*.*"))
+                    boundary = false;
                 // A pihenő UTÁN már megint edzés van: a „két hét pihi után
                 // visszaültem a bringára, 25 km" huszonöt kilométere eddig
                 // gazdátlan távként FUTÁS lett, mert a pihi szava elvitte a
@@ -3037,10 +3047,14 @@ public final class Activities {
         // mai napra semmi, egy régi napra meg egy soha meg nem történt edzés.
         java.util.regex.Matcher ago = java.util.regex.Pattern
                 .compile("(?<![\\d.,a-z])(?<!mar )(\\d{1,2}|egy|ket|ketto|harom|negy|ot|hat|"
-                        + "nyolc|kilenc|tiz)\\s?(nap|het|honap)(ja|je|e)\\b").matcher(s);
+                        + "nyolc|kilenc|tiz)\\s?(?:(nap|het|honap)(?:ja|je|e)"
+                        // A „3 nappal ezelőtt" ugyanaz a visszatekintés,
+                        // eszközhatározóval – eddig a mai napra került.
+                        + "|(nap|het|honap)(?:pal|tel|al)\\s+ezelott)\\b").matcher(s);
         if (ago.find()) {
             int n = numWord(ago.group(1));
-            int mul = ago.group(2).equals("nap") ? 1 : ago.group(2).equals("het") ? 7 : 30;
+            String unit2 = ago.group(2) != null ? ago.group(2) : ago.group(3);
+            int mul = unit2.equals("nap") ? 1 : unit2.equals("het") ? 7 : 30;
             int back = n * mul;
             if (back >= 1 && back <= 365)
                 return new int[]{ago.start(), ago.end(), back};

@@ -2986,4 +2986,25 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("edzettem ma 45 percet")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * A kimaradt bejegyzés nem kimaradt edzés.
+     *
+     * A „kimaradt a tegnapi bejegyzés: futottam 8 km-t" pótlás – a futás
+     * megtörtént, csak a napló maradt le róla. Eddig a „kimaradt" szó az
+     * egészet tagadásnak vette. A „3 nappal ezelőtt" visszatekintés pedig a
+     * mai napra került.
+     */
+    @Test public void aMissedEntryIsNotAMissedWorkout() {
+        Activities.Parsed p = Activities.parse("kimaradt a tegnapi bejegyzés: "
+                + "futottam 8 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.offset);
+        assertEquals(2, Activities.parse("elfelejtettem beírni: tegnapelőtt "
+                + "úszás 1500 m").offset);
+        assertEquals(3, Activities.parse("3 nappal ezelőtt futottam 10 km-t")
+                .offset);
+        // A kimaradt EDZÉS marad tagadás.
+        assertTrue(Activities.parse("kimaradt a mai futás").plans.isEmpty());
+    }
 }
