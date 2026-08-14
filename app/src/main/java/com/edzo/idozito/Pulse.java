@@ -29,10 +29,13 @@ public final class Pulse {
             // pulzus reggel 47" a legtermészetesebb alak, és eddig egyáltalán
             // nem létezett – a mérés némán elveszett. Csak a napszak fér be,
             // más szó nem: attól a szám már máshoz tartozhatna.
+            // A „ma" magában is beékelődhet („nyugalmi pulzusom ma 52"), és
+            // a PIHENŐPULZUS ugyanaz a mérés más néven – mindkettő némán
+            // elveszett.
             java.util.regex.Pattern.compile(
-                    "(?<![a-z])pulzus\\w*\\s?:?\\s?"
-                            + "(?:(?:ma\\s)?(?:reggel|este|ejjel|hajnalban|delben|"
-                            + "ebredeskor|ebredes utan|most|volt)\\s?)?(\\d{2,3})"),
+                    "(?<![a-z])(?:piheno)?pulzus\\w*\\s?:?\\s?"
+                            + "(?:(?:ma|reggel|este|ejjel|hajnalban|delben|"
+                            + "ebredeskor|ebredes utan|most|volt)\\s){0,2}(\\d{2,3})"),
             // „52-es pulzus", „48 as nyugalmi pulzus"
             java.util.regex.Pattern.compile(
                     "(\\d{2,3})[- ]?[ae]s\\s(?:nyugalmi\\s)?pulzus"),

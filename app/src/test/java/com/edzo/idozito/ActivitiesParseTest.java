@@ -3024,6 +3024,14 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „körül mozog" ingadozás, nem mozgás.
+     */
+    @Test public void hoveringAroundAValueIsNotExercise() {
+        assertEquals(0, Activities.parse("pihenőpulzus 55 körül mozog "
+                + "mostanában").plans.size());
+    }
+
+    /**
      * Az úszásnem főnévi alakja is úszás.
      *
      * A „mellúszás 800 m" és a „hátúszás 800 m" nyolcszáz méteres FUTÁS

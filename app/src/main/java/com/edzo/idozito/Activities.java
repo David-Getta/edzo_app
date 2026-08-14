@@ -927,6 +927,11 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „KÖRÜL MOZOG" ingadozást jelent, nem mozgást: a „pihenőpulzus
+        // 55 körül mozog" mondatból egy negyvenöt perces „egyéb mozgás"
+        // lett – egy pulzus-leolvasásból.
+        s = s.replaceAll("(?<![a-z])korul mozg\\w*", "korul");
+        s = s.replaceAll("(?<![a-z])korul mozog\\w*", "korul");
         // A KÖRSZÁM a pálya mellett nem alkalomszám: a „leraktam 10 kört a
         // pályán" TÍZ futás-bejegyzéssé vált, mert a tíz darabszámnak
         // látszott. A szám a körök száma egy edzésen belül – kitakarjuk, a

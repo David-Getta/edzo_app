@@ -163,4 +163,18 @@ public class PulseTest {
         assertEquals(45, Pulse.parse("nyugalmi pulzusom 48-ról 45-re javult "
                 + "egy hónap alatt"));
     }
+
+    /**
+     * A „ma" beékelődhet, és a pihenőpulzus is pulzus.
+     *
+     * A „nyugalmi pulzusom ma 52" és a „pihenőpulzus 55 körül mozog"
+     * eddig némán elveszett – az elsőben a „ma" nem fért a szó és a szám
+     * közé, a másodikban a pihenő-előtag takarta a pulzus-szót.
+     */
+    @Test public void todayFitsBetweenTheWordAndTheNumber() {
+        assertEquals(52, Pulse.parse("nyugalmi pulzusom ma 52"));
+        assertEquals(55, Pulse.parse("pihenőpulzus 55 körül mozog mostanában"));
+        // Az edzés-pulzus továbbra sem nyugalmi.
+        assertEquals(-1, Pulse.parse("átlagpulzus 145 a futáson, max 172"));
+    }
 }
