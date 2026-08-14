@@ -2979,4 +2979,11 @@ public class ActivitiesParseTest {
         assertEquals("kondi", Activities.parse("teremben edzettem")
                 .plans.get(0).kind.id);
     }
+
+    /** A -hez rag a hozzávalóé: a „monster ital edzéshez" nem edzés. */
+    @Test public void aDrinkForTheWorkoutIsNotTheWorkout() {
+        assertTrue(Activities.parse("monster ital edzéshez").plans.isEmpty());
+        assertEquals(45, Activities.parse("edzettem ma 45 percet")
+                .plans.get(0).minutes);
+    }
 }

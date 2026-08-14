@@ -2120,6 +2120,10 @@ public final class Activities {
      * betűket átlépjük, és csak az utána álló KÜLÖN szót nézzük.
      */
     private static boolean timePhraseAfter(String s, int from) {
+        // A -HEZ rag a hozzávalóé, nem az edzésé: a „monster ital edzéshez"
+        // negyvenöt perces bejegyzés lett – az italból, amit MAJD az edzéshez
+        // iszik az ember.
+        if (s.startsWith("hez", from) || s.startsWith("hoz", from)) return true;
         int i = from;
         while (i < s.length() && Character.isLetter(s.charAt(i))) i++;
         while (i < s.length() && s.charAt(i) == ' ') i++;
