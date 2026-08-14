@@ -3116,6 +3116,10 @@ public final class Foods {
                 "vettem", "veszek", "vasarol", "hoztam", "hozok",
                 // Főzés jelen időben: a „főzök egy levest" még nem vacsora.
                 "fozok", "sutok", "keszitek", "keszitem", "fozni fogok",
+                // A KELESZTÉS előkészület: a „tésztát kelesztettem" kenyérsütés
+                // közbeni mondat, nem egy adag megevett tészta. A dagasztás
+                // ugyanez.
+                "keleszt", "dagaszt",
                 // Ami a kukába ment.
                 "eldobtam", "kidobtam", "kiontottem", "megromlott", "kidobom",
                 // Amit más evett meg.

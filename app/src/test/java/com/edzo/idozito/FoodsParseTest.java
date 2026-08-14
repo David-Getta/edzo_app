@@ -528,6 +528,15 @@ public class FoodsParseTest {
     }
 
     /**
+     * A kelesztés és a dagasztás előkészület, nem evés.
+     */
+    @Test public void proofingDoughIsNotEating() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "tésztát kelesztettem délután").isEmpty());
+        assertTrue(Foods.parse(all, "kenyértésztát dagasztottam").isEmpty());
+    }
+
+    /**
      * A kollagén egy l-lel sem kóla.
      *
      * A „kolagén port keverek a kávémba" a kóla tövén ült, és üdítőt írt

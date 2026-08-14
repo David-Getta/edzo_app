@@ -150,6 +150,17 @@ public final class Sleep {
                     if (v >= MIN_H && v <= MAX_H) return v;
                 }
             }
+            // A „HÚZTAM" szleng is alvás – de csak kimondott alvás-szó
+            // mellett: a „bepótoltam az alvást, 10 órát húztam" tíz órája
+            // eddig elveszett. Alvás-szó nélkül a „2 órát húztam a
+            // teremben" súlyzózás marad, ezért él ez a minta ebben az ágban.
+            java.util.regex.Matcher hz = java.util.regex.Pattern
+                    .compile("(\\d{1,2}([.,]\\d)?)\\s?ora(?:t)?\\s?huztam")
+                    .matcher(s);
+            if (hz.find()) {
+                double v = Double.parseDouble(hz.group(1).replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return v;
+            }
         }
         for (java.util.regex.Pattern p : FORMS) {
             java.util.regex.Matcher m = p.matcher(s);
@@ -200,9 +211,12 @@ public final class Sleep {
         // „lefeküdtem" és az „ágyba bújtam" ugyanaz a pillanat. Enélkül az
         // „este 10-re ágyban voltam, reggel 6-kor keltem" egésze elveszett,
         // pedig a nyolc óra ki van mondva benne.
+        // A PUSZTA „ágyban" is lefekvés a párja mellett: a „11-kor ágyban,
+        // fél 7-kor kelés" eddig elveszett, mert az „ágyban" mögül hiányzott
+        // a „voltam". A „kelés" főnév ugyanígy ébredés.
         boolean bed = s.contains("fekudtem") || s.contains("fekszem")
-                || s.contains("lefeku") || s.contains("agyban volt")
-                || s.contains("agyba bujt") || s.contains("agyban vagyok")
+                || s.contains("lefeku") || s.contains("agyban")
+                || s.contains("agyba bujt")
                 || s.contains("lefekves");
         // Az ÉJFÉL is időpont, csak nem számmal írják: az „éjfél után
         // feküdtem, 6-kor keltem" bedagadt volna a szabályba, ha az éjfélt
@@ -213,7 +227,7 @@ public final class Sleep {
         // ébredés" az óra-app kijelzőjéről másolt sor, és eddig teljesen
         // elveszett – ige nélkül nem látszott alvás-mondatnak.
         boolean up = s.contains("keltem") || s.contains("ebredtem")
-                || s.contains("ebredes");
+                || s.contains("ebredes") || s.contains("keles");
         boolean ctx = s.contains("alud") || s.contains("alvas") || (bed && up);
         if (!ctx) return -1;
         java.util.List<Integer> mins = new java.util.ArrayList<>();
@@ -251,8 +265,9 @@ public final class Sleep {
         // Enélkül a különbség tizenhat óra lett, és a tizenkét órás igazítás
         // négy és negyed órányi alvást hazudott rá.
         int bedAt = firstOf(s, new String[]{"fekudtem", "fekszem", "lefeku",
-                "agyban volt", "agyba bujt", "agyban vagyok", "lefekves"});
-        int upAt = firstOf(s, new String[]{"keltem", "ebredtem", "ebredes"});
+                "agyban", "agyba bujt", "lefekves"});
+        int upAt = firstOf(s, new String[]{"keltem", "ebredtem", "ebredes",
+                "keles"});
         if (bedAt >= 0 && upAt >= 0 && upAt < bedAt) {
             java.util.Collections.reverse(mins);
             java.util.Collections.reverse(exact);

@@ -274,4 +274,31 @@ public class SleepTest {
         // Az átlagpulzus melletti valódi alvás marad.
         assertEquals(7.0, Sleep.parse("7 óra alvás, átlagpulzus 62"), 0.01);
     }
+
+    /**
+     * A puszta „ágyban" és a „kelés" főnév is időpont-pár.
+     *
+     * A „11-kor ágyban, fél 7-kor kelés" eddig elveszett: az „ágyban"
+     * mögül hiányzott a „voltam", a „kelés" pedig nem volt ébredés-szó.
+     * Egy időponttal a pár nem áll össze: az esti olvasás az ágyban nem
+     * alvás-hossz.
+     */
+    @Test public void bareInBedAndTheWakingNounPairUp() {
+        assertEquals(7.5, Sleep.parse("11-kor ágyban, fél 7-kor kelés, de "
+                + "forgolódtam sokat"), 0.01);
+        assertEquals(-1.0, Sleep.parse("az ágyban olvastam este, 11-kor "
+                + "keltem"), 0.01);
+    }
+
+    /**
+     * A „húztam" szleng is alvás – de csak alvás-szó mellett.
+     *
+     * A „bepótoltam az alvást, 10 órát húztam" tíz órája eddig elveszett.
+     * Alvás-szó nélkül a „2 órát húztam a teremben" súlyzózás marad.
+     */
+    @Test public void pullingTenHoursIsSleepSlang() {
+        assertEquals(10.0, Sleep.parse("hétvégén bepótoltam az alvást, "
+                + "10 órát húztam"), 0.01);
+        assertEquals(-1.0, Sleep.parse("2 órát húztam a teremben"), 0.01);
+    }
 }
