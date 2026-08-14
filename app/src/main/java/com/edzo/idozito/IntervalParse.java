@@ -148,6 +148,12 @@ public final class IntervalParse {
         if (java.util.regex.Pattern
                 .compile("\\d{1,3}\\s?-\\s?\\d{1,3}\\s*(?:perc|mp|masodperc|ora)")
                 .matcher(s).find() && !saysPlan(s)) return null;
+        // A NAPIREND óra-tartománya sem ritmus: az „ebédidő: 12:30-13:00
+        // séta" két időpontja munka/pihenő párnak látszott. Két kettőspontos
+        // idő kötőjellel a nap órái – terv csak kimondva lehet belőle.
+        if (java.util.regex.Pattern
+                .compile("\\d{1,2}:\\d{2}\\s?-\\s?\\d{1,2}:\\d{2}")
+                .matcher(s).find() && !saysPlan(s)) return null;
         // Az edzőtermi tábla írásmódja: „1:30 munka 0:30 pihenő”. A perc:mp
         // alakot rögtön másodpercre váltjuk, hogy a többi szabály értse.
         s = clockToSeconds(s);

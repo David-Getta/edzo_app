@@ -721,4 +721,11 @@ public class IntervalParseTest {
         assertNull(IntervalParse.parse("esti rutin: 15 perc nyújtás, "
                 + "23:00 lefekvés"));
     }
+
+    /** A napirend óra-tartománya sem ritmus: a 12:30-13:00 a nap órái. */
+    @Test public void aClockRangeIsNotAPlan() {
+        assertNull(IntervalParse.parse("ebédidő: 12:30-13:00 séta"));
+        // A perc:mp alakú tábla-írásmód kimondott tervvel marad.
+        assertEquals(90, IntervalParse.parse("5 kör 1:30 munka 0:30 pihenő").work);
+    }
 }
