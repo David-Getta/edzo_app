@@ -2744,4 +2744,24 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
         assertEquals(48, Activities.parse("futás 10 km 48:20").plans.get(0).minutes);
     }
+
+    /**
+     * A mondat közbeni sorszám is sorszám.
+     *
+     * A „letudtam a heti 3. futást, 7 km" hármasa a hét HARMADIK futása, nem
+     * három futás – eddig három bejegyzés lett belőle. A „30 napos kihívás"
+     * harmincasa pedig a kihívás hossza: az aznapi ötven guggolás eddig
+     * harminc napra terült szét, és a sorozat ismétlésszáma is harmincra
+     * változott.
+     */
+    @Test public void theMidSentenceOrdinalIsAnOrdinal() {
+        Activities.Parsed p = Activities.parse("letudtam a heti 3. futást, 7 km");
+        assertEquals(1, p.plans.size());
+        assertEquals(7.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed q = Activities.parse("3. nap a 30 napos kihívásból: "
+                + "50 guggolás");
+        assertEquals(1, q.days);
+        assertEquals(50, StrengthParse.parse("3. nap a 30 napos kihívásból: "
+                + "50 guggolás").get(0).totalReps());
+    }
 }

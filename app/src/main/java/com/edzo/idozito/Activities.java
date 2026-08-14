@@ -2761,6 +2761,11 @@ public final class Activities {
             String word = wordAt(s, p);
             if (word.equals(unit + "ja") || word.equals(unit + "je")
                     || word.equals(unit + "e")) continue;
+            // Az „N napos" JELZŐ, nem időszak: a „30 napos kihívás" a
+            // kihívás hosszát mondja, a bejegyzés a mai napé – eddig harminc
+            // napra terült szét az aznapi ötven guggolás.
+            if (word.startsWith(unit + "os") || word.startsWith(unit + "es"))
+                continue;
             // A „3 hét UTÁN" nem időszak, hanem a kihagyás hossza: a „ma volt
             // az első edzésem 3 hét után, 30 perc könnyű futás" EGY mai edzés.
             // Eddig huszonegy napra terült szét, vagyis a mai nap kimaradt a
@@ -3557,6 +3562,15 @@ public final class Activities {
                 .compile("(?i)(?<![a-zöüó])nap\\s?(\\d{1,2})\\s*[:.]").matcher(text);
         while (m.find())
             for (int i = m.start(1); i < m.end(1); i++) sb.setCharAt(i, ' ');
+        // A MONDAT KÖZBENI sorszám is sorszám: a „letudtam a heti 3. futást"
+        // hármasa a hét HARMADIK futása, nem három futás – eddig három
+        // bejegyzés lett belőle, hét napra szétosztva. A magyar a sorszámot
+        // ponttal írja, a darabszámot pont nélkül; a pont utáni betű zárja
+        // ki a tizedes törtet.
+        m = java.util.regex.Pattern
+                .compile("(?<![\\d.,])(\\d{1,2})\\.(?=\\s?\\p{L})").matcher(text);
+        while (m.find())
+            for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
         return sb.toString();
     }
 

@@ -1030,6 +1030,9 @@ public final class StrengthParse {
      * kg-ot nem érinti (a szám után ott nem m betű áll).
      */
     private static String maskDistance(String s) {
+        // Az „N napos" és az „N hetes" jelző sem sorozat: a „30 napos
+        // kihívás" harmincasa a kihívás hossza, nem ismétlésszám.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:napos|hetes|honapos)(?![a-z])", "#");
         return s.replaceAll("(?<![\\d,.:])\\d{1,4}(?:[.,]\\d+)?\\s*(?:km|m)(?![a-z])", "#");
     }
 
