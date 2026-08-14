@@ -302,4 +302,22 @@ public class KcalTest {
         assertEquals(120, Kcal.protein("120 fehérje ma"));
         assertEquals(140, Kcal.protein("fehérje: 140"));
     }
+
+    /**
+     * A napi mérleg két száma két irány.
+     *
+     * A „napi mérleg: 1900 kcal bevitel, 2400 kcal égetés" első száma a
+     * bevitel, a második az égetés – eddig mindkét oldal a 2400-at kapta,
+     * mert a „napi" cél-szónak számított, az „égetés" főnévi alakja pedig
+     * hiányzott a tiltólistáról. A kimondott irány erősebb a cél szavánál.
+     */
+    @Test public void theDailyBalanceHasTwoDirections() {
+        assertEquals(1900, Kcal.stated("napi mérleg: 1900 kcal bevitel, "
+                + "2400 kcal égetés"));
+        assertEquals(2400, Kcal.burned("napi mérleg: 1900 kcal bevitel, "
+                + "2400 kcal égetés"));
+        // A deficit mértéke se nem bevitel, se nem égetés.
+        assertEquals(-1, Kcal.stated("kalóriadeficitben vagyok, kb 400 kcal"));
+        assertEquals(-1, Kcal.burned("kalóriadeficitben vagyok, kb 400 kcal"));
+    }
 }

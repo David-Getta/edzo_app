@@ -71,6 +71,11 @@ public final class Kcal {
             // kalóriás deficitben vagyok" ötszáz elfogyasztott kalóriaként
             // került a naplóba – a napi keret negyedeként.
             "deficit", "deficitben", "deficittel", "tobbletben", "szufficit",
+            // Az összetett alak kicselezi a szóhatárt: a „kalóriadeficitben
+            // vagyok, kb 400 kcal" négyszáza a deficit mértéke, mégis
+            // bevitelként ÉS égetésként is beszámoltuk.
+            "kaloriadeficit", "kaloriadeficitben", "kaloriadeficittel",
+            "kaloriatobblet", "kaloriatobbletben",
     };
 
     /**
@@ -99,6 +104,9 @@ public final class Kcal {
      */
     private static final String[] NOT_EATEN = {
             "egettem", "egetem", "elegettem", "elegetem", "elhasznaltam",
+            // A FŐNÉVI alak is égetés: a „napi mérleg: 1900 kcal bevitel,
+            // 2400 kcal égetés" második fele eddig a BEVITELHEZ adódott.
+            "egetes", "elegetes", "egetett", "elegetett",
             "alatt", "felett", "folott",
     };
 
@@ -201,10 +209,22 @@ public final class Kcal {
             for (String cl : s.split("\\s*[,;]\\s*")) {
                 boolean bad = false;
                 for (Pattern w : GOAL_P) if (w.matcher(cl).find()) { bad = true; break; }
+                // A kimondott IRÁNY erősebb a cél szavánál: a „napi mérleg:
+                // 1900 kcal bevitel" tagmondatában ott a „bevitel" – ez nem
+                // terv, hanem beszámoló, hiába kezdődik „napi"-val.
+                if (bad) for (Pattern w : want) if (w.matcher(cl).find()) bad = false;
                 if (!bad) keep.append(keep.length() > 0 ? ", " : "").append(cl);
             }
             s = keep.toString();
             if (s.isEmpty()) return -1;
+            // A cél mellett maradt tagmondat csak akkor adat, ha MEGTÖRTÉNTET
+            // mond: a „kalóriadeficitben vagyok, kb 400 kcal" négyszáza a
+            // deficit mértéke, nem bevitel és nem égetés – eddig mindkettőnek
+            // beszámoltuk. A „ma 1750 lett" viszont beszámoló.
+            boolean done = s.matches(".*(?<![a-z])(lett|volt|ossze\\w*|ma|tegnap"
+                    + "|bevitel|bevittem|megettem|ettem|ittam|elegettem|egettem"
+                    + "|egetes|reggeli|ebed|vacsora)(?![a-z]).*");
+            if (!done) return -1;
         }
         // A tiltó szó csak a SAJÁT tagmondatát viszi el. A „ma 2100 kcal-t
         // ettem, elégettem 600-at" mindkét számot kimondja, de az „elégettem"
