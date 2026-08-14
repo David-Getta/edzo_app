@@ -870,6 +870,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // A TERVEZETT HELYETT a valódi: „a tervezett 10 km helyett csak 6
+        // lett" hatosa a megtett táv – eddig az egész mondat elveszett, mert
+        // a hat mellett nem állt mértékegység, a tíz meg terv volt. A magyar
+        // helyesbítés mintája ez is: előbb a nem-igaz, aztán az igaz.
+        s = s.replaceAll("(?i)tervezett\\s+\\d{1,3}(?:[.,]\\d)?\\s*"
+                + "(km|kilometer|perc|ora)\\w*\\s+helyett\\s+(?:csak\\s+)?"
+                + "(\\d{1,3}(?:[.,]\\d)?)(?!\\s*(?:km|kilometer|perc|ora))",
+                "$2 $1");
         // Az ODA-VISSZA két fele ugyanaz az út: a „munkába biciklivel: oda
         // 25, vissza 28 perc" eddig csak a vissza-időt kapta meg – a napi
         // ingázás fele elveszett. A két szám összege az egy bejegyzés.

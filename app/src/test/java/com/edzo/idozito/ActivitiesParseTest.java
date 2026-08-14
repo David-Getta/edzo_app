@@ -2913,4 +2913,18 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("2 óra takarítás közben "
                 + "4000 lépés").plans.size());
     }
+
+    /**
+     * A tervezett helyett a valódi.
+     *
+     * „A tervezett 10 km helyett csak 6 lett" hatosa a megtett táv – eddig az
+     * egész mondat elveszett, mert a hat mellett nem állt mértékegység, a tíz
+     * meg terv volt.
+     */
+    @Test public void thePlannedGivesWayToTheActual() {
+        Activities.Parsed p = Activities.parse("a tervezett 10 km helyett "
+                + "csak 6 lett");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+    }
 }
