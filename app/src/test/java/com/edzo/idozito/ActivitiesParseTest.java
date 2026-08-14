@@ -2727,4 +2727,21 @@ public class ActivitiesParseTest {
         assertEquals(105, p.plans.get(0).minutes);
         assertEquals(1, p.days);
     }
+
+    /**
+     * A méteres táv ideje perc:mp, nem óra:perc.
+     *
+     * Az „úszóverseny: 100 m gyors 1:12" hetvenkét PERCES úszás lett száz
+     * méterre. Rövidtávon az 1:12 egy perc tizenkét másodperc – a kilométeres
+     * táv óra-értelmezése változatlan.
+     */
+    @Test public void aShortRaceTimeIsMinutesAndSeconds() {
+        assertEquals(1, Activities.parse("úszóverseny: 100 m gyors 1:12")
+                .plans.get(0).minutes);
+        assertEquals(1, Activities.parse("400 m futás 1:05").plans.get(0).minutes);
+        // Kilométerrel írt távnál marad az óra:perc.
+        assertEquals(105, Activities.parse("18 km futás 1:45:20")
+                .plans.get(0).minutes);
+        assertEquals(48, Activities.parse("futás 10 km 48:20").plans.get(0).minutes);
+    }
 }

@@ -3271,10 +3271,20 @@ public final class Activities {
                     "hajnal", "ejjel"})
                 if (beforeBlank.contains(dw)) { daypart = true; break; }
             if (first < 10 && daypart) continue;
+            // A MÉTERES táv mellett az óra:perc értelmezés képtelenség: az
+            // „úszóverseny: 100 m gyors 1:12" hetvenkét PERCES úszás lett
+            // száz méterre – a rövidtávú idő perc:mp, nem óra:perc. Csak
+            // méterben (km nélkül) kiírt táv mellett él.
+            boolean meterOnly = !beforeBlank.contains("km")
+                    && !beforeBlank.contains("maraton")
+                    && java.util.regex.Pattern.compile("\\d\\s?m(?![a-z])")
+                            .matcher(beforeBlank).find();
             int min = first < 10
-                    ? first * 60 + Integer.parseInt(m.group(2))
+                    ? (meterOnly
+                        ? Math.max(1, first + (Integer.parseInt(m.group(2)) >= 30 ? 1 : 0))
+                        : first * 60 + Integer.parseInt(m.group(2)))
                     : first + (Integer.parseInt(m.group(2)) >= 30 ? 1 : 0);
-            if (min >= 3 && min <= 24 * 60) out.add(new int[]{m.start(), min, m.end(), 0});
+            if (min >= 1 && min <= 24 * 60) out.add(new int[]{m.start(), min, m.end(), 0});
         }
     }
 
