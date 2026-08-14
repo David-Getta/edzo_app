@@ -2333,6 +2333,14 @@ public final class Activities {
                 // ami még el sem kezdődött.
                 "benevez", "beneveztem", "nevezes", "jelentkeztem egy"})
             if (s.contains(w)) return true;
+        // A PÓTLÁS jelen ideje terv: a „hétvégén pótolom az edzést" egy
+        // majdani edzés – eddig megtörténtként került be. Két kivétel: a
+        // NAPLÓ pótlása („pótolom: tegnap 30 perc jóga" – utólag beírt,
+        // megtörtént edzés) és a kimondott „tegnap". A múlt idejű
+        // „bepótoltam" a ragja miatt eleve nem esik a mintába.
+        if (s.matches(".*(?<![a-z])(?:be)?potol(?:om|juk)(?![a-z]).*")
+                && !s.matches(".*(bejegyz|beir|napl|rogzit|tegnap).*"))
+            return true;
         // A mondat ELEJÉN álló „majd" és a FŐNÉVI IGENÉV együtt jövő idő:
         // „majd futni 30 percet", „talán elmenni a terembe". Külön-külön
         // egyik sem elég – a „majd 30 perc kondi" beírható a naplóba

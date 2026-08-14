@@ -3024,6 +3024,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A pótlás jelen ideje terv – a napló pótlása viszont megtörtént edzés.
+     *
+     * A „hétvégén pótolom az edzést" egy majdani edzés, mégis bekerült a
+     * naplóba. A „pótolom: tegnap 30 perc jóga" ellenben utólag beírt,
+     * megtörtént edzés – a napló-szó és a „tegnap" felmenti. A múlt idejű
+     * „bepótoltam" a ragja miatt eleve valódi edzés.
+     */
+    @Test public void makingUpAWorkoutLaterIsAPlan() {
+        assertEquals(0, Activities.parse("a hétvégén pótolom "
+                + "az edzést").plans.size());
+        assertEquals(1, Activities.parse("kimaradt a szerdai edzés, ma "
+                + "bepótoltam: 45 perc kondi").plans.size());
+        assertEquals(1, Activities.parse("elfelejtettem beírni, pótolom: "
+                + "tegnap 30 perc jóga").plans.size());
+    }
+
+    /**
      * A jelzős osztálynév egy edzés – a fej-szó dönt.
      *
      * Az „alakformáló torna 50 perc" elejéből tánc, a végéből jóga lett:
