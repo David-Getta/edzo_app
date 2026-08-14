@@ -2942,4 +2942,12 @@ public class ActivitiesParseTest {
         assertTrue(StrengthParse.parse("szalagszakadás után 6 héttel: óvatos "
                 + "guggolások saját súllyal").isEmpty());
     }
+
+    /** A körhossz szorozva a körszámmal: 8 db 500 m-es kör négy kilométer. */
+    @Test public void lapLengthTimesLapCount() {
+        Activities.Parsed p = Activities.parse("500 m-es köröket futottam, "
+                + "összesen 8-at");
+        assertEquals(1, p.plans.size());
+        assertEquals(4.0, p.plans.get(0).km, 0.01);
+    }
 }

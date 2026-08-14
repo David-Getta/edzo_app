@@ -870,6 +870,18 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // A KÖRHOSSZ szorozva a körszámmal: az „500 m-es köröket futottam,
+        // összesen 8-at" fél kilométeres futás lett NÉGY helyett – a
+        // körhossz bement távnak, a nyolc kör elveszett mellőle.
+        java.util.regex.Matcher lap = java.util.regex.Pattern
+                .compile("(\\d{2,4})\\s?(?:m|meter)-?es\\s+kor\\w*"
+                        + "[^0-9]{0,30}?(\\d{1,2})(?!\\d)").matcher(s);
+        if (lap.find()) {
+            int total = Integer.parseInt(lap.group(1)) * Integer.parseInt(lap.group(2));
+            if (total >= 200 && total <= 100000)
+                s = s.substring(0, lap.start()) + total + " m "
+                        + s.substring(lap.end());
+        }
         // A TERVEZETT HELYETT a valódi: „a tervezett 10 km helyett csak 6
         // lett" hatosa a megtett táv – eddig az egész mondat elveszett, mert
         // a hat mellett nem állt mértékegység, a tíz meg terv volt. A magyar
