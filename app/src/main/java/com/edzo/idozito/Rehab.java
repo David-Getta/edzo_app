@@ -423,8 +423,9 @@ public final class Rehab {
                 "rovid a", "roviduelt", "roviduelt", "beszukult",
                 "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
                 // Az igekötős húzódás is húzódás: a „meghúzódott a hátam a
-                // 120 kg-os felhúzásnál" eddig válasz nélkül maradt.
-                "meghuzod", "megrandult",
+                // 120 kg-os felhúzásnál" eddig válasz nélkül maradt. A
+                // „behúzódott a combhajlítóm" ugyanaz b-vel.
+                "meghuzod", "behuzod", "megrandult",
                 // A SÉRÜLÉS kimondva is panasz: a „lesérültem focin, boka"
                 // pont az a mondat, ami után a boka-lap kell.
                 "leserul", "megserul", "serules", "serulest",

@@ -779,5 +779,16 @@ public class RehabTest {
                 + "a 120 kg-os felhúzásnál").id);
         assertEquals("boka", Rehab.forComplaint("megrándult a bokám "
                 + "a focin").id);
+        // A b-igekötős húzódás ugyanaz: „behúzódott a combhajlítóm".
+        assertEquals("comb", Rehab.forComplaint("behúzódott a combhajlítóm "
+                + "futás közben").id);
+    }
+
+    /** A becsípődött ideg panasz – és nem bécsi szelet. */
+    @Test public void aPinchedNerveIsNotASchnitzel() {
+        assertEquals("derek", Rehab.forComplaint("becsípődött a derekam "
+                + "reggel").id);
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "becsípődött a derekam reggel").isEmpty());
     }
 }

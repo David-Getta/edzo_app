@@ -3024,6 +3024,21 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az izomláz beszámolója nem új edzés.
+     *
+     * Az „izomláz van rendesen a tegnapi lábnaptól" egy hatvanperces
+     * kondit írt TEGNAPRA – pedig azt az edzést az ember már beírta,
+     * amikor megtörtént. A kimondott számmal írt edzés mellette marad:
+     * az „izomláz után 45 perc kondi ment ma" valódi mai edzés.
+     */
+    @Test public void muscleSorenessIsNotANewWorkout() {
+        assertEquals(0, Activities.parse("izomláz van rendesen a tegnapi "
+                + "lábnaptól").plans.size());
+        assertEquals(1, Activities.parse("izomláz után 45 perc kondi ment "
+                + "ma").plans.size());
+    }
+
+    /**
      * A „körül mozog" ingadozás, nem mozgás.
      */
     @Test public void hoveringAroundAValueIsNotExercise() {

@@ -822,6 +822,9 @@ public final class Foods {
             "zsireget", "zsirgeto",
             // A SZERVIZ önálló szóként is a víz tövén ül.
             "szerviz",
+            // A BECSÍPŐDÖTT ideg nem bécsi szelet: a „becsípődött a derekam"
+            // mellé egy rántott hús került a naplóba – a „becsi" tövön ült.
+            "becsip",
             // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
             // „vízisí" mellé egy pohár ásványvíz került a naplóba.
             "vizi",

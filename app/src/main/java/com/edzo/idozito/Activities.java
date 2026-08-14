@@ -4029,7 +4029,11 @@ public final class Activities {
                 "belenyilall", "szakadas", "elpattant", "megpattant",
                 // Az instabilitás és a merevség is panasz: a „gyakran húzódik
                 // a combom sprintnél" eddig negyvenöt perces futás lett.
-                "huzodik", "kifordul", "kibicsaklik", "megbicsaklik", "instabil"})
+                "huzodik", "kifordul", "kibicsaklik", "megbicsaklik", "instabil",
+                // Az IZOMLÁZ is panasz-mondat: az „izomláz van rendesen a
+                // tegnapi lábnaptól" egy hatvanperces kondit írt TEGNAPRA –
+                // pedig azt az edzést az ember már beírta, amikor megtörtént.
+                "izomlaz"})
             if (cl.contains(w)) return true;
         return false;
     }
