@@ -513,6 +513,34 @@ public class FoodsParseTest {
     }
 
     /**
+     * Az elfelejtett étel nem került a szájba.
+     *
+     * Az „elfelejtettem bevenni a vitaminokat" étrend-kiegészítőt írt a
+     * naplóba – pont arról, ami kimaradt. A valódi evés-ige viszont
+     * felment: az „elfelejtettem fotózni, de megettem a lasagnét" falat.
+     */
+    @Test public void aForgottenPillWasNeverTaken() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "elfelejtettem bevenni "
+                + "a vitaminokat").isEmpty());
+        assertFalse(Foods.parse(all, "elfelejtettem fotózni, de megettem "
+                + "a lasagnét").isEmpty());
+    }
+
+    /**
+     * A kollagén egy l-lel sem kóla.
+     *
+     * A „kolagén port keverek a kávémba" a kóla tövén ült, és üdítőt írt
+     * a naplóba. A kávé marad, az üdítő nem.
+     */
+    @Test public void misspelledCollagenIsNotACoke() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (Foods.Hit x : Foods.parse(all, "kolagén port keverek "
+                + "a kávémba minden reggel"))
+            assertFalse(x.food.name.startsWith("Üdítő"));
+    }
+
+    /**
      * A turmix hozzávalói nem a turmix mellé számítanak.
      *
      * A „reggel smoothie: banán, spenót, zabtej" kettőspont utáni listája

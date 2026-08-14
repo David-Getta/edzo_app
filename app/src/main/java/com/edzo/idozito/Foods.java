@@ -812,6 +812,10 @@ public final class Foods {
             // A „BŐRIG áztam" idióma ékezet nélkül gépelve „borig aztam" –
             // az esős biciklizés mellé eddig egy pohár bor került a naplóba.
             "borig",
+            // A KOLLAGÉN egy l-lel írva („kolagén port keverek a kávémba")
+            // a kóla tövén ül, és üdítőt írt a naplóba. A helyes kettős l
+            // („kollagen") sosem ütközött.
+            "kolagen",
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",
@@ -3129,6 +3133,12 @@ public final class Foods {
                 // „lemondtam a csokiról".
                 "birtam ki", "kibirtam", "lemondtam a", "lemondok a",
                 "tartozkodom", "bojtolok", "bojtoltem",
+                // Az ELFELEJTETT étel nem került a szájba: az „elfelejtettem
+                // bevenni a vitaminokat" eddig étrend-kiegészítőt írt a
+                // naplóba – pont arról, ami kimaradt. A valódi evés-ige
+                // („ettem", „megittam") alább úgyis felment, ezért a puszta
+                // ige is elég tőnek.
+                "elfelejtettem", "elfelejtettuk",
                 // A HETI FŐZÉS nem mai evés: a „vasárnapi meal prep: 4 adag
                 // csirkés rizs a hétre" hatszáz gramm csirkét írt a MAI
                 // naplóba – abból az ételből, ami a jövő hét ebédje. Az
