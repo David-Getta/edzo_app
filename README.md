@@ -187,6 +187,16 @@ viszont a konkrét sport nyer az általános „edzés" szó felett. A **zsíré
 fitnesz** is edzés, és az **edzővel töltött óra** is az – a vele folytatott
 beszélgetés viszont nem.
 
+A sportok szakszavait is beszéli: az **úszásnemek** főnévi alakja úszás
+(mellúszás, hátúszás – a pillangó viszont csak úszó-szó mellett úszás, a
+teremben mellgép), a **bringás szókincs** (országúti, Zwift, mtb túra,
+e-bike, defekt) tekerés, a **tempó** pedig a szám előtt és jelzőként is
+percenkénti idő, nem időtartam – az „átlagtempóm 5:20 volt a 10 kilométeren"
+53 perc, nem öt óra húsz. Az **izomláz** beszámolója nem új edzés, a
+**„körül mozog"** ingadozás, a **pótolom** terv (a napló pótlása viszont
+megtörtént edzés), és a **küszöb** száma („lement 80 alá, 79.6 kg") sosem
+a mérleg száma.
+
 A konditerem szlengjét is beszéli: a **„toltam a vasat"** súlyzózás (a puszta
 „vas" tilos tő – a vasárnap és a vasalás is tartalmazza), a **„leraktam 10
 kört a pályán"** pedig sportnév nélkül is futás, mert a kör + pálya páros az
