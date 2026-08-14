@@ -2896,4 +2896,21 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(21450, p.plans.get(0).steps);
     }
+
+    /**
+     * A „közben" mért lépés nem külön séta a tevékenység mellé.
+     *
+     * A „takarítás közben 4000 lépés" egyetlen óra takarítás – eddig
+     * takarítás PLUSZ fél óra gyaloglás lett belőle, kilencven perc mozgás
+     * egy órából. A lépésszám (a lépéscél adata) marad.
+     */
+    @Test public void stepsDuringAChoreAreNotASecondWorkout() {
+        List<Activities.Plan> p = Activities.parse("takarítás közben "
+                + "4000 lépés").plans;
+        assertEquals(1, p.size());
+        assertEquals(4000, p.get(0).steps);
+        // A kimondott idejű tevékenység mellett marad mindkettő.
+        assertEquals(2, Activities.parse("2 óra takarítás közben "
+                + "4000 lépés").plans.size());
+    }
 }

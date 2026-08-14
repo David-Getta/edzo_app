@@ -1774,6 +1774,21 @@ public final class Activities {
                 if (!kept.isEmpty()) out = kept;
             }
         }
+        // A „KÖZBEN" mért lépés nem külön séta a tevékenység MELLÉ: a
+        // „takarítás közben 4000 lépés" egyetlen óra takarítás, nem
+        // takarítás PLUSZ fél óra gyaloglás – kilencven perc mozgás lett
+        // egy órából. A kimondatlan hosszú kísérő tevékenység esik ki, a
+        // lépésszám (a lépéscél adata) marad.
+        if (steps > 0 && rawText.contains("kozben") && out.size() >= 1) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out) {
+                if (!"tura".equals(p.kind.id) && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin && p.count == 1)
+                    continue;
+                kept.add(p);
+            }
+            out = kept;
+        }
         // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót
         // sem mond ki: a „ma 14 000 lépés, 9,8 km" a tíz és fél kilométeres
         // gyaloglás MELLÉ egy tíz kilométeres FUTÁST is beírt – húsz
