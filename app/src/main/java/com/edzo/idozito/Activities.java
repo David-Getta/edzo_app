@@ -1570,6 +1570,24 @@ public final class Activities {
                 break;
             }
         }
+        // Ahány alkalom, annyi hossz: a „két edzés ma, 45 és 60 perc"
+        // hatvana eddig elveszett, és MINDKÉT alkalom negyvenöt percet
+        // kapott. Ha a kimondott időtartamok száma pont az alkalomszám, a
+        // hosszak a saját alkalmukhoz tartoznak – ugyanaz a szabály, ami a
+        // távoknál már megvolt („két túra: 12 km és 18 km").
+        if (out.size() == 1 && out.get(0).count > 1 && out.get(0).km <= 0
+                && out.get(0).steps <= 0 && mins.size() == out.get(0).count) {
+            Plan p0 = out.get(0);
+            boolean own = false;
+            for (int[] m : mins) if (m[1] == p0.minutes) own = true;
+            if (own) {
+                List<Plan> split = new ArrayList<>();
+                for (int[] m : mins)
+                    split.add(new Plan(p0.kind, 1, m[1], 0));
+                out = split;
+            }
+        }
+
         // A lépésszám túra/gyaloglás: időt (~130 lépés/perc) és távot
         // (~75 cm/lépés) is jelent. Ha séta/túra már szerepel a mondatban,
         // azt egészíti ki – nem lesz belőle második bejegyzés.

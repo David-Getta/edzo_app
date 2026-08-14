@@ -2675,4 +2675,26 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("1 óra pihenés után 30 perc bringa")
                 .plans.get(0).minutes);
     }
+
+    /**
+     * Ahány alkalom, annyi hossz.
+     *
+     * A „két edzés ma, 45 és 60 perc" hatvana eddig elveszett, és MINDKÉT
+     * alkalom negyvenöt percet kapott. Ha a kimondott időtartamok száma pont
+     * az alkalomszám, a hosszak a saját alkalmukhoz tartoznak – ugyanaz a
+     * szabály, ami a távoknál már megvolt.
+     */
+    @Test public void asManySessionsAsManyDurations() {
+        List<Activities.Plan> p = Activities.parse("két edzés ma, 45 és 60 perc").plans;
+        assertEquals(2, p.size());
+        assertEquals(45, p.get(0).minutes);
+        assertEquals(60, p.get(1).minutes);
+        List<Activities.Plan> q = Activities.parse("két futás ma, 30 és 45 perc").plans;
+        assertEquals(2, q.size());
+        assertEquals("futas", q.get(0).kind.id);
+        assertEquals(30, q.get(0).minutes);
+        assertEquals(45, q.get(1).minutes);
+        // Egyetlen idő mellett marad az alkalomszám.
+        assertEquals(2, Activities.parse("2 edzés 45 perc").plans.get(0).count);
+    }
 }
