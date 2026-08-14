@@ -2294,6 +2294,10 @@ public final class Foods {
         // 1-et" mondatból eddig semmi nem lett – a tagadás elvitte az egészet,
         // pedig az egy szelet megvolt.
         query = Hu.correction(query);
+        // A „néhány szem" és a „pár szem" kis maréknyi, nem EGYETLEN szem: a
+        // „néhány szem szőlő" öt grammként ment be – egyetlen szőlőszemként.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(n[eé]h[aá]ny|p[aá]r)"
+                + "(?=\\s+szem)", "5");
         query = withoutOthersPlates(query);
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);

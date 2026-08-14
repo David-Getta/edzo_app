@@ -461,4 +461,12 @@ public class FoodsQuantityTest {
         assertEquals(180.0, Foods.parse(all, "palacsintát sütöttem, hármat "
                 + "ettem meg").get(0).grams, 0.01);
     }
+
+    /** A „néhány szem" kis maréknyi, nem egyetlen szem. */
+    @Test public void aFewPiecesAreNotOnePiece() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(25.0, Foods.parse(all, "esti nass: néhány szem szőlő")
+                .get(0).grams, 0.01);
+        assertEquals(25.0, Foods.parse(all, "pár szem szőlő").get(0).grams, 0.01);
+    }
 }
