@@ -105,7 +105,11 @@ public final class StrengthParse {
                     "nyak moge nyom", "katonai nyomas", "military press", "shoulder press"},
             {"Evezés", "evezes", "evezo", "rowing", "evezt", "evezni", "evezek",
                     "cable row", "pendlay"},
-            {"Bicepsz", "bicepsz", "kalapacs", "predikator", "scott pad", "hammer curl"},
+            // Az angol „biceps curl" z nélkül írja a bicepszet – eddig a
+            // sor teljesen elveszett. A puszta „curl" nem tő: a leg curl
+            // combhajlítás.
+            {"Bicepsz", "bicepsz", "biceps curl", "biceps ", "kalapacs",
+                    "predikator", "scott pad", "hammer curl"},
             // A FRANCIA FEKVENYOMÁS tricepsz-gyakorlat, nem fekvenyomás: a
             // rövidebb „fekvenyom" tő eddig elvitte, és a huszonöt kilós
             // francia a fekvenyomás rekordjai közé került. A hosszabb tő nyer,
@@ -354,14 +358,29 @@ public final class StrengthParse {
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban
         // nincs ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat
         // elveszett, pedig együtt teljesen egyértelmű.
-        String pending = null;
+        String pending = null, pendingKg = null;
         for (String part : splitClauses(whole)) {
             Item it = parseOne(part);
             // A név ékezetes, szép alak; a tagmondat viszont már normalizált,
             // ezért a nevet is úgy adjuk hozzá.
-            if (it == null && pending != null) it = parseOne(Foods.norm(pending) + " " + part);
-            if (it != null) { out.add(it); pending = null; continue; }
-            if (out.isEmpty() && pending == null) pending = moveIn(part);
+            // A JELZŐS súly is átjön a névvel: a „húsz kilós kettlebell
+            // swing, 4x15" súlya az első tagmondatban áll, a sorozat a
+            // másodikban – a név mellől eddig elveszett a húsz kiló, és
+            // saját testsúlyos lendítés lett belőle. A tagmondat SAJÁT
+            // súlya erősebb: a hozott csak a végére kerül.
+            if (it == null && pending != null)
+                it = parseOne(Foods.norm(pending) + " " + part
+                        + (pendingKg != null ? " " + pendingKg + " kg" : ""));
+            if (it != null) { out.add(it); pending = null; pendingKg = null; continue; }
+            if (out.isEmpty() && pending == null) {
+                pending = moveIn(part);
+                if (pending != null) {
+                    java.util.regex.Matcher aw = java.util.regex.Pattern
+                            .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg-?os|kg os|kilos)")
+                            .matcher(part);
+                    if (aw.find()) pendingKg = aw.group(1);
+                }
+            }
             // Sorozatfelsorolás gyakorlatnév nélkül: „fekvenyomás 60x10, 70x8,
             // 80x6”. A vessző itt nem új gyakorlatot nyit, hanem a következő
             // sorozatot – név hiányában az előzőhöz tartozik.

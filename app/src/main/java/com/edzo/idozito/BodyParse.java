@@ -272,6 +272,13 @@ public final class BodyParse {
                     && !part.contains("kg") && !part.contains("kilo")
                     && !Foods.matches(java.util.Arrays.asList(Foods.ALL),
                             part).isEmpty()) other = true;
+            // A GYAKORLATNÉV tagmondata a súlyzós naplóé: a „vállból nyomás
+            // ma csak 40 kg ment, fáradt voltam" negyvenese a rúdon van, nem
+            // a mérlegen – a „voltam" miatt mégis negyven kilós mérés lett
+            // belőle a súlytrendben. A CENTIVEL írt tagmondat marad: a
+            // „vádli 38 cm" körfogat, hiába gyakorlatnév is a vádli.
+            if (!other && !part.contains("cm") && !part.contains("centi")
+                    && StrengthParse.nameIn(part) != null) other = true;
             if (other) { dropped = true; continue; }
             if (keep.length() > 0) keep.append(' ');
             keep.append(part.trim());

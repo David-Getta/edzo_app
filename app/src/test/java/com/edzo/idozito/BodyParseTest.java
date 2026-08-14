@@ -676,6 +676,21 @@ public class BodyParseTest {
                 + "79.6 kg").kg, 0.01);
     }
 
+    /**
+     * A gyakorlat súlya a rúdon van, nem a mérlegen.
+     *
+     * A „vállból nyomás ma csak 40 kg ment, fáradt voltam" negyvenese a
+     * súlyzós naplóé – a „voltam" miatt mégis negyven kilós mérés lett
+     * belőle a súlytrendben. A centivel írt vádli viszont körfogat marad,
+     * hiába gyakorlatnév is a vádli.
+     */
+    @Test public void anExerciseWeightIsNotTheScale() {
+        assertEquals(0.0, BodyParse.parse("vállból nyomás ma csak 40 kg "
+                + "ment, fáradt voltam").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("evezés volt reggel, este 78 kg "
+                + "a mérlegen").kg, 0.01);
+    }
+
     /** A „pont" és a „kg-nál tartok" is csak kíséret a mérés mellett. */
     @Test public void exactAndStandingAtPhrasesAreCompany() {
         assertEquals(68.0, BodyParse.parse("reggel éhgyomorra "

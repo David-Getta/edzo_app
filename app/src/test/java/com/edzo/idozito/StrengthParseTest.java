@@ -1245,4 +1245,31 @@ public class StrengthParseTest {
         assertEquals(2, StrengthParse.parse("guggolás 2x15 60 kg")
                 .get(0).sets.size());
     }
+
+    /**
+     * A jelzős súly is átjön a névvel a következő tagmondatba.
+     *
+     * A „húsz kilós kettlebell swing, 4x15" súlya az első tagmondatban
+     * áll, a sorozat a másodikban – a név mellől eddig elveszett a húsz
+     * kiló, és saját testsúlyos lendítés lett belőle. A tagmondat saját
+     * súlya erősebb: a „guggolás 60 kg bemelegítés, aztán 3x5 100"
+     * munkasorozata száz kilós marad.
+     */
+    @Test public void anAdjectiveWeightTravelsWithTheName() {
+        List<StrengthParse.Item> it = StrengthParse.parse("húsz kilós "
+                + "kettlebell swing, 4x15");
+        assertEquals(1, it.size());
+        assertEquals(20.0, it.get(0).topWeight(), 0.01);
+        assertEquals(100.0, StrengthParse.parse("guggolás 60 kg bemelegítés, "
+                + "aztán 3x5 100").get(0).topWeight(), 0.01);
+    }
+
+    /** Az angol „biceps curl" z nélkül is bicepsz. */
+    @Test public void englishBicepsCurlIsRecognised() {
+        List<StrengthParse.Item> it = StrengthParse.parse("biceps curl "
+                + "12,5 kg-os kézisúlyzóval 3x12");
+        assertEquals(1, it.size());
+        assertEquals("Bicepsz", it.get(0).name);
+        assertEquals(12.5, it.get(0).topWeight(), 0.01);
+    }
 }
