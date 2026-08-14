@@ -600,4 +600,35 @@ public class BodyParseTest {
         assertEquals(0.0, b.kg, 0.01);
         assertEquals(84.0, b.cm[0], 0.01);
     }
+
+    /**
+     * A „lettem" nem „ettem".
+     *
+     * A tagmondat-szűrő contains()-szel keresett, és a „78 kg LETTEM, végre
+     * 80 alá mentem" első tagmondatában megtalálta az „ettem"-et – a mérés
+     * étkezés-tagmondatként esett ki, és az egész mondatból semmi nem lett.
+     * A szóhatár + igekötő szabály a „megettem"-et továbbra is étkezésnek
+     * látja.
+     */
+    @Test public void becomingIsNotEating() {
+        assertEquals(78.0, BodyParse.parse("78 kg lettem, végre 80 alá "
+                + "mentem").kg, 0.01);
+        assertEquals(79.8, BodyParse.parse("megettem egy pizzát, 79,8 kg "
+                + "voltam reggel").kg, 0.01);
+        assertEquals(77.7, BodyParse.parse("77,7 kg, eddigi legjobb").kg, 0.01);
+        assertEquals(82.0, BodyParse.parse("visszahíztam 82-re").kg, 0.01);
+    }
+
+    /**
+     * Az elért cél már mérés.
+     *
+     * Az „elértem a célsúlyom, 72 kg" hetvenkettője a mai súly – a cél szava
+     * eddig az egész mondatot elnémította, pedig aki elérte, az épp most állt
+     * a mérlegen. A puszta kívánság marad kívánság.
+     */
+    @Test public void aReachedGoalIsAMeasurement() {
+        assertEquals(72.0, BodyParse.parse("elértem a célsúlyom, 72 kg").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("a cél 75 kg").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("szeretnék 72 kg lenni").kg, 0.01);
+    }
 }

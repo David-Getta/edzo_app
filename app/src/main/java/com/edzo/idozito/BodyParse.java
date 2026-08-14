@@ -101,6 +101,14 @@ public final class BodyParse {
             // „lefogytam" nem ugyanaz, mint a „fogytam". Huszonhat valós
             // mérés-mondattal próbálva ezek maradtak ki.
             "lefogytam", "felmentem", "lementem", "felszedtem",
+            // A visszahízás is mérés-ige: a „visszahíztam 82-re" eddig
+            // elveszett, mert a „híztam" csak szó elején volt meg.
+            "visszahiztam", "visszahizott", "visszamentem",
+            // Az ELÉRT cél már mérés: az „elértem a célsúlyom, 72 kg"
+            // hetvenkettője a mai súly – a cél szava eddig az egész mondatot
+            // elnémította, pedig aki elérte, az épp most állt a mérlegen.
+            // (A puszta „a célsúlyom 72 kg" kívánság marad, nem mérés.)
+            "elertem",
             // A mérés IGÉJE is kimondás: „reggel megmértem magam, 78,4".
             "megmertem", "mertem", "megmerve", "merem",
             // A mérés FŐNEVE is kimondás: a „reggeli mérés: 80,1 kg" eddig
@@ -173,7 +181,26 @@ public final class BodyParse {
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(Foods.norm(q))))));
         if (s.isEmpty()) return new Body(0, 0);
-        for (String n : NOT_BODY) if (word(s, n)) return new Body(0, 0);
+        // A tiltó szó csak a SAJÁT tagmondatát viszi el: az „elértem a
+        // célsúlyom, 72 kg" hetvenkettője valódi mérés – a CÉL az első
+        // tagmondatban áll, és eddig az egész mondatot elnémította. A „78 kg
+        // lettem, végre 80 alá mentem" nyolcvana ugyanígy: a küszöb a másik
+        // tagmondaté, a hetvennyolc a mérleg száma. Ha minden tagmondat
+        // tiltott, az egész mondat az – a „a cél 75 kg" továbbra sem mérés.
+        boolean anyBlocked = false;
+        for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
+        if (anyBlocked) {
+            StringBuilder keepB = new StringBuilder();
+            for (String cl : s.split("[,;.](?!\\d)")) {
+                boolean bad = false;
+                for (String n : NOT_BODY) if (word(cl, n)) { bad = true; break; }
+                if (bad) continue;
+                if (keepB.length() > 0) keepB.append(", ");
+                keepB.append(cl.trim());
+            }
+            s = keepB.toString().trim();
+            if (s.isEmpty()) return new Body(0, 0);
+        }
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
         boolean said = hasBodyWord(s);
 
@@ -220,7 +247,13 @@ public final class BodyParse {
                     "futas", "futottam", "edzes", "edzettem", "km", "lepes",
                     "perc", "ittam", "ettem", "ebed", "vacsora", "uzsonna",
                     "kcal", "kalori"})
-                if (part.contains(w)) { other = true; break; }
+                // Szóhatárról, igekötővel: a „megettem" étkezés, a „78 kg
+                // LETTEM" viszont mérés – a puszta contains() a „lettem"
+                // belsejében is megtalálta az „ettem"-et, és a mérés
+                // tagmondata étkezésként esett ki.
+                if (part.matches(".*(?<![a-z])(?:meg|le|be|fel|el)?" + w + ".*")) {
+                    other = true; break;
+                }
             // A SOROZAT tagmondata is másé: a „körfogatok és súlyok: derék
             // 84, guggolás 3x5 100" száza a rúdon van, nem a mérlegen –
             // eddig száz kilós MÉRÉS lett belőle a súlytrendben.
@@ -504,6 +537,9 @@ public final class BodyParse {
                         // és a „78 kg két hónap után" mérés – eddig a mellette
                         // álló szavaktól az egész mondat kiesett.
                         + "egy|ket|harom|negy|ot|hat|het|honap|ev|nap|"
+                        // A BÜSZKESÉG szava is csak kíséret: a „77,7 kg –
+                        // eddigi legjobb" mérés, a jelző nem veszi el.
+                        + "eddigi|legjobb|rekord|csucs|uj|vegre|kerek|"
                         + "hete|honapja|eve|napja|hetre|honapra|evre)"
                         + "(?![a-z])", " ")
                 .replaceAll("[^a-z]", " ").trim();
