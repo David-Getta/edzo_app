@@ -870,6 +870,17 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // Az ODA-VISSZA két fele ugyanaz az út: a „munkába biciklivel: oda
+        // 25, vissza 28 perc" eddig csak a vissza-időt kapta meg – a napi
+        // ingázás fele elveszett. A két szám összege az egy bejegyzés.
+        java.util.regex.Matcher ov = java.util.regex.Pattern
+                .compile("oda\\s?(\\d{1,3})\\s?(?:perc)?\\s?[,;]?\\s?(?:es\\s)?"
+                        + "vissza\\s?(\\d{1,3})\\s?perc").matcher(s);
+        if (ov.find()) {
+            int sum = Integer.parseInt(ov.group(1)) + Integer.parseInt(ov.group(2));
+            if (sum >= 2 && sum <= 24 * 60)
+                s = s.substring(0, ov.start()) + sum + " perc" + s.substring(ov.end());
+        }
         // Szóközzel tagolt ezres: „10 000" → „10000". A KETTŐSPONT megvédi az
         // óraállást: a „túra 14,8 km 3:45:00 620 m emelkedés" mondatban a
         // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem

@@ -2842,4 +2842,19 @@ public class ActivitiesParseTest {
         assertEquals(40, p.plans.get(0).minutes);
         assertEquals(1, Activities.parse("z2 futás 60 perc").plans.get(0).count);
     }
+
+    /**
+     * Az oda-vissza két fele ugyanaz az út.
+     *
+     * A „munkába biciklivel: oda 25, vissza 28 perc" eddig csak a vissza-időt
+     * kapta meg – a napi ingázás fele elveszett. A két szám összege az egy
+     * bejegyzés.
+     */
+    @Test public void thereAndBackIsOneTrip() {
+        Activities.Parsed p = Activities.parse("munkába biciklivel: oda 25, "
+                + "vissza 28 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals(53, p.plans.get(0).minutes);
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+    }
 }
