@@ -631,4 +631,10 @@ public class BodyParseTest {
         assertEquals(0.0, BodyParse.parse("a cél 75 kg").kg, 0.01);
         assertEquals(0.0, BodyParse.parse("szeretnék 72 kg lenni").kg, 0.01);
     }
+
+    /** A dátum is csak kíséret: az „aug. 14. reggel 78 kg" jegyzet-sor. */
+    @Test public void aDateStampDoesNotHideTheWeight() {
+        assertEquals(78.0, BodyParse.parse("aug. 14. reggel 78 kg").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("július 28-án 78 kg").kg, 0.01);
+    }
 }

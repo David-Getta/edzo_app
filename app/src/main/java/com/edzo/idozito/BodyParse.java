@@ -540,6 +540,12 @@ public final class BodyParse {
                         // A BÜSZKESÉG szava is csak kíséret: a „77,7 kg –
                         // eddigi legjobb" mérés, a jelző nem veszi el.
                         + "eddigi|legjobb|rekord|csucs|uj|vegre|kerek|"
+                        // A DÁTUM is csak kíséret: az „aug. 14. reggel 78 kg"
+                        // jegyzetből másolt sor, a hónapnév nem veszi el.
+                        + "januar|februar|marcius|aprilis|majus|junius|julius|"
+                        + "augusztus|szeptember|oktober|november|december|"
+                        + "jan|feb|marc|apr|maj|jun|jul|aug|szept|okt|nov|dec|"
+                        + "en|an|jen|ejen|"
                         + "hete|honapja|eve|napja|hetre|honapra|evre)"
                         + "(?![a-z])", " ")
                 .replaceAll("[^a-z]", " ").trim();
