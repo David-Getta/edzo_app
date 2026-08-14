@@ -1225,6 +1225,24 @@ public final class Activities {
             if (!covered) keep.add(h);
         }
         sortByPos(keep);
+        // Az EGY SZÓBA eső azonos mozgásformájú tövek egy találat: a
+        // „gyalogtúrán" elején a gyalog, a közepén a túra – mindkettő a
+        // túráé, mégis KÉT túra lett belőle, és a szintemelkedés métere is
+        // kapott egy sajátot. Két különböző sport egy szóban maradhat
+        // (sífutás), az ugyanaz kétszer nem.
+        List<int[]> uniq = new ArrayList<>();
+        for (int[] h : keep) {
+            boolean dup = false;
+            for (int[] o : uniq) {
+                if (o[2] != h[2]) continue;
+                boolean sameWord = true;
+                for (int i = o[0] + o[1]; i < h[0]; i++)
+                    if (!Character.isLetter(s.charAt(i))) { sameWord = false; break; }
+                if (sameWord && h[0] - (o[0] + o[1]) <= 2) { dup = true; break; }
+            }
+            if (!dup) uniq.add(h);
+        }
+        keep = uniq;
 
         // 4) Távok hozzárendelése: a legközelebbi táv-alapú mozgáshoz. A magyar
         //    mindkét szórendet használja („10 km futás”, „futottam 10 km-t”),

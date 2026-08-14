@@ -2871,4 +2871,22 @@ public class ActivitiesParseTest {
                 + "1 perc séta)").plans.isEmpty());
         assertEquals(2, Activities.parse("2x45 perc foci").plans.get(0).count);
     }
+
+    /**
+     * Az egy szóba eső azonos tövek egy találat.
+     *
+     * A „gyalogtúrán" elején a gyalog, a közepén a túra – mindkettő a túra
+     * mozgásformájáé, mégis KÉT túra lett belőle, és a szintemelkedés métere
+     * is kapott egy sajátot: a „gyalogtúrán voltunk, 14 km 600 m szint"
+     * mondatból tizennégy plusz hat tized kilométer.
+     */
+    @Test public void twoStemsInOneWordAreOneHit() {
+        List<Activities.Plan> p = Activities.parse("gyalogtúrán voltunk, "
+                + "14 km 600 m szint").plans;
+        assertEquals(1, p.size());
+        assertEquals(14.0, p.get(0).km, 0.01);
+        // Két KÜLÖNBÖZŐ sport egy mondatban marad kettő.
+        assertEquals(2, Activities.parse("futottam 5 km-t és úsztam 1 km-t")
+                .plans.size());
+    }
 }
