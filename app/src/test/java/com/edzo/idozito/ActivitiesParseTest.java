@@ -2798,4 +2798,19 @@ public class ActivitiesParseTest {
         assertTrue(StrengthParse.parse("régebben 100 kg-ot nyomtam fekve")
                 .isEmpty());
     }
+
+    /**
+     * A jelzőként álló csupasz „hét" nem időszak.
+     *
+     * A „ma deload hét van, könnyű súlyokkal edzettem 45 percet" mai edzése
+     * hét napra terült szét, mert a „hét" szó szám nélkül is időszaknak
+     * számított. A ragozott alak („a héten") marad időszak.
+     */
+    @Test public void aBareWeekAdjectiveIsNotASpan() {
+        Activities.Parsed p = Activities.parse("ma deload hét van, könnyű "
+                + "súlyokkal edzettem 45 percet");
+        assertEquals(1, p.days);
+        assertEquals(45, p.plans.get(0).minutes);
+        assertEquals(7, Activities.parse("a héten összesen 42 km futás").days);
+    }
 }

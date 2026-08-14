@@ -2791,9 +2791,12 @@ public final class Activities {
                 continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {
-                // Szám nélkül csak a hét és a hónap időszak („a héten",
-                // „a hónapban") – a puszta „nap" nem.
-                if (mult == 7 || mult == 30) return new int[]{p, end, mult};
+                // Szám nélkül csak a RAGOZOTT hét és hónap időszak („a héten",
+                // „a hónapban") – a puszta „nap" nem, és a jelzőként álló
+                // csupasz „hét" sem: a „ma deload hét van, edzettem 45
+                // percet" mai edzése eddig hét napra terült szét.
+                if ((mult == 7 || mult == 30) && word.length() > unit.length())
+                    return new int[]{p, end, mult};
                 continue;
             }
             int val = Math.max(1, Math.min(365, n[2] * mult));
