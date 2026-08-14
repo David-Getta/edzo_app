@@ -3007,4 +3007,19 @@ public class ActivitiesParseTest {
         // A kimaradt EDZÉS marad tagadás.
         assertTrue(Activities.parse("kimaradt a mai futás").plans.isEmpty());
     }
+
+    /**
+     * A megnevezett nap melletti puszta „semmi" is tagadás.
+     *
+     * A „hétfőn kondi 60 perc, kedden semmi" keddje eddig egy MÁSODIK
+     * hatvanperces kondit kapott – pont arról a napról, amelyikről az ember
+     * azt írta, hogy semmi.
+     */
+    @Test public void aBareNothingClearsTheNamedDay() {
+        Activities.Parsed p = Activities.parse("hétfőn kondi 60 perc, "
+                + "kedden semmi");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(1, p.days);
+    }
 }

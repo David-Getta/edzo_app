@@ -2496,6 +2496,11 @@ public final class Activities {
                 // semmi mozgás" mondatból eddig tízórás „egyéb mozgás" lett –
                 // pont abból a szóból, amivel az ember azt mondja, hogy nem
                 // mozgott.
+                // A megnevezett nap melletti puszta „SEMMI" is tagadás: a
+                // „hétfőn kondi 60 perc, kedden semmi" keddje eddig egy
+                // MÁSODIK hatvanperces kondit kapott – pont arról a napról,
+                // amelyikről az ember azt írta, hogy semmi.
+                "semmi",
                 "semmi mozgas", "semmilyen mozgas", "nulla mozgas",
                 "semmi edzes", "semmilyen edzes", "nulla edzes",
                 "semmi sport", "nem mozogtam", "nem mozdultam",
