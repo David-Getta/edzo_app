@@ -2212,10 +2212,15 @@ public final class Foods {
             // Puszta DARABSZÁM a záró tagmondatban: „sütöttem egy adag
             // palacsintát, megettem hatot". A tárgyrag itt a mértékegység
             // helyét foglalja el, és eddig egyetlen adag ment be hat helyett.
+            // Az ige a szám MÖGÖTT is állhat: a „sütit sütöttem, kettőt
+            // megettem" és a „hármat ettem meg" ugyanaz a mondat fordított
+            // szórenddel – eddig csak az elöl álló igés alak működött.
             java.util.regex.Matcher c = java.util.regex.Pattern.compile(
                     "[,;]\\s*(?:megettem|ettem|megittam|ittam)?\\s*"
                             + "(\\d{1,2}(?:-?(?:ot|et|at))?|egyet|kettot|harmat|negyet|"
-                            + "otot|hatot|hetet|nyolcat|kilencet|tizet)\\s*$").matcher(s);
+                            + "otot|hatot|hetet|nyolcat|kilencet|tizet)"
+                            + "(?:\\s+(?:megettem|ettem meg|ettem|megittam|ittam meg|"
+                            + "ittam|elfogyasztottam))?\\s*$").matcher(s);
             if (!c.find()) return query;
             head = s.substring(0, c.start());
             amount = plainNumber(c.group(1));

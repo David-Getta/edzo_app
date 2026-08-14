@@ -446,4 +446,19 @@ public class FoodsQuantityTest {
         // A tányér és a marék sem változik.
         assertEquals(30.0, Foods.parse(all, "egy marék dió").get(0).grams, 0.01);
     }
+
+    /**
+     * Az ige a szám mögött is állhat.
+     *
+     * A „sütit sütöttem, kettőt megettem" ugyanaz a mondat, mint a
+     * „megettem kettőt", csak fordított szórenddel – eddig csak az elöl álló
+     * igés alak működött, és egy süti ment be kettő helyett.
+     */
+    @Test public void theVerbMayFollowTheCount() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(200.0, Foods.parse(all, "sütit sütöttem, kettőt megettem")
+                .get(0).grams, 0.01);
+        assertEquals(180.0, Foods.parse(all, "palacsintát sütöttem, hármat "
+                + "ettem meg").get(0).grams, 0.01);
+    }
 }
