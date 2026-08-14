@@ -2962,4 +2962,13 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("reggeli után 30 perccel edzettem "
                 + "45 percet").plans.get(0).minutes);
     }
+
+    /** A cél beállítása nem séta: a „10000 lépéses cél" száma terv. */
+    @Test public void settingAStepGoalIsNotAWalk() {
+        assertTrue(Activities.parse("beállítottam a 10000 lépéses célt")
+                .plans.isEmpty());
+        // A megtett lépés marad.
+        assertEquals(10000, Activities.parse("ma 10000 lépés összejött")
+                .plans.get(0).steps);
+    }
 }

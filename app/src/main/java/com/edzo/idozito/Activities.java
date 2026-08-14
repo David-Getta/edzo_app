@@ -2250,6 +2250,10 @@ public final class Activities {
                 // A CÉL sem napló: az „a heti célom 4 edzés" négy megtörtént
                 // edzésként került be – a hét elején, amikor még egy sem volt.
                 "celom", "celunk", "celja a", "heti cel", "napi cel", "cel:",
+                // A cél BEÁLLÍTÁSA sem edzés: a „beállítottam a 10000 lépéses
+                // célt" hét és fél kilométeres sétát írt a naplóba – abból a
+                // számból, amennyit az ember MAJD el akar érni naponta.
+                "lepeses cel", "a celt", "celt allitottam", "celt tuztem",
                 // A NEVEZÉS nem futás: a „beneveztem egy félmaratonra"
                 // huszonegy kilométert írt a naplóba egy olyan versenyről,
                 // ami még el sem kezdődött.
