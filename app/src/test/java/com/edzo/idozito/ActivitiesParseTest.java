@@ -2971,4 +2971,12 @@ public class ActivitiesParseTest {
         assertEquals(10000, Activities.parse("ma 10000 lépés összejött")
                 .plans.get(0).steps);
     }
+
+    /** A terem mérlege sem edzés: a mérés-mondat terme csak helyszín. */
+    @Test public void theGymScaleIsNotAWorkout() {
+        assertTrue(Activities.parse("az edzőteremben mértem: 78,8 kg")
+                .plans.isEmpty());
+        assertEquals("kondi", Activities.parse("teremben edzettem")
+                .plans.get(0).kind.id);
+    }
 }

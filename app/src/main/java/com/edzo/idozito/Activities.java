@@ -1778,6 +1778,18 @@ public final class Activities {
         // beírt – ugyanannak az órának a helyszínéből, kimondatlan hosszal.
         // Ha a teremre a mondatban semmi más nem utal, és van mellette
         // kimondott hosszúságú edzés, a helyszín nem külön bejegyzés.
+        // A terem MÉRLEGE sem edzés: „az edzőteremben mértem: 78,8 kg" a
+        // mérésről szól, a terem csak helyszín – mégis hatvan perc kondi
+        // került mellé.
+        if (out.size() == 1 && onlyGymPlace(rawText)
+                && "kondi".equals(out.get(0).kind.id)
+                && out.get(0).minutes == out.get(0).kind.defaultMin
+                && out.get(0).km <= 0 && out.get(0).steps <= 0
+                && rawText.matches(".*\\d\\s?kg.*")
+                && (rawText.contains("mertem") || rawText.contains("merleg")
+                    || rawText.contains("meres"))) {
+            out = new ArrayList<>();
+        }
         if (out.size() > 1 && onlyGymPlace(rawText)) {
             boolean stated = false;
             for (Plan p : out)

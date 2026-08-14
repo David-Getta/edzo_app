@@ -542,7 +542,8 @@ public final class BodyParse {
                         // A mérés KÖRÜLMÉNYE is csak körülmény: az
                         // „éhgyomorra" és a „zuhany után" ugyanúgy nem adat,
                         // mint a napszak – a mérés MELLETT állnak, nem helyette.
-                        + "ehgyomorra|ehgyomor|zuhany|utan|inbody|szerint|"
+                        + "ehgyomorra|ehgyomor|zuhany|furdes|furdo|esti|reggeli|"
+                        + "utan|elott|inbody|szerint|"
                         // A mérleg többi sora is csak kíséret: az izom- és
                         // csonttömeg mellett a testsúly ugyanúgy mérés marad,
                         // csak épp nem az a szám.

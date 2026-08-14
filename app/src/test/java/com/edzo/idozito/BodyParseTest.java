@@ -658,4 +658,9 @@ public class BodyParseTest {
         assertEquals(38.0, BodyParse.parse("78 kg, 18% zsír, 92 cm derék, "
                 + "100 cm csípő, 38 cm comb, 34 cm kar").cm[3], 0.01);
     }
+
+    /** A fürdés és az esti jelző is csak kíséret a mérés mellett. */
+    @Test public void aBathTimeWeighInCounts() {
+        assertEquals(79.2, BodyParse.parse("esti fürdés után 79,2 kg").kg, 0.01);
+    }
 }
