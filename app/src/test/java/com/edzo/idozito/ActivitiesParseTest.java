@@ -2857,4 +2857,18 @@ public class ActivitiesParseTest {
         assertEquals(53, p.plans.get(0).minutes);
         assertEquals("kerekpar", p.plans.get(0).kind.id);
     }
+
+    /**
+     * A percben írt szakasz sem külön edzés.
+     *
+     * A „bemelegítés, aztán 3x(5 perc futás + 1 perc séta)" öt- és egyperces
+     * darabjai a körök részei – eddig három ötperces futás és egy egyperces
+     * túra is bekerült az időzítő-terv mellé. A „2x45 perc foci" viszont két
+     * félidő pihenő-szakasz nélkül: a meccs marad bejegyzés.
+     */
+    @Test public void aMinuteSegmentIsNotASeparateWorkout() {
+        assertTrue(Activities.parse("bemelegítés, aztán 3x(5 perc futás + "
+                + "1 perc séta)").plans.isEmpty());
+        assertEquals(2, Activities.parse("2x45 perc foci").plans.get(0).count);
+    }
 }

@@ -1716,6 +1716,24 @@ public final class Activities {
                 if (p.km > 0 || p.minutes != p.kind.defaultMin) kept.add(p);
             if (!kept.isEmpty() || out.size() > 1) out = kept;
         }
+        // PERCBEN írt szakaszoknál az időzítő-terv a mérce: a „3x(5 perc
+        // futás + 1 perc séta)" öt- és egyperces darabjai a KÖRÖK részei,
+        // nem külön edzések – eddig három ötperces futás és egy egyperces
+        // túra is bekerült a terv mellé. Amelyik mozgás hossza pont egy
+        // szakasz hossza, az a szakasz maga.
+        // Csak valódi munka/pihenő párnál: a „2x45 perc foci" két félidő,
+        // ott nincs pihenő-szakasz, és a meccs marad bejegyzés.
+        IntervalParse.Plan ip = IntervalParse.parse(rawText);
+        if (ip != null && ip.rounds >= 2 && ip.rest > 0 && !ip.guessed) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out) {
+                int sec = p.minutes * 60;
+                if (p.km <= 0 && p.steps <= 0 && (sec == ip.work || sec == ip.rest))
+                    continue;
+                kept.add(p);
+            }
+            out = kept;
+        }
         // A TEREM csak HELYSZÍN: a „45 perc spinning óra a teremben" a
         // negyvenöt perces kerékpározás MELLÉ egy hatvanperces kondit is
         // beírt – ugyanannak az órának a helyszínéből, kimondatlan hosszal.
