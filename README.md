@@ -180,6 +180,12 @@ jelzője sem az. A **köredzés** hossza az egész körből jön, az **oda-vissz
 két fele pedig ugyanaz az út: a „munkába biciklivel: oda 25, vissza 28 perc"
 ötvenhárom perc egyben.
 
+A konditerem szlengjét is beszéli: a **„toltam a vasat"** súlyzózás (a puszta
+„vas" tilos tő – a vasárnap és a vasalás is tartalmazza), a **„leraktam 10
+kört a pályán"** pedig sportnév nélkül is futás, mert a kör + pálya páros az
+atlétikai pályát mondja ki. A körök száma ilyenkor EGY edzésen belüli szám,
+nem tíz külön bejegyzés – a gokartpályán lerakott körök viszont nem edzések.
+
 A nap **ülő órái** sem edzésidők: a „hosszú nap, 11 óra munka, este 20 perc
 nyújtás" tizenegy órája a munkáé, a „2 óra tv, 30 perc séta" két órája a
 tévéé, a „8 óra ülés az irodában, este 30 perc futás" nyolc órája az ülésé –

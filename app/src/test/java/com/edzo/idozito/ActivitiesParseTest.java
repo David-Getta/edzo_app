@@ -3022,4 +3022,39 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.get(0).count);
         assertEquals(1, p.days);
     }
+
+    /**
+     * A „toltam a vasat" a súlyzózás szlengje – edzés, nem vasalás.
+     *
+     * A konditerem nyelvén a vas a súlyzó: a „toltam a vasat egy órát"
+     * eddig üresen jött vissza, mert egyik sportszó sem volt benne. A tő
+     * a teljes szókapcsolat – a puszta „vas" a vasárnapban és a
+     * vasalásban is benne van, ezért az tilos.
+     */
+    @Test public void pushingTheIronIsGymSlang() {
+        Activities.Parsed p = Activities.parse("toltam a vasat 1 órát");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        Activities.Parsed q = Activities.parse("kivasaltam az ingeket este");
+        assertEquals(0, q.plans.size());
+        Activities.Parsed r = Activities.parse("vasárnap pihentem");
+        assertEquals(0, r.plans.size());
+    }
+
+    /**
+     * A pályán lerakott körök EGY futás – nem annyi edzés, ahány kör.
+     *
+     * A „leraktam 10 kört a pályán" sportnév nélkül is futást jelent: a
+     * kör + pálya páros az atlétikai pályát mondja ki. A tíz eddig
+     * darabszámnak látszott, és tíz külön bejegyzés lett belőle – a szám
+     * a körök száma egyetlen edzésen belül.
+     */
+    @Test public void lapsOnTheTrackAreOneRun() {
+        Activities.Parsed p = Activities.parse("leraktam 10 kört a pályán");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(1, p.plans.get(0).count);
+        Activities.Parsed q = Activities.parse("mentem 10 kört a gokartpályán");
+        assertEquals(0, q.plans.size());
+    }
 }

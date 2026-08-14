@@ -52,7 +52,13 @@ public final class Activities {
                     "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep",
                     // A verseny neve is a sportot mondja ki – a puszta „futó"
                     // viszont nem lehet tő, mert túl sok szóban benne van.
-                    "futoverseny", "terepfutas", "spartan", "parkrun"),
+                    "futoverseny", "terepfutas", "spartan", "parkrun",
+                    // A „LERAKTAM 10 KÖRT A PÁLYÁN" sportnév nélkül is futás:
+                    // a kör + pálya páros az atlétikai pályát mondja ki. A tő
+                    // a teljes szókapcsolat, mert a puszta „kör" edzésterv, a
+                    // puszta „pálya" pedig gokartpálya is lehetne – a
+                    // „gokartpalyan" szóban nincs benne a „ palyan" tagolás.
+                    "kort a palyan", "kor a palyan", "koroket a palyan"),
             new Kind("uszas", "🏊", "Úszás", 7.0, true, 45,
                     "uszas", "uszo edzes", "uszni", "uszoedzes", "uszodaz", "uszt", "uszkal",
                     // A vizes termi óra is a medencében van: „aqua fitness
@@ -129,6 +135,12 @@ public final class Activities {
                     // az a mérleg szava.
                     "sajat testsul", "sajattestsul", "testsulyos edzes",
                     "testsulyos gyakorlat", "sajat testtomeg",
+                    // A „TOLTAM A VASAT" a súlyzózás szlengje – a „vas" tő
+                    // önmagában tilos (vasal, vasarnap, vasut), ezért csak a
+                    // teljes szókapcsolat számít. A „vasaztam" múlt idejű,
+                    // első személyű alak edzésnaplóban szintén a vasat jelenti.
+                    "vasat tol", "vasat nyom", "toltam a vasat", "tolom a vasat",
+                    "toltuk a vasat", "nyomtam a vasat", "vasaztam",
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
@@ -882,6 +894,11 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A KÖRSZÁM a pálya mellett nem alkalomszám: a „leraktam 10 kört a
+        // pályán" TÍZ futás-bejegyzéssé vált, mert a tíz darabszámnak
+        // látszott. A szám a körök száma egy edzésen belül – kitakarjuk, a
+        // „kört a pályán" szókapcsolat maga mondja ki a futást.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?=kor(?:t|oket)? a palyan)", "");
         // A TERVEZETT HELYETT a valódi: „a tervezett 10 km helyett csak 6
         // lett" hatosa a megtett táv – eddig az egész mondat elveszett, mert
         // a hat mellett nem állt mértékegység, a tíz meg terv volt. A magyar
