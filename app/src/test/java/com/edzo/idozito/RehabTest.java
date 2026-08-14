@@ -764,4 +764,20 @@ public class RehabTest {
         assertEquals("torzs", Rehab.forComplaint("diasztázisom van, "
                 + "mit csinálhatok").id);
     }
+
+    /**
+     * A sérülés és az igekötős húzódás is panasz.
+     *
+     * A „lesérültem focin, boka" és a „meghúzódott a hátam a 120 kg-os
+     * felhúzásnál" eddig válasz nélkül maradt – pedig pont a sérülés utáni
+     * hetekben kell a felépítő lap.
+     */
+    @Test public void injuriesAndPulledMusclesAreComplaints() {
+        assertEquals("boka", Rehab.forComplaint("lesérültem focin, boka, "
+                + "2 hét kihagyás jön").id);
+        assertEquals("derek", Rehab.forComplaint("meghúzódott a hátam "
+                + "a 120 kg-os felhúzásnál").id);
+        assertEquals("boka", Rehab.forComplaint("megrándult a bokám "
+                + "a focin").id);
+    }
 }

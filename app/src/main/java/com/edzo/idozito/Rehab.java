@@ -422,6 +422,12 @@ public final class Rehab {
                 // A RÖVIDÜLÉS ugyanígy: „rövid a combhajlítóm", „feszes a vádlim".
                 "rovid a", "roviduelt", "roviduelt", "beszukult",
                 "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
+                // Az igekötős húzódás is húzódás: a „meghúzódott a hátam a
+                // 120 kg-os felhúzásnál" eddig válasz nélkül maradt.
+                "meghuzod", "megrandult",
+                // A SÉRÜLÉS kimondva is panasz: a „lesérültem focin, boka"
+                // pont az a mondat, ami után a boka-lap kell.
+                "leserul", "megserul", "serules", "serulest",
                 "meghuztam", "becsipodott", "belovellt", "lumbago", "merev",
                 // A diagnózis NEVE maga a panasz: aki azt írja, „golfkönyök",
                 // az nem érdeklődik, hanem fáj neki. Eddig ezekre a mondat
