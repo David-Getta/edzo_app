@@ -870,6 +870,9 @@ public final class Activities {
             // A SUPERNATURAL VR-app nevében a túra töve lakik: a
             // „Supernatural VR edzés 35 perc" gyalogtúra lett.
             "supernatural",
+            // A JÓGAMATRAC felszerelés, nem gyakorlás: a „jógamatracot
+            // kaptam szülinapomra" negyvenöt perc jógát írt be.
+            "jogamatrac", "jogaszonyeg",
             // A FUTÓBABAKOCSI a futás eszköze, nem külön séta: a „babával
             // kocogtam a futóbabakocsival 4 km-t" két bejegyzés lett – egy
             // futás ÉS egy négy kilométeres túra. A sima babakocsis séta
@@ -3201,6 +3204,10 @@ public final class Activities {
                 // átültem a biciklire" futópadja negyvenöt perc futást írt
                 // be – egy gépről, amin senki nem futott.
                 "elromlott", "meghibasodott", "tonkrement",
+                // A SZERVIZBE vitt bringa nem tekerés: a „levittem a
+                // bringát szervizbe, új lánc" hatvanperces kerékpározást
+                // írt be.
+                "szervizbe", "szervizben",
                 // A „MEHET a kemény edzés" engedély a jövőre, nem napló: a
                 // „whoop recovery 85%, mehet a kemény edzés" negyvenöt
                 // perces bejegyzést kapott – egy el sem kezdett napról. Csak

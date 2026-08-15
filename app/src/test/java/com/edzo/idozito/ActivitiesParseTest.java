@@ -4346,4 +4346,21 @@ public class ActivitiesParseTest {
         assertEquals("fal", Activities.parse("6b utat másztam a falon, "
                 + "4 kör").plans.get(0).kind.id);
     }
+    /**
+     * A szervizbe vitt bringa és a kapott jógamatrac nem edzés.
+     *
+     * A „levittem a bringát szervizbe, új lánc" hatvanperces
+     * kerékpározást, a „jógamatracot kaptam szülinapomra" negyvenöt perc
+     * jógát írt be. A szerviz utáni próbakör és a matracon nyújtás marad.
+     */
+    @Test public void bikeServiceAndAGiftedMatAreNotWorkouts() {
+        assertEquals(0, Activities.parse("levittem a bringát szervizbe, "
+                + "új lánc").plans.size());
+        assertEquals(0, Activities.parse("jógamatracot kaptam "
+                + "szülinapomra").plans.size());
+        assertEquals("kerekpar", Activities.parse("szerviz után tekertem "
+                + "egy próbakört, 5 km").plans.get(0).kind.id);
+        assertEquals(20, Activities.parse("jógamatracon nyújtottam "
+                + "20 percet").plans.get(0).minutes);
+    }
 }
