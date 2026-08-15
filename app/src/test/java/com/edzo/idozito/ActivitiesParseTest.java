@@ -4549,4 +4549,16 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    @Test public void rollingMusclesIsMobilityScrollingIsNot() {
+        // A „hengerrel görgettem az izmaimat" izomlazítás, a hírfolyam
+        // görgetése viszont nem mozgás. A McKenzie hátgyakorlat.
+        assertEquals("joga", Activities
+                .parse("habhengerrel görgettem az izmaimat 10 percig")
+                .plans.get(0).kind.id);
+        assertEquals("joga", Activities
+                .parse("mckenzie gyakorlatok reggel").plans.get(0).kind.id);
+        assertTrue(Activities.parse("görgettem a hírfolyamot fél órán át")
+                .plans.isEmpty());
+    }
+
 }

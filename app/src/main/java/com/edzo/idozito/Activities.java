@@ -294,6 +294,10 @@ public final class Activities {
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
                     "legzo gyakorlat",
+                    // A HENGERES görgetés izomlazítás – a puszta „görgettem"
+                    // nem tő, mert a képernyőt is görgetjük. A McKenzie a
+                    // hátgyakorlatok neve.
+                    "hengerrel gorgettem", "mckenzie",
                     // Az autogén tréning a relaxáció műfaja – a meditáció
                     // családjába tartozik, eddig üresen jött vissza.
                     "autogen trening",
