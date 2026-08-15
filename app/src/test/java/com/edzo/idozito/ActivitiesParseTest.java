@@ -3030,6 +3030,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A birtokos terem és a hosszban mért szállodai medence is edzés.
+     *
+     * Az „a hotel edzőtermében 30 perc" terme-je elveszti a második e-t,
+     * és nem illeszkedett a „terem" tőre – a fél óra elveszett. A
+     * „szállodai medence 20 hossz" fél kilométere pedig FUTÁS lett, mert
+     * a puszta medence (testrész is) nem úszás-tő.
+     */
+    @Test public void hotelGymAndPoolLengthsCount() {
+        Activities.Parsed p = Activities.parse("a hotel edzőtermében "
+                + "30 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        Activities.Parsed q = Activities.parse("szállodai medence 20 hossz");
+        assertEquals(1, q.plans.size());
+        assertEquals("uszas", q.plans.get(0).kind.id);
+        assertEquals(0.5, q.plans.get(0).km, 0.001);
+    }
+
+    /**
      * A kihívás haladás-jegyzete nem mai edzés, a széria nem dátum.
      *
      * A „januári futókihívás: eddig 87 km a 100-ból" nyolcvanhét

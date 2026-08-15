@@ -152,6 +152,10 @@ public final class Activities {
                     // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
                     // „terem" (kondi) tövet – a hosszabb tő nyer, egy találat.
                     "fitneszterem", "fitnessterem",
+                    // A BIRTOKOS alak elveszti a második e-t: az „a hotel
+                    // edzőtermében 30 perc" terme-je nem illeszkedett a
+                    // „terem" tőre, és a fél óra elveszett.
+                    "edzoterme", "konditerme", "tornaterme",
                     // A SAJÁT TESTSÚLYOS edzés a legolcsóbb edzésforma, és
                     // eddig nem volt szótő: az „otthon 30 perc saját testsúly"
                     // válasz nélkül maradt. A puszta „testsúly" nem lehet tő –
@@ -3020,6 +3024,16 @@ public final class Activities {
         java.util.regex.Matcher pm = java.util.regex.Pattern
                 .compile("(?<![\\d,.])\\d{1,3}\\s?meteres(?![a-z])").matcher(new String(q));
         while (pm.find()) blank(q, pm.start(), pm.end());
+        // A PUSZTA „medence" szándékosan nem úszás-tő (a medence testrész
+        // is), de ha hosszban mért táv áll mellette, az uszodáé: a
+        // „szállodai medence 20 hossz" fél kilométere eddig FUTÁS lett,
+        // mert a méterek mellé nem került úszás-szó.
+        String t = new String(q);
+        int mp = t.indexOf("medence");
+        if (mp >= 0 && (mp + 7 >= t.length() || !Character.isLetter(t.charAt(mp + 7)))) {
+            String rep2 = "uszoda ";
+            for (int i = 0; i < 7; i++) q[mp + i] = rep2.charAt(i);
+        }
     }
 
     /** A magyar uszodák alapmérete – ennyi méter egy hossz. */
