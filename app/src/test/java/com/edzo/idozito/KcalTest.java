@@ -333,4 +333,14 @@ public class KcalTest {
         assertEquals(2000, Kcal.stated("bevitel 2000, égetés 500, nettó 1500"));
         assertEquals(500, Kcal.burned("bevitel 2000, égetés 500, nettó 1500"));
     }
+    /**
+     * A puszta „kalória" szó utáni szám is bevitel.
+     *
+     * A „fehérjebevitel rendben, kalória 2200" kétezer-kétszáza némán
+     * elveszett – se a bevitel-, se a kcal-minta nem fedte.
+     */
+    @Test public void aBareCaloriesWordCarriesItsNumber() {
+        assertEquals(2200, Kcal.stated("fehérjebevitel rendben, "
+                + "kalória 2200"));
+    }
 }

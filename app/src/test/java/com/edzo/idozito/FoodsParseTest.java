@@ -850,4 +850,16 @@ public class FoodsParseTest {
         assertEquals("Bor (vörös/fehér)", hits("sítáborban voltunk, "
                 + "bort is ittunk este").get(0).food.name);
     }
+    /**
+     * A fordított makró-sor zsírja sem olaj.
+     *
+     * A „fehérje 120 g, szénhidrát 180 g, zsír 60 g" hatvan grammja hatvan
+     * gramm OLAJKÉNT került be – ötszáz fantom-kalória. A konyhai zsír
+     * makró-szavak nélkül étel marad.
+     */
+    @Test public void aReversedMacroLineIsNotOil() {
+        assertTrue(hits("fehérje 120 g, szénhidrát 180 g, zsír 60 g")
+                .isEmpty());
+        assertEquals("Olaj", hits("100 g zsír a rántáshoz").get(0).food.name);
+    }
 }

@@ -204,6 +204,10 @@ public final class Kcal {
                 "bevitel $1 kcal");
         s = s.replaceAll("(?<![a-z])(bevitel|egetes)\\s?:?\\s?(\\d{3,4})(?!\\d)"
                 + "(?![.,]\\d)(?!\\s?kcal)", "$1 $2 kcal");
+        // A puszta „kalória" szó utáni szám is bevitel: a „fehérjebevitel
+        // rendben, kalória 2200" kétezer-kétszáza eddig némán elveszett.
+        s = s.replaceAll("(?<![a-z])kaloria\\w*\\s?:?\\s?(\\d{3,4})(?!\\d)"
+                + "(?![.,]\\d)(?!\\s?kcal)", "$1 kcal");
         // A CÉL is csak a saját tagmondatát viszi el: a „napi cél 1800 kcal,
         // ma 1750 lett" második fele valódi bevitel.
         boolean anyGoal = false;

@@ -2258,6 +2258,13 @@ public final class Foods {
         String macro = !macroLine ? s : s.replaceAll("(\\d{1,3})\\s?(g|gr|gramm)\\s?"
                 + "(zsir|szenhidrat|ch|rost|telitett)(?![a-z])", "$1 $2 #");
         if (!macro.equals(s)) { s = macro; query = macro; }
+        // Fordított szórenddel is tápérték-sor: a „fehérje 120 g,
+        // szénhidrát 180 g, zsír 60 g" hatvan grammja is hatvan gramm
+        // OLAJ lett – a makró neve itt a szám ELŐTT áll.
+        macro = !macroLine ? s : s.replaceAll("(?<![a-z])(zsir|szenhidrat"
+                + "|ch|rost|telitett)\\s?:?\\s?(\\d{1,3})\\s?(g|gr|gramm)(?![a-z])",
+                "# $2 $3");
+        if (!macro.equals(s)) { s = macro; query = macro; }
         // A SZÁZALÉKBAN mért zsír a TESTZSÍR, nem konyhai olaj: a „80,2 kg,
         // 18% zsír, derék 86 cm" mérés-mondatból eddig tíz gramm olaj is
         // bekerült az étrendbe.
