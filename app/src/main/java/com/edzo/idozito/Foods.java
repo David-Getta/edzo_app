@@ -829,6 +829,9 @@ public final class Foods {
             // A BECSÍPŐDÖTT ideg nem bécsi szelet: a „becsípődött a derekam"
             // mellé egy rántott hús került a naplóba – a „becsi" tövön ült.
             "becsip",
+            // A „sTEAdy state kardió" közepén a tea: az angol edzős szó
+            // mellé egy csésze tea került a naplóba.
+            "steady",
             // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
             // „vízisí" mellé egy pohár ásványvíz került a naplóba.
             "vizi",

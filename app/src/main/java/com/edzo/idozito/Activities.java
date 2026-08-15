@@ -224,7 +224,7 @@ public final class Activities {
                     // A jóga-irányzatok neve is jóga: a „vinyasa flow 60
                     // perc" és a „napüdvözlet sorozat" eddig üresen jött
                     // vissza. A fascia-lazítás a henger rokona.
-                    "vinyasa", "napudvozlet", "fascia",
+                    "vinyasa", "napudvozlet", "fascia", "mobility",
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
                     "legzo gyakorlat",

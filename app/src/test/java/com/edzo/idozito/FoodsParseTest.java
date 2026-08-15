@@ -536,6 +536,13 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "szervizben volt az autó").isEmpty());
     }
 
+    /** A „steady state" közepén nem ital a tea. */
+    @Test public void steadyStateIsNotACupOfTea() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "steady state kardió 40 perc").isEmpty());
+        assertFalse(Foods.parse(all, "teát ittam a futás után").isEmpty());
+    }
+
     /**
      * Az alanyesetű darabszám az „is" nyomatékkal is darabszám.
      *
