@@ -4173,4 +4173,20 @@ public class ActivitiesParseTest {
         assertEquals("kondi", Activities.parse("functional training "
                 + "60 perc").plans.get(0).kind.id);
     }
+    /**
+     * A feladott verseny megtett távja megmarad.
+     *
+     * A „feladtam a versenyt a 30. km-nél görcs miatt" harminc megtett
+     * kilométer – a feladás tagadó igéje ÉS a sorszám-maszk (a „30." a
+     * heti sorszámnak látszott) együtt az egészet elvitte. A tényleg
+     * elmaradt edzés marad kihagyva.
+     */
+    @Test public void aGivenUpRaceKeepsItsKilometres() {
+        assertEquals(30.0, Activities.parse("feladtam a versenyt a "
+                + "30. km-nél görcs miatt").plans.get(0).km, 0.01);
+        assertEquals("kerekpar", Activities.parse("feladtam a bringatúrát "
+                + "a 40 km-nél defekt miatt").plans.get(0).kind.id);
+        assertEquals(0, Activities.parse("feladtam, nem megyek el edzeni")
+                .plans.size());
+    }
 }

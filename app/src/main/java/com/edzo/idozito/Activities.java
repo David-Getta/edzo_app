@@ -1100,6 +1100,11 @@ public final class Activities {
                 + "lett volna([^.;\\d]{0,24}?),?\\s?(?:de\\s+)?(?:a\\s+)?"
                 + "(\\d{1,3}(?:[.,]\\d+)?)\\s?(?:km)?[- ]?n[ae]l\\s+"
                 + "(?:leall|megall|kiszall|felad)\\w*", "$2 km$1");
+        // Fordított szórenddel is: a „feladtam a versenyt a 30. km-nél"
+        // harminc megtett kilométer – a feladás tagadó igéje mégis az
+        // egészet elvitte.
+        s = s.replaceAll("(?<![a-z])felad\\w*[^.;\\d]{0,20}?"
+                + "(\\d{1,3})\\.?\\s?km[- ]?n[ae]l", "$1 km");
         // Az EMOJI is sportnév: a „ma: 🏊 1500m + 🚴 20km" úszása és
         // bringája elveszett, csak egy húsz kilométeres futás maradt.
         // Ha a sport szava már ott van a szövegben, az emoji csak dísz –
@@ -4444,8 +4449,11 @@ public final class Activities {
         // bejegyzés lett belőle, hét napra szétosztva. A magyar a sorszámot
         // ponttal írja, a darabszámot pont nélkül; a pont utáni betű zárja
         // ki a tizedes törtet.
+        // A KM előtti sorszám viszont megtett táv: a „feladtam a versenyt
+        // a 30. km-nél" harmincasa nem a hét harmincadik futása.
         m = java.util.regex.Pattern
-                .compile("(?<![\\d.,])(\\d{1,2})\\.(?=\\s?\\p{L})").matcher(text);
+                .compile("(?<![\\d.,])(\\d{1,2})\\.(?=\\s?\\p{L})"
+                        + "(?!\\s?km(?![\\p{L}]))").matcher(text);
         while (m.find())
             for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
         return sb.toString();
