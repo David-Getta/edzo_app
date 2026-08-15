@@ -75,7 +75,30 @@ public final class Sleep {
         // összesen talán 5 óra" összegző fele eddig elveszett, mert a
         // mondatban egyetlen alud-tő sem volt.
         return s.contains("alud") || s.contains("alvas") || s.contains("aludt")
-                || s.contains("felebred");
+                || s.contains("felebred")
+                // A TÖBBSZÖRI kelés is éjszakáról szól: „a gyerek miatt
+                // háromszor keltem fel, összesen 6 óra lett". A „fel" a
+                // számnév-fordítás után „0,5", ezért csak a „keltem" marad.
+                || s.matches(".*\\d\\s?-?\\s?szor\\w*\\s+(?:fel)?kelt.*");
+    }
+
+    /**
+     * Ragos óra-számnevek: a „tíztől", „hatig", „hétkor" időpont, de a
+     * számnév-fordítás a rag miatt nem ismeri fel őket – az „este tíztől
+     * reggel hatig aludtam" egésze elveszett. A hét ELŐTTI darabszám
+     * („két hétig") naptári hét, nem hét óra – azt kihagyjuk.
+     */
+    private static String hourWords(String s) {
+        String[][] w = {{"tizenegy", "11"}, {"tizenketto", "12"},
+                {"tizenket", "12"}, {"egy", "1"}, {"ketto", "2"}, {"ket", "2"},
+                {"harom", "3"}, {"negy", "4"}, {"ot", "5"}, {"hat", "6"},
+                {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"}};
+        for (String[] p : w)
+            s = s.replaceAll("(?<![a-z\\d])" + p[0] + "(tol|ig|kor)(?![a-z])",
+                    p[1] + "-$1");
+        return s.replaceAll("(?<![a-z\\d])(?<!fel )(?<!masfel )(?<!egy )"
+                + "(?<!ket )(?<!harom )(?<!negy )(?<!ot )(?<!hat )(?<!par )"
+                + "(?<!nehany )(?<!tobb )het(tol|ig|kor)(?![a-z])", "7-$1");
     }
 
     /**
@@ -86,7 +109,7 @@ public final class Sleep {
      */
     public static double parse(String q) {
         if (q == null) return -1;
-        String s = Hu.digits(Hu.correction(Foods.norm(q)));
+        String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
         // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
@@ -232,9 +255,20 @@ public final class Sleep {
         // A PUSZTA „ágyban" is lefekvés a párja mellett: a „11-kor ágyban,
         // fél 7-kor kelés" eddig elveszett, mert az „ágyban" mögül hiányzott
         // a „voltam". A „kelés" főnév ugyanígy ébredés.
+        // A CSÖRGŐ ÓRA az ébredés: a „hatkor csörgött az óra" ugyanaz,
+        // mint a „hatkor keltem" – eddig se ige, se időpont nem lett belőle.
+        s = s.replaceAll("(?:csorgott|szolt|megszolalt) az? "
+                + "(?:ora|vekker|ebreszto\\w*|telefon)", "keltem");
+        // Az ELALVÁS is lefekvés: az „alhattam el" és az „aludtam el"
+        // ugyanaz a pillanat, csak bizonytalanabbul mondva.
+        s = s.replaceAll("al(?:hat|ud)tam el(?![a-z])", "elaludtam");
+        // A „11 óra körül" is időpont: az óra-szó kiesik, a rag marad.
+        s = s.replaceAll("(\\d{1,2})\\s?ora\\s?korul", "$1-kor");
         boolean bed = s.contains("fekudtem") || s.contains("fekszem")
                 || s.contains("lefeku") || s.contains("agyban")
-                || s.contains("agyba bujt")
+                || s.contains("agyba bujt") || s.contains("elalud")
+                // Az „ágyba kerültem" is lefekvés – akárhogy áll a szórend.
+                || s.contains("agyba kerul") || s.contains("kerultem agyba")
                 || s.contains("lefekves");
         // Az ÉJFÉL is időpont, csak nem számmal írják: az „éjfél után
         // feküdtem, 6-kor keltem" bedagadt volna a szabályba, ha az éjfélt
@@ -287,7 +321,8 @@ public final class Sleep {
         // Enélkül a különbség tizenhat óra lett, és a tizenkét órás igazítás
         // négy és negyed órányi alvást hazudott rá.
         int bedAt = firstOf(s, new String[]{"fekudtem", "fekszem", "lefeku",
-                "agyban", "agyba bujt", "lefekves"});
+                "agyban", "agyba bujt", "lefekves", "elalud", "agyba kerul",
+                "kerultem agyba"});
         int upAt = firstOf(s, new String[]{"keltem", "ebredtem", "ebredes",
                 "keles"});
         if (bedAt >= 0 && upAt >= 0 && upAt < bedAt) {

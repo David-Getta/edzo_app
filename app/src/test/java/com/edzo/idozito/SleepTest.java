@@ -341,4 +341,30 @@ public class SleepTest {
         assertEquals(7.0, Sleep.parse("82%-os alvásminőség, 7:02 "
                 + "alvásidő"), 0.01);
     }
+    @Test public void suffixedHourWordsAreClockTimes() {
+        // Az „este tíztől reggel hatig aludtam" nyolc óra – a ragos
+        // óra-számnevet a számnév-fordítás eddig nem ismerte fel.
+        assertEquals(8, Sleep.parse("este tíztől reggel hatig aludtam"), 0.01);
+        // A naptári hét viszont marad: a „két hétig rosszul aludtam"
+        // nem héttől valameddig tartó éjszaka.
+        assertEquals(-1, Sleep.parse("két hétig rosszul aludtam"), 0.01);
+        assertEquals(8, Sleep.parse("egy hétig alig aludtam, ma végre 8 órát"), 0.01);
+    }
+
+    @Test public void theAlarmClockRingingIsWakingUp() {
+        // A „tizenegy óra körül alhattam el, hatkor csörgött az óra" hét
+        // óra alvás – a csörgő óra az ébredés pillanata.
+        assertEquals(7, Sleep.parse(
+                "tizenegy óra körül alhattam el, hatkor csörgött az óra"), 0.01);
+        assertEquals(6, Sleep.parse(
+                "csak hajnali 2-kor kerültem ágyba, 8-kor keltem"), 0.01);
+    }
+
+    @Test public void repeatedWakingsStillSumTheNight() {
+        // „a gyerek miatt háromszor keltem fel, összesen 6 óra lett" –
+        // a „fel" a számnév-fordítás után 0,5, mégis éjszakáról szól.
+        assertEquals(6, Sleep.parse(
+                "a gyerek miatt háromszor keltem fel, összesen 6 óra lett"), 0.01);
+    }
+
 }
