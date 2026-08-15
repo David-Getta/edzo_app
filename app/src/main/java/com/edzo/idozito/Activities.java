@@ -199,6 +199,9 @@ public final class Activities {
                     "ping pong", "ping-pong", "asztalitenisz", "padel", "sqash",
                     "skvos", "szkvos"),
             new Kind("harcmuveszet", "🥋", "Harcművészet / box", 10.0, false, 60,
+                    // A BOXTEREM egyben fedi a „box" és a „terem" tövet – a
+                    // hosszabb tő nyer, egy találat lesz.
+                    "boxterem", "bokszterem",
                     "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",
@@ -957,6 +960,12 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „24 ÓRÁS" terem a nyitvatartás, nem az edzés hossza: „az
+        // edzőterem 24 órás, éjfélkor mentem, 40 perc" ezernégyszáznegyven
+        // perces kondi lett. A 24 órás futóverseny marad: ott nincs
+        // terem-szó a mondatban.
+        if (s.matches(".*(terem|nyitva|nonstop|non-stop|non stop).*"))
+            s = s.replaceAll("(?<![\\d,.])24\\s?oras(?![a-z])", "");
         // A „TERVEZTEM, VÉGÜL" mondat vége a valóság: a „20 percet
         // terveztem, végül 45 lett" negyvenöt perce megtörtént – a tervezés
         // szava eddig az egészet elvitte. A tervezett szám kiesik, a végül

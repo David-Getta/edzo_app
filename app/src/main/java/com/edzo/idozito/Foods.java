@@ -836,8 +836,9 @@ public final class Foods {
             // mellé egy uborka került a naplóba.
             "lubickol",
             // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
-            // „vízisí" mellé egy pohár ásványvíz került a naplóba.
-            "vizi",
+            // „vízisí" mellé egy pohár ásványvíz került a naplóba. A
+            // KVÍZ közepén ugyanez a tő ül.
+            "vizi", "kviz",
             // A figyelMEZtetésben a méz, a memoRIZálásban a rizs. A puszta
             // „mező" is: a mezei és a mezőgazdaság már ki volt véve.
             "figyelmeztet", "memorizal", "mezo",

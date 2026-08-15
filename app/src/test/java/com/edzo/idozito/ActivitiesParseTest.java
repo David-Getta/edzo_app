@@ -3030,6 +3030,19 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „24 órás" terem a nyitvatartás – a 24 órás verseny viszont edzés.
+     */
+    @Test public void aTwentyFourHourGymIsNotAWorkoutLength() {
+        assertEquals(40, Activities.parse("az edzőterem 24 órás, éjfélkor "
+                + "mentem, 40 perc").plans.get(0).minutes);
+        assertEquals(1440, Activities.parse("24 órás futóversenyen 142 km-t "
+                + "tettem meg").plans.get(0).minutes);
+        // A boxterem egy találat, nem box + kondi.
+        assertEquals(1, Activities.parse("nyílt nap a boxteremben, "
+                + "kipróbáltam, 30 perc").plans.size());
+    }
+
+    /**
      * A tizedes óra is óra: az „1,5h" másfél óra.
      */
     @Test public void decimalHoursCount() {
