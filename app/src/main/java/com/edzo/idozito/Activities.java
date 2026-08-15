@@ -970,6 +970,14 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A TÁVIRATI „kardió 30, súlyzó 40" csupasz száma perc: az idő-alapú
+        // sport neve utáni kis szám nem lehet más. A táv-alapú sportnál
+        // (futás 10) nem merünk dönteni – az lehet km is.
+        s = s.replaceAll("(?<![a-z])(kardio|sulyzo|kondi|joga|nyujtas|pilates"
+                + "|hiit|edzes|gyuras)\\s+(\\d{1,3})"
+                + "(?!\\d)(?![.,]\\d)(?![:%-])(?!\\s?(?:perc|ora|km|kg|kcal|mp|lepes|x|kor"
+                + "|es(?![a-z])|as(?![a-z])|os(?![a-z])|m(?![a-z])|h(?![a-z])"
+                + "|p(?![a-z])))", "$1 $2 perc");
         // Az „EDDIG … A 100-BÓL" halmozott összeg, nem mai edzés: a
         // „januári futókihívás: eddig 87 km a 100-ból" nyolcvanhét
         // kilométeres MAI futást írt be – egy hónap összegéből. A -ból

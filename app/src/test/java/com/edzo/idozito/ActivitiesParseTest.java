@@ -3030,6 +3030,22 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A távirati „kardió 30, súlyzó 40" csupasz száma perc.
+     *
+     * Az idő-alapú sport neve utáni kis szám nem lehet más – eddig
+     * mindkettő az alapértelmezett hosszt kapta. A táv-alapú sportnál
+     * („futás 10") nem döntünk: az km is lehet.
+     */
+    @Test public void telegraphicBareNumbersAreMinutes() {
+        Activities.Parsed p = Activities.parse("reggel kardió 30, este "
+                + "súlyzó 40");
+        assertEquals(2, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(40, p.plans.get(1).minutes);
+        assertEquals(50, Activities.parse("edzés 50").plans.get(0).minutes);
+    }
+
+    /**
      * A birtokos terem és a hosszban mért szállodai medence is edzés.
      *
      * Az „a hotel edzőtermében 30 perc" terme-je elveszti a második e-t,
