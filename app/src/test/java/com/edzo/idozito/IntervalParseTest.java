@@ -777,4 +777,19 @@ public class IntervalParseTest {
         assertNotNull(IntervalParse.parse("30 mp munka 15 mp pihenő, "
                 + "10 kör"));
     }
+    @Test public void anHourLongAlternationCountsItsRounds() {
+        // A „30 mp sprint 90 mp séta váltakozva fél órán át" tizenöt kör –
+        // eddig egyetlen kör lett, mert a teljes hossz óra-szóval állt.
+        IntervalParse.Plan p = IntervalParse.parse(
+                "30 mp sprint 90 mp séta váltakozva fél órán át");
+        assertNotNull(p);
+        assertEquals(15, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(90, p.rest);
+        p = IntervalParse.parse("1 perc munka 1 perc pihi egy órán keresztül");
+        assertEquals(30, p.rounds);
+        p = IntervalParse.parse("30/30 váltakozva 20 percen át");
+        assertEquals(20, p.rounds);
+    }
+
 }

@@ -447,6 +447,18 @@ public final class IntervalParse {
      */
     private static int roundsFromTotal(String s, int cycle) {
         if (cycle <= 0) return 0;
+        // Az ÓRÁS teljes idő is teljes idő: a „30 mp sprint 90 mp séta
+        // váltakozva fél órán át" tizenöt kör – eddig egyetlen kör lett,
+        // mert a teljes hossz óra-szóval állt, nem perccel.
+        s = s.replaceAll("(?<![a-z\\d,.])(?:fel|0,5) ora(?:n at| alatt|ig"
+                + "|n keresztul)(?![a-z])", "30 percig");
+        s = s.replaceAll("(?<![a-z\\d,.])masfel ora(?:n at| alatt|ig"
+                + "|n keresztul)(?![a-z])", "90 percig");
+        s = s.replaceAll("(?<![a-z\\d,.])(?:egy|1) ora(?:n at| alatt|ig"
+                + "|n keresztul)(?![a-z])", "60 percig");
+        // A „percen át" ugyanaz, mint a „percig" – csak más raggal.
+        s = s.replaceAll("(\\d{1,3})\\s?perc(?:en at|en keresztul)(?![a-z])",
+                "$1 percig");
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(\\d{1,3})\\s?perc(?:ig)?(?:\\s?(?:alatt|osszesen))?")
                 .matcher(s);
