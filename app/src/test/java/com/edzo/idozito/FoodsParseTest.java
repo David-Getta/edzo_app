@@ -1135,4 +1135,12 @@ public class FoodsParseTest {
         assertEquals(30, hits("ettem pár falatot a tortából").get(0).grams, 0.5);
     }
 
+    @Test public void theGymPulleyIsNotAPastry() {
+        // A „letolás csigán 3x12" kakaós csigát írt a naplóba – a ragozás
+        // árulja el: a süteményt „csigát" esszük, nem „csigán".
+        assertTrue(hits("letolás csigán 3x12 25 kg").isEmpty());
+        assertEquals("Kakaós csiga",
+                hits("ettem egy csigát a pékből").get(0).food.name);
+    }
+
 }

@@ -846,6 +846,7 @@ public final class Foods {
             "vizvisszatart", "vizmegtart", "vizet tart",
             // Az angol HALF (marathon) nem hal-étel.
             "half",
+
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
             // naplóba, százötven kalóriával.
@@ -2475,6 +2476,11 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A CSIGÁN végzett letolás a konditerem csigája, nem kakaós csiga:
+        // a terem-szavak mellett a csiga nem péksütemény.
+        if (query.matches("(?iu).*(letol|lehuz|tricepsz|kabel|kettlebell"
+                + "|sulyzo|\\dx\\d).*"))
+            query = query.replaceAll("(?iu)csig[aá]\\p{L}*", "");
         // Az „EGY KIS mogyoró" nem egyetlen szem: a „nassoltam egy kis
         // mogyorót" egy grammként ment be – az „egy" itt nem darabszám.
         query = query.replaceAll("(?iu)(?<!\\p{L})egy kis(?=\\s)", "kis");

@@ -104,7 +104,9 @@ public final class StrengthParse {
                     // press) – a magyar terem így hívja, és eddig válasz
                     // nélkül maradt.
                     "tolonyom", "tolo nyom", "push press", "pushpress",
-                    "nyak moge nyom", "katonai nyomas", "military press", "shoulder press"},
+                    "nyak moge nyom", "katonai nyomas", "military press", "shoulder press",
+                    // A TARKÓNYOMÁS a nyak mögötti nyomás rövid neve.
+                    "tarkonyomas", "tarko nyomas"},
             {"Evezés", "evezes", "evezo", "rowing", "evezt", "evezni", "evezek",
                     "cable row", "pendlay"},
             // Az angol „biceps curl" z nélkül írja a bicepszet – eddig a
@@ -117,6 +119,8 @@ public final class StrengthParse {
             // francia a fekvenyomás rekordjai közé került. A hosszabb tő nyer,
             // ezért elég felvenni ide.
             {"Tricepsz", "tricepsz", "francia nyom", "franciafekvenyom",
+                    // A LETOLÁS a csigás tricepsznyújtás termi neve.
+                    "letolas", "letoltes gep",
                     "francia fekvenyom", "skull crusher", "skullcrusher",
                     "tricepsz lenyom", "nyujtott karu lenyom"},
             {"Kitörés", "kitores", "lunge", "kitort"},
@@ -141,6 +145,8 @@ public final class StrengthParse {
             {"Combhajlítás", "labhajlit", "combhajlit", "leg curl", "legcurl"},
             {"Lábnyújtás", "labnyujt", "combfeszit", "labgep", "leg extension"},
             {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok",
+                    // A CSÍPŐTOLÁS ugyanez magyarul.
+                    "csipotolas", "csipo tolas",
                     "medenceemel", "medence emel", "farizom"},
             {"Arnold nyomás", "arnold"},
             {"Fordított tárogatás", "forditott tarogat", "hatso vall", "hatso deltoid",

@@ -1381,4 +1381,15 @@ public class StrengthParseTest {
         assertEquals(102.1, it.get(0).topWeight(), 0.1);
     }
 
+    @Test public void hungarianMachineNamesResolve() {
+        // A letolás, a tarkónyomás és a csípőtolás termi nevek – eddig
+        // egyik sem lett sorozat. A csigás letolás pedig nem kakaós csiga.
+        assertEquals("Tricepsz",
+                StrengthParse.parse("letolás csigán 3x12 25 kg").get(0).name);
+        assertEquals("Vállból nyomás",
+                StrengthParse.parse("tarkónyomás 4x8 40 kg").get(0).name);
+        assertEquals("Csípőemelés",
+                StrengthParse.parse("csípőtolás 3x10 100 kg").get(0).name);
+    }
+
 }
