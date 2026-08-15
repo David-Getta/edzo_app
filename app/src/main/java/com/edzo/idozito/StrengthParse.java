@@ -275,6 +275,15 @@ public final class StrengthParse {
      * se sorozat, pedig minden adat ott volt benne.
      */
     static String kgBeforeMultiplier(String s) {
+        // A S\u00daLYEMEL\u00c9S mondat\u00e1ban a \u201emost N" az \u00faj munkas\u00faly: az \u201eemeltem a
+        // guggol\u00e1s s\u00faly\u00e1t 5 kil\u00f3val, most 85" nyolcvan\u00f6t KIL\u00d3 \u2013 eddig
+        // nyolcvan\u00f6t ism\u00e9tl\u00e9s lett bel\u0151le, s\u00faly n\u00e9lk\u00fcl.
+        if (s.contains("sulyat") || s.contains("sulyt"))
+            s = s.replaceAll("(?<![a-z])most (\\d{1,3}(?:[.,]\\d)?)"
+                    + "(?!\\s?(?:kg|kilo|x|:))(?![\\d,.])", "most $1 kg");
+        // Az \u00dcRES R\u00daD is s\u00faly: a szabv\u00e1ny olimpiai r\u00fad h\u00fasz kil\u00f3 \u2013 eddig
+        // saj\u00e1t tests\u00falyos szak\u00edt\u00e1s lett a technik\u00e1z\u00e1sb\u00f3l.
+        s = s.replaceAll("ures rud", "20 kg rud");
         return s.replaceAll("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)\\s?([x\u00d7])", "$1$2");
     }
 

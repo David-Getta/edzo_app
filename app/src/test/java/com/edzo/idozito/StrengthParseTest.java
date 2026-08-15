@@ -1317,4 +1317,20 @@ public class StrengthParseTest {
                 "bicepsz curl 3x12 a 12,5 kg-os súlyzóval")
                 .get(0).sets.get(0).reps);
     }
+    /**
+     * Az üres rúd húsz kiló, a súlyemelés-jegyzet pedig nem ismétlésszám.
+     *
+     * A „szakítás technika üres rúddal 6x3" saját testsúlyosnak számított,
+     * pedig a szabvány rúd húsz kiló. Az „emeltem a guggolás súlyát
+     * 5 kilóval, most 85" nyolcvanöte pedig NYOLCVANÖT ISMÉTLÉS lett –
+     * inkább ne kerüljön be sorozatként, mint így.
+     */
+    @Test public void anEmptyBarWeighsTwentyKilos() {
+        StrengthParse.Item it = StrengthParse.parse(
+                "szakítás technika üres rúddal 6x3").get(0);
+        assertEquals(20.0, it.topWeight(), 0.01);
+        assertEquals(6, it.sets.size());
+        assertTrue(StrengthParse.parse("emeltem a guggolás súlyát "
+                + "5 kilóval, most 85").isEmpty());
+    }
 }
