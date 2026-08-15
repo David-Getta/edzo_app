@@ -3883,4 +3883,19 @@ public class ActivitiesParseTest {
         assertEquals("uszas", Activities.parse("nyílt vízi úszás a "
                 + "Balatonban 2 km").plans.get(0).kind.id);
     }
+    /**
+     * A heti terv mondata terv, a folytatása napló.
+     *
+     * A „Heti terv: hétfő futás, szerda úszás. Ma a hétfői megvolt, 6 km."
+     * terv-szava az egészet jövőnek minősítette, és a lefutott hat
+     * kilométer is elveszett. A csak-terv bejegyzés továbbra sem edzés.
+     */
+    @Test public void aWeeklyPlanHeaderDoesNotEatTheDoneRun() {
+        Activities.Parsed p = Activities.parse("Heti terv: hétfő futás, "
+                + "szerda úszás, péntek kondi. Ma a hétfői megvolt, 6 km.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertEquals(0, Activities.parse("heti terv: 3 futás és 2 kondi")
+                .plans.size());
+    }
 }

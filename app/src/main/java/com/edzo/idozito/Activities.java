@@ -1025,6 +1025,15 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A HETI TERV mondata terv, a folytatása viszont napló: a „Heti
+        // terv: hétfő futás, szerda úszás. Ma a hétfői megvolt, 6 km."
+        // terv-szava eddig az EGÉSZET jövőnek minősítette, és a lefutott
+        // hat kilométer is elveszett. Csak a terv saját mondatát dobjuk el,
+        // és csak ha utána még áll valami.
+        java.util.regex.Matcher hterv = java.util.regex.Pattern
+                .compile("(?:heti|napi|havi) terv\\s?:?[^.!?;]*[.!?;]").matcher(s);
+        if (hterv.find() && hterv.end() < s.trim().length())
+            s = s.substring(0, hterv.start()) + s.substring(hterv.end());
         // A PULZUSZÓNA száma nem darabszám: a „zóna 2 futás 40 perc" KÉT
         // futássá vált. A zóna sorszáma a terhelést nevezi meg, nem az
         // alkalmakat.

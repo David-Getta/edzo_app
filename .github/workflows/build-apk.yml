@@ -129,7 +129,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           make_latest: true
           body: |
-            Grit automatikus build (v101.7, build ${{ github.run_number }}).
+            Grit automatikus build (v101.8, build ${{ github.run_number }}).
 
             **Mi változott:** ${{ env.COMMIT_SUBJECT }}
 
