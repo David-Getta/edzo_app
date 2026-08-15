@@ -4136,4 +4136,22 @@ public class ActivitiesParseTest {
         assertEquals("munka", Activities.parse("ablakot pucoltam egész "
                 + "délelőtt").plans.get(0).kind.id);
     }
+    /**
+     * Az úszók méter nélkül írják a távot.
+     *
+     * A „4x100 gyors" és az „1500 vegyes" métert mond, de mértékegység
+     * híján a táv elveszett, és az alap-45 perc ment be. Csak úszó-
+     * mondatban és csak kerek (25-tel osztható) számra él – a bérlet ára
+     * és az évszám nem táv.
+     */
+    @Test public void swimmersWriteMetersWithoutTheUnit() {
+        assertEquals(1.5, Activities.parse("1500 vegyes az uszodában")
+                .plans.get(0).km, 0.01);
+        assertEquals(0.4, Activities.parse("úszás: 4x100 gyors 2:00 "
+                + "indulással, 200 levezetés").plans.get(0).km, 0.01);
+        assertEquals(0, Activities.parse("úszóbérlet 12000 forintba "
+                + "került").plans.size());
+        assertEquals("uszas", Activities.parse("delfinezést gyakoroltam "
+                + "20 percig").plans.get(0).kind.id);
+    }
 }

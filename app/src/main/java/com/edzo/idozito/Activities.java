@@ -94,6 +94,8 @@ public final class Activities {
                     // saját tövet kapnak.
                     "melluszas", "hatuszas", "gyorsuszas", "pillangouszas",
                     "vegyesuszas",
+                    // A delfinezés a pillangó lábtempójának gyakorlása.
+                    "delfinez",
                     // A felszíni és a felszín alatti vizes sportok is ide:
                     // a snorkeling és a kitesurf ugyanabban a közegben zajlik.
                     "snorkel", "kitesurf", "kiteszorf",
@@ -1056,6 +1058,28 @@ public final class Activities {
                     s = s.substring(0, ing.start()) + t + " perc"
                             + s.substring(ing.end());
             }
+        }
+        // Az úszók MÉTER NÉLKÜL írják a távot: a „4x100 gyors" és az
+        // „1500 vegyes" métert mond, de mértékegység híján a táv eddig
+        // elveszett, és az alap-45 perc ment be. Csak úszó-mondatban, és
+        // csak a medencés kerek (25-tel osztható) számokra merjük.
+        if (s.contains("usz")) {
+            s = s.replaceAll("(?<![\\d,.])(\\d{1,2})\\s?x\\s?"
+                    + "(25|50|75|100|150|200|400|800)"
+                    + "(?![\\d])(?!\\s?(?:kg|perc|mp|ora|kcal|m(?![a-z])|km))",
+                    "$1x$2 m");
+            java.util.regex.Matcher um = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.x])(\\d{3,4})(?![\\d])(?!\\s?(?:kg|perc|mp|"
+                    + "ora|kcal|ft|forint|lepes|x|m(?![a-z])|km))").matcher(s);
+            StringBuffer ub = new StringBuffer();
+            while (um.find()) {
+                int n = Integer.parseInt(um.group(1));
+                um.appendReplacement(ub, java.util.regex.Matcher
+                        .quoteReplacement(n % 25 == 0 && n >= 200 && n <= 5000
+                                ? n + " m" : um.group()));
+            }
+            um.appendTail(ub);
+            s = ub.toString();
         }
         // A FÉLBEHAGYOTT táv a MEGTETT táv: a „10 km lett volna, de 7-nél
         // leállítottam" hét kilométer futás – a „volna" miatt eddig az
