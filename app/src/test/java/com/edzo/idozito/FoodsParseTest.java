@@ -554,6 +554,15 @@ public class FoodsParseTest {
                 + "2 tányér").size());
     }
 
+    /** A gyerekadag fél adag, a duplázott kettő. */
+    @Test public void kidPortionsAndDoublesScale() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(125.0, Foods.parse(all, "gyerekadag spagettit "
+                + "ettem").get(0).grams, 0.01);
+        assertEquals(500.0, Foods.parse(all, "duplázott sajtburger, nagyon "
+                + "éhes voltam").get(0).grams, 0.01);
+    }
+
     /**
      * A latte egyetlen ital – az összetevői a pohárban vannak.
      *

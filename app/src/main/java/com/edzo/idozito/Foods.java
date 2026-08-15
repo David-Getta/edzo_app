@@ -2356,6 +2356,10 @@ public final class Foods {
         // „néhány szem szőlő" öt grammként ment be – egyetlen szőlőszemként.
         query = query.replaceAll("(?iu)(?<!\\p{L})(n[eé]h[aá]ny|p[aá]r)"
                 + "(?=\\s+szem)", "5");
+        // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
+        // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
+        query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
+        query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
         // A „FÉL TÁBLA" az étel UTÁN állva elveszett: a „csoki fél tábla"
         // nulla grammos bejegyzés lett (a fél a tört-ágon kiesett). A fél
         // tábla mindig ötven gramm – grammban egyértelmű.
