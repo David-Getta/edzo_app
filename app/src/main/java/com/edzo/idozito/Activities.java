@@ -807,6 +807,11 @@ public final class Activities {
             // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
             // („januári futókihívás: eddig 87 km") nem mai edzés.
             "futokihivas",
+            // A FELSZÓLÍTÓ mozgás tanács, nem edzés: „a doki szerint
+            // mozogjak többet" negyvenöt perc egyéb mozgást írt be. A
+            // „mozogj" tő a mozogjak/mozogjunk/mozogjál alakot is fedi,
+            // a múlt idejű „mozogtam" nem ilyen.
+            "mozogj",
             // A NYÚJTÓZKODÁS az íróasztalnál nem nyújtás-edzés, a
             // SZEMTORNA pedig nem torna: mindkettő negyvenöt perces jógát
             // írt a naplóba egy-egy irodai mikroszünetből.

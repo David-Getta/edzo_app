@@ -785,6 +785,9 @@ public final class Foods {
             // rakparton" nyolc kilométeréhez eddig egy adag főtt rizs is
             // került a naplóba.
             "koriz", "gorkoriz",
+            // A VÍZHÓLYAG seb, nem ásványvíz: a „felszakadt a vízhólyag a
+            // sarkamon" mellé eddig két és fél deci víz került a naplóba.
+            "vizholyag",
             // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
             // ásványvíz: a panaszból eddig italbejegyzés lett.
             "vizesed", "vizeny", "vizretencio", "vizhajto",

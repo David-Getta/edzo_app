@@ -780,4 +780,14 @@ public class FoodsParseTest {
         assertEquals("Rizs (főtt)", hits("rizst ettem csirkével")
                 .get(0).food.name);
     }
+    /**
+     * A vízhólyag seb, nem ásványvíz.
+     *
+     * A „felszakadt a vízhólyag a sarkamon a 15 km-en" mellé eddig két és
+     * fél deci víz került a naplóba. Az ivott víz marad.
+     */
+    @Test public void aBlisterIsNotDrinkingWater() {
+        assertTrue(hits("felszakadt a vízhólyag a sarkamon").isEmpty());
+        assertEquals(500.0, hits("vizet ittam, 5 dl").get(0).grams, 0.001);
+    }
 }

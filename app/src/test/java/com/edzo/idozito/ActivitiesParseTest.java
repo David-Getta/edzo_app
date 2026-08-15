@@ -3857,4 +3857,18 @@ public class ActivitiesParseTest {
         assertEquals("korcsolya", Activities.parse("koriztunk a jégpályán "
                 + "másfél órát").plans.get(0).kind.id);
     }
+    /**
+     * Az orvosi tanács nem edzés.
+     *
+     * A „magas volt a vérnyomásom, a doki szerint mozogjak többet"
+     * negyvenöt perc egyéb mozgást írt a naplóba. A felszólító alak
+     * (mozogjak, mozogjunk) tanács vagy terv; a múlt idejű „mozogtam"
+     * marad.
+     */
+    @Test public void doctorsAdviceToMoveMoreIsNotAWorkout() {
+        assertEquals(0, Activities.parse("magas volt a vérnyomásom, "
+                + "a doki szerint mozogjak többet").plans.size());
+        assertEquals(120, Activities.parse("sokat mozogtam ma, kb 2 órát")
+                .plans.get(0).minutes);
+    }
 }
