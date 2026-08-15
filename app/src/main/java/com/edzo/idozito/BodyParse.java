@@ -231,6 +231,26 @@ public final class BodyParse {
         s = s.replaceAll("(?<![\\d,.])(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?"
                 + "(?:%|szazalek)?\\s+a\\s+(testzsir\\w*|zsirszazalek\\w*)",
                 "$2 $1");
+        // A KÖRÜL a mérleg ingadozását mondja, nem tiltószó: a „stagnál a
+        // súlyom 82 körül" nyolcvankét kiló – eddig elveszett.
+        s = s.replaceAll("(?<=\\d)\\s?korul(?![a-z])", "");
+        // Az ÁTLÉPETT HATÁR utáni szám a mai mérés: a „végre átléptem a
+        // 80-as határt lefelé, 79,8" hetvenkilenc egész nyolc – a küszöb
+        // száma nem mérés, azt eldobjuk.
+        s = s.replaceAll("atlept\\w*\\s+a\\s+\\d{2,3}\\s?-?[ae]s\\s+"
+                + "hatart(?:\\s+lefele|\\s+felfele)?,?\\s*", "sulyom ");
+        // A FOGYÓKÚRA kiindulópontja múlt, a „ma" utáni szám a mérés: a
+        // „83-ról indultam januárban, ma 76" hetvenhat kiló – eddig
+        // egyik szám sem lett mérés, mert test-szó nincs a mondatban.
+        java.util.regex.Matcher jm = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{2,3})\\s?-?rol\\s+indultam")
+                .matcher(s);
+        if (jm.find()) {
+            int start = Integer.parseInt(jm.group(1));
+            if (start >= 40 && start <= 200)
+                s = s.substring(0, jm.start()) + "sulyom"
+                        + s.substring(jm.end());
+        }
         if (s.isEmpty()) return new Body(0, 0);
         // A tiltó szó csak a SAJÁT tagmondatát viszi el: az „elértem a
         // célsúlyom, 72 kg" hetvenkettője valódi mérés – a CÉL az első

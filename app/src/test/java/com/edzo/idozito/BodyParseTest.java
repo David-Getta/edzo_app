@@ -817,4 +817,18 @@ public class BodyParseTest {
         assertEquals(0, BodyParse.parse("a cipő 120 fontba került").kg, 0.001);
     }
 
+    @Test public void weightJourneySentencesFindTodaysNumber() {
+        // A „stagnál a súlyom 82 körül", az „átléptem a 80-as határt
+        // lefelé, 79,8" és a „83-ról indultam januárban, ma 76" mind mai
+        // mérést mond – eddig egyik sem került be.
+        assertEquals(82, BodyParse.parse("stagnál a súlyom 82 körül").kg, 0.001);
+        assertEquals(79.8, BodyParse
+                .parse("végre átléptem a 80-as határt lefelé, 79,8").kg, 0.001);
+        assertEquals(76, BodyParse
+                .parse("83-ról indultam januárban, ma 76").kg, 0.001);
+        // A versenyen elfoglalt rajthely viszont nem testsúly.
+        assertEquals(0, BodyParse
+                .parse("a 10. helyről indultam a versenyen").kg, 0.001);
+    }
+
 }
