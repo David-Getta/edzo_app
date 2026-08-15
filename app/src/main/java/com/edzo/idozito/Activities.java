@@ -927,6 +927,14 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A LÉPTEM ige is lépésszám: a „léptem vagy 14 ezret a
+        // városnézésen" és a „léptem 14000-et" eddig üresen jött vissza,
+        // mert a lépés-szó főnévi alakja hiányzott mellőle. Az igekötős
+        // „beléptem" és „átléptem" a szóhatár miatt nem esik ide.
+        s = s.replaceAll("(?<![a-z])leptem\\s+(?:vagy\\s+|kb\\s+)?(\\d{1,2})\\s?ezret",
+                "$1 ezer lepest");
+        s = s.replaceAll("(?<![a-z])leptem\\s+(?:vagy\\s+|kb\\s+)?(\\d{4,6})(?:-e?t)?",
+                "$1 lepest");
         // A „KÖRÜL MOZOG" ingadozást jelent, nem mozgást: a „pihenőpulzus
         // 55 körül mozog" mondatból egy negyvenöt perces „egyéb mozgás"
         // lett – egy pulzus-leolvasásból.
@@ -1214,6 +1222,7 @@ public final class Activities {
         double steps = 0;
         double[] st = findSteps(q);
         if (st == null) st = findStepsAfter(q);
+        if (st == null) st = findStepsByGoal(q);
         if (st != null) { steps = st[2]; blank(q, (int) st[0], (int) st[1]); }
 
         // 2) Időtartamok: „45 perc”. Ezeket is kitakarjuk a darabszám elől,
@@ -2239,8 +2248,19 @@ public final class Activities {
      */
     private static double[] findSteps(char[] q) {
         String s = new String(q);
-        int p = s.indexOf("lepes");
-        if (p < 0) return null;
+        // Az ÖSSZES lépés-szót végignézzük, nem csak az elsőt: a „napi
+        // lépéscél 10000, ma 11200 lépés lett" első lépés-szava a cél
+        // összetett szavában ül, szám nélkül – és miatta a valódi számláló
+        // is némán elveszett.
+        for (int p = s.indexOf("lepes"); p >= 0; p = s.indexOf("lepes", p + 1)) {
+            double[] one = stepsAt(s, p);
+            if (one != null) return one;
+        }
+        return null;
+    }
+
+    /** Egy adott lépés-szó előtti számláló, vagy null. */
+    private static double[] stepsAt(String s, int p) {
         if (p > 0 && Character.isLetter(s.charAt(p - 1))) return null;
         int end = p + 5;
         while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
@@ -2284,6 +2304,24 @@ public final class Activities {
         String s = new String(q);
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("lepes\\w*\\s?:\\s?(\\d{3,6})(?![\\d.,])").matcher(s);
+        if (!m.find()) return null;
+        double steps = Double.parseDouble(m.group(1));
+        if (steps < 500 || steps > 100000) return null;
+        return new double[]{m.start(1), m.end(1), steps};
+    }
+
+    /**
+     * A lépéscél MELLETT kimondott mai érték: „napi lépéscél 10000, ma
+     * 11200 lett". A cél utáni tagmondat lett-tel zárt száma a valódi
+     * lépésszám – eddig az egész mondat üresen jött vissza, mert a cél
+     * száma mellett nem állt lépés-szó, a mai szám mellett meg semmi.
+     */
+    private static double[] findStepsByGoal(char[] q) {
+        String s = new String(q);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("lepescel\\w*\\s?:?\\s?\\d{3,6}\\s?[,;]"
+                        + "[^0-9]{0,16}?(\\d{3,6})(?![\\d.,])"
+                        + "[^0-9]{0,10}?(?<![a-z])lett(?![a-z])").matcher(s);
         if (!m.find()) return null;
         double steps = Double.parseDouble(m.group(1));
         if (steps < 500 || steps > 100000) return null;

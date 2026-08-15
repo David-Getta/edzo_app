@@ -3027,6 +3027,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A lépéscél mellett kimondott mai érték a valódi lépésszám.
+     *
+     * A „napi lépéscél 10000, ma 11200 lett" és a „a lépéscélt
+     * teljesítettem, 10500 lépés" eddig üresen jött vissza: az első
+     * lépés-szó a cél összetett szavában ült, szám nélkül, és a kereső
+     * az első szónál feladta. A „léptem 14 ezret" igés alak ugyanígy.
+     */
+    @Test public void theStepGoalDoesNotHideTheRealCount() {
+        assertEquals(11200, Activities.parse("napi lépéscél 10000, ma "
+                + "11200 lett").plans.get(0).steps);
+        assertEquals(10500, Activities.parse("a lépéscélt teljesítettem, "
+                + "10500 lépés").plans.get(0).steps);
+        assertEquals(14000, Activities.parse("léptem vagy 14 ezret a "
+                + "városnézésen").plans.get(0).steps);
+    }
+
+    /**
      * Az angolul írt pihenőnap is pihenőnap.
      *
      * Az „alvás 6:45, rhr 51, edzés rest day" mellől egy 45 perces
