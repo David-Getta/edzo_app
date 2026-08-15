@@ -4019,4 +4019,24 @@ public class ActivitiesParseTest {
         assertEquals(8.0, Activities.parse("kis híján elestem a futáson, "
                 + "de megvolt a 8 km").plans.get(0).km, 0.01);
     }
+    /**
+     * A box breathing légzés, az alvás előtti perc a jógáé.
+     *
+     * A „box breathing 5 perc" ötperces HARCMŰVÉSZET lett; a „jóga nidra
+     * 30 perc alvás előtt" harminc perce pedig az alvásnak tulajdonítva
+     * elveszett, és az alap-45 ment be. Az igazi box és az igazi alvásidő
+     * marad.
+     */
+    @Test public void boxBreathingIsBreathingNotBoxing() {
+        Activities.Parsed p = Activities.parse("box breathing 5 perc "
+                + "stressz ellen");
+        assertEquals("joga", p.plans.get(0).kind.id);
+        assertEquals(5, p.plans.get(0).minutes);
+        assertEquals(30, Activities.parse("jóga nidra 30 perc alvás előtt")
+                .plans.get(0).minutes);
+        assertEquals("harcmuveszet", Activities.parse("boxoltam "
+                + "30 percet a zsákon").plans.get(0).kind.id);
+        assertEquals(30, Activities.parse("autogén tréning este fél óra")
+                .plans.get(0).minutes);
+    }
 }

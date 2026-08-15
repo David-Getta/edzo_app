@@ -264,6 +264,9 @@ public final class Activities {
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
                     "legzo gyakorlat",
+                    // Az autogén tréning a relaxáció műfaja – a meditáció
+                    // családjába tartozik, eddig üresen jött vissza.
+                    "autogen trening",
                     // A hengerezés is regeneráció, és sokan naplózzák: eddig
                     // egyetlen alakját sem ismertük.
                     // A GÖRGŐZÉS ugyanaz, csak hétköznapibb néven – enélkül a
@@ -1033,6 +1036,9 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A BOX BREATHING légzőgyakorlat, nem bunyó: a „box breathing
+        // 5 perc" ötperces harcművészet-edzésként került be.
+        s = s.replaceAll("box breathing|doboz ?legzes", "legzogyakorlat");
         // A PÁR PERC tényleg pár perc: a „pár percet nyújtottam" a
         // mozgásforma alap-negyvenöt percét kapta. Öttel számolunk – a
         // lényeg, hogy ne kilencszerezzük túl.
@@ -3897,7 +3903,18 @@ public final class Activities {
             int e = i;
             while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
             if (e == i) break;
-            if (isSleepWord(s.substring(i, e))) return true;
+            if (isSleepWord(s.substring(i, e))) {
+                // Az „ALVÁS ELŐTT" időpont, nem időtartam: a „jóga nidra
+                // 30 perc alvás előtt" harminc perce a jógáé volt, mégis
+                // az alvásnak tulajdonítottuk, és az alap-45 perc ment be.
+                int j = e;
+                while (j < s.length() && !Character.isLetter(s.charAt(j))) j++;
+                int f = j;
+                while (f < s.length() && Character.isLetter(s.charAt(f))) f++;
+                String next = j < f ? s.substring(j, f) : "";
+                if (!next.startsWith("elott") && !next.startsWith("utan"))
+                    return true;
+            }
             if (isDeskWord(s, s.substring(i, e))) return true;
             i = e;
         }
