@@ -4530,4 +4530,23 @@ public class ActivitiesParseTest {
         assertEquals("uszas", p.kind.id);
     }
 
+    @Test public void booksDreamsAndKidsRunsAreNotMyWorkout() {
+        // Az „elkezdtem egy könyvet a maratonfutásról" és az „álmomban
+        // futottam egy maratont" negyvenkét kilométert írt be – egyik sem
+        // történt meg. A gyerek udvari futása pedig a gyereké.
+        assertTrue(Activities.parse("elkezdtem egy könyvet a maratonfutásról")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("álmomban futottam egy maratont")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("a gyerek 5 kört futott az udvaron")
+                .plans.isEmpty());
+        // Az első személyű mozgás a gyerekkel viszont az enyém.
+        assertEquals("foci", Activities
+                .parse("a gyerekkel játszottam focit fél órát").plans.get(0).kind.id);
+        // A futás közbeni hangoskönyv nem viszi el a futást.
+        assertEquals(8, Activities
+                .parse("futás közben hangoskönyvet hallgattam, 8 km lett")
+                .plans.get(0).km, 0.001);
+    }
+
 }

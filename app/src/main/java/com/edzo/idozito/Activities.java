@@ -1126,6 +1126,12 @@ public final class Activities {
         // mentem munkába" órányi görkorcsolya lett a naplóban.
         s = s.replaceAll("(?<![a-z])(?:elektromos|elektro|villany|e-)"
                 + "\\s?roller\\w*", "");
+        // A GYEREK futása a gyereké: az „a gyerek 5 kört futott az
+        // udvaron" nem az én edzésem – az egyes szám harmadik személyű
+        // ige árulja el. A „futottam a gyerekkel" első személye marad.
+        s = s.replaceAll("(?<![a-z])a gyerek\\w{0,3} [^.;]{0,24}?"
+                + "(?:futott|szaladt|jatszott|ugralt|uszott|tekert|edzett)"
+                + "(?![a-z])", "");
         // Az ÁZTATÁS nem úszás: a „meleg vizes medencében áztattam magam"
         // pihenés – a medence szava mégis háromnegyed óra úszást írt be.
         if (s.contains("aztat") || s.contains("jakuzzi")
@@ -3225,6 +3231,10 @@ public final class Activities {
                 // huszonegy kilométert írt be egy még meg nem futott versenyre.
                 "megneztem", "megneztuk", "olvastam", "olvastuk", "cikket",
                 "rajtszam", "rajtcsomag", "nevezesi", "streamelt",
+                // A KÖNYV a sportról szól, nem sport: az „elkezdtem egy
+                // könyvet a maratonfutásról" negyvenkét kilométer lett. Az
+                // ÁLOMBELI maraton ugyanígy – egyik sem történt meg.
+                "konyvet", "konyvrol", "almomban", "almodtam", "azt almodtam",
                 // Az edzés LEFÚJÁSA is elmaradás: „a futást lefújtam az eső
                 // miatt" eddig negyvenöt perces futás lett.
                 "lefujtam", "lefujtuk", "lemondtuk", "torolve lett",
