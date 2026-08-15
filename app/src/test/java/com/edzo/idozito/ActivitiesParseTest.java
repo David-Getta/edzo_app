@@ -3030,6 +3030,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „kajak" nyomatékosító szó nem csónak.
+     *
+     * A „kajak kifárasztott a mai meló" fél óra evezést írt a naplóba – a
+     * beszélt nyelvben a kajak nyomatékosítás (= nagyon). A ragozott
+     * alakok (kajakoztam) és a „kajak túra" a vízé maradnak – utóbbi
+     * egyben tő, hogy a fej-szó szabály ne a gyalogtúrának adja.
+     */
+    @Test public void kajakTheSlangWordIsNotABoat() {
+        assertEquals(0, Activities.parse("kajak kifárasztott a mai meló, "
+                + "semmi edzés").plans.size());
+        assertEquals("evezes", Activities.parse("kajakoztam a Tiszán másfél "
+                + "órát").plans.get(0).kind.id);
+        assertEquals("evezes", Activities.parse("kajak túra a Dunán, "
+                + "12 km").plans.get(0).kind.id);
+    }
+
+    /**
      * Az intervall számpárja nem napok és nem alkalmak.
      *
      * A „30-30 intervall 10x" HARMINC napra osztott HARMINC egyéb-edzést

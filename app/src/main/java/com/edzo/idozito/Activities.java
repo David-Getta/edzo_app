@@ -133,6 +133,10 @@ public final class Activities {
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
                     "raftin", "sarkanyhajo", "sarkany hajo",
+                    // A „kajak túra" egyben tő, hogy a fej-szó szabály ne a
+                    // gyalogtúrának adja: az a túra a vízen történt.
+                    "kajak tura", "kajaktura", "kajak-tura", "kenu tura",
+                    "kenutura",
                     // A SUP (álló evezés) a Balatonon a legnépszerűbb vizes
                     // sport – eddig egyik írásmódját sem ismertük.
                     "supozas", "supoztam", "szupozas", "paddleboard",
@@ -927,6 +931,13 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „KAJAK" a beszélt nyelvben nyomatékosító szó („kajak
+        // kifárasztott" = nagyon), nem csónak: mellette múlt idejű igével
+        // eddig fél óra evezés került a naplóba. A ragozott alakok
+        // (kajakoztam, kajakkal) és a szám melletti kajak a vízé marad.
+        s = s.replaceAll("(?<![a-z])kajak(?:ra)?\\s+(?=(?:[a-z]{3,}"
+                + "(?:ott|ett|tam|tem|tunk|tak|tek)|jo|kemeny|durva|brutal"
+                + "|nagyon|full)(?![a-z]))", "");
         // A „30-30 INTERVALL" munka-pihenő pár, nem harminc nap és nem
         // harminc alkalom: a számpár az időzítőé, a bejegyzésből ki kell
         // takarni. A „10x" utótag a körök száma – azt az intervall-elemző
