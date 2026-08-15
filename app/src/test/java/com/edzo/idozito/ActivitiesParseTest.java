@@ -3744,4 +3744,23 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(60, p.plans.get(0).minutes);
     }
+
+    /**
+     * A mászni ige is falmászás, nem csak a mászás főnév.
+     *
+     * Az „elmentem falat mászni 2 órára" üresen jött vissza: a fal
+     * mozgásformának csak főnévi stemjei voltak (mászás, boulder), a
+     * főnévi igeneves köznyelvi alak egyiket sem tartalmazza. A hegyre
+     * fölmászás viszont marad túra.
+     */
+    @Test public void goingWallClimbingIsClimbing() {
+        Activities.Parsed p = Activities.parse("elmentem falat mászni "
+                + "2 órára");
+        assertEquals(1, p.plans.size());
+        assertEquals("fal", p.plans.get(0).kind.id);
+        assertEquals(120, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("felmásztam a Kékesre, "
+                + "3 óra volt");
+        assertEquals("tura", q.plans.get(0).kind.id);
+    }
 }

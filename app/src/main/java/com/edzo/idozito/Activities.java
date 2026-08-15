@@ -285,7 +285,13 @@ public final class Activities {
                     "olimpiai tav"),
             new Kind("fal", "🧗", "Falmászás", 8.0, false, 60,
                     "falmaszas", "falmasz", "maszas", "sziklamasz",
-                    "boulder", "maszofal"),
+                    "boulder", "maszofal",
+                    // A főnévi igeneves alak eddig kimaradt: az „elmentem
+                    // falat mászni" nem adott mozgást, mert csak a mászás
+                    // főnév volt stem, a mászni ige nem.
+                    "falat masz", "falra masz", "maszoterem", "maszo terem",
+                    "mentem maszni", "voltam maszni", "voltunk maszni",
+                    "maszni voltam", "maszni voltunk"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
                     "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
                     "takarit", "funyir", "fuvet nyir", "sovenyt vag", "sovenyvag",
