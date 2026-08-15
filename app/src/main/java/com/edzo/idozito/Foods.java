@@ -670,7 +670,11 @@ public final class Foods {
                 "elektrolit"),
         // Kapszula, tabletta, por: kalóriában elhanyagolható, de ha valaki
         // beírja, ne „ismeretlen ételként" kelljen felvennie.
-        new Food("Étrend-kiegészítő", 0, 0, 5, "kreatin", "bcaa", "aminosav",
+        new Food("Étrend-kiegészítő", 0, 0, 5,
+                // A vas tabletta is kiegészítő – a puszta „vas" tilos tő
+                // (a „vasat toltam" súlyzózás), ezért a teljes szókapcsolat.
+                "vas tabletta", "vastabletta", "vaspotlo",
+                "kreatin", "bcaa", "aminosav",
                 "magnezium", "vitamin", "omega 3", "omega-3", "halolaj",
                 "cink", "koffein tabletta", "pre workout", "preworkout",
                 "etrend-kiegeszito", "etrend kiegeszito", "etrendkiegeszito"),

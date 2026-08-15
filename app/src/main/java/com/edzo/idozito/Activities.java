@@ -781,6 +781,9 @@ public final class Activities {
             // SZEMTORNA pedig nem torna: mindkettő negyvenöt perces jógát
             // írt a naplóba egy-egy irodai mikroszünetből.
             "nyujtoz", "szemtorna",
+            // Az immunERŐSÍTÉS közepén a kondi erősít-töve ült: a vitaminos
+            // mondat mellé egy órás súlyzós edzés került.
+            "immuneros",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
             // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés

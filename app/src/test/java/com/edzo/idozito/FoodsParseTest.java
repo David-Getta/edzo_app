@@ -554,6 +554,13 @@ public class FoodsParseTest {
                 + "2 tányér").size());
     }
 
+    /** A vas tabletta étrend-kiegészítő – a vasat tolni súlyzózás marad. */
+    @Test public void anIronPillIsASupplement() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Étrend-kiegészítő", Foods.parse(all, "vas tabletta "
+                + "reggelente, ma is bevettem").get(0).food.name);
+    }
+
     /** A gyerekadag fél adag, a duplázott kettő. */
     @Test public void kidPortionsAndDoublesScale() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
