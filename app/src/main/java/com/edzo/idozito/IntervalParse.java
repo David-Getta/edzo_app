@@ -802,6 +802,19 @@ public final class IntervalParse {
                             || s.startsWith("ahajnal", p + 3)
                             || s.startsWith("osztaly", p + 3)
                             || s.startsWith("haz", p + 3));
+                // A „MUNKA előtti úszás" munkája az állás, nem a
+                // munkaszakasz: miatta a 6:00-6:45 óra-tartományból
+                // időzítő-terv lett.
+                if (w.equals("munka")
+                        && (s.startsWith(" elott", p + 5)
+                            || s.startsWith(" utan", p + 5)
+                            || s.startsWith(" kozben", p + 5)
+                            || s.startsWith(" miatt", p + 5)
+                            || s.startsWith("ba", p + 5)
+                            || s.startsWith("bol", p + 5)
+                            || s.startsWith("hoz", p + 5)
+                            || s.startsWith("hely", p + 5)
+                            || s.startsWith("nap", p + 5))) notRound = true;
                 if (!dayOff && !notRound
                         && (p == 0 || !Character.isLetter(s.charAt(p - 1))))
                     return true;

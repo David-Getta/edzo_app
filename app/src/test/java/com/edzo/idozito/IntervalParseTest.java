@@ -730,6 +730,15 @@ public class IntervalParseTest {
     }
 
     /**
+     * A „munka előtti úszás" munkája az állás, nem a munkaszakasz.
+     */
+    @Test public void workAsAJobIsNotAWorkInterval() {
+        assertNull(IntervalParse.parse("munka előtti úszás 6:00-6:45"));
+        assertEquals(8, IntervalParse.parse("40 mp munka 20 mp pihenő "
+                + "8 kör").rounds);
+    }
+
+    /**
      * A „kétszer ébredtem" nem két kör, a „korahajnali" nem kör.
      *
      * Az „alvás 22:40-06:10, kétszer ébredtem" éjszakájából kétkörös
