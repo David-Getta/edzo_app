@@ -1050,6 +1050,13 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A FÉLBEHAGYOTT táv a MEGTETT táv: a „10 km lett volna, de 7-nél
+        // leállítottam" hét kilométer futás – a „volna" miatt eddig az
+        // egész bejegyzés elveszett, pedig a leállásig megvolt a hét.
+        s = s.replaceAll("(?:\\d{1,3}(?:[.,]\\d+)?)\\s?km(?:-t| t)?\\s+"
+                + "lett volna([^.;\\d]{0,24}?),?\\s?(?:de\\s+)?(?:a\\s+)?"
+                + "(\\d{1,3}(?:[.,]\\d+)?)\\s?(?:km)?[- ]?n[ae]l\\s+"
+                + "(?:leall|megall|kiszall|felad)\\w*", "$2 km$1");
         // Az EMOJI is sportnév: a „ma: 🏊 1500m + 🚴 20km" úszása és
         // bringája elveszett, csak egy húsz kilométeres futás maradt.
         // Ha a sport szava már ott van a szövegben, az emoji csak dísz –

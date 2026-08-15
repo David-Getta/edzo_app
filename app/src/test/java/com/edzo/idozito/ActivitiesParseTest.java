@@ -4103,4 +4103,21 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("edzés 45 perc, jó terhelés "
                 + "volt").plans.get(0).minutes);
     }
+    /**
+     * A félbehagyott táv a megtett táv.
+     *
+     * A „10 km lett volna, de 7-nél leállítottam" hét kilométer futás –
+     * a „volna" miatt az egész bejegyzés elveszett, pedig a leállásig
+     * megvolt a hét. Ami tényleg elmaradt, az marad terv.
+     */
+    @Test public void anAbortedRunKeepsItsCoveredDistance() {
+        assertEquals(7.0, Activities.parse("10 km lett volna, de 7-nél "
+                + "leállítottam").plans.get(0).km, 0.01);
+        Activities.Parsed p = Activities.parse("20 km lett volna a "
+                + "bringatúra, de 15 km-nél leálltunk az eső miatt");
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(15.0, p.plans.get(0).km, 0.01);
+        assertEquals(0, Activities.parse("10 km lett volna, de nem "
+                + "mentem el").plans.size());
+    }
 }
