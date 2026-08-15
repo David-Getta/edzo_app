@@ -284,6 +284,10 @@ public final class Activities {
                     // volt. (Az étel-oldalon ugyanez a szó a diót hozta.)
                     // A puszta „tekez" nem elég: az érTEKEZletben is benne van.
                     "kardio", "bowling", "tekepalya", "tekezes", "tekeztem", "tekezni",
+                    // Az UGRÁLÁS első személyben mozgás: az „ugráltam vagy
+                    // 20 percet" az ugrálóvárban is edzés. Csak a saját,
+                    // múlt idejű alak – a „gyerek ugrált" nem az enyém.
+                    "ugraltam", "ugraltunk",
                     // A puszta FITNESZ is edzés: az „aqua fitnesz 45 perc"
                     // eddig üresen jött vissza. Az EDZŐVEL töltött óra csak a
                     // kimondott igével tő – a „beszéltem az edzővel" nem az.
@@ -931,6 +935,12 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „FÉL-FÉL ÓRA" az oda-vissza út két fele: a „sétáltunk a piacig
+        // és vissza, fél-fél óra" hatvan perc együtt – eddig csak az egyik
+        // fél került be. A számnév-fordítás után „0,5-0,5 ora" alakban áll.
+        if (s.contains("vissza") || s.contains("oda"))
+            s = s.replaceAll("(?<![\\d,])0,5\\s?-\\s?0,5\\s?ora", "1 ora")
+                 .replaceAll("(?<![a-z])fel-fel\\s?ora", "1 ora");
         // A „KAJAK" a beszélt nyelvben nyomatékosító szó („kajak
         // kifárasztott" = nagyon), nem csónak: mellette múlt idejű igével
         // eddig fél óra evezés került a naplóba. A ragozott alakok

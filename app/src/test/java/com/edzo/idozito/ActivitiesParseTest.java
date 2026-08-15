@@ -3030,6 +3030,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A fél-fél óra az oda-vissza út két fele, az ugrálás pedig mozgás.
+     *
+     * A „sétáltunk a piacig és vissza, fél-fél óra" hatvan perc együtt –
+     * eddig csak az egyik fél került be. Az „ugráltam vagy 20 percet" az
+     * ugrálóvárban is edzés; a gyerek ugrálása a kanapén nem az enyém.
+     */
+    @Test public void halfAndHalfHourIsTheRoundTrip() {
+        Activities.Parsed p = Activities.parse("nagyival sétáltunk a piacig "
+                + "és vissza, fél-fél óra");
+        assertEquals(60, p.plans.get(0).minutes);
+        assertEquals(20, Activities.parse("gyerekszülinapon ugrálóvár, én is "
+                + "ugráltam vagy 20 percet").plans.get(0).minutes);
+        assertEquals(0, Activities.parse("a gyerek ugrált a kanapén egész "
+                + "délután").plans.size());
+    }
+
+    /**
      * A „kajak" nyomatékosító szó nem csónak.
      *
      * A „kajak kifárasztott a mai meló" fél óra evezést írt a naplóba – a
