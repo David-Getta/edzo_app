@@ -989,6 +989,11 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A ZÁRÓ KÍSÉRŐ nem külön edzés: a „nyújtással zártam a 45 perces
+        // futást" nyújtása lemásolta a futás negyvenöt percét, és két
+        // bejegyzés lett egy edzésből.
+        s = s.replaceAll("(?<![a-z])(nyujtas|seta|kocogas|levezetes)\\w*l"
+                + "\\s+zartam", "zartam");
         // A MÉLYSÉG métere nem megtett táv: a „leereszkedtünk a barlangba
         // 60 m mélyre" hatvan méteres futás lett.
         s = s.replaceAll("(?<![\\d,.])\\d{1,4}\\s?m\\s+mely\\w*", "");
@@ -3695,7 +3700,12 @@ public final class Activities {
     }
 
     private static boolean isWarmupWord(String w) {
-        return w.startsWith("bemelegit") || w.startsWith("levezet");
+        // Az angolul naplózók warm up / cool down szavai ugyanazok: a
+        // „warm up 5 perc, wod 20 perc" wod-ja eddig az öt percet kapta.
+        return w.startsWith("bemelegit") || w.startsWith("levezet")
+                || w.equals("warm") || w.equals("warmup")
+                || w.equals("cool") || w.equals("cooldown")
+                || w.equals("up") || w.equals("down");
     }
 
     /**

@@ -121,9 +121,15 @@ jobs:
           # .../releases/latest link is működik.
           tag_name: build-${{ github.run_number }}
           name: "Grit – build ${{ github.run_number }}"
+          # A tag a TÉNYLEGESEN buildelt commitra mutasson, ne a mainre: a
+          # GitHub a release created_at-jét a célzott commit dátumából
+          # veszi, és mivel a main július 6. óta állt, MINDEN kiadás
+          # azonos dátumúnak látszott – az Obtainium ezért nem tudta,
+          # melyik a legújabb, és a build-999-nél ragadt.
+          target_commitish: ${{ github.sha }}
           make_latest: true
           body: |
-            Grit automatikus build (v100.6, build ${{ github.run_number }}).
+            Grit automatikus build (v100.7, build ${{ github.run_number }}).
 
             **Mi változott:** ${{ env.COMMIT_SUBJECT }}
 
