@@ -249,7 +249,11 @@ public final class Activities {
                     // ugyanezt a szót az olajtól védi (a zsír tövén ült). A
                     // puszta „zsírégető" NEM lehet tő: az időzítős „Zsírégető
                     // HIIT" program neve program marad, nem sport.
-                    "zsireget ora", "zsiregeto ora", "zsirgeto ora"),
+                    "zsireget ora", "zsiregeto ora", "zsirgeto ora",
+                    // A balett-fitnesz és a pompomcsapat is táncos óra: a
+                    // „barre workout 50 perc" és a „cheerleading próba"
+                    // üresen jött vissza.
+                    "barre", "cheerlead", "pompom"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.

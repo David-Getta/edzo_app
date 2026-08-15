@@ -3972,4 +3972,16 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("sétáltam egy órát, aztán "
                 + "golfoztam").plans.size());
     }
+    /**
+     * A balett-fitnesz és a pompomcsapat is táncos óra.
+     *
+     * A „barre workout 50 perc" és a „cheerleading próba 2 óra" üresen
+     * jött vissza – egyik szó sem volt tánc-stem.
+     */
+    @Test public void barreAndCheerleadingAreDanceClasses() {
+        assertEquals("tanc", Activities.parse("barre workout 50 perc")
+                .plans.get(0).kind.id);
+        assertEquals(120, Activities.parse("cheerleading próba 2 óra")
+                .plans.get(0).minutes);
+    }
 }
