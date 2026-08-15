@@ -83,6 +83,10 @@ public final class Activities {
                     // fekve" hasizomgyakorlatban.
                     "gyorson", "gyorsuszo", "melluszo", "hatuszo",
                     "pillangozas", "pillangoztam",
+                    // A VÍZTAPOSÁS is vízben végzett munka – mindkét
+                    // szórenddel.
+                    "vizet tapos", "vizet tapostam", "viztaposas",
+                    "tapostam a vizet",
                     // Az úszásnem FŐNÉVI alakja is: a „mellúszás 800 m" és a
                     // „hátúszás 800 m" nyolcszáz méteres FUTÁS lett – az
                     // „uszas" tő szó belsejében szándékosan nem él (a
@@ -123,6 +127,10 @@ public final class Activities {
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
                     "hegymasz", "megmaszt", "gyalog", "lepcsoz",
+                    // A FELMÁSZTAM a kilátóhoz és a VÉGIGJÁRTAM tanösvény is
+                    // túra: az egyik üresen jött vissza, a másik futás lett.
+                    "felmasztam", "felmasztunk", "vegigjartam", "vegigjartuk",
+                    "bejartam", "bejartuk",
                     // A ragozott lépcső is lépcsőzés – a „lépcsőház" viszont
                     // nem mozgás, ezért a puszta tő szándékosan kimarad.
                     "lepcsot", "lepcson", "lepcsomasz", "lepcsofutas", "babakocsi",
@@ -981,6 +989,9 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A MÉLYSÉG métere nem megtett táv: a „leereszkedtünk a barlangba
+        // 60 m mélyre" hatvan méteres futás lett.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,4}\\s?m\\s+mely\\w*", "");
         // A JÖVŐ ÉVSZAK versenye nem lefutott táv: az „ősszel maraton, most
         // építem az alapozást" negyvenkét kilométeres MAI futást írt be. A
         // versenyig hátralévő „10 hét" pedig nem tíz hetes időszak.

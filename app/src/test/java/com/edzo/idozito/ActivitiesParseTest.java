@@ -3030,6 +3030,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az igekötős gyalogos igék túrák, a mélység nem táv.
+     *
+     * A „felmásztam a kilátóhoz, 40 perc fölfelé" üresen jött vissza, a
+     * „végigjártam a tanösvényt, 6 km" futás lett, a „leereszkedtünk a
+     * barlangba 60 m mélyre" pedig hatvan méteres futás. A víztaposás
+     * úszás-féle, nem egy pohár ásványvíz.
+     */
+    @Test public void prefixedWalkingVerbsAreHikes() {
+        assertEquals("tura", Activities.parse("felmásztam a kilátóhoz, "
+                + "40 perc fölfelé").plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("végigjártam a tanösvényt, "
+                + "6 km").plans.get(0).kind.id);
+        assertEquals(0, Activities.parse("leereszkedtünk a barlangba "
+                + "60 m mélyre").plans.size());
+        assertEquals("uszas", Activities.parse("mélyvízben tapostam a "
+                + "vizet 10 percig").plans.get(0).kind.id);
+    }
+
+    /**
      * A „készülök" csak a saját tagmondatát viszi, az őszi maraton nem táv.
      *
      * Az „első 5k versenyemre készülök, ma 3 km sikerült" hárma valódi

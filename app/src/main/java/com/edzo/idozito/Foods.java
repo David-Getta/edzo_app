@@ -2882,6 +2882,14 @@ public final class Foods {
         for (Match m : ms) {
             if (m.food.name.equals("Olaj") && q.startsWith("olaj", m.pos)
                     && q.regionMatches(m.pos + 4, "os", 0, 2)) continue;
+            // A VÍZTAPOSÁS nem ivás: a „tapostam a vizet 10 percig" mellé
+            // egy pohár ásványvíz került. A kimondott ivás felment: a
+            // „vizet ittam a taposás után" valódi pohár.
+            if (m.food.name.startsWith("Víz")
+                    && (q.contains("vizet tapos") || q.contains("viztapos")
+                        || q.contains("tapostam a vizet"))
+                    && !q.contains("ittam") && !q.contains("iszom"))
+                continue;
             // A SZÁM utáni „fogás" a menü fogása, nem a fogas nevű hal: a
             // „degusztációs menü 5 fogás" hétszázötven gramm halat írt be.
             if (m.food.name.startsWith("Hal") && q.startsWith("fogas", m.pos)) {
