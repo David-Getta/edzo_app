@@ -862,4 +862,9 @@ public class FoodsParseTest {
                 .isEmpty());
         assertEquals("Olaj", hits("100 g zsír a rántáshoz").get(0).food.name);
     }
+    /** A buddha bowl ugyanaz a műfaj, mint a poke bowl. */
+    @Test public void aBuddhaBowlIsABowl() {
+        assertEquals("Poke bowl", hits("buddha bowl falafellel")
+                .get(0).food.name);
+    }
 }

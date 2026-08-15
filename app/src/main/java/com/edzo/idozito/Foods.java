@@ -566,7 +566,9 @@ public final class Foods {
                 // Ugyanaz a tál, más néven: a menzán „káposztás kocka".
                 "kaposztas kocka", "kaposztaskocka", "kaposztas nudli"),
         new Food("Quiche", 300, 9, 200, "quiche"),
-        new Food("Poke bowl", 120, 8, 400, "poke"),
+        // A buddha bowl ugyanaz a műfaj: zöldséges-gabonás tál.
+        new Food("Poke bowl", 120, 8, 400, "poke", "buddha bowl",
+                "buddha tal"),
         new Food("Caprese saláta", 130, 7, 250, "caprese salata", "caprese"),
         new Food("Mákos guba", 300, 7, 200, "makos guba"),
         // A teljes kifejezés is szótő, különben a „galuska" külön a nokedlire ülne.
