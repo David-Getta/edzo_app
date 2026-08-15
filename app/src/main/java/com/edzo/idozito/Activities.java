@@ -1157,6 +1157,15 @@ public final class Activities {
                         + lista.group(3) + ", " + lista.group(2) + " "
                         + lista.group(4) + s.substring(lista.end());
         }
+        // A TAPADÓ ó-rövidítés óra: a „kondi 1ó" egyperces kondi lett – a
+        // távirati perc-átírás nem ismerte az ó betűt. Csak közvetlenül a
+        // számhoz tapadva él: az önálló „ő" névmás (norm után o) marad.
+        s = s.replaceAll("(\\d(?:[.,]\\d)?)o(?![a-z])", "$1 ora");
+        // Az ÓRA UTÁNI csupasz szám perc: a „jóga 1 óra 15" hetvenöt perc
+        // – a tizenöt eddig elveszett. Az órakor-időpont nem esik ide.
+        s = s.replaceAll("(\\d{1,2})\\s?ora\\s+(\\d{1,2})(?![\\d])"
+                + "(?!\\s?(?:perc|ora|km|kg|kcal|:|%))(?!-?\\s?kor)",
+                "$1 ora $2 perc");
         // Az ANGOL óra-app szavai magyarra váltva: az „easy run 40 min",
         // a „steps: 12000" és a „swim 1500m" eddig üresen jött vissza
         // (vagy futásnak nézte az úszást). Egész szóra illesztünk – a

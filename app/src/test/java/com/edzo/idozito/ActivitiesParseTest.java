@@ -4311,4 +4311,19 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("brunch a lányokkal")
                 .plans.size());
     }
+    /**
+     * A tapadó ó-rövidítés óra, az óra utáni csupasz szám perc.
+     *
+     * A „kondi 1ó" EGYPERCES kondi lett, a „jóga 1 óra 15" tizenöt perce
+     * pedig elveszett. Az órakor-időpont és az ő névmás érintetlen.
+     */
+    @Test public void attachedHourAbbreviationsWork() {
+        assertEquals(60, Activities.parse("kondi 1ó").plans.get(0).minutes);
+        assertEquals(75, Activities.parse("jóga 1 óra 15")
+                .plans.get(0).minutes);
+        assertEquals(90, Activities.parse("séta 1,5ó")
+                .plans.get(0).minutes);
+        assertEquals(45, Activities.parse("edzés 6 órakor kezdődött, "
+                + "45 perc lett").plans.get(0).minutes);
+    }
 }
