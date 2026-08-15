@@ -4491,4 +4491,18 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("mentem egy kört az autóval").plans.isEmpty());
     }
 
+    @Test public void aParkrunIsAlwaysFiveK() {
+        // A parkrun távja a világon mindenhol öt kilométer – kimondatlanul
+        // is tudjuk. A kimondott táv viszont erősebb.
+        Activities.Plan p = Activities.parse("parkrunon voltam reggel").plans.get(0);
+        assertEquals("futas", p.kind.id);
+        assertEquals(5, p.km, 0.001);
+        p = Activities.parse("dupláztam a parkrunt, 10 km lett").plans.get(0);
+        assertEquals(10, p.km, 0.001);
+        // A családi futónap is futás; a gyerek kísérete viszont nem az enyém.
+        assertEquals("futas", Activities
+                .parse("családi futónapon voltunk a gyerekekkel").plans.get(0).kind.id);
+        assertTrue(Activities.parse("vittem a gyereket a futónapra").plans.isEmpty());
+    }
+
 }

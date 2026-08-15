@@ -53,6 +53,8 @@ public final class Activities {
                     // A verseny neve is a sportot mondja ki – a puszta „futó"
                     // viszont nem lehet tő, mert túl sok szóban benne van.
                     "futoverseny", "terepfutas", "spartan", "parkrun",
+                    // A családi FUTÓNAP is futás – eddig üresen jött vissza.
+                    "futonap",
                     // A „LERAKTAM 10 KÖRT A PÁLYÁN" sportnév nélkül is futás:
                     // a kör + pálya páros az atlétikai pályát mondja ki. A tő
                     // a teljes szókapcsolat, mert a puszta „kör" edzésterv, a
@@ -1136,6 +1138,13 @@ public final class Activities {
                         + "(?:gyors |laza |konnyu |kis )?" + t[0]
                         + "t(?![a-z])", "$1 " + t[1] + " km-t");
         }
+        // A PARKRUN mindig öt kilométer: a szombat reggeli futás távja a
+        // világon mindenhol ugyanaz – kimondatlanul is tudjuk. Csak akkor
+        // szúrjuk be, ha nincs kimondott táv és MÁSIK sport-szó sem – a
+        // „maraton parkrun 30 perc" különben két futássá esne szét.
+        if (s.contains("parkrun") && !s.matches(".*\\d\\s?km.*")
+                && kindByText(s.replace("parkrun", "")) == null)
+            s = s.replaceAll("(?<![a-z])parkrun\\w*", "$0 5 km");
         // A „MENTEM EGY KÖRT" séta, ha se sport, se jármű nincs mellette:
         // eddig üresen jött vissza, pedig mozgásról szól.
         if (!s.contains("auto") && !s.contains("kocsi") && !s.contains("motor")
