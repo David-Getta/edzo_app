@@ -1157,6 +1157,19 @@ public final class Activities {
                         + lista.group(3) + ", " + lista.group(2) + " "
                         + lista.group(4) + s.substring(lista.end());
         }
+        // Az ANGOL óra-app szavai magyarra váltva: az „easy run 40 min",
+        // a „steps: 12000" és a „swim 1500m" eddig üresen jött vissza
+        // (vagy futásnak nézte az úszást). Egész szóra illesztünk – a
+        // brunch-ban lakó run nem futás.
+        s = s.replaceAll("(?<![a-z])run(?![a-z])", "futas");
+        s = s.replaceAll("(?<![a-z])ride(?![a-z])", "tekeres");
+        s = s.replaceAll("(?<![a-z])walk(?![a-z])", "seta");
+        s = s.replaceAll("(?<![a-z])swim(?![a-z])", "uszas");
+        s = s.replaceAll("(?<![a-z])hike(?![a-z])", "tura");
+        // Csak a többes „steps": az egyes „step" a step-aerobik órája.
+        s = s.replaceAll("(?<![a-z])steps(?![a-z])", "lepes");
+        s = s.replaceAll("(?<![a-z])stretching(?![a-z])", "nyujtas");
+        s = s.replaceAll("(\\d)\\s?min(?![a-z])", "$1 perc");
         // A LÉPÉSCÉL -ből ragos beszámolója: a „lépéscél teljesítve:
         // 10 000-ből 12 340" tizenkétezres eredménye eddig elveszett. A
         // szóközös ezres tagolás itt még nincs összevonva, ezért a minta

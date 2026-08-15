@@ -4289,4 +4289,26 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(12340, p.plans.get(0).steps);
     }
+    /**
+     * Az angol óra-app szavai is naplóbejegyzések.
+     *
+     * Az „easy run 40 min", a „steps: 12000" és a „recovery ride 45 min"
+     * üresen jött vissza, a „swim 1500m" pedig FUTÁS lett. Egész szóra
+     * illesztünk – a brunch-ban lakó run nem futás, az egyes szám „step"
+     * a step-aerobiké marad.
+     */
+    @Test public void englishWatchWordsResolveToSports() {
+        assertEquals(40, Activities.parse("easy run 40 min")
+                .plans.get(0).minutes);
+        assertEquals(12000, Activities.parse("steps: 12000")
+                .plans.get(0).steps);
+        assertEquals("kerekpar", Activities.parse("recovery ride 45 min "
+                + "z1").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("swim 1500m")
+                .plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("walk 30 min lunch break")
+                .plans.get(0).kind.id);
+        assertEquals(0, Activities.parse("brunch a lányokkal")
+                .plans.size());
+    }
 }
