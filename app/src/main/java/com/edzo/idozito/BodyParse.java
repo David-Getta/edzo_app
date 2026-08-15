@@ -104,6 +104,10 @@ public final class BodyParse {
             // A visszahízás is mérés-ige: a „visszahíztam 82-re" eddig
             // elveszett, mert a „híztam" csak szó elején volt meg.
             "visszahiztam", "visszahizott", "visszamentem",
+            // A JELEN IDEJŰ irány is mérés-mondat: a „végre fogyok, 74,2 kg
+            // ma" hetvennégy kilója valódi mérés – eddig kiesett, mert a
+            // „fogyok" se kimondásnak, se kísérőnek nem számított.
+            "fogyok", "hizok",
             // Az ELÉRT cél már mérés: az „elértem a célsúlyom, 72 kg"
             // hetvenkettője a mai súly – a cél szava eddig az egész mondatot
             // elnémította, pedig aki elérte, az épp most állt a mérlegen.
@@ -196,6 +200,11 @@ public final class BodyParse {
         // időtartamot – az „alatt" pedig összehasonlításnak látszana.
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(Foods.norm(q))))));
+        // A KEZELÉS ALATTI „alatt" nem összehasonlítás: a „hormonkezelés
+        // alatt híztam 3 kilót, most 68 kg" hatvannyolca valódi mérés –
+        // az „alatt" tiltószava eddig az egészet elvitte.
+        s = s.replaceAll("(kezeles|kura|terapia|szoptatas|terhesseg|dieta)"
+                + "\\s+alatt", "$1 idejen");
         if (s.isEmpty()) return new Body(0, 0);
         // A tiltó szó csak a SAJÁT tagmondatát viszi el: az „elértem a
         // célsúlyom, 72 kg" hetvenkettője valódi mérés – a CÉL az első

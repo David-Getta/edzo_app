@@ -665,6 +665,22 @@ public class BodyParseTest {
     }
 
     /**
+     * A kezelés alatti „alatt" nem küszöb, a jelen idejű irány is mérés.
+     *
+     * A „hormonkezelés alatt híztam 3 kilót, most 68 kg" hatvannyolca
+     * valódi mérés – az „alatt" tiltószava eddig az egészet elvitte. A
+     * „végre fogyok, 74,2 kg ma" pedig se kimondásnak, se kísérőnek nem
+     * számított. A „70 kg alatt vagyok" küszöbe továbbra sem mérés.
+     */
+    @Test public void treatmentContextDoesNotBlockTheScale() {
+        assertEquals(68.0, BodyParse.parse("hormonkezelés alatt híztam "
+                + "3 kilót, most 68 kg").kg, 0.01);
+        assertEquals(74.2, BodyParse.parse("végre fogyok, 74,2 kg ma").kg,
+                0.01);
+        assertTrue(BodyParse.parse("70 kg alatt vagyok").isEmpty());
+    }
+
+    /**
      * A „voltam …, most" mondatban a második szám a mai.
      *
      * A „80 kg voltam 20% zsírral, most 76 kg 16%-kal" nyolcvana a múlté –
