@@ -1052,6 +1052,21 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // Fordított szórenddel is: a „futottam 4 kört, egyenként 400 m"
+        // négyszáz méteres futás lett ezerhatszáz helyett – a kör-szám és
+        // a körhossz közé az „egyenként" ékelődik.
+        java.util.regex.Matcher lap2 = java.util.regex.Pattern
+                .compile("(\\d{1,2})\\s?kor\\w*[^0-9]{0,12}?egyenkent\\s?"
+                        + "(\\d{1,4}(?:[.,]\\d+)?)\\s?(m|meter\\w*|km)(?![a-z])")
+                .matcher(s);
+        if (lap2.find()) {
+            double d = Double.parseDouble(lap2.group(2).replace(',', '.'));
+            double total = Integer.parseInt(lap2.group(1))
+                    * (lap2.group(3).equals("km") ? d * 1000 : d);
+            if (total >= 200 && total <= 100000)
+                s = s.substring(0, lap2.start()) + Math.round(total) + " m "
+                        + s.substring(lap2.end());
+        }
         // A ZÁRÓ KÍSÉRŐ nem külön edzés: a „nyújtással zártam a 45 perces
         // futást" nyújtása lemásolta a futás negyvenöt percét, és két
         // bejegyzés lett egy edzésből.
@@ -3113,7 +3128,11 @@ public final class Activities {
                 // ezerkétszáz méter. Eddig a kör-szám elveszett, és a naplóba
                 // a táv harmada került. A kötőjeles „5-kor" (órakor) nem esik
                 // ide: ott szóköz helyett kötőjel áll a szám után.
-                .compile("(\\d{1,2})(?:\\s?[x×]\\s?|\\s+kor\\s+)"
+                // A ragozott kör („5 körben") ugyanaz a szorzó. A
+                // kettőspontos alak („5 kör: 500 m evezés, 15 swing")
+                // szándékosan NEM: az egy többtételes kör, ahol a szorzás
+                // csak a távot vinné, a többi tétel ismétléseit nem.
+                .compile("(\\d{1,2})(?:\\s?[x×]\\s?|\\s+kor\\w*\\s+)"
                         + "(\\d{1,4}(?:[.,]\\d+)?)\\s?(km|meter[a-z]*|m)(?![a-z])")
                 .matcher(s);
         while (m.find()) {

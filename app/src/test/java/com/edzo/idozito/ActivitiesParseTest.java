@@ -3898,4 +3898,18 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("heti terv: 3 futás és 2 kondi")
                 .plans.size());
     }
+    /**
+     * A körszám az „egyenként" mögötti körhosszal szorzódik.
+     *
+     * A „futottam 4 kört, egyenként 400 m" négyszáz méteres futás lett
+     * ezerhatszáz helyett. A többtételes CrossFit-kör („5 kör: 500 m
+     * evezés, 15 swing") viszont szándékosan nem szorzódik – ott a
+     * szorzás csak a távot vinné, a többi tétel ismétléseit nem.
+     */
+    @Test public void lapsTimesEachLapLengthMultiply() {
+        assertEquals(1.6, Activities.parse("futottam 4 kört, egyenként "
+                + "400 m").plans.get(0).km, 0.01);
+        assertEquals(1.2, Activities.parse("3 kör 400 m a pályán")
+                .plans.get(0).km, 0.01);
+    }
 }
