@@ -4568,4 +4568,13 @@ public class ActivitiesParseTest {
         assertEquals(60, p.minutes);
     }
 
+    @Test public void theCouchTo5kNameIsNotTwentyFiveKm() {
+        // A „c25k week 3 day 2 kész" huszonöt kilométeres futást írt be –
+        // a program neve nem táv. Az igazi 5k szleng viszont marad.
+        Activities.Plan p = Activities.parse("c25k week 3 day 2 kész").plans.get(0);
+        assertEquals("futas", p.kind.id);
+        assertEquals(0, p.km, 0.001);
+        assertEquals(5, Activities.parse("lefutottam egy 5k-t").plans.get(0).km, 0.001);
+    }
+
 }

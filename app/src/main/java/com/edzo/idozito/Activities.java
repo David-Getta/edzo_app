@@ -1145,6 +1145,10 @@ public final class Activities {
                 || s.contains("pezsgofurdo"))
             s = s.replaceAll("(?<![a-z])(?:medence|uszoda|uszomedence)"
                     + "\\w*", "");
+        // A C25K a kezdő futóprogram neve, nem 25 kilométer: a „c25k week
+        // 3 day 2 kész" huszonöt kilométeres futást írt be.
+        s = s.replaceAll("(?<![a-z\\d])c25k(?![a-z])", "futoedzes");
+        s = s.replaceAll("(?<![a-z])couch to 5k", "futoedzes");
         // A HALF MARATHON félmaraton: az angol alak eddig hal-ételnek
         // látszott, a táv pedig elveszett.
         s = s.replaceAll("(?<![a-z])half\\s?marath?on\\w*", "felmaraton");
