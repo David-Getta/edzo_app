@@ -1125,4 +1125,14 @@ public class FoodsParseTest {
         assertEquals(3000, h.get(0).grams, 0.5);
     }
 
+    @Test public void aLittleNutIsAHandfulNotASinglePiece() {
+        // A „nassoltam egy kis mogyorót" egy grammként ment be – egyetlen
+        // szemként. Az „egy kis" nem darabszám, a „pár falat" két falat.
+        Foods.Hit nut = hits("nassoltam egy kis mogyorót").get(0);
+        // A nulla gramm alapadagot jelent – az a maréknyi, nem egy szem.
+        assertEquals(0, nut.grams, 0.5);
+        assertEquals(30, nut.food.portion, 0.5);
+        assertEquals(30, hits("ettem pár falatot a tortából").get(0).grams, 0.5);
+    }
+
 }

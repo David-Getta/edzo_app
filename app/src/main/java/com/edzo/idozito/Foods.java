@@ -2475,6 +2475,12 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // Az „EGY KIS mogyoró" nem egyetlen szem: a „nassoltam egy kis
+        // mogyorót" egy grammként ment be – az „egy" itt nem darabszám.
+        query = query.replaceAll("(?iu)(?<!\\p{L})egy kis(?=\\s)", "kis");
+        // A „PÁR FALAT" két falat: a „ettem pár falatot a tortából" teljes
+        // adag sütemény lett harminc gramm helyett.
+        query = query.replaceAll("(?iu)(?<!\\p{L})p[aá]r fala", "2 fala");
         // Az ÖSSZEJÖTT mennyiség is mennyiség: a „vizet ittam, 2 liter
         // összejött mára" két litere elveszett, mert az ige a tiszta
         // mennyiség-tagmondatot beszédessé tette.
