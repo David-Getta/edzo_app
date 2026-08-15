@@ -554,6 +554,15 @@ public class FoodsParseTest {
                 + "2 tányér").size());
     }
 
+    /** A szám utáni „fogás" a menü fogása, nem a fogas nevű hal. */
+    @Test public void fiveCoursesAreNotFiveFish() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "degusztációs menü 5 fogás, kicsi "
+                + "adagok").isEmpty());
+        assertEquals("Hal (fehér)", Foods.parse(all, "fogast ettem roston "
+                + "sütve").get(0).food.name);
+    }
+
     /** A vas tabletta étrend-kiegészítő – a vasat tolni súlyzózás marad. */
     @Test public void anIronPillIsASupplement() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

@@ -2882,6 +2882,13 @@ public final class Foods {
         for (Match m : ms) {
             if (m.food.name.equals("Olaj") && q.startsWith("olaj", m.pos)
                     && q.regionMatches(m.pos + 4, "os", 0, 2)) continue;
+            // A SZÁM utáni „fogás" a menü fogása, nem a fogas nevű hal: a
+            // „degusztációs menü 5 fogás" hétszázötven gramm halat írt be.
+            if (m.food.name.startsWith("Hal") && q.startsWith("fogas", m.pos)) {
+                int b = m.pos;
+                while (b > 0 && q.charAt(b - 1) == ' ') b--;
+                if (b > 0 && Character.isDigit(q.charAt(b - 1))) continue;
+            }
             out.add(m);
         }
         return out;
