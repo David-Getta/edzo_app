@@ -271,7 +271,11 @@ public final class Foods {
                 // epret" eddig üres választ kapott.
                 "epret", "eprek", "eperbol", "eprem"),
         new Food("Avokádó", 160, 2, 70, "avokado"),
-        new Food("Dió", 650, 15, 30, "dio", "makadamia", "makadamdio"),
+        new Food("Dió", 650, 15, 30, "dio", "makadamia", "makadamdio",
+                // Az „olajos magvak" a vegyes maroknyi mag – tápértékben a
+                // dióhoz áll a legközelebb. A hosszabb tő nyeri az „olaj"
+                // elleni átfedést, így nem egy kanál olaj lesz belőle.
+                "olajos magvak", "olajos mag"),
         new Food("Mandula", 580, 21, 30, "mandula"),
         new Food("Mogyoró", 570, 25, 30, "mogyoro"),
         new Food("Csokoládé", 550, 5, 25, "csoki", "csokolade", "kinder", "milka", "twix",
@@ -2327,6 +2331,7 @@ public final class Foods {
         ms = dropSmoothieDouble(ms, norm(query));
         ms = dropFakeMeat(ms, norm(query));
         ms = dropWrapDouble(ms);
+        ms = dropOilyAdjective(ms, norm(query));
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {
             // Az „ittam másfél litert" ital-név nélkül is vizet jelent.
@@ -2817,6 +2822,24 @@ public final class Foods {
             out.add(m);
         }
         return out.isEmpty() ? ms : out;
+    }
+
+    /**
+     * Az „olajos" jelző nem egy kanál olaj.
+     *
+     * Az „ebédre rakott krumpli, eléggé olajos volt" megjegyzése mellé egy
+     * kanál olaj került a naplóba. A jelzős alak (olajos, olajosan) sosem
+     * elfogyasztott olaj – az „olajjal", „olajban" ragos alakok maradnak,
+     * az „olajos magvak" pedig a hosszabb tövén dió lesz.
+     */
+    private static List<Match> dropOilyAdjective(List<Match> ms, String q) {
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) {
+            if (m.food.name.equals("Olaj") && q.startsWith("olaj", m.pos)
+                    && q.regionMatches(m.pos + 4, "os", 0, 2)) continue;
+            out.add(m);
+        }
+        return out;
     }
 
     /**

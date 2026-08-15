@@ -514,7 +514,10 @@ public class FoodsDataQualityTest {
             // lett a cipőm" és a „COMBOS edzés volt" eddig két és fél deci
             // vizet, illetve egy csirkecombot írt a naplóba. Vizet inni
             // magyarul „vizet iszom", nem „vizes".
-            "vizes", "combos"));
+            "vizes", "combos",
+            // Az „olajos" is jelző: az „eléggé olajos volt" megjegyzés nem
+            // egy kanál olaj – az „olajos magvak" a dió tövén marad étel.
+            "olajos"));
         String[] suf = {"t", "ba", "bol", "ban", "val", "hoz", "nak", "ja",
                 "jat", "k", "kat", "n", "ra", "rol", "tol", "nal", "os", "as", "es"};
         StringBuilder bad = new StringBuilder();

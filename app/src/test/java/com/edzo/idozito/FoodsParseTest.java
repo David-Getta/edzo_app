@@ -536,6 +536,19 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "szervizben volt az autó").isEmpty());
     }
 
+    /** Az „olajos" jelző nem egy kanál olaj – az olajos magvak dió. */
+    @Test public void greasyIsNotASpoonOfOil() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        for (Foods.Hit h : Foods.parse(all, "ebédre rakott krumpli, eléggé "
+                + "olajos volt"))
+            assertFalse(h.food.name.equals("Olaj"));
+        assertEquals("Dió", Foods.parse(all, "ettem egy marék olajos "
+                + "magvat").get(0).food.name);
+        // A ragos olaj marad: az „olajban sült" valódi olaj.
+        assertEquals("Olaj", Foods.parse(all, "olajban sült hal").get(0)
+                .food.name);
+    }
+
     /** A vízi jelző sport, nem ital – a megivott víz marad. */
     @Test public void openWaterIsNotAGlassOfWater() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
