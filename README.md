@@ -197,6 +197,15 @@ percenkénti idő, nem időtartam – az „átlagtempóm 5:20 volt a 10 kilomé
 megtörtént edzés), és a **küszöb** száma („lement 80 alá, 79.6 kg") sosem
 a mérleg száma.
 
+A napló idő-horizontját is érti: az **éves-havi összegző** („összesen 1250 km
+idén", „a Garmin évi összesítője") nem egy mai edzés, a **kihívás
+haladás-jegyzete** („eddig 87 km a 100-ból") nem mai futás, a **széria**
+(„21 napja folyamatosan") nem visszatekintő dátum, a **„készülök"** csak a
+saját tagmondatát viszi, az **őszi maraton** pedig nem lefutott táv. A
+meghiúsult terv (zárva volt, elromlott a gép) nem edzés – a helyette végzett
+az. A **gyerekadag** fél adag, a **duplázott** kettő, a **gyerek menüje** a
+gyereké.
+
 A kötőszavakat és a nyomatékot is érti: a **„de"** új állítást nyit („az nem
 edzés de 6 km-t gyalogoltam" – a gyaloglás megtörtént), a szorzószám utáni
 **„is"** csak nyomaték („kétszer is voltam úszni" = két úszás), a **mért
