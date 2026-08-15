@@ -4619,4 +4619,12 @@ public class ActivitiesParseTest {
         assertEquals("futas", p.plans.get(0).kind.id);
     }
 
+    @Test public void rearrangingFurnitureIsPhysicalWork() {
+        // Az „átrendeztük a nappalit" fizikai munka – eddig üresen jött
+        // vissza. (A vasalás szándékosan marad kint: lásd a vas-szlenget.)
+        assertEquals("munka", Activities
+                .parse("átrendeztük a nappalit, sokat emelgettem")
+                .plans.get(0).kind.id);
+    }
+
 }

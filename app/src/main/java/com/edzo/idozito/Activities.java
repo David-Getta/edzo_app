@@ -366,6 +366,9 @@ public final class Activities {
                     "koltoz", "asas", "kapalas", "kapal", "gereblyez",
                     "lapatol", "kertben dolgoz", "kertben melo", "astam", "asni",
                     "sepreget", "felmostam", "felmosas",
+                    // A bútor-átrendezés is fizikai munka. (A vasalás
+                    // szándékosan nincs itt – lásd a vas-szleng tesztjét.)
+                    "atrendez",
                     // A kaszálás és a cipekedés ugyanaz a fizikai munka: eddig
                     // a „kaszáltam a kertben 90 percet" és a „3 órát
                     // cipekedtem" válasz nélkül maradt.
