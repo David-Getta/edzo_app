@@ -4627,4 +4627,13 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void whitewaterAndSnorkelingResolve() {
+        // A „raftingoltunk a vadvízen" mellé pohár ásványvíz került, a
+        // sznorkelezés pedig üresen jött vissza.
+        assertEquals("evezes", Activities.parse("raftingoltunk a vadvízen")
+                .plans.get(0).kind.id);
+        assertEquals("uszas", Activities
+                .parse("sznorkeleztünk a tengerben fél órát").plans.get(0).kind.id);
+    }
+
 }

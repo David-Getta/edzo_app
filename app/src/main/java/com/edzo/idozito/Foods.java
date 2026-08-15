@@ -845,6 +845,8 @@ public final class Foods {
             // A VÍZVISSZATARTÁS a mérleg ingadozása, nem megivott pohár víz:
             // a „vízvisszatartás miatt 84 kg" mellé ital került a naplóba.
             "vizvisszatart", "vizmegtart", "vizet tart",
+            // A VADVÍZI rafting nem pohár víz.
+            "vadviz",
             // Az angol HALF (marathon) nem hal-étel, a CARDIO vége nem dió.
             "half", "cardio",
 

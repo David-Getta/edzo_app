@@ -71,6 +71,9 @@ public final class Activities {
                     // eddig egykilométeres FUTÁS lett, mert a puszta táv
                     // magyarul futást jelent.
                     "uszoda", "tanmedence", "strandon usz",
+                    // A sznorkelezés is úszás – pipával. A tő a szó közepe,
+                    // így az angolos „snorkel" írásmódot is fedi.
+                    "norkel",
                     "uszoverseny",
                     // A medence RAGOZOTT alakja: a puszta „medence" a súlyzós
                     // medenceemelés szava is, azt nem vesszük el tőle.
