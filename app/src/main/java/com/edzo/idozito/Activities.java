@@ -401,6 +401,9 @@ public final class Activities {
                     // mozgás –, ezért csak a játék igéjével együtt él.
                     "meccset jatszottam", "meccsen jatszottam",
                     "vegig jatszottam", "vegigjatszottam", "meccset nyertunk",
+                    // Az EDZŐMECCS a lejátszott felkészülési meccs – sport
+                    // nélkül is mozgás.
+                    "edzomeccs",
                     // Az óra AKTÍV IDEJE is mozgás: „az applikáció 47 perc
                     // aktív időt mért" eddig üresen jött vissza.
                     "aktiv ido", "aktiv idot", "aktiv perc",

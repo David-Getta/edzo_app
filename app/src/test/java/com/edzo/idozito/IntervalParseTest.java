@@ -792,4 +792,12 @@ public class IntervalParseTest {
         assertEquals(20, p.rounds);
     }
 
+    @Test public void aMatchIsNotAnIntervalTimer() {
+        // Az „edzőmeccs 2x30 perc" hatvan perc játék, a „25-22 lett" a
+        // végeredmény – egyik sem időzítő-terv. A kimondott HIIT felment.
+        assertNull(IntervalParse.parse("edzőmeccs 2x30 perc"));
+        assertNull(IntervalParse.parse("kézilabda meccsen játszottam, 25-22 lett"));
+        assertNotNull(IntervalParse.parse("meccs után hiit 8x30/30"));
+    }
+
 }

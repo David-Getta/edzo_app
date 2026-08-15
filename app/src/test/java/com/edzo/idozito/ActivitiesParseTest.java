@@ -4561,4 +4561,11 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    @Test public void aPracticeMatchIsAnHourOfPlay() {
+        // Az „edzőmeccs 2x30 perc" hatvan perc mozgás – eddig időzítő-terv
+        // lett belőle, bejegyzés nélkül.
+        Activities.Plan p = Activities.parse("edzőmeccs 2x30 perc").plans.get(0);
+        assertEquals(60, p.minutes);
+    }
+
 }

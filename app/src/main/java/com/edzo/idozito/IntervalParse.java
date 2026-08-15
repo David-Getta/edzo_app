@@ -120,6 +120,11 @@ public final class IntervalParse {
         // app – száznegyven másodperc munka, kilencvenöt pihenő.
         if (s.contains("vernyomas") || s.contains("ver nyomas")
                 || s.contains("higanymilli") || s.contains("hgmm")) return null;
+        // A MECCS sem ritmus: az „edzőmeccs 2x30 perc" hatvan perc játék,
+        // a „25-22 lett" pedig a végeredmény – eddig mindkettő időzítő-terv
+        // lett. A kimondott intervall-szó viszont felment.
+        if ((s.contains("meccs") || s.contains("felido"))
+                && !s.contains("intervall") && !s.contains("hiit")) return null;
         // A PULZUS sem ritmus: az „50-55 között van a nyugalmi pulzusom"
         // tartománya munka/pihenő párnak látszott, és ötven másodperc munka,
         // ötvenöt pihenő terv lett belőle. Ha viszont a mondat ki is mondja
