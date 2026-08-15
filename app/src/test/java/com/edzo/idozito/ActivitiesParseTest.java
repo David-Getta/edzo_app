@@ -4263,4 +4263,23 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("a kukorica pattogott a "
                 + "serpenyőben").plans.size());
     }
+    /**
+     * A húsz fölötti km/h bringasebesség, a bringás kocogás tekerés.
+     *
+     * A „28 km/h átlagsebességgel 40 km" négyórás FUTÁS lett sportnév
+     * híján; a „kocogtunk a bringával" kocogása pedig külön futást szült.
+     * A reggeli valódi kocogás és a sétatempójú km/h marad.
+     */
+    @Test public void twentyPlusKmhMeansCycling() {
+        assertEquals("kerekpar", Activities.parse("28 km/h "
+                + "átlagsebességgel 40 km").plans.get(0).kind.id);
+        Activities.Parsed p = Activities.parse("25-ös átlaggal kocogtunk "
+                + "a bringával 20 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(2, Activities.parse("reggel kocogtam 5 km-t, "
+                + "délután bringáztam 20 km-t").plans.size());
+        assertEquals("tura", Activities.parse("8 km/h-val sétáltunk a "
+                + "parkban 4 km-t").plans.get(0).kind.id);
+    }
 }

@@ -1157,6 +1157,16 @@ public final class Activities {
                         + lista.group(3) + ", " + lista.group(2) + " "
                         + lista.group(4) + s.substring(lista.end());
         }
+        // A BRINGÁS KOCOGÁS tekerés: a „25-ös átlaggal kocogtunk a
+        // bringával 20 km-t" kocogása külön futást szült a bringa mellé.
+        s = s.replaceAll("kocog\\w*(?=\\s+a\\s+bring)", "tekertunk");
+        s = s.replaceAll("(bringaval\\s+)kocog\\w*", "$1tekertunk");
+        // A HÚSZ FÖLÖTTI km/h bringasebesség: a „28 km/h átlagsebességgel
+        // 40 km" negyven kilométere sportnév híján FUTÁS lett – négy órás
+        // futás egy másfél órás tekerésből.
+        if (s.matches(".*(?<![\\d,.])(?:1[89]|[2-9]\\d)\\s?km\\s?/\\s?h.*")
+                && kindByText(s) == null)
+            s = "kerekpar " + s;
         // A TÁNCSZŐNYEGEN ugrálás egyetlen tánc: az „ugráltunk" egyéb-töve
         // külön hatvanperces bejegyzést csinált a tánc mellé.
         if (s.contains("tancszonyeg")) s = s.replaceAll("ugral\\w*", "");
