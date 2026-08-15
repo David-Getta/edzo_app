@@ -764,4 +764,15 @@ public class BodyParseTest {
         BodyParse.Body b = BodyParse.parse("bicepszem 38 cm lett");
         assertTrue(b.hasCm());
     }
+    /**
+     * A várandósság hete nem testsúly.
+     *
+     * Az „a 30. hétben vagyok, hetente 2x úszás" harmincasa HARMINC KILÓ
+     * lett a naplóban. A valódi heti mérés marad.
+     */
+    @Test public void aPregnancyWeekIsNotAWeight() {
+        assertEquals(0.0, BodyParse.parse("a 30. hétben vagyok, hetente "
+                + "2x úszás").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("78 kg voltam a héten").kg, 0.01);
+    }
 }

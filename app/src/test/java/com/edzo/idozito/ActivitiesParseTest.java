@@ -4189,4 +4189,24 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("feladtam, nem megyek el edzeni")
                 .plans.size());
     }
+    /**
+     * A várandósság hete nem e heti időszak, a futóbabakocsi nem séta.
+     *
+     * A „kismama jóga a 28. héten" hétnapos bejegyzés lett (a sorszám
+     * kiesett, a csupasz héten időszaknak látszott); a „babával kocogtam
+     * a futóbabakocsival 4 km-t" pedig futás ÉS külön négy kilométeres
+     * túra. A sima babakocsis séta és az e heti időszak marad.
+     */
+    @Test public void aPregnancyWeekIsNotThisWeek() {
+        Activities.Parsed p = Activities.parse("kismama jóga a 28. héten");
+        assertEquals(1, p.days);
+        assertEquals("joga", p.plans.get(0).kind.id);
+        Activities.Parsed b = Activities.parse("babával kocogtam a "
+                + "futóbabakocsival 4 km-t");
+        assertEquals(1, b.plans.size());
+        assertEquals("futas", b.plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("babakocsival sétáltam "
+                + "5 km-t").plans.get(0).kind.id);
+        assertEquals(7, Activities.parse("a héten 3x futottam").days);
+    }
 }

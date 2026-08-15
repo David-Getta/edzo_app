@@ -852,6 +852,11 @@ public final class Activities {
             // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
             // („januári futókihívás: eddig 87 km") nem mai edzés.
             "futokihivas",
+            // A FUTÓBABAKOCSI a futás eszköze, nem külön séta: a „babával
+            // kocogtam a futóbabakocsival 4 km-t" két bejegyzés lett – egy
+            // futás ÉS egy négy kilométeres túra. A sima babakocsis séta
+            // marad túra.
+            "futobabakocsi",
             // A TRICEPSZNYÚJTÁS gépes gyakorlat, nem nyújtás: a
             // „rest-pause tricepsznyújtás 15+5+5" mellé egy negyvenöt
             // perces jóga is bekerült a nyújt-tő miatt.
@@ -4453,6 +4458,16 @@ public final class Activities {
         // bejegyzés lett belőle, hét napra szétosztva. A magyar a sorszámot
         // ponttal írja, a darabszámot pont nélkül; a pont utáni betű zárja
         // ki a tizedes törtet.
+        // A SORSZÁMOS HÉT a várandósság hete, nem e heti időszak: a
+        // „kismama jóga a 28. héten" hétnapos bejegyzéssé vált, mert a
+        // sorszám kiesett, a csupasz „héten" meg időszaknak látszott.
+        // A hét-szó is a maszkba kerül.
+        m = java.util.regex.Pattern
+                .compile("(?i)(?<![\\d.,])(\\d{1,2})\\.\\s?h[ée]t(?:en|ben)(?!\\p{L})")
+                .matcher(text);
+        while (m.find())
+            for (int i = m.start(); i < m.end(); i++)
+                if (sb.charAt(i) != ' ') sb.setCharAt(i, ' ');
         // A KM előtti sorszám viszont megtett táv: a „feladtam a versenyt
         // a 30. km-nél" harmincasa nem a hét harmincadik futása.
         m = java.util.regex.Pattern

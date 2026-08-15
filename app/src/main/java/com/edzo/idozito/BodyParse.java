@@ -219,6 +219,9 @@ public final class BodyParse {
         // az „alatt" tiltószava eddig az egészet elvitte.
         s = s.replaceAll("(kezeles|kura|terapia|szoptatas|terhesseg|dieta)"
                 + "\\s+alatt", "$1 idejen");
+        // A VÁRANDÓSSÁG hete nem testsúly: az „a 30. hétben vagyok,
+        // hetente 2x úszás" harmincasa HARMINC KILÓ lett a naplóban.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\.?\\s?het(?:en|ben)(?![a-z])", "");
         if (s.isEmpty()) return new Body(0, 0);
         // A tiltó szó csak a SAJÁT tagmondatát viszi el: az „elértem a
         // célsúlyom, 72 kg" hetvenkettője valódi mérés – a CÉL az első
