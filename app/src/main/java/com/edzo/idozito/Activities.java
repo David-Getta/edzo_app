@@ -298,6 +298,9 @@ public final class Activities {
                     // mozgás –, ezért csak a játék igéjével együtt él.
                     "meccset jatszottam", "meccsen jatszottam",
                     "vegig jatszottam", "vegigjatszottam", "meccset nyertunk",
+                    // Az óra AKTÍV IDEJE is mozgás: „az applikáció 47 perc
+                    // aktív időt mért" eddig üresen jött vissza.
+                    "aktiv ido", "aktiv idot", "aktiv perc",
                     // Az ERGOMÉTER gép is edzés – a KÉZI-ergométer pedig nem
                     // kézilabda: a „kéziergométer a rehab részlegen 10 perc"
                     // tízperces kézilabda-meccs lett a naplóban. A hosszabb
@@ -2753,7 +2756,13 @@ public final class Activities {
                 "akartam", "akartunk", "szerettem volna", "szerettunk volna",
                 // Az ELFELEJTETT edzés meg sem történt, a ZÁRVA tartó terem
                 // pedig épp az oka annak, hogy nem lett belőle semmi.
-                "elfelejtettem", "elfelejtettuk", "zarva", "be volt zar"}) {
+                "elfelejtettem", "elfelejtettuk", "zarva", "be volt zar",
+                // A „MEHET a kemény edzés" engedély a jövőre, nem napló: a
+                // „whoop recovery 85%, mehet a kemény edzés" negyvenöt
+                // perces bejegyzést kapott – egy el sem kezdett napról. Csak
+                // a saját tagmondatát viszi: a „megvolt a futás, mehet a
+                // pihenés" futása marad.
+                "mehet a ", "mehet egy "}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));

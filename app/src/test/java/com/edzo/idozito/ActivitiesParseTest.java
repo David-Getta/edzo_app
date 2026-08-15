@@ -3030,6 +3030,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „mehet a kemény edzés" engedély a jövőre, az aktív idő viszont adat.
+     *
+     * A „whoop recovery 85%, mehet a kemény edzés" negyvenöt perces
+     * bejegyzést kapott – egy el sem kezdett napról. A tagadás csak a
+     * saját tagmondatát viszi: a „megvolt a futás 8 km, mehet a pihenés"
+     * futása marad. Az óra aktív ideje pedig mozgás.
+     */
+    @Test public void aGreenLightIsNotAWorkoutYet() {
+        assertEquals(0, Activities.parse("whoop recovery 85%, mehet a "
+                + "kemény edzés").plans.size());
+        assertEquals(1, Activities.parse("megvolt a futás 8 km, mehet a "
+                + "pihenés").plans.size());
+        assertEquals(47, Activities.parse("az applikáció 47 perc aktív "
+                + "időt mért").plans.get(0).minutes);
+    }
+
+    /**
      * A szorzószám utáni „is" csak nyomaték.
      */
     @Test public void twiceWithEmphasisIsStillTwice() {
