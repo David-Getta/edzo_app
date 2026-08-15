@@ -3030,6 +3030,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A kihívás haladás-jegyzete nem mai edzés, a széria nem dátum.
+     *
+     * A „januári futókihívás: eddig 87 km a 100-ból" nyolcvanhét
+     * kilométeres MAI futást írt be – egy hónap összegéből. A „megvan a
+     * 10000 lépés 21 napja folyamatosan" pedig 21 nappal ezelőttre került
+     * – a széria hossza nem visszatekintő dátum.
+     */
+    @Test public void aChallengeProgressNoteIsNotTodaysRun() {
+        assertEquals(0, Activities.parse("januári futókihívás: eddig "
+                + "87 km a 100-ból").plans.size());
+        Activities.Parsed p = Activities.parse("megvan a 10000 lépés "
+                + "21 napja folyamatosan");
+        assertEquals(0, p.offset);
+        assertEquals(10000, p.plans.get(0).steps);
+        // A valódi visszatekintés marad.
+        assertEquals(5, Activities.parse("5 napja futottam 10 km-t").offset);
+    }
+
+    /**
      * A meghiúsult terv nem edzés – a helyette végzett viszont az.
      *
      * Az „uszodába mentem de zárva volt, helyette 5 km futás" úszást IS

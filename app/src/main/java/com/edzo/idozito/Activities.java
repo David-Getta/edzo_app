@@ -766,6 +766,9 @@ public final class Activities {
             // A BABYMEDENCE nem úszás: a „gyerekkel játszottunk a
             // babymedencében" negyvenöt perc úszást írt a szülő naplójába.
             "babymedence", "gyerekmedence", "pancsolo",
+            // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
+            // („januári futókihívás: eddig 87 km") nem mai edzés.
+            "futokihivas",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
             // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés
@@ -963,6 +966,12 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // Az „EDDIG … A 100-BÓL" halmozott összeg, nem mai edzés: a
+        // „januári futókihívás: eddig 87 km a 100-ból" nyolcvanhét
+        // kilométeres MAI futást írt be – egy hónap összegéből. A -ból
+        // ragos cél mellett az eddig-összeg kiesik.
+        if (s.matches(".*(?<![a-z])eddig(?![a-z]).*\\d\\s?-?b[o]l.*"))
+            s = s.replaceAll("(?<![a-z])eddig[^,;.]*", "");
         // A „24 ÓRÁS" terem a nyitvatartás, nem az edzés hossza: „az
         // edzőterem 24 órás, éjfélkor mentem, 40 perc" ezernégyszáznegyven
         // perces kondi lett. A 24 órás futóverseny marad: ott nincs
@@ -3323,7 +3332,11 @@ public final class Activities {
         // mai napra semmi, egy régi napra meg egy soha meg nem történt edzés.
         java.util.regex.Matcher ago = java.util.regex.Pattern
                 .compile("(?<![\\d.,a-z])(?<!mar )(\\d{1,2}|egy|ket|ketto|harom|negy|ot|hat|"
+                        // A „21 napja FOLYAMATOSAN" széria-hossz, nem dátum:
+                        // a mai tízezer lépés eddig három hete ezelőttre
+                        // került tőle.
                         + "nyolc|kilenc|tiz)\\s?(?:(nap|het|honap)(?:ja|je|e)"
+                        + "(?!\\s*(?:folyamatosan|egymas|zsinorban|sorban))"
                         // A „3 nappal ezelőtt" ugyanaz a visszatekintés,
                         // eszközhatározóval – eddig a mai napra került.
                         + "|(nap|het|honap)(?:pal|tel|al)\\s+ezelott)\\b").matcher(s);
