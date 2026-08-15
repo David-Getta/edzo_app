@@ -247,7 +247,11 @@ public final class BodyParse {
         boolean said = hasBodyWord(s);
 
         double[] cm = circumferences(s);
-        double fat = bodyFat(s);
+        // A tejtermék-szót a NYERS mondatban keressük: a feldolgozás a
+        // kefir tagmondatát már eldobhatta, mire a százalékhoz érünk.
+        double fat = bodyFat(s, Foods.norm(q).matches(
+                ".*(?<![a-z])(tej|kefir|joghurt|turo|sajt|tejfol|tejszin"
+                + "|kakao)\\w*.*"));
         // A kimondott testzsír-százalék maga is testről szóló mondat: a
         // „78 kg 18% zsír" mondatban egyik szó sem szerepelt a listán, pedig
         // aki százalékban zsírt ír, az magáról beszél.
@@ -354,13 +358,20 @@ public final class BodyParse {
      * A puszta százalék is elfogadható: ilyen mondatban más százalékos adat
      * nem szokott szerepelni.
      */
-    private static double bodyFat(String s) {
-        java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,2}([.,]\\d)?)\\s?(%|szazalek)").matcher(s);
-        while (m.find()) {
-            double v = num(m.group(1));
-            if (v >= MIN_FAT && v <= MAX_FAT) return v;
+    private static double bodyFat(String s, boolean tejtermek) {
+        // A TEJTERMÉK százaléka zsírtartalom, nem testzsír: a „kefir
+        // Danone, 3%" hármasa testzsír-mérésként került a naplóba. Ha a
+        // mondatban tejtermék áll és a zsír szó nincs kimondva, a puszta
+        // százalék nem mérés.
+        if (!tejtermek || s.contains("zsir")) {
+            java.util.regex.Matcher pm = java.util.regex.Pattern
+                    .compile("(\\d{1,2}([.,]\\d)?)\\s?(%|szazalek)").matcher(s);
+            while (pm.find()) {
+                double v = num(pm.group(1));
+                if (v >= MIN_FAT && v <= MAX_FAT) return v;
+            }
         }
+        java.util.regex.Matcher m;
         m = java.util.regex.Pattern.compile("testzsir\\w*\\s?:?\\s?(\\d{1,2}([.,]\\d)?)")
                 .matcher(s);
         if (m.find()) {

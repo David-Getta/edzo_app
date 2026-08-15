@@ -410,14 +410,17 @@ public final class Foods {
                 "whey protein", "kazein protein", "kollagen"),
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
                 "feherjeszelet", "feherje szelet", "energiaszelet"),
-        new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
+        // A Pöttyös a túró rudi márkaneve – a „Pöttyös óriás guru" is az.
+        new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi", "pottyos"),
         new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque",
                 // Az angolul írt alak is szendvics: „subway ham sandwich".
                 "sandwich", "szendvicset"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog", "hot dog"),
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
-        new Food("Müzliszelet", 400, 6, 30, "muzliszelet", "zabszelet", "granolaszelet"),
+        // A Cerbona a magyar müzliszelet márkaneve.
+        new Food("Müzliszelet", 400, 6, 30, "muzliszelet", "zabszelet",
+                "granolaszelet", "cerbona"),
         // A „felvágott" gyűjtőnév is ide fut be: kalóriában a párizsi az átlag.
         new Food("Párizsi / felvágott", 230, 12, 50, "parizsi", "felvagott", "mortadella",
                 "loncshus"),

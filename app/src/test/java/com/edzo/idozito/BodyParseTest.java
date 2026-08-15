@@ -775,4 +775,18 @@ public class BodyParseTest {
                 + "2x úszás").kg, 0.01);
         assertEquals(78.0, BodyParse.parse("78 kg voltam a héten").kg, 0.01);
     }
+    /**
+     * A tejtermék százaléka zsírtartalom, nem testzsír.
+     *
+     * A „kefir Danone, 3%" hármasa testzsír-mérésként került a naplóba.
+     * A kimondott zsír-szó melletti százalék mérés marad – tejtermékkel
+     * egy mondatban is.
+     */
+    @Test public void aDairyPercentageIsNotBodyFat() {
+        assertEquals(0.0, BodyParse.parse("kefir Danone, 3%").fatPct, 0.01);
+        assertEquals(0.0, BodyParse.parse("tejföl 20%-os a lecsóba")
+                .fatPct, 0.01);
+        assertEquals(18.0, BodyParse.parse("18% testzsír, reggel túró "
+                + "volt").fatPct, 0.01);
+    }
 }

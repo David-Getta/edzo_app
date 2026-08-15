@@ -932,4 +932,11 @@ public class FoodsParseTest {
         assertEquals(105.0, hits("kenyérből 3 szeletet vajaztam meg")
                 .get(0).grams, 0.001);
     }
+    /** A Cerbona müzliszelet, a Pöttyös túró rudi. */
+    @Test public void hungarianSnackBrandsResolve() {
+        assertEquals("Müzliszelet", hits("Cerbona szelet edzés előtt")
+                .get(0).food.name);
+        assertEquals("Túró rudi", hits("Pöttyös óriás guru")
+                .get(0).food.name);
+    }
 }
