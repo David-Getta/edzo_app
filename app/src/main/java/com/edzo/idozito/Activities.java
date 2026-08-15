@@ -873,6 +873,8 @@ public final class Activities {
             // A JÓGAMATRAC felszerelés, nem gyakorlás: a „jógamatracot
             // kaptam szülinapomra" negyvenöt perc jógát írt be.
             "jogamatrac", "jogaszonyeg",
+            // A GYALOGÁLDOZAT a sakktábláé, nem gyaloglás.
+            "gyalogaldozat",
             // A FUTÓBABAKOCSI a futás eszköze, nem külön séta: a „babával
             // kocogtam a futóbabakocsival 4 km-t" két bejegyzés lett – egy
             // futás ÉS egy négy kilométeres túra. A sima babakocsis séta
@@ -1177,6 +1179,18 @@ public final class Activities {
         s = s.replaceAll("(\\d{1,2})\\s?ora\\s+(\\d{1,2})(?![\\d])"
                 + "(?!\\s?(?:perc|ora|km|kg|kcal|:|%))(?!-?\\s?kor)",
                 "$1 ora $2 perc");
+        // Az ÁTFUTOTT jegyzet olvasás, a KÖRBEJÁRT kérdés gondolkodás: a
+        // „átfutottam a jegyzeteimet" negyvenöt perc futást, a
+        // „körbejártam a kérdést" kilencven perc túrát írt be.
+        s = s.replaceAll("atfutottam (?:az? )?(jegyzet|email|mail|level"
+                + "|anyag|dokumentum|cikk|szerzodes|riport|konyv)", "atneztem $1");
+        s = s.replaceAll("korbejar\\w* (?:az? )?(kerdes|tema|problema|ugy)",
+                "atgondoltam $1");
+        // A BOXBA állított autó parkolás, nem bunyó: a „boxba raktam az
+        // autót a mélygarázsban" hatvanperces harcművészet lett.
+        if (s.contains("auto") || s.contains("kocsi") || s.contains("garazs")
+                || s.contains("parkol"))
+            s = s.replaceAll("(?<![a-z])boxba?n?(?![a-z])", "");
         // Az ANGOL óra-app szavai magyarra váltva: az „easy run 40 min",
         // a „steps: 12000" és a „swim 1500m" eddig üresen jött vissza
         // (vagy futásnak nézte az úszást). Egész szóra illesztünk – a

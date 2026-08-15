@@ -4363,4 +4363,28 @@ public class ActivitiesParseTest {
         assertEquals(20, Activities.parse("jógamatracon nyújtottam "
                 + "20 percet").plans.get(0).minutes);
     }
+    /**
+     * Az átfutott jegyzet, a boxba állt autó és a gyalogáldozat nem sport.
+     *
+     * Az „átfutottam a jegyzeteimet" futást, a „boxba raktam az autót"
+     * harcművészetet, a „körbejártam a kérdést" túrát, a „gyalogáldozat"
+     * gyaloglást írt be. A hídon átfutás, az igazi box és a tó körbejárása
+     * marad.
+     */
+    @Test public void figurativeSportVerbsAreNotWorkouts() {
+        assertEquals(0, Activities.parse("átfutottam a jegyzeteimet este")
+                .plans.size());
+        assertEquals(0, Activities.parse("boxba raktam az autót a "
+                + "mélygarázsban").plans.size());
+        assertEquals(0, Activities.parse("körbejártam a kérdést a "
+                + "meetingen").plans.size());
+        assertEquals(0, Activities.parse("gyalogáldozat a sakkpartiban")
+                .plans.size());
+        assertEquals("futas", Activities.parse("átfutottam a hídon a "
+                + "túloldalra").plans.get(0).kind.id);
+        assertEquals(6.0, Activities.parse("körbejártam a tavat, 6 km")
+                .plans.get(0).km, 0.01);
+        assertEquals(30, Activities.parse("boxoltam 30 percet")
+                .plans.get(0).minutes);
+    }
 }
