@@ -127,6 +127,8 @@ public final class Foods {
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
+                // A rakott palacsinta hosszabb töve veri a rakott krumplit.
+                "rakott palacsinta",
                 "protein palacsinta", "feherje palacsinta", "pancake"),
         new Food("Pizza", 260, 11, 300, "pizza", "calzone", "quattro formaggi",
                 "quattro stagioni"),
@@ -175,7 +177,10 @@ public final class Foods {
                 "krumplilangos", "berthake"),
         new Food("Töltött dagadó", 330, 18, 200, "toltott dagado", "dagado"),
         new Food("Rakott zöldbab", 110, 5, 350, "rakott zoldbab", "rakott zoldseg"),
-        new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta"),
+        // A toroskáposzta a disznóvágás húsos káposztája – kalóriában a
+        // töltött káposzta rokona, nem a párolt köreté.
+        new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta",
+                "toroskaposzta", "toros kaposzta"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
         new Food("Lencse (főtt)", 115, 9, 200, "lencse"),
         new Food("Borsó", 80, 5, 150, "borso"),
@@ -315,7 +320,10 @@ public final class Foods {
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
         new Food("Szaloncukor", 450, 3, 15, "szaloncukor", "szaloncukr"),
         new Food("Nutella", 540, 6, 30, "nutella", "mogyorokrem"),
-        new Food("Lekvár", 250, 0.4, 25, "lekvar"),
+        // A gyümölcsnév+lekvár összetétel hosszabb töve veri a lé-tövet: a
+        // „baracklekvár" barackle-kezdete fél liter GYÜMÖLCSLÉT írt be.
+        new Food("Lekvár", 250, 0.4, 25, "lekvar", "baracklekvar",
+                "szilvalekvar", "eperlekvar", "malnalekvar", "meggylekvar"),
         new Food("Méz", 320, 0.3, 20, "mez"),
         new Food("Cukor", 400, 0, 10, "cukor", "cukrot", "cukrok", "cukrom"),
         new Food("Vattacukor", 400, 0, 30, "vattacukor"),
@@ -354,7 +362,10 @@ public final class Foods {
         new Food("Tükörtojás", 200, 13, 110, "tukortojas"),
         new Food("Bableves", 90, 5, 400, "bableves"),
         new Food("Palócleves", 80, 5, 400, "palocleves", "paloc leves"),
-        new Food("Gyümölcsleves", 60, 1, 350, "gyumolcsleves", "meggyleves", "meggy leves"),
+        // A barackleves hosszabb töve veri a barackle-t: a hideg
+        // gyümölcsleves nem pohár lé.
+        new Food("Gyümölcsleves", 60, 1, 350, "gyumolcsleves", "meggyleves",
+                "meggy leves", "barackleves", "eperleves"),
         new Food("Paradicsomos káposzta", 55, 2, 400,
                 "paradicsomos kaposzta", "paradicsomoskaposzta"),
         new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta",
@@ -474,6 +485,10 @@ public final class Foods {
                 // szándékosan nincs itt: a zellerLEVES belsejében is ott a
                 // töve, és az ebéd levese pohár lévé vált volna.
                 "zoldsegle", "zoldseg le",
+                // A szüreti MUST szőlőlé: a „mustot ittam 2 dl-t" eddig
+                // nulla kalóriás vízként ment be. A puszta „must" nem lehet
+                // tő – a mustár is vele kezdődik.
+                "mustot", "szureti must", "szolomust",
                 "repale", "rostos le", "rostos udito", "cappy", "hohes c",
                 // A gyümölcs NEVE plusz a „lé" külön étel: az „egy pohár
                 // szőlőlé" eddig a szőlő szótövére esett, és öt gramm SZŐLŐ

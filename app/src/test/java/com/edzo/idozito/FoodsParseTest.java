@@ -897,4 +897,25 @@ public class FoodsParseTest {
         assertEquals("Csirkecomb", hits("csirkecombot sütöttem ebédre")
                 .get(0).food.name);
     }
+    /**
+     * Az ünnepi asztal szavai a saját ételükre esnek.
+     *
+     * A „baracklekvár" barackle-kezdete fél liter GYÜMÖLCSLÉT írt be, a
+     * „rakott palacsinta" rakott krumplinak, a szüreti must nulla
+     * kalóriás víznek, a toroskáposzta párolt köretnek számított, a
+     * „barackleves" pedig pohár lének.
+     */
+    @Test public void holidayFoodsResolveToThemselves() {
+        assertEquals("Lekvár", hits("farsangi fánk 2 db baracklekvárral")
+                .get(1).food.name);
+        assertEquals("Palacsinta", hits("névnapomra rakott palacsintát "
+                + "sütöttek").get(0).food.name);
+        assertEquals("Gyümölcslé", hits("szüreti mustot ittam 2 dl-t")
+                .get(0).food.name);
+        assertEquals("Töltött káposzta", hits("toroskáposzta és hurka")
+                .get(0).food.name);
+        assertEquals("Gyümölcsleves", hits("barackleves hidegen")
+                .get(0).food.name);
+        assertEquals("Mustár", hits("mustáros virsli").get(0).food.name);
+    }
 }
