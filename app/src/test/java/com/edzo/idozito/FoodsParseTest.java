@@ -554,6 +554,16 @@ public class FoodsParseTest {
                 + "2 tányér").size());
     }
 
+    /** A százalékos zsír és a milliméteres comb nem étel. */
+    @Test public void bodyFatAndCaliperReadingsAreNotFood() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "15,8% zsír a mai mérésen").isEmpty());
+        assertTrue(Foods.parse(all, "testzsírmérő csipesz: 12 mm has, "
+                + "8 mm comb").isEmpty());
+        // A valódi zsíros étel marad.
+        assertFalse(Foods.parse(all, "zsíros kenyér hagymával").isEmpty());
+    }
+
     /** A „steady state" közepén nem ital a tea. */
     @Test public void steadyStateIsNotACupOfTea() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

@@ -163,7 +163,7 @@ public final class BodyParse {
      * belőle. A régi értéket kivágjuk, a mai marad a helyén.
      */
     private static String keepTheNewValue(String s) {
-        return s.replaceAll(
+        s = s.replaceAll(
                 "(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:cm|centi|kg|kilo|%|szazalek)?"
                         + "\\s?-?r[o\u00f3]l\\b([^0-9]{0,12}?)"
                         // A MÉRTÉKEGYSÉG a két szám között is ott állhat: a
@@ -172,6 +172,18 @@ public final class BodyParse {
                         // naplóban – vagyis a fogyás napján egy hízás.
                         + "(\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
                         + "(?:cm|centi|kg|kilo|%|szazalek)?\\s?-?r[ae]\\b)", "$2");
+        // A „VOLTAM …, MOST" mondatban is a második szám a mai: a „80 kg
+        // voltam 20% zsírral, most 76 kg" nyolcvana a múlté – mégis az
+        // került a trendbe. A régi szám (és a régi százalék) kiesik, ha a
+        // mondat később „most"-tal folytatódik.
+        if (s.matches(".*(?<![a-z])most(?![a-z]).*\\d.*")) {
+            s = s.replaceAll("(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?"
+                    + "(\\s?(?:kg|kilo)\\w*\\s+voltam)(?=.*(?<![a-z])most(?![a-z]))",
+                    "$1");
+            s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?"
+                    + "\\s?%\\s?(zsir\\w*)(?=.*(?<![a-z])most(?![a-z]))", "$1");
+        }
+        return s;
     }
 
     /** A mondatban rejlő mérés, vagy egy üres Body. */

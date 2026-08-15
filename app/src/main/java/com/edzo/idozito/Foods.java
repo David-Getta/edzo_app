@@ -2935,6 +2935,18 @@ public final class Foods {
         out = dropRedundantBase(q, out);
         applyCombos(list, q, out);
         out = dropNegated(q, out);
+        // A SZÁZALÉK utáni zsír testérték, nem konyhai zsír: a „15,8% zsír"
+        // és a „20% zsírral" mellé eddig egy kanál olaj került – a testzsír
+        // sora pedig el is veszett, mert az étel-találat elvitte a
+        // tagmondatot. A milliméteres bőrredő-mérés combja sem csirkecomb.
+        List<Match> noBody = new ArrayList<>();
+        for (Match m : out) {
+            String pre = q.substring(Math.max(0, m.pos - 6), m.pos);
+            boolean pctFat = q.startsWith("zsir", m.pos) && pre.contains("%");
+            boolean mmPart = pre.matches(".*\\d\\s?mm\\s?$");
+            if (!pctFat && !mmPart) noBody.add(m);
+        }
+        out = noBody;
         // Rendezés a szövegbeli előfordulás szerint.
         for (int i = 0; i < out.size(); i++)
             for (int j = i + 1; j < out.size(); j++)

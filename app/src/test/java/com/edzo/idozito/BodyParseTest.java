@@ -665,6 +665,27 @@ public class BodyParseTest {
     }
 
     /**
+     * A „voltam …, most" mondatban a második szám a mai.
+     *
+     * A „80 kg voltam 20% zsírral, most 76 kg 16%-kal" nyolcvana a múlté –
+     * mégis az került a trendbe, a húsz százalékkal együtt.
+     */
+    @Test public void theCurrentValueBeatsThePastOne() {
+        BodyParse.Body b = BodyParse.parse("80 kg voltam 20% zsírral, "
+                + "most 76 kg 16%-kal");
+        assertEquals(76.0, b.kg, 0.01);
+        assertEquals(16.0, b.fatPct, 0.01);
+    }
+
+    /** A százalék utáni zsír testérték – az inbody sora nem étel. */
+    @Test public void percentFatIsABodyValue() {
+        BodyParse.Body b = BodyParse.parse("inbody mérés: 80,2 kg, "
+                + "15,8% zsír, 38,1 kg izom");
+        assertEquals(80.2, b.kg, 0.01);
+        assertEquals(15.8, b.fatPct, 0.01);
+    }
+
+    /**
      * Az átlépett küszöb száma nem a mérleg száma.
      *
      * A „végre lement a súlyom 80 alá, 79.6 kg" nyolcvanasa a lélektani
