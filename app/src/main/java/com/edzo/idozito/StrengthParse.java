@@ -73,7 +73,9 @@ public final class StrengthParse {
      */
     // Csomag-szintű, hogy a ragozás-söprés tesztje végig tudjon menni rajta.
     static final String[][] MOVES = {
-            {"Guggolás", "guggol", "szkvot", "squat"},
+            // Az egy g-s „gugolás" gyakori elírás – eddig semmi nem lett
+            // belőle.
+            {"Guggolás", "guggol", "gugol", "szkvot", "squat"},
             // A „fekve" magában is fekvenyomás: a magyar terem fordított
             // szórenddel is mondja („nyomtam 100 kilót fekve ötöt"), és a
             // fekvőtámasz szótöve más, tehát nem ütközik vele.
@@ -290,6 +292,18 @@ public final class StrengthParse {
         // Az \u00dcRES R\u00daD is s\u00faly: a szabv\u00e1ny olimpiai r\u00fad h\u00fasz kil\u00f3 \u2013 eddig
         // saj\u00e1t tests\u00falyos szak\u00edt\u00e1s lett a technik\u00e1z\u00e1sb\u00f3l.
         s = s.replaceAll("ures rud", "20 kg rud");
+        // A JELZ\u0150S s\u00faly is s\u00faly: a \u201emegcsin\u00e1ltam a 100 kil\u00f3s
+        // fekvenyom\u00e1st" sz\u00e1z kil\u00f3 \u2013 eddig az eg\u00e9sz mondat elveszett. Csak
+        // gyakorlat-sz\u00f3 el\u0151tt \u00edrjuk \u00e1t, a \u201e14 kil\u00f3s s\u00falyz\u00f3kkal" alakot a
+        // k\u00e9zis\u00falyz\u00f3-szab\u00e1ly kezeli.
+        s = s.replaceAll("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg-?os|kilos)\\s+"
+                + "(?=\\p{L}*(?:nyom|guggol|gugol|felhuz|holtemel|huzodzkod"
+                + "|kitores|szakitas|lokes))", "$1 kg ");
+        // A KIH\u00daZOTT s\u00faly felh\u00faz\u00e1s: a \u201ekih\u00faztam 100 kil\u00f3t a f\u00f6ldr\u0151l"
+        // eddig \u00fcresen j\u00f6tt vissza.
+        s = s.replaceAll("(?<![a-z])kihuz\\w*\\s+(?:a\\s+)?"
+                + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilot|kilo)(?![a-z])",
+                "sikerult felhuzas $1 kg");
         return s.replaceAll("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)\\s?([x\u00d7])", "$1$2");
     }
 
@@ -926,7 +940,10 @@ public final class StrengthParse {
                     "vegre", "megdontott", "eloszor", "elso alkalommal", "pr ",
                     // A „megvan a 100 kg-os guggolás" ugyanaz a mondat,
                     // csak a legrövidebb magyar alakjában.
-                    "megvan", "meglett", "osszejott", "bevallalt"})
+                    "megvan", "meglett", "osszejott", "bevallalt",
+                    // A „megcsináltam a 100 kilós fekvenyomást" is teljesített
+                    // egyes – eddig üresen jött vissza.
+                    "megcsinalt", "kinyomtam", "teljesitett"})
                 if (s.contains(w)) { sets.add(new Set(1, weight)); break; }
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);

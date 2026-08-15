@@ -1349,4 +1349,28 @@ public class StrengthParseTest {
         assertEquals(0, Activities.parse("rest-pause tricepsznyújtás "
                 + "15+5+5").plans.size());
     }
+    @Test public void aCompletedHeavySingleIsLogged() {
+        // A „megcsináltam a 100 kilós fekvenyomást" teljesített egyes –
+        // eddig üresen jött vissza, ahogy a „kihúztam 100 kilót" is.
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("megcsináltam a 100 kilós fekvenyomást");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(100, it.get(0).topWeight(), 0.001);
+        it = StrengthParse.parse("kihúztam 100 kilót a földről");
+        assertEquals("Felhúzás", it.get(0).name);
+        assertEquals(100, it.get(0).topWeight(), 0.001);
+        // A „kihúztam a hetet" nem felhúzás.
+        assertTrue(StrengthParse.parse("kihúztam a hetet valahogy").isEmpty());
+    }
+
+    @Test public void theSingleGTypoStillSquats() {
+        // Az egy g-s „gugolás" gyakori elírás – eddig semmi nem lett belőle.
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("gugolás 3x8 a rúdon 60 kilóval");
+        assertEquals("Guggolás", it.get(0).name);
+        assertEquals(60, it.get(0).topWeight(), 0.001);
+        assertEquals(3, it.get(0).sets.size());
+    }
+
 }
