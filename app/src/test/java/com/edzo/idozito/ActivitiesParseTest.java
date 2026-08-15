@@ -3030,6 +3030,22 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A mért tagmondat kimenti a szokás-mondatot.
+     *
+     * A „botokkal járok, nordic walking 3 km" második fele kimondott távú,
+     * megtörtént túra – eddig a „járok" szokás-szava az egészet elvitte.
+     * A gyakoriság („kondiba járok, heti 3x") szokás marad.
+     */
+    @Test public void aMeasuredClauseRescuesTheHabitSentence() {
+        Activities.Parsed p = Activities.parse("botokkal járok, nordic "
+                + "walking 3 km");
+        assertEquals(1, p.plans.size());
+        assertEquals(3.0, p.plans.get(0).km, 0.001);
+        assertEquals(0, Activities.parse("kondiba járok, heti 3x")
+                .plans.size());
+    }
+
+    /**
      * A lejátszott meccs edzés – a tévén nézett nem.
      */
     @Test public void aPlayedMatchIsAWorkout() {

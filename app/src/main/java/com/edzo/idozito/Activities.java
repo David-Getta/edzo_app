@@ -2496,6 +2496,13 @@ public final class Activities {
             // terv; a puszta „úszni járok" marad az.
             if (s.matches(".*(?<![a-z])(ma|tegnap|most|delelott|delutan|"
                     + "este|reggel)(?![a-z])[^,;.]*\\d.*")) break;
+            // A MÉRT tagmondat is kimenti: a „botokkal járok, nordic
+            // walking 3 km" második fele kimondott távú, megtörtént túra –
+            // eddig a „járok" szokás-szava az egészet elvitte. A gyakoriság
+            // száma („heti 3x járok") nem esik ide: az a szokás tagmondatában
+            // áll, nem vessző után.
+            if (s.matches(".*[,;][^,;]*\\d[^,;]*"
+                    + "(?<![a-z])(km|perc|lepes|ora|m)(?![a-z]).*")) break;
             int p = s.indexOf(w);
             while (p >= 0) {
                 int e = p + w.length();
