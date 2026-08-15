@@ -2465,6 +2465,12 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A KÓSTOLÁS egy falat, nem teljes adag: a „csak megkóstoltam a
+        // sütit" száz gramm sütemény lett, a „belekóstoltam a levesbe"
+        // négy deci leves.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:csak\\s+)?"
+                + "(?:meg|bele)k[oó]stol\\p{L}*\\s+(?:az?\\s+|egy\\s+)?",
+                "egy falat ");
         // A NAAN KENYÉR egyetlen pékáru: a „curry naan kenyérrel" naanja
         // mellé eddig egy szelet kenyér is került.
         query = query.replaceAll("(?iu)(naan|pita)\\s+keny[eé]r\\p{L}*", "$1");
@@ -3521,6 +3527,11 @@ public final class Foods {
                 // „ettem" ige nélkül a prep csak előkészület.
                 "meal prep", "mealprep", "elore megfoz", "elore fozt",
                 "elore elkeszit", "bekeszitettem", "adagokra osztottam",
+                // A HÉTRE főzött fazék étel is előkészület: a „főztem egy
+                // nagy fazék gulyást a hétre" nem mai adag. A SÜTŐBEN sülő
+                // étel ugyanígy – a „megsült a kenyerem" még nem falat.
+                "a hetre", "egesz hetre", "tobb napra", "napokra",
+                "megsult", "most sul", "sul a sutoben",
                 // Feltételes mód: a „rendelnék egy pizzát" nem rendelés.
                 "rendelnek", "sutnek", "foznek", "keszitenek", "ennek egy"})
             if (s.contains(w)) { intent = true; break; }

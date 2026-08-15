@@ -1072,4 +1072,22 @@ public class FoodsParseTest {
         assertEquals(2, hits("marhahús rizzsel").size());
     }
 
+    @Test public void aTasteIsABiteNotAFullPortion() {
+        // A „csak megkóstoltam a sütit" száz gramm sütemény volt, a
+        // „belekóstoltam a levesbe" négy deci leves – a kóstolás egy falat.
+        assertEquals(15, hits("csak megkóstoltam a sütit").get(0).grams, 0.5);
+        assertEquals(15, hits("belekóstoltam a levesbe").get(0).grams, 0.5);
+    }
+
+    @Test public void cookingForTheWeekIsNotTodaysMeal() {
+        // A „főztem egy nagy fazék gulyást a hétre" előkészület, a
+        // „megsült a kenyerem" még nem falat. Az evés igéje viszont felment.
+        assertTrue(hits("főztem egy nagy fazék gulyást a hétre").isEmpty());
+        assertTrue(hits("megsült a kenyerem a sütőben").isEmpty());
+        assertEquals("Gulyásleves",
+                hits("főztem gulyást és ettem is egy tányérral").get(0).food.name);
+        assertEquals("Csirkemell (sült/grill)",
+                hits("sütőben sült csirkét ettem rizzsel").get(0).food.name);
+    }
+
 }
