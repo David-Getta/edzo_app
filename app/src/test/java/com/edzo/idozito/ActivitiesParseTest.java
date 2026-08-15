@@ -3030,6 +3030,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az akupunktúra nem túra, a vinyasa viszont jóga.
+     *
+     * Az „akupunktúra kezelés a hátamra" kilencven perces GYALOGTÚRÁT írt
+     * a naplóba – a szó közepén ült a túra. A jóga-irányzatok neve
+     * (vinyasa, napüdvözlet) és a fascia-lazítás viszont eddig üresen jött
+     * vissza.
+     */
+    @Test public void acupunctureIsNotAHike() {
+        assertEquals(0, Activities.parse("akupunktúra kezelés a "
+                + "hátamra").plans.size());
+        assertEquals("joga", Activities.parse("vinyasa flow 60 perc a "
+                + "stúdióban").plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("napüdvözlet sorozat reggel, "
+                + "12 ismétlés").plans.get(0).kind.id);
+    }
+
+    /**
      * A mért tagmondat kimenti a szokás-mondatot.
      *
      * A „botokkal járok, nordic walking 3 km" második fele kimondott távú,

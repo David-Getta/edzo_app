@@ -221,6 +221,10 @@ public final class Activities {
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
+                    // A jóga-irányzatok neve is jóga: a „vinyasa flow 60
+                    // perc" és a „napüdvözlet sorozat" eddig üresen jött
+                    // vissza. A fascia-lazítás a henger rokona.
+                    "vinyasa", "napudvozlet", "fascia",
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
                     "legzo gyakorlat",
@@ -744,6 +748,10 @@ public final class Activities {
     private static final String[] NOT_SPORT = {
             "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
+            // Az akuponk-TÚRA sem túra: az „akupunktúra kezelés a hátamra"
+            // kilencven perces gyalogtúrát írt a naplóba. A manikűr-pedikűr
+            // rokona, a „punktura" tő az elgépeléseket is fedi.
+            "akupunktur", "punktur",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
             // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés
