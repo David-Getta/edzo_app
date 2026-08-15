@@ -805,4 +805,24 @@ public class FoodsParseTest {
                 .get(0).food.name);
         assertEquals("Gyros", hits("ettem egy gírost").get(0).food.name);
     }
+    /**
+     * A falat és a harapás a legkisebb mérték, nem teljes adag.
+     *
+     * Az „egy falat csoki" huszonöt grammnak, az „egy harapás hamburger"
+     * egy egész burgernek (250 g) számított – pont annál, aki azt írja le,
+     * hogy alig evett.
+     */
+    @Test public void aBiteIsABiteNotAWholePortion() {
+        assertEquals(15.0, hits("egy falat csokit ettem csak")
+                .get(0).grams, 0.001);
+        assertEquals(15.0, hits("egy harapás hamburgert kaptam")
+                .get(0).grams, 0.001);
+        assertEquals(30.0, hits("két falat sajttorta").get(0).grams, 0.001);
+        // A falatozó vendéglő: a gyros étel marad, a falat-mérték nem
+        // ragad rá (a gramm 0 = a hívó tölti a tipikus adaggal).
+        assertEquals("Gyros", hits("falatozóban ebédeltem, gyros tál")
+                .get(0).food.name);
+        assertEquals(0.0, hits("falatozóban ebédeltem, gyros tál")
+                .get(0).grams, 0.001);
+    }
 }

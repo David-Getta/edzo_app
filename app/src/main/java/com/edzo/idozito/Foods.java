@@ -1812,7 +1812,12 @@ public final class Foods {
              // némán elveszett.
              "kocka",
              // A kulacs az edzőterem palackja.
-             "kulacs", "kulaccsal"};
+             "kulacs", "kulaccsal",
+             // A falat és a harapás a legkisebb magyar mérték: az „egy
+             // falat csoki" eddig teljes adagnak (25 g) számított, az „egy
+             // harapás hamburger" egy egész burgernek.
+             "falat", "falatot", "falatnyi", "harapas", "harapast",
+             "harapasnyi"};
 
     /**
      * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag
@@ -2732,6 +2737,9 @@ public final class Foods {
         // húsz kocka van. Adagnyinak (25 g) számolni ötszörös túlbecslés
         // lenne épp annál, aki büszkén írja be, hogy CSAK egy kockát evett.
         if (unit.equals("kocka") && f.name.equals("Csokoládé")) return 5;
+        // A falat és a harapás ételtől függetlenül pár deka: aki ennyit
+        // ír, az pont azt mondja, hogy alig evett belőle.
+        if (unit.startsWith("falat") || unit.startsWith("harapas")) return 15;
         if (unit.equals("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
         // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
         // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a
