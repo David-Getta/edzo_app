@@ -763,6 +763,9 @@ public final class Activities {
             // kilencven perces gyalogtúrát írt a naplóba. A manikűr-pedikűr
             // rokona, a „punktura" tő az elgépeléseket is fedi.
             "akupunktur", "punktur",
+            // A BABYMEDENCE nem úszás: a „gyerekkel játszottunk a
+            // babymedencében" negyvenöt perc úszást írt a szülő naplójába.
+            "babymedence", "gyerekmedence", "pancsolo",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
             // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés
@@ -2787,6 +2790,10 @@ public final class Activities {
                 // Az ELFELEJTETT edzés meg sem történt, a ZÁRVA tartó terem
                 // pedig épp az oka annak, hogy nem lett belőle semmi.
                 "elfelejtettem", "elfelejtettuk", "zarva", "be volt zar",
+                // Az ELROMLOTT gép nem edzés: az „elromlott a futópad,
+                // átültem a biciklire" futópadja negyvenöt perc futást írt
+                // be – egy gépről, amin senki nem futott.
+                "elromlott", "meghibasodott", "tonkrement",
                 // A „MEHET a kemény edzés" engedély a jövőre, nem napló: a
                 // „whoop recovery 85%, mehet a kemény edzés" negyvenöt
                 // perces bejegyzést kapott – egy el sem kezdett napról. Csak
@@ -2860,6 +2867,10 @@ public final class Activities {
                         for (String c : LINKERS) {
                             int k = s.indexOf(c, p);
                             if (k >= 0 && k < e) e = k;
+                            // A „de" HÁTRAFELÉ nem határ: az „uszodába
+                            // mentem de zárva volt" zárva-ja az egész
+                            // odautat tagadja – a de előtti fél nem élhet.
+                            if (c.equals(" de ")) continue;
                             k = s.lastIndexOf(c, p);
                             if (k >= 0 && k >= a) a = k + c.length();
                         }
@@ -3377,6 +3388,11 @@ public final class Activities {
                 if (ue < s.length() && s.charAt(ue) == '/' ) continue;
                 if (s.startsWith(" per ora", ue) || s.startsWith("h", ue)
                         && unit.equals("km")) continue;
+                // A „KM-NÉL" helymegjelölés, nem megtett táv: a „leállt az
+                // óra 3 km-nél, összesen kb 5 km lett" hármasa egy pont az
+                // úton – mégis külön háromkilométeres futás lett belőle.
+                if (s.startsWith("-nel", ue) || s.startsWith(" nel", ue)
+                        || s.startsWith("nel", ue)) continue;
                 // A puszta „m" ne egy szó ELEJE legyen („3 meccs” nem 3 méter).
                 if (unit.equals("m") && p + 1 < s.length()
                         && Character.isLetter(s.charAt(p + 1))) continue;

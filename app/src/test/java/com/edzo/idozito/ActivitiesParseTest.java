@@ -3030,6 +3030,29 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A meghiúsult terv nem edzés – a helyette végzett viszont az.
+     *
+     * Az „uszodába mentem de zárva volt, helyette 5 km futás" úszást IS
+     * írt (a „de" előtti fél élt túl), az „elromlott a futópad, átültem a
+     * biciklire" futópadja futást, a babymedencés játék úszást, a „3
+     * km-nél leállt az óra" pedig külön háromkilométeres futást.
+     */
+    @Test public void aFoiledPlanIsNotAWorkout() {
+        Activities.Parsed p = Activities.parse("uszodába mentem de zárva "
+                + "volt, helyette 5 km futás");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("elromlott a futópad, "
+                + "átültem a biciklire 30 percre").plans.get(0).kind.id);
+        assertEquals(0, Activities.parse("az úszásoktatás elmaradt, a "
+                + "gyerekkel játszottunk a babymedencében").plans.size());
+        Activities.Parsed q = Activities.parse("leállt az óra 3 km-nél, "
+                + "összesen kb 5 km lett");
+        assertEquals(1, q.plans.size());
+        assertEquals(5.0, q.plans.get(0).km, 0.001);
+    }
+
+    /**
      * A jelzős szám nem védi a panaszt, a terem nem másol percet.
      *
      * Az „a 42-es cipőm szorít futásnál" negyvenöt perces futást írt be –
