@@ -971,4 +971,18 @@ public class FoodsParseTest {
         assertEquals("Cukor", hits("kockacukrot tettem a kávéba")
                 .get(0).food.name);
     }
+    /**
+     * Az egész pizza két adag, a bográcsos gulyás.
+     *
+     * Az „az egész pizzát megettem egyedül" egyetlen szokásos adagként
+     * (300 g) ment be; a „túlettem magam a bográcsosból" üresen jött
+     * vissza. A másnak főzött vacsora továbbra sem étkezés.
+     */
+    @Test public void eatingTheWholeThingDoublesThePortion() {
+        assertEquals(600.0, hits("az egész pizzát megettem egyedül")
+                .get(0).grams, 0.001);
+        assertEquals("Gulyásleves", hits("túlettem magam a bográcsosból")
+                .get(0).food.name);
+        assertTrue(hits("az egész családnak főztem vacsorát").isEmpty());
+    }
 }

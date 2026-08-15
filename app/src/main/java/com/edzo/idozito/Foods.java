@@ -143,7 +143,9 @@ public final class Foods {
         // A „gíros" gyakori elgépelés (a görög ejtés szerint írva).
         new Food("Gyros", 220, 15, 350, "gyros", "giros", "souvlaki"),
         new Food("Lángos", 320, 7, 200, "langos"),
-        new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves", "gulyas"),
+        // A bográcsos a szabadtűzi gulyás neve.
+        new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves",
+                "gulyas", "bogracsos", "bogracsgulyas"),
         new Food("Pörkölt", 180, 15, 300, "porkolt"),
         // A „sóska" magában is a főzeléket jelenti; a „kelkáposzta főzelék"
         // teljes alakja szótő, különben káposzta + főzelék kettőnek számolna.
@@ -2441,6 +2443,13 @@ public final class Foods {
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
+        // AZ EGÉSZ megevése két adag: „az egész pizzát megettem egyedül"
+        // egyetlen szokásos adagként (300 g) ment be – az egész pizza a
+        // duplája. Csak evés-ige mellett él.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(meg)?ettem az eg[eé]sz\\s+",
+                "$1ettem 2 adag ");
+        query = query.replaceAll("(?iu)(?<!\\p{L})az eg[eé]sz\\s+"
+                + "(\\p{L}{3,15}t)\\s+((?:meg)?ettem|befaltam)", "2 adag $1 $2");
         // A „FÉL TÁBLA" az étel UTÁN állva elveszett: a „csoki fél tábla"
         // nulla grammos bejegyzés lett (a fél a tört-ágon kiesett). A fél
         // tábla mindig ötven gramm – grammban egyértelmű.
