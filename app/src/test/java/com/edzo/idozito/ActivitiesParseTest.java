@@ -3030,6 +3030,16 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A lejátszott meccs edzés – a tévén nézett nem.
+     */
+    @Test public void aPlayedMatchIsAWorkout() {
+        assertEquals(1, Activities.parse("a meccset megnyertük 3-1-re, "
+                + "végig játszottam").plans.size());
+        assertEquals(0, Activities.parse("meccset néztem a tévében "
+                + "este").plans.size());
+    }
+
+    /**
      * A fél-fél óra az oda-vissza út két fele, az ugrálás pedig mozgás.
      *
      * A „sétáltunk a piacig és vissza, fél-fél óra" hatvan perc együtt –

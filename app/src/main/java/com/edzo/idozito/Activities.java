@@ -288,6 +288,12 @@ public final class Activities {
                     // 20 percet" az ugrálóvárban is edzés. Csak a saját,
                     // múlt idejű alak – a „gyerek ugrált" nem az enyém.
                     "ugraltam", "ugraltunk",
+                    // A LEJÁTSZOTT meccs is edzés: az „a meccset megnyertük
+                    // 3-1-re, végig játszottam" eddig üresen jött vissza. A
+                    // puszta „meccs" nem lehet tő – a tévén NÉZETT meccs nem
+                    // mozgás –, ezért csak a játék igéjével együtt él.
+                    "meccset jatszottam", "meccsen jatszottam",
+                    "vegig jatszottam", "vegigjatszottam", "meccset nyertunk",
                     // A puszta FITNESZ is edzés: az „aqua fitnesz 45 perc"
                     // eddig üresen jött vissza. Az EDZŐVEL töltött óra csak a
                     // kimondott igével tő – a „beszéltem az edzővel" nem az.
