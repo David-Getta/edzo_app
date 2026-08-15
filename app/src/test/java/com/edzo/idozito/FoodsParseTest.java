@@ -751,4 +751,21 @@ public class FoodsParseTest {
         assertEquals(1, Foods.parse(all, "gyümölcsturmix banánból "
                 + "és eperből").size());
     }
+
+    /**
+     * A csoki kockája a törésrács egy négyzete, nem egy adag.
+     *
+     * A „2 kocka csoki" eddig ugyanannyi volt, mint az egy kocka: a kocka
+     * nem volt mérőszó, a darabszám elveszett, és a tipikus adag (25 g)
+     * ment be. Egy kocka viszont kb. öt gramm – ötszörös túlbecslés annál,
+     * aki büszkén naplózza, hogy csak egy kockát evett.
+     */
+    @Test public void aSquareOfChocolateIsFiveGrams() {
+        assertEquals(5.0, hits("ettem egy kocka csokit").get(0).grams, 0.001);
+        assertEquals(10.0, hits("ettem 2 kocka csokit").get(0).grams, 0.001);
+        // Más ételnél a kocka darabszó marad: egy kocka sajt egy adag.
+        assertEquals(30.0, hits("ettem egy kocka sajtot").get(0).grams, 0.001);
+        // A kockacukor és a leveskocka szava érintetlen.
+        assertEquals("Cukor", hits("kockacukor a kávéba").get(0).food.name);
+    }
 }

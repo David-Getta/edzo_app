@@ -1793,6 +1793,10 @@ public final class Foods {
              "karej", "karéj", "szal", "szál",
              // A csokoládé SORban törik: a „két sor csoki" két sor, nem egy.
              "sor",
+             // …és KOCKÁRA is: a „2 kocka csoki" eddig ugyanannyi volt, mint
+             // az egy kocka, mert a kocka nem volt mérőszó, és a darabszám
+             // némán elveszett.
+             "kocka",
              // A kulacs az edzőterem palackja.
              "kulacs", "kulaccsal"};
 
@@ -2710,6 +2714,10 @@ public final class Foods {
     private static double pieceFor(Food f, String unit) {
         if (waterMl(f, unit) > 0) return waterMl(f, unit);
         if (unit.equals("tabla")) return 100;                // egy tábla csoki
+        // A kocka a tábla törésrácsa: egy százgrammos táblában nagyjából
+        // húsz kocka van. Adagnyinak (25 g) számolni ötszörös túlbecslés
+        // lenne épp annál, aki büszkén írja be, hogy CSAK egy kockát evett.
+        if (unit.equals("kocka") && f.name.equals("Csokoládé")) return 5;
         if (unit.equals("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
         // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
         // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a
