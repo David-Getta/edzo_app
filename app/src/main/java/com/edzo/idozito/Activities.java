@@ -96,7 +96,10 @@ public final class Activities {
                     "vegyesuszas",
                     // A felszíni és a felszín alatti vizes sportok is ide:
                     // a snorkeling és a kitesurf ugyanabban a közegben zajlik.
-                    "snorkel", "kitesurf", "kiteszorf"),
+                    "snorkel", "kitesurf", "kiteszorf",
+                    // A sportórák nyílt vízi úszás-módjának neve: a
+                    // „Garmin: Open Water 1,2 km" eddig futásnak számított.
+                    "open water", "openwater", "nyilt vizi", "nyiltvizi"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
                     // A GÖRGŐN (edzőpadon) tekerés kerékpár: a „175 wattos

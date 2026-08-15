@@ -3871,4 +3871,16 @@ public class ActivitiesParseTest {
         assertEquals(120, Activities.parse("sokat mozogtam ma, kb 2 órát")
                 .plans.get(0).minutes);
     }
+    /**
+     * A sportórák nyílt vízi módja úszás.
+     *
+     * A „Garmin: Open Water 1,2 km 28:45" futásként került be – a táv
+     * gazdátlan volt, mert az open water nem volt úszás-stem.
+     */
+    @Test public void openWaterIsSwimming() {
+        assertEquals("uszas", Activities.parse("Garmin: Open Water 1,2 km "
+                + "28:45").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("nyílt vízi úszás a "
+                + "Balatonban 2 km").plans.get(0).kind.id);
+    }
 }

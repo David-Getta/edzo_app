@@ -312,4 +312,17 @@ public class SleepTest {
         assertEquals(8.0, Sleep.parse("8 órás alvás után frissen keltem"), 0.01);
         assertEquals(-1.0, Sleep.parse("másfél órás délutáni alvás"), 0.01);
     }
+    /**
+     * Az óra+perc alvás a címke mellett is pontos.
+     *
+     * Az „összefoglaló: 7 óra 12 perc alvás" hét egész kettő tized – az
+     * össze-tő „összesen"-szabálya elkapta a hetest, és a tizenkét perc
+     * elveszett. Az igazi összesen-mondat marad.
+     */
+    @Test public void aSummaryLabelDoesNotEatTheMinutes() {
+        assertEquals(7.2, Sleep.parse("összefoglaló: 7 óra 12 perc alvás, "
+                + "62 nyugalmi"), 0.01);
+        assertEquals(5.0, Sleep.parse("éjszaka 3x felébredtem, összesen "
+                + "talán 5 órát aludtam"), 0.01);
+    }
 }

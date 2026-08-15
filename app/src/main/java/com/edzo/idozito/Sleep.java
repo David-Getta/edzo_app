@@ -121,17 +121,24 @@ public final class Sleep {
             // hossz a HARMADIK tagmondatban áll, az ige mellől pedig
             // szándékosan nem vesszük el a számot (az az ébredések száma
             // lenne). Az „összesen" viszont félreérthetetlen.
-            java.util.regex.Matcher tm = java.util.regex.Pattern
-                    .compile("ossze\\w*[^0-9]{0,15}?(\\d{1,2}([.,]\\d)?)\\s?ora").matcher(s);
-            if (tm.find()) {
-                double v = Double.parseDouble(tm.group(1).replace(',', '.'));
-                if (v >= MIN_H && v <= MAX_H) return v;
-            }
+            // Az óra+perc alak ELŐBB fut, mint az „összesen"-szabály: az
+            // „összefoglaló: 7 óra 12 perc alvás" hét egész kettő tized –
+            // az össze-tő korábban elkapta a hetest, és a tizenkét perc
+            // elveszett.
             java.util.regex.Matcher hm = java.util.regex.Pattern
                     .compile("(\\d{1,2})\\s?ora\\w*\\s?(\\d{1,2})\\s?perc").matcher(s);
             if (hm.find()) {
                 double v = Integer.parseInt(hm.group(1)) + Integer.parseInt(hm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Az ÖSSZESEN tő szándékosan szűk: az „összefoglaló" nem
+            // összegzés-szó, csak a cím – ossze-előtaggal minden címke
+            // elvitte volna az első óra-számot.
+            java.util.regex.Matcher tm = java.util.regex.Pattern
+                    .compile("osszes\\w*[^0-9]{0,15}?(\\d{1,2}([.,]\\d)?)\\s?ora").matcher(s);
+            if (tm.find()) {
+                double v = Double.parseDouble(tm.group(1).replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return v;
             }
             // „hét és fél órát aludtam": a számnév-fordítás után „7 es 0,5
             // orat", ahol a fél KÜLÖN számként áll. A régi összeadás csak az
