@@ -4248,4 +4248,19 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("munka 30 perc kondi")
                 .plans.get(0).minutes);
     }
+    /**
+     * A buli szlengje is tánc.
+     *
+     * A „lagziban ropta mindenki, én is vagy 2 órát" és a „koncerten
+     * pattogtam 2 órát" üresen jött vissza. A ropi rágcsa marad, a
+     * serpenyőben pattogó kukorica sem edzés.
+     */
+    @Test public void partySlangCountsAsDancing() {
+        assertEquals("tanc", Activities.parse("koncerten pattogtam "
+                + "2 órát").plans.get(0).kind.id);
+        assertEquals(120, Activities.parse("lagziban ropta mindenki, "
+                + "én is vagy 2 órát").plans.get(0).minutes);
+        assertEquals(0, Activities.parse("a kukorica pattogott a "
+                + "serpenyőben").plans.size());
+    }
 }

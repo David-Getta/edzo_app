@@ -275,7 +275,11 @@ public final class Activities {
                     "barre", "cheerlead", "pompom",
                     // A táncos videojátékok is tánc: a Beat Saber és a
                     // Just Dance percei eddig elvesztek.
-                    "beat saber", "beatsaber", "just dance", "justdance"),
+                    "beat saber", "beatsaber", "just dance", "justdance",
+                    // A buli szlengje is tánc: a „lagziban ropta mindenki,
+                    // én is vagy 2 órát" és a „koncerten pattogtam 2 órát"
+                    // üresen jött vissza.
+                    "ropt", "ropni", "pattogtam", "pattogtunk"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
