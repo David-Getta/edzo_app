@@ -536,6 +536,24 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "szervizben volt az autó").isEmpty());
     }
 
+    /**
+     * A recept szerint készült étel megevett étel, az alapanyag a tálé.
+     *
+     * A „töltött paprika nagymama receptje szerint" vacsora – a recept
+     * szava eddig receptkeresésnek nézte. A „sushi szett, lazacos" lazaca
+     * a szettben van, a lecsó paprikája a lábosban.
+     */
+    @Test public void aRecipeDishIsEatenAndItsBaseIsIncluded() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Töltött paprika", Foods.parse(all, "töltött paprika "
+                + "nagymama receptje szerint").get(0).food.name);
+        assertTrue(Foods.parse(all, "receptet keresek zabkásához").isEmpty());
+        assertEquals(1, Foods.parse(all, "sushi szett 8 darabos, "
+                + "lazacos").size());
+        assertEquals(1, Foods.parse(all, "házi lecsó sok paprikával, "
+                + "2 tányér").size());
+    }
+
     /** A „steady state" közepén nem ital a tea. */
     @Test public void steadyStateIsNotACupOfTea() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

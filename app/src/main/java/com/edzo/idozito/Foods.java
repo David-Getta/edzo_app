@@ -3094,6 +3094,10 @@ public final class Foods {
             {"Sonka", "Pizza", "Szendvics", "Gyros", "Kebab"},
             {"Szalámi", "Pizza", "Szendvics"},
             {"Gomba", "Pizza"},
+            // A lazacos sushi lazaca a szettben van, a lecsó paprikája a
+            // lábosban – egyik sem külön adag a tál mellé.
+            {"Lazac", "Sushi"},
+            {"Paprika", "Lecsó"},
             // A wok adagja a zöldséget is tartalmazza: a „zöldséges wok" egy
             // wok, nem wok PLUSZ egy adag párolt zöldség.
             {"Zöldség (vegyes / párolt)", "Wok (zöldséges-húsos)"},
@@ -3117,7 +3121,14 @@ public final class Foods {
             boolean dish = dishAt != null;
             // Kötőszóval FELSOROLVA két külön tétel: a „csoki és müzliszelet"
             // csoki PLUSZ szelet, a „csokis müzliszelet" viszont egy szelet.
-            if (base != null && dish && listedSeparately(q, base, dishAt)) continue;
+            // A MELLÉKNÉVKÉPZŐS alak viszont sosem felsorolás: a „sushi szett,
+            // lazacOS" lazaca a szettben van, hiába áll vessző előtte.
+            boolean adjective = base != null
+                    && (q.startsWith("os", base.pos + base.len)
+                        || q.startsWith("as", base.pos + base.len)
+                        || q.startsWith("es", base.pos + base.len));
+            if (base != null && dish && !adjective
+                    && listedSeparately(q, base, dishAt)) continue;
             if (base != null && dish) out.remove(base);
         }
         return out;
@@ -3165,6 +3176,10 @@ public final class Foods {
     public static boolean looksUneaten(String query) {
         String s = norm(query == null ? "" : query);
         if (s.isEmpty()) return false;
+        // A „RECEPTJE SZERINT" elkészült étel, nem receptkeresés: a
+        // „töltött paprika nagymama receptje szerint" megevett vacsora –
+        // a recept szava eddig az egészet szándéknak nézte.
+        s = s.replaceAll("recept\\w*\\s+szerint", "");
         boolean intent = false;
         for (String w : new String[]{
                 // Jövő és szándék.
