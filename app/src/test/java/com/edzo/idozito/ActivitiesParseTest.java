@@ -4588,4 +4588,14 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    @Test public void gymShorthandMinutesAreNotMetres() {
+        // A „cardio 20m + súlyok 40m" húsz és negyven PERC – méterként
+        // negyven méteres futás lett belőle. Az úszás métere marad.
+        Activities.Parsed p = Activities.parse("cardio 20m + súlyok 40m");
+        assertEquals(2, p.plans.size());
+        assertEquals(20, p.plans.get(0).minutes);
+        assertEquals(40, p.plans.get(1).minutes);
+        assertEquals(0.4, Activities.parse("úsztam 400m-t").plans.get(0).km, 0.001);
+    }
+
 }

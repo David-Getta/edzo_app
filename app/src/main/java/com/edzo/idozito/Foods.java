@@ -844,8 +844,8 @@ public final class Foods {
             // A VÍZVISSZATARTÁS a mérleg ingadozása, nem megivott pohár víz:
             // a „vízvisszatartás miatt 84 kg" mellé ital került a naplóba.
             "vizvisszatart", "vizmegtart", "vizet tart",
-            // Az angol HALF (marathon) nem hal-étel.
-            "half",
+            // Az angol HALF (marathon) nem hal-étel, a CARDIO vége nem dió.
+            "half", "cardio",
 
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
@@ -1149,6 +1149,7 @@ public final class Foods {
             // A TÁBOR belsejében a BOR: az „edzőtábor: napi 2 edzés" és a
             // „sítábor egész héten" mellé eddig másfél deci bor került.
             "tabor",
+
             // A BODYCOMBAT belsejében a COMB: az óra neve mellé egy adag
             // csirkecomb került a naplóba.
             "combat"};

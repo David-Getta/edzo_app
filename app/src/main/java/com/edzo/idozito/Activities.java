@@ -189,6 +189,8 @@ public final class Activities {
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
                     // Az erőnléti a csapatsportok kiegészítő edzése.
                     "eronleti",
+                    // A SÚLYOK a súlyzók termi rövidítése („súlyok 40 perc").
+                    "sulyok",
                     // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
                     // „terem" (kondi) tövet – a hosszabb tő nyer, egy találat.
                     "fitneszterem", "fitnessterem",
@@ -391,6 +393,8 @@ public final class Activities {
                     // volt. (Az étel-oldalon ugyanez a szó a diót hozta.)
                     // A puszta „tekez" nem elég: az érTEKEZletben is benne van.
                     "kardio", "bowling", "tekepalya", "tekezes", "tekeztem", "tekezni",
+                    // Az angolosan írt „cardio" ugyanaz a szó.
+                    "cardio",
                     // Az UGRÁLÁS első személyben mozgás: az „ugráltam vagy
                     // 20 percet" az ugrálóvárban is edzés. Csak a saját,
                     // múlt idejű alak – a „gyerek ugrált" nem az enyém.
@@ -1145,6 +1149,14 @@ public final class Activities {
                 || s.contains("pezsgofurdo"))
             s = s.replaceAll("(?<![a-z])(?:medence|uszoda|uszomedence)"
                     + "\\w*", "");
+        // A TERMI RÖVIDÍTÉS perce nem méter: a „cardio 20m + súlyok 40m"
+        // húsz és negyven PERC – méterként negyven méteres futás lett
+        // belőle. Csak termi szó mellett és úszás nélkül merjük.
+        if ((s.contains("kardio") || s.contains("cardio")
+                || s.contains("sulyok") || s.contains("gym"))
+                && !s.contains("usz"))
+            s = s.replaceAll("(?<![a-z\\d,.])(\\d{1,3})\\s?m(?![a-z\\d])",
+                    "$1 perc");
         // A C25K a kezdő futóprogram neve, nem 25 kilométer: a „c25k week
         // 3 day 2 kész" huszonöt kilométeres futást írt be.
         s = s.replaceAll("(?<![a-z\\d])c25k(?![a-z])", "futoedzes");

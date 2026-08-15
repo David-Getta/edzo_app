@@ -1143,4 +1143,11 @@ public class FoodsParseTest {
                 hits("ettem egy csigát a pékből").get(0).food.name);
     }
 
+    @Test public void theEndOfCardioIsNotAWalnut() {
+        // A „cardio 20m + súlyok 40m" mellé harminc gramm dió került – a
+        // szó vége nem dió. Az igazi dió marad.
+        assertTrue(hits("cardio 20m + súlyok 40m").isEmpty());
+        assertEquals("Dió", hits("ettem 30 g diót").get(0).food.name);
+    }
+
 }
