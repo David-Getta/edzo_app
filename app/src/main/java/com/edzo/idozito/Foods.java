@@ -469,6 +469,11 @@ public final class Foods {
         // 200 g almának): a gyümölcs-összetételek teljes alakja szótő.
         new Food("Gyümölcslé", 45, 0.5, 250, "gyumolcsle", "juice", "dzsussz", "dzsusz",
                 "narancsle", "almale", "paradicsomle", "oszibarackle", "barackle",
+                // A zöldséglé a léböjtök itala: a „zöldséglé 3x" eddig
+                // kétszáz gramm párolt zöldségnek számított. A „zellerlé"
+                // szándékosan nincs itt: a zellerLEVES belsejében is ott a
+                // töve, és az ebéd levese pohár lévé vált volna.
+                "zoldsegle", "zoldseg le",
                 "repale", "rostos le", "rostos udito", "cappy", "hohes c",
                 // A gyümölcs NEVE plusz a „lé" külön étel: az „egy pohár
                 // szőlőlé" eddig a szőlő szótövére esett, és öt gramm SZŐLŐ

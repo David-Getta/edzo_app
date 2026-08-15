@@ -867,4 +867,17 @@ public class FoodsParseTest {
         assertEquals("Poke bowl", hits("buddha bowl falafellel")
                 .get(0).food.name);
     }
+    /**
+     * A zöldséglé ital, a zellerleves étel.
+     *
+     * A léböjtös „zöldséglé 3x" kétszáz gramm párolt zöldségnek számított.
+     * A zellerlé szándékosan nem stem: a zellerLEVES belsejében is ott
+     * lenne a töve, és az ebéd levese pohár lévé válna.
+     */
+    @Test public void vegetableJuiceIsAJuiceNotSteamedVeg() {
+        assertEquals("Gyümölcslé", hits("léböjt 2. nap, zöldséglé 3x")
+                .get(0).food.name);
+        assertEquals("Leves (átlag)", hits("zellerlevest ettem ebédre")
+                .get(0).food.name);
+    }
 }
