@@ -4387,4 +4387,35 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("boxoltam 30 percet")
                 .plans.get(0).minutes);
     }
+    @Test public void aSixPmClassIsNotAnEighteenHourWorkout() {
+        // „a 18 órás spinningen voltam" – a hatkor kezdődő óra, nem
+        // tizennyolc órányi tekerés.
+        Activities.Parsed p = Activities.parse("a 18 órás spinningen voltam");
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(60, p.plans.get(0).minutes);
+        p = Activities.parse("a 19 órás jógán voltam");
+        assertEquals(45, p.plans.get(0).minutes);
+        // Napszak-szóval a kis szám is kezdési idő.
+        p = Activities.parse("az este 8 órás edzésen voltam");
+        assertTrue(p.plans.get(0).minutes <= 90);
+        // A valódi hosszú túra órái viszont megmaradnak.
+        p = Activities.parse("10 órás túra volt a Magas-Tátrában");
+        assertEquals(600, p.plans.get(0).minutes);
+        p = Activities.parse("2 órás túrán voltam");
+        assertEquals(120, p.plans.get(0).minutes);
+    }
+
+    @Test public void theWorkShiftHoursDoNotBecomeTheRun() {
+        // „a 8 órás munkanap után futottam 5 km-t" – a futás fél óra,
+        // nem nyolc: a műszak hossza nem a mozgásé.
+        Activities.Parsed p =
+                Activities.parse("a 8 órás munkanap után futottam 5 km-t");
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(30, p.plans.get(0).minutes);
+        p = Activities.parse("8 órás alvás után futottam");
+        assertEquals(45, p.plans.get(0).minutes);
+        p = Activities.parse("12 órás műszak után sétáltam egy órát");
+        assertEquals(60, p.plans.get(0).minutes);
+    }
+
 }

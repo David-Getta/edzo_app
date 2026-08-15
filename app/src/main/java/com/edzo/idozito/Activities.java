@@ -1087,6 +1087,26 @@ public final class Activities {
         s = s.replaceAll("(?<![\\d,.])(\\d{1,2})-kor (edzes\\w*)", "$2 $1-kor");
         s = s.replaceAll("(?<![a-z])(reggel|este|delutan|delelott|hajnalban|"
                 + "hajnali) (\\d{1,2})[- ]?kor (edzes\\w*)", "$1 $3 $2-kor");
+        // A MUNKANAP órái nem edzésórák: a „8 órás munkanap után futottam
+        // 5 km-t" futása fél óra, mégis 480 perc lett belőle, mert a szám
+        // a műszakról ráragadt a mozgásra. A nem-mozgás főnév elől a
+        // hosszát elvesszük.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\s?oras (munkanap|muszak|"
+                + "bojt|meeting|ertekezlet|konferencia|eloadas|utazas|"
+                + "autozas|vonatozas|repules|vezetes|ules|uldogeles|"
+                + "alvas|szundi|pihenes)",
+                "$1");
+        // A 18 ÓRÁS SPINNING a hatkor kezdődő óra, nem tizennyolc órányi
+        // tekerés: 16 óránál hosszabb edzése senkinek sincs, ezért a
+        // 16–23 órás jelző mindig kezdési időpont. Órakor-alakra írjuk
+        // át, így az időpont is megmarad, és a hossz nem torzul.
+        s = s.replaceAll("(?<![\\d,.])(1[6-9]|2[0-3])\\s?oras(?:ra)?"
+                + "(?![a-z])", "$1 orakor");
+        // Napszak-szóval a kis szám is időpont: „az este 8 órás edzésen"
+        // a nyolckor kezdődőt mondja – este nincs nyolcórányi edzés.
+        s = s.replaceAll("(?<![a-z])(este|esti|reggel|reggeli|hajnali|"
+                + "delelott|delelotti)\\s?([4-9]|1[0-2])\\s?oras(?:ra)?"
+                + "(?![a-z])", "$1 $2 orakor");
         // Az INGÁZÁS oda-vissza útja egyetlen napi adag: a „biciklivel
         // mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig az
         // intervallum-olvasó vitte el, és huszonöt perc maradt belőle.
