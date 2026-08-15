@@ -790,4 +790,19 @@ public class FoodsParseTest {
         assertTrue(hits("felszakadt a vízhólyag a sarkamon").isEmpty());
         assertEquals(500.0, hits("vizet ittam, 5 dl").get(0).grams, 0.001);
     }
+    /**
+     * A hagymás jelző fűszerezés, nem külön adag hagyma.
+     *
+     * A „fokhagymás csirkemell" mellé eddig ötven gramm hagyma került.
+     * A hagyma főnévként marad étel, és a „gíros" elgépelés is gyros.
+     */
+    @Test public void aGarlickyAdjectiveIsNotAnOnionPortion() {
+        for (Foods.Hit h : hits("fokhagymás csirkemell 180g rizzsel"))
+            assertFalse(h.food.name.equals("Hagyma"));
+        for (Foods.Hit h : hits("lilahagymás rántotta"))
+            assertFalse(h.food.name.equals("Hagyma"));
+        assertEquals("Hagyma", hits("hagymát pirítottam a lecsóba")
+                .get(0).food.name);
+        assertEquals("Gyros", hits("ettem egy gírost").get(0).food.name);
+    }
 }

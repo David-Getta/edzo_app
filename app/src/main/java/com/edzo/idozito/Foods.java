@@ -138,7 +138,8 @@ public final class Foods {
                 // szokásos tálcára gondol.
                 "mekis menu", "mekis kaja", "mcdonalds", "mcdonald's", "meki",
                 "kfc kosar", "kfc menu", "burger king menu"),
-        new Food("Gyros", 220, 15, 350, "gyros", "souvlaki"),
+        // A „gíros" gyakori elgépelés (a görög ejtés szerint írva).
+        new Food("Gyros", 220, 15, 350, "gyros", "giros", "souvlaki"),
         new Food("Lángos", 320, 7, 200, "langos"),
         new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves", "gulyas"),
         new Food("Pörkölt", 180, 15, 300, "porkolt"),
@@ -1255,6 +1256,12 @@ public final class Foods {
             // ezért csak akkor takarjuk ki, ha nem az áll utána.
             if (!hide && tok.startsWith("zsirszegeny"))
                 hide = !sb.substring(j).trim().startsWith("tej");
+            // A HAGYMÁS jelző fűszerezés, nem külön adag hagyma: a
+            // „fokhagymás csirkemell" mellé eddig ötven gramm hagyma
+            // került. Pontos szóalak-egyezés kell: a „fokhagymaszósz"
+            // hosszabb szó, az marad szósz.
+            if (!hide && tok.matches("(?:fok|lila|uj|voros)?hagymas(?:an)?"))
+                hide = true;
             if (hide) for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
             i = j;
         }
