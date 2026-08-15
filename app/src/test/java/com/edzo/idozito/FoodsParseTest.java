@@ -1090,4 +1090,28 @@ public class FoodsParseTest {
                 hits("sütőben sült csirkét ettem rizzsel").get(0).food.name);
     }
 
+    @Test public void proteinContentDoesNotShrinkTheShake() {
+        // A „fehérjeturmix edzés után 30 g fehérjével" turmixa harminc
+        // grammos itallá zsugorodott – a tartalom nem az adag.
+        List<Foods.Hit> h = hits("fehérjeturmix edzés után 30 g fehérjével");
+        assertEquals("Protein turmix", h.get(0).food.name);
+        // A nulla gramm azt mondja: nincs kimondott adag, az alap (300 g)
+        // érvényes – eddig a harminc gramm tartalom kötött ide.
+        assertEquals(0, h.get(0).grams, 0.5);
+        assertEquals(300, h.get(0).food.portion, 0.5);
+        // A kimondott turmix-mennyiség viszont marad.
+        assertEquals(300, hits("300 g fehérjeturmixot ittam").get(0).grams, 0.5);
+    }
+
+    @Test public void theFoodBeforeInsteadOfWasNotEaten() {
+        // A „kávézacc helyett koffein tabletta" kávét írt a naplóba,
+        // pedig épp az maradt el.
+        List<Foods.Hit> h = hits("kávézacc helyett koffein tabletta");
+        assertEquals(1, h.size());
+        assertEquals("Étrend-kiegészítő", h.get(0).food.name);
+        h = hits("rizs helyett bulgurt ettem");
+        assertEquals(1, h.size());
+        assertEquals("Bulgur (főtt)", h.get(0).food.name);
+    }
+
 }

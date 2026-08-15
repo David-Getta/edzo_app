@@ -2312,6 +2312,13 @@ public final class Foods {
         // viszont a doboz sora.
         boolean macroLine = s.contains("kcal") || s.contains("kalori")
                 || s.contains("feherje") || s.contains("szenhidrat");
+        // A FEHÉRJE grammja is tápérték-sor: a „fehérjeturmix 30 g
+        // fehérjével" turmixa harminc grammos itallá zsugorodott. A -vel
+        // rag tartalmat ír le, ott a szám is eltűnik, különben a puszta
+        // „30 g" kötne vissza az italra. A fehérjeTURMIX étel-neve marad.
+        String withMask = !macroLine ? s : s.replaceAll(
+                "(\\d{1,3})\\s?(?:g|gr|gramm)\\s?feherjevel(?![a-z])", "#");
+        if (!withMask.equals(s)) { s = withMask; query = withMask; }
         String macro = !macroLine ? s : s.replaceAll("(\\d{1,3})\\s?(g|gr|gramm)\\s?"
                 + "(zsir|szenhidrat|ch|rost|telitett)(?![a-z])", "$1 $2 #");
         if (!macro.equals(s)) { s = macro; query = macro; }
@@ -2465,6 +2472,10 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A HELYETT előtti étel nem került a szájba: a „kávézacc helyett
+        // koffein tabletta" kávét írt a naplóba, pedig épp az maradt el.
+        query = query.replaceAll("(?iu)(?<!\\p{L})\\p{L}+\\s+helyett(?!\\p{L})",
+                "helyett");
         // A KÓSTOLÁS egy falat, nem teljes adag: a „csak megkóstoltam a
         // sütit" száz gramm sütemény lett, a „belekóstoltam a levesbe"
         // négy deci leves.
