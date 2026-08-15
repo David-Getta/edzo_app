@@ -1090,7 +1090,10 @@ public final class Foods {
             "szerviz",
             // Az ÉPÍTÉS összetétel MÁSODIK tagjaként is a pite tövén ül: a
             // „hóemberépítés a kertben" mellé egy szelet almás pite került.
-            "epites"};
+            "epites",
+            // A TÁBOR belsejében a BOR: az „edzőtábor: napi 2 edzés" és a
+            // „sítábor egész héten" mellé eddig másfél deci bor került.
+            "tabor"};
 
     /**
      * Tövek, amik CSAK a szó elején jelentenek ételt.

@@ -3912,4 +3912,22 @@ public class ActivitiesParseTest {
         assertEquals(1.2, Activities.parse("3 kör 400 m a pályán")
                 .plans.get(0).km, 0.01);
     }
+    /**
+     * Az edzőtábor napjai időszak, a lesiklás sí.
+     *
+     * A „napi 2 edzés 4 napig" négyese négy PERC edzés lett – a távirati
+     * perc-átírás nem zárta ki a nap egységet. A „sítábor egész héten,
+     * napi 5 óra lesiklás" pedig üresen jött vissza, mert a lesiklás nem
+     * volt sí-stem.
+     */
+    @Test public void aTrainingCampSpansItsDays() {
+        Activities.Parsed p = Activities.parse("napi 2 edzés 4 napig");
+        assertEquals(4, p.days);
+        assertEquals(8, p.plans.get(0).count);
+        assertEquals(45, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("sítábor egész héten, "
+                + "napi 5 óra lesiklás");
+        assertEquals("si", q.plans.get(0).kind.id);
+        assertEquals(300, q.plans.get(0).minutes);
+    }
 }

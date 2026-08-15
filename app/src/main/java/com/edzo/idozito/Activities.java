@@ -289,7 +289,11 @@ public final class Activities {
                     // A FELSZERELÉS neve is kimondja a sportot: a „3 óra
                     // sítalpon" és a „deszkán voltunk" ugyanaz a nap.
                     "snowboard", "sifutas", "sifut", "sitalp", "sipalya",
-                    "sielni", "sielt", "sielunk"),
+                    "sielni", "sielt", "sielunk",
+                    // A LESIKLÁS maga a sportág neve, a SÍTÁBOR pedig a
+                    // helyszíné: a „sítábor egész héten, napi 5 óra
+                    // lesiklás" üresen jött vissza.
+                    "lesikl", "sitabor"),
             // A triatlon és a duatlon NEM futás: a versenytáv órákig tart, és a
             // három (két) sportág együtt más terhelés, mint bármelyik külön. A
             // saját tétele nélkül vagy elveszne, vagy hamis névvel kerülne be.
@@ -1084,10 +1088,12 @@ public final class Activities {
         // A TÁVIRATI „kardió 30, súlyzó 40" csupasz száma perc: az idő-alapú
         // sport neve utáni kis szám nem lehet más. A táv-alapú sportnál
         // (futás 10) nem merünk dönteni – az lehet km is.
+        // A NAP és a HÉT egység is kizárás: az „edzés 4 napig" négyese
+        // időszak-hossz, nem négy perc edzés.
         s = s.replaceAll("(?<![a-z])(kardio|sulyzo|kondi|joga|nyujtas|pilates"
                 + "|hiit|edzes|gyuras)\\s+(\\d{1,3})"
                 + "(?!\\d)(?![.,]\\d)(?![:%-])(?!\\s?(?:perc|ora|km|kg|kcal|mp|lepes|x|kor"
-                + "|es(?![a-z])|as(?![a-z])|os(?![a-z])|m(?![a-z])|h(?![a-z])"
+                + "|nap|het(?:ig|en|re)|es(?![a-z])|as(?![a-z])|os(?![a-z])|m(?![a-z])|h(?![a-z])"
                 + "|p(?![a-z])))", "$1 $2 perc");
         // Az „EDDIG … A 100-BÓL" halmozott összeg, nem mai edzés: a
         // „januári futókihívás: eddig 87 km a 100-ból" nyolcvanhét

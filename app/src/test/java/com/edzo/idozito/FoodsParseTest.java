@@ -839,4 +839,15 @@ public class FoodsParseTest {
             if (h.food.name.startsWith("Gyümölcsturmix")) smoothie = true;
         assertTrue(smoothie);
     }
+    /**
+     * A tábor belsejében lakó bor nem ital.
+     *
+     * Az „edzőtábor: napi 2 edzés" és a „sítábor egész héten" mellé eddig
+     * másfél deci bor került a naplóba. A megivott bor marad.
+     */
+    @Test public void aTrainingCampIsNotWine() {
+        assertTrue(hits("edzőtábor: napi 2 edzés 4 napon át").isEmpty());
+        assertEquals("Bor (vörös/fehér)", hits("sítáborban voltunk, "
+                + "bort is ittunk este").get(0).food.name);
+    }
 }
