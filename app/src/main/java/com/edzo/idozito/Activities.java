@@ -1124,6 +1124,25 @@ public final class Activities {
         // mentem munkába" órányi görkorcsolya lett a naplóban.
         s = s.replaceAll("(?<![a-z])(?:elektromos|elektro|villany|e-)"
                 + "\\s?roller\\w*", "");
+        // A futó-szleng SZÁMNEVES távja kilométer: a „lefutottam egy
+        // tízest" tíz kilométer futás – eddig üresen jött vissza.
+        {
+            String[][] tavok = {{"otos", "5"}, {"hatos", "6"}, {"hetes", "7"},
+                    {"nyolcas", "8"}, {"kilences", "9"}, {"tizenotos", "15"},
+                    {"tizes", "10"}, {"huszas", "20"}};
+            for (String[] t : tavok)
+                s = s.replaceAll("(?<![a-z])((?:le)?(?:futottam|turaztam|"
+                        + "tekertem|kocogtam|tudtam|turtam)) egy "
+                        + "(?:gyors |laza |konnyu |kis )?" + t[0]
+                        + "t(?![a-z])", "$1 " + t[1] + " km-t");
+        }
+        // A „MENTEM EGY KÖRT" séta, ha se sport, se jármű nincs mellette:
+        // eddig üresen jött vissza, pedig mozgásról szól.
+        if (!s.contains("auto") && !s.contains("kocsi") && !s.contains("motor")
+                && kindByText(s) == null)
+            s = s.replaceAll("(?<![a-z])(?:leadtam|lementem|mentem|"
+                    + "megtettem) egy (?:gyors |laza |kis )?kort(?![a-z])",
+                    "setaltam 30 percet");
         // Az INGÁZÁS oda-vissza útja egyetlen napi adag: a „biciklivel
         // mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig az
         // intervallum-olvasó vitte el, és huszonöt perc maradt belőle.

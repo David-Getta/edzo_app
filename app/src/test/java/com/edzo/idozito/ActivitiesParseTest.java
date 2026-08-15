@@ -4469,4 +4469,26 @@ public class ActivitiesParseTest {
         assertEquals("futas", p.plans.get(0).kind.id);
     }
 
+    @Test public void runnerSlangNumbersAreKilometres() {
+        // A „lefutottam egy tízest" tíz kilométer futás – eddig üresen
+        // jött vissza. A bolti tízes viszont nem táv.
+        Activities.Plan p = Activities.parse("lefutottam egy tízest").plans.get(0);
+        assertEquals("futas", p.kind.id);
+        assertEquals(10, p.km, 0.001);
+        p = Activities.parse("tekertem egy húszast").plans.get(0);
+        assertEquals("kerekpar", p.kind.id);
+        assertEquals(20, p.km, 0.001);
+        assertTrue(Activities.parse("vettem egy tízest a boltban").plans.isEmpty());
+    }
+
+    @Test public void goingForALapIsAWalkUnlessDriving() {
+        // A „leadtam egy kört a ház körül" séta – az autós kör viszont
+        // nem mozgás.
+        Activities.Plan p = Activities
+                .parse("leadtam egy kört a ház körül").plans.get(0);
+        assertEquals("tura", p.kind.id);
+        assertEquals(30, p.minutes);
+        assertTrue(Activities.parse("mentem egy kört az autóval").plans.isEmpty());
+    }
+
 }
