@@ -343,4 +343,13 @@ public class KcalTest {
         assertEquals(2200, Kcal.stated("fehérjebevitel rendben, "
                 + "kalória 2200"));
     }
+    @Test public void theWatchDisplayIsBurnedNotEaten() {
+        // „az óra 300 kcal-t mutatott az edzés után" – a kijelzőn látott
+        // szám égetés, mégis a napi bevitelhez adódott.
+        assertEquals(-1, Kcal.stated("az óra 300 kcal-t mutatott az edzés után"));
+        assertEquals(300, Kcal.burned("az óra 300 kcal-t mutatott az edzés után"));
+        // Az evés-ige viszont erősebb a kijelzőnél.
+        assertEquals(600, Kcal.stated("edzés után ettem 600 kcal-t"));
+    }
+
 }

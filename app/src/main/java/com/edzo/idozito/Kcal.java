@@ -133,7 +133,11 @@ public final class Kcal {
         for (Pattern w : EATEN_P) if (w.matcher(s).find()) return false;
         for (String w : new String[]{"polar", "garmin", "suunto", "fitbit",
                 "strava", "apple watch", "coros", "aktiv kalori", "atlag hr",
-                "atlagpulzus", "atlag pulzus", "elegetett"})
+                "atlagpulzus", "atlag pulzus", "elegetett",
+                // A MUTATOTT/MÉRT kalória kijelzőről jön: „az óra 300 kcal-t
+                // mutatott az edzés után" égetés, mégis bevitel lett belőle.
+                "kcal-t mutatott", "kaloriat mutatott", "kcal-t mert",
+                "kaloriat mert", "kcal-t irt", "kaloriat irt"})
             if (s.contains(w)) return true;
         return false;
     }

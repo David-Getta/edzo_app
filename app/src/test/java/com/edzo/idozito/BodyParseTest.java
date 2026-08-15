@@ -794,4 +794,20 @@ public class BodyParseTest {
         assertEquals(77.8, BodyParse.parse("78 kg alá mentem végre, "
                 + "77,8!").kg, 0.01);
     }
+    @Test public void theReversedBodyFatIsStillBodyFat() {
+        // Az „az okosmérleg szerint 22,1 a testzsírom" eddig üresen jött
+        // vissza, mert a szám a szó előtt áll.
+        BodyParse.Body b = BodyParse.parse("az okosmérleg szerint 22,1 a testzsírom");
+        assertEquals(22.1, b.fatPct, 0.001);
+        b = BodyParse.parse("19 a testzsír százalékom");
+        assertEquals(19, b.fatPct, 0.001);
+    }
+
+    @Test public void theShownWeightIsAMeasurement() {
+        // A „vízvisszatartás miatt 84 kg-ot mutatott" nyolcvannégye a
+        // mérleg reggeli száma – eddig ital lett belőle, mérés nem.
+        BodyParse.Body b = BodyParse.parse("vízvisszatartás miatt 84 kg-ot mutatott");
+        assertEquals(84, b.kg, 0.001);
+    }
+
 }

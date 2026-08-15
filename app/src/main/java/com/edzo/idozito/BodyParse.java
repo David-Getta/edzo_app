@@ -108,6 +108,9 @@ public final class BodyParse {
             // ma" hetvennégy kilója valódi mérés – eddig kiesett, mert a
             // „fogyok" se kimondásnak, se kísérőnek nem számított.
             "fogyok", "hizok",
+            // A MUTATOTT szám a mérleg száma: a „vízvisszatartás miatt
+            // 84 kg-ot mutatott" nyolcvannégye valódi reggeli mérés.
+            "mutatott", "mutat",
             // Az ELÉRT cél már mérés: az „elértem a célsúlyom, 72 kg"
             // hetvenkettője a mai súly – a cél szava eddig az egész mondatot
             // elnémította, pedig aki elérte, az épp most állt a mérlegen.
@@ -222,6 +225,12 @@ public final class BodyParse {
         // A VÁRANDÓSSÁG hete nem testsúly: az „a 30. hétben vagyok,
         // hetente 2x úszás" harmincasa HARMINC KILÓ lett a naplóban.
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\.?\\s?het(?:en|ben)(?![a-z])", "");
+        // A FORDÍTOTT szórendű testzsír is testzsír: az „az okosmérleg
+        // szerint 22,1 a testzsírom" eddig üresen jött vissza, mert a
+        // szám a szó ELŐTT áll. Egyenes szórendre írjuk át.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?"
+                + "(?:%|szazalek)?\\s+a\\s+(testzsir\\w*|zsirszazalek\\w*)",
+                "$2 $1");
         if (s.isEmpty()) return new Body(0, 0);
         // A tiltó szó csak a SAJÁT tagmondatát viszi el: az „elértem a
         // célsúlyom, 72 kg" hetvenkettője valódi mérés – a CÉL az első

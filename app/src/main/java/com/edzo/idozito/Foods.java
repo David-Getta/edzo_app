@@ -827,6 +827,9 @@ public final class Foods {
             // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
             // ásványvíz: a panaszból eddig italbejegyzés lett.
             "vizesed", "vizeny", "vizretencio", "vizhajto",
+            // A VÍZVISSZATARTÁS a mérleg ingadozása, nem megivott pohár víz:
+            // a „vízvisszatartás miatt 84 kg" mellé ital került a naplóba.
+            "vizvisszatart", "vizmegtart", "vizet tart",
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
             // naplóba, százötven kalóriával.
