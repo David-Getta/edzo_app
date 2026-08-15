@@ -831,6 +831,10 @@ public final class Activities {
             // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
             // („januári futókihívás: eddig 87 km") nem mai edzés.
             "futokihivas",
+            // Az EDZÉSTERHELÉS a sportóra mutatószáma, nem edzés: az
+            // „edzésterhelés 320, a Garmin szerint produktív" negyvenöt
+            // perc egyéb mozgást írt be.
+            "edzesterhel",
             // A FELSZÓLÍTÓ mozgás tanács, nem edzés: „a doki szerint
             // mozogjak többet" negyvenöt perc egyéb mozgást írt be. A
             // „mozogj" tő a mozogjak/mozogjunk/mozogjál alakot is fedi,

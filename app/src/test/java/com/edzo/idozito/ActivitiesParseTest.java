@@ -4091,4 +4091,16 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("jó volt a meccs ⚽ néztük a "
                 + "tévében").plans.size());
     }
+    /**
+     * Az edzésterhelés mutatószám, nem edzés.
+     *
+     * Az „edzésterhelés 320, a Garmin szerint produktív" negyvenöt perc
+     * egyéb mozgást írt be. A valódi edzés a maga percével marad.
+     */
+    @Test public void trainingLoadIsAMetricNotAWorkout() {
+        assertEquals(0, Activities.parse("edzésterhelés 320, a Garmin "
+                + "szerint produktív").plans.size());
+        assertEquals(45, Activities.parse("edzés 45 perc, jó terhelés "
+                + "volt").plans.get(0).minutes);
+    }
 }
