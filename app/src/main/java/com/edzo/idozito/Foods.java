@@ -781,6 +781,10 @@ public final class Foods {
             // a rizs, az állCSÚSZÁSban a csusza. A rehab-lap ezeket a neveket
             // mutatja, tehát pont ezeket másolja be az ember.
             "farizom", "farizmo", "allcsusz", "allcsusztat",
+            // A KORIZÁS szlengjében is rizs lakik: a „görkoriztam a
+            // rakparton" nyolc kilométeréhez eddig egy adag főtt rizs is
+            // került a naplóba.
+            "koriz", "gorkoriz",
             // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
             // ásványvíz: a panaszból eddig italbejegyzés lett.
             "vizesed", "vizeny", "vizretencio", "vizhajto",

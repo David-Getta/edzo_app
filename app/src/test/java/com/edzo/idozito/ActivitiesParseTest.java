@@ -3812,4 +3812,49 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.parse("január elején futottam egy "
                 + "10 km-est").plans.size());
     }
+    /**
+     * A kutyasétáltatás séta, nem futás.
+     *
+     * A „a kutyával mentem egy nagyot, 6 km" hat kilométere gazdátlan
+     * távként futásnak számított. A kutyával futás persze futás marad.
+     */
+    @Test public void walkingTheDogIsAWalk() {
+        Activities.Parsed p = Activities.parse("a kutyával mentem egy "
+                + "nagyot, 6 km");
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("kutyával futottam 5 km-t")
+                .plans.get(0).kind.id);
+    }
+
+    /**
+     * Az ingázás oda-vissza útja egy napi adag.
+     *
+     * A „biciklivel mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig
+     * az intervallum-olvasó vitte el a szorzatot, és huszonöt perc maradt.
+     * Munkás szó nélkül a 2x25 marad intervallum.
+     */
+    @Test public void aCommutePairAddsUp() {
+        Activities.Parsed p = Activities.parse("biciklivel mentem "
+                + "dolgozni, 2x25 perc");
+        assertEquals(50, p.plans.get(0).minutes);
+        assertEquals(25, Activities.parse("2x25 perc intervall futás")
+                .plans.get(0).minutes);
+    }
+
+    /**
+     * A görkori táv-alapú, és a korizás ige is korcsolya.
+     *
+     * A „görkoriztam a rakparton 8 km-t" távja nem tudott a korcsolyára
+     * kerülni (nem volt táv-alapú), és külön nyolc kilométeres futás lett.
+     * A „koriztunk a jégpályán" pedig üresen jött vissza.
+     */
+    @Test public void rollerSkatingCarriesItsDistance() {
+        Activities.Parsed p = Activities.parse("görkoriztam a rakparton "
+                + "8 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals("korcsolya", p.plans.get(0).kind.id);
+        assertEquals(8.0, p.plans.get(0).km, 0.01);
+        assertEquals("korcsolya", Activities.parse("koriztunk a jégpályán "
+                + "másfél órát").plans.get(0).kind.id);
+    }
 }

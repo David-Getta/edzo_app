@@ -768,4 +768,16 @@ public class FoodsParseTest {
         // A kockacukor és a leveskocka szava érintetlen.
         assertEquals("Cukor", hits("kockacukor a kávéba").get(0).food.name);
     }
+    /**
+     * A korizás szlengjében rizs lakik, de nem étel.
+     *
+     * A „görkoriztam a rakparton 8 km-t" mellé eddig egy adag főtt rizs is
+     * került a naplóba. Az igazi rizs marad.
+     */
+    @Test public void skatingSlangIsNotRice() {
+        assertTrue(hits("görkoriztam a rakparton 8 km-t").isEmpty());
+        assertTrue(hits("koriztunk a jégpályán").isEmpty());
+        assertEquals("Rizs (főtt)", hits("rizst ettem csirkével")
+                .get(0).food.name);
+    }
 }

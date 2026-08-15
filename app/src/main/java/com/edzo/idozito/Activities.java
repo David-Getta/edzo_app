@@ -142,7 +142,12 @@ public final class Activities {
                     "barlangasz", "via ferrata",
                     // A magyar szétszedi az összetételt: „hegyet másztunk",
                     // „hegyre másztam" – a „hegymászás" tövét ez nem fedi.
-                    "hegyet masz", "hegyre masz", "hegyi tura", "hegyet megmasz"),
+                    "hegyet masz", "hegyre masz", "hegyi tura", "hegyet megmasz",
+                    // A kutyasétáltatás séta akkor is, ha a séta szó nincs
+                    // kimondva: „a kutyával mentem egy nagyot, 6 km" – eddig
+                    // hat kilométeres futás lett belőle.
+                    "kutyaval mentem", "kutyat setaltat", "kutyasetaltat",
+                    "kutyaval setal", "kutyaval korbe", "kutyazas"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
                     "raftin", "sarkanyhajo", "sarkany hajo",
@@ -265,9 +270,14 @@ public final class Activities {
                     // 10 percet" eddig válasz nélkül maradt.
                     "hengereles", "hengereltem", "hengerezes", "hengereztem",
                     "foam roller", "foamroller", "smr henger"),
-            new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, false, 60,
+            // A görkori táv-alapú is: a „görkoriztam a rakparton 8 km-t"
+            // távja eddig nem tudott hova kerülni, és egy külön nyolc
+            // kilométeres FUTÁS lett belőle a korcsolya mellett.
+            new Kind("korcsolya", "⛸", "Korcsolya / görkorcsolya", 7.0, true, 60,
                     "korcsolya", "gorkorcsolya", "gorkori", "gordeszka", "roller",
-                    "jegkorong", "hoki", "curling"),
+                    // A szleng ige is korizás: a „koriztunk a jégpályán"
+                    // eddig üresen jött vissza.
+                    "koriz", "jegkorong", "hoki", "curling"),
             // A sífutás táv-alapú: a „20 km sífutás" távja is számít.
             new Kind("si", "🎿", "Sí / snowboard", 6.0, true, 120,
                     // A „sízem/síztem/sízni" alakok is: a puszta „si" nem
@@ -585,6 +595,7 @@ public final class Activities {
             case "tura": return 12;
             case "evezes": return 5;
             case "si": return 5;    // sífutás: gyorsabb a gyaloglásnál
+            case "korcsolya": return 5;   // görkori: a futásnál gyorsabb
             // A triatlon távjának java a bringa: az olimpiai táv 51,5 km-e
             // két és fél óra körül van, ez nagyjából három perc kilométerenként.
             case "triatlon": return 3;
@@ -990,6 +1001,22 @@ public final class Activities {
         s = s.replaceAll("(?<![\\d,.])(\\d{1,2})-kor (edzes\\w*)", "$2 $1-kor");
         s = s.replaceAll("(?<![a-z])(reggel|este|delutan|delelott|hajnalban|"
                 + "hajnali) (\\d{1,2})[- ]?kor (edzes\\w*)", "$1 $3 $2-kor");
+        // Az INGÁZÁS oda-vissza útja egyetlen napi adag: a „biciklivel
+        // mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig az
+        // intervallum-olvasó vitte el, és huszonöt perc maradt belőle.
+        // Csak munkába/iskolába járós vagy oda-vissza mondatban élünk vele.
+        if (s.contains("dolgozni") || s.contains("munkaba") || s.contains("suliba")
+                || s.contains("iskolaba") || s.contains("oda-vissza")
+                || s.contains("oda vissza")) {
+            java.util.regex.Matcher ing = java.util.regex.Pattern
+                    .compile("(?<![\\dx.,])2\\s?x\\s?(\\d{1,3})\\s?perc").matcher(s);
+            if (ing.find()) {
+                int t = 2 * Integer.parseInt(ing.group(1));
+                if (t <= 300)
+                    s = s.substring(0, ing.start()) + t + " perc"
+                            + s.substring(ing.end());
+            }
+        }
         // A PULZUSZÓNA száma nem darabszám: a „zóna 2 futás 40 perc" KÉT
         // futássá vált. A zóna sorszáma a terhelést nevezi meg, nem az
         // alkalmakat.
