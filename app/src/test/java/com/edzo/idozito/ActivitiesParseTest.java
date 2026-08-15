@@ -4418,4 +4418,31 @@ public class ActivitiesParseTest {
         assertEquals(60, p.plans.get(0).minutes);
     }
 
+    @Test public void thePaceMinutesAreNotTheDuration() {
+        // Az „5 perces tempóval futottam 10 km-t" ötven perc futás,
+        // nem öt: a tempó perce nem az edzés hossza.
+        Activities.Plan p =
+                Activities.parse("5 perces tempóval futottam 10 km-t").plans.get(0);
+        assertEquals(50, p.minutes);
+        p = Activities.parse("4 perc 50-es tempóban mentem 10 km-t").plans.get(0);
+        assertEquals(48, p.minutes);
+        p = Activities.parse("6 perc per km tempóval futottam 8 km-t").plans.get(0);
+        assertEquals(48, p.minutes);
+        // A valódi időtartam tempó-szó mellett is megmarad.
+        p = Activities.parse("futottam 40 percet jó tempóban").plans.get(0);
+        assertEquals(40, p.minutes);
+    }
+
+    @Test public void theCoolDownMinutesDoNotStealTheRun() {
+        // A „futás 8 km, 10 perces levezetéssel zártam" nyolc kilométere
+        // eddig tízperces futás lett – a levezetés perce nem a futásé.
+        Activities.Plan p = Activities
+                .parse("futás 8 km, 10 perces levezetéssel zártam").plans.get(0);
+        assertEquals(8, p.km, 0.001);
+        assertEquals(48, p.minutes);
+        p = Activities.parse("5 perces bemelegítés után futottam 8 km-t")
+                .plans.get(0);
+        assertEquals(48, p.minutes);
+    }
+
 }

@@ -1107,6 +1107,19 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(este|esti|reggel|reggeli|hajnali|"
                 + "delelott|delelotti)\\s?([4-9]|1[0-2])\\s?oras(?:ra)?"
                 + "(?![a-z])", "$1 $2 orakor");
+        // A TEMPÓ perce nem az edzés hossza: az „5 perces tempóval
+        // futottam 10 km-t" ötven perc futás, nem öt. A kiírt tempót
+        // kettőspontos alakra írjuk át – azt a percszámítás már jól érti,
+        // és a távból számolja a valódi időt.
+        s = s.replaceAll("(?<![\\d,.:])(\\d{1,2})\\s?perc(?:es)?\\s?"
+                + "(\\d{1,2})\\s?(?:masodperc|mp)?-?[ae]?s?\\s+(?=tempo)",
+                "$1:$2-as ");
+        s = s.replaceAll("(?<![\\d,.:])(\\d{1,2})\\s?perc(?:es)?"
+                + "(?:\\s?(?:/|per)\\s?km)?\\s+(?=tempo)", "$1:00-as ");
+        // A BEMELEGÍTÉS perce nem a futásé: a „futás 8 km, 10 perces
+        // levezetéssel" tíz perce eddig elvitte a nyolc kilométer idejét.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?perces\\s+"
+                + "(bemelegites|bemeleged|levezetes)", "$1");
         // Az INGÁZÁS oda-vissza útja egyetlen napi adag: a „biciklivel
         // mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig az
         // intervallum-olvasó vitte el, és huszonöt perc maradt belőle.
