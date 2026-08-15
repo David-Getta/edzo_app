@@ -272,7 +272,10 @@ public final class Activities {
                     // A balett-fitnesz és a pompomcsapat is táncos óra: a
                     // „barre workout 50 perc" és a „cheerleading próba"
                     // üresen jött vissza.
-                    "barre", "cheerlead", "pompom"),
+                    "barre", "cheerlead", "pompom",
+                    // A táncos videojátékok is tánc: a Beat Saber és a
+                    // Just Dance percei eddig elvesztek.
+                    "beat saber", "beatsaber", "just dance", "justdance"),
             new Kind("joga", "🧘", "Jóga / nyújtás / pilates", 3.0, false, 45,
                     // A „torna" fedi a gerinctornát, gyógytornát, tornázást is.
                     // A „nyujt" tő az igét is fedi: nyújtás, nyújtottam, nyújtok.
@@ -386,6 +389,9 @@ public final class Activities {
                     // Az óra AKTÍV IDEJE is mozgás: „az applikáció 47 perc
                     // aktív időt mért" eddig üresen jött vissza.
                     "aktiv ido", "aktiv idot", "aktiv perc",
+                    // A mozgásos videojátékok valódi izzadság: a „Ring Fit
+                    // Adventure 30 perc" üresen jött vissza.
+                    "ring fit", "ringfit",
                     // Az ERGOMÉTER gép is edzés – a KÉZI-ergométer pedig nem
                     // kézilabda: a „kéziergométer a rehab részlegen 10 perc"
                     // tízperces kézilabda-meccs lett a naplóban. A hosszabb
@@ -852,6 +858,9 @@ public final class Activities {
             // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
             // („januári futókihívás: eddig 87 km") nem mai edzés.
             "futokihivas",
+            // A SUPERNATURAL VR-app nevében a túra töve lakik: a
+            // „Supernatural VR edzés 35 perc" gyalogtúra lett.
+            "supernatural",
             // A FUTÓBABAKOCSI a futás eszköze, nem külön séta: a „babával
             // kocogtam a futóbabakocsival 4 km-t" két bejegyzés lett – egy
             // futás ÉS egy négy kilométeres túra. A sima babakocsis séta
@@ -1144,6 +1153,9 @@ public final class Activities {
                         + lista.group(3) + ", " + lista.group(2) + " "
                         + lista.group(4) + s.substring(lista.end());
         }
+        // A TÁNCSZŐNYEGEN ugrálás egyetlen tánc: az „ugráltunk" egyéb-töve
+        // külön hatvanperces bejegyzést csinált a tánc mellé.
+        if (s.contains("tancszonyeg")) s = s.replaceAll("ugral\\w*", "");
         // A BOX BREATHING légzőgyakorlat, nem bunyó: a „box breathing
         // 5 perc" ötperces harcművészet-edzésként került be.
         s = s.replaceAll("box breathing|doboz ?legzes", "legzogyakorlat");

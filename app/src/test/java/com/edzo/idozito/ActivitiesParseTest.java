@@ -4209,4 +4209,26 @@ public class ActivitiesParseTest {
                 + "5 km-t").plans.get(0).kind.id);
         assertEquals(7, Activities.parse("a héten 3x futottam").days);
     }
+    /**
+     * A mozgásos videojátékok valódi izzadság, a Fifa nem az.
+     *
+     * A Beat Saber, a Just Dance és a Ring Fit percei elvesztek, a
+     * Supernatural VR-edzés pedig a nevében lakó túra-tő miatt GYALOGTÚRA
+     * lett. A táncszőnyeg ugrálása sem duplázódik, a Fifa és a sakk
+     * továbbra sem edzés.
+     */
+    @Test public void fitnessVideoGamesCountButFifaDoesNot() {
+        assertEquals("tanc", Activities.parse("Beat Saber 40 perc, jól "
+                + "megizzadtam").plans.get(0).kind.id);
+        assertEquals("tanc", Activities.parse("Just Dance a gyerekekkel "
+                + "45 perc").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("Ring Fit Adventure "
+                + "30 perc").plans.get(0).kind.id);
+        assertEquals("egyeb", Activities.parse("Supernatural VR edzés "
+                + "35 perc").plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("táncszőnyegen ugráltunk egy "
+                + "órát").plans.size());
+        assertEquals(0, Activities.parse("Fifát toltam 3 órát")
+                .plans.size());
+    }
 }
