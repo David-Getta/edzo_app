@@ -536,6 +536,20 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "szervizben volt az autó").isEmpty());
     }
 
+    /**
+     * Az alanyesetű darabszám az „is" nyomatékkal is darabszám.
+     *
+     * A „gin tonik a bárban, kettő is" két pohár – eddig egy ment be. A
+     * „három is lecsúszott" ugyanígy a darabszámot mondja.
+     */
+    @Test public void aNominativeCountWithEmphasisStillCounts() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(500.0, Foods.parse(all, "gin tonik a koktélbárban, "
+                + "kettő is").get(0).grams, 0.01);
+        assertEquals(180.0, Foods.parse(all, "palacsintát sütöttem, három "
+                + "is lecsúszott").get(0).grams, 0.01);
+    }
+
     /** Az „olajos" jelző nem egy kanál olaj – az olajos magvak dió. */
     @Test public void greasyIsNotASpoonOfOil() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
