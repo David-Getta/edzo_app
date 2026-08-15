@@ -298,7 +298,7 @@ public final class Foods {
         new Food("Gofri", 350, 6, 100, "gofri", "waffle", "protein gofri"),
         new Food("Energiagolyó", 420, 8, 25,
                 "energiagolyo", "kokuszgolyo", "zabgolyo", "proteingolyo"),
-        new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt", "jegkrem",
+        new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt", "jegkrem", "mcflurry",
                 "protein jegkrem", "sundae"),
         new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
                 // A „tortilla chips" eddig KÉT tétel volt (tortilla + chips):
@@ -399,7 +399,9 @@ public final class Foods {
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
                 "feherjeszelet", "feherje szelet", "energiaszelet"),
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi"),
-        new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque"),
+        new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque",
+                // Az angolul írt alak is szendvics: „subway ham sandwich".
+                "sandwich", "szendvicset"),
         new Food("Hot-dog", 290, 10, 150, "hot-dog", "hotdog", "hot dog"),
         // A puszta „szelet” szótő itt nem lehet: hétköznapi szó, ami mennyiséget
         // jelöl („két szelet kenyér”, „egy szelet torta”), nem ételt.
@@ -2305,7 +2307,16 @@ public final class Foods {
             for (String v : OTHER_EAT_VERB) if (t.contains(" " + v + " ")) eats = true;
             boolean firstP = cl.matches(".*\\b\\w{3,}(tam|tem|tunk)\\b.*")
                     || t.contains(" en ") || t.contains(" nekem ") || t.contains(" magam ");
+            // A RÉSZESHATÁROZÓS címzett étele sem az enyém: a „happy meal
+            // a gyereknek" menüje a gyereké – ige nélkül is. Az „én egy
+            // mcflurryt" tagmondata marad.
+            boolean dative = false;
+            for (String d : new String[]{"gyereknek", "gyerekeknek", "fiamnak",
+                    "lanyomnak", "ferjemnek", "felesegemnek", "paromnak",
+                    "anyunak", "apunak", "kollegaknak", "vendegeknek"})
+                if (t.contains(" " + d + " ")) dative = true;
             if (other && eats && !firstP) { any = true; continue; }
+            if (dative && !firstP) { any = true; continue; }
             if (keep.length() > 0) keep.append(", ");
             keep.append(cl.trim());
         }
@@ -2338,6 +2349,11 @@ public final class Foods {
         // „néhány szem szőlő" öt grammként ment be – egyetlen szőlőszemként.
         query = query.replaceAll("(?iu)(?<!\\p{L})(n[eé]h[aá]ny|p[aá]r)"
                 + "(?=\\s+szem)", "5");
+        // A „FÉL TÁBLA" az étel UTÁN állva elveszett: a „csoki fél tábla"
+        // nulla grammos bejegyzés lett (a fél a tört-ágon kiesett). A fél
+        // tábla mindig ötven gramm – grammban egyértelmű.
+        query = query.replaceAll("(?iu)(?<!\\p{L})f[eé]l\\s+t[aá]bl[aá]\\w*",
+                "50 g");
         query = withoutOthersPlates(query);
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);

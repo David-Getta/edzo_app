@@ -555,6 +555,25 @@ public class FoodsParseTest {
     }
 
     /**
+     * A fél tábla az étel után is fél tábla, a gyerek menüje a gyereké.
+     *
+     * A „milka csoki fél tábla" nulla grammos bejegyzés lett (a fél a
+     * tört-ágon kiesett), a „happy meal a gyereknek" menüje pedig a
+     * szülő naplójába került. Az angol sandwich és a mcflurry is étel.
+     */
+    @Test public void halfABarAfterTheFoodStillCounts() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(50.0, Foods.parse(all, "milka csoki fél tábla")
+                .get(0).grams, 0.01);
+        List<Foods.Hit> h = Foods.parse(all, "mcdonalds happy meal a "
+                + "gyereknek, én egy mcflurryt");
+        assertEquals(1, h.size());
+        assertEquals("Fagylalt", h.get(0).food.name);
+        assertEquals("Szendvics", Foods.parse(all, "subway ham sandwich, "
+                + "15 cm").get(0).food.name);
+    }
+
+    /**
      * A sétáló-vétel azonnal a szájban landol.
      *
      * A „vettem egy fagyit a sétány végén" nem bevásárlás – a fagyit
