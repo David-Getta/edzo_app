@@ -1392,4 +1392,12 @@ public class StrengthParseTest {
                 StrengthParse.parse("csípőtolás 3x10 100 kg").get(0).name);
     }
 
+    @Test public void aChocolateCakeIsNotALunge() {
+        // Az „egy nagy szelet csokitorta" belsejében ott a KITÖRés töve –
+        // lunge-sorozat lett a süteményből. Az igazi kitörés marad.
+        assertTrue(StrengthParse.parse("egy nagy szelet csokitorta").isEmpty());
+        assertEquals("Kitörés",
+                StrengthParse.parse("kitöréseket csináltam 3x10").get(0).name);
+    }
+
 }

@@ -395,6 +395,11 @@ public final class StrengthParse {
         String clean = dropDumbbellPair(maskDistance(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(stripPercent(stripListMarkers(
                         Hu.correction(Foods.norm(text))))))))));
+        // A TORTA nem gyakorlat: az „egy nagy szelet csokitorta" belsejében
+        // ott a KITÖRés töve, és lunge-sorozat lett a süteményből.
+        clean = clean.replaceAll("(?<![a-z])\\p{L}*tort[aá]"
+                + "(?:t|k|kat|val|bol|hoz|ra|rol|nak|bo[l]?|m|d|j[aá]t?)?"
+                + "(?![a-z])", " ");
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(clean))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban

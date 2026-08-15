@@ -312,7 +312,8 @@ public final class Foods {
         new Food("Energiagolyó", 420, 8, 25,
                 "energiagolyo", "kokuszgolyo", "zabgolyo", "proteingolyo"),
         new Food("Fagylalt", 200, 3.5, 100, "fagyi", "fagylalt", "jegkrem", "mcflurry",
-                "protein jegkrem", "sundae"),
+                // A Magnum és a Cornetto bolti jégkrém – márkanéven is kérik.
+                "protein jegkrem", "sundae", "magnum", "cornetto"),
         new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
                 // A „tortilla chips" eddig KÉT tétel volt (tortilla + chips):
                 // egy lapos kenyér kalóriája a nassolnivaló mellé.
