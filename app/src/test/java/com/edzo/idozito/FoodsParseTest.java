@@ -1032,4 +1032,27 @@ public class FoodsParseTest {
         assertEquals("Szendvics", h.get(0).food.name);
     }
 
+    @Test public void theLiquidMeasureBelongsToTheLiquid() {
+        // A „zabkása fél liter tejjel" öt deci TEJET mond – mégis fél
+        // kiló zabpehely lett belőle, a tej meg alapadag maradt.
+        List<Foods.Hit> h = hits("zabkása fél liter tejjel");
+        assertEquals("Zabpehely", h.get(0).food.name);
+        assertTrue("zab: " + h.get(0).grams, h.get(0).grams <= 100);
+        assertEquals("Tej", h.get(1).food.name);
+        assertEquals(500, h.get(1).grams, 0.5);
+        // A szilárd étel grammja viszont marad hátrakötve.
+        h = hits("tészta 100 g sonkával");
+        assertEquals(100, h.get(0).grams, 0.5);
+    }
+
+    @Test public void aPairOfSausagesIsTwoSausages() {
+        // A „virsli 2 pár mustárral" négy szál virsli, nem kettő.
+        List<Foods.Hit> h = hits("virsli 2 pár mustárral");
+        assertEquals("Virsli", h.get(0).food.name);
+        assertEquals(200, h.get(0).grams, 0.5);
+        assertEquals(100, hits("egy pár virslit ettem").get(0).grams, 0.5);
+        // A „pár szem szőlő" határozatlan párja nem darabszám.
+        assertEquals("Szőlő", hits("pár szem szőlőt ettem").get(0).food.name);
+    }
+
 }

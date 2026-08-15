@@ -54,7 +54,10 @@ public final class Foods {
                 "egeszben sult csirke"),
         new Food("Pulykamell", 105, 23, 150, "pulyka"),
         new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes", "tarja",
-                "naturszelet", "natur szelet", "szuzerme", "szuzpecsenye", "flekken"),
+                "naturszelet", "natur szelet", "szuzerme", "szuzpecsenye", "flekken",
+                // A HIDEGSÜLT is sült hús: a „hideg sült egy szelet
+                // kenyérrel" húsa eddig elveszett, csak a kenyér maradt.
+                "hidegsult", "hideg sult"),
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
         // Vad és bárány: a magyar konyha rendszeres vendégei, de eddig
@@ -2452,6 +2455,31 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A FOLYADÉK mértéke a folyadéké: a „zabkása fél liter tejjel" öt
+        // deci TEJET mond, mégis fél kiló zabpehely lett belőle – a
+        // mennyiség visszafelé, a kására tapadt. Az ital-szó elé fordítva
+        // a mérték már a helyes ételre tapad.
+        query = query.replaceAll("(?iu)(?<![\\p{L}\\d.,-])"
+                + "((?:(?:\\d+|egy|k[eé]t|h[aá]rom|n[eé]gy|[oö]t)\\s+[eé]s\\s+)?"
+                + "(?:f[eé]l|m[aá]sf[eé]l|h[aá]romnegyed|negyed|"
+                + "\\d+(?:[.,]\\d+)?)\\s?(?:deci|liter|dl|ml|cl|l)(?![\\p{L}]))\\s+"
+                + "((?:tej|tejsz[ií]n|v[ií]z|kaka[oó]|kefir|joghurt|"
+                + "k[aá]v[eé]|tea|gy[uü]m[oö]lcsl[eé]|narancsl[eé]|"
+                + "s[oö]r|bor|k[oó]la|[uü]d[ií]t[oő])\\p{L}*)", "$2 $1");
+        // A PÁR virsli KÉT szál: a „virsli 2 pár mustárral" négy virsli –
+        // eddig kettő lett. Csak virsli-féle mellett él, a „pár szem
+        // szőlő" határozatlan párja nem darabszám.
+        if (query.matches("(?iu).*(virsli|kolb[aá]sz|debreceni).*")) {
+            query = query.replaceAll("(?iu)(?<!\\p{L})egy p[aá]r(?![\\p{L}])", "2 db");
+            java.util.regex.Matcher pm = java.util.regex.Pattern
+                    .compile("(?iu)(?<!\\p{L})(\\d{1,2})\\s?p[aá]r(?![\\p{L}])")
+                    .matcher(query);
+            StringBuffer pb = new StringBuffer();
+            while (pm.find())
+                pm.appendReplacement(pb, 2 * Integer.parseInt(pm.group(1)) + " db");
+            pm.appendTail(pb);
+            query = pb.toString();
+        }
         // A PINT és az IPA kocsmai sör: az „egy pint IPA-t ittam" eddig
         // üresen jött vissza. A pint nagyjából korsónyi.
         query = query.replaceAll("(?iu)(?<!\\p{L})ipa(?:-?t)?(?!\\p{L})", "sör");
