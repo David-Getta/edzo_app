@@ -298,6 +298,11 @@ public final class Activities {
                     // mozgás –, ezért csak a játék igéjével együtt él.
                     "meccset jatszottam", "meccsen jatszottam",
                     "vegig jatszottam", "vegigjatszottam", "meccset nyertunk",
+                    // Az ERGOMÉTER gép is edzés – a KÉZI-ergométer pedig nem
+                    // kézilabda: a „kéziergométer a rehab részlegen 10 perc"
+                    // tízperces kézilabda-meccs lett a naplóban. A hosszabb
+                    // tő nyeri az átfedést a „kezi" ellen.
+                    "ergometer", "keziergometer", "kezi ergometer",
                     // A puszta FITNESZ is edzés: az „aqua fitnesz 45 perc"
                     // eddig üresen jött vissza. Az EDZŐVEL töltött óra csak a
                     // kimondott igével tő – a „beszéltem az edzővel" nem az.
@@ -949,6 +954,15 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „JÓ KIS KARDIÓ" értékelő megjegyzés, nem második edzés: a
+        // „sífutógép 25 perc, jó kis kardió" mellé egy 45 perces „egyéb
+        // mozgás" került – ugyanarról a huszonöt percről.
+        s = s.replaceAll("(?<![a-z])jo (?:kis )?(kardio|edzes|mozgas)\\w*", "");
+        // A FUTÓPADON sétálás EGY séta: a „futópad 5% emelkedőn 40 perc
+        // séta" a futópad tövéről egy 45 perces futást IS kapott a séta
+        // mellé. Ha ugyanabban a tagmondatban ott a séta szava, a futópad
+        // csak a helyszín.
+        s = s.replaceAll("futopad\\w*(?=[^,;.]*(?<![a-z])seta)", "");
         // A „FÉL-FÉL ÓRA" az oda-vissza út két fele: a „sétáltunk a piacig
         // és vissza, fél-fél óra" hatvan perc együtt – eddig csak az egyik
         // fél került be. A számnév-fordítás után „0,5-0,5 ora" alakban áll.
@@ -1935,6 +1949,10 @@ public final class Activities {
             for (Plan p : out)
                 if (p.km > 0 || p.steps > 0 || p.minutes != p.kind.defaultMin)
                     stated = true;
+            // A kiírt perc akkor is kimondott hossz, ha épp az alap-
+            // értelmezéssel egyezik: a „45 perc kardió a teremben" mellé
+            // egy hatvanperces kondi került – a terem csak helyszín.
+            if (!stated && rawText.matches(".*\\d\\s?perc.*")) stated = true;
             if (stated) {
                 List<Plan> kept = new ArrayList<>();
                 for (Plan p : out) {

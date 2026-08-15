@@ -3030,6 +3030,30 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A termi gépek a saját sportjukat mondják, a terem csak helyszín.
+     *
+     * A „kéziergométer a rehab részlegen 10 perc" tízperces
+     * KÉZILABDA-meccs lett, a „sífutógép 25 perc, jó kis kardió" mellé
+     * egy második edzés került az értékelő megjegyzésből, a „futópad 5%
+     * emelkedőn 40 perc séta" a séta MELLÉ egy 45 perces futást is kapott,
+     * a „45 perc kardió a teremben" mellé pedig egy hatvanperces kondit.
+     */
+    @Test public void machinesNameTheirOwnSport() {
+        Activities.Parsed p = Activities.parse("kéziergométer a rehab "
+                + "részlegen 10 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("egyeb", p.plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("sífutógép 25 perc, jó kis "
+                + "kardió").plans.size());
+        Activities.Parsed q = Activities.parse("futópad 5% emelkedőn "
+                + "40 perc séta");
+        assertEquals(1, q.plans.size());
+        assertEquals("tura", q.plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("45 perc kardió a "
+                + "teremben").plans.size());
+    }
+
+    /**
      * Az akupunktúra nem túra, a vinyasa viszont jóga.
      *
      * Az „akupunktúra kezelés a hátamra" kilencven perces GYALOGTÚRÁT írt
