@@ -852,6 +852,10 @@ public final class Activities {
             // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
             // („januári futókihívás: eddig 87 km") nem mai edzés.
             "futokihivas",
+            // A TRICEPSZNYÚJTÁS gépes gyakorlat, nem nyújtás: a
+            // „rest-pause tricepsznyújtás 15+5+5" mellé egy negyvenöt
+            // perces jóga is bekerült a nyújt-tő miatt.
+            "tricepsznyujt",
             // Az EDZÉSTERHELÉS a sportóra mutatószáma, nem edzés: az
             // „edzésterhelés 320, a Garmin szerint produktív" negyvenöt
             // perc egyéb mozgást írt be.

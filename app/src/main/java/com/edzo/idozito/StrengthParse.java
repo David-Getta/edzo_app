@@ -275,6 +275,12 @@ public final class StrengthParse {
      * se sorozat, pedig minden adat ott volt benne.
      */
     static String kgBeforeMultiplier(String s) {
+        // A DARABSZÁM egy sorozat: az „AMRAP fekvőtámasz: 42 db egy
+        // sorozatban" negyvenkettője eddig elveszett, mert a db-hez nem
+        // tartozott sorozat-jelölés. Az „egy sorozatban" farok is a
+        // cserébe kerül: a számnévvé váló „egy" különben súlynak látszana.
+        s = s.replaceAll("(?<![\\dx,.])(\\d{1,3})\\s?db(?![a-z])"
+                + "(?:\\s?egy (?:sorozatban|szettben|szeriaban))?", "1x$1");
         // A S\u00daLYEMEL\u00c9S mondat\u00e1ban a \u201emost N" az \u00faj munkas\u00faly: az \u201eemeltem a
         // guggol\u00e1s s\u00faly\u00e1t 5 kil\u00f3val, most 85" nyolcvan\u00f6t KIL\u00d3 \u2013 eddig
         // nyolcvan\u00f6t ism\u00e9tl\u00e9s lett bel\u0151le, s\u00faly n\u00e9lk\u00fcl.

@@ -1333,4 +1333,20 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("emeltem a guggolás súlyát "
                 + "5 kilóval, most 85").isEmpty());
     }
+    /**
+     * A darabszám egy sorozat, a tricepsznyújtás nem jóga.
+     *
+     * Az „AMRAP fekvőtámasz: 42 db egy sorozatban" negyvenkettője
+     * elveszett (a db-hez nem tartozott sorozat-jelölés, az „egy" pedig
+     * súlynak látszott volna); a „tricepsznyújtás" nyújt-töve mellé pedig
+     * egy 45 perces jóga került.
+     */
+    @Test public void aPieceCountIsASingleSet() {
+        StrengthParse.Item it = StrengthParse.parse(
+                "AMRAP fekvőtámasz: 42 db egy sorozatban").get(0);
+        assertEquals(42, it.totalReps());
+        assertEquals(0.0, it.topWeight(), 0.01);
+        assertEquals(0, Activities.parse("rest-pause tricepsznyújtás "
+                + "15+5+5").plans.size());
+    }
 }
