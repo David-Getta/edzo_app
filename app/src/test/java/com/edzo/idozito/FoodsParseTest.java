@@ -956,4 +956,19 @@ public class FoodsParseTest {
         assertEquals(100.0, hits("100 g nyers répa rágcsálva")
                 .get(0).grams, 0.001);
     }
+    /**
+     * A cukorteszt laborvizsgálat, a vaspótlás étrend-kiegészítő.
+     *
+     * A „terhességi cukorteszt után ettem" mellé tíz gramm cukor került;
+     * a „vaspótlás miatt vas + C" üresen jött vissza. A kockacukor marad.
+     */
+    @Test public void aGlucoseTestIsNotEatenSugar() {
+        for (Foods.Hit h : hits("terhességi cukorteszt után ettem egy "
+                + "szendvicset"))
+            assertFalse(h.food.name.equals("Cukor"));
+        assertEquals("Étrend-kiegészítő", hits("vaspótlás miatt vas + C "
+                + "reggel").get(0).food.name);
+        assertEquals("Cukor", hits("kockacukrot tettem a kávéba")
+                .get(0).food.name);
+    }
 }

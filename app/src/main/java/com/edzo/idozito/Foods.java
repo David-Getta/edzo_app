@@ -699,7 +699,7 @@ public final class Foods {
         new Food("Étrend-kiegészítő", 0, 0, 5,
                 // A vas tabletta is kiegészítő – a puszta „vas" tilos tő
                 // (a „vasat toltam" súlyzózás), ezért a teljes szókapcsolat.
-                "vas tabletta", "vastabletta", "vaspotlo",
+                "vas tabletta", "vastabletta", "vaspotlo", "vaspotlas",
                 "kreatin", "bcaa", "aminosav",
                 "magnezium", "vitamin", "omega 3", "omega-3", "halolaj",
                 "cink", "koffein tabletta", "pre workout", "preworkout",
@@ -814,6 +814,10 @@ public final class Foods {
             // A VÍZHÓLYAG seb, nem ásványvíz: a „felszakadt a vízhólyag a
             // sarkamon" mellé eddig két és fél deci víz került a naplóba.
             "vizholyag",
+            // A CUKORTESZT laborvizsgálat, nem elszopogatott kockacukor: a
+            // „terhességi cukorteszt után ettem" mellé tíz gramm cukor
+            // került a naplóba.
+            "cukorteszt", "cukorterhel",
             // A „vizesedik a térdem" ízületi folyadék, nem két és fél deci
             // ásványvíz: a panaszból eddig italbejegyzés lett.
             "vizesed", "vizeny", "vizretencio", "vizhajto",
