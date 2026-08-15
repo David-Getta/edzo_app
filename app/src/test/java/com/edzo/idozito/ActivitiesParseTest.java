@@ -3030,6 +3030,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az éves-havi összegző nem egy (vagy ötven) mai edzés.
+     *
+     * Az „összesen 1250 km futás idén" mai futást írt be 211 napra, „a
+     * Garmin évi összesítője: 210 edzés" ÖTVEN egyéb mozgást, a „legjobb
+     * hónapom volt: 160 km" pedig egy 160 kilométeres futást. A mai és a
+     * heti összeg marad.
+     */
+    @Test public void aYearlySummaryIsNotOneWorkout() {
+        assertEquals(0, Activities.parse("véget ért a szezon, összesen "
+                + "1250 km futás idén").plans.size());
+        assertEquals(0, Activities.parse("a Garmin évi összesítője: "
+                + "210 edzés, 9800 perc").plans.size());
+        assertEquals(0, Activities.parse("legjobb hónapom volt: 160 km és "
+                + "14 edzés").plans.size());
+        assertEquals(1, Activities.parse("ma összesen 12000 lépés "
+                + "lett").plans.size());
+    }
+
+    /**
      * A nyújtózkodás az íróasztalnál nem nyújtás-edzés.
      */
     @Test public void stretchingAtTheDeskIsNotAWorkout() {

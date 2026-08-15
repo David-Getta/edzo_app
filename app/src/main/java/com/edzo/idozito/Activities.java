@@ -1244,6 +1244,18 @@ public final class Activities {
         // nyomtalanul eltűnt, mert a szokás-szabály az EGÉSZ mondatra élt.
         stripHabitClause(q);
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
+        // Az ÉVES-HAVI ÖSSZEGZŐ nem egy edzés: az „összesen 1250 km futás
+        // idén", „a Garmin évi összesítője: 210 edzés" és a „legjobb
+        // hónapom volt: 160 km" számai hónapok összegei – mégis egy-egy
+        // mai (vagy ötven!) bejegyzés lett belőlük.
+        String sm = new String(q);
+        if (sm.contains("osszesito")
+                || sm.matches(".*(?<![a-z])(iden|tavaly|szezonban|a szezon)"
+                        + "(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*")
+                || sm.matches(".*(?<![a-z])osszesen(?![a-z]).*"
+                        + "(?<![a-z])(iden|tavaly|szezonban)(?![a-z]).*")
+                || sm.matches(".*legjobb (honap|het)\\w*.*"))
+            return new Parsed(out, 1, 0, 12);
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.
         maskSymptomStairs(q);

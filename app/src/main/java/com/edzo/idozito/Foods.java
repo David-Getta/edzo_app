@@ -841,6 +841,9 @@ public final class Foods {
             // tej került a naplóba. A KÓKUSZCHIPS szórás, nem egy zacskó
             // sós burgonyachips.
             "tejmentes", "kokuszchips",
+            // A „tAPEROLtam" (formaidőzítés a verseny előtt) közepén az
+            // Aperol ült: a tésztavacsora mellé egy koktél került.
+            "taperol", "taperel",
             // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
             // „vízisí" mellé egy pohár ásványvíz került a naplóba. A
             // KVÍZ közepén ugyanez a tő ül.
