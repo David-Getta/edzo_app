@@ -918,4 +918,18 @@ public class FoodsParseTest {
                 .get(0).food.name);
         assertEquals("Mustár", hits("mustáros virsli").get(0).food.name);
     }
+    /**
+     * A név utáni ragozott szelet-szám is darab.
+     *
+     * A „tegnapi pizzából ettem 2 szeletet" a teljes pizza-adagot (300 g)
+     * kapta: a szám és az étel közé az étel ragja és az evés-ige
+     * ékelődött, a „szeletet" ragos alakot pedig nem ismerte a darabszó-
+     * lista.
+     */
+    @Test public void slicesAfterTheFoodNameStillCount() {
+        assertEquals(200.0, hits("tegnapi pizzából ettem 2 szeletet")
+                .get(0).grams, 0.001);
+        assertEquals(105.0, hits("kenyérből 3 szeletet vajaztam meg")
+                .get(0).grams, 0.001);
+    }
 }

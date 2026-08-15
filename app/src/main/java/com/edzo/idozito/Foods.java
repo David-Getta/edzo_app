@@ -1832,7 +1832,10 @@ public final class Foods {
      * látszott, és a tipikus adaggal (egy szeletnyivel) számolt tovább.
      */
     private static final String[] COUNT_WORDS =
-            {"db", "darab", "szelet", "gombóc", "gomboc", "pohar", "pohár",
+            {"db", "darab", "szelet",
+             // A ragozott alak a név UTÁN áll: „pizzából ettem 2 szeletet".
+             "szeletet", "szelettel",
+             "gombóc", "gomboc", "pohar", "pohár",
              "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg",
              "kupica", "stampedli", "korty", "kortyot", "kancso", "kancsó",
              // A „szem" a magyar konyhában darabszó: „tíz szem mandula",
@@ -2692,7 +2695,15 @@ public final class Foods {
                 // Csak az étel és a szám KÖZÖTT álló írásjelek engedettek:
                 // a „banán (2 db)" zárójele nem szakítja el, egy közbeékelt
                 // másik szó viszont igen.
-                if (!onlyPunctBetween(q, foodPos.get(k) + foodLen.get(k), numStart)) continue;
+                if (!onlyPunctBetween(q, foodPos.get(k) + foodLen.get(k), numStart)) {
+                    // Az étel saját ragja és az evés-ige beékelődhet: a
+                    // „pizzából ettem 2 szeletet" és a „kenyérből 3 szeletet"
+                    // számmal mért adag – eddig a tipikus adag ment be.
+                    String mid = q.substring(foodPos.get(k) + foodLen.get(k), numStart);
+                    if (!mid.matches("[a-z]{0,6}\\s+"
+                            + "(?:(?:meg)?(?:ettem|ittam|ettunk|ittunk)\\s+)?"))
+                        continue;
+                }
                 if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
             }
             if (best < 0) continue;
@@ -2784,7 +2795,7 @@ public final class Foods {
         // A falat és a harapás ételtől függetlenül pár deka: aki ennyit
         // ír, az pont azt mondja, hogy alig evett belőle.
         if (unit.startsWith("falat") || unit.startsWith("harapas")) return 15;
-        if (unit.equals("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
+        if (unit.startsWith("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
         // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
         // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a
         // kisebb mérték – a „3 evőkanál zabpehely" eddig három ADAGOT, vagyis
