@@ -1029,6 +1029,11 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A JAVÍTÁS rossz száma nem adat: a „nem 45, hanem 60 perc jóga
+        // volt" negyvenöt-hatvanasából ötven(!) jóga-alkalom lett. A rossz
+        // szám kiesik, a helyes marad.
+        s = s.replaceAll("(?<![a-z])nem\\s+\\d{1,4}(?:[.,]\\d+)?\\s?,?\\s+"
+                + "hanem(?![a-z])", "hanem");
         // A HETI TERV mondata terv, a folytatása viszont napló: a „Heti
         // terv: hétfő futás, szerda úszás. Ma a hétfői megvolt, 6 km."
         // terv-szava eddig az EGÉSZET jövőnek minősítette, és a lefutott
@@ -1363,6 +1368,12 @@ public final class Activities {
         // hónapom volt: 160 km" számai hónapok összegei – mégis egy-egy
         // mai (vagy ötven!) bejegyzés lett belőlük.
         String sm = new String(q);
+        // A TÖRLÉS-KÉRÉS nem új bejegyzés: a „duplán ment be a futás, az
+        // egyiket vedd ki" mellé egy HARMADIK futás került volna.
+        if (sm.contains("vedd ki") || sm.contains("vegyel ki")
+                || sm.contains("torold") || sm.contains("torolni")
+                || sm.contains("duplan ment"))
+            return new Parsed(out, 1, 0, 12);
         if (sm.contains("osszesito")
                 || sm.matches(".*(?<![a-z])(iden|tavaly|szezonban|a szezon)"
                         + "(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*")

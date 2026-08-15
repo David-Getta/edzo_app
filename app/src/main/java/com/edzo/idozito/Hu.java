@@ -259,10 +259,16 @@ public final class Hu {
                 // saját szövegével dolgozik tovább).
                 "(?iu)(?<!\\p{L})nem\\s+([^,;0-9]{0,30}?)(\\d{1,3}(?:[.,]\\d{1,2})?)"
                         + "([^,;0-9]{0,25}?)\\s*[,;]?\\s*(?:csak|hanem)\\s+"
-                        + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*-?\\s*\\p{L}{0,4}(?!\\p{L})")
+                        + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*-?\\s*(\\p{L}{0,4})(?!\\p{L})")
                 .matcher(s);
         if (!m.find()) return s;
-        return s.substring(0, m.start()) + m.group(1) + m.group(4) + m.group(3)
+        // A szám mögötti rövid szó legtöbbször rag („csak 5-öt"), az
+        // eldobható – de ha a tagadó félben nem volt mértékegység, akkor ez
+        // AZ EGYSÉG: a „nem 45, hanem 60 perc jóga" percét eldobva hatvan
+        // jóga-alkalom lett a hatvan perc helyett.
+        String unit = m.group(3).trim().isEmpty() && !m.group(5).isEmpty()
+                ? " " + m.group(5) : m.group(3);
+        return s.substring(0, m.start()) + m.group(1) + m.group(4) + unit
                 + s.substring(m.end());
     }
 }

@@ -3930,4 +3930,24 @@ public class ActivitiesParseTest {
         assertEquals("si", q.plans.get(0).kind.id);
         assertEquals(300, q.plans.get(0).minutes);
     }
+    /**
+     * A helyesbítés egysége nem vész el, a törlés-kérés nem új bejegyzés.
+     *
+     * A „nem 45, hanem 60 perc jóga volt" javító-szabálya a szám mögötti
+     * rövid szót ragnak nézte és eldobta – a perc egységgel együtt, így
+     * ÖTVEN jóga-alkalom lett a hatvan percből. A „duplán ment be a futás,
+     * az egyiket vedd ki" pedig egy HARMADIK futást írt volna be.
+     */
+    @Test public void aCorrectionKeepsItsUnit() {
+        Activities.Parsed p = Activities.parse("nem 45, hanem 60 perc "
+                + "jóga volt");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(60, p.plans.get(0).minutes);
+        assertEquals(0, Activities.parse("duplán ment be a futás, az "
+                + "egyiket vedd ki").plans.size());
+        // A ragos javítás változatlanul jó: az egység az első félből jön.
+        assertEquals(78.0, BodyParse.parse("nem 80 kg, csak 78 kg volt "
+                + "a súlyom").kg, 0.01);
+    }
 }
