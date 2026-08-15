@@ -3030,6 +3030,16 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A nyújtózkodás az íróasztalnál nem nyújtás-edzés.
+     */
+    @Test public void stretchingAtTheDeskIsNotAWorkout() {
+        assertEquals(0, Activities.parse("óránként felálltam nyújtózni "
+                + "pár percre").plans.size());
+        assertEquals(15, Activities.parse("nyújtottam 15 percet edzés "
+                + "után").plans.get(0).minutes);
+    }
+
+    /**
      * A terem kondija átadja az ellopott percet a konkrét sportnak.
      *
      * A „falmásztam a boulder teremben 90 percet" falmászása az

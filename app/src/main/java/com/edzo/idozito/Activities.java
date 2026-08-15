@@ -777,6 +777,10 @@ public final class Activities {
             // A FUTÓKIHÍVÁS neve nem egy futás: a haladás-jegyzet
             // („januári futókihívás: eddig 87 km") nem mai edzés.
             "futokihivas",
+            // A NYÚJTÓZKODÁS az íróasztalnál nem nyújtás-edzés, a
+            // SZEMTORNA pedig nem torna: mindkettő negyvenöt perces jógát
+            // írt a naplóba egy-egy irodai mikroszünetből.
+            "nyujtoz", "szemtorna",
             "tekercs", "tornacipo", "tornado", "kezitaska", "bevasarl",
             // A TEREM szótöve a hétköznapi helyiségnevekben is ott van: a
             // tárgyalóteremben töltött nap eddig hatvanperces kondi-edzés
