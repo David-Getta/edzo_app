@@ -4598,4 +4598,16 @@ public class ActivitiesParseTest {
         assertEquals(0.4, Activities.parse("úsztam 400m-t").plans.get(0).km, 0.001);
     }
 
+    @Test public void spokenDecimalsKeepTheirWholeParts() {
+        // A „futottam három egész öt kilométert" 3,5 km – eddig csak az
+        // öt maradt belőle, öt kilométerként.
+        assertEquals(3.5, Activities.parse("futottam három egész öt kilométert")
+                .plans.get(0).km, 0.001);
+        assertEquals(25.5, Activities
+                .parse("tekertem huszonöt egész öt kilométert")
+                .plans.get(0).km, 0.001);
+        assertEquals(5, Activities.parse("futottam öt kilométert")
+                .plans.get(0).km, 0.001);
+    }
+
 }

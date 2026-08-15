@@ -1149,6 +1149,36 @@ public final class Activities {
                 || s.contains("pezsgofurdo"))
             s = s.replaceAll("(?<![a-z])(?:medence|uszoda|uszomedence)"
                     + "\\w*", "");
+        // A „HÁROM EGÉSZ ÖT kilométer" 3,5: a kimondott tizedes-pár eddig
+        // szétesett, és csak az öt maradt – öt kilométer lett a három és
+        // félből. (A testsúly-oldal a teljes számnév-fordítást használja,
+        // ott ez eddig is jó volt.)
+        {
+            java.util.regex.Matcher em = java.util.regex.Pattern.compile(
+                    "(?<![a-z])((?:tizen|huszon)?(?:egy|ketto|ket|harom|negy"
+                    + "|ot|hat|het|nyolc|kilenc)) egesz ((?:egy|ketto|ket"
+                    + "|harom|negy|ot|hat|het|nyolc|kilenc|\\d))(?![a-z])")
+                    .matcher(s);
+            StringBuffer eb = new StringBuffer();
+            String[] w = {"egy", "ketto", "ket", "harom", "negy", "ot",
+                    "hat", "het", "nyolc", "kilenc"};
+            String[] d = {"1", "2", "2", "3", "4", "5", "6", "7", "8", "9"};
+            while (em.find()) {
+                String g1 = em.group(1), g2 = em.group(2);
+                int tens = 0;
+                if (g1.startsWith("tizen")) { tens = 10; g1 = g1.substring(5); }
+                else if (g1.startsWith("huszon")) { tens = 20; g1 = g1.substring(6); }
+                for (int i = 0; i < w.length; i++) {
+                    if (w[i].equals(g1)) g1 = d[i];
+                    if (w[i].equals(g2)) g2 = d[i];
+                }
+                try { g1 = String.valueOf(tens + Integer.parseInt(g1)); }
+                catch (NumberFormatException ignored) { }
+                em.appendReplacement(eb, g1 + "," + g2);
+            }
+            em.appendTail(eb);
+            s = eb.toString();
+        }
         // A TERMI RÖVIDÍTÉS perce nem méter: a „cardio 20m + súlyok 40m"
         // húsz és negyven PERC – méterként negyven méteres futás lett
         // belőle. Csak termi szó mellett és úszás nélkül merjük.
