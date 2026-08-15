@@ -197,6 +197,15 @@ percenkénti idő, nem időtartam – az „átlagtempóm 5:20 volt a 10 kilomé
 megtörtént edzés), és a **küszöb** száma („lement 80 alá, 79.6 kg") sosem
 a mérleg száma.
 
+A kötőszavakat és a nyomatékot is érti: a **„de"** új állítást nyit („az nem
+edzés de 6 km-t gyalogoltam" – a gyaloglás megtörtént), a szorzószám utáni
+**„is"** csak nyomaték („kétszer is voltam úszni" = két úszás), a **mért
+tagmondat** kimenti a szokás-mondatot („botokkal járok, nordic walking 3 km"),
+a **„kajak"** pedig a beszélt nyelvben nyomatékosítás, nem csónak. Az
+**akupunktúra** nem túra, a **kéziergométer** nem kézilabda, a **steady
+state** közepén nincs tea, és a **„jó kis kardió"** értékelő megjegyzés, nem
+második edzés.
+
 A konditerem szlengjét is beszéli: a **„toltam a vasat"** súlyzózás (a puszta
 „vas" tilos tő – a vasárnap és a vasalás is tartalmazza), a **„leraktam 10
 kört a pályán"** pedig sportnév nélkül is futás, mert a kör + pálya páros az
