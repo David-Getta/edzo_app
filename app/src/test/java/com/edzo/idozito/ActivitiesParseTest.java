@@ -4326,4 +4326,24 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("edzés 6 órakor kezdődött, "
                 + "45 perc lett").plans.get(0).minutes);
     }
+    /**
+     * A két félidő összeadódik, a kevés futás nem a fő edzés.
+     *
+     * Az „edzőmeccs 2x35 perc" harmincöt percnek számított hetven
+     * helyett; a „taktikai edzés 90 perc, kevés futással" pedig KILENCVEN
+     * PERC FUTÁS lett. Az erőnléti és az „utat másztam a falon" üresen
+     * jött vissza.
+     */
+    @Test public void matchHalvesAddUp() {
+        assertEquals(70, Activities.parse("edzőmeccs 2x35 perc, végig "
+                + "játszottam").plans.get(0).minutes);
+        Activities.Parsed t = Activities.parse("taktikai edzés 90 perc, "
+                + "kevés futással");
+        assertEquals(1, t.plans.size());
+        assertEquals("egyeb", t.plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("erőnléti a csapattal "
+                + "45 perc").plans.get(0).kind.id);
+        assertEquals("fal", Activities.parse("6b utat másztam a falon, "
+                + "4 kör").plans.get(0).kind.id);
+    }
 }

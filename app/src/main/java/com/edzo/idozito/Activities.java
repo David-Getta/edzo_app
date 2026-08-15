@@ -185,6 +185,8 @@ public final class Activities {
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    // Az erőnléti a csapatsportok kiegészítő edzése.
+                    "eronleti",
                     // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
                     // „terem" (kondi) tövet – a hosszabb tő nyer, egy találat.
                     "fitneszterem", "fitnessterem",
@@ -346,7 +348,10 @@ public final class Activities {
                     // főnév volt stem, a mászni ige nem.
                     "falat masz", "falra masz", "maszoterem", "maszo terem",
                     "mentem maszni", "voltam maszni", "voltunk maszni",
-                    "maszni voltam", "maszni voltunk"),
+                    "maszni voltam", "maszni voltunk",
+                    // Az ÚT a mászók köre: a „6b utat másztam a falon"
+                    // üresen jött vissza.
+                    "utat masz", "falon masz"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
                     "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
                     "takarit", "funyir", "fuvet nyir", "sovenyt vag", "sovenyvag",
@@ -1083,7 +1088,10 @@ public final class Activities {
         // Csak munkába/iskolába járós vagy oda-vissza mondatban élünk vele.
         if (s.contains("dolgozni") || s.contains("munkaba") || s.contains("suliba")
                 || s.contains("iskolaba") || s.contains("oda-vissza")
-                || s.contains("oda vissza")) {
+                || s.contains("oda vissza")
+                // A MECCS két félideje is összeadódik: az „edzőmeccs
+                // 2x35 perc" hetven perc játék, nem harmincöt.
+                || s.contains("meccs") || s.contains("felido")) {
             java.util.regex.Matcher ing = java.util.regex.Pattern
                     .compile("(?<![\\dx.,])2\\s?x\\s?(\\d{1,3})\\s?perc").matcher(s);
             if (ing.find()) {
@@ -1212,6 +1220,12 @@ public final class Activities {
         // Az IGE előtti alak („majdnem elestem") marad tagadás.
         s = s.replaceAll("(?<![a-z])(?:kis hijan|keves hijan|majdnem)\\s+"
                 + "(?=(?:egy |fel |masfel |\\d))", "kb ");
+        // A KEVÉS kísérő-mozgás nem a fő edzés: a „taktikai edzés 90 perc,
+        // kevés futással" KILENCVEN PERC FUTÁS lett – a futással csak
+        // annyit mond, hogy alig volt.
+        s = s.replaceAll("(?<![a-z])keves\\s+\\p{L}*"
+                + "(?:futas|futassal|uszas|uszassal|tekeres|tekeressel"
+                + "|setaval|kocogas)\\w*", "");
         // A MECCS-SZÁM a megnevezett sporté: az „asztalitenisz bajnokság,
         // 5 meccset játszottam" játszottam-igéje KÜLÖN öt egyéb mozgást
         // szült a tenisz mellé. Ha a mondatban ott a sportág neve, a
