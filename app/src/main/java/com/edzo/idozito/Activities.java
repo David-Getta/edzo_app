@@ -2577,6 +2577,10 @@ public final class Activities {
                 // NAPOT nevez meg, és eddig mindkettőre bekerült a négyórás
                 // túra – vagyis nyolc óra mozgás abból, ami négy volt.
                 "pihentem", "pihentunk", "pihenonap", "pihi",
+                // Az angolul írt pihenőnap ugyanaz: az „edzés: rest day"
+                // mellől eddig egy 45 perces „egyéb mozgás" került be – a
+                // percek ráadásul az alvás órájából (6:45) jöttek.
+                "rest day", "restday",
                 // Az „alig mozogtam" pont az ellenkezőjét mondja annak, amit
                 // a mozgás-szó jelent: a home office napjából eddig egy
                 // negyvenöt perces „egyéb mozgás" lett a naplóban. Csak a

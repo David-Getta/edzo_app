@@ -346,7 +346,10 @@ public class ActivitiesParseTest {
         // A „hétvégi" JELZŐ: a „hétvégi hosszú futás 18 km" tizennyolc
         // kilométere hét napra terült szét, és a heti statisztikában hétszer
         // annyi napnak látszott. A hétvége két nap, nem hét.
-        Activities.Parsed p = Activities.parse("hétvégi hosszú futás 18 km 1:45");
+        // Rögzített hétköznapi nap (szerda): hétvégén írva a „hétvégi"
+        // szándékosan rövidebb időszak (szombaton a ma, vasárnap kettő).
+        Activities.Parsed p = Activities.parse("hétvégi hosszú futás 18 km 1:45",
+                1_753_869_600_000L);
         assertEquals(2, p.days);
         assertEquals(1, p.plans.size());
         assertEquals(18, p.plans.get(0).km, 0.001);
@@ -3021,6 +3024,20 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(1, p.plans.get(0).count);
         assertEquals(1, p.days);
+    }
+
+    /**
+     * Az angolul írt pihenőnap is pihenőnap.
+     *
+     * Az „alvás 6:45, rhr 51, edzés rest day" mellől egy 45 perces
+     * „egyéb mozgás" került a naplóba – a percek ráadásul az alvás
+     * órájából jöttek. A rest day melletti valódi séta viszont marad.
+     */
+    @Test public void restDayInEnglishIsStillARestDay() {
+        assertEquals(0, Activities.parse("alvás 6:45, rhr 51, edzés "
+                + "rest day").plans.size());
+        assertEquals(1, Activities.parse("rest day, csak sétáltam "
+                + "20 percet").plans.size());
     }
 
     /**
