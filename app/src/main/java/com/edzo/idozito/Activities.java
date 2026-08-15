@@ -4011,6 +4011,12 @@ public final class Activities {
         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
         String before = a < b ? s.substring(a, b) : "";
         if (isSleepWord(before)) return true;
+        // Az ÜLŐ IGE az idő ELŐTT is állhat: a „görnyedtem 10 órát, este
+        // 20 perc gerinctorna" tíz órája hatszáz perc jógává vált – a
+        // desk-szót eddig csak az idő MÖGÖTT kerestük. Csak igealakra: a
+        // főnév („munka 30 perc kondi") az őrszem-teszt szerint nem
+        // veheti el a mellette álló edzés idejét.
+        if (isDeskVerb(before)) return true;
         // A TEMPÓ csak ELŐLRŐL köt, és csak ÓRA-alakú számra: a „tempó 5:00"
         // öt perc egy kilométerre. Hátrafelé nem nézünk, mert a „24:59 tempó
         // 5:00" első száma a valódi idő; a „perc"-cel kiírt hossz pedig sosem
@@ -4081,7 +4087,12 @@ public final class Activities {
                 || w.startsWith("telefonal")
                 // A PIHENÉS is a mozdulatlan idő neve: az „1 óra pihenés után
                 // 30 perc bringa" egy óráját eddig a bringa kapta meg.
-                || w.startsWith("pihen") || w.startsWith("szunet");
+                || w.startsWith("pihen") || w.startsWith("szunet")
+                // A GÖRNYEDÉS a monitor előtt is ülés: az „a monitornál
+                // görnyedtem 10 órát, este 20 perc gerinctorna" tíz órája
+                // hatszáz perc jógává vált.
+                || w.startsWith("gornyed") || w.startsWith("monitor")
+                || w.startsWith("szamitogep") || w.startsWith("laptop");
         return desk && !s.contains("kerti munka") && !s.contains("fizikai munka")
                 && !s.contains("haz koruli");
     }
@@ -4089,6 +4100,20 @@ public final class Activities {
     /** Sebességet jelölő szó: ami utána áll, az perc/km, nem perc. */
     private static boolean isPaceWord(String w) {
         return w.startsWith("tempo") || w.startsWith("iram");
+    }
+
+    /**
+     * ÜLŐ IGE: aki ezt írja az idő elé, az a mozdulatlan óráit meséli.
+     *
+     * Csak igealakok – a főnév („munka 30 perc kondi") nem veheti el a
+     * mellette álló edzés idejét.
+     */
+    private static boolean isDeskVerb(String w) {
+        return w.startsWith("gornyed") || w.equals("ultem") || w.equals("ultunk")
+                || w.equals("ulok") || w.startsWith("uldogel")
+                || w.startsWith("utaztam") || w.startsWith("utaztunk")
+                || w.startsWith("vezettem") || w.startsWith("vezettunk")
+                || w.startsWith("tevezt") || w.startsWith("telefonalt");
     }
 
     /**

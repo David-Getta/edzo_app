@@ -4231,4 +4231,21 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("Fifát toltam 3 órát")
                 .plans.size());
     }
+    /**
+     * Az ülő ige órái az idő ELŐTT állva sem edzésórák.
+     *
+     * A „monitornál görnyedtem 10 órát, este 20 perc gerinctorna" tíz
+     * órája HATSZÁZ PERC jógává vált – a desk-szót csak az idő mögött
+     * kerestük. Csak igealakra él: a „munka 30 perc kondi" harminc perce
+     * a kondié marad.
+     */
+    @Test public void slouchingHoursBeforeTheNumberAreNotTraining() {
+        assertEquals(20, Activities.parse("a monitornál görnyedtem "
+                + "10 órát, este 20 perc gerinctorna")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("laptop előtt ültem 8 órát, "
+                + "aztán 30 perc futás").plans.get(0).minutes);
+        assertEquals(30, Activities.parse("munka 30 perc kondi")
+                .plans.get(0).minutes);
+    }
 }
