@@ -3030,6 +3030,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A jelzős szám nem védi a panaszt, a terem nem másol percet.
+     *
+     * Az „a 42-es cipőm szorít futásnál" negyvenöt perces futást írt be –
+     * egy cipő-panaszból: a méret száma bizonyítéknak számított. A
+     * „4-es teremben volt a spinning, 45 perc" kondija pedig lemásolta a
+     * spinning percét. A valódi fájós-de-megtörtént edzés marad.
+     */
+    @Test public void aShoeSizeDoesNotProveAWorkout() {
+        assertEquals(0, Activities.parse("a 42-es cipőm szorít "
+                + "futásnál").plans.size());
+        Activities.Parsed p = Activities.parse("a 4-es teremben volt a "
+                + "spinning, 45 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("20 perc futás után fájt a "
+                + "térdem").plans.size());
+    }
+
+    /**
      * A „24 órás" terem a nyitvatartás – a 24 órás verseny viszont edzés.
      */
     @Test public void aTwentyFourHourGymIsNotAWorkoutLength() {

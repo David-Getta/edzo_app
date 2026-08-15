@@ -1985,8 +1985,16 @@ public final class Activities {
             if (stated) {
                 List<Plan> kept = new ArrayList<>();
                 for (Plan p : out) {
+                    // A terem kondija akkor is kiesik, ha a MÁSIK edzés
+                    // percét másolta le: „a 4-es teremben volt a spinning,
+                    // 45 perc" kondija ugyanazt a 45 percet kapta meg.
+                    boolean copied = false;
+                    for (Plan o : out)
+                        if (o != p && !"kondi".equals(o.kind.id)
+                                && o.minutes == p.minutes) copied = true;
                     if ("kondi".equals(p.kind.id) && p.count == 1 && p.km <= 0
-                            && p.steps <= 0 && p.minutes == p.kind.defaultMin)
+                            && p.steps <= 0
+                            && (p.minutes == p.kind.defaultMin || copied))
                         continue;
                     kept.add(p);
                 }
@@ -4182,9 +4190,13 @@ public final class Activities {
             while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
                     && s.charAt(e) != ';') e++;
             String cl = s.substring(a, e);
-            boolean digit = false;
-            for (int i = 0; i < cl.length(); i++)
-                if (Character.isDigit(cl.charAt(i))) { digit = true; break; }
+            // A JELZŐS szám (42-es cipő, 3-as szint) nem védi meg a
+            // panasz-tagmondatot: az „a 42-es cipőm szorít futásnál"
+            // negyvenöt perces futást írt be – egy cipő-panaszból. Csak a
+            // mennyiség-szám (20 perc, 5 km) bizonyíték.
+            boolean digit = java.util.regex.Pattern
+                    .compile("(?>\\d+)(?![\\d])(?!\\s?-?[eao]s(?![a-z]))")
+                    .matcher(cl).find();
             if (!digit && complains(cl)) blank(q, a, e);
             a = e + 1;
         }
@@ -4196,7 +4208,10 @@ public final class Activities {
         for (String w : new String[]{"faj", "fajt", "fajnak", "fajos", "huzodas",
                 "huzodast", "huzodott", "huzodtam", "megrandult", "berandult",
                 "serules", "serultem", "megserult", "ropog", "recseg", "kattog",
-                "sajog", "nyilall", "nyilallt", "zsibbad", "elzsibbadt"})
+                // A SZORÍTÓ cipő is panasz: „a 42-es cipőm szorít futásnál"
+                // negyvenöt perces futást írt be – egy cipő-panaszból.
+                "sajog", "nyilall", "nyilallt", "zsibbad", "elzsibbadt",
+                "szorit"})
             if (t.contains(" " + w + " ")) return true;
         for (String w : new String[]{"fajdalm", "megfajdul", "gyulladt", "gyulladas",
                 "belenyilall", "szakadas", "elpattant", "megpattant",
