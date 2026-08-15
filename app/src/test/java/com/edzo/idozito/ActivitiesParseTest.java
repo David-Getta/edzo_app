@@ -4610,4 +4610,13 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    @Test public void theEnglishWordDistanceIsNotDancing() {
+        // Az „activity: running, distance 10.02 km" sorból tánc-tétel is
+        // lett – a disTANCe belsejében ott a tánc.
+        Activities.Parsed p = Activities
+                .parse("activity: running, distance 10.02 km, time 55:31");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+    }
+
 }

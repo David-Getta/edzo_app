@@ -868,6 +868,9 @@ public final class Activities {
      * érintetlenek maradnak – azokat egy szóhatár-szabály elvágná.
      */
     private static final String[] NOT_SPORT = {
+            // Az angol óra-export DISTANCE szavában ott a TÁNC – az
+            // „activity: running, distance 10 km" sorból tánc-tétel lett.
+            "distance",
             "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
             // Az akuponk-TÚRA sem túra: az „akupunktúra kezelés a hátamra"
