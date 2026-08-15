@@ -957,6 +957,13 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „TERVEZTEM, VÉGÜL" mondat vége a valóság: a „20 percet
+        // terveztem, végül 45 lett" negyvenöt perce megtörtént – a tervezés
+        // szava eddig az egészet elvitte. A tervezett szám kiesik, a végül
+        // utáni marad.
+        s = s.replaceAll("(?<![\\d.,])\\d{1,3}\\s?perc\\w*([^0-9,;.]{0,20}?)"
+                + "tervez\\w+,?\\s*(?:de\\s+)?vegul\\s+(\\d{1,3})"
+                + "(?:\\s?perc\\w*)?\\s+lett", "$2 perc$1lett");
         // A SZORZÓSZÁM utáni „is" csak nyomaték: a „kétszer is voltam
         // úszni" két úszás – az „is" eddig elvágta a számot a mozgástól,
         // és egy alkalom lett belőle.

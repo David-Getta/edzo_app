@@ -3030,6 +3030,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „terveztem, végül" mondat vége a valóság.
+     *
+     * A „30 perc futást terveztem, de végül 50 perc lett" ötven perce
+     * megtörtént – a tervezés szava eddig az egészet elvitte, a mondat
+     * üresen jött vissza. A puszta terv („holnapra 20 perc futást
+     * tervezek") terv marad.
+     */
+    @Test public void thePlannedVersusActualKeepsTheActual() {
+        Activities.Parsed p = Activities.parse("30 perc futást terveztem, "
+                + "de végül 50 perc lett");
+        assertEquals(1, p.plans.size());
+        assertEquals(50, p.plans.get(0).minutes);
+        assertEquals(0, Activities.parse("holnapra 20 perc futást "
+                + "tervezek").plans.size());
+    }
+
+    /**
      * A „mehet a kemény edzés" engedély a jövőre, az aktív idő viszont adat.
      *
      * A „whoop recovery 85%, mehet a kemény edzés" negyvenöt perces
