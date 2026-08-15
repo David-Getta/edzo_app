@@ -766,4 +766,15 @@ public class IntervalParseTest {
         assertEquals(30, p.work);
         assertEquals(30, p.rest);
     }
+    /**
+     * A súly-tartomány nem munka/pihenő ritmus.
+     *
+     * A „70-75 kg között ingadozom" hetvenes párjából időzítő-terv lett
+     * (70 mp munka, 75 pihenő). A kimondott intervall marad.
+     */
+    @Test public void aWeightRangeIsNotATimerPlan() {
+        assertNull(IntervalParse.parse("70-75 kg között ingadozom"));
+        assertNotNull(IntervalParse.parse("30 mp munka 15 mp pihenő, "
+                + "10 kör"));
+    }
 }

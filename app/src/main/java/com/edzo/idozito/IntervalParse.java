@@ -148,6 +148,11 @@ public final class IntervalParse {
         if (java.util.regex.Pattern
                 .compile("\\d{1,3}\\s?-\\s?\\d{1,3}\\s*(?:perc|mp|masodperc|ora)")
                 .matcher(s).find() && !saysPlan(s)) return null;
+        // A SÚLY- és TÁV-tartomány sem ritmus: a „70-75 kg között
+        // ingadozom" hetvenes párja munka/pihenő tervnek látszott.
+        if (java.util.regex.Pattern
+                .compile("\\d{1,3}\\s?-\\s?\\d{1,3}\\s*(?:kg|kilo|km|ezer)")
+                .matcher(s).find() && !saysPlan(s)) return null;
         // A NAPIREND óra-tartománya sem ritmus: az „ebédidő: 12:30-13:00
         // séta" két időpontja munka/pihenő párnak látszott. Két kettőspontos
         // idő kötőjellel a nap órái – terv csak kimondva lehet belőle.
