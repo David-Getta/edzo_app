@@ -1343,6 +1343,12 @@ public final class Activities {
                     if (p >= 2 && w.startsWith("fut") && s.startsWith("si", p - 2)
                             && (p == 2 || !Character.isLetter(s.charAt(p - 3))))
                         continue;
+                    // Az „ÚSZÁS NÉLKÜL" tagadás: a sport-tő utáni „nélkül"
+                    // kizárja a bejegyzést – a „csak lubickoltam, úszás
+                    // nélkül" nem negyvenöt perc úszás.
+                    int wEnd = p + w.length();
+                    while (wEnd < s.length() && Character.isLetter(s.charAt(wEnd))) wEnd++;
+                    if (s.startsWith(" nelkul", wEnd)) continue;
                     // A „terem” az ÉTterem és a MŰterem belsejében nem kondi
                     // (az edzőterem, gépterem viszont igen).
                     if (w.equals("terem") && p >= 2

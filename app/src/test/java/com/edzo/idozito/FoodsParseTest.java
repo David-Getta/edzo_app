@@ -554,6 +554,16 @@ public class FoodsParseTest {
                 + "2 tányér").size());
     }
 
+    /** A hóemberépítésben nincs pite, a lubickolásban nincs uborka. */
+    @Test public void snowmanBuildingHasNoPieInIt() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "hóemberépítés és hógolyózás a "
+                + "kertben").isEmpty());
+        assertTrue(Foods.parse(all, "lubickoltam a Balatonban").isEmpty());
+        assertFalse(Foods.parse(all, "almáspite a nagyinál").isEmpty());
+        assertFalse(Foods.parse(all, "uborkasaláta ebédre").isEmpty());
+    }
+
     /** A százalékos zsír és a milliméteres comb nem étel. */
     @Test public void bodyFatAndCaliperReadingsAreNotFood() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

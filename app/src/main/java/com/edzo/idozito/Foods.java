@@ -832,6 +832,9 @@ public final class Foods {
             // A „sTEAdy state kardió" közepén a tea: az angol edzős szó
             // mellé egy csésze tea került a naplóba.
             "steady",
+            // A LUBICKOLÁS közepén az ubi (uborka): a balatoni pancsolás
+            // mellé egy uborka került a naplóba.
+            "lubickol",
             // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
             // „vízisí" mellé egy pohár ásványvíz került a naplóba.
             "vizi",
@@ -1062,7 +1065,10 @@ public final class Foods {
             "haboru", "sertes", "szolo", "kettej",
             // A SZERVIZ végén a víz: a „bringaszerviz után próbakör" mellé
             // egy pohár ásványvíz került a naplóba.
-            "szerviz"};
+            "szerviz",
+            // Az ÉPÍTÉS összetétel MÁSODIK tagjaként is a pite tövén ül: a
+            // „hóemberépítés a kertben" mellé egy szelet almás pite került.
+            "epites"};
 
     /**
      * Tövek, amik CSAK a szó elején jelentenek ételt.

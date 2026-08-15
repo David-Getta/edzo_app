@@ -3030,6 +3030,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A sport-tő utáni „nélkül" tagadás.
+     *
+     * A „hűtöttem magam a Balatonban, úszás nélkül csak lubickolás"
+     * negyvenöt perc úszást írt a naplóba – pont abból a szóból, amivel
+     * az ember kimondta, hogy nem úszott. A másik sport marad: a „futás
+     * nélkül telt a hét, csak 2 úszás volt" úszásai bekerülnek.
+     */
+    @Test public void aSportFollowedByWithoutIsNegated() {
+        assertEquals(0, Activities.parse("hűtöttem magam a Balatonban, "
+                + "úszás nélkül csak lubickolás").plans.size());
+        Activities.Parsed p = Activities.parse("futás nélkül telt a hét, "
+                + "csak 2 úszás volt, 1-1 km");
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+    }
+
+    /**
      * A „terveztem, végül" mondat vége a valóság.
      *
      * A „30 perc futást terveztem, de végül 50 perc lett" ötven perce
