@@ -780,7 +780,10 @@ public final class Foods {
         // A „folyadék" a napi bevitel hétköznapi szava: a „2,5 liter folyadék
         // ment le ma" eddig sehol nem jelent meg.
         new Food("Víz / ásványvíz", 0, 0, 250, "viz", "asvanyviz", "szoda",
-                "folyadek", "folyadekot", "folyadekbevitel"),
+                "folyadek", "folyadekot", "folyadekbevitel",
+                // A HIDRATÁLÁS is vízivás: a „hidratálás pipa, 3 liter"
+                // eddig üresen jött vissza.
+                "hidratal", "hidratacio"),
         // A rizling BOR, nem rizs – a hosszabb tő menti meg a „rizs"-től.
         new Food("Bor (vörös/fehér)", 80, 0.1, 150, "bor", "vorosbor", "feherbor",
                 "rizling", "furmint", "kekfrankos", "cabernet", "chardonnay",
@@ -2472,6 +2475,13 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // Az ÖSSZEJÖTT mennyiség is mennyiség: a „vizet ittam, 2 liter
+        // összejött mára" két litere elveszett, mert az ige a tiszta
+        // mennyiség-tagmondatot beszédessé tette.
+        query = query.replaceAll("(?iu)((?:\\d+(?:[.,]\\d+)?|f[eé]l|"
+                + "m[aá]sf[eé]l)\\s?(?:liter|dl|l)\\p{L}*)\\s+"
+                + "(?:[oö]sszej[oö]tt|ment le|lett meg|megvolt|meglett)"
+                + "(?:\\s+m[aá]ra|\\s+ma)?", "$1");
         // A HELYETT előtti étel nem került a szájba: a „kávézacc helyett
         // koffein tabletta" kávét írt a naplóba, pedig épp az maradt el.
         query = query.replaceAll("(?iu)(?<!\\p{L})\\p{L}+\\s+helyett(?!\\p{L})",

@@ -1114,4 +1114,15 @@ public class FoodsParseTest {
         assertEquals("Bulgur (főtt)", h.get(0).food.name);
     }
 
+    @Test public void theDailyWaterTotalCounts() {
+        // A „vizet ittam, 2 liter összejött mára" két litere elveszett –
+        // az ige beszédessé tette a tiszta mennyiség-tagmondatot. A
+        // „hidratálás pipa, 3 liter" pedig üresen jött vissza.
+        assertEquals(2000, hits("vizet ittam, 2 liter összejött mára")
+                .get(0).grams, 0.5);
+        List<Foods.Hit> h = hits("hidratálás pipa, 3 liter");
+        assertEquals("Víz / ásványvíz", h.get(0).food.name);
+        assertEquals(3000, h.get(0).grams, 0.5);
+    }
+
 }
