@@ -3772,6 +3772,15 @@ public final class Activities {
             // Húsz számjegy nem óraszám: a hosszú szám nem fér az int-be sem.
             if (i - a > 4) continue;
             int num = Integer.parseInt(s.substring(a, i));
+            // A TIZEDES óra is óra: az „1,5h" másfél óra – eddig a vessző
+            // elvágta, és az „5h"-ból háromszáz perc lett.
+            int fracMin = 0;
+            if (i + 1 < s.length() && (s.charAt(i) == ',' || s.charAt(i) == '.')
+                    && Character.isDigit(s.charAt(i + 1))
+                    && (i + 2 >= s.length() || !Character.isDigit(s.charAt(i + 2)))) {
+                fracMin = (s.charAt(i + 1) - '0') * 6;
+                i += 2;
+            }
             int j = i;
             while (j < s.length() && s.charAt(j) == ' ') j++;
             if (j >= s.length()) continue;
@@ -3779,7 +3788,7 @@ public final class Activities {
             int val;
             if (u == 'h') {
                 if (num > 24) continue;
-                val = num * 60;
+                val = num * 60 + fracMin;
                 j++;
                 // Az óra utáni perc: „1h20", „1h 20m". A perc-jel elhagyható.
                 int k = j;

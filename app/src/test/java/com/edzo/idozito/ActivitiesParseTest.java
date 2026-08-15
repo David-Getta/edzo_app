@@ -3030,6 +3030,18 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A tizedes óra is óra: az „1,5h" másfél óra.
+     */
+    @Test public void decimalHoursCount() {
+        assertEquals(90, Activities.parse("séta 1,5h a városban")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("futás 0,5h reggel")
+                .plans.get(0).minutes);
+        assertEquals(80, Activities.parse("edzés 1h 20m")
+                .plans.get(0).minutes);
+    }
+
+    /**
      * A sport-tő utáni „nélkül" tagadás.
      *
      * A „hűtöttem magam a Balatonban, úszás nélkül csak lubickolás"
