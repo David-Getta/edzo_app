@@ -1285,4 +1285,36 @@ public class StrengthParseTest {
         assertEquals("Bicepsz", it.get(0).name);
         assertEquals(12.5, it.get(0).topWeight(), 0.01);
     }
+    /**
+     * A kiírt darabszámú súlyzópár súlya a jelzős szám.
+     *
+     * A „két 12,5-ös kézisúlyzóval" kettese darab (két súlyzó), a súly a
+     * tizenkét és fél – mégis két kilós vállnyomás lett belőle. A számnév-
+     * fordítás előtt futó álarcnak a „két" szót is ismernie kell.
+     */
+    @Test public void aSpelledOutDumbbellPairKeepsItsWeight() {
+        StrengthParse.Item it = StrengthParse.parse(
+                "vállból nyomás 4x10 két 12,5-ös kézisúlyzóval").get(0);
+        assertEquals(12.5, it.topWeight(), 0.01);
+        assertEquals(4, it.sets.size());
+        assertEquals(10, it.sets.get(0).reps);
+        // Az „egy 24-es kettlebell" súlya is a jelzős szám.
+        assertEquals(24.0, StrengthParse.parse(
+                "goblet guggolás egy 24-es kettlebell-lel 3x12").get(0)
+                .topWeight(), 0.01);
+    }
+
+    /**
+     * A centis bicepsz mérőszalag, nem gyakorlat.
+     *
+     * A „bicepszem 38 cm lett" harmincnyolc ismétléses bicepszgyakorlatként
+     * is bekerült a mérés mellé – a testrész-lista nem ismerte a bicepszt.
+     */
+    @Test public void aBicepsMeasurementIsNotAWorkout() {
+        assertTrue(StrengthParse.parse("bicepszem 38 cm lett").isEmpty());
+        // A valódi bicepszgyakorlat marad.
+        assertEquals(12, StrengthParse.parse(
+                "bicepsz curl 3x12 a 12,5 kg-os súlyzóval")
+                .get(0).sets.get(0).reps);
+    }
 }

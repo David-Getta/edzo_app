@@ -543,7 +543,11 @@ public final class BodyParse {
                         // eddig teljesen elveszett, mert a tő után betű állt.
                         ? "(?<![a-z])" + stem + "(?:em|ed|e|unk|etek|uk)?"
                                 + "(?:\\s?korfogat\\w*)?(?![a-z])\\s?:?\\s?"
-                                + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg)\\s?(cm|centi\\w*)?"
+                        // A TÖBBES jelzős szám sem körfogat: a „bicepsz
+                        // 21-esek 3 kör" a huszonegyes ismétlés-séma neve,
+                        // nem huszonegy centis kar.
+                                + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg|\\s?-?[oae]sek)"
+                                + "\\s?(cm|centi\\w*)?"
                         : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
                                 + "(?<![a-z])" + stem + "(?![a-z])");
             }

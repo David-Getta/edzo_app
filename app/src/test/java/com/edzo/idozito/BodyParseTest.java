@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -751,5 +752,16 @@ public class BodyParseTest {
                 + "egy hónapja 81 volt").kg, 0.01);
         assertEquals(78.0, BodyParse.parse("3 hete edzek rendszeresen, "
                 + "ma 78 kg volt a súlyom").kg, 0.01);
+    }
+    /**
+     * A többes jelzős szám nem körfogat.
+     *
+     * A „bicepsz 21-esek 3 kör" a huszonegyes ismétlés-séma neve – mégis
+     * huszonegy centis kar került a naplóba. A valódi mérés marad.
+     */
+    @Test public void theTwentyOnesSchemeIsNotAnArmSize() {
+        assertFalse(BodyParse.parse("bicepsz 21-esek 3 kör").hasCm());
+        BodyParse.Body b = BodyParse.parse("bicepszem 38 cm lett");
+        assertTrue(b.hasCm());
     }
 }

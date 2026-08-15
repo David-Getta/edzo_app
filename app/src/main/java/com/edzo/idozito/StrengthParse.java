@@ -1066,8 +1066,18 @@ public final class StrengthParse {
      * súly marad.
      */
     private static String dropDumbbellPair(String s) {
-        return s.replaceAll("(?<![\\d,.])[12]\\s?x\\s?(\\d{1,3})\\s?kg"
+        s = s.replaceAll("(?<![\\d,.])[12]\\s?x\\s?(\\d{1,3})\\s?kg"
                 + "(?:-os|-mal|-al|os)?\\s?(?=\\p{L}*sulyzo|kettlebell)", "$1 kg ");
+        // Ugyanez X nélkül, kiírt darabszámmal: a „két 12,5-ös
+        // kézisúlyzóval" kettese darab, a súly a jelzős szám – mégis két
+        // kiló lett belőle, a tizenkét és fél meg elveszett. Itt még nem
+        // futott le a számnév-fordítás, ezért a „két" és az „egy" szóként
+        // áll a szövegben.
+        s = s.replaceAll("(?<![a-z\\d,.x])(?:[12]|ket|egy)\\s"
+                + "(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?(?:kg)?\\s?-?[oe]s\\s?(?=\\p{L}*sulyzo|kettlebell)",
+                "$1 kg ");
+        return s;
     }
 
     /**
@@ -1096,8 +1106,10 @@ public final class StrengthParse {
      */
     private static boolean looksLikeMeasurement(String s) {
         if (!s.matches(".*\\d\\s?-?(?:cm|centi)\\b.*")) return false;
+        // A bicepsz is testrész: a „bicepszem 38 cm lett" mérőszalag, nem
+        // harmincnyolc ismétléses bicepszgyakorlat.
         for (String w : new String[]{"comb", "derek", "csipo", "mellkas", "vadli",
-                "korfogat", "boseg", "felkar"})
+                "korfogat", "boseg", "felkar", "bicepsz"})
             if (s.contains(w)) return true;
         return false;
     }
