@@ -4001,4 +4001,22 @@ public class ActivitiesParseTest {
         assertEquals("foci", Activities.parse("a tesómmal fociztunk "
                 + "egy órát").plans.get(0).kind.id);
     }
+    /**
+     * A pár perc tényleg pár perc, a szám előtti majdnem pedig közelítő.
+     *
+     * A „pár percet nyújtottam" a mozgásforma alap-negyvenöt percét kapta;
+     * a „kis híján egy órán át táncoltunk" tánca pedig teljesen elveszett,
+     * mert a híján tagadásnak számított. Az ige előtti majdnem („majdnem
+     * elestem") marad tagadás.
+     */
+    @Test public void aFewMinutesIsAFewMinutes() {
+        assertEquals(5, Activities.parse("pár percet nyújtottam lefekvés "
+                + "előtt").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("kis híján egy órán át "
+                + "táncoltunk").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("majdnem egy órát futottam")
+                .plans.get(0).minutes);
+        assertEquals(8.0, Activities.parse("kis híján elestem a futáson, "
+                + "de megvolt a 8 km").plans.get(0).km, 0.01);
+    }
 }

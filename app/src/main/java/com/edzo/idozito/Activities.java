@@ -1033,6 +1033,17 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A PÁR PERC tényleg pár perc: a „pár percet nyújtottam" a
+        // mozgásforma alap-negyvenöt percét kapta. Öttel számolunk – a
+        // lényeg, hogy ne kilencszerezzük túl.
+        s = s.replaceAll("(?<![a-z])par perc", "5 perc");
+        s = s.replaceAll("(?<![a-z])nehany perc", "10 perc");
+        // A SZÁM előtti „majdnem" és „kis híján" mennyiség-közelítő, nem
+        // tagadás: a „kis híján egy órán át táncoltunk" tánca megtörtént,
+        // csak nem volt kerek óra – az egész bejegyzés mégis elveszett.
+        // Az IGE előtti alak („majdnem elestem") marad tagadás.
+        s = s.replaceAll("(?<![a-z])(?:kis hijan|keves hijan|majdnem)\\s+"
+                + "(?=(?:egy |fel |masfel |\\d))", "kb ");
         // A MECCS-SZÁM a megnevezett sporté: az „asztalitenisz bajnokság,
         // 5 meccset játszottam" játszottam-igéje KÜLÖN öt egyéb mozgást
         // szült a tenisz mellé. Ha a mondatban ott a sportág neve, a
