@@ -337,6 +337,13 @@ public final class Activities {
                     // cipekedtem" válasz nélkül maradt.
                     "kaszal", "kaszalas", "cipeked", "cipekedes", "cipeltem",
                     "pakolas", "bepakol", "kipakol",
+                    // A ház körüli nehezebb munkák igéi: a fahasogatás, a
+                    // kézi autómosás, az ablakpucolás és a szobafestés is
+                    // üresen jött vissza.
+                    "hasogat", "autot mos", "automos", "kocsit mos",
+                    "ablakot pucol", "ablakot mos",
+                    "kifestett", "keritest fest", "festettem a kerit",
+                    "szobat fest", "lakast fest",
                     // A FÁT HORDANI és a HÁZIMUNKA is fizikai munka: a „fát
                     // hordtam be fél órát" és a „házimunka, kb 3 óra" eddig
                     // válasz nélkül maradt. A puszta „munka" ülőmunka-szó,

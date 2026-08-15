@@ -4120,4 +4120,20 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("10 km lett volna, de nem "
                 + "mentem el").plans.size());
     }
+    /**
+     * A ház körüli nehéz munkák igéi is fizikai munkák.
+     *
+     * A kézi autómosás, az ablakpucolás, a fahasogatás és a szobafestés
+     * üresen jött vissza – pedig órákig tartó valódi terhelés.
+     */
+    @Test public void heavyChoresArePhysicalWork() {
+        assertEquals("munka", Activities.parse("autót mostam kézzel egy "
+                + "órát").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("tüzifát hasogattam "
+                + "délután").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("kifestettem a "
+                + "gyerekszobát, egész nap ment").plans.get(0).kind.id);
+        assertEquals("munka", Activities.parse("ablakot pucoltam egész "
+                + "délelőtt").plans.get(0).kind.id);
+    }
 }

@@ -880,4 +880,15 @@ public class FoodsParseTest {
         assertEquals("Leves (átlag)", hits("zellerlevest ettem ebédre")
                 .get(0).food.name);
     }
+    /**
+     * A szüret betakarítás, nem uzsonna.
+     *
+     * A „leszedtük a diót a fáról" harminc gramm dióként került a
+     * naplóba. A megevett dió marad.
+     */
+    @Test public void harvestingIsNotEating() {
+        assertTrue(hits("leszedtük a diót a fáról").isEmpty());
+        assertEquals("Dió", hits("megettem egy marék diót")
+                .get(0).food.name);
+    }
 }

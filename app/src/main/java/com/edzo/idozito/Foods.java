@@ -3335,6 +3335,9 @@ public final class Foods {
                 // közbeni mondat, nem egy adag megevett tészta. A dagasztás
                 // ugyanez.
                 "keleszt", "dagaszt",
+                // A SZÜRET betakarítás, nem uzsonna: a „leszedtük a diót a
+                // fáról" harminc gramm dióként került a naplóba.
+                "leszedtem", "leszedtuk", "szuretel",
                 // Ami a kukába ment.
                 "eldobtam", "kidobtam", "kiontottem", "megromlott", "kidobom",
                 // Amit más evett meg.
