@@ -4039,4 +4039,20 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("autogén tréning este fél óra")
                 .plans.get(0).minutes);
     }
+    /**
+     * A terem kardió-gépeinek angol neve is sport.
+     *
+     * A „stairmaster 20 perc" és a „sípad gép 15 perc" üresen jött vissza,
+     * az „assault bike" és a „ski erg" pedig futásnak számított.
+     */
+    @Test public void gymCardioMachinesResolveToTheirSports() {
+        assertEquals("tura", Activities.parse("stairmaster 20 perc, "
+                + "brutál volt").plans.get(0).kind.id);
+        assertEquals("si", Activities.parse("sípad gép 15 perc")
+                .plans.get(0).kind.id);
+        assertEquals("si", Activities.parse("ski erg 1000 m")
+                .plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("airbike 4 perc")
+                .plans.get(0).kind.id);
+    }
 }

@@ -102,6 +102,9 @@ public final class Activities {
                     "open water", "openwater", "nyilt vizi", "nyiltvizi"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
+                    // A crossfit-termek levegős biciklije is bicikli: az
+                    // „assault bike 10 kalória sprintek" futásnak számított.
+                    "assault bike", "airbike", "air bike",
                     // A GÖRGŐN (edzőpadon) tekerés kerékpár: a „175 wattos
                     // átlaggal 90 perc a görgőn" eddig üresen jött vissza.
                     // A „görgőzés" NEM ide tartozik: az az SMR-henger
@@ -142,6 +145,10 @@ public final class Activities {
                     // A ragozott lépcső is lépcsőzés – a „lépcsőház" viszont
                     // nem mozgás, ezért a puszta tő szándékosan kimarad.
                     "lepcsot", "lepcson", "lepcsomasz", "lepcsofutas", "babakocsi",
+                    // A terem lépcsőzőgépének angol neve: a „stairmaster
+                    // 20 perc" üresen jött vissza. (A „stepper" már a kondi
+                    // töve, az marad ott.)
+                    "stairmaster",
                     "barlangasz", "via ferrata",
                     // A magyar szétszedi az összetételt: „hegyet másztunk",
                     // „hegyre másztam" – a „hegymászás" tövét ez nem fedi.
@@ -300,7 +307,10 @@ public final class Activities {
                     // A LESIKLÁS maga a sportág neve, a SÍTÁBOR pedig a
                     // helyszíné: a „sítábor egész héten, napi 5 óra
                     // lesiklás" üresen jött vissza.
-                    "lesikl", "sitabor"),
+                    "lesikl", "sitabor",
+                    // A terem sí-mozgású gépei is ide: a „ski erg 1000 m"
+                    // futás lett, a „sípad gép 15 perc" üres.
+                    "ski erg", "skierg", "sipad"),
             // A triatlon és a duatlon NEM futás: a versenytáv órákig tart, és a
             // három (két) sportág együtt más terhelés, mint bármelyik külön. A
             // saját tétele nélkül vagy elveszne, vagy hamis névvel kerülne be.
