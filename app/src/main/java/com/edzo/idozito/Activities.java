@@ -107,6 +107,8 @@ public final class Activities {
                     // A crossfit-termek levegős biciklije is bicikli: az
                     // „assault bike 10 kalória sprintek" futásnak számított.
                     "assault bike", "airbike", "air bike",
+                    // A spinracing a spinning márkanév-változata.
+                    "spinracing", "spin racing",
                     // A GÖRGŐN (edzőpadon) tekerés kerékpár: a „175 wattos
                     // átlaggal 90 perc a görgőn" eddig üresen jött vissza.
                     // A „görgőzés" NEM ide tartozik: az az SMR-henger
@@ -216,7 +218,12 @@ public final class Activities {
                     // (Az elliptikus és a crosstrainer az „egyéb" alatt van.)
                     "body pump", "bodypump", "stepper",
                     "kettlebell", "funkcionalis edzes", "funkcionalis trening",
-                    "bootcamp", "boot camp"),
+                    "bootcamp", "boot camp",
+                    // Termi márka-órák, amik eddig üresen jöttek vissza: a
+                    // Hot Iron rudas óra, a Deepwork saját testsúlyos, a
+                    // functional training az angol írásmód.
+                    "hot iron", "hotiron", "deepwork", "deep work",
+                    "functional training", "functional edzes"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
@@ -249,7 +256,10 @@ public final class Activities {
                     // tartalmazza őket, és egy hétköznapi szóból lett
                     // harcművészet-bejegyzés rosszabb, mint egy fel nem
                     // ismert ritka sportág.
-                    "tai chi", "taichi"),
+                    "tai chi", "taichi",
+                    // A Body Combat a termek harcművészet-alapú kardiója –
+                    // a comb-tő miatt az étel-oldalon csirkecomb lett belőle.
+                    "bodycombat", "body combat"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
                     "pole dance", "poledance", "rudtanc", "pole fitness",
@@ -276,6 +286,8 @@ public final class Activities {
                     // Az autogén tréning a relaxáció műfaja – a meditáció
                     // családjába tartozik, eddig üresen jött vissza.
                     "autogen trening",
+                    // A gerinctréning a gerinctorna másik neve.
+                    "gerinctrening", "gerinc trening",
                     // A hengerezés is regeneráció, és sokan naplózzák: eddig
                     // egyetlen alakját sem ismertük.
                     // A GÖRGŐZÉS ugyanaz, csak hétköznapibb néven – enélkül a

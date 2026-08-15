@@ -1100,7 +1100,10 @@ public final class Foods {
             "epites",
             // A TÁBOR belsejében a BOR: az „edzőtábor: napi 2 edzés" és a
             // „sítábor egész héten" mellé eddig másfél deci bor került.
-            "tabor"};
+            "tabor",
+            // A BODYCOMBAT belsejében a COMB: az óra neve mellé egy adag
+            // csirkecomb került a naplóba.
+            "combat"};
 
     /**
      * Tövek, amik CSAK a szó elején jelentenek ételt.

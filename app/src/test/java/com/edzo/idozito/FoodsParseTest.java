@@ -891,4 +891,10 @@ public class FoodsParseTest {
         assertEquals("Dió", hits("megettem egy marék diót")
                 .get(0).food.name);
     }
+    /** A Body Combat óra nem csirkecomb – az ebéd combja marad. */
+    @Test public void bodyCombatIsNotAChickenThigh() {
+        assertTrue(hits("les mills bodycombat 55 perc").isEmpty());
+        assertEquals("Csirkecomb", hits("csirkecombot sütöttem ebédre")
+                .get(0).food.name);
+    }
 }

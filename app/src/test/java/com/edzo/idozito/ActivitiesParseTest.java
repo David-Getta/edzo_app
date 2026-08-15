@@ -4154,4 +4154,23 @@ public class ActivitiesParseTest {
         assertEquals("uszas", Activities.parse("delfinezést gyakoroltam "
                 + "20 percig").plans.get(0).kind.id);
     }
+    /**
+     * A termek márka-órái a saját műfajukra esnek.
+     *
+     * A Body Combat comb-töve CSIRKECOMBOT írt a naplóba edzés helyett; a
+     * Hot Iron, a Deepwork, a spinracing, a gerinctréning és a functional
+     * training üresen jött vissza.
+     */
+    @Test public void brandedGymClassesResolveToTheirGenres() {
+        assertEquals("harcmuveszet", Activities.parse("les mills "
+                + "bodycombat 55'").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("hot iron 60 perc")
+                .plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("spinracing 45 perc")
+                .plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("gerinctréning 40 perc")
+                .plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("functional training "
+                + "60 perc").plans.get(0).kind.id);
+    }
 }
