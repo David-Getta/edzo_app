@@ -3117,6 +3117,8 @@ public final class Foods {
             // lábosban – egyik sem külön adag a tál mellé.
             {"Lazac", "Sushi"},
             {"Paprika", "Lecsó"},
+            // A „citromOS" fagyi íze citrom, nem egy pohár citromlé mellé.
+            {"Citromlé", "Fagylalt", "Sütemény", "Palacsinta", "Limonádé"},
             // A wok adagja a zöldséget is tartalmazza: a „zöldséges wok" egy
             // wok, nem wok PLUSZ egy adag párolt zöldség.
             {"Zöldség (vegyes / párolt)", "Wok (zöldséges-húsos)"},
@@ -3199,6 +3201,12 @@ public final class Foods {
         // „töltött paprika nagymama receptje szerint" megevett vacsora –
         // a recept szava eddig az egészet szándéknak nézte.
         s = s.replaceAll("recept\\w*\\s+szerint", "");
+        // A SÉTÁLÓ-VÉTEL azonnal a szájban landol: a „vettem egy fagyit a
+        // sétány végén" nem bevásárlás – a fagyit, a lángost és a kürtőst
+        // senki nem viszi haza a kamrába. A „vettem 2 kg almát" marad
+        // bevásárlás.
+        s = s.replaceAll("vettem egy\\s+(?=(?:fagyi|fagylalt|langos|kurtos"
+                + "|perec|palacsinta|hot ?dog|kave|jegkave|kurtoskalacs))", "");
         boolean intent = false;
         for (String w : new String[]{
                 // Jövő és szándék.

@@ -554,6 +554,22 @@ public class FoodsParseTest {
                 + "2 tányér").size());
     }
 
+    /**
+     * A sétáló-vétel azonnal a szájban landol.
+     *
+     * A „vettem egy fagyit a sétány végén" nem bevásárlás – a fagyit
+     * senki nem viszi haza a kamrába. A „vettem 2 kg almát" bevásárlás
+     * marad, a citromOS fagyi íze pedig nem külön pohár citromlé.
+     */
+    @Test public void anIceCreamBoughtOnAWalkIsEaten() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "vettem egy fagyit a sétány "
+                + "végén, citromos");
+        assertEquals(1, h.size());
+        assertEquals("Fagylalt", h.get(0).food.name);
+        assertTrue(Foods.parse(all, "vettem 2 kg almát a piacon").isEmpty());
+    }
+
     /** A hóemberépítésben nincs pite, a lubickolásban nincs uborka. */
     @Test public void snowmanBuildingHasNoPieInIt() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
