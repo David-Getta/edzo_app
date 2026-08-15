@@ -1243,12 +1243,20 @@ public final class Foods {
     static String mask(String q) {
         StringBuilder sb = new StringBuilder(q);
         int i = 0;
+        String prev = "";
         while (i < sb.length()) {
             if (!Character.isLetter(sb.charAt(i))) { i++; continue; }
             int j = i;
             while (j < sb.length() && Character.isLetter(sb.charAt(j))) j++;
             String tok = sb.substring(i, j);
             boolean hide = masked(tok);
+            // Az AMINOSAV-ITAL turmixa nem gyümölcsturmix: a „BCAA turmix
+            // edzés közben" mellé eddig egy ötszáz grammos smoothie került
+            // – pár kalória helyett több száz. A banános turmix marad.
+            if (!hide && tok.startsWith("turmix")
+                    && (prev.equals("bcaa") || prev.equals("eaa")
+                        || prev.startsWith("aminosav")))
+                hide = true;
             // A „zsírszegény" a zsír TARTALMÁRÓL szól, nem hozzávalóról: a
             // „zsírszegény túró" mellé eddig száz gramm olaj került, kilenc-
             // száz kalória – pont az ellenkezője annak, amit az ember írt.
@@ -1263,6 +1271,7 @@ public final class Foods {
             if (!hide && tok.matches("(?:fok|lila|uj|voros)?hagymas(?:an)?"))
                 hide = true;
             if (hide) for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
+            prev = tok;
             i = j;
         }
         return sb.toString();

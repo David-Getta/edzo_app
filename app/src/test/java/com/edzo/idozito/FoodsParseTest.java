@@ -825,4 +825,18 @@ public class FoodsParseTest {
         assertEquals(0.0, hits("falatozóban ebédeltem, gyros tál")
                 .get(0).grams, 0.001);
     }
+    /**
+     * A BCAA turmix aminosav-ital, nem gyümölcsturmix.
+     *
+     * A „BCAA turmix edzés közben" mellé egy ötszáz grammos smoothie
+     * került – pár kalória helyett több száz. A banános turmix marad.
+     */
+    @Test public void aBcaaShakeIsNotAFruitSmoothie() {
+        for (Foods.Hit h : hits("BCAA turmix edzés közben, 500 ml"))
+            assertFalse(h.food.name.startsWith("Gyümölcsturmix"));
+        boolean smoothie = false;
+        for (Foods.Hit h : hits("banános turmix reggelire"))
+            if (h.food.name.startsWith("Gyümölcsturmix")) smoothie = true;
+        assertTrue(smoothie);
+    }
 }
