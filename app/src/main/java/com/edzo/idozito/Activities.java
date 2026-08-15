@@ -137,6 +137,10 @@ public final class Activities {
                     // gyalogtúrának adja: az a túra a vízen történt.
                     "kajak tura", "kajaktura", "kajak-tura", "kenu tura",
                     "kenutura",
+                    // A PADDLE is evezés: a „paddleztem 5 km-t a Dunán"
+                    // öt kilométeres futás lett. (A „padliz" tő tilos:
+                    // a padlizsán nem vízisport.)
+                    "paddlez",
                     // A SUP (álló evezés) a Balatonon a legnépszerűbb vizes
                     // sport – eddig egyik írásmódját sem ismertük.
                     "supozas", "supoztam", "szupozas", "paddleboard",
@@ -2007,6 +2011,23 @@ public final class Activities {
             // egy hatvanperces kondi került – a terem csak helyszín.
             if (!stated && rawText.matches(".*\\d\\s?perc.*")) stated = true;
             if (stated) {
+                // Ha a terem kondija LOPTA el az egyetlen kimondott percet
+                // („falmásztam a boulder teremben 90 percet"), a perc a
+                // konkrét sporté – a kondi átadja, mielőtt kiesik.
+                Plan gymPlan = null, specific = null;
+                for (Plan p : out) {
+                    if ("kondi".equals(p.kind.id)) gymPlan = p;
+                    else specific = p;
+                }
+                if (gymPlan != null && specific != null && out.size() == 2
+                        && gymPlan.minutes != gymPlan.kind.defaultMin
+                        && specific.minutes == specific.kind.defaultMin
+                        && specific.km <= 0 && specific.steps <= 0
+                        && gymPlan.km <= 0 && gymPlan.steps <= 0) {
+                    out = new ArrayList<>();
+                    out.add(new Plan(specific.kind, specific.count,
+                            gymPlan.minutes, 0, 0));
+                }
                 List<Plan> kept = new ArrayList<>();
                 for (Plan p : out) {
                     // A terem kondija akkor is kiesik, ha a MÁSIK edzés

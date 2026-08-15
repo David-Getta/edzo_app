@@ -3030,6 +3030,22 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A terem kondija átadja az ellopott percet a konkrét sportnak.
+     *
+     * A „falmásztam a boulder teremben 90 percet" falmászása az
+     * alapértelmezett órát kapta, a terem kondija meg a kimondott
+     * kilencven percet – fordítva kell. A paddle pedig evezés.
+     */
+    @Test public void theGymGivesBackTheStolenMinutes() {
+        Activities.Parsed p = Activities.parse("falmásztam a boulder "
+                + "teremben 90 percet");
+        assertEquals(1, p.plans.size());
+        assertEquals(90, p.plans.get(0).minutes);
+        assertEquals("evezes", Activities.parse("paddleztem 5 km-t a "
+                + "Dunán").plans.get(0).kind.id);
+    }
+
+    /**
      * A távirati „kardió 30, súlyzó 40" csupasz száma perc.
      *
      * Az idő-alapú sport neve utáni kis szám nem lehet más – eddig
