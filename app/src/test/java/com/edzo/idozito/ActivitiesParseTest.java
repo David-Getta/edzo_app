@@ -4445,4 +4445,28 @@ public class ActivitiesParseTest {
         assertEquals(48, p.minutes);
     }
 
+    @Test public void anElectricScooterIsAVehicle() {
+        // Az „elektromos rollerrel mentem munkába" nem görkorcsolya –
+        // a villanyroller jármű. A gyerekkel rollerezés viszont mozgás.
+        assertTrue(Activities.parse("elektromos rollerrel mentem munkába")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("e-rollerrel mentem a boltba")
+                .plans.isEmpty());
+        assertEquals("korcsolya", Activities
+                .parse("rollereztem a gyerekkel fél órát").plans.get(0).kind.id);
+    }
+
+    @Test public void escortingGrandmaIsNotMyWorkout() {
+        // A „senior tornára kísértem a nagyit" a nagyi tornája, nem az
+        // enyém – eddig negyvenöt perc jóga lett a naplómban.
+        assertTrue(Activities.parse("senior tornára kísértem a nagyit")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("elkísértem anyut a gyógytornára")
+                .plans.isEmpty());
+        // A saját mozgás kísérés mellett is megmarad.
+        Activities.Parsed p = Activities
+                .parse("elkísértem a barátnőmet futni és én is futottam 5 km-t");
+        assertEquals("futas", p.plans.get(0).kind.id);
+    }
+
 }

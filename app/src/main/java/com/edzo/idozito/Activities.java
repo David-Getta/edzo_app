@@ -1120,6 +1120,10 @@ public final class Activities {
         // levezetéssel" tíz perce eddig elvitte a nyolc kilométer idejét.
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?perces\\s+"
                 + "(bemelegites|bemeleged|levezetes)", "$1");
+        // Az ELEKTROMOS roller jármű, nem mozgás: az „elektromos rollerrel
+        // mentem munkába" órányi görkorcsolya lett a naplóban.
+        s = s.replaceAll("(?<![a-z])(?:elektromos|elektro|villany|e-)"
+                + "\\s?roller\\w*", "");
         // Az INGÁZÁS oda-vissza útja egyetlen napi adag: a „biciklivel
         // mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig az
         // intervallum-olvasó vitte el, és huszonöt perc maradt belőle.
@@ -3225,6 +3229,12 @@ public final class Activities {
                 "vittem a gyerek", "elvittem a gyerek", "kisertem a gyerek",
                 "vittem a fiam", "vittem a lanyom", "edzesre vittem",
                 "meccsre vittem", "gyereket kisertem",
+                // A NAGYI tornája sem az enyém: a „senior tornára kísértem
+                // a nagyit" negyvenöt perc jóga lett a naplómban.
+                "tornara kisertem", "edzesre kisertem", "orara kisertem",
+                "kisertem a nagyi", "kisertem anyu", "kisertem apu",
+                "elkisertem a nagyi", "elkisertem anyu", "elkisertem apu",
+                "vittem a nagyi", "vittem anyu", "vittem apu",
                 // A MAJDNEM nem történt meg: a „majdnem elmentem futni" és a
                 // „kis híján elmentem edzeni" negyvenöt perces bejegyzés
                 // lett. (A „majdnem 10 km-t futottam" viszont megtörtént –
