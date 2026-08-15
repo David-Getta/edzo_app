@@ -1046,6 +1046,21 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // Az EMOJI is sportnév: a „ma: 🏊 1500m + 🚴 20km" úszása és
+        // bringája elveszett, csak egy húsz kilométeres futás maradt.
+        // Ha a sport szava már ott van a szövegben, az emoji csak dísz –
+        // olyankor törlődik, hogy ne legyen belőle második alkalom.
+        String[][] emojiKind = {{"🏃", "futas"}, {"🏊", "uszas"},
+                {"🚴", "kerekpar"}, {"🥾", "tura"}, {"🧘", "joga"},
+                {"⛸", "korcsolya"}, {"🎿", "sizes"}, {"💃", "tanc"},
+                {"🥋", "harcmuveszet"}, {"🧗", "falmaszas"},
+                {"⚽", "foci"}, {"🏀", "kosarlabda"}, {"🏐", "roplabda"},
+                {"🎾", "tenisz"}, {"🏋", "kondi"}};
+        for (String[] e : emojiKind) {
+            if (!s.contains(e[0])) continue;
+            boolean nevMarOtt = s.contains(e[1].substring(0, 4));
+            s = s.replace(e[0], nevMarOtt ? " " : " " + e[1] + " ");
+        }
         // A FELSOROLT TÁVOK sorrendben járnak: a „futás, úszás: 5 km és
         // 1 km" ötöse a futásé – a közelség-alapú párosítás mégis
         // megcserélte (öt kilométer úszás lett belőle, több mint két óra).

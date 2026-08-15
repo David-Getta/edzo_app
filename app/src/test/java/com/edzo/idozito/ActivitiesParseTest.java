@@ -4073,4 +4073,22 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("reggel és délután is futottam, "
                 + "5 és 7 km").plans.size());
     }
+    /**
+     * Az emoji is sportnév.
+     *
+     * A „ma: 🏊 1500m + 🚴 20km" úszása és bringája elveszett, csak egy
+     * húsz kilométeres futás maradt. A kiírt sportnév melletti emoji dísz
+     * (nem lesz belőle második alkalom), a nézett meccs emojival sem edzés.
+     */
+    @Test public void anEmojiNamesItsSport() {
+        Activities.Parsed p = Activities.parse("ma: 🏊 1500m + 🚴 20km");
+        assertEquals(2, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals("kerekpar", p.plans.get(1).kind.id);
+        assertEquals(1, Activities.parse("futas 5km 🏃‍♂️").plans.size());
+        assertEquals("kondi", Activities.parse("🏋️ 60 perc")
+                .plans.get(0).kind.id);
+        assertEquals(0, Activities.parse("jó volt a meccs ⚽ néztük a "
+                + "tévében").plans.size());
+    }
 }
