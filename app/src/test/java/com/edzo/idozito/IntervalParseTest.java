@@ -728,4 +728,17 @@ public class IntervalParseTest {
         // A perc:mp alakú tábla-írásmód kimondott tervvel marad.
         assertEquals(90, IntervalParse.parse("5 kör 1:30 munka 0:30 pihenő").work);
     }
+
+    /**
+     * A pártól távolabb álló „10x" is körszám.
+     *
+     * A „30-30 intervall 10x" tíz kör – eddig egy lett belőle, és az
+     * időzítő az első perc után leállt.
+     */
+    @Test public void aDetachedTimesSuffixIsTheRoundCount() {
+        IntervalParse.Plan p = IntervalParse.parse("30-30 intervall 10x");
+        assertEquals(10, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+    }
 }

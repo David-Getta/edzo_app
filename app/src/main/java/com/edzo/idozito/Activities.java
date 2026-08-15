@@ -927,6 +927,18 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A „30-30 INTERVALL" munka-pihenő pár, nem harminc nap és nem
+        // harminc alkalom: a számpár az időzítőé, a bejegyzésből ki kell
+        // takarni. A „10x" utótag a körök száma – azt az intervall-elemző
+        // olvassa, itt szintén nem darabszám.
+        if (s.matches(".*(?<![a-z])(interval|intervall)\\w*.*")) {
+            s = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s?-\\s?(\\d{1,3})"
+                    + "(?=\\s?(?:mp|perc)?\\s?interval)", "");
+            s = s.replaceAll("(?<![\\dx(])(\\d{1,2})\\s?x(?![\\da-z])", "");
+        }
+        // A SÉTÁLÓ PIHENŐ az intervall része, nem külön séta: a „4x800 m
+        // 2 perc sétáló pihenővel" mellé egy kilencvenperces túra került.
+        s = s.replaceAll("(?<![a-z])(setalo|kocogo)\\s?(piheno\\w*|szunet\\w*)", "$2");
         // A LÉPTEM ige is lépésszám: a „léptem vagy 14 ezret a
         // városnézésen" és a „léptem 14000-et" eddig üresen jött vissza,
         // mert a lépés-szó főnévi alakja hiányzott mellőle. Az igekötős
@@ -2542,7 +2554,11 @@ public final class Activities {
     /** Ismétlés-alapú gyakorlatszavak: előttük a nagy szám ismétlés, nem alkalom. */
     private static boolean isRepWord(String w) {
         for (String r : new String[]{"fekvotamasz", "guggolas", "felules",
-                "huzodzkodas", "plank"})
+                "huzodzkodas", "plank",
+                // A „minden második percben 15 kettlebell swing" tizenöt
+                // ISMÉTLÉS, nem tizenöt edzés – eddig tizenöt húszperces
+                // kondi került be egyetlen EMOM-ból. A burpee ugyanígy.
+                "kettlebell", "burpee", "swing"})
             if (w.startsWith(r)) return true;
         return false;
     }

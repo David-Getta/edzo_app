@@ -1901,7 +1901,10 @@ public class ActivitiesParseTest {
         Activities.Parsed p = Activities.parse("20 kettlebell swing és 10 burpee");
         assertEquals(1, p.plans.get(0).count);
         assertEquals(1, p.days);
-        assertEquals("1d+0: 1×evezes/3, 1×kondi/60",
+        // A kettlebell ismétlés-szó lett: az öt kör hetvenöt lendítése
+        // ismétlésből becsült időt kap (negyedóra), nem az alapértelmezett
+        // hatvan percet.
+        assertEquals("1d+0: 1×evezes/3, 1×kondi/15",
                 summary("5 kör: 500 m evezés, 15 kettlebell swing"));
         // A kimondott alkalom megvédi magát: ott a szám után az edzés szó áll.
         assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
@@ -3024,6 +3027,26 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(1, p.plans.get(0).count);
         assertEquals(1, p.days);
+    }
+
+    /**
+     * Az intervall számpárja nem napok és nem alkalmak.
+     *
+     * A „30-30 intervall 10x" HARMINC napra osztott HARMINC egyéb-edzést
+     * írt be – egy időzítő-beállításból. A számpár a munkára-pihenőre, a
+     * „10x" a körökre tartozik. Az EMOM sétáló pihenője sem külön túra.
+     */
+    @Test public void anIntervalPairIsNotDaysOrOccasions() {
+        Activities.Parsed p = Activities.parse("30-30 intervall 10x");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        Activities.Parsed q = Activities.parse("futás: 4x800 m 2 perc "
+                + "sétáló pihenővel");
+        for (Activities.Plan pl : q.plans)
+            assertFalse("tura".equals(pl.kind.id));
+        assertEquals(1, Activities.parse("minden második percben 15 "
+                + "kettlebell swing, 20 percig").plans.size());
     }
 
     /**

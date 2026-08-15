@@ -257,6 +257,18 @@ public final class IntervalParse {
                 if (r <= 0) r = numberBefore(s, "round");
                 rounds = r;
             }
+            // A pártól TÁVOLABB álló „10x" is körszám: a „30-30 intervall
+            // 10x" tíz kör – eddig egy lett belőle, és az időzítő az első
+            // perc után leállt.
+            if (rounds <= 0) {
+                java.util.regex.Matcher xm = java.util.regex.Pattern
+                        .compile("(?<![\\dx(])(\\d{1,2})\\s?x(?![\\da-z])")
+                        .matcher(s);
+                if (xm.find()) {
+                    int r = Integer.parseInt(xm.group(1));
+                    if (r >= 2 && r <= MAX_ROUNDS) rounds = r;
+                }
+            }
             // „20 perc alatt 40/20”: a körszám a teljes időből jön ki. A
             // teremben gyakran így mondják, és fejben osztani edzés előtt a
             // legrosszabb pillanat.
@@ -276,6 +288,17 @@ public final class IntervalParse {
         if (rounds <= 0) rounds = numberAfterColon(s, "kor");
         if (rounds <= 0) rounds = numberAfterColon(s, "round");
         if (rounds <= 0) rounds = roundsPrefix(s);
+        // A magában álló „10x" is körszám: a „30-30 intervall 10x" tíz kör
+        // – eddig egyetlen kör lett belőle, és az időzítő az első perc után
+        // leállt. A „4x800" alakot a szám utáni számjegy zárja ki.
+        if (rounds <= 0) {
+            java.util.regex.Matcher xm = java.util.regex.Pattern
+                    .compile("(?<![\\dx(])(\\d{1,2})\\s?x(?![\\da-z])").matcher(s);
+            if (xm.find()) {
+                int r = Integer.parseInt(xm.group(1));
+                if (r >= 2 && r <= MAX_ROUNDS) rounds = r;
+            }
+        }
         // Az „on" NEM szerepel: szó belsejében is előfordul („huszonöt"),
         // és a secondsBefore nem néz szóhatárt. Az „off" mellett a munkaidő
         // úgyis az első kimondott időből jön.
