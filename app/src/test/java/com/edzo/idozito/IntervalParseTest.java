@@ -730,6 +730,22 @@ public class IntervalParseTest {
     }
 
     /**
+     * A „kétszer ébredtem" nem két kör, a „korahajnali" nem kör.
+     *
+     * Az „alvás 22:40-06:10, kétszer ébredtem" éjszakájából kétkörös
+     * időzítő lett: a szorzószám „kör"-ré vált, a szintetikus kör-szó
+     * pedig a terv-őröket is kicselezte. A valódi „20/10 nyolcszor" terv
+     * marad.
+     */
+    @Test public void wakingTwiceIsNotTwoRounds() {
+        assertNull(IntervalParse.parse("alvás 22:40-06:10, kétszer "
+                + "ébredtem"));
+        assertNull(IntervalParse.parse("korahajnali ébredés, 4:50, nem "
+                + "tudtam visszaaludni"));
+        assertEquals(8, IntervalParse.parse("20/10 nyolcszor").rounds);
+    }
+
+    /**
      * A pártól távolabb álló „10x" is körszám.
      *
      * A „30-30 intervall 10x" tíz kör – eddig egy lett belőle, és az

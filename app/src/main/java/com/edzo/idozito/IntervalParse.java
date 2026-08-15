@@ -721,7 +721,12 @@ public final class IntervalParse {
         // A kötőjel is odatartozik: a „10-szer" ugyanazt jelenti, mint a
         // „tízszer". Nélküle a terv egyszer futott le tíz helyett – a szám
         // ott volt a mondatban, csak nem jutott el a körszámig.
-        return Hu.digits(s).replaceAll("(\\d+)\\s?-?\\s?(szor|szer)\\b", "$1 kor");
+        // A „KÉTSZER ÉBREDTEM" viszont alvás-napló, nem két kör: az
+        // ébredés-ige előtti szorzószám nem válhat körré, mert a
+        // szintetikus „kör" szó a terv-őröket is kicselezte, és az
+        // éjszakából kétkörös időzítő lett.
+        return Hu.digits(s).replaceAll("(\\d+)\\s?-?\\s?(szor|szer)\\b"
+                + "(?!\\s*(?:ebred|felebred|felkel|keltem|megszakad))", "$1 kor");
     }
 
     /** Az első szám a szó után: „emom 12” → 12. */
@@ -788,7 +793,17 @@ public final class IntervalParse {
                 // A PIHENŐNAP nem terv: az „aktív pihenőnap: 30 perc séta"
                 // félórája egykörös, munka-pihenő párrá vált.
                 boolean dayOff = w.equals("piheno") && s.startsWith("nap", p + w.length());
-                if (!dayOff && (p == 0 || !Character.isLetter(s.charAt(p - 1))))
+                // A „KORahajnali", a „korán" és a „korosztály" nem kör: a
+                // szó eleji „kor" miatt a hajnali ébredésből egykörös
+                // időzítő lett.
+                boolean notRound = w.equals("kor")
+                        && (s.startsWith("an", p + 3) || s.startsWith("ai", p + 3)
+                            || s.startsWith("abb", p + 3)
+                            || s.startsWith("ahajnal", p + 3)
+                            || s.startsWith("osztaly", p + 3)
+                            || s.startsWith("haz", p + 3));
+                if (!dayOff && !notRound
+                        && (p == 0 || !Character.isLetter(s.charAt(p - 1))))
                     return true;
                 p = s.indexOf(w, p + 1);
             }
