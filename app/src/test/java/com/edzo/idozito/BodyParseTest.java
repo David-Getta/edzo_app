@@ -810,4 +810,11 @@ public class BodyParseTest {
         assertEquals(84, b.kg, 0.001);
     }
 
+    @Test public void bodyWeightInPoundsConverts() {
+        // A „súlyom 180 font" nyolcvankét kiló, nem száznyolcvan – a
+        // pénzbeli font („fontba került") viszont nem testsúly.
+        assertEquals(81.6, BodyParse.parse("súlyom 180 font").kg, 0.1);
+        assertEquals(0, BodyParse.parse("a cipő 120 fontba került").kg, 0.001);
+    }
+
 }

@@ -4505,4 +4505,16 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("vittem a gyereket a futónapra").plans.isEmpty());
     }
 
+    @Test public void imperialUnitsConvertToMetric() {
+        // A „futottam 3 mérföldet" négy-nyolc kilométer, az „5 mile run"
+        // nyolc – a mérföld eddig elveszett. A „half marathon" pedig nem
+        // hal-étel, hanem félmaraton.
+        Activities.Plan p = Activities.parse("futottam 3 mérföldet").plans.get(0);
+        assertEquals(4.8, p.km, 0.05);
+        p = Activities.parse("5 mile run reggel").plans.get(0);
+        assertEquals(8, p.km, 0.05);
+        p = Activities.parse("half marathon done, 1:58").plans.get(0);
+        assertEquals(21.1, p.km, 0.05);
+    }
+
 }

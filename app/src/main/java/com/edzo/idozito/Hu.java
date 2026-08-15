@@ -253,6 +253,30 @@ public final class Hu {
      */
     public static String correction(String s) {
         if (s == null || s.isEmpty()) return s == null ? "" : s;
+        // Az ANGOL egység átváltva magyar: a „bench press 225 lbs"
+        // kétszázhuszonöt KILÓ lett, a „súlyom 180 font" száznyolcvan – a
+        // font 0,45 kg, a mérföld 1,6 km. A számmal együtt váltjuk át, így
+        // minden meglévő felismerő érti. A ragozott „fontba került" pénz,
+        // azt a szó végi betű-tiltás kihagyja.
+        java.util.regex.Matcher im = java.util.regex.Pattern.compile(
+                "(?iu)(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+                + "(lbs|lb|font|m[eé]rf[oö]ld\\p{L}*|miles|mile)(?!\\p{L})")
+                .matcher(s);
+        StringBuffer ib = new StringBuffer();
+        boolean any = false;
+        while (im.find()) {
+            String u = im.group(2).toLowerCase(LOCALE);
+            double v = Double.parseDouble(im.group(1).replace(',', '.'));
+            boolean weight = u.startsWith("l") || u.startsWith("f");
+            double conv = weight ? v * 0.4536 : v * 1.609;
+            String num = String.valueOf(Math.round(conv * 10) / 10.0)
+                    .replace('.', ',');
+            if (num.endsWith(",0")) num = num.substring(0, num.length() - 2);
+            im.appendReplacement(ib, java.util.regex.Matcher
+                    .quoteReplacement(num + (weight ? " kg" : " km")));
+            any = true;
+        }
+        if (any) { im.appendTail(ib); s = ib.toString(); }
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 // Ékezetre és kis-nagybetűre érzéketlen: a nyers, még
                 // normalizálatlan mondaton is futnia kell (az étel-oldal a

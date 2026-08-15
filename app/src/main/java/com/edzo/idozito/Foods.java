@@ -87,7 +87,9 @@ public final class Foods {
                 // A boltok pultjának többi gyakori fehér hala is.
                 // Az „amur" szándékosan hiányzik: a szaMURáj-szerű szavak
                 // belsejébe esne. Aki amurt eszik, írja körül („fehér hal").
-                "keszeg", "fogas", "sullo", "busa", "tilapia", "pangasius", "tokehal"),
+                "keszeg", "fogas", "sullo", "busa", "tilapia", "pangasius", "tokehal",
+                // Az angol „fish and chips" hala is hal.
+                "fish"),
         new Food("Tenger gyümölcsei", 90, 18, 150, "garnela", "kagylo", "polip",
                 "tenger gyumolcsei", "rakkoktel", "rak koktel", "kaviar",
                 // A „rák" magában is étel – a hosszabb tövek (rákkoktél)
@@ -839,6 +841,8 @@ public final class Foods {
             // A VÍZVISSZATARTÁS a mérleg ingadozása, nem megivott pohár víz:
             // a „vízvisszatartás miatt 84 kg" mellé ital került a naplóba.
             "vizvisszatart", "vizmegtart", "vizet tart",
+            // Az angol HALF (marathon) nem hal-étel.
+            "half",
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
             // naplóba, százötven kalóriával.

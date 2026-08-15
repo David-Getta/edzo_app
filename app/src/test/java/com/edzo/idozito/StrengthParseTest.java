@@ -1373,4 +1373,12 @@ public class StrengthParseTest {
         assertEquals(3, it.get(0).sets.size());
     }
 
+    @Test public void poundsBecomeKilograms() {
+        // A „bench press 3x5 225 lbs" kétszázhuszonöt KILÓ lett a naplóban
+        // – az angol font negyedannyi.
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("bench press 3x5 225 lbs");
+        assertEquals(102.1, it.get(0).topWeight(), 0.1);
+    }
+
 }

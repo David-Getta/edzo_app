@@ -1126,6 +1126,10 @@ public final class Activities {
         // mentem munkába" órányi görkorcsolya lett a naplóban.
         s = s.replaceAll("(?<![a-z])(?:elektromos|elektro|villany|e-)"
                 + "\\s?roller\\w*", "");
+        // A HALF MARATHON félmaraton: az angol alak eddig hal-ételnek
+        // látszott, a táv pedig elveszett.
+        s = s.replaceAll("(?<![a-z])half\\s?marath?on\\w*", "felmaraton");
+        s = s.replaceAll("(?<![a-z])full\\s?marath?on\\w*", "maraton");
         // A futó-szleng SZÁMNEVES távja kilométer: a „lefutottam egy
         // tízest" tíz kilométer futás – eddig üresen jött vissza.
         {
