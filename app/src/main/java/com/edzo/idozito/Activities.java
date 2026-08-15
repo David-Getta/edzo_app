@@ -4611,6 +4611,12 @@ public final class Activities {
             "batyam", "hugom", "novverem", "anyam", "apam", "anyukam", "apukam",
             "kollegam", "fonokom", "szomszedom", "kutyam", "csapat", "csapatom",
             "gyerekek", "gyerekem", "unokam", "baratom", "baratnom", "edzom",
+            // A becézett szülő-nevek is alanyok: az „apu 10 km-t
+            // biciklizett" az apa túrája volt, mégis a naplómba került.
+            // A teljes alak (anya, apa, nagypapa) szándékosan nincs itt:
+            // azok hétköznapi szóként bárhol állhatnak, és az őrszem-teszt
+            // szerint nem vihetik el a mellettük álló saját edzést.
+            "apu", "anyu", "nagyi", "tesom",
             // A névmás a legrövidebb alany: az „ő kardiózott, én súlyzóztam"
             // kardiója a párom edzése volt, mégis bekerült a naplómba.
             // Ékezet nélkül egyetlen betű, de egész szóként a magyar

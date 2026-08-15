@@ -3984,4 +3984,21 @@ public class ActivitiesParseTest {
         assertEquals(120, Activities.parse("cheerleading próba 2 óra")
                 .plans.get(0).minutes);
     }
+    /**
+     * Apu edzése nem az én naplóm.
+     *
+     * Az „apu 10 km-t biciklizett ma" a szülő túrája volt, mégis a saját
+     * naplóba került – a becézett alanyok (apu, anyu, nagyi, tesóm) is
+     * mások. A saját tagmondat és a közös (tesómmal) edzés marad.
+     */
+    @Test public void dadsRideIsNotMyWorkout() {
+        assertEquals(0, Activities.parse("apu 10 km-t biciklizett ma")
+                .plans.size());
+        Activities.Parsed p = Activities.parse("anyu jógázott, én "
+                + "futottam 5 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals("foci", Activities.parse("a tesómmal fociztunk "
+                + "egy órát").plans.get(0).kind.id);
+    }
 }
