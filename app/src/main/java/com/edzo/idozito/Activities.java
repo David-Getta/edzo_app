@@ -978,6 +978,12 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A JÖVŐ ÉVSZAK versenye nem lefutott táv: az „ősszel maraton, most
+        // építem az alapozást" negyvenkét kilométeres MAI futást írt be. A
+        // versenyig hátralévő „10 hét" pedig nem tíz hetes időszak.
+        s = s.replaceAll("(?<![a-z])(osszel|tavasszal|jovore|jovo evben)"
+                + "\\s+(fel)?maraton\\w*", "");
+        s = s.replaceAll("(?<=versenyre |versenyig )\\s?(meg )?\\d{1,2}\\s?het\\w*", "");
         // A TÁVIRATI „kardió 30, súlyzó 40" csupasz száma perc: az idő-alapú
         // sport neve utáni kis szám nem lehet más. A táv-alapú sportnál
         // (futás 10) nem merünk dönteni – az lehet km is.
@@ -2540,7 +2546,10 @@ public final class Activities {
                 // A szándék többi hétköznapi alakja. Mind ugyanarról szól:
                 // a mondat egy JÖVŐBELI edzésről beszél, az app mégis
                 // megtörténtként naplózta, teljes idővel, szériával, XP-vel.
-                "remelem", "megprobal", "probalok", "probalom", "keszulok",
+                // A „KÉSZÜLÖK" nem itt: tagmondat-szintű tagadás lett, hogy
+                // az „5k versenyemre készülök, ma 3 km sikerült" hárma
+                // megmaradjon.
+                "remelem", "megprobal", "probalok", "probalom",
                 "elhataroz", "eldontottem", "muszaj", "kotelezo", "vagyom ra",
                 "gondolkodom", "gondolkozom", "igerem", "eltokel", "nekiallok",
                 "raveszem magam", "ossze kell szedn",
@@ -2857,7 +2866,11 @@ public final class Activities {
                 // perces bejegyzést kapott – egy el sem kezdett napról. Csak
                 // a saját tagmondatát viszi: a „megvolt a futás, mehet a
                 // pihenés" futása marad.
-                "mehet a ", "mehet egy "}) {
+                "mehet a ", "mehet egy ",
+                // A „KÉSZÜLÖK" is csak a saját tagmondatát viszi: az „első
+                // 5k versenyemre készülök, ma 3 km sikerült" hárma valódi
+                // futás – a felkészülés szava eddig az egészet elvitte.
+                "keszulok", "keszulunk"}) {
             int p = s.indexOf(w);
             while (p >= 0) {
                 boolean boundary = p == 0 || !Character.isLetter(s.charAt(p - 1));

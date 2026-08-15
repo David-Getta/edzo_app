@@ -3030,6 +3030,28 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „készülök" csak a saját tagmondatát viszi, az őszi maraton nem táv.
+     *
+     * Az „első 5k versenyemre készülök, ma 3 km sikerült" hárma valódi
+     * futás – a felkészülés szava eddig az egészet elvitte, a súlyzós
+     * változatot (5x3 140) is. Az „ősszel maraton" pedig negyvenkét
+     * kilométeres MAI futást írt be, a „versenyre 10 hét" hetven napos
+     * időszakot.
+     */
+    @Test public void preparingForARaceKeepsTodaysWork() {
+        Activities.Parsed p = Activities.parse("első 5k versenyemre "
+                + "készülök, ma 3 km sikerült megállás nélkül");
+        assertEquals(1, p.plans.size());
+        assertEquals(3.0, p.plans.get(0).km, 0.001);
+        Activities.Parsed q = Activities.parse("ősszel maraton, most "
+                + "építem az alapozást: 12 km hosszú futás");
+        assertEquals(1, q.plans.size());
+        assertEquals(12.0, q.plans.get(0).km, 0.001);
+        assertEquals(1, Activities.parse("bikini fitnesz versenyre 10 hét, "
+                + "ma színpadi póz gyakorlás").days);
+    }
+
+    /**
      * Az éves-havi összegző nem egy (vagy ötven) mai edzés.
      *
      * Az „összesen 1250 km futás idén" mai futást írt be 211 napra, „a
