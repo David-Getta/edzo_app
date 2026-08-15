@@ -1029,6 +1029,19 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A MECCS-SZÁM a megnevezett sporté: az „asztalitenisz bajnokság,
+        // 5 meccset játszottam" játszottam-igéje KÜLÖN öt egyéb mozgást
+        // szült a tenisz mellé. Ha a mondatban ott a sportág neve, a
+        // meccs-tagmondat igéje fölösleges – a darabszám-szó (meccs) marad.
+        if (s.matches(".*(tenisz|squash|tollas|fallabda|padel|pingpong"
+                + "|roplabda|kosar|foci|kezilabda|hoki|vizilabda).*"))
+            s = s.replaceAll("(\\d{1,2})\\s?meccset jatszottam", "$1 meccs");
+        // A GOLF sétája maga a golf: a „golfoztam 18 lyukat, kb 4 óra séta"
+        // négy órája külön túraként állt a golf mellett – kétszer ugyanaz
+        // a délután. Csak az „óra séta" leíró alakra él: a golf ELŐTTI
+        // önálló séta („sétáltam egy órát, aztán golfoztam") külön edzés.
+        if (s.contains("golf"))
+            s = s.replaceAll("ora seta\\w*", "ora");
         // A JAVÍTÁS rossz száma nem adat: a „nem 45, hanem 60 perc jóga
         // volt" negyvenöt-hatvanasából ötven(!) jóga-alkalom lett. A rossz
         // szám kiesik, a helyes marad.

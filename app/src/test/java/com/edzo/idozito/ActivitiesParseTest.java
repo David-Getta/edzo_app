@@ -3950,4 +3950,26 @@ public class ActivitiesParseTest {
         assertEquals(78.0, BodyParse.parse("nem 80 kg, csak 78 kg volt "
                 + "a súlyom").kg, 0.01);
     }
+    /**
+     * A meccs-szám a megnevezett sporté, a golf sétája maga a golf.
+     *
+     * Az „asztalitenisz bajnokság, 5 meccset játszottam" öt KÜLÖN egyéb
+     * mozgást szült a tenisz mellé; a „golfoztam 18 lyukat, kb 4 óra séta"
+     * pedig ugyanazt a délutánt kétszer írta be. A sport nélküli
+     * meccs-mondat és a golf előtti önálló séta marad.
+     */
+    @Test public void matchesBelongToTheirNamedSport() {
+        Activities.Parsed p = Activities.parse("asztalitenisz bajnokság, "
+                + "5 meccset játszottam");
+        assertEquals(1, p.plans.size());
+        assertEquals("tenisz", p.plans.get(0).kind.id);
+        assertEquals(5, Activities.parse("5 meccset játszottam ma")
+                .plans.get(0).count);
+        Activities.Parsed g = Activities.parse("golfoztam 18 lyukat, "
+                + "kb 4 óra séta");
+        assertEquals(1, g.plans.size());
+        assertEquals(240, g.plans.get(0).minutes);
+        assertEquals(2, Activities.parse("sétáltam egy órát, aztán "
+                + "golfoztam").plans.size());
+    }
 }
