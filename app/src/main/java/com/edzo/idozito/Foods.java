@@ -2442,6 +2442,9 @@ public final class Foods {
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
+        // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
+        // kakaóval" mellé két és fél deci ital került.
+        query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
         // AZ EGÉSZ megevése két adag: „az egész pizzát megettem egyedül"
         // egyetlen szokásos adagként (300 g) ment be – az egész pizza a
@@ -3243,6 +3246,9 @@ public final class Foods {
                     "Mákos tészta", "Grízes tészta", "Káposztás tészta",
                     "Grenadírmars (krumplis tészta)", "Pad thai"},
             {"Rizs (főtt)", "Rizottó", "Rizses hús", "Sushi", "Poke bowl", "Tejberizs"},
+            // A TEJES KAKAÓ-ban benne a tej: az „ittam egy tejes kakaót"
+            // egy pohár tejet is naplózott a kakaó mellé.
+            {"Tej", "Kakaó (tejes)"},
             {"Saláta (zöld)", "Görög saláta", "Csirkés saláta", "Tonhalsaláta",
                     "Caprese saláta", "Uborkasaláta", "Céklasaláta", "Krumplisaláta",
                     "Franciasaláta / coleslaw"},

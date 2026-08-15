@@ -985,4 +985,19 @@ public class FoodsParseTest {
                 .get(0).food.name);
         assertTrue(hits("az egész családnak főztem vacsorát").isEmpty());
     }
+    @Test public void aMilkyCocoaIsOneDrink() {
+        // „ittam egy tejes kakaót" – a tej benne van a kakaóban,
+        // nem szabad külön pohár tejet is naplózni mellé.
+        List<Foods.Hit> h = hits("ittam egy tejes kakaót");
+        assertEquals(1, h.size());
+        assertEquals("Kakaó (tejes)", h.get(0).food.name);
+        // A megszórt tejbegríz kakaója nem ital.
+        h = hits("menzai tejbegríz szórt kakaóval");
+        assertEquals(1, h.size());
+        assertEquals("Tejbegríz", h.get(0).food.name);
+        // Külön felsorolva viszont mindkettő marad.
+        h = hits("tejet ittam és kakaót is");
+        assertEquals(2, h.size());
+    }
+
 }
