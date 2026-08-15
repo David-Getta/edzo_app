@@ -837,6 +837,10 @@ public final class Foods {
             // A LUBICKOLÁS közepén az ubi (uborka): a balatoni pancsolás
             // mellé egy uborka került a naplóba.
             "lubickol",
+            // A TEJMENTES pont a tej hiányát mondja ki – mégis egy pohár
+            // tej került a naplóba. A KÓKUSZCHIPS szórás, nem egy zacskó
+            // sós burgonyachips.
+            "tejmentes", "kokuszchips",
             // A VÍZI jelző sport, nem ital: a „nyílt vízi úszás" és a
             // „vízisí" mellé egy pohár ásványvíz került a naplóba. A
             // KVÍZ közepén ugyanez a tő ül.
@@ -3135,6 +3139,15 @@ public final class Foods {
             {"Paprika", "Lecsó"},
             // A „citromOS" fagyi íze citrom, nem egy pohár citromlé mellé.
             {"Citromlé", "Fagylalt", "Sütemény", "Palacsinta", "Limonádé"},
+            // A LATTE egyetlen ital: a „matcha latte zabtejjel" négy
+            // tételt kapott (tea + tejeskávé + növényi tej + kávé) – a
+            // kávé, a tea és a tej a pohárban van, nem mellette.
+            {"Kávé (fekete)", "Tejeskávé / cappuccino"},
+            {"Tea (cukrozatlan)", "Tejeskávé / cappuccino"},
+            {"Növényi tej (mandula/zab)", "Tejeskávé / cappuccino"},
+            {"Kókusztej", "Tejeskávé / cappuccino"},
+            // A chia puding nem bolti tejes puding: a chia mag az étel.
+            {"Puding", "Chia / lenmag"},
             // A wok adagja a zöldséget is tartalmazza: a „zöldséges wok" egy
             // wok, nem wok PLUSZ egy adag párolt zöldség.
             {"Zöldség (vegyes / párolt)", "Wok (zöldséges-húsos)"},

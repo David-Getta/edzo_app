@@ -555,6 +555,23 @@ public class FoodsParseTest {
     }
 
     /**
+     * A latte egyetlen ital – az összetevői a pohárban vannak.
+     *
+     * A „matcha latte zabtejjel" négy tételt kapott: tea + tejeskávé +
+     * növényi tej + kávé. A „tejmentes cappuccino" mellé ráadásul egy
+     * pohár tej került – pont abból, amit a szó kizár. A felsorolt kávé
+     * és tea külön marad.
+     */
+    @Test public void aLatteIsOneDrink() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(1, Foods.parse(all, "matcha latte zabtejjel a "
+                + "kávézóban").size());
+        assertEquals(1, Foods.parse(all, "tejmentes cappuccino "
+                + "kókusztejjel").size());
+        assertEquals(2, Foods.parse(all, "kávé és tea is volt ma").size());
+    }
+
+    /**
      * A fél tábla az étel után is fél tábla, a gyerek menüje a gyereké.
      *
      * A „milka csoki fél tábla" nulla grammos bejegyzés lett (a fél a
