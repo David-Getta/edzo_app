@@ -39,9 +39,12 @@ public final class Sleep {
             java.util.regex.Pattern.compile(
                     "aludtam[^0-9,;.]{0,12}?(\\d{1,2}([.,]\\d)?)"
                             + "\\s?(?:ora|h(?![a-z])|$|[,.;])"),
-            // „8 óra alvás", „7,5 óra alvás"
+            // „8 óra alvás", „7,5 óra alvás" – és a jelzős alak: a „másfél
+            // órás délutáni alvás" ugyanezt mondja melléknévvel, közé pár
+            // rövid jelző beférhet.
             java.util.regex.Pattern.compile(
-                    "(\\d{1,2}([.,]\\d)?)\\s?ora(?:t)?\\s?alvas"),
+                    "(\\d{1,2}([.,]\\d)?)\\s?ora(?:t|s)?\\s?"
+                            + "(?:[a-z]+\\s){0,2}?(?:alvas|szundi)"),
             // „alvás: 8", „alvás 7,5 óra"
             java.util.regex.Pattern.compile(
                     "alvas\\w*\\s?:?\\s?(\\d{1,2}([.,]\\d)?)"),

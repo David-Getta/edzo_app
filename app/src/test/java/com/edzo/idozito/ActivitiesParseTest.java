@@ -3763,4 +3763,19 @@ public class ActivitiesParseTest {
                 + "3 óra volt");
         assertEquals("tura", q.plans.get(0).kind.id);
     }
+    /**
+     * A ponttal tagolt ezres lépésszám ezres, nem tizedes.
+     *
+     * A „ma 12.500 lépés lett meg" tizenkét és fél ezer lépés – az app
+     * tizenkét egész öt tized lépésnek olvasta, és négyszáz méter séta
+     * lett belőle. Csak a lépés szó előtt élünk vele: a GPS-tizedes
+     * („5.300 km") nem ezres tagolás.
+     */
+    @Test public void aDotThousandsStepCountIsThousands() {
+        Activities.Parsed p = Activities.parse("ma 12.500 lépés lett meg");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(Activities.parse("12500 lépést tettem meg")
+                .plans.get(0).minutes, p.plans.get(0).minutes);
+    }
 }

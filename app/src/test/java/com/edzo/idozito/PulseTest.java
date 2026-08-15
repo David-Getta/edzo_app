@@ -177,4 +177,16 @@ public class PulseTest {
         // Az edzés-pulzus továbbra sem nyugalmi.
         assertEquals(-1, Pulse.parse("átlagpulzus 145 a futáson, max 172"));
     }
+    /**
+     * A kimondott pihenőpulzus akkor is mérés, ha a mondat edzésről is szól.
+     *
+     * A „pihenőpulzus 52, edzés közben max 178" ötvenkettője eddig némán
+     * elveszett: az edzés-szavas tiltás csak a „nyugalmi" szót engedte át,
+     * a vele egyenértékű pihenőpulzust nem.
+     */
+    @Test public void aStatedRestingPulseSurvivesATrainingClause() {
+        assertEquals(52, Pulse.parse("pihenőpulzus 52, edzés közben max 178"));
+        // Edzés-pulzus pihenő-szó nélkül továbbra sem nyugalmi.
+        assertEquals(-1, Pulse.parse("edzés közben max 178"));
+    }
 }

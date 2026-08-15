@@ -301,4 +301,15 @@ public class SleepTest {
                 + "10 órát húztam"), 0.01);
         assertEquals(-1.0, Sleep.parse("2 órát húztam a teremben"), 0.01);
     }
+    /**
+     * A jelzős alak is alvás: a „8 órás alvás" ugyanaz, mint a „8 óra alvás".
+     *
+     * Az -s képző miatt a minta nem illeszkedett, és az éjszaka némán
+     * elveszett. A két óránál rövidebb szundi viszont szándékosan nem kerül
+     * be: a napi egy alvásérték miatt felülírná az éjszakát.
+     */
+    @Test public void anAdjectivalSleepHourStillCounts() {
+        assertEquals(8.0, Sleep.parse("8 órás alvás után frissen keltem"), 0.01);
+        assertEquals(-1.0, Sleep.parse("másfél órás délutáni alvás"), 0.01);
+    }
 }

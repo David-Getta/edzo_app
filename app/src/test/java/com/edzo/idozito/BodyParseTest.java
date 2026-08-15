@@ -734,4 +734,22 @@ public class BodyParseTest {
                 + "68 kg pont").kg, 0.01);
         assertEquals(82.0, BodyParse.parse("82 kg-nál tartok").kg, 0.01);
     }
+    /**
+     * A múltra utalt „volt" a régi érték, nem a mai mérés.
+     *
+     * A „derékbőség 92 cm, két hete még 95 volt" kilencvenöte a két héttel
+     * ezelőtti derék – mégis testsúlyként került a naplóba. A múlt-
+     * időhatározó melletti „N volt" kiesik; a távoli szám marad, mert a
+     * „3 hete edzek, ma 78 kg volt" hetvennyolcasa valódi mai mérés.
+     */
+    @Test public void aValueFromWeeksAgoIsNotTodaysWeight() {
+        BodyParse.Body b = BodyParse.parse("derékbőség 92 cm, "
+                + "két hete még 95 volt");
+        assertEquals(0.0, b.kg, 0.01);
+        assertTrue(b.hasCm());
+        assertEquals(78.4, BodyParse.parse("78,4 kg ma reggel, "
+                + "egy hónapja 81 volt").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("3 hete edzek rendszeresen, "
+                + "ma 78 kg volt a súlyom").kg, 0.01);
+    }
 }

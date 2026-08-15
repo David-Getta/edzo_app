@@ -1122,6 +1122,11 @@ public final class Activities {
         // lett időtartam – a kimondott három és háromnegyed óra helyére a
         // tempóból becsült százhetvennyolc perc lépett.
         s = s.replaceAll("(?<![\\d.,:])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        // PONTTAL tagolt ezres a lépésszámban: a „12.500 lépés" tizenkét és
+        // fél ezer lépés, nem tizenkét egész öt tized – abból négyszáz méter
+        // séta lett. Csak a lépés szó előtt merjük: a „levittem 5.300 km-re"
+        // GPS-tizedes is lehet, ott nem nyúlunk hozzá.
+        s = s.replaceAll("(?<![\\d.,:])(\\d{1,3})\\.(\\d{3})(?=\\s?lepes)", "$1$2");
         // A MÉRTÉKEGYSÉG egyszer van kimondva, a szám kétszer: a „két edzés
         // ma, 45 és 60 perc" negyvenöte és a „reggel és délután is futottam,
         // 5 és 7 km" ötöse eddig némán elveszett – az egyik alkalom teljesen

@@ -91,7 +91,11 @@ public final class Pulse {
                 i = s.indexOf(w, i + 1);
             }
         }
-        if (!s.contains("nyugalmi"))
+        // A PIHENŐPULZUS szó ugyanolyan erős, mint a „nyugalmi": aki
+        // kimondja, az a reggeli mérésről beszél – akkor is, ha utána az
+        // edzés közbeni maximumát is odaírja. A „pihenőpulzus 52, edzés
+        // közben max 178" ötvenkettője eddig némán elveszett.
+        if (!s.contains("nyugalmi") && !s.contains("pihenopulzus"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})
                 if (s.contains(g)) return -1;

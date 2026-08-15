@@ -187,6 +187,20 @@ public final class BodyParse {
             s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?"
                     + "\\s?%\\s?(zsir\\w*)(?=.*(?<![a-z])most(?![a-z]))", "$1");
         }
+        // A múltra utalt „volt" is a régi érték: a „derékbőség 92 cm, két
+        // hete még 95 volt" kilencvenöte a két héttel ezelőtti szám – mégis
+        // testsúlyként került a naplóba. A múlt-időhatározó és a „volt"
+        // közti szám kiesik. Tagmondatra nem támaszkodhatunk (a dropOtherLogs
+        // a vesszőket is elhagyja), ezért a távolság a korlát: a marker és a
+        // szám közé csak pár rövid szó férhet („még", „csak", „kb") – a
+        // „3 hete edzek rendszeresen, ma 78 volt" hetvennyolcasa messze van,
+        // az marad.
+        s = s.replaceAll("(?<![a-z])(?:\\d+ ?)?"
+                + "(?:hete|honapja|napja|eve|hettel|honappal|evvel|nappal|"
+                + "tavaly|regen|regebben|korabban|anno)"
+                + "(?![a-z])[^,;.\\d]{0,12}?"
+                + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:kg|kilo\\w*|cm|centi\\w*|%|szazalek)?\\s?volt(?![a-z])", "");
         return s;
     }
 
