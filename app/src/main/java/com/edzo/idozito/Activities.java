@@ -1126,6 +1126,12 @@ public final class Activities {
         // mentem munkába" órányi görkorcsolya lett a naplóban.
         s = s.replaceAll("(?<![a-z])(?:elektromos|elektro|villany|e-)"
                 + "\\s?roller\\w*", "");
+        // Az ÁZTATÁS nem úszás: a „meleg vizes medencében áztattam magam"
+        // pihenés – a medence szava mégis háromnegyed óra úszást írt be.
+        if (s.contains("aztat") || s.contains("jakuzzi")
+                || s.contains("pezsgofurdo"))
+            s = s.replaceAll("(?<![a-z])(?:medence|uszoda|uszomedence)"
+                    + "\\w*", "");
         // A HALF MARATHON félmaraton: az angol alak eddig hal-ételnek
         // látszott, a táv pedig elveszett.
         s = s.replaceAll("(?<![a-z])half\\s?marath?on\\w*", "felmaraton");

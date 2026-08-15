@@ -4517,4 +4517,17 @@ public class ActivitiesParseTest {
         assertEquals(21.1, p.km, 0.05);
     }
 
+    @Test public void soakingInThePoolIsNotSwimming() {
+        // A „meleg vizes medencében áztattam magam" pihenés – a medence
+        // szava mégis háromnegyed óra úszást írt be.
+        assertTrue(Activities.parse("meleg vizes medencében áztattam magam")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("jakuzziban ültünk fél órát")
+                .plans.isEmpty());
+        // A valódi úszás a medencében marad.
+        Activities.Plan p = Activities
+                .parse("úsztam 40 hosszt a medencében").plans.get(0);
+        assertEquals("uszas", p.kind.id);
+    }
+
 }
