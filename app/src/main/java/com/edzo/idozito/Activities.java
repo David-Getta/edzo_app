@@ -982,6 +982,14 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // Az ÓRAKOR nem köredzés: a „reggel 6-kor edzés" hat órája beleírta
+        // a „kor edzes" betűsort a szövegbe, és hatszoros köredzés lett
+        // belőle. A szórend cseréje mindent helyretesz: az „edzés 6-kor"
+        // alakban az óra óra marad. A kötőjeles alak mindig időpont; a
+        // szóközös csak napszak-szó után az (a „3 kör edzés" köröket mond).
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2})-kor (edzes\\w*)", "$2 $1-kor");
+        s = s.replaceAll("(?<![a-z])(reggel|este|delutan|delelott|hajnalban|"
+                + "hajnali) (\\d{1,2})[- ]?kor (edzes\\w*)", "$1 $3 $2-kor");
         // A PULZUSZÓNA száma nem darabszám: a „zóna 2 futás 40 perc" KÉT
         // futássá vált. A zóna sorszáma a terhelést nevezi meg, nem az
         // alkalmakat.
@@ -1295,7 +1303,16 @@ public final class Activities {
                         + "(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*")
                 || sm.matches(".*(?<![a-z])osszesen(?![a-z]).*"
                         + "(?<![a-z])(iden|tavaly|szezonban)(?![a-z]).*")
-                || sm.matches(".*legjobb (honap|het)\\w*.*"))
+                || sm.matches(".*legjobb (honap|het)\\w*.*")
+                // A HÓNAP ÓTA gyűjtött, ÖSSZESEN-nel zárt táv is összegző:
+                // a „január óta 120 km-t futottam összesen" kétszáztizenegy
+                // napos, százhúsz kilométeres bejegyzésként került volna be.
+                // Az összesen-szó nélküli „március óta 40 edzés" viszont
+                // marad: az a támogatott időszakos visszatöltés.
+                || sm.matches(".*(?<![a-z])(?:januar|februar|marcius|aprilis|"
+                        + "majus|junius|julius|augusztus|szeptember|oktober|"
+                        + "november|december|az? ev eleje|a honap eleje)"
+                        + "\\w*\\s+ota(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*"))
             return new Parsed(out, 1, 0, 12);
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.

@@ -3778,4 +3778,38 @@ public class ActivitiesParseTest {
         assertEquals(Activities.parse("12500 lépést tettem meg")
                 .plans.get(0).minutes, p.plans.get(0).minutes);
     }
+    /**
+     * Az órakor nem köredzés.
+     *
+     * A „reggel 6-kor edzés" hat órája beleírta a „kor edzes" betűsort a
+     * szövegbe, és HATSZOROS köredzés lett belőle. A valódi köredzés és a
+     * körszám marad.
+     */
+    @Test public void trainingAtSixOclockIsNotSixCircuits() {
+        Activities.Parsed p = Activities.parse("ma reggel 6-kor edzés: "
+                + "45 perc kerékpár");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("6-kor edzés").plans.get(0).count);
+        // A körszám továbbra is szorzó, a köredzés köredzés.
+        assertEquals(3, Activities.parse("3 kör edzés, mindegyik 10 perc")
+                .plans.get(0).count);
+        assertEquals("kondi", Activities.parse("köredzés 40 perc")
+                .plans.get(0).kind.id);
+    }
+
+    /**
+     * A hónap óta gyűjtött táv összegző, nem egy edzés.
+     *
+     * A „január óta 120 km-t futottam összesen" kétszáztizenegy napos,
+     * százhúsz kilométeres bejegyzésként került volna be – hónapok összege
+     * egyetlen edzésként. A konkrét januári futás viszont marad.
+     */
+    @Test public void aSinceJanuaryTotalIsASummary() {
+        assertEquals(0, Activities.parse("január óta 120 km-t futottam "
+                + "összesen").plans.size());
+        assertEquals(1, Activities.parse("január elején futottam egy "
+                + "10 km-est").plans.size());
+    }
 }
