@@ -4685,10 +4685,12 @@ public final class Activities {
             for (int i = m.start(); i < m.end(); i++)
                 if (sb.charAt(i) != ' ') sb.setCharAt(i, ' ');
         // A KM előtti sorszám viszont megtett táv: a „feladtam a versenyt
-        // a 30. km-nél" harmincasa nem a hét harmincadik futása.
+        // a 30. km-nél" harmincasa nem a hét harmincadik futása. Az
+        // EMELET sorszáma ugyanígy megmászott magasság: a „lépcsőn mentem
+        // fel a 8. emeletre" nyolcasa nélkül kilencven perc séta lett.
         m = java.util.regex.Pattern
                 .compile("(?<![\\d.,])(\\d{1,2})\\.(?=\\s?\\p{L})"
-                        + "(?!\\s?km(?![\\p{L}]))").matcher(text);
+                        + "(?!\\s?(?:km(?![\\p{L}])|emelet))").matcher(text);
         while (m.find())
             for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
         return sb.toString();
@@ -4907,7 +4909,9 @@ public final class Activities {
         String s = new String(q);
         if (!s.contains("lepcso") && !s.contains("emelet")) return;
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d.,])(\\d{1,3})\\s?emelet\\w*").matcher(s);
+                // A SORSZÁMOS alak is emeletszám: a „lépcsőn mentem fel a
+                // 8. emeletre" nyolc emelet – a pont eddig kizárta.
+                .compile("(?<![\\d.,])(\\d{1,3})\\.?\\s?emelet\\w*").matcher(s);
         while (m.find()) {
             int floors;
             try { floors = Integer.parseInt(m.group(1)); } catch (NumberFormatException e) { continue; }

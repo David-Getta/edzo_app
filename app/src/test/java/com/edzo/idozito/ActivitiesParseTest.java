@@ -4577,4 +4577,15 @@ public class ActivitiesParseTest {
         assertEquals(5, Activities.parse("lefutottam egy 5k-t").plans.get(0).km, 0.001);
     }
 
+    @Test public void climbingToTheEighthFloorIsMinutesNotAHike() {
+        // A „lépcsőn mentem fel a 8. emeletre" kilencven perc séta lett –
+        // a sorszám pontja kizárta az emelet-átváltást.
+        assertEquals(4, Activities.parse("lépcsőn mentem fel a 8. emeletre")
+                .plans.get(0).minutes);
+        assertEquals(2, Activities.parse("a 3. emeletig lépcsőztem")
+                .plans.get(0).minutes);
+        assertEquals(3, Activities.parse("5 emeletet mentem lépcsőn")
+                .plans.get(0).minutes);
+    }
+
 }
