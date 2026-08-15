@@ -4055,4 +4055,22 @@ public class ActivitiesParseTest {
         assertEquals("kerekpar", Activities.parse("airbike 4 perc")
                 .plans.get(0).kind.id);
     }
+    /**
+     * A felsorolt távok sorrendben járnak a felsorolt sportoknak.
+     *
+     * A „futás, úszás: 5 km és 1 km" ötöse a futásé – a közelség-alapú
+     * párosítás mégis megcserélte, és öt kilométer ÚSZÁS lett belőle,
+     * több mint két órával. Az egy-sportos pár (reggel és délután is
+     * futottam, 5 és 7 km) változatlan.
+     */
+    @Test public void listedDistancesPairInOrder() {
+        Activities.Parsed p = Activities.parse("futás, úszás: 5 km és 1 km");
+        assertEquals(2, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        assertEquals("uszas", p.plans.get(1).kind.id);
+        assertEquals(1.0, p.plans.get(1).km, 0.01);
+        assertEquals(2, Activities.parse("reggel és délután is futottam, "
+                + "5 és 7 km").plans.size());
+    }
 }

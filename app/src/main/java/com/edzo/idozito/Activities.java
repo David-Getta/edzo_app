@@ -1046,6 +1046,21 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A FELSOROLT TÁVOK sorrendben járnak: a „futás, úszás: 5 km és
+        // 1 km" ötöse a futásé – a közelség-alapú párosítás mégis
+        // megcserélte (öt kilométer úszás lett belőle, több mint két óra).
+        // Szétírjuk párokra, ahogy a mondat mondja.
+        java.util.regex.Matcher lista = java.util.regex.Pattern.compile(
+                "(?<![a-z])([a-z]+), ([a-z]+)\\s?:\\s?"
+                + "(\\d{1,3}(?:[.,]\\d+)?\\s?km) es "
+                + "(\\d{1,3}(?:[.,]\\d+)?\\s?km)(?![a-z])").matcher(s);
+        if (lista.find()) {
+            Kind k1 = kindByText(lista.group(1)), k2 = kindByText(lista.group(2));
+            if (k1 != null && k2 != null && k1 != k2)
+                s = s.substring(0, lista.start()) + lista.group(1) + " "
+                        + lista.group(3) + ", " + lista.group(2) + " "
+                        + lista.group(4) + s.substring(lista.end());
+        }
         // A BOX BREATHING légzőgyakorlat, nem bunyó: a „box breathing
         // 5 perc" ötperces harcművészet-edzésként került be.
         s = s.replaceAll("box breathing|doboz ?legzes", "legzogyakorlat");
