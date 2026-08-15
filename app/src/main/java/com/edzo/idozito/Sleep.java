@@ -109,6 +109,14 @@ public final class Sleep {
                 double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
             }
+            // Fordított szórenddel is: a „7:02 alvásidő" az óra-app sora,
+            // és eddig teljesen elveszett.
+            cm = java.util.regex.Pattern
+                    .compile("(?<![\\d,:])(\\d{1,2}):(\\d{2})\\s?alvas").matcher(s);
+            if (cm.find()) {
+                double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
             // Óra-jeles rövidítés: „aludtam 7h30", „7h 30m". Az óra-appok és a
             // sportórák így írják ki, és a perc eddig elveszett belőle.
             java.util.regex.Matcher sm = java.util.regex.Pattern
@@ -231,6 +239,10 @@ public final class Sleep {
         // Az ÉJFÉL is időpont, csak nem számmal írják: az „éjfél után
         // feküdtem, 6-kor keltem" bedagadt volna a szabályba, ha az éjfélt
         // nullára fordítjuk – hát pont ezt tesszük.
+        // Ha az éjfél után KONKRÉT óra áll („éjfél után 1-kor feküdtem"),
+        // az éjfél csak körülírás – kettőt csinált volna egy időpontból,
+        // és a 0:00→1:00 egyórás „éjszaka" kiejtette az egészet.
+        s = s.replaceAll("(?<![a-z])ejfel utan(?=\\s*\\d)", "");
         s = s.replaceAll("(?<![a-z])ejfel(?:kor| utan| korul| tajban)?(?![a-z])",
                 "0:00-kor");
         // A FŐNÉVI alak is ugyanaz a pillanat: a „22:15 lefekvés, 5:45

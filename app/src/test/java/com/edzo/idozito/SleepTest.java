@@ -325,4 +325,20 @@ public class SleepTest {
         assertEquals(5.0, Sleep.parse("éjszaka 3x felébredtem, összesen "
                 + "talán 5 órát aludtam"), 0.01);
     }
+    /**
+     * Az éjfél utáni pontos óra és a fordított alvásidő is működik.
+     *
+     * Az „éjfél után 1-kor feküdtem, 7-kor keltem" éjfele kettőt csinált
+     * egy időpontból, és a 0:00→1:00 egyórás éjszaka kiejtette az
+     * egészet. A „7:02 alvásidő" óra-app-sor pedig fordított szórendje
+     * miatt veszett el.
+     */
+    @Test public void midnightPlusAnHourStillMakesANight() {
+        assertEquals(6.0, Sleep.parse("éjfél után 1-kor feküdtem, "
+                + "7-kor keltem"), 0.01);
+        assertEquals(6.0, Sleep.parse("éjfél után feküdtem, 6-kor "
+                + "keltem"), 0.01);
+        assertEquals(7.0, Sleep.parse("82%-os alvásminőség, 7:02 "
+                + "alvásidő"), 0.01);
+    }
 }
