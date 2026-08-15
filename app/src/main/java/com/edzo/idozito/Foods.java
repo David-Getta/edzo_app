@@ -554,7 +554,13 @@ public final class Foods {
         // csirke" számát a köztes szó különben elvágta a tőtől.
         new Food("Kínai bundás csirke", 250, 14, 250, "kinai bundas csirke",
                 "kinai csirke", "bundas csirke",
-                "szechuan", "szecsuani", "kung pao", "edes-savanyu csirke",
+                // A GONG BAO a kung pao másik átírása – eddig csak puszta
+                // csirkemell lett belőle.
+                "szechuan", "szecsuani", "kung pao", "gong bao",
+                // A csirkés alak hosszabb tőként elnyeli a csirkét – külön
+                // csirkemell nélkül.
+                "kung pao csirke", "gong bao csirke",
+                "edes-savanyu csirke",
                 "edes savanyu csirke"),
         new Food("Quesadilla", 250, 11, 200, "quesadilla"),
         new Food("Falafel", 300, 13, 150, "falafel"),
@@ -2455,6 +2461,9 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A NAAN KENYÉR egyetlen pékáru: a „curry naan kenyérrel" naanja
+        // mellé eddig egy szelet kenyér is került.
+        query = query.replaceAll("(?iu)(naan|pita)\\s+keny[eé]r\\p{L}*", "$1");
         // A FOLYADÉK mértéke a folyadéké: a „zabkása fél liter tejjel" öt
         // deci TEJET mond, mégis fél kiló zabpehely lett belőle – a
         // mennyiség visszafelé, a kására tapadt. Az ital-szó elé fordítva
@@ -3370,6 +3379,9 @@ public final class Foods {
             {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
                     "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
                     "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)", "Rizottó"},
+            // A burrito és a taco töltve érkezik: a „burrito marhahússal"
+            // egy burrito, nem burrito PLUSZ egy szelet marha.
+            {"Marhahús", "Burrito", "Taco", "Quesadilla"},
             // A csusza tejfölös: ez a neve, nem egy külön kanál tejföl.
             {"Tejföl", "Túrós csusza"},
     };

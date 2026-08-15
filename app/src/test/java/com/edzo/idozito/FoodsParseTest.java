@@ -1055,4 +1055,21 @@ public class FoodsParseTest {
         assertEquals("Szőlő", hits("pár szem szőlőt ettem").get(0).food.name);
     }
 
+    @Test public void aStuffedDishIsNotTheDishPlusItsFilling() {
+        // A „burrito marhahússal" egy burrito – a hús benne van, eddig
+        // külön szelet marha is került mellé.
+        List<Foods.Hit> h = hits("burrito marhahússal");
+        assertEquals(1, h.size());
+        assertEquals("Burrito", h.get(0).food.name);
+        // A gong bao csirke teljes fogás, nem puszta csirkemell.
+        h = hits("a gong bao csirkét ettem");
+        assertEquals(1, h.size());
+        assertEquals("Kínai bundás csirke", h.get(0).food.name);
+        // A „naan kenyérrel" egyetlen pékáru.
+        h = hits("indiai csirke curry naan kenyérrel");
+        assertEquals(2, h.size());
+        // A külön álló marha rizzsel viszont két tétel marad.
+        assertEquals(2, hits("marhahús rizzsel").size());
+    }
+
 }
