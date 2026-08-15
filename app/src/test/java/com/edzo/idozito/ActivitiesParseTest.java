@@ -3030,6 +3030,20 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A záró kísérő nem külön edzés, az angol warm up is bemelegítés.
+     *
+     * A „nyújtással zártam a 45 perces futást" nyújtása lemásolta a futás
+     * negyvenöt percét – két bejegyzés lett egy edzésből. A „warm up 5
+     * perc, wod 20 perc" wod-ja pedig az öt percet kapta.
+     */
+    @Test public void aClosingStretchIsNotASecondWorkout() {
+        Activities.Parsed p = Activities.parse("nyújtással zártam a "
+                + "45 perces futást");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+    }
+
+    /**
      * Az igekötős gyalogos igék túrák, a mélység nem táv.
      *
      * A „felmásztam a kilátóhoz, 40 perc fölfelé" üresen jött vissza, a
@@ -3667,5 +3681,67 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.get(0).count);
         Activities.Parsed q = Activities.parse("mentem 10 kört a gokartpályán");
         assertEquals(0, q.plans.size());
+    }
+
+    /**
+     * A warm up és a cool down ideje nem az edzésé – de csak a sajátjuk.
+     *
+     * A „warm up 5 perc, wod 20 perc, cool down 5 perc" wod-ja öt percet
+     * kapott: az idő utáni szó-vizsgálat átlépte a vesszőt, és a húsz perc
+     * mögött a következő tagmondat cool szavát találta meg.
+     */
+    @Test public void theNextClausesCooldownDoesNotStealTheMainTime() {
+        Activities.Parsed p = Activities.parse("warm up 5 perc, "
+                + "wod 20 perc, cool down 5 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals(20, p.plans.get(0).minutes);
+        // Az angol szavas bemelegítés a saját tagmondatában továbbra is
+        // kiesik, ahogy a magyar megfelelője is.
+        Activities.Parsed q = Activities.parse("5 perc cool down a "
+                + "40 perc futás után");
+        assertEquals(1, q.plans.size());
+        assertEquals(40, q.plans.get(0).minutes);
+    }
+
+    /**
+     * A sprintek darabszáma ismétlés, nem a percek száma.
+     *
+     * A „sprintekből 25-öt nyomtam, összesen 30 perc" huszonöt sprintje
+     * időként győzött a harminc perc fölött – 25 perc futás lett belőle.
+     */
+    @Test public void aSprintCountIsRepsNotMinutes() {
+        Activities.Parsed p = Activities.parse("sprintekből 25-öt nyomtam, "
+                + "összesen 30 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
+    /**
+     * A görgőn tekerés szobabiciklizés.
+     *
+     * A görgő (a kinti bringát befogó edzőállvány) mondatai kimaradtak: a
+     * „görgőn tekertem 90 percet" nem adott mozgást. A görgőzés szó viszont
+     * NEM bicikli: az SMR-hengerezés régóta a jóga/nyújtás családba tartozik.
+     */
+    @Test public void ridingOnRollersIsCycling() {
+        Activities.Parsed p = Activities.parse("görgőn tekertem 90 percet");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(90, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("görgőzés 15 perc");
+        assertEquals("joga", q.plans.get(0).kind.id);
+    }
+
+    /**
+     * A perc/km nem időtartam, hanem tempó.
+     *
+     * A „10 km futás 6 perc/km tempóval" hat perce lett az edzés hossza a
+     * hatvan helyett: a percvadász nem nézte, hogy a perc után törtjel áll.
+     */
+    @Test public void minutesPerKmIsAPaceNotADuration() {
+        Activities.Parsed p = Activities.parse("10 km futás 6 perc/km "
+                + "tempóval");
+        assertEquals(1, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes);
     }
 }

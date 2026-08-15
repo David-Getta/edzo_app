@@ -99,6 +99,11 @@ public final class Activities {
                     "snorkel", "kitesurf", "kiteszorf"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
+                    // A GÖRGŐN (edzőpadon) tekerés kerékpár: a „175 wattos
+                    // átlaggal 90 perc a görgőn" eddig üresen jött vissza.
+                    // A „görgőzés" NEM ide tartozik: az az SMR-henger
+                    // (jóga-oldal) bevett szava.
+                    "gorgon",
                     // A beszélt alakok és a leggyakoribb elgépelés: enélkül a
                     // „biciglizteem 20 km-t" HÚSZ KILOMÉTERES FUTÁS lett, mert
                     // a puszta táv futást jelent. Egy elütés nem érhet ennyit.
@@ -2743,8 +2748,10 @@ public final class Activities {
                 "huzodzkodas", "plank",
                 // A „minden második percben 15 kettlebell swing" tizenöt
                 // ISMÉTLÉS, nem tizenöt edzés – eddig tizenöt húszperces
-                // kondi került be egyetlen EMOM-ból. A burpee ugyanígy.
-                "kettlebell", "burpee", "swing"})
+                // kondi került be egyetlen EMOM-ból. A burpee ugyanígy, és
+                // a „10x25 sprintekkel" huszonöte is ismétlés, nem
+                // huszonöt futás.
+                "kettlebell", "burpee", "swing", "sprint"})
             if (w.startsWith(r)) return true;
         return false;
     }
@@ -3689,7 +3696,13 @@ public final class Activities {
         if (a < b && isWarmupWord(s.substring(a, b))) return true;
         int i = m[2];
         for (int w = 0; w < 2 && i < s.length(); w++) {
-            while (i < s.length() && !Character.isLetter(s.charAt(i))) i++;
+            // Tagmondathatáron megállunk: a „wod 20 perc, cool down 5 perc"
+            // vesszője utáni cool már a KÖVETKEZŐ szakaszé, nem a húsz percé.
+            while (i < s.length() && !Character.isLetter(s.charAt(i))) {
+                char c = s.charAt(i);
+                if (c == ',' || c == ';' || c == '.') return false;
+                i++;
+            }
             int e = i;
             while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
             if (e == i) break;
@@ -3981,6 +3994,9 @@ public final class Activities {
                 // negyvenöt perc – eddig a harminc perces eltolást kapta meg.
                 if (s.startsWith(unit + "cel", p) || s.startsWith(unit + "vel", p)
                         || s.startsWith(unit + "val", p)) continue;
+                // A „PERC/KM" tempó, nem időtartam: a „6 perc/km-es tempóval
+                // 10 km" hatperces futás lett – tíz kilométerre.
+                if (s.startsWith(unit + "/", p)) continue;
                 // A „fél óra" és a „másfél óra" nem egész számnév – külön ág.
                 if (unit.equals("ora")) {
                     int we = p;
