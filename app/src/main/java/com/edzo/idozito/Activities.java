@@ -1157,6 +1157,12 @@ public final class Activities {
                         + lista.group(3) + ", " + lista.group(2) + " "
                         + lista.group(4) + s.substring(lista.end());
         }
+        // A LÉPÉSCÉL -ből ragos beszámolója: a „lépéscél teljesítve:
+        // 10 000-ből 12 340" tizenkétezres eredménye eddig elveszett. A
+        // szóközös ezres tagolás itt még nincs összevonva, ezért a minta
+        // maga engedi a szóközt a számjegyek között.
+        s = s.replaceAll("(?<![a-z])lepescel\\w*[^,;.]*?\\d[\\d ]*-?b[oó]l\\s+"
+                + "(\\d{1,3}(?: ?\\d{3})?)(?![\\d])", "$1 lepes");
         // A BRINGÁS KOCOGÁS tekerés: a „25-ös átlaggal kocogtunk a
         // bringával 20 km-t" kocogása külön futást szült a bringa mellé.
         s = s.replaceAll("kocog\\w*(?=\\s+a\\s+bring)", "tekertunk");

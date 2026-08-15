@@ -74,6 +74,11 @@ public final class Pulse {
         // került a trendbe, vagyis a javulás napján egy romlás.
         s = s.replaceAll("(\\d{2,3})\\s?-?r[o\u00f3]l\\b[^0-9]{0,12}?"
                 + "(\\d{2,3})\\s?-?r[ae]\\b", "$2");
+        // A K\u00dcSZ\u00d6B \u00e1tl\u00e9p\u00e9se nem m\u00e9r\u00e9s, a m\u00f6g\u00f6tte \u00e1ll\u00f3 mai sz\u00e1m az: a
+        // \u201enyugalmi pulzusom lement 50 al\u00e1, ma 49" negyvenkilence eddig
+        // elveszett, mert a k\u00fcsz\u00f6b-sz\u00e1m el\u00e1llta a minta \u00fatj\u00e1t.
+        s = s.replaceAll("(?:lement|felment|ment)\\s+\\d{2,3}\\s?"
+                + "(?:ala|fole|koze)\\b,?\\s*", "");
         // A CÉL nem mérés: a „szeretném, ha 50 lenne a nyugalmi pulzusom" és
         // az „a cél 50-es nyugalmi pulzus" ugyanúgy tartalmaz számot és
         // pulzus-szót, mint egy bejegyzés – csak épp az ellenkezőjét mondja.

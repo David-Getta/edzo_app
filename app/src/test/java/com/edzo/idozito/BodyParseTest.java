@@ -789,4 +789,9 @@ public class BodyParseTest {
         assertEquals(18.0, BodyParse.parse("18% testzsír, reggel túró "
                 + "volt").fatPct, 0.01);
     }
+    /** A súly-küszöb átlépése is csak kíséret: a 77,8 a mérés. */
+    @Test public void goingUnderAWeightThresholdKeepsTheReading() {
+        assertEquals(77.8, BodyParse.parse("78 kg alá mentem végre, "
+                + "77,8!").kg, 0.01);
+    }
 }

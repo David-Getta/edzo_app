@@ -189,4 +189,14 @@ public class PulseTest {
         // Edzés-pulzus pihenő-szó nélkül továbbra sem nyugalmi.
         assertEquals(-1, Pulse.parse("edzés közben max 178"));
     }
+    /**
+     * A küszöb átlépése után a mai szám a mérés.
+     *
+     * A „nyugalmi pulzusom lement 50 alá, ma 49" negyvenkilence eddig
+     * elveszett – a küszöb-szám elállta a minta útját.
+     */
+    @Test public void crossingAThresholdKeepsTodaysReading() {
+        assertEquals(49, Pulse.parse("nyugalmi pulzusom lement 50 alá, "
+                + "ma 49!"));
+    }
 }

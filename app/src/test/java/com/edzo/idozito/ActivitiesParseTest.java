@@ -4282,4 +4282,11 @@ public class ActivitiesParseTest {
         assertEquals("tura", Activities.parse("8 km/h-val sétáltunk a "
                 + "parkban 4 km-t").plans.get(0).kind.id);
     }
+    /** A lépéscél -ből ragos beszámolója is lépésszám. */
+    @Test public void aStepGoalReportCountsItsResult() {
+        Activities.Parsed p = Activities.parse("lépéscél teljesítve: "
+                + "10 000-ből 12 340");
+        assertEquals(1, p.plans.size());
+        assertEquals(12340, p.plans.get(0).steps);
+    }
 }

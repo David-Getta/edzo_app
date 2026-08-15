@@ -630,6 +630,9 @@ public final class BodyParse {
                         // kíséret: a „reggel éhgyomorra 68 kg pont" és a
                         // „82 kg-nál tartok" mérés – eddig mindkettő kiesett.
                         + "pont|pontosan|kereken|nal|nel|tartok|tartunk|"
+                        // A KÜSZÖB átlépése is csak kíséret: a „78 kg alá
+                        // mentem végre, 77,8" valódi mérése a 77,8.
+                        + "ala|fole|folott|alatt|mentem|lementem|"
                         // A DÁTUM is csak kíséret: az „aug. 14. reggel 78 kg"
                         // jegyzetből másolt sor, a hónapnév nem veszi el.
                         + "januar|februar|marcius|aprilis|majus|junius|julius|"
