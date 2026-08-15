@@ -2442,6 +2442,41 @@ public final class Foods {
         // tábla mindig ötven gramm – grammban egyértelmű.
         query = query.replaceAll("(?iu)(?<!\\p{L})f[eé]l\\s+t[aá]bl[aá]\\w*",
                 "50 g");
+        // A NYERSEN mért köret főve két és félszer nehezebb: a „100 g rizs
+        // nyersen" a főtt rizs kalóriájával százra számolva a HARMADÁT
+        // adta a valódi bevitelnek. A száraz grammot főtt grammra váltjuk,
+        // így a (főtt) tétel adata már stimmel. Csak a vizet szívó
+        // köretekre él – a nyers hús és a nyers zöldség marad.
+        {
+            java.util.regex.Matcher ny = java.util.regex.Pattern.compile(
+                    "(?iu)(\\d{1,3})\\s?(?:g|gr|gramm)\\s+(?:sz[aá]raz)?"
+                    + "(rizs|t[eé]szt|bulgur|kuszkusz|k[oö]les)"
+                    + "(\\p{L}*)((?:\\s+\\p{L}{1,10}){0,2}?)"
+                    + "\\s+(?:nyersen|sz[aá]razon)(?!\\p{L})").matcher(query);
+            StringBuffer nyb = new StringBuffer();
+            while (ny.find()) {
+                int g = Integer.parseInt(ny.group(1));
+                ny.appendReplacement(nyb, java.util.regex.Matcher
+                        .quoteReplacement(Math.round(g * 2.5) + " g "
+                                + ny.group(2) + ny.group(3) + ny.group(4)));
+            }
+            ny.appendTail(nyb);
+            query = nyb.toString();
+            // Ugyanez a „száraztészta" összetételre mérő-szó nélkül is:
+            // a szó maga mondja, hogy szárazon mérték.
+            java.util.regex.Matcher sz = java.util.regex.Pattern.compile(
+                    "(?iu)(\\d{1,3})\\s?(?:g|gr|gramm)\\s+sz[aá]raz"
+                    + "(rizs|t[eé]szt)").matcher(query);
+            StringBuffer szb = new StringBuffer();
+            while (sz.find()) {
+                int g = Integer.parseInt(sz.group(1));
+                sz.appendReplacement(szb, java.util.regex.Matcher
+                        .quoteReplacement(Math.round(g * 2.5) + " g "
+                                + sz.group(2)));
+            }
+            sz.appendTail(szb);
+            query = szb.toString();
+        }
         query = withoutOthersPlates(query);
         query = maskMacroWords(query);
         query = amountFromTheOtherClause(list, query);

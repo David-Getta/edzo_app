@@ -939,4 +939,21 @@ public class FoodsParseTest {
         assertEquals("Túró rudi", hits("Pöttyös óriás guru")
                 .get(0).food.name);
     }
+    /**
+     * A nyersen mért köret főve két és félszer nehezebb.
+     *
+     * A „100 g rizs nyersen" a főtt rizs kalóriájával százra számolva a
+     * HARMADÁT adta a valódi bevitelnek. A főtt mérés és a nyers zöldség
+     * marad.
+     */
+    @Test public void rawMeasuredGrainsConvertToCookedWeight() {
+        assertEquals(250.0, hits("100 g rizs nyersen mérve")
+                .get(0).grams, 0.001);
+        assertEquals(150.0, hits("60 g száraztészta főzve")
+                .get(0).grams, 0.001);
+        assertEquals(200.0, hits("200 g főtt rizs a bowlba")
+                .get(0).grams, 0.001);
+        assertEquals(100.0, hits("100 g nyers répa rágcsálva")
+                .get(0).grams, 0.001);
+    }
 }
