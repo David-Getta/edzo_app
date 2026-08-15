@@ -3030,6 +3030,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „de" új állítást nyit, az „átlag" pedig tempó-szó.
+     *
+     * Az „az nem edzés de 6 km-t gyalogoltam a partig" hat kilométere
+     * megtörtént – a tagadás vessző híján eddig az egész tagmondatot
+     * elvitte. Az „új cipőben 12 km, átlag 5:40" öt-negyvene percenkénti
+     * idő: 68 perc, nem öt óra negyven.
+     */
+    @Test public void butOpensANewStatementAndAtlagIsPace() {
+        Activities.Parsed p = Activities.parse("hajnali 5-kor keltem "
+                + "horgászni, az nem edzés de 6 km-t gyalogoltam a partig");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.001);
+        assertEquals(0, Activities.parse("nem futottam de nem is "
+                + "úsztam").plans.size());
+        assertEquals(68, Activities.parse("az új cipőben 12 km, semmi "
+                + "panasz, átlag 5:40").plans.get(0).minutes);
+    }
+
+    /**
      * A termi gépek a saját sportjukat mondják, a terem csak helyszín.
      *
      * A „kéziergométer a rehab részlegen 10 perc" tízperces

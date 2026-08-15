@@ -2636,7 +2636,10 @@ public final class Activities {
     }
 
     /** Kötőszavak, amik vessző nélkül is ÚJ állítást nyitnak. */
-    private static final String[] LINKERS = {" es ", " majd ", " utana ", " aztan ", " viszont "};
+    // A „de" is új állítást nyit: az „az nem edzés de 6 km-t gyalogoltam"
+    // hat kilométere megtörtént – eddig a tagadás vessző híján elvitte.
+    private static final String[] LINKERS = {" es ", " majd ", " utana ",
+            " aztan ", " viszont ", " de "};
 
     /**
      * Tagadás és csere kitakarása. Az „X helyett" X-e a tagmondat elejétől a
@@ -2825,6 +2828,10 @@ public final class Activities {
                     if (forward) {
                         int es = s.indexOf(" es ", p);
                         if (es >= 0 && es < e && !s.startsWith("nem ", es + 4)) e = es;
+                        // A „de" ugyanígy új állítás: „az nem edzés de 6 km-t
+                        // gyalogoltam" – a gyaloglás megtörtént.
+                        int de = s.indexOf(" de ", p);
+                        if (de >= 0 && de < e && !s.startsWith("nem ", de + 4)) e = de;
                         // A KÍSÉRŐ megmarad: a „nem futottam a kondi mellett"
                         // kondija megtörtént, csak a futás maradt el. A jelző
                         // ELŐTT álló szó a kísérő, azt kihagyjuk a törlésből.
@@ -3491,7 +3498,7 @@ public final class Activities {
         // 10 kilométeren" öt-húsza percenkénti idő – enélkül a tíz
         // kilométer a mozgásforma átlagával számolódott. A jelzős
         // kilométer ugyanez: „4:45-ös kilométerekkel".
-        m = java.util.regex.Pattern.compile("tempo\\w*\\s?:?\\s?"
+        m = java.util.regex.Pattern.compile("(?:tempo|atlag)\\w*\\s?:?\\s?"
                 + "(\\d{1,2}):([0-5]\\d)"
                 + "|(\\d{1,2}):([0-5]\\d)\\s?-?[oae]s\\s?(?:km|kilometer)")
                 .matcher(s);
@@ -3676,7 +3683,11 @@ public final class Activities {
             int pa = pe;
             while (pa > 0 && Character.isLetter(s.charAt(pa - 1))) pa--;
             prevWord = s.substring(pa, pe);
-            if (prevWord.contains("tempo") || prevWord.startsWith("iram")) continue;
+            // Az „ÁTLAG" is tempó-szó a perc:mp előtt: az „új cipőben 12 km,
+            // átlag 5:40" öt-negyvene percenkénti idő – eddig öt óra
+            // negyven perces futás lett belőle.
+            if (prevWord.contains("tempo") || prevWord.startsWith("iram")
+                    || prevWord.startsWith("atlag")) continue;
             // Az „-os" rag is jelzős tempó: a „4:45-os kilométerekkel" a
             // kilométerenkénti idő, nem négy és háromnegyed óra.
             if (s.startsWith("-as", m.end()) || s.startsWith("-es", m.end())
