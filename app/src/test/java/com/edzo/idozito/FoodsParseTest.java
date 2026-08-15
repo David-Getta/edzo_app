@@ -1000,4 +1000,36 @@ public class FoodsParseTest {
         assertEquals(2, h.size());
     }
 
+    @Test public void aPintOfIpaIsABeer() {
+        // Az „egy pint IPA-t ittam" eddig üresen jött vissza – a kocsmai
+        // kézműves sör is sör, a pint nagyjából korsónyi.
+        List<Foods.Hit> h = hits("egy pint IPA-t ittam a kocsmában");
+        assertEquals(1, h.size());
+        assertEquals("Sör", h.get(0).food.name);
+        assertEquals(500, h.get(0).grams, 0.5);
+        // Az „ipari" nem ital.
+        h = hits("ipari mennyiségű tésztát ettem");
+        assertEquals("Tészta (főtt)", h.get(0).food.name);
+    }
+
+    @Test public void aShotIsSpiritAndTheWifeIsNot() {
+        // A „két felest ittunk" két kupica tömény; a „feleségem főzött"
+        // viszont nem ital.
+        List<Foods.Hit> h = hits("két felest ittunk a szülinapon");
+        assertEquals("Pálinka / tömény", h.get(0).food.name);
+        assertEquals(80, h.get(0).grams, 0.5);
+        assertTrue(hits("a feleségem főzött vacsorát").isEmpty());
+    }
+
+    @Test public void thePossessiveHalfIsHalfAPortion() {
+        // A „megettem a pizza felét" fél pizza, nem egész; a „feleztünk
+        // egy pizzát" fejenként fél.
+        assertEquals(150, hits("megettem a pizza felét").get(0).grams, 0.5);
+        assertEquals(150, hits("feleztünk egy pizzát").get(0).grams, 0.5);
+        // A „hat felé értem haza" nem fél hatos étel.
+        List<Foods.Hit> h = hits("hat felé értem haza és ettem egy szendvicset");
+        assertEquals(1, h.size());
+        assertEquals("Szendvics", h.get(0).food.name);
+    }
+
 }

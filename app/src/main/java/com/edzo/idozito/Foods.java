@@ -783,7 +783,11 @@ public final class Foods {
         // A „vilmoskörte" pálinka, nem gyümölcs – a hosszabb tő elnyeli a körtét.
         new Food("Pálinka / tömény", 250, 0, 40, "palinka", "tomenny", "tomeny", "vodka",
                 "whisky", "whiskey", "jager", "rum", "gin", "tequila", "unicum",
-                "baileys", "martini", "likor", "vilmoskorte", "vilmos"),
+                "baileys", "martini", "likor", "vilmoskorte", "vilmos",
+                // A FELES egy kupica tömény: a „két felest ittunk a
+                // szülinapon" eddig üresen jött vissza. Csak a tárgyas és
+                // az igei alak – a „feleségem" nem ital.
+                "felest", "felesek", "felesez", "felesezt"),
         new Food("Koktél / long drink", 90, 0, 250, "koktel", "gin tonik", "gintonik",
                 "mojito", "aperol", "cuba libre", "long drink", "spritz"),
         new Food("Pezsgő", 76, 0, 150, "pezsgo", "prosecco", "champagne"),
@@ -2445,6 +2449,19 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A PINT és az IPA kocsmai sör: az „egy pint IPA-t ittam" eddig
+        // üresen jött vissza. A pint nagyjából korsónyi.
+        query = query.replaceAll("(?iu)(?<!\\p{L})ipa(?:-?t)?(?!\\p{L})", "sör");
+        query = query.replaceAll("(?iu)(?<!\\p{L})pint(?!\\p{L})", "korsó");
+        // A BIRTOKOS FELE is fél adag: a „megettem a pizza felét" teljes
+        // pizzaként ment be. Az „a SZÓ felét/fele" alak fél SZÓ-ra íródik
+        // át – nem étel-szóra alkalmazva ártalmatlan.
+        query = query.replaceAll("(?iu)(?<!\\p{L})az? (\\p{L}{3,}) "
+                + "fel(?:e|et|ét)(?!\\p{L})", "fél $1");
+        // A FELEZETT étel is fél adag: a „feleztünk egy pizzát" fejenként
+        // fél pizza, eddig egész ment be.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"
+                + "(?:egy\\s+|az?\\s+)?", "fél ");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
         // AZ EGÉSZ megevése két adag: „az egész pizzát megettem egyedül"
         // egyetlen szokásos adagként (300 g) ment be – az egész pizza a
