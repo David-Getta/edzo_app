@@ -3030,6 +3030,14 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A szorzószám utáni „is" csak nyomaték.
+     */
+    @Test public void twiceWithEmphasisIsStillTwice() {
+        assertEquals(2, Activities.parse("a hétvégén kétszer is voltam "
+                + "úszni, 1-1 km").plans.get(0).count);
+    }
+
+    /**
      * A „de" új állítást nyit, az „átlag" pedig tempó-szó.
      *
      * Az „az nem edzés de 6 km-t gyalogoltam a partig" hat kilométere

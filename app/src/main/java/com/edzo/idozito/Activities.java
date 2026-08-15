@@ -954,6 +954,10 @@ public final class Activities {
                 s = s.substring(0, lap.start()) + total + " m "
                         + s.substring(lap.end());
         }
+        // A SZORZÓSZÁM utáni „is" csak nyomaték: a „kétszer is voltam
+        // úszni" két úszás – az „is" eddig elvágta a számot a mozgástól,
+        // és egy alkalom lett belőle.
+        s = s.replaceAll("(szer|szor)\\s+is(?![a-z])", "$1");
         // A „JÓ KIS KARDIÓ" értékelő megjegyzés, nem második edzés: a
         // „sífutógép 25 perc, jó kis kardió" mellé egy 45 perces „egyéb
         // mozgás" került – ugyanarról a huszonöt percről.
