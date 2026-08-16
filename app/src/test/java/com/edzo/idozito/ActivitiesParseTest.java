@@ -4710,4 +4710,15 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void homeWorkoutPlatformsResolve() {
+        // A Peloton, a Freeletics és a Chloe Ting videó-edzések eddig
+        // üresen jöttek vissza.
+        assertEquals("kerekpar", Activities.parse("peloton óra 30 perc")
+                .plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("freeletics szett 30 perc")
+                .plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("chloe ting has kihívás 15 perc")
+                .plans.get(0).kind.id);
+    }
+
 }

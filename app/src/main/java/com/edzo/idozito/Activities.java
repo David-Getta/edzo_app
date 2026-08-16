@@ -111,6 +111,8 @@ public final class Activities {
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
                     // A „kerkpar" gyakori elütés (kimaradt e).
                     "kerkpar",
+                    // A Peloton otthoni spinning-platform.
+                    "peloton",
                     // A crossfit-termek levegős biciklije is bicikli: az
                     // „assault bike 10 kalória sprintek" futásnak számított.
                     "assault bike", "airbike", "air bike",
@@ -196,6 +198,8 @@ public final class Activities {
                     "eronleti",
                     // A SÚLYOK a súlyzók termi rövidítése („súlyok 40 perc").
                     "sulyok",
+                    // Otthoni edzésvideó-platformok.
+                    "freeletics", "chloe ting",
                     // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
                     // „terem" (kondi) tövet – a hosszabb tő nyer, egy találat.
                     "fitneszterem", "fitnessterem",
