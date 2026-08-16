@@ -288,6 +288,9 @@ public final class Activities {
                     "bodycombat", "body combat"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
+                    // A Les Mills kardió-óra neve: a „body attack óra"
+                    // eddig üresen jött vissza.
+                    "body attack", "bodyattack",
                     "pole dance", "poledance", "rudtanc", "pole fitness",
                     "polefitness",
                     // A ZSÍRÉGETŐ ÓRA a termek kardió-osztálya – az étel-oldal

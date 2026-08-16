@@ -893,6 +893,9 @@ public final class Foods {
             // csinált – két és fél deci vizet, egy csirkecombot, egy szelet
             // sajtot.
             "vizes", "vizesblokk", "combos", "sajtol", "sajtolas",
+            // A BODY COMBAT terem-óra, nem csirkecomb: a „combat" belsejében
+            // lakó „comb" ételt naplózott az edzés mellé.
+            "combat",
             // Az összetett alakok külön: a token ELEJÉT nézzük, tehát a
             // „kertépítés" és az „izomépítés" nem ugyanaz a szó, mint az
             // „építés" – pedig mindegyikben ott a PITE.

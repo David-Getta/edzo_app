@@ -4931,4 +4931,8 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("tavaly szeptemberben maraton").plans.isEmpty());
     }
 
+    @Test public void bodyAttackIsACardioClass() {
+        assertEquals("tanc", Activities.parse("body attack \u00f3ra").plans.get(0).kind.id);
+    }
+
 }
