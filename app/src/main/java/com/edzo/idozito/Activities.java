@@ -1198,8 +1198,16 @@ public final class Activities {
         // udvaron" nem az én edzésem – az egyes szám harmadik személyű
         // ige árulja el. A „futottam a gyerekkel" első személye marad.
         s = s.replaceAll("(?<![a-z])a gyerek\\w{0,3} [^.;]{0,24}?"
-                + "(?:futott|szaladt|jatszott|ugralt|uszott|tekert|edzett)"
+                + "(?:futott|szaladt|jatszott|ugralt|uszott|tekert|edzett"
+                // A „focizott", „kosarazott", „úszott" is a gyereké – az
+                // „a gyerek focizott, én kocogtam 20 percet" mellé eddig
+                // egy másfél órás foci is bekerült.
+                + "|focizott|kosarazott|kezizett|tancolt|kuzdott|birkozott)"
                 + "(?![a-z])", "");
+        // A VÁRAKOZÁS nem edzés: a „gyerek úszására vártam egy órát" egy
+        // órányi úszást írt be – pedig épp a parton ült az ember.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:gyerek\\w{0,3}|fiam|lanyom)"
+                + "\\s+\\p{L}{3,}(?:ra|re)\\s+vart\\w*", "");
         // Az ÁZTATÁS nem úszás: a „meleg vizes medencében áztattam magam"
         // pihenés – a medence szava mégis háromnegyed óra úszást írt be.
         if (s.contains("aztat") || s.contains("jakuzzi")

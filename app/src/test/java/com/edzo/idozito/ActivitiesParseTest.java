@@ -4986,4 +4986,17 @@ public class ActivitiesParseTest {
         assertEquals(30, Activities.parse("futottam 30 pecig").plans.get(0).minutes);
     }
 
+    @Test public void waitingForTheKidsPracticeIsNotMyWorkout() {
+        assertTrue(Activities.parse(
+                "a gyerek \u00fasz\u00e1s\u00e1ra v\u00e1rtam egy \u00f3r\u00e1t").plans.isEmpty());
+    }
+
+    @Test public void theKidsMatchIsNotMyMatch() {
+        Activities.Parsed p = Activities.parse(
+                "a gyerek focizott, \u00e9n a p\u00e1lya mellett kocogtam 20 percet");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(20, p.plans.get(0).minutes);
+    }
+
 }
