@@ -1395,4 +1395,8 @@ public class FoodsParseTest {
                 hits("\u2615 \u00e9s egy croissant").get(0).food.name);
     }
 
+    @Test public void myFatPercentIsNotLard() {
+        assertTrue(hits("zs\u00edrom 18 sz\u00e1zal\u00e9k").isEmpty());
+    }
+
 }

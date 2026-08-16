@@ -265,6 +265,13 @@ public final class BodyParse {
         // A VÁRANDÓSSÁG hete nem testsúly: az „a 30. hétben vagyok,
         // hetente 2x úszás" harmincasa HARMINC KILÓ lett a naplóban.
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\.?\\s?het(?:en|ben)(?![a-z])", "");
+        // Az ANGOL rövidítés is testzsír: a „bf 18%" és a „body fat
+        // 18,5%" az óra-app sora, és eddig üresen jött vissza. A
+        // „testzsír% 17,2" jel-előre-vetett alakja ugyanígy.
+        s = s.replaceAll("(?<![a-z])(?:bf|body\\s?fat)\\s?:?\\s?"
+                + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?%?", "testzsir $1 %");
+        s = s.replaceAll("(testzsir\\w*)\\s?%\\s?:?\\s?"
+                + "(\\d{1,2}(?:[.,]\\d{1,2})?)", "$1 $2 %");
         // A FORDÍTOTT szórendű testzsír is testzsír: az „az okosmérleg
         // szerint 22,1 a testzsírom" eddig üresen jött vissza, mert a
         // szám a szó ELŐTT áll. Egyenes szórendre írjuk át.

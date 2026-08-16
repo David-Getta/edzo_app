@@ -898,6 +898,9 @@ public final class Foods {
             // A BODY COMBAT terem-óra, nem csirkecomb: a „combat" belsejében
             // lakó „comb" ételt naplózott az edzés mellé.
             "combat",
+            // A SAJÁT zsír a mérleg rovata, nem sertészsír: a „zsírom 18
+            // százalék" egy kanál olajat írt a naplóba.
+            "zsirom", "zsirszazalek",
             // Az összetett alakok külön: a token ELEJÉT nézzük, tehát a
             // „kertépítés" és az „izomépítés" nem ugyanaz a szó, mint az
             // „építés" – pedig mindegyikben ott a PITE.

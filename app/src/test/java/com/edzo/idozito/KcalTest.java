@@ -361,4 +361,8 @@ public class KcalTest {
         assertEquals(320, Kcal.burned("fut\u00e1s k\u00f6zben 320 kcal ment el"));
     }
 
+    @Test public void basalMetabolicRateIsNotIntake() {
+        assertEquals(-1, Kcal.stated("bmr 1780 kcal"));
+    }
+
 }

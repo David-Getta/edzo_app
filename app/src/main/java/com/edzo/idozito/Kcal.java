@@ -76,6 +76,9 @@ public final class Kcal {
             // bevitelként ÉS égetésként is beszámoltuk.
             "kaloriadeficit", "kaloriadeficitben", "kaloriadeficittel",
             "kaloriatobblet", "kaloriatobbletben",
+            // A BMR az alapanyagcsere, nem a mai bevitel: a „bmr 1780
+            // kcal" a napi keret fele-kétharmada, mégis étkezés lett.
+            "bmr", "alapanyagcsere", "tdee",
     };
 
     /**

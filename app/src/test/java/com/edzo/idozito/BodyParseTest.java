@@ -908,4 +908,10 @@ public class BodyParseTest {
         assertEquals(84.0, BodyParse.parse("lefogytam 90-r\u0151l 84-re").kg, 0.01);
     }
 
+    @Test public void englishBodyFatShorthandReads() {
+        assertEquals(18.0, BodyParse.parse("bf 18%").fatPct, 0.01);
+        assertEquals(18.5, BodyParse.parse("body fat 18,5%").fatPct, 0.01);
+        assertEquals(17.2, BodyParse.parse("testzs\u00edr% 17,2").fatPct, 0.01);
+    }
+
 }
