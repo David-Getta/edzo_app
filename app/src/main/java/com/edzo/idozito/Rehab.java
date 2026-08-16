@@ -404,6 +404,9 @@ public final class Rehab {
                 // A „pattant" a szakadás magyar szava: az „elpattant valami a
                 // vádlimban" mondatra eddig semmi nem jött.
                 "elpattant", "megpattant", "elszakadt", "beszakadt",
+                // A „kiugrott a derekam" a magyar hexensussz, a „begyulladt
+                // az Achillesem" igekötős gyulladás – egyik sem talált eddig.
+                "kiugrott", "begyullad",
                 // Az INSTABILITÁS is panasz, fájdalom-szó nélkül: a „bokám
                 // gyakran kifordul futás közben" és az „instabil a térdem"
                 // eddig válasz nélkül maradt – pedig pont ezekre való a sor.
@@ -531,6 +534,10 @@ public final class Rehab {
             {"nem tudok rendesen jarni", "terhelhetetlenség"},
             {"nem tudok jarni", "terhelhetetlenség"},
             {"nem tudom mozgatni", "mozgásképtelenség"},
+            // A TÖRÉS nem gyakorlat-ügy: az „eltört a lábam síelésnél"
+            // eddig kétórás síelésként került a naplóba.
+            {"eltort", "törésgyanú"}, {"eltorott", "törésgyanú"},
+            {"csontom tort", "törésgyanú"}, {"toresem", "törésgyanú"},
     };
 
     /**

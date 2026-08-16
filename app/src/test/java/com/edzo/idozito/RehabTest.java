@@ -791,4 +791,13 @@ public class RehabTest {
         assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
                 "becsípődött a derekam reggel").isEmpty());
     }
+    @Test public void aSlippedBackAndAnInflamedAchillesAreComplaints() {
+        assertEquals("derek", Rehab.forComplaint("kiugrott a derekam").id);
+        assertEquals("achilles", Rehab.forComplaint("begyulladt az achillesem").id);
+    }
+
+    @Test public void aBrokenLegIsARedFlagNotASkiSession() {
+        assertNotNull(Rehab.redFlag("elt\u00f6rt a l\u00e1bam s\u00edel\u00e9sn\u00e9l"));
+    }
+
 }
