@@ -352,4 +352,13 @@ public class KcalTest {
         assertEquals(600, Kcal.stated("edzés után ettem 600 kcal-t"));
     }
 
+    @Test public void intakeWordWithMaInBetweenStillCounts() {
+        assertEquals(1900, Kcal.stated("kal\u00f3riabevitel ma 1900"));
+    }
+
+    @Test public void caloriesThatWentAwayAreBurnedNotEaten() {
+        assertEquals(-1, Kcal.stated("fut\u00e1s k\u00f6zben 320 kcal ment el"));
+        assertEquals(320, Kcal.burned("fut\u00e1s k\u00f6zben 320 kcal ment el"));
+    }
+
 }

@@ -107,6 +107,9 @@ public final class Kcal {
             // A FŐNÉVI alak is égetés: a „napi mérleg: 1900 kcal bevitel,
             // 2400 kcal égetés" második fele eddig a BEVITELHEZ adódott.
             "egetes", "elegetes", "egetett", "elegetett",
+            // A „320 kcal ment el" is égetés: az óra kijelzőjének magyar
+            // olvasata, mégis bevitelként számolt.
+            "ment el", "elhasznalt",
             "alatt", "felett", "folott",
     };
 
@@ -204,7 +207,10 @@ public final class Kcal {
         // mellől hiányzott a kcal, a „bevitel" meg a szó belsejében ült. A
         // puszta „bevitel 2000" és „égetés 500" ugyanígy: az irány-szó után
         // álló nagy szám csak kalória lehet.
-        s = s.replaceAll("kaloriabevitel\\w*\\s?:?\\s?(\\d{3,4})(?!\\d)(?![.,]\\d)",
+        // A „ma/tegnap" beékelődhet: a „kalóriabevitel ma 1900" eddig
+        // elveszett.
+        s = s.replaceAll("kaloriabevitel\\w*\\s?:?\\s?"
+                + "(?:(?:ma|tegnap|most|eddig)\\s)?(\\d{3,4})(?!\\d)(?![.,]\\d)",
                 "bevitel $1 kcal");
         s = s.replaceAll("(?<![a-z])(bevitel|egetes)\\s?:?\\s?(\\d{3,4})(?!\\d)"
                 + "(?![.,]\\d)(?!\\s?kcal)", "$1 $2 kcal");
