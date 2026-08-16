@@ -1171,4 +1171,15 @@ public class FoodsParseTest {
                 .get(0).grams, 0.5);
     }
 
+    @Test public void freeFromProductsResolveSensibly() {
+        // A „zsírszegény tejföl" tej PLUSZ tejföl volt; az alkoholmentes
+        // sör teljes sörként számított. (A cukormentes rágó szándékosan a
+        // nulla kalóriás gyűjtőbe megy – azt a fitnesz-teszt őrzi.)
+        List<Foods.Hit> h = hits("zsírszegény tejföl a levesbe");
+        assertEquals("Tejföl", h.get(0).food.name);
+        assertEquals("Alkoholmentes sör",
+                hits("alkoholmentes sört ittam").get(0).food.name);
+        assertEquals("Sör", hits("sört ittam a meccs alatt").get(0).food.name);
+    }
+
 }

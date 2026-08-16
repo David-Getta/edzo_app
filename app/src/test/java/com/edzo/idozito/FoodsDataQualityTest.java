@@ -145,10 +145,13 @@ public class FoodsDataQualityTest {
     @Test public void beerNeedsItsAccentInsideAWord() {
         java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
         String[] beer = {"két korsó sör", "sört ittam", "sör", "búzasör", "barna sör",
-                "alkoholmentes sör", "2 üveg sör", "két korso sor"};
+                "2 üveg sör", "két korso sor"};
         for (String q : beer)
             assertEquals("elveszett a sör: " + q, "Sör",
                     Foods.parse(all, q).isEmpty() ? "—" : Foods.parse(all, q).get(0).food.name);
+        // Az alkoholmentes változat saját, harmadannyi kalóriás tétel.
+        assertEquals("Alkoholmentes sör",
+                Foods.parse(all, "alkoholmentes sör").get(0).food.name);
         String[] notBeer = {"névsora", "gyakorlatsorok", "címsorban", "fejsor", "csipsor",
                 "munkasorozatokra", "3 sorozat 10 fekvenyomás", "egysoros",
                 "ábécésorrendben", "sorból", "soronként", "sorompó", "idősor"};

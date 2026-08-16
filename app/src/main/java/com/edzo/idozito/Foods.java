@@ -809,6 +809,10 @@ public final class Foods {
                 "mojito", "aperol", "cuba libre", "long drink", "spritz"),
         new Food("Pezsgő", 76, 0, 150, "pezsgo", "prosecco", "champagne"),
         new Food("Cider", 45, 0, 330, "cider", "almabor"),
+        // Az alkoholmentes sör harmadannyi kalória, mint az igazi – a
+        // hosszabb tő elviszi a sima sör elől.
+        new Food("Alkoholmentes sör", 25, 0, 500, "alkoholmentes sor",
+                "alkoholmentes sort"),
         new Food("Növényi tej (mandula/zab)", 40, 1, 250, "novenyi tej", "mandulatej",
                 "zabtej", "rizstej", "szojatej", "zabital", "mandulaital",
                 "rizsital", "szojaital", "kokusztej ital"),
@@ -2482,6 +2486,10 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A ZSÍRSZEGÉNY TEJFÖL tejföl: a jelző miatt eddig zsírszegény
+        // TEJ és tejföl is bekerült – kettő egy helyett.
+        query = query.replaceAll("(?iu)zs[ií]rszeg[eé]ny\\s+tejf[oö]l",
+                "tejföl");
         // A DEKÁS jelző is mennyiség: a „harmincdekás steak" alapadagként
         // ment be, pedig háromszáz gramm.
         query = query.replaceAll("(?iu)(?<!\\p{L})t[ií]z\\s?dek[aá]s", "100 g")
