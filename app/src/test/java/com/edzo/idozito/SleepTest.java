@@ -398,4 +398,20 @@ public class SleepTest {
         assertEquals(7.8, Sleep.parse("alvás 7:45, ebből mély 2:05"), 0.01);
     }
 
+    @Test public void hoursAndMinutesJoinedByEsAddUp() {
+        assertEquals(6.8, Sleep.parse("aludtam 6 \u00f3r\u00e1t \u00e9s 45 percet"), 0.01);
+    }
+
+    @Test public void stayingUpUntilTwoIsFallingAsleepAtTwo() {
+        assertEquals(7.0, Sleep.parse("hajnali 2-ig fent voltam, 9-kor keltem"), 0.01);
+    }
+
+    @Test public void approximateBedAndWakeTimesStillCount() {
+        assertEquals(7.5, Sleep.parse("f\u00e9l 12 ut\u00e1n alhattam el, 7 el\u0151tt \u00e9bredtem"), 0.01);
+    }
+
+    @Test public void wakingBeforeNineAloneIsNotANight() {
+        assertEquals(-1.0, Sleep.parse("9 el\u0151tt keltem"), 0.01);
+    }
+
 }

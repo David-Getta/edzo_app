@@ -175,7 +175,9 @@ public final class Sleep {
             // az össze-tő korábban elkapta a hetest, és a tizenkét perc
             // elveszett.
             java.util.regex.Matcher hm = java.util.regex.Pattern
-                    .compile("(\\d{1,2})\\s?ora\\w*\\s?(\\d{1,2})\\s?perc").matcher(s);
+                    // Az „és" kötőszóval mondva is óra+perc: az „aludtam
+                    // 6 órát és 45 percet" negyvenöt perce eddig elveszett.
+                    .compile("(\\d{1,2})\\s?ora\\w*\\s?(?:es\\s+)?(\\d{1,2})\\s?perc").matcher(s);
             if (hm.find()) {
                 double v = Integer.parseInt(hm.group(1)) + Integer.parseInt(hm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
@@ -280,6 +282,17 @@ public final class Sleep {
         // Az ELALVÁS is lefekvés: az „alhattam el" és az „aludtam el"
         // ugyanaz a pillanat, csak bizonytalanabbul mondva.
         s = s.replaceAll("al(?:hat|ud)tam el(?![a-z])", "elaludtam");
+        // A KÖRÜLBELÜLI időpont is időpont: a „fél 12 után aludtam el,
+        // 7 előtt ébredtem" eddig elveszett – az „után" és az „előtt"
+        // elvitte a ragot.
+        s = s.replaceAll("((?:fel|haromnegyed)\\s)?(\\d{1,2})\\s?"
+                + "(?:utan|korul|tajban|tajt)\\s+(?=elalud)", "$1$2-kor ");
+        s = s.replaceAll("((?:fel|haromnegyed)\\s)?(\\d{1,2})\\s?elott\\s+"
+                + "(?=ebred|kel)", "$1$2-kor ");
+        // Az „X-ig fent voltam" az elalvás pillanata: a „hajnali 2-ig fent
+        // voltam, 9-kor keltem" hét órája eddig elveszett.
+        s = s.replaceAll("(\\d{1,2})-ig\\s+fen[nt]\\p{L}*\\s+"
+                + "(?:voltam|maradtam)", "$1-kor elaludtam");
         // A „11 óra körül" is időpont: az óra-szó kiesik, a rag marad.
         s = s.replaceAll("(\\d{1,2})\\s?ora\\s?korul", "$1-kor");
         boolean bed = s.contains("fekudtem") || s.contains("fekszem")
