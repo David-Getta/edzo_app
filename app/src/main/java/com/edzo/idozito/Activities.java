@@ -76,6 +76,10 @@ public final class Activities {
                     // így az angolos „snorkel" írásmódot is fedi.
                     "norkel",
                     "uszoverseny",
+                    // Az „úszó intervall 10x50 m" a bare-táv szabályon át
+                    // futássá vált – a jelzős alak is úszás. (A puszta
+                    // „uszo" nem lehet tő: a „csúszó" belsejében is ott van.)
+                    "uszo intervall",
                     // A medence RAGOZOTT alakja: a puszta „medence" a súlyzós
                     // medenceemelés szava is, azt nem vesszük el tőle.
                     "medenceben", "uszomedence", "szinkronuszas",
@@ -1454,6 +1458,12 @@ public final class Activities {
                 "kondi");
         // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
         s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
+        // A NORVÉG 4x4 az intervall sémája, nem négy alkalom: a „norvég
+        // 4x4 futás" négy napra szétosztott négy futás lett. A mértékegység
+        // nélküli NxM az intervall-mondatban csak a séma.
+        if (s.contains("norveg") || s.contains("intervall") || s.contains("hiit"))
+            s = s.replaceAll("(?<![\\dx.,])\\d{1,2}\\s?x\\s?\\d{1,2}"
+                    + "(?!\\s?(?:km|perc|mp|m(?![a-z])|\\d))", " ");
         // Csak a többes „steps": az egyes „step" a step-aerobik órája.
         s = s.replaceAll("(?<![a-z])steps(?![a-z])", "lepes");
         s = s.replaceAll("(?<![a-z])stretching(?![a-z])", "nyujtas");

@@ -4882,4 +4882,18 @@ public class ActivitiesParseTest {
         assertEquals(50, p.plans.get(0).minutes);
     }
 
+    @Test public void theNorwegianFourByFourIsOneSession() {
+        Activities.Parsed p = Activities.parse("norv\u00e9g 4x4 fut\u00e1s");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals("futas", p.plans.get(0).kind.id);
+    }
+
+    @Test public void aSwimIntervalIsSwimmingNotRunning() {
+        Activities.Parsed p = Activities.parse("\u00fasz\u00f3 intervall 10x50 m");
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(0.5, p.plans.get(0).km, 0.01);
+    }
+
 }
