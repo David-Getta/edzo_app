@@ -418,4 +418,10 @@ public class SleepTest {
         assertEquals(7.5, Sleep.parse("78,2 kg / 54 rhr / 7,5h alv\u00e1s"), 0.01);
     }
 
+    @Test public void aTrailingHourCountAfterAClauseStillCounts() {
+        assertEquals(6.0, Sleep.parse(
+                "nappal aludtam, mert \u00e9jjel dolgoztam: 6 \u00f3ra"), 0.01);
+        assertEquals(6.5, Sleep.parse("m\u0171szak ut\u00e1n aludtam 6,5 \u00f3r\u00e1t"), 0.01);
+    }
+
 }

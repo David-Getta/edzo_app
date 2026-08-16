@@ -210,6 +210,18 @@ public final class Sleep {
                 double v = Integer.parseInt(fm.group(1)) + 0.5;
                 if (v >= MIN_H && v <= MAX_H) return v;
             }
+            // A TAGMONDAT-VÉGI óraszám is a kimondott alvás: a „nappal
+            // aludtam, mert éjjel dolgoztam: 6 óra" hatosa eddig elveszett –
+            // a szám két tagmondattal odébb áll az igétől.
+            if (s.matches(".*alud\\w*.*")) {
+                java.util.regex.Matcher vm = java.util.regex.Pattern
+                        .compile("(?<!\\d)[:,]\\s?(\\d{1,2}(?:[.,]\\d)?)"
+                                + "\\s?ora\\w*\\s*$").matcher(s);
+                if (vm.find()) {
+                    double v = Double.parseDouble(vm.group(1).replace(',', '.'));
+                    if (v >= MIN_H && v <= MAX_H) return v;
+                }
+            }
             // Tól-ig: a „8-9 órát aludtam" közepét vesszük. Enélkül a pár úgy
             // nézett ki, mint egy munka/pihenő ritmus, és az időzítőbe ment.
             java.util.regex.Matcher rm = java.util.regex.Pattern
