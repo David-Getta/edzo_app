@@ -4999,4 +4999,11 @@ public class ActivitiesParseTest {
         assertEquals(20, p.plans.get(0).minutes);
     }
 
+    @Test public void theIntervalTotalIsTheWorkoutLength() {
+        Activities.Parsed p = Activities.parse(
+                "hiit 15 perc, 40 mp munka 20 mp pihen\u0151");
+        assertEquals(1, p.plans.size());
+        assertEquals(15, p.plans.get(0).minutes);
+    }
+
 }

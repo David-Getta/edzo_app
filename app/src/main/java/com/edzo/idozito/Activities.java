@@ -2681,6 +2681,22 @@ public final class Activities {
         // Csak valódi munka/pihenő párnál: a „2x45 perc foci" két félidő,
         // ott nincs pihenő-szakasz, és a meccs marad bejegyzés.
         IntervalParse.Plan ip = IntervalParse.parse(rawText);
+        // A TERV hossza a mozgás hossza is: a „hiit 15 perc, 40 mp munka
+        // 20 mp pihenő" tizenöt perce körszámmá vált, a mozgás mellé meg
+        // a negyvenöt perces alapérték került – háromszorosa a valóságnak.
+        // Csak KIMONDOTT munka/pihenő pár mellett: a „csináltunk egy
+        // tabatát" négyperces sémáját nem tesszük meg a nap mozgásának.
+        if (ip != null && ip.rounds >= 2 && ip.rest > 0 && !ip.guessed
+                && rawText.matches(".*(?<![a-z])\\d{1,3}\\s?mp(?![a-z]).*")
+                && out.size() == 1 && out.get(0).km <= 0
+                && out.get(0).steps <= 0
+                && out.get(0).minutes == out.get(0).kind.defaultMin) {
+            int tot = Math.round(ip.rounds * (ip.work + ip.rest) / 60f);
+            if (tot >= 1 && tot <= 24 * 60) {
+                Plan p0 = out.get(0);
+                out.set(0, new Plan(p0.kind, p0.count, tot, 0, 0));
+            }
+        }
         if (ip != null && ip.rounds >= 2 && ip.rest > 0 && !ip.guessed) {
             List<Plan> kept = new ArrayList<>();
             for (Plan p : out) {
