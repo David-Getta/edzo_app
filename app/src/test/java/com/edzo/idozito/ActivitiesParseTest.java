@@ -5033,4 +5033,10 @@ public class ActivitiesParseTest {
         assertEquals(45, p.plans.get(0).minutes);
     }
 
+    @Test public void movingMyselfALittleIsStillAWorkout() {
+        Activities.Parsed p = Activities.parse("megmozgattam magam 30 percet");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
 }

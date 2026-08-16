@@ -324,7 +324,9 @@ public final class Activities {
                     // vissza. A fascia-lazítás a henger rokona.
                     "vinyasa", "napudvozlet", "fascia", "mobility",
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
-                    "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
+                    // A „megmozgattam magam" ugyanaz a laza átmozgatás.
+                    "meditac", "atmozgat", "megmozgat",
+                    "mobiliz", "mobilitas", "legzogyakorlat",
                     // A Wim Hof-módszer vezetett légzőgyakorlat.
                     "legzo gyakorlat", "wim hof",
                     // A HENGERES görgetés izomlazítás – a puszta „görgettem"
