@@ -1359,4 +1359,11 @@ public class FoodsParseTest {
         assertEquals("Ban\u00e1n", h.get(0).food.name);
     }
 
+    @Test public void aTextualHalfOfAWholePizzaIsHalfAPortion() {
+        List<Foods.Hit> h = hits("nem ettem meg az eg\u00e9sz pizz\u00e1t, csak a fel\u00e9t");
+        assertEquals(1, h.size());
+        assertEquals("Pizza", h.get(0).food.name);
+        assertEquals(150, h.get(0).grams, 0.01);
+    }
+
 }

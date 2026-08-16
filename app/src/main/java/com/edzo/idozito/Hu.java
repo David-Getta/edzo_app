@@ -253,6 +253,10 @@ public final class Hu {
      */
     public static String correction(String s) {
         if (s == null || s.isEmpty()) return s == null ? "" : s;
+        // A MÉGSEM ugyanaz a tagadás, mint a „nem": a „mégsem 80 kg
+        // vagyok, hanem 78" nyolcvana ment be, a „mégsem futottam le a
+        // 10 km-t, csak 6 lett" meg elveszett.
+        s = s.replaceAll("(?iu)(?<!\\p{L})m[eé]gsem(?!\\p{L})", "nem");
         // Az ANGOL egység átváltva magyar: a „bench press 225 lbs"
         // kétszázhuszonöt KILÓ lett, a „súlyom 180 font" száznyolcvan – a
         // font 0,45 kg, a mérföld 1,6 km. A számmal együtt váltjuk át, így

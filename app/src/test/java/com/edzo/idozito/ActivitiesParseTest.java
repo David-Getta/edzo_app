@@ -4917,4 +4917,14 @@ public class ActivitiesParseTest {
         assertEquals(1.0, q.plans.get(0).km, 0.01);
     }
 
+    @Test public void megsemWithCsakKeepsTheSmallerRun() {
+        Activities.Parsed p = Activities.parse(
+                "m\u00e9gsem futottam le a 10 km-t, csak 6 lett");
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+    }
+
+    @Test public void megsemAloneCancelsTheRun() {
+        assertTrue(Activities.parse("m\u00e9gsem mentem el futni").plans.isEmpty());
+    }
+
 }

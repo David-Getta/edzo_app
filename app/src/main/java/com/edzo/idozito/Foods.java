@@ -2539,6 +2539,12 @@ public final class Foods {
         // A SEMMI tagadás: a „mentes nap volt, semmi cukor" cukra pont az,
         // ami NEM került a szervezetbe – mégis tíz gramm ment a naplóba.
         query = query.replaceAll("(?iu)(?<!\\p{L})semmi\\s+\\p{L}+", "");
+        // A SZÖVEGES fél is fél: a „nem ettem meg az egész pizzát, csak
+        // a felét" eddig üresen jött vissza – a tagadás elvitte, a „felét"
+        // meg nem szám.
+        query = query.replaceAll("(?iu)nem\\s+ettem\\s+meg\\s+az?\\s+"
+                + "eg[eé]sz\\s+(\\p{L}+),?\\s*csak\\s+a\\s+fel[eé]t",
+                "ettem fél $1");
         // A VISZCERÁLIS zsír az okosmérleg rovata, nem kanál zsír: a
         // „viszcerális zsír 9" kilenc adag sertészsírként ment volna be.
         query = query.replaceAll("(?iu)(?:viszcer[aá]lis|zsigeri)\\s+"

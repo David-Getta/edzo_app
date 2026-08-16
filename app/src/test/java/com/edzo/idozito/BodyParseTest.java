@@ -860,4 +860,8 @@ public class BodyParseTest {
         assertTrue(b == null || b.kg == 0);
     }
 
+    @Test public void megsemKeepsTheCorrectedWeight() {
+        assertEquals(78.0, BodyParse.parse("m\u00e9gsem 80 kg vagyok, hanem 78").kg, 0.01);
+    }
+
 }
