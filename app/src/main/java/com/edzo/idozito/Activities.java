@@ -1188,6 +1188,11 @@ public final class Activities {
             em.appendTail(eb);
             s = eb.toString();
         }
+        // A SZINTEMELKEDÉS métere magasság, nem táv: a „szintemelkedés
+        // 1200 m a mai túrán" egy 1,2 km-es sétává zsugorodott.
+        s = s.replaceAll("(?<![a-z])(szintemelkedes|szintnyereseg)\\w*"
+                + "\\s?:?\\s?\\d{2,4}\\s?m(?![a-z])", "$1");
+        s = s.replaceAll("(?<![\\d,.])\\d{2,4}\\s?m\\s+szint\\w*", "szint");
         // A TERMI RÖVIDÍTÉS perce nem méter: a „cardio 20m + súlyok 40m"
         // húsz és negyven PERC – méterként negyven méteres futás lett
         // belőle. Csak termi szó mellett és úszás nélkül merjük.

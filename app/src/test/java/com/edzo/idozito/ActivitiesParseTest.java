@@ -4636,4 +4636,14 @@ public class ActivitiesParseTest {
                 .parse("sznorkeleztünk a tengerben fél órát").plans.get(0).kind.id);
     }
 
+    @Test public void elevationGainIsNotDistance() {
+        // A „szintemelkedés 1200 m a mai túrán" egy 1,2 km-es sétává
+        // zsugorodott – a szint métere magasság. Az úszás métere marad.
+        Activities.Plan p = Activities
+                .parse("túráztam 3 órát, szintemelkedés 800 m").plans.get(0);
+        assertEquals(180, p.minutes);
+        assertEquals(0, p.km, 0.001);
+        assertEquals(0.8, Activities.parse("úsztam 800 m-t").plans.get(0).km, 0.001);
+    }
+
 }
