@@ -133,6 +133,19 @@ public final class BodyParse {
     };
 
     /**
+     * MÁS emberének (vagy állatának) tagmondata törölve – még a vesszők
+     * eltávolítása ELŐTT, mert a későbbi lépések tagmondat-határ nélkül
+     * már nem tudnák leválasztani. Az „én 78 kg vagyok, a fiam 32" első
+     * fele így megmarad, a fiú súlya nem lesz a felhasználóé.
+     */
+    private static String dropOthersWeight(String s) {
+        return s.replaceAll("(?:(?<=[,;.])|^)[^,;.]*(?<![a-z])"
+                + "(?:fiam|lanyom|ferjem|felesegem|parom|gyerek\\w{0,3}"
+                + "|baba\\w{0,3}|kutya\\w{0,3}|macska\\w{0,3}"
+                + "|anyu|apu|anyam|apam|tesom|nagyi)(?![a-z])[^,;.]*", " ");
+    }
+
+    /**
      * Szavak, amelyektől a mondat biztosan NEM mérés – a súly másé.
      *
      * Mind egész szóként keresve: a rövid szótő máshol elrejtve („húsz”-ban a
@@ -144,7 +157,13 @@ public final class BodyParse {
             // „szeretnék 75 lenni" meg egyáltalán nem mérés. Egy vágyból
             // csinált bejegyzés a trendet is, a BMI-t is elrontaná.
             "alatt", "felett", "folott", "korul", "korulbelul", "kb", "kozel",
-            "szeretnek", "akarok", "cel", "celom", "lenni"
+            "szeretnek", "akarok", "cel", "celom", "lenni",
+            // MÁS súlya nem az enyém: „a fiam 32 kg lett a mérlegen"
+            // eddig a felhasználó mérésének számított. A tagmondat-hatókör
+            // miatt az „én 78, a fiam 32" első fele megmarad.
+            "fiam", "lanyom", "ferjem", "felesegem", "parom", "gyerek",
+            "babank", "baba", "kutyam", "kutya", "macska", "macskam",
+            "anyu", "apu", "anyam", "apam", "tesom", "nagyi"
     };
 
     /**
@@ -216,7 +235,8 @@ public final class BodyParse {
         // hete a digits() után már „7", és a szabály nem ismerné fel benne az
         // időtartamot – az „alatt" pedig összehasonlításnak látszana.
         String s = keepTheNewValue(dropOtherLogs(
-                Hu.digits(maskTimeUnder(Hu.correction(Foods.norm(q))))));
+                Hu.digits(maskTimeUnder(Hu.correction(
+                        dropOthersWeight(Foods.norm(q)))))));
         // A KEZELÉS ALATTI „alatt" nem összehasonlítás: a „hormonkezelés
         // alatt híztam 3 kilót, most 68 kg" hatvannyolca valódi mérés –
         // az „alatt" tiltószava eddig az egészet elvitte.

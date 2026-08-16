@@ -831,4 +831,15 @@ public class BodyParseTest {
                 .parse("a 10. helyről indultam a versenyen").kg, 0.001);
     }
 
+    @Test public void aFamilyMembersWeightIsNotMine() {
+        // „A fiam 32 kg lett a mérlegen" a gyerek súlya – eddig a
+        // felhasználó mérésének számított. A saját tagmondat megmarad.
+        assertEquals(0, BodyParse.parse("a fiam 32 kg lett a mérlegen").kg, 0.001);
+        assertEquals(78, BodyParse
+                .parse("én 78 kg vagyok, a fiam 32 kg").kg, 0.001);
+        assertEquals(78, BodyParse
+                .parse("a párom szerint fogytam, 78 kg vagyok").kg, 0.001);
+        assertEquals(0, BodyParse.parse("a kutyám 28 kg-ot nyom").kg, 0.001);
+    }
+
 }
