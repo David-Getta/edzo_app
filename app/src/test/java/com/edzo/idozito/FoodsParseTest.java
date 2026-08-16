@@ -1182,4 +1182,12 @@ public class FoodsParseTest {
         assertEquals("Sör", hits("sört ittam a meccs alatt").get(0).food.name);
     }
 
+    @Test public void aRowHouseIsNotABeer() {
+        // A „sorház utcában találkoztunk" egy korsó sört írt a naplóba.
+        // A sörházban MEGIVOTT sör viszont marad.
+        assertTrue(hits("sorház utcában találkoztunk").isEmpty());
+        assertEquals(1000, hits("a sörházban megittunk két sört")
+                .get(0).grams, 0.5);
+    }
+
 }

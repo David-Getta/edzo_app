@@ -855,6 +855,8 @@ public final class Foods {
             "vadviz",
             // Az angol HALF (marathon) nem hal-étel, a CARDIO vége nem dió.
             "half", "cardio",
+            // A SORHÁZ épület (és a sörház is hely, nem megivott sör).
+            "sorhaz",
 
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a
