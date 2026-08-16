@@ -4935,4 +4935,12 @@ public class ActivitiesParseTest {
         assertEquals("tanc", Activities.parse("body attack \u00f3ra").plans.get(0).kind.id);
     }
 
+    @Test public void futsalIsFootballAndStreetballIsBasketball() {
+        Activities.Parsed p = Activities.parse("futsal meccs 2x25 perc");
+        assertEquals("foci", p.plans.get(0).kind.id);
+        assertEquals(50, p.plans.get(0).minutes);
+        assertEquals("kosarlabda",
+                Activities.parse("streetball a t\u00e9ren").plans.get(0).kind.id);
+    }
+
 }

@@ -251,10 +251,14 @@ public final class Activities {
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
-                    "foci", "focizas", "labdarugas", "focizt", "futball"),
+                    // A futsal a terem-foci neve – eddig üresen jött vissza.
+                    "foci", "focizas", "labdarugas", "focizt", "futball",
+                    "futsal"),
             new Kind("kosarlabda", "🏀", "Kosárlabda", 6.5, false, 60,
                     // A puszta „kosár" nem sport: a bevásárlókosár is az.
-                    "kosarlabda", "kosaraz", "kosar edzes"),
+                    // A streetball az utcai változat – eddig üresen jött
+                    // vissza.
+                    "kosarlabda", "kosaraz", "kosar edzes", "streetball"),
             new Kind("roplabda", "🏐", "Röplabda", 4.0, false, 60,
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
