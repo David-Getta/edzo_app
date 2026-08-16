@@ -1190,4 +1190,17 @@ public class FoodsParseTest {
                 .get(0).grams, 0.5);
     }
 
+    @Test public void fastFoodMenusAndFriesResolve() {
+        // A „mekis menüt ettem sajtburgerrel" menü PLUSZ burger volt; a
+        // „big mac menü nagy krumplival" főtt burgonyát írt a sült
+        // krumpli helyett. A pörkölt főtt krumplija marad.
+        List<Foods.Hit> h = hits("mekis menüt ettem sajtburgerrel");
+        assertEquals(1, h.size());
+        assertEquals("Gyorséttermi menü", h.get(0).food.name);
+        h = hits("big mac menü nagy krumplival és kólával");
+        assertEquals("Sült krumpli", h.get(1).food.name);
+        assertEquals("Burgonya (főtt)",
+                hits("főtt krumpli pörkölthöz").get(0).food.name);
+    }
+
 }

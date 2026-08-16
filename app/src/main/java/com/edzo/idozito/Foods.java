@@ -2488,6 +2488,17 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A MENÜVEL mondott burger a menü része: a „mekis menüt ettem
+        // sajtburgerrel" menü PLUSZ külön burger volt. Csak a -val/-vel
+        // ragos alak esik ki – a „menü és egy burger" hozzáadás marad.
+        query = query.replaceAll("(?iu)(men[uü]\\p{L}*\\s+ettem)"
+                + "\\s+\\p{L}*burgerrel", "$1");
+        // A GYORSÉTTERMI krumpli sült krumpli, nem főtt burgonya: a „big
+        // mac menü nagy krumplival" köretét harmadannyi kalóriával írta be.
+        if (query.matches("(?iu).*(meki|big mac|mcdonald|kfc"
+                + "|burger king).*"))
+            query = query.replaceAll("(?iu)(?<!\\p{L})(?:nagy\\s+)?krumpli",
+                    "sültkrumpli");
         // A ZSÍRSZEGÉNY TEJFÖL tejföl: a jelző miatt eddig zsírszegény
         // TEJ és tejföl is bekerült – kettő egy helyett.
         query = query.replaceAll("(?iu)zs[ií]rszeg[eé]ny\\s+tejf[oö]l",
