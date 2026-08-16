@@ -4672,4 +4672,21 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    @Test public void aDetailedTriathlonIsItsLegsOnly() {
+        // A „triatlon: úszás 1,5 km, kerékpár 40 km, futás 10 km" mellé
+        // egy külön 150 perces triatlon-tétel is került – duplán számolva.
+        Activities.Parsed p = Activities
+                .parse("triatlon: úszás 1,5 km, kerékpár 40 km, futás 10 km");
+        assertEquals(3, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        // A vessző nélküli lánc kötése is a saját sportjához igazodik.
+        p = Activities.parse("sprint triatlon 750 m úszás 20 km bringa 5 km futás");
+        assertEquals(0.75, p.plans.get(0).km, 0.001);
+        assertEquals(20, p.plans.get(1).km, 0.001);
+        assertEquals(5, p.plans.get(2).km, 0.001);
+        // A puszta triatlon-szó marad gyűjtő.
+        assertEquals("triatlon", Activities
+                .parse("olimpiai távú triatlont teljesítettem").plans.get(0).kind.id);
+    }
+
 }

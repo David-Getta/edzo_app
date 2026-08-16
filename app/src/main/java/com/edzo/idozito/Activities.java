@@ -1188,6 +1188,26 @@ public final class Activities {
             em.appendTail(eb);
             s = eb.toString();
         }
+        // A RÉSZLETEZETT triatlon a szakaszaival él: a „triatlon: úszás
+        // 1,5 km, kerékpár 40 km, futás 10 km" mellé eddig egy külön
+        // 150 perces triatlon-tétel is került – duplán számolva a napot.
+        // A gyűjtő-szó csak akkor esik ki, ha legalább két táv ki van írva.
+        if (s.matches(".*(triatlon|duatlon|aquatlon).*")) {
+            int tavok = 0;
+            java.util.regex.Matcher tm2 = java.util.regex.Pattern
+                    .compile("\\d\\s?km(?![a-z])|\\d{3,4}\\s?m(?![a-z])")
+                    .matcher(s);
+            while (tm2.find()) tavok++;
+            if (tavok >= 2) {
+                s = s.replaceAll("(?<![a-z])(?:sprint\\s|olimpiai\\s)?"
+                        + "(?:tri|du|aqu)atlon\\w*\\s?:?\\s?", "");
+                // A vessző nélküli lánc („750 m úszás 20 km bringa 5 km
+                // futás") kötése elcsúszott: minden táv+sport pár elé
+                // tagmondat-határ kerül, így a táv a saját sportjáé.
+                s = s.replaceAll("(?<=[a-z])\\s+(?=\\d+(?:[.,]\\d+)?\\s?k?m"
+                        + "\\s(?:usz|bring|kerekpar|futas|tekeres))", ", ");
+            }
+        }
         // A LEGYŐZÖTT lustaság is edzés: a „nem volt kedvem, de azért
         // lefutottam 5 km-t" második fele megtörtént – a kedv hiánya eddig
         // az egészet elvitte.
