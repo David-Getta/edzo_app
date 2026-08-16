@@ -1346,4 +1346,17 @@ public class FoodsParseTest {
         assertTrue(hits("viszcer\u00e1lis zs\u00edr 9").isEmpty());
     }
 
+    @Test public void semmiNegatesTheFoodAfterIt() {
+        assertTrue(hits("mentes nap volt, semmi cukor").isEmpty());
+        List<Foods.Hit> h = hits("ettem pizz\u00e1t, de semmi \u00e9dess\u00e9g");
+        assertEquals(1, h.size());
+        assertEquals("Pizza", h.get(0).food.name);
+    }
+
+    @Test public void blendingWithLePrefixIsAlsoJustMixing() {
+        List<Foods.Hit> h = hits("leturmixoltam egy ban\u00e1nt tejjel");
+        assertEquals(2, h.size());
+        assertEquals("Ban\u00e1n", h.get(0).food.name);
+    }
+
 }

@@ -2534,8 +2534,11 @@ public final class Foods {
         // A TURMIXOLVA készítésmód, nem külön ital: a „mogyoróvaj banánnal
         // turmixolva" mellé egy teljes smoothie is került – a hozzávalók
         // mellé. Az ige keveréssé szelídül, a megivott turmix marad.
-        query = query.replaceAll("(?iu)(?<!\\p{L})(?:[oö]ssze)?turmixol"
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:[oö]ssze|le)?turmixol"
                 + "\\p{L}*", "keverve");
+        // A SEMMI tagadás: a „mentes nap volt, semmi cukor" cukra pont az,
+        // ami NEM került a szervezetbe – mégis tíz gramm ment a naplóba.
+        query = query.replaceAll("(?iu)(?<!\\p{L})semmi\\s+\\p{L}+", "");
         // A VISZCERÁLIS zsír az okosmérleg rovata, nem kanál zsír: a
         // „viszcerális zsír 9" kilenc adag sertészsírként ment volna be.
         query = query.replaceAll("(?iu)(?:viszcer[aá]lis|zsigeri)\\s+"
