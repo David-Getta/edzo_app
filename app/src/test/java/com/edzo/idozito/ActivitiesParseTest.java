@@ -4721,4 +4721,13 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void frequentativeFormsStillCount() {
+        // A „futkarásztam a gyerekek után" és a „jártam egyet a korzón"
+        // eddig üresen jött vissza.
+        assertEquals("futas", Activities
+                .parse("futkarásztam a gyerekek után egész nap").plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("jártam egyet a korzón")
+                .plans.get(0).kind.id);
+    }
+
 }

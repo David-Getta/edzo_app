@@ -49,7 +49,8 @@ public final class Activities {
     public static final Kind[] ALL = {
             new Kind("futas", "🏃", "Futás", 9.8, true, 45,
                     "futas", "futo edzes", "futoedzes", "futni", "futott", "kocog", "futok",
-                    "maraton", "futkaroz", "futkos", "sprint", "futopad", "futogep",
+                    "maraton", "futkaroz", "futkos", "futkarasz", "sprint",
+                    "futopad", "futogep",
                     // A verseny neve is a sportot mondja ki – a puszta „futó"
                     // viszont nem lehet tő, mert túl sok szóban benne van.
                     "futoverseny", "terepfutas", "spartan", "parkrun",
@@ -150,6 +151,9 @@ public final class Activities {
                     "mountain bike", "mountainbike", "mtb", "gravel"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
+                    // A „jártam egyet" séta-szleng – csak múlt időben: a
+                    // „járok egyet" még szándék.
+                    "jartam egyet",
                     "hegymasz", "megmaszt", "gyalog", "lepcsoz",
                     // A FELMÁSZTAM a kilátóhoz és a VÉGIGJÁRTAM tanösvény is
                     // túra: az egyik üresen jött vissza, a másik futás lett.
