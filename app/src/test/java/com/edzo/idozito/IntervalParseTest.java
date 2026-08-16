@@ -817,4 +817,9 @@ public class IntervalParseTest {
         assertNull(IntervalParse.parse("30 perc \u00fasz\u00e1s, 2:10/100m temp\u00f3"));
     }
 
+    @Test public void mealClockTimesAreNotAWorkRestRhythm() {
+        assertNull(IntervalParse.parse(
+                "7:00 zabk\u00e1sa, 12:30 csirke rizzsel, 19:00 toj\u00e1sr\u00e1ntotta"));
+    }
+
 }

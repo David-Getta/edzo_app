@@ -120,6 +120,14 @@ public final class IntervalParse {
         // app – száznegyven másodperc munka, kilencvenöt pihenő.
         if (s.contains("vernyomas") || s.contains("ver nyomas")
                 || s.contains("higanymilli") || s.contains("hgmm")) return null;
+        // Az ÉTKEZÉSI IDŐPONTOK sora sem ritmus: a „7:00 zabkása, 12:30
+        // csirke rizzsel" órajelei munka/pihenő párnak látszottak, és
+        // időzítő-tervet ajánlott rájuk az app.
+        if (s.matches(".*\\d{1,2}:\\d{2}.*")
+                && !Foods.parse(java.util.Arrays.asList(Foods.ALL), text).isEmpty()
+                && !s.contains("intervall") && !s.contains("hiit")
+                && !s.contains("kor ") && !s.contains("sprint")
+                && !s.contains("munka") && !s.contains("piheno")) return null;
         // Az ÚSZÓ-TEMPÓ sem ritmus: a „2:10/100m tempó" munka/pihenő
         // párnak látszott, és időzítő-tervet ajánlott rá az app.
         s = s.replaceAll("(?<![\\d])\\d{1,2}:\\d{2}\\s?/\\s?100\\s?m"
