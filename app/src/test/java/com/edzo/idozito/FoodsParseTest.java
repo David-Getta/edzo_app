@@ -1434,4 +1434,12 @@ public class FoodsParseTest {
         assertEquals(800, hits("dupla adag guly\u00e1s").get(0).grams, 0.01);
     }
 
+    @Test public void aLayeredPastaIsNotLayeredPotato() {
+        List<Foods.Hit> h = hits("h\u00fasos rakott t\u00e9szta");
+        assertEquals(1, h.size());
+        assertEquals("T\u00e9szta (f\u0151tt)", h.get(0).food.name);
+        assertEquals("Rakott krumpli",
+                hits("rakott krumpli vacsor\u00e1ra").get(0).food.name);
+    }
+
 }

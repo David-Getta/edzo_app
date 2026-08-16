@@ -2593,6 +2593,9 @@ public final class Foods {
             for (String[] e : ef)
                 query = query.replace(e[0], " " + e[1] + " ");
         }
+        // A RAKOTT TÉSZTA nem rakott krumpli: a „húsos rakott tészta"
+        // mellé egy egész adag rakott krumpli is bekerült.
+        query = query.replaceAll("(?iu)(?<!\\p{L})rakott\\s+(?=t[eé]szt)", "");
         // A SZÁZALÉKOS zsír a mérleg rovata, nem sertészsír: a „súlyom 80,
         // zsír 18%" mellé egy kanál olaj került a naplóba.
         query = query.replaceAll("(?iu)(?<!\\p{L})zs[ií]r\\w*\\s?:?\\s?"
