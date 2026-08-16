@@ -1277,4 +1277,14 @@ public class FoodsParseTest {
                 hits("3x10 guggolás után megittam egy sört").get(0).food.name);
     }
 
+    @Test public void halloumiAndBogracsResolve() {
+        // A halloumit a „hall" tiltó-prefix elnyelte, a bográcsozás igéje
+        // pedig hiányzott. A hallott recept továbbra sem étel.
+        assertEquals("Camembert / brie",
+                hits("grillezett zöldségek halloumival").get(1).food.name);
+        assertEquals("Gulyásleves",
+                hits("bográcsoztunk a kertben").get(0).food.name);
+        assertTrue(hits("hallottam egy jó receptet halból").isEmpty());
+    }
+
 }

@@ -150,7 +150,9 @@ public final class Foods {
         new Food("Lángos", 320, 7, 200, "langos"),
         // A bográcsos a szabadtűzi gulyás neve.
         new Food("Gulyásleves", 100, 7, 400, "gulyasleves", "gulyas leves",
-                "gulyas", "bogracsos", "bogracsgulyas"),
+                "gulyas", "bogracsos", "bogracsgulyas",
+                // A bográcsozás igéje is gulyást mond.
+                "bogracsoz"),
         new Food("Pörkölt", 180, 15, 300, "porkolt"),
         // A „sóska" magában is a főzeléket jelenti; a „kelkáposzta főzelék"
         // teljes alakja szótő, különben káposzta + főzelék kettőnek számolna.
@@ -224,7 +226,7 @@ public final class Foods {
         new Food("Mozzarella", 280, 22, 50, "mozzarella"),
         // A „parmezán" MÉZNEK számított (a „mez" tő beleesett a szóba).
         new Food("Parmezán", 400, 35, 20, "parmezan"),
-        new Food("Camembert / brie", 300, 20, 50, "camembert", "brie"),
+        new Food("Camembert / brie", 300, 20, 50, "camembert", "brie", "halloumi"),
         new Food("Feta", 270, 14, 50, "feta"),
         new Food("Mascarpone", 435, 4, 50, "mascarpone"),
         new Food("Ricotta", 150, 11, 50, "ricotta"),
@@ -1318,6 +1320,8 @@ public final class Foods {
     }
 
     private static boolean startsWithBad(String tok) {
+        // A HALLOUMI grillsajt étel – hiába kezdődik a „hall" tiltóval.
+        if (tok.startsWith("halloumi")) return false;
         for (String bad : ALOM) if (tok.startsWith(bad)) return true;
         for (String bad : NOT_FOOD) if (tok.startsWith(bad)) return true;
         for (String bad : START_BAD_EXTRA) if (tok.startsWith(bad)) return true;
