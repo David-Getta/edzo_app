@@ -4861,4 +4861,25 @@ public class ActivitiesParseTest {
         assertEquals(45, p.plans.get(0).minutes);
     }
 
+    @Test public void englishGerundExportLinesParse() {
+        assertEquals("futas", Activities.parse("polar: running 48 min, avg hr 149")
+                .plans.get(0).kind.id);
+        assertEquals("kerekpar", Activities.parse("cycling 30 min").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("swimming 30 min").plans.get(0).kind.id);
+        assertEquals(48, Activities.parse("running 48 min").plans.get(0).minutes);
+    }
+
+    @Test public void strengthLabelIsAGymWorkout() {
+        Activities.Parsed p = Activities.parse("workout complete: 45 min strength, 380 kcal");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        assertEquals(45, p.plans.get(0).minutes);
+    }
+
+    @Test public void aBareWorkoutWordStillLogs() {
+        Activities.Parsed p = Activities.parse("workout 50 min");
+        assertEquals(1, p.plans.size());
+        assertEquals(50, p.plans.get(0).minutes);
+    }
+
 }

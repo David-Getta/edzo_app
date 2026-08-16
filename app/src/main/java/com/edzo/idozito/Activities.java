@@ -1437,6 +1437,23 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])walk(?![a-z])", "seta");
         s = s.replaceAll("(?<![a-z])swim(?![a-z])", "uszas");
         s = s.replaceAll("(?<![a-z])hike(?![a-z])", "tura");
+        // A folyamatos (-ing) alak is ugyanaz a sport: a „running 48 min,
+        // avg hr 149" óra-export eddig üresen jött vissza, mert csak a
+        // szótári alakot ismertük.
+        s = s.replaceAll("(?<![a-z])running(?![a-z])", "futas");
+        s = s.replaceAll("(?<![a-z])jogging(?![a-z])", "kocogas");
+        s = s.replaceAll("(?<![a-z])(?:cycling|biking)(?![a-z])", "tekeres");
+        s = s.replaceAll("(?<![a-z])swimming(?![a-z])", "uszas");
+        s = s.replaceAll("(?<![a-z])hiking(?![a-z])", "tura");
+        s = s.replaceAll("(?<![a-z])walking(?![a-z])", "seta");
+        s = s.replaceAll("(?<![a-z])rowing(?![a-z])", "evezes");
+        s = s.replaceAll("(?<![a-z])elliptical(?![a-z])", "elliptikus");
+        // Az óra-appok „strength" címkéje a súlyzós edzés: a „workout
+        // complete: 45 min strength, 380 kcal" étkezésnek látszott.
+        s = s.replaceAll("(?<![a-z])strength(?:\\s?training)?(?![a-z])",
+                "kondi");
+        // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
+        s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
         // Csak a többes „steps": az egyes „step" a step-aerobik órája.
         s = s.replaceAll("(?<![a-z])steps(?![a-z])", "lepes");
         s = s.replaceAll("(?<![a-z])stretching(?![a-z])", "nyujtas");

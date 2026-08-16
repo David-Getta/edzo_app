@@ -400,6 +400,11 @@ public final class StrengthParse {
         clean = clean.replaceAll("(?<![a-z])\\p{L}*tort[aá]"
                 + "(?:t|k|kat|val|bol|hoz|ra|rol|nak|bo[l]?|m|d|j[aá]t?)?"
                 + "(?![a-z])", " ");
+        // Az ANGOL óra-export perce nem ismétlésszám: a „rowing 20 min"
+        // sorból húsz ismétléses evezőgép lett. Csak a „min" esik ki – a
+        // magyar „perc" a plank-féle tartásidők mértéke, az marad.
+        clean = clean.replaceAll("(?<![a-z0-9])\\d{1,3}\\s?min(?![a-z])",
+                " ");
         String whole = splitBareList(stripInsteadOf(sets(slashWeightReps(clean))));
         // Gyakorlatnév sorozat nélkül, a sorozat meg egy tagmondattal odébb:
         // „guggolás 60 kg bemelegítés, aztán 3x5 100". Az első tagmondatban

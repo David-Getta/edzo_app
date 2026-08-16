@@ -1400,4 +1400,16 @@ public class StrengthParseTest {
                 StrengthParse.parse("kitöréseket csináltam 3x10").get(0).name);
     }
 
+    @Test public void aTimedRowingExportIsNotARepCount() {
+        assertTrue(StrengthParse.parse("rowing 20 min").isEmpty());
+    }
+
+    @Test public void restMinutesDoNotBreakTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "3x10 fekvenyom\u00e1s 2 perc pihen\u0151vel 60 kg");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(60.0, it.get(0).topWeight(), 0.01);
+    }
+
 }
