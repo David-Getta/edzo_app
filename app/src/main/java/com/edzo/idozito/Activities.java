@@ -1458,6 +1458,12 @@ public final class Activities {
                 "kondi");
         // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
         s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
+        // A KUTYÁVAL kint lenni séta: „a kutyával háromszor voltunk kint,
+        // összesen másfél óra" eddig üresen jött vissza – a mondatban
+        // nincs sport-szó, csak a kint-lét.
+        if (s.contains("kutya") || s.contains("kutyu") || s.contains("eb "))
+            s = s.replaceAll("(?<![a-z])(?:kint volt(?:unk|am)|volt(?:unk|am)"
+                    + "\\s+kint)(?![a-z])", "setaltunk");
         // A NORVÉG 4x4 az intervall sémája, nem négy alkalom: a „norvég
         // 4x4 futás" négy napra szétosztott négy futás lett. A mértékegység
         // nélküli NxM az intervall-mondatban csak a séma.
@@ -2553,6 +2559,18 @@ public final class Activities {
             out.set(0, new Plan(p0.kind,
                     Math.min(50, p0.count * Math.max(1, days / freq)),
                     p0.minutes, p0.km, p0.steps));
+        }
+        // Az ÖSSZESEN a teljes mennyiség, alkalmanként az N-ed rész jár:
+        // a „háromszor sétáltam, összesen 90 perc" három KILENCVENPERCES
+        // sétát írt be – négy és fél óra mozgást másfél órából. A táv
+        // ugyanígy oszlik.
+        if (out.size() == 1 && out.get(0).count > 1
+                && (rawText.contains("osszesen")
+                    || rawText.contains("osszessegeben"))) {
+            Plan p0 = out.get(0);
+            int c = p0.count;
+            out.set(0, new Plan(p0.kind, c, Math.max(1, p0.minutes / c),
+                    p0.km > 0 ? p0.km / c : 0, p0.steps / c));
         }
         // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.
         if (wdBacks != null && !out.isEmpty()) {

@@ -4896,4 +4896,25 @@ public class ActivitiesParseTest {
         assertEquals(0.5, p.plans.get(0).km, 0.01);
     }
 
+    @Test public void beingOutWithTheDogIsAWalk() {
+        Activities.Parsed p = Activities.parse(
+                "a kuty\u00e1val voltam kint f\u00e9l \u00f3r\u00e1t");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
+    @Test public void justBeingOutsideIsNotAWalk() {
+        assertTrue(Activities.parse("kint voltunk a teraszon").plans.isEmpty());
+    }
+
+    @Test public void aStatedTotalSplitsAcrossTheOccasions() {
+        Activities.Parsed p = Activities.parse(
+                "h\u00e1romszor s\u00e9t\u00e1ltam ma, \u00f6sszesen 90 perc");
+        assertEquals(3, p.plans.get(0).count);
+        assertEquals(30, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("k\u00e9tszer \u00fasztam, \u00f6sszesen 2 km");
+        assertEquals(1.0, q.plans.get(0).km, 0.01);
+    }
+
 }
