@@ -2642,6 +2642,14 @@ public final class Activities {
                     out.add(new Plan(specific.kind, specific.count,
                             gymPlan.minutes, 0, 0));
                 }
+                // Ha a terem SAJÁT órát kapott („este konditerem 1 óra"),
+                // az kimondott hossz akkor is, ha épp hatvan perc – az
+                // alapértelmezéssel egyezés miatt eddig helyszínként esett
+                // ki a második edzés.
+                boolean gymOwnTime = rawText.matches(".*(?:kondi\\p{L}*"
+                        + "|terem\\p{L}*|gym)(?:\\s+volt\\p{L}{0,3})?\\s+"
+                        + "(?:\\d{1,2}|egy|masfel|fel|ket|harom)\\s?"
+                        + "or[aá](?:t|ig)?(?!\\p{L}).*");
                 List<Plan> kept = new ArrayList<>();
                 for (Plan p : out) {
                     // A terem kondija akkor is kiesik, ha a MÁSIK edzés
@@ -2653,7 +2661,8 @@ public final class Activities {
                                 && o.minutes == p.minutes) copied = true;
                     if ("kondi".equals(p.kind.id) && p.count == 1 && p.km <= 0
                             && p.steps <= 0
-                            && (p.minutes == p.kind.defaultMin || copied))
+                            && ((p.minutes == p.kind.defaultMin && !gymOwnTime)
+                                || copied))
                         continue;
                     kept.add(p);
                 }
@@ -5058,10 +5067,15 @@ public final class Activities {
                 // A SORSZÁMOS alak is emeletszám: a „lépcsőn mentem fel a
                 // 8. emeletre" nyolc emelet – a pont eddig kizárta.
                 .compile("(?<![\\d.,])(\\d{1,3})\\.?\\s?emelet\\w*").matcher(s);
+        // Ha a mondat máshol KIMONDOTT percet hordoz („5 emelet, 30 perc
+        // séta"), az emeletből számolt perc nem írhatja felül – az emelet
+        // ilyenkor csak kiesik, a séta harminc perce marad.
+        boolean saidMinutes = s.matches(".*(?<!\\p{L})\\d{1,3}\\s?perc.*");
         while (m.find()) {
             int floors;
             try { floors = Integer.parseInt(m.group(1)); } catch (NumberFormatException e) { continue; }
             if (floors < 1 || floors > 300) continue;
+            if (saidMinutes) { blank(q, m.start(), m.end()); continue; }
             String rep = Math.max(2, Math.round(floors * 0.5f)) + " perc";
             if (rep.length() > m.end() - m.start()) continue;
             blank(q, m.start(), m.end());

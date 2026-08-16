@@ -4805,4 +4805,37 @@ public class ActivitiesParseTest {
         assertEquals(90, p.plans.get(0).minutes);
     }
 
+    @Test public void anEveningGymHourAfterTheMorningRunSurvives() {
+        Activities.Parsed p = Activities.parse(
+                "reggel futottam 5 km-t, este konditerem 1 \u00f3ra");
+        assertEquals(2, p.plans.size());
+        assertEquals("kondi", p.plans.get(1).kind.id);
+        assertEquals(60, p.plans.get(1).minutes);
+    }
+
+    @Test public void beingAtTheGymForAnHourIsAStatedHour() {
+        Activities.Parsed p = Activities.parse(
+                "reggel futottam 5 km-t, este konditeremben voltam egy \u00f3r\u00e1t");
+        assertEquals(2, p.plans.size());
+        assertEquals(60, p.plans.get(1).minutes);
+    }
+
+    @Test public void theGymAsAVenueStillFallsOut() {
+        Activities.Parsed p = Activities.parse("45 perc spinning \u00f3ra a teremben");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(45, p.plans.get(0).minutes);
+    }
+
+    @Test public void statedWalkMinutesBeatTheFloorEstimate() {
+        Activities.Parsed p = Activities.parse("5 emelet, 30 perc s\u00e9ta");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
+    @Test public void floorsAloneStillBecomeMinutes() {
+        Activities.Parsed p = Activities.parse("20 emeletet l\u00e9pcs\u0151ztem");
+        assertEquals(10, p.plans.get(0).minutes);
+    }
+
 }
