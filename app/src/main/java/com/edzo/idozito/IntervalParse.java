@@ -120,6 +120,10 @@ public final class IntervalParse {
         // app – száznegyven másodperc munka, kilencvenöt pihenő.
         if (s.contains("vernyomas") || s.contains("ver nyomas")
                 || s.contains("higanymilli") || s.contains("hgmm")) return null;
+        // Az ÚSZÓ-TEMPÓ sem ritmus: a „2:10/100m tempó" munka/pihenő
+        // párnak látszott, és időzítő-tervet ajánlott rá az app.
+        s = s.replaceAll("(?<![\\d])\\d{1,2}:\\d{2}\\s?/\\s?100\\s?m"
+                + "(?![a-z])", " ");
         // A MECCS sem ritmus: az „edzőmeccs 2x30 perc" hatvan perc játék,
         // a „25-22 lett" pedig a végeredmény – eddig mindkettő időzítő-terv
         // lett. A kimondott intervall-szó viszont felment.

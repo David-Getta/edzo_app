@@ -813,4 +813,8 @@ public class IntervalParseTest {
         assertNull(IntervalParse.parse("kisp\u00e1ly\u00e1s focin j\u00e1tszottam 2x20 percet"));
     }
 
+    @Test public void aSwimPaceIsNotAWorkRestPair() {
+        assertNull(IntervalParse.parse("30 perc \u00fasz\u00e1s, 2:10/100m temp\u00f3"));
+    }
+
 }

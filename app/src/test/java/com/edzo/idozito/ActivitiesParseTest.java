@@ -4958,4 +4958,11 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("45' fut\u00e1s").plans.get(0).minutes);
     }
 
+    @Test public void aSwimPacePerHundredIsNotADistance() {
+        Activities.Parsed p = Activities.parse("30 perc \u00fasz\u00e1s, 2:10/100m temp\u00f3");
+        assertEquals(1, p.plans.size());
+        assertEquals(0.0, p.plans.get(0).km, 0.01);
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
 }

@@ -1168,6 +1168,10 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(este|esti|reggel|reggeli|hajnali|"
                 + "delelott|delelotti)\\s?([4-9]|1[0-2])\\s?oras(?:ra)?"
                 + "(?![a-z])", "$1 $2 orakor");
+        // Az ÚSZÓ-TEMPÓ száz métere nem táv: a „30 perc úszás, 2:10/100m
+        // tempó" száz méteres úszást írt be fél óra alatt.
+        s = s.replaceAll("(?<![\\d])\\d{1,2}:\\d{2}\\s?/\\s?100\\s?m"
+                + "(?![a-z])", " ");
         // A TEMPÓ perce nem az edzés hossza: az „5 perces tempóval
         // futottam 10 km-t" ötven perc futás, nem öt. A kiírt tempót
         // kettőspontos alakra írjuk át – azt a percszámítás már jól érti,
