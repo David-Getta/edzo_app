@@ -1926,7 +1926,8 @@ public final class Foods {
              "szeletet", "szelettel",
              "gombóc", "gomboc", "pohar", "pohár",
              "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg",
-             "kupica", "stampedli", "korty", "kortyot", "kancso", "kancsó",
+             "kupica", "stampedli", "korty", "kortyot", "kortynyi",
+             "kancso", "kancsó",
              // A „szem" a magyar konyhában darabszó: „tíz szem mandula",
              // „öt szem szőlő". Enélkül a szám elveszett, és a szokásos adag
              // ment be – tíz mandula helyett egy egész marék.
@@ -1957,7 +1958,7 @@ public final class Foods {
      * eleve ennyi, az „egy korty bor" pedig nem életszerű bejegyzés.
      */
     static final String[][] WATER_ML = {
-            {"korty", "40"}, {"kortyot", "40"},
+            {"korty", "40"}, {"kortyot", "40"}, {"kortynyi", "40"},
             {"uveg", "500"}, {"üveg", "500"},
             // A kulacs az edzőtermi alapfelszerelés – fél literrel számolunk.
             {"kulacs", "500"}, {"kulaccsal", "500"},

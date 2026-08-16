@@ -1442,4 +1442,8 @@ public class FoodsParseTest {
                 hits("rakott krumpli vacsor\u00e1ra").get(0).food.name);
     }
 
+    @Test public void aSipIsASipEvenInTheNyiForm() {
+        assertEquals(40, hits("ittam egy kortynyi vizet").get(0).grams, 0.01);
+    }
+
 }
