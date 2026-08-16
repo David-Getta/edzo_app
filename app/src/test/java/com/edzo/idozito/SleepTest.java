@@ -390,4 +390,12 @@ public class SleepTest {
                 "két műszak között csak 4 órát tudtam aludni"), 0.01);
     }
 
+    @Test public void deepSleepPhaseDoesNotOverwriteTheTotal() {
+        // A „mélyalvás 2 óra 10 perc, összesen 7 óra 30 perc alvás" két
+        // óra tízként ment be – a fázis nem a teljes éjszaka.
+        assertEquals(7.5, Sleep.parse(
+                "mélyalvás 2 óra 10 perc, összesen 7 óra 30 perc alvás"), 0.01);
+        assertEquals(7.8, Sleep.parse("alvás 7:45, ebből mély 2:05"), 0.01);
+    }
+
 }

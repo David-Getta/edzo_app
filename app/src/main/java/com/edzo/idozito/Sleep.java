@@ -121,6 +121,13 @@ public final class Sleep {
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");
+        // Az ALVÁSFÁZIS nem a teljes éjszaka: a „mélyalvás 2 óra 10 perc,
+        // összesen 7 óra 30 perc alvás" két óra husz percként ment be. A
+        // kimondott összesen mellől a fázis-sor kiesik.
+        if (s.contains("osszes"))
+            s = s.replaceAll("(?:melyalvas|mely alvas|konnyu alvas"
+                    + "|rem(?: fazis)?)\\s?:?\\s?\\d{1,2}(?::\\d{2})?\\s?"
+                    + "(?:ora\\w*)?\\s?(?:\\d{1,2}\\s?perc)?", "");
         // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
