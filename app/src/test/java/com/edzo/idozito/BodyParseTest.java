@@ -893,4 +893,10 @@ public class BodyParseTest {
         assertTrue(b == null || b.kg == 0);
     }
 
+    @Test public void aWorkRestPairIsNotAWeight() {
+        BodyParse.Body b = BodyParse.parse("Reggeli rutin: 4 k\u00f6r 45/15");
+        assertTrue(b == null || b.kg == 0);
+        assertEquals(82.0, BodyParse.parse("v\u00e9rnyom\u00e1s 160/95, s\u00falyom 82").kg, 0.01);
+    }
+
 }

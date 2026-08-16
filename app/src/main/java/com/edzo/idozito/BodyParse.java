@@ -281,6 +281,11 @@ public final class BodyParse {
         // 74,6" hetvennégy egész hat – a küszöb száma kiesik.
         s = s.replaceAll("(?<![\\d,.])\\d{2,3}\\s?(?:ala|alatt|fole|folott)"
                 + "\\s+(?:vagyok|mentem|kerultem|ertem)\\W*", "sulyom ");
+        // A MUNKA/PIHENŐ számpár nem testsúly: a „Reggeli rutin: 4 kör
+        // 45/15" negyvenöt kilós méréssé vált a rutin-fejléc miatt. (A
+        // vérnyomás 160/95-e ugyanígy kiesik.)
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.])",
+                " ");
         // A PLATÓ fordulatai is mérések: a „78-on állok", a „beálltam
         // 78-ra" és a „tartom a 78-at" eddig üresen jött vissza.
         s = s.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)"
