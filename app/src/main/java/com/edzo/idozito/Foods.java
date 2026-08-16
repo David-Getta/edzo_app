@@ -2512,6 +2512,17 @@ public final class Foods {
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
+        // A RECEPTES rövidítés is kanál: a „3 ek olívaolaj" evőkanalanként
+        // tíz gramm, de az „ek"-et nem ismertük, így a hármas elveszett.
+        query = query.replaceAll("(?iu)(?<!\\p{L})((?:\\d{1,2}|egy|k[eé]t"
+                + "|h[aá]rom|n[eé]gy|[oö]t|hat|f[eé]l)\\s?)ek(?=\\s\\p{L})",
+                "$1evokanal");
+        query = query.replaceAll("(?iu)(?<!\\p{L})((?:\\d{1,2}|egy|k[eé]t"
+                + "|h[aá]rom|n[eé]gy|[oö]t|hat|f[eé]l)\\s?)tk(?=\\s\\p{L})",
+                "$1teaskanal");
+        query = query.replaceAll("(?iu)(?<!\\p{L})((?:\\d{1,2}|egy|k[eé]t"
+                + "|h[aá]rom|n[eé]gy|[oö]t|hat|f[eé]l)\\s?)kk(?=\\s\\p{L})",
+                "$1kaveskanal");
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
@@ -2688,6 +2699,30 @@ public final class Foods {
             }
             sz.appendTail(szb);
             query = szb.toString();
+        }
+        // A DARABSZÁM szorozza a darabsúlyt: a „2 db 300 g-os pizza"
+        // egyetlen 300 grammos pizzaként ment be – a másik fele lemaradt.
+        {
+            java.util.regex.Matcher db = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}\\d])(\\d{1,2}|k[eé]t|h[aá]rom"
+                    + "|n[eé]gy|[oö]t|hat)\\s?(?:db|darab)\\s+(\\d{1,4})"
+                    + "\\s?(g|gr|gramm|dkg|deka)[\\p{L}-]*").matcher(query);
+            StringBuffer dbb = new StringBuffer();
+            while (db.find()) {
+                int n; String w = db.group(1).toLowerCase();
+                if (w.startsWith("k")) n = 2;
+                else if (w.startsWith("h") && w.contains("r")) n = 3;
+                else if (w.startsWith("n")) n = 4;
+                else if (w.startsWith("h")) n = 6;
+                else if (!Character.isDigit(w.charAt(0))) n = 5;
+                else n = Integer.parseInt(w);
+                int egy = Integer.parseInt(db.group(2));
+                if (db.group(3).toLowerCase().startsWith("d")) egy *= 10;
+                db.appendReplacement(dbb, java.util.regex.Matcher
+                        .quoteReplacement((n * egy) + " g "));
+            }
+            db.appendTail(dbb);
+            query = dbb.toString();
         }
         query = withoutOthersPlates(query);
         query = maskMacroWords(query);

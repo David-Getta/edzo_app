@@ -1314,4 +1314,32 @@ public class FoodsParseTest {
                 hits("ettem egy tábla csokit").get(0).food.name);
     }
 
+    @Test public void pieceCountMultipliesThePerPieceWeight() {
+        List<Foods.Hit> h = hits("kaja: 2 db 300 g-os pizza");
+        assertEquals(1, h.size());
+        assertEquals("Pizza", h.get(0).food.name);
+        assertEquals(600, h.get(0).grams, 0.01);
+    }
+
+    @Test public void dekaPerPieceWeightAlsoMultiplies() {
+        List<Foods.Hit> h = hits("vacsora: 2 db 30 dkg-os pizza");
+        assertEquals(600, h.get(0).grams, 0.01);
+    }
+
+    @Test public void recipeSpoonAbbreviationIsATablespoon() {
+        List<Foods.Hit> h = hits("3 ek oliv\u00e1olaj a sal\u00e1t\u00e1ba");
+        assertEquals("Olaj", h.get(0).food.name);
+        assertEquals(30, h.get(0).grams, 0.01);
+    }
+
+    @Test public void teaspoonAbbreviationIsATeaspoon() {
+        List<Foods.Hit> h = hits("2 tk cukorral ittam a k\u00e1v\u00e9t");
+        assertEquals("Cukor", h.get(0).food.name);
+        assertEquals(20, h.get(0).grams, 0.01);
+    }
+
+    @Test public void ekkoraIsNotASpoon() {
+        assertTrue(hits("ekkora adag rizst m\u00e9g nem ettem").isEmpty());
+    }
+
 }
