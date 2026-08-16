@@ -3804,6 +3804,26 @@ public final class Activities {
             }
             o = s.indexOf("ota", o + 1);
         }
+        // A „januárban … összesen" a megnevezett hónap egésze: a havi
+        // össz-kilométer eddig egyetlen MAI edzésként ment be. A folyó
+        // hónapnál a hónap eleje óta eltelt napok számítanak.
+        if (s.contains("osszesen")) {
+            java.util.regex.Matcher hm = java.util.regex.Pattern
+                    .compile("(?<!\\p{L})(\\p{L}+)b[ae]n(?!\\p{L})").matcher(s);
+            while (hm.find()) {
+                int mi = monthIndexOf(hm.group(1));
+                if (mi < 0) continue;
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTimeInMillis(now);
+                cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+                cal.set(java.util.Calendar.MONTH, mi);
+                if (cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
+                int len = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+                int back = Days.between(cal.getTimeInMillis(), now);
+                int days = Math.min(len, back + 1);
+                if (days >= 1) return new int[]{hm.start(), hm.end(), days};
+            }
+        }
         // Egy hét = 7 nap, egy hónap = 30. A legkorábbi találat dönt.
         int[] best = null;
         for (int[] c : new int[][]{spanAt(s, "nap", 1), spanAt(s, "het", 7), spanAt(s, "honap", 30)})

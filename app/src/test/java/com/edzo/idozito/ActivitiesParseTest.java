@@ -4838,4 +4838,27 @@ public class ActivitiesParseTest {
         assertEquals(10, p.plans.get(0).minutes);
     }
 
+    @Test public void aNamedMonthTotalSpreadsOverTheWholeMonth() {
+        long now = 1_753_869_600_000L; // 2025. julius 30.
+        Activities.Parsed p = Activities.parse(
+                "janu\u00e1rban 100 km-t futottam \u00f6sszesen", now);
+        assertEquals(31, p.days);
+        assertEquals(100.0, p.plans.get(0).km, 0.01);
+    }
+
+    @Test public void theCurrentMonthTotalCoversTheMonthSoFar() {
+        long now = 1_753_869_600_000L; // 2025. julius 30.
+        Activities.Parsed p = Activities.parse(
+                "j\u00faliusban \u00f6sszesen 60 km-t tekertem", now);
+        assertEquals(30, p.days);
+    }
+
+    @Test public void aGymTotalIsNotAMonth() {
+        long now = 1_753_869_600_000L;
+        Activities.Parsed p = Activities.parse(
+                "a teremben \u00f6sszesen 45 percet t\u00f6lt\u00f6ttem", now);
+        assertEquals(1, p.days);
+        assertEquals(45, p.plans.get(0).minutes);
+    }
+
 }
