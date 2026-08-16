@@ -897,6 +897,9 @@ public final class Activities {
             // A PRÓBATEREM a zenekaré, nem a konditerem: a „doboltam a
             // próbateremben két órát" kétórás kondiedzés lett.
             "probaterem", "probaterm",
+            // A pálya MELLETT állás nem korcsolyázás: a „puncssal
+            // melegedtünk a korcsolyapályánál" órányi korizás lett.
+            "korcsolyapalyanal", "korcsolyapalyanel",
             "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
             // Az akuponk-TÚRA sem túra: az „akupunktúra kezelés a hátamra"

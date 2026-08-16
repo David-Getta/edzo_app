@@ -1287,4 +1287,12 @@ public class FoodsParseTest {
         assertTrue(hits("hallottam egy jó receptet halból").isEmpty());
     }
 
+    @Test public void punchIsAWinterDrink() {
+        // A puncs (és a hasonult „punccsal" alak) eddig hiányzott.
+        assertEquals("Koktél / long drink",
+                hits("puncsot ittam a vásárban").get(0).food.name);
+        assertEquals("Koktél / long drink",
+                hits("punccsal melegedtünk a korcsolyapályánál").get(0).food.name);
+    }
+
 }

@@ -4766,4 +4766,14 @@ public class ActivitiesParseTest {
         assertEquals(120, p.plans.get(0).minutes);
     }
 
+    @Test public void standingByTheRinkIsNotSkating() {
+        // A „punccsal melegedtünk a korcsolyapályánál" órányi korizás
+        // lett – a pálya MELLETT állás nem korcsolyázás. A pályán korizás
+        // marad.
+        assertTrue(Activities.parse("punccsal melegedtünk a korcsolyapályánál")
+                .plans.isEmpty());
+        assertEquals("korcsolya", Activities
+                .parse("koriztam a korcsolyapályán egy órát").plans.get(0).kind.id);
+    }
+
 }

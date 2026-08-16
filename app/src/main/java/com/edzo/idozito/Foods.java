@@ -818,7 +818,10 @@ public final class Foods {
                 // az igei alak – a „feleségem" nem ital.
                 "felest", "felesek", "felesez", "felesezt"),
         new Food("Koktél / long drink", 90, 0, 250, "koktel", "gin tonik", "gintonik",
-                "mojito", "aperol", "cuba libre", "long drink", "spritz"),
+                // A puncs a téli vásárok édes-forró itala – a ragozott
+                // „punccsal" alakban a cs hasonul.
+                "mojito", "aperol", "cuba libre", "long drink", "spritz",
+                "puncs", "punccsal"),
         new Food("Pezsgő", 76, 0, 150, "pezsgo", "prosecco", "champagne"),
         new Food("Cider", 45, 0, 330, "cider", "almabor"),
         // Az alkoholmentes sör harmadannyi kalória, mint az igazi – a
