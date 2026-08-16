@@ -281,6 +281,14 @@ public final class BodyParse {
         // 74,6" hetvennégy egész hat – a küszöb száma kiesik.
         s = s.replaceAll("(?<![\\d,.])\\d{2,3}\\s?(?:ala|alatt|fole|folott)"
                 + "\\s+(?:vagyok|mentem|kerultem|ertem)\\W*", "sulyom ");
+        // A PLATÓ fordulatai is mérések: a „78-on állok", a „beálltam
+        // 78-ra" és a „tartom a 78-at" eddig üresen jött vissza.
+        s = s.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?[eoa]?n\\s+allok(?![a-z])", "sulyom $1");
+        s = s.replaceAll("(?<![a-z])beall\\w*\\s+(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?r[ae](?![a-z])", "sulyom $1");
+        s = s.replaceAll("(?<![a-z])tartom\\s+a\\s+(\\d{2,3})"
+                + "\\s?-?[ae]?t(?![a-z])", "sulyom $1");
         // A RAJTAM mért szám az enyém, akárki olvasta le a mérleget: az
         // „az orvosnál 84 kg-ot mértek rajtam" eddig másénak látszott.
         s = s.replaceAll("mertek\\s+rajtam", "mertem");

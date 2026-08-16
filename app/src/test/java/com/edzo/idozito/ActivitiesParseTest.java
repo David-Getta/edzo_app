@@ -4943,4 +4943,10 @@ public class ActivitiesParseTest {
                 Activities.parse("streetball a t\u00e9ren").plans.get(0).kind.id);
     }
 
+    @Test public void wimHofBreathingIsAGuidedPractice() {
+        Activities.Parsed p = Activities.parse("wim hof l\u00e9gz\u00e9s 15 perc");
+        assertEquals("joga", p.plans.get(0).kind.id);
+        assertEquals(15, p.plans.get(0).minutes);
+    }
+
 }

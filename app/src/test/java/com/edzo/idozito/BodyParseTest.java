@@ -882,4 +882,15 @@ public class BodyParseTest {
         assertTrue(b == null || b.kg == 0);
     }
 
+    @Test public void plateauIdiomsAreMeasurements() {
+        assertEquals(78.0, BodyParse.parse("78-on \u00e1llok").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("be\u00e1lltam 78-ra").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("tartom a 78-at").kg, 0.01);
+    }
+
+    @Test public void standingInLineIsNotAWeight() {
+        BodyParse.Body b = BodyParse.parse("sorban \u00e1llok a boltban");
+        assertTrue(b == null || b.kg == 0);
+    }
+
 }

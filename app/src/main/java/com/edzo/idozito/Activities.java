@@ -322,7 +322,8 @@ public final class Activities {
                     "vinyasa", "napudvozlet", "fascia", "mobility",
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
                     "meditac", "atmozgat", "mobiliz", "mobilitas", "legzogyakorlat",
-                    "legzo gyakorlat",
+                    // A Wim Hof-módszer vezetett légzőgyakorlat.
+                    "legzo gyakorlat", "wim hof",
                     // A HENGERES görgetés izomlazítás – a puszta „görgettem"
                     // nem tő, mert a képernyőt is görgetjük. A McKenzie a
                     // hátgyakorlatok neve.
