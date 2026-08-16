@@ -1432,4 +1432,11 @@ public class StrengthParseTest {
                 .get(0).name);
     }
 
+    @Test public void aLyingLegRaiseIsNotABenchPress() {
+        assertEquals("L\u00e1bemel\u00e9s",
+                StrengthParse.parse("l\u00e1bemel\u00e9s fekve 3x15").get(0).name);
+        assertEquals("Fekvenyom\u00e1s",
+                StrengthParse.parse("fekvenyom\u00e1s 3x10 60 kg").get(0).name);
+    }
+
 }

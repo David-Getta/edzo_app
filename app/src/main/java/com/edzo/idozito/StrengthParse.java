@@ -144,7 +144,8 @@ public final class StrengthParse {
             {"Felülés", "felules", "crunch", "felult"},
             {"Hasprés", "haspres", "hasizom", "hasgep"},
             // A „térdemelés" ugyanaz a hasizom-gyakorlat, csak hajlított lábbal.
-            {"Lábemelés", "labemel", "terdemel", "terd emel"},
+            {"Lábemelés", "labemel", "terdemel", "terd emel",
+                    "leg raise"},
             {"Combhajlítás", "labhajlit", "combhajlit", "leg curl", "legcurl"},
             {"Lábnyújtás", "labnyujt", "combfeszit", "labgep", "leg extension"},
             {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok",
@@ -407,6 +408,11 @@ public final class StrengthParse {
         clean = clean.replaceAll("(?<![a-z])\\p{L}*tort[aá]"
                 + "(?:t|k|kat|val|bol|hoz|ra|rol|nak|bo[l]?|m|d|j[aá]t?)?"
                 + "(?![a-z])", " ");
+        // A LÁBEMELÉS testhelyzete nem fekvenyomás: a „lábemelés fekve
+        // 3x15" a fekvenyomás rekordjai közé került. A gyakorlat neve már
+        // ott van a mondatban, a testhelyzet-szó fölösleges.
+        if (clean.contains("labemeles"))
+            clean = clean.replaceAll("(?<![a-z])fekve(?![a-z])", " ");
         // Az ANGOL óra-export perce nem ismétlésszám: a „rowing 20 min"
         // sorból húsz ismétléses evezőgép lett. Csak a „min" esik ki – a
         // magyar „perc" a plank-féle tartásidők mértéke, az marad.
