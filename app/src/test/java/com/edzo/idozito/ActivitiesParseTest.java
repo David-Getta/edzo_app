@@ -4661,4 +4661,15 @@ public class ActivitiesParseTest {
         assertEquals(15, p.plans.get(0).km, 0.001);
     }
 
+    @Test public void abandonedMinutesAndPlannedDistancesCount() {
+        // A „60 perc lett volna a kondi, de 40-nél abbahagytam" negyven
+        // perc; „a 10 km-es futásból 6-nál feladtam" hat kilométer.
+        assertEquals(40, Activities
+                .parse("60 perc lett volna a kondi, de 40-nél abbahagytam")
+                .plans.get(0).minutes);
+        assertEquals(6, Activities
+                .parse("a 10 km-es futásból 6-nál feladtam")
+                .plans.get(0).km, 0.001);
+    }
+
 }

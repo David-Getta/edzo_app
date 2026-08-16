@@ -1292,6 +1292,19 @@ public final class Activities {
                 + "lett volna([^.;\\d]{0,24}?),?\\s?(?:de\\s+)?(?:a\\s+)?"
                 + "(\\d{1,3}(?:[.,]\\d+)?)\\s?(?:km)?[- ]?n[ae]l\\s+"
                 + "(?:leall|megall|kiszall|felad)\\w*", "$2 km$1");
+        // PERCBEN mondva ugyanez: a „60 perc lett volna a kondi, de
+        // 40-nél abbahagytam" negyven perc edzés – eddig elveszett.
+        s = s.replaceAll("(?:\\d{1,3})\\s?perc(?:es)?\\s+"
+                + "lett volna([^.;\\d]{0,24}?),?\\s?(?:de\\s+)?(?:a\\s+)?"
+                + "(\\d{1,3})\\s?(?:perc)?[- ]?n[ae]l\\s+"
+                + "(?:leall|megall|kiszall|felad|abbahagy)\\w*",
+                "$2 perc$1");
+        // A TERVEZETT TÁVBÓL feladott rész is megtett táv: „a 10 km-es
+        // futásból 6-nál feladtam" hat kilométer – eddig a tíz ment be.
+        s = s.replaceAll("(\\d{1,3})\\s?km-es\\s+([^.;\\d]{0,15}?)bol\\s+"
+                + "(\\d{1,3}(?:[.,]\\d+)?)[- ]?n[ae]l\\s+"
+                + "(?:felad|kiszall|leall|megall|abbahagy)\\w*",
+                "$3 km $2");
         // Fordított szórenddel is: a „feladtam a versenyt a 30. km-nél"
         // harminc megtett kilométer – a feladás tagadó igéje mégis az
         // egészet elvitte.
