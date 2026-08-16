@@ -122,6 +122,9 @@ public final class StrengthParse {
                     // A LETOLÁS a csigás tricepsznyújtás termi neve.
                     "letolas", "letoltes gep",
                     "francia fekvenyom", "skull crusher", "skullcrusher",
+                    // A puszta „franciafekvés" is ez a gyakorlat – a
+                    // „fekvés" töve eddig fekvenyomássá tette.
+                    "franciafekves", "francia fekves",
                     "tricepsz lenyom", "nyujtott karu lenyom"},
             {"Kitörés", "kitores", "lunge", "kitort"},
             // A gép NEVE a teremben „lábtoló", nem „lábtolás": a
@@ -153,7 +156,9 @@ public final class StrengthParse {
                     "face pull", "facepull", "arcra huz"},
             {"Csuklyás emelés", "csuklyas", "shrug"},
             {"Hátizom gép", "hatizom", "hatgep"},
-            {"Mellgép", "mellgep", "tarogat", "pillango", "mellnyom", "mellrepul", "butterfly",
+            // A PEK DECK a mellgép angol neve – eddig üresen jött vissza.
+            {"Mellgép", "mellgep", "pek deck", "pekdeck", "peck deck",
+                    "tarogat", "pillango", "mellnyom", "mellrepul", "butterfly",
                     "chest press", "pec deck", "pecdeck",
                     // A kábeles keresztezés ugyanaz a mozgás, más eszközzel.
                     "keresztez", "cable cross", "crossover", "kabelkereszt"},
@@ -181,7 +186,9 @@ public final class StrengthParse {
             // összemérhető – egy kalap alatt a rekord és a haladás is hazudna.
             // A magyar terem „jó reggelt"-nek hívja – köszönésnek hangzik, de
             // sorozat-számok nélkül úgysem lesz belőle bejegyzés.
-            {"Good morning", "good morning", "gudmorning", "jo reggelt"},
+            // Az egybeírt alak is ugyanaz a gyakorlat.
+            {"Good morning", "good morning", "goodmorning", "gudmorning",
+                    "jo reggelt"},
             {"Farmerjárás", "farmerjaras", "farmer jaras", "farmers walk", "farmer walk"},
             {"Szakítás", "szakitas", "snatch"},
             // Hetvenhárom gyakorlatnévvel végigpróbálva ezek hiányoztak

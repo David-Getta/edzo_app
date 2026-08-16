@@ -1423,4 +1423,13 @@ public class StrengthParseTest {
         assertEquals(120.0, it.get(0).topWeight(), 0.01);
     }
 
+    @Test public void pekDeckAndTheFrenchPressAreTheirOwnMoves() {
+        assertEquals("Mellg\u00e9p", StrengthParse.parse("pek deck 3x12 40 kg")
+                .get(0).name);
+        assertEquals("Tricepsz", StrengthParse.parse("franciafekv\u00e9s 3x12 25 kg")
+                .get(0).name);
+        assertEquals("Good morning", StrengthParse.parse("goodmorning 3x10 40 kg")
+                .get(0).name);
+    }
+
 }
