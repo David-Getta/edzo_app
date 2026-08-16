@@ -1161,4 +1161,5 @@ public class FoodsParseTest {
                 hits("palacsintát ettem lekvárral").get(0).food.name);
     }
 
+
 }

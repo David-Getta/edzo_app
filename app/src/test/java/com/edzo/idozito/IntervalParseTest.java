@@ -800,4 +800,13 @@ public class IntervalParseTest {
         assertNotNull(IntervalParse.parse("meccs után hiit 8x30/30"));
     }
 
+    @Test public void theSpokenSchemeBeatsThePresetName() {
+        // A „tabata dupla: 16x20/10" tizenhat kör – a névre eddig a gyári
+        // nyolc jött. A puszta tabata marad nyolc.
+        IntervalParse.Plan p = IntervalParse.parse("tabata dupla: 16x20/10");
+        assertEquals(16, p.rounds);
+        assertEquals(8, IntervalParse.parse("tabata").rounds);
+        assertEquals(4, IntervalParse.parse("tabata 4 körrel").rounds);
+    }
+
 }

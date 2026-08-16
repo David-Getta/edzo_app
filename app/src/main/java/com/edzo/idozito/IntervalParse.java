@@ -190,6 +190,10 @@ public final class IntervalParse {
         //    „tabata 6 kör” hat kört jelent, nem nyolcat.
         for (String[] p : PRESETS)
             if (s.contains(p[0])) {
+                // A KIMONDOTT séma erősebb a preset-nél: a „tabata dupla:
+                // 16x20/10" tizenhat kör – a névre eddig a gyári nyolc jött.
+                if (s.matches(".*\\d{1,2}\\s?[x×]\\s?\\d{1,3}\\s?/\\s?"
+                        + "\\d{1,3}.*")) break;
                 int r = numberBefore(s, "kor");
                 if (r <= 0) r = numberBefore(s, "sorozat");
                 if (r <= 0) r = numberBefore(s, "round");
