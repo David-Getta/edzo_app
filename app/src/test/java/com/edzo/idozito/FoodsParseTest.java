@@ -1404,4 +1404,13 @@ public class FoodsParseTest {
         assertEquals(2500, h.get(0).grams, 0.01);
     }
 
+    @Test public void dancingIsNotACola() {
+        assertTrue(hits("vacsora \u00e9s t\u00e1ncol\u00e1s hajnalig").isEmpty());
+        assertEquals("\u00dcd\u00edt\u0151 (cukros)", hits("ittam egy kol\u00e1t").get(0).food.name);
+    }
+
+    @Test public void roastMeatIsAFoodOfItsOwn() {
+        assertEquals("Sert\u00e9skaraj", hits("s\u00fclt h\u00fas").get(0).food.name);
+    }
+
 }

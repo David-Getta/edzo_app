@@ -57,7 +57,9 @@ public final class Foods {
                 "naturszelet", "natur szelet", "szuzerme", "szuzpecsenye", "flekken",
                 // A HIDEGSÜLT is sült hús: a „hideg sült egy szelet
                 // kenyérrel" húsa eddig elveszett, csak a kenyér maradt.
-                "hidegsult", "hideg sult"),
+                // A „sült hús" a vasárnapi ebéd gyűjtőneve: eddig üresen
+                // jött vissza, csak a köret került a naplóba.
+                "hidegsult", "hideg sult", "sult hus", "sulthus"),
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
         // Vad és bárány: a magyar konyha rendszeres vendégei, de eddig
@@ -901,6 +903,9 @@ public final class Foods {
             // A SAJÁT zsír a mérleg rovata, nem sertészsír: a „zsírom 18
             // százalék" egy kanál olajat írt a naplóba.
             "zsirom", "zsirszazalek",
+            // A TÁNCOLÁS belsejében lakó „kola" egy fél liter üdítőt
+            // naplózott: a „vacsora és táncolás hajnalig" mellé.
+            "tancol", "tancolas", "tancolt", "tancolunk",
             // Az összetett alakok külön: a token ELEJÉT nézzük, tehát a
             // „kertépítés" és az „izomépítés" nem ugyanaz a szó, mint az
             // „építés" – pedig mindegyikben ott a PITE.
