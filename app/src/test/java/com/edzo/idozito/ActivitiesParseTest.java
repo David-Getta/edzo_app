@@ -4788,4 +4788,21 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void watchingTheKidsPracticeIsNotMyMatch() {
+        assertTrue(Activities.parse("v\u00e9gign\u00e9ztem a fiam fociedz\u00e9s\u00e9t").plans.isEmpty());
+    }
+
+    @Test public void twoHalvesOfFiveASideAddUp() {
+        Activities.Parsed p = Activities.parse("kisp\u00e1ly\u00e1s focin j\u00e1tszottam 2x20 percet");
+        assertEquals(1, p.plans.size());
+        assertEquals("foci", p.plans.get(0).kind.id);
+        assertEquals(40, p.plans.get(0).minutes);
+    }
+
+    @Test public void playingTheFullNinetyStillCounts() {
+        Activities.Parsed p = Activities.parse("v\u00e9gigj\u00e1tszottam a 90 percet");
+        assertEquals(1, p.plans.size());
+        assertEquals(90, p.plans.get(0).minutes);
+    }
+
 }

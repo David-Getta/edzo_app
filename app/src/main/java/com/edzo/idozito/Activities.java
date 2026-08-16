@@ -1318,7 +1318,9 @@ public final class Activities {
                 || s.contains("oda vissza")
                 // A MECCS két félideje is összeadódik: az „edzőmeccs
                 // 2x35 perc" hetven perc játék, nem harmincöt.
-                || s.contains("meccs") || s.contains("felido")) {
+                || s.contains("meccs") || s.contains("felido")
+                // A KISPÁLYÁS két húszperces félideje is összeadódik.
+                || s.contains("jatszottam") || s.contains("kispalyas")) {
             java.util.regex.Matcher ing = java.util.regex.Pattern
                     .compile("(?<![\\dx.,])2\\s?x\\s?(\\d{1,3})\\s?perc").matcher(s);
             if (ing.find()) {
@@ -3378,7 +3380,8 @@ public final class Activities {
                 // A rövid „se" ugyanaz: „ott se voltam a teremben".
                 "sem ", "se ",
                 "kihagytam", "kimaradt", "elmarad",
-                "lemondtam", "neztem", "neztuk", "rendeltem", "vettem", "berlet",
+                "lemondtam", "neztem", "neztuk", "vegignez", "vegigneztem",
+                "rendeltem", "vettem", "berlet",
                 // A MEGnéztem is nézés: a „megnéztem a maratont a tv-ben"
                 // negyvenkét kilométeres futás lett a naplóban. Az OLVASÁS és
                 // a RAJTSZÁM ugyanígy: a „megvan a rajtszámom a félmaratonra"

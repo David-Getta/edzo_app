@@ -809,4 +809,8 @@ public class IntervalParseTest {
         assertEquals(4, IntervalParse.parse("tabata 4 körrel").rounds);
     }
 
+    @Test public void aFiveASideMatchIsNotAnIntervalWorkout() {
+        assertNull(IntervalParse.parse("kisp\u00e1ly\u00e1s focin j\u00e1tszottam 2x20 percet"));
+    }
+
 }
