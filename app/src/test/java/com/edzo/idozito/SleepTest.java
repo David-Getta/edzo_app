@@ -432,4 +432,8 @@ public class SleepTest {
         assertEquals(8.0, Sleep.parse("aludtma 8 \u00f3r\u00e1t"), 0.01);
     }
 
+    @Test public void verbFirstBareHourCountReads() {
+        assertEquals(8.0, Sleep.parse("aludtam 8-at"), 0.01);
+    }
+
 }

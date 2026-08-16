@@ -265,6 +265,12 @@ public final class BodyParse {
         // A VÁRANDÓSSÁG hete nem testsúly: az „a 30. hétben vagyok,
         // hetente 2x úszás" harmincasa HARMINC KILÓ lett a naplóban.
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\.?\\s?het(?:en|ben)(?![a-z])", "");
+        // A PUSZTA „zsír NN%" is testzsír: a tömör naplósor („súlyom 80,
+        // zsír 18%") százaléka eddig elveszett – a százalékjel mondja ki,
+        // hogy nem sertészsírról van szó.
+        s = s.replaceAll("(?<![a-z])zsir\\s?:?\\s?"
+                + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?(?:%|szazalek)",
+                "testzsir $1 %");
         // Az ANGOL rövidítés is testzsír: a „bf 18%" és a „body fat
         // 18,5%" az óra-app sora, és eddig üresen jött vissza. A
         // „testzsír% 17,2" jel-előre-vetett alakja ugyanígy.

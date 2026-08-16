@@ -914,4 +914,8 @@ public class BodyParseTest {
         assertEquals(17.2, BodyParse.parse("testzs\u00edr% 17,2").fatPct, 0.01);
     }
 
+    @Test public void aBareFatPercentIsBodyFat() {
+        assertEquals(18.0, BodyParse.parse("zs\u00edr 18%").fatPct, 0.01);
+    }
+
 }

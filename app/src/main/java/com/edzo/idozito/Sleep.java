@@ -59,6 +59,10 @@ public final class Sleep {
             // szám és az ige közé viszont csak a tárgyrag férhet be.
             java.util.regex.Pattern.compile(
                     "(\\d{1,2}([.,]\\d)?)\\s?-?(?:[oae]t)?\\s*aludtam"),
+            // Fordított szórenddel is: az „aludtam 8-at" óra-szó nélküli,
+            // ige-elöl alakja eddig üresen jött vissza.
+            java.util.regex.Pattern.compile(
+                    "aludtam\\s+(\\d{1,2}([.,]\\d)?)\\s?-?[oae]t(?![a-z])"),
             // „rosszul aludtam, kb 5 órát": a hossz a KÖVETKEZŐ tagmondatban
             // áll. Az ige melletti szám elől a vessző szándékos határ (az
             // ott álló szám az ébredések száma lenne), de ha az ÓRA-szó ki

@@ -1424,4 +1424,8 @@ public class FoodsParseTest {
         assertEquals("Aszalt gy\u00fcm\u00f6lcs", hits("aszalt szilva").get(0).food.name);
     }
 
+    @Test public void aFatPercentIsNotCookingFat() {
+        assertTrue(hits("zs\u00edr 18%").isEmpty());
+    }
+
 }

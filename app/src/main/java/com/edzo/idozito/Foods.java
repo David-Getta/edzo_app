@@ -2586,6 +2586,10 @@ public final class Foods {
             for (String[] e : ef)
                 query = query.replace(e[0], " " + e[1] + " ");
         }
+        // A SZÁZALÉKOS zsír a mérleg rovata, nem sertészsír: a „súlyom 80,
+        // zsír 18%" mellé egy kanál olaj került a naplóba.
+        query = query.replaceAll("(?iu)(?<!\\p{L})zs[ií]r\\w*\\s?:?\\s?"
+                + "\\d{1,2}(?:[.,]\\d{1,2})?\\s?(?:%|sz[aá]zal[eé]k)", "");
         // A TESTVÍZ százaléka nem pohár víz: a „mérleg 78,8 / víz 55%"
         // mellé két és fél deci ásványvíz került.
         query = query.replaceAll("(?iu)(?<!\\p{L})v[ií]z\\w*\\s?:?\\s?"
