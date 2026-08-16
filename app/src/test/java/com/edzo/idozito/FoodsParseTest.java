@@ -1237,4 +1237,13 @@ public class FoodsParseTest {
         assertEquals("Szőlő", hits("szőlőt ettem uzsonnára").get(0).food.name);
     }
 
+    @Test public void blendingIsPreparationNotAnExtraDrink() {
+        // A „mogyoróvaj banánnal turmixolva" mellé egy teljes smoothie is
+        // került a hozzávalókon felül. A megivott turmix marad.
+        List<Foods.Hit> h = hits("mogyoróvaj banánnal turmixolva");
+        assertEquals(2, h.size());
+        assertTrue(hits("banán turmixot ittam").stream()
+                .anyMatch(x -> x.food.name.startsWith("Gyümölcsturmix")));
+    }
+
 }

@@ -2503,6 +2503,11 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A TURMIXOLVA készítésmód, nem külön ital: a „mogyoróvaj banánnal
+        // turmixolva" mellé egy teljes smoothie is került – a hozzávalók
+        // mellé. Az ige keveréssé szelídül, a megivott turmix marad.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:[oö]ssze)?turmixol"
+                + "\\p{L}*", "keverve");
         // Az ÚSZÁS VIZE nem ital: a „20 fokos vízben úsztam fél órát"
         // mellé egy pohár ásványvíz került a naplóba.
         if (query.matches("(?iu).*(usz[ot]|[uú]szni|[uú]sztam|[uú]sztunk"
