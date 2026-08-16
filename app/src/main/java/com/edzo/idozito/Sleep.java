@@ -166,6 +166,16 @@ public final class Sleep {
                 double v = Integer.parseInt(sm.group(1)) + Integer.parseInt(sm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
             }
+            // Tizedes órajel az alvás-szó mellett: a „7,5h alvás" sor
+            // eddig teljesen elveszett.
+            sm = java.util.regex.Pattern.compile("(\\d{1,2}[.,]\\d{1,2})\\s?h"
+                    + "\\s?(?:alvas|sleep)|(?:alvas\\w*|sleep)\\s?:?\\s?"
+                    + "(\\d{1,2}[.,]\\d{1,2})\\s?h(?![a-z])").matcher(s);
+            if (sm.find()) {
+                String g = sm.group(1) != null ? sm.group(1) : sm.group(2);
+                double v = Double.parseDouble(g.replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
             // „Rosszul aludtam, 3-szor felébredtem, összesen talán 5 órát": a
             // hossz a HARMADIK tagmondatban áll, az ige mellől pedig
             // szándékosan nem vesszük el a számot (az az ébredések száma

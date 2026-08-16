@@ -414,4 +414,8 @@ public class SleepTest {
         assertEquals(-1.0, Sleep.parse("9 el\u0151tt keltem"), 0.01);
     }
 
+    @Test public void aDecimalHourNextToTheSleepWordCounts() {
+        assertEquals(7.5, Sleep.parse("78,2 kg / 54 rhr / 7,5h alv\u00e1s"), 0.01);
+    }
+
 }

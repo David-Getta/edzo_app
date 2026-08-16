@@ -44,6 +44,8 @@ public final class Pulse {
                     "(\\d{2,3})[- ]?[ae]s\\s(?:nyugalmi\\s)?pulzus"),
             // Az óra-appok rövidítése.
             java.util.regex.Pattern.compile("(?<![a-z])rhr\\s?:?\\s?(\\d{2,3})"),
+            // Fordítva is: az „54 rhr" a tömör napló-sor alakja.
+            java.util.regex.Pattern.compile("(\\d{2,3})\\s?-?\\s?rhr(?![a-z])"),
             // „ma reggel 47 volt a nyugalmi pulzusom": a szám ELÖL áll, a
             // pulzus-szó a mondat végén. Ez a legtermészetesebb magyar alak,
             // és eddig nem létezett – a „nyugalmi" szó itt kötelező, mert

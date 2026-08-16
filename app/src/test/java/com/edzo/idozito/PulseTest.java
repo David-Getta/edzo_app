@@ -220,4 +220,8 @@ public class PulseTest {
         assertEquals(-1, Pulse.parse("edz\u00e9s ut\u00e1ni pulzus 130"));
     }
 
+    @Test public void aReversedRhrReads() {
+        assertEquals(54, Pulse.parse("78,2 kg / 54 rhr / 7,5h alv\u00e1s"));
+    }
+
 }

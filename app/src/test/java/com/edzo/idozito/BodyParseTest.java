@@ -864,4 +864,22 @@ public class BodyParseTest {
         assertEquals(78.0, BodyParse.parse("m\u00e9gsem 80 kg vagyok, hanem 78").kg, 0.01);
     }
 
+    @Test public void aMorningRoutineHeaderIsAWeighInContext() {
+        assertEquals(78.2, BodyParse.parse("reggeli rutin: 78,2 kg, pulzus 54").kg, 0.01);
+    }
+
+    @Test public void theCompactRhrLineCarriesTheWeight() {
+        assertEquals(78.2, BodyParse.parse("78,2 kg / 54 rhr / 7,5h alv\u00e1s").kg, 0.01);
+    }
+
+    @Test public void bodyWaterPercentIsNotBodyFat() {
+        BodyParse.Body b = BodyParse.parse("m\u00e9rleg 78,8 / testzs\u00edr 18,2 / v\u00edz 55%");
+        assertEquals(18.2, b.fatPct, 0.01);
+    }
+
+    @Test public void aBarbellWeightInARoutineIsNotBodyWeight() {
+        BodyParse.Body b = BodyParse.parse("edz\u00e9s rutin: fekvenyom\u00e1s 3x10 60 kg");
+        assertTrue(b == null || b.kg == 0);
+    }
+
 }

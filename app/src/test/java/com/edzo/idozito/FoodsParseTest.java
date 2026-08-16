@@ -1372,4 +1372,8 @@ public class FoodsParseTest {
         assertEquals("Fr\u00f6ccs", h.get(0).food.name);
     }
 
+    @Test public void bodyWaterPercentIsNotAGlassOfWater() {
+        assertTrue(hits("m\u00e9rleg 78,8 / v\u00edz 55%").isEmpty());
+    }
+
 }

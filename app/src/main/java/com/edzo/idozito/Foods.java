@@ -2547,6 +2547,10 @@ public final class Foods {
         query = query.replaceAll("(?iu)nem\\s+ettem\\s+meg\\s+az?\\s+"
                 + "eg[eé]sz\\s+(\\p{L}+),?\\s*csak\\s+a\\s+fel[eé]t",
                 "ettem fél $1");
+        // A TESTVÍZ százaléka nem pohár víz: a „mérleg 78,8 / víz 55%"
+        // mellé két és fél deci ásványvíz került.
+        query = query.replaceAll("(?iu)(?<!\\p{L})v[ií]z\\w*\\s?:?\\s?"
+                + "\\d{1,2}(?:[.,]\\d{1,2})?\\s?%", "");
         // A VISZCERÁLIS zsír az okosmérleg rovata, nem kanál zsír: a
         // „viszcerális zsír 9" kilenc adag sertészsírként ment volna be.
         query = query.replaceAll("(?iu)(?:viszcer[aá]lis|zsigeri)\\s+"

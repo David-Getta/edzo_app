@@ -104,6 +104,12 @@ public final class BodyParse {
             // A visszahízás is mérés-ige: a „visszahíztam 82-re" eddig
             // elveszett, mert a „híztam" csak szó elején volt meg.
             "visszahiztam", "visszahizott", "visszamentem",
+            // A NAPLÓ-FEJLÉC is mérés-kontextus: a „reggeli rutin: 78,2 kg,
+            // pulzus 54" súlya eddig elveszett, mert a „rutin" nem volt cue.
+            "rutin", "check-in", "checkin", "check in",
+            // Az RHR-es tömör naplósor („78,2 kg / 54 rhr / 7,5h alvás")
+            // is reggeli mérés-kontextus.
+            "rhr",
             // A JELEN IDEJŰ irány is mérés-mondat: a „végre fogyok, 74,2 kg
             // ma" hetvennégy kilója valódi mérés – eddig kiesett, mert a
             // „fogyok" se kimondásnak, se kísérőnek nem számított.
@@ -156,6 +162,11 @@ public final class BodyParse {
             // MÁS emelése sem az én mérésem: „a srác 90 kg-ot nyomott ki"
             // kilencven kilós testsúly lett – az én tagmondatom megmarad.
             "nyomott", "nyomta", "kinyomta", "emelt", "huzott",
+            // A GYAKORLAT súlya sem testsúly: az „edzés rutin: fekvenyomás
+            // 3x10 60 kg" hatvana a rúdon van, nem a mérlegen.
+            "fekvenyomas", "guggolas", "felhuzas", "holtemeles",
+            "huzodzkodas", "tolodzkodas", "fekvotamasz", "kitores",
+            "szakitas", "lokes", "vallbol",
             // Célok és becslések: a „70 kg alatt vagyok" nem hetven kiló, a
             // „szeretnék 75 lenni" meg egyáltalán nem mérés. Egy vágyból
             // csinált bejegyzés a trendet is, a BMI-t is elrontaná.
@@ -257,6 +268,10 @@ public final class BodyParse {
         // A KÖRÜL a mérleg ingadozását mondja, nem tiltószó: a „stagnál a
         // súlyom 82 körül" nyolcvankét kiló – eddig elveszett.
         s = s.replaceAll("(?<=\\d)\\s?korul(?![a-z])", "");
+        // A TESTVÍZ százaléka nem testzsír: a „testzsír 18,2 / víz 55%"
+        // zsírja ötvenöt százalék lett – az okosmérleg víz-rovata kiesik.
+        s = s.replaceAll("(?<![a-z])viz\\w*\\s?:?\\s?\\d{1,2}"
+                + "(?:[.,]\\d{1,2})?\\s?%", " ");
         // Az ÁTLÉPETT HATÁR utáni szám a mai mérés: a „végre átléptem a
         // 80-as határt lefelé, 79,8" hetvenkilenc egész nyolc – a küszöb
         // száma nem mérés, azt eldobjuk.
