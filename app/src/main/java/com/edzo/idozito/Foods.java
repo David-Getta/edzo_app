@@ -2561,6 +2561,11 @@ public final class Foods {
         query = query.replaceAll("(?iu)nem\\s+ettem\\s+meg\\s+az?\\s+"
                 + "eg[eé]sz\\s+(\\p{L}+),?\\s*csak\\s+a\\s+fel[eé]t",
                 "ettem fél $1");
+        // A KÖVETKEZŐ tagmondat litere a vízé: az „ittam sok vizet, kb
+        // 2,5 litert" két és fél deci lett a két és fél liter helyett.
+        query = query.replaceAll("(?iu)vizet,?\\s*(?:kb\\.?\\s*)?"
+                + "(\\d+(?:[.,]\\d+)?)\\s?litert?(?!\\p{L})",
+                "$1 liter vizet");
         // Az ÉTEL-EMODZSI is étel: a „🍕 2 szelet" eddig üresen jött
         // vissza, pedig a sport-emodzsik régóta működnek.
         {

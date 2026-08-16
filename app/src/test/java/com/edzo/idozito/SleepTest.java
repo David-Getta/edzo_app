@@ -424,4 +424,8 @@ public class SleepTest {
         assertEquals(6.5, Sleep.parse("m\u0171szak ut\u00e1n aludtam 6,5 \u00f3r\u00e1t"), 0.01);
     }
 
+    @Test public void sleepWordBeforeTheNumberWithADayWordReads() {
+        assertEquals(7.0, Sleep.parse("alv\u00e1s tegnap 7 \u00f3ra volt"), 0.01);
+    }
+
 }

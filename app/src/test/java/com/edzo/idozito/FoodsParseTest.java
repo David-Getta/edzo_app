@@ -1399,4 +1399,9 @@ public class FoodsParseTest {
         assertTrue(hits("zs\u00edrom 18 sz\u00e1zal\u00e9k").isEmpty());
     }
 
+    @Test public void theNextClauseLitresBelongToTheWater() {
+        List<Foods.Hit> h = hits("ittam sok vizet, kb 2,5 litert");
+        assertEquals(2500, h.get(0).grams, 0.01);
+    }
+
 }

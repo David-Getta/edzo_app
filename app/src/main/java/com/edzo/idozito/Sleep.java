@@ -121,6 +121,11 @@ public final class Sleep {
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");
+        // A NAPSZÓ beékelődhet az alvás-szó és a szám közé: az „alvás
+        // tegnap 7 óra volt" hetese eddig nem talált, és a mondat többi
+        // időpontjából jött ki egy rossz szám.
+        s = s.replaceAll("(alvas\\w*)\\s+(?:ma|tegnap|az ejjel|ejjel)\\s+"
+                + "(?=\\d)", "$1 ");
         // Az ALVÁSFÁZIS nem a teljes éjszaka: a „mélyalvás 2 óra 10 perc,
         // összesen 7 óra 30 perc alvás" két óra husz percként ment be. A
         // kimondott összesen mellől a fázis-sor kiesik.
@@ -156,6 +161,16 @@ public final class Sleep {
                     .compile("(?<![\\d,:])(\\d{1,2}):(\\d{2})\\s?(?:alvas|sleep)").matcher(s);
             if (cm.find()) {
                 double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Az ALVÁS-SZÓ UTÁN álló óraszám is hossz: az „alvás 7 óra
+            // volt" szórendjét eddig egyik minta sem fedte – a szám mindig
+            // a szó ELŐTT állt („7 óra alvás").
+            cm = java.util.regex.Pattern
+                    .compile("(?<![a-z])(?:alvas\\w*|sleep)\\s?:?\\s?"
+                            + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?ora").matcher(s);
+            if (cm.find()) {
+                double v = Double.parseDouble(cm.group(1).replace(',', '.'));
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
             }
             // Óra-jeles rövidítés: „aludtam 7h30", „7h 30m". Az óra-appok és a
