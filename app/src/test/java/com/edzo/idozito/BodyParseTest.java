@@ -899,4 +899,13 @@ public class BodyParseTest {
         assertEquals(82.0, BodyParse.parse("v\u00e9rnyom\u00e1s 160/95, s\u00falyom 82").kg, 0.01);
     }
 
+    @Test public void aWaistDropKeepsTheNewCentimetres() {
+        BodyParse.Body b = BodyParse.parse("der\u00e9kb\u0151s\u00e9g lement 90-r\u0151l 86-ra");
+        assertEquals(86.0, b.cm[0], 0.01);
+    }
+
+    @Test public void aWeightDropKeepsTheNewKilos() {
+        assertEquals(84.0, BodyParse.parse("lefogytam 90-r\u0151l 84-re").kg, 0.01);
+    }
+
 }

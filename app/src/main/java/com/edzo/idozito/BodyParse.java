@@ -203,6 +203,12 @@ public final class BodyParse {
      * belőle. A régi értéket kivágjuk, a mai marad a helyén.
      */
     private static String keepTheNewValue(String s) {
+        // A KÖRMÉRET változása centiben értendő: a „derékbőség lement
+        // 90-ről 86-ra" egyik számán sincs cm, így a maradó új érték sem
+        // volt körméretnek olvasható – a mértékegységet visszaírjuk.
+        s = s.replaceAll("(derekboseg\\w*|haskorfogat\\w*)([^0-9]{0,20}?)"
+                + "(\\d{2,3})\\s?-?r[oó]l(?![a-z])[^0-9]{0,12}?"
+                + "(\\d{2,3})\\s?-?r[ae](?![a-z])", "$1 $4 cm");
         s = s.replaceAll(
                 "(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:cm|centi|kg|kilo|%|szazalek)?"
                         + "\\s?-?r[o\u00f3]l\\b([^0-9]{0,12}?)"
@@ -301,6 +307,11 @@ public final class BodyParse {
         // mértékegység híján eddig elveszett.
         s = s.replaceAll("(?<![\\d,.])(\\d{2,3})\\s?-?[ae]?t\\s+mertem",
                 "$1 kg-ot mertem");
+        // A VÁLTOZÁS mondatában a MÁSODIK szám a mai érték: a „derékbőség
+        // lement 90-ről 86-ra" a régi számot hagyta meg (vagy semmit).
+        s = s.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?-?r[o]l"
+                + "(?![a-z])[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?r[ae](?![a-z])", "$2");
         // A FOGYÓKÚRA kiindulópontja múlt, a „ma" utáni szám a mérés: a
         // „83-ról indultam januárban, ma 76" hetvenhat kiló – eddig
         // egyik szám sem lett mérés, mert test-szó nincs a mondatban.
