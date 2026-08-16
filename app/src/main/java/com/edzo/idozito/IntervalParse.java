@@ -135,6 +135,9 @@ public final class IntervalParse {
         // A MECCS sem ritmus: az „edzőmeccs 2x30 perc" hatvan perc játék,
         // a „25-22 lett" pedig a végeredmény – eddig mindkettő időzítő-terv
         // lett. A kimondott intervall-szó viszont felment.
+        // A KUTYASÉTÁLTATÁS napi két köre sem ritmus: a
+        // „kutyasétáltatás 2x30 perc" egy óra séta.
+        if (s.contains("setaltatas") || s.contains("kutyaset")) return null;
         if ((s.contains("meccs") || s.contains("felido")
                 || s.contains("jatszottam") || s.contains("kispalyas"))
                 && !s.contains("intervall") && !s.contains("hiit")) return null;

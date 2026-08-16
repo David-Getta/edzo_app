@@ -5013,4 +5013,17 @@ public class ActivitiesParseTest {
         assertEquals(40, p.plans.get(0).minutes);
     }
 
+    @Test public void twoDogWalksAddUp() {
+        Activities.Parsed p = Activities.parse("kutyas\u00e9t\u00e1ltat\u00e1s 2x30 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(60, p.plans.get(0).minutes);
+    }
+
+    @Test public void thereAndBackMinutesAddUp() {
+        Activities.Parsed p = Activities.parse(
+                "gyalog mentem a boltba, 15 perc oda \u00e9s 15 vissza");
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
 }

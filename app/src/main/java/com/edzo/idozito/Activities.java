@@ -1336,6 +1336,21 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])(?:leadtam|lementem|mentem|"
                     + "megtettem) egy (?:gyors |laza |kis )?kort(?![a-z])",
                     "setaltam 30 percet");
+        // Az ODA ÉS VISSZA két útja összeadódik: a „gyalog mentem a
+        // boltba, 15 perc oda és 15 vissza" harminc perc séta – eddig
+        // csak az egyik irány maradt.
+        {
+            java.util.regex.Matcher ov = java.util.regex.Pattern
+                    .compile("(\\d{1,3})\\s?perc\\s+oda\\s+(?:es|meg)\\s+"
+                            + "(\\d{1,3})\\s?(?:perc\\s+)?vissza").matcher(s);
+            if (ov.find()) {
+                int t = Integer.parseInt(ov.group(1))
+                        + Integer.parseInt(ov.group(2));
+                if (t <= 300)
+                    s = s.substring(0, ov.start()) + t + " perc"
+                            + s.substring(ov.end());
+            }
+        }
         // Az INGÁZÁS oda-vissza útja egyetlen napi adag: a „biciklivel
         // mentem dolgozni, 2x25 perc" ötven perc tekerés – eddig az
         // intervallum-olvasó vitte el, és huszonöt perc maradt belőle.
@@ -1347,7 +1362,10 @@ public final class Activities {
                 // 2x35 perc" hetven perc játék, nem harmincöt.
                 || s.contains("meccs") || s.contains("felido")
                 // A KISPÁLYÁS két húszperces félideje is összeadódik.
-                || s.contains("jatszottam") || s.contains("kispalyas")) {
+                || s.contains("jatszottam") || s.contains("kispalyas")
+                // A KUTYASÉTÁLTATÁS napi két köre ugyanígy: a
+                // „kutyasétáltatás 2x30 perc" egy óra séta.
+                || s.contains("setaltatas") || s.contains("kutyaset")) {
             java.util.regex.Matcher ing = java.util.regex.Pattern
                     .compile("(?<![\\dx.,])2\\s?x\\s?(\\d{1,3})\\s?perc").matcher(s);
             if (ing.find()) {
