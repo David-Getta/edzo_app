@@ -4744,4 +4744,16 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void aMultiDayTourSpansItsDays() {
+        // A „három napos biciklitúra, összesen 180 km" egyetlen napra
+        // került; a „30 napos kihívás" viszont program-név, ott a mai
+        // adag számít, nem harminc nap.
+        Activities.Parsed p = Activities
+                .parse("három napos biciklitúra, összesen 180 km");
+        assertEquals(3, p.days);
+        assertEquals(180, p.plans.get(0).km, 0.001);
+        assertEquals(1, Activities
+                .parse("30 napos guggolás kihívás, ma 150 guggolás").days);
+    }
+
 }

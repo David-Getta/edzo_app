@@ -1208,6 +1208,19 @@ public final class Activities {
             em.appendTail(eb);
             s = eb.toString();
         }
+        // Az N NAPOS jelző is időszak: a „három napos biciklitúra,
+        // összesen 180 km" egyetlen napra került, pedig három napé. A
+        // „30 napos kihívás" viszont program-név, ott a mai adag számít.
+        if (!s.contains("kihivas") && !s.contains("challenge")
+                && !s.contains("program")) {
+            String[][] nd = {{"ket", "2"}, {"harom", "3"}, {"negy", "4"},
+                    {"ot", "5"}, {"hat", "6"}};
+            for (String[] p : nd)
+                s = s.replaceAll("(?<![a-z])" + p[0] + " napos(?![a-z])",
+                        p[1] + " nap alatt");
+            s = s.replaceAll("(?<![\\d,.])(\\d{1,2})\\s?napos(?![a-z])",
+                    "$1 nap alatt");
+        }
         // A RÉSZLETEZETT triatlon a szakaszaival él: a „triatlon: úszás
         // 1,5 km, kerékpár 40 km, futás 10 km" mellé eddig egy külön
         // 150 perces triatlon-tétel is került – duplán számolva a napot.
