@@ -761,6 +761,7 @@ public final class Foods {
         new Food("Túrós batyu", 300, 7, 100, "turos batyu", "batyu"),
         // A -val/-vel hasonul: „kaláccsal". A cs+cs alakot külön tő fogja meg.
         new Food("Kalács / bejgli", 350, 8, 80, "kalacs", "kalaccs", "bejgli", "beigli",
+                "pozsonyi kifli",
                 // A töltelék benne van a kalóriában: a „diós bejgli" ne
                 // számoljon még egy adag diót is mellé.
                 "dios bejgli", "makos bejgli", "makos tekercs", "dios tekercs"),
@@ -1783,6 +1784,7 @@ public final class Foods {
             {"Szaloncukor", "15"}, {"Mézeskalács", "25"},
             {"Víz / ásványvíz", "250"},
             {"Sör", "500"}, {"Bor (vörös/fehér)", "150"}, {"Pálinka / tömény", "40"},
+            {"Szilvás gombóc", "80"},
             {"Tej", "200"}, {"Üdítő (cukros)", "330"}, {"Energiaital", "250"},
             {"Kávé (fekete)", "200"}, {"Tejeskávé / cappuccino", "250"},
             {"Tea (cukrozatlan)", "250"},
@@ -2503,6 +2505,11 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A KAKAÓS sütemény jelzője nem pohár kakaó: a „kakaós kalács a
+        // pékségből" mellé két és fél deci ital került.
+        query = query.replaceAll("(?iu)(?<!\\p{L})kaka[oó]s\\s+"
+                + "(?=kal[aá]cs|piskot|s[uü]t|muffin|keksz|fank|f[aá]nk"
+                + "|palacsint|t[eé]szta|granola)", "");
         // A TURMIXOLVA készítésmód, nem külön ital: a „mogyoróvaj banánnal
         // turmixolva" mellé egy teljes smoothie is került – a hozzávalók
         // mellé. Az ige keveréssé szelídül, a megivott turmix marad.

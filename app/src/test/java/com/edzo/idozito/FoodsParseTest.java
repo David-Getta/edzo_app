@@ -1246,4 +1246,18 @@ public class FoodsParseTest {
                 .anyMatch(x -> x.food.name.startsWith("Gyümölcsturmix")));
     }
 
+    @Test public void bakeryAdjectivesAndDumplingsResolve() {
+        // A „kakaós kalács" mellé pohár kakaó került; a szilvás gombóc
+        // darabja nem volt meg; a pozsonyi kifli sima kifliként ment be.
+        List<Foods.Hit> h = hits("kakaós kalács a pékségből");
+        assertEquals(1, h.size());
+        assertEquals("Kalács / bejgli", h.get(0).food.name);
+        assertEquals(480, hits("ettem 6 szilvás gombócot").get(0).grams, 0.5);
+        assertEquals("Kalács / bejgli",
+                hits("pozsonyi kifli diósan").get(0).food.name);
+        // A kakaós csiga és a tejes kakaó marad.
+        assertEquals("Kakaós csiga", hits("kakaós csigát ettem").get(0).food.name);
+        assertEquals("Kakaó (tejes)", hits("tejes kakaót ittam").get(0).food.name);
+    }
+
 }
