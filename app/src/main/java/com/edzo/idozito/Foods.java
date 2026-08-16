@@ -439,7 +439,7 @@ public final class Foods {
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
         new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao", "forro csoki", "forrocsoki",
-                "nesquik"),
+                "nesquik", "melegcsoki", "meleg csoki"),
         new Food("Tükörponty / halrudak", 220, 12, 150, "tukorponty", "halrud", "halrudak"),
         new Food("Körte", 57, 0.4, 150, "korte"),
         new Food("Őszibarack", 39, 0.9, 150, "oszibarack", "barack", "nektarin"),

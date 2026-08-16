@@ -1305,4 +1305,13 @@ public class FoodsParseTest {
                 hits("főtt krumplit ettem pörkölttel").get(0).food.name);
     }
 
+    @Test public void hotChocolateIsADrinkNotABar() {
+        // A „melegcsoki a hidegben" 25 gramm táblás csoki lett – a
+        // melegcsoki két és fél deci kakaó. A tábla csoki marad.
+        assertEquals("Kakaó (tejes)",
+                hits("melegcsoki a hidegben").get(0).food.name);
+        assertEquals("Csokoládé",
+                hits("ettem egy tábla csokit").get(0).food.name);
+    }
+
 }
