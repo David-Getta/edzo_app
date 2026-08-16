@@ -870,6 +870,9 @@ public final class Foods {
             // Az ÖVVIZSGA közepén a víz – a karate-vizsgából pohár
             // ásványvíz lett.
             "ovvizsga",
+            // A PEZSGŐTABLETTA elején a pezsgő: a C-vitamin mellé másfél
+            // deci ital került.
+            "pezsgotab",
 
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a

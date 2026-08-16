@@ -1260,4 +1260,13 @@ public class FoodsParseTest {
         assertEquals("Kakaó (tejes)", hits("tejes kakaót ittam").get(0).food.name);
     }
 
+    @Test public void anEffervescentTabletIsNotChampagne() {
+        // A „C-vitamin pezsgőtabletta vízben oldva" mellé másfél deci
+        // pezsgő került. A szilveszteri pezsgő marad.
+        for (Foods.Hit h : hits("c-vitamin pezsgőtabletta vízben oldva"))
+            assertFalse(h.food.name.equals("Pezsgő"));
+        assertEquals("Pezsgő",
+                hits("pezsgőt ittunk szilveszterkor").get(0).food.name);
+    }
+
 }
