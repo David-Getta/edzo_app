@@ -1163,6 +1163,9 @@ public final class Foods {
             // A TÁBOR belsejében a BOR: az „edzőtábor: napi 2 edzés" és a
             // „sítábor egész héten" mellé eddig másfél deci bor került.
             "tabor",
+            // A SULI összetétel hátulján a LIBA: a „táncSULIBAn" mellé
+            // kacsasült került a naplóba.
+            "suli",
 
             // A BODYCOMBAT belsejében a COMB: az óra neve mellé egy adag
             // csirkecomb került a naplóba.

@@ -1217,4 +1217,12 @@ public class FoodsParseTest {
         assertTrue(hits("övvizsga volt karatéból, sikerült").isEmpty());
     }
 
+    @Test public void theDanceSchoolHasNoGooseInIt() {
+        // A „táncSULIBAn" hátulján a liba szótöve ül – kacsasült került a
+        // cha-cha óra mellé. Az igazi libacomb marad.
+        assertTrue(hits("keringő és cha-cha a táncsuliban").isEmpty());
+        assertEquals("Kacsa / liba",
+                hits("libacombot ettem párolt káposztával").get(0).food.name);
+    }
+
 }
