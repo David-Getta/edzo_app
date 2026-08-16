@@ -76,6 +76,9 @@ public final class Sleep {
         // mondatban egyetlen alud-tő sem volt.
         return s.contains("alud") || s.contains("alvas") || s.contains("aludt")
                 || s.contains("felebred")
+                // Az óra angol exportja: a „sleep score 78, 7h12m" hét óra
+                // tizenkét perce eddig elveszett.
+                || s.contains("sleep")
                 // A TÖBBSZÖRI kelés is éjszakáról szól: „a gyerek miatt
                 // háromszor keltem fel, összesen 6 óra lett". A „fel" a
                 // számnév-fordítás után „0,5", ezért csak a „keltem" marad.
@@ -127,7 +130,7 @@ public final class Sleep {
             // Az „alvás 6:30" hossz, nem időpont: az óra-appok így írják ki.
             // A perc eddig elveszett belőle – fél óra, minden éjszakán.
             java.util.regex.Matcher cm = java.util.regex.Pattern
-                    .compile("alvas\\w*\\s?:?\\s?(\\d{1,2}):(\\d{2})").matcher(s);
+                    .compile("(?:alvas\\w*|sleep)\\s?:?\\s?(\\d{1,2}):(\\d{2})").matcher(s);
             if (cm.find()) {
                 double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
@@ -135,7 +138,7 @@ public final class Sleep {
             // Fordított szórenddel is: a „7:02 alvásidő" az óra-app sora,
             // és eddig teljesen elveszett.
             cm = java.util.regex.Pattern
-                    .compile("(?<![\\d,:])(\\d{1,2}):(\\d{2})\\s?alvas").matcher(s);
+                    .compile("(?<![\\d,:])(\\d{1,2}):(\\d{2})\\s?(?:alvas|sleep)").matcher(s);
             if (cm.find()) {
                 double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;

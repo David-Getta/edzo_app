@@ -367,4 +367,13 @@ public class SleepTest {
                 "a gyerek miatt háromszor keltem fel, összesen 6 óra lett"), 0.01);
     }
 
+    @Test public void englishWatchSleepLinesParse() {
+        // Az óra angol exportja: a „sleep score 78, 7h12m" hét óra
+        // tizenkét perc, a „sleep 6:45" hat és háromnegyed – eddig
+        // egyik sem került be. A pontszám nem alvásóra.
+        assertEquals(7.2, Sleep.parse("sleep score 78, 7h12m"), 0.01);
+        assertEquals(6.8, Sleep.parse("sleep 6:45"), 0.01);
+        assertEquals(-1, Sleep.parse("alvás pontszám 85"), 0.01);
+    }
+
 }
