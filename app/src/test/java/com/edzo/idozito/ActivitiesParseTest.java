@@ -5006,4 +5006,11 @@ public class ActivitiesParseTest {
         assertEquals(15, p.plans.get(0).minutes);
     }
 
+    @Test public void fartlekIsARunningSession() {
+        Activities.Parsed p = Activities.parse("fartlek 40 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(40, p.plans.get(0).minutes);
+    }
+
 }

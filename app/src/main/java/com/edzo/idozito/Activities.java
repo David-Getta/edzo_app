@@ -53,6 +53,9 @@ public final class Activities {
                     "futopad", "futogep",
                     // A verseny neve is a sportot mondja ki – a puszta „futó"
                     // viszont nem lehet tő, mert túl sok szóban benne van.
+                    // A FARTLEK futóedzés-forma: a „fartlek 40 perc"
+                    // időzítő-tervet kapott, de a futás nem került naplóba.
+                    "fartlek",
                     "futoverseny", "terepfutas", "spartan", "parkrun",
                     // A családi FUTÓNAP is futás – eddig üresen jött vissza.
                     "futonap",
