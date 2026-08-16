@@ -253,6 +253,12 @@ public final class Hu {
      */
     public static String correction(String s) {
         if (s == null || s.isEmpty()) return s == null ? "" : s;
+        // Az APOSZTRÓFOS sportjelölés perc és másodperc: a „90' foci"
+        // kilencven darab focivá vált ötven napra szétosztva, mert az
+        // aposztróf a normalizálásban elveszett, a szám meg darabszám
+        // lett. A dupla jel a másodperc, ezért az fut előbb.
+        s = s.replaceAll("(\\d{1,3})\\s?(?:''|′′|″|\")(?!\\p{L})", "$1 mp ");
+        s = s.replaceAll("(\\d{1,3})\\s?['′’](?![\\p{L}'′’])", "$1 perc ");
         // A MÉGSEM ugyanaz a tagadás, mint a „nem": a „mégsem 80 kg
         // vagyok, hanem 78" nyolcvana ment be, a „mégsem futottam le a
         // 10 km-t, csak 6 lett" meg elveszett.

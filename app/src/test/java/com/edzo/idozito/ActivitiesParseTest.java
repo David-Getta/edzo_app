@@ -4949,4 +4949,13 @@ public class ActivitiesParseTest {
         assertEquals(15, p.plans.get(0).minutes);
     }
 
+    @Test public void apostropheMinutesAreMinutesNotACount() {
+        Activities.Parsed p = Activities.parse("90' foci");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(90, p.plans.get(0).minutes);
+        assertEquals(45, Activities.parse("45' fut\u00e1s").plans.get(0).minutes);
+    }
+
 }
