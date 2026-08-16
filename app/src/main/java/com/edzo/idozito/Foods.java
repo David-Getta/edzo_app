@@ -321,7 +321,9 @@ public final class Foods {
         new Food("Chips", 540, 6, 50, "chips", "nachos", "proteinchips",
                 // A „tortilla chips" eddig KÉT tétel volt (tortilla + chips):
                 // egy lapos kenyér kalóriája a nassolnivaló mellé.
-                "protein chips", "tortilla chips", "tortillachips", "nacho"),
+                // A Pringles a maga nevén él – eddig üresen jött vissza.
+                "protein chips", "tortilla chips", "tortillachips", "nacho",
+                "pringles"),
         // Nassolás-kör: a hagymakarika hagymának (20 kcal!), a szaloncukor
         // kanál cukornak, a mézeskalács kalácsnak számított.
         new Food("Hagymakarika (rántott)", 280, 4, 100, "hagymakarika"),
@@ -2531,6 +2533,12 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A SZELET JELZŐJE nem külön étel: a „kekszes-mogyorós müzliszelet"
+        // keksznek, mogyorónak ÉS szeletnek is beszámolt – a jelzők a
+        // rúd ízét mondják, nem plusz fogásokat.
+        query = query.replaceAll("(?iu)(?:(?<!\\p{L})\\p{L}{3,}[eoaöó]s[- ])+"
+                + "(?=m[uü]zliszelet|proteinszelet|protein\\s?szelet"
+                + "|energiaszelet)", "");
         // A KAKAÓS sütemény jelzője nem pohár kakaó: a „kakaós kalács a
         // pékségből" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)(?<!\\p{L})kaka[oó]s\\s+"

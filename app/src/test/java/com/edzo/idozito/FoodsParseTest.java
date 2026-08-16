@@ -1376,4 +1376,15 @@ public class FoodsParseTest {
         assertTrue(hits("m\u00e9rleg 78,8 / v\u00edz 55%").isEmpty());
     }
 
+    @Test public void aFlavouredCerealBarIsOneItem() {
+        List<Foods.Hit> h = hits("kekszes-mogyor\u00f3s m\u00fczliszelet");
+        assertEquals(1, h.size());
+        assertEquals("M\u00fczliszelet", h.get(0).food.name);
+    }
+
+    @Test public void pringlesIsChips() {
+        List<Foods.Hit> h = hits("pringles f\u00e9l doboz");
+        assertEquals("Chips", h.get(0).food.name);
+    }
+
 }
