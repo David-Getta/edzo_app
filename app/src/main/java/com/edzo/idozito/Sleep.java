@@ -115,6 +115,12 @@ public final class Sleep {
         String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
         // Az „aluttam" gyakori fonetikus elütés.
         s = s.replace("aluttam", "aludtam");
+        // A „TUDTAM ALUDNI" is alvás: a „két műszak között csak 4 órát
+        // tudtam aludni" eddig elveszett, mert az ige főnévi igenév volt.
+        s = s.replaceAll("(?:tudtam|sikerult|birtam)\s+aludni", "aludtam");
+        // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
+        // feküdtem és 19-kor keltem" hét óra nappali alvás.
+        s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");
         // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))

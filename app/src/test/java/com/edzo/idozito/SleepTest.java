@@ -381,4 +381,13 @@ public class SleepTest {
         assertEquals(8, Sleep.parse("aluttam 8 órát"), 0.01);
     }
 
+    @Test public void shiftWorkersDaytimeSleepCounts() {
+        // Az „éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"
+        // hét óra nappali alvás; a „csak 4 órát tudtam aludni" négy.
+        assertEquals(7, Sleep.parse(
+                "éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"), 0.01);
+        assertEquals(4, Sleep.parse(
+                "két műszak között csak 4 órát tudtam aludni"), 0.01);
+    }
+
 }
