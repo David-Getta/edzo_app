@@ -1162,4 +1162,13 @@ public class FoodsParseTest {
     }
 
 
+    @Test public void dekaAdjectivesAndEatenHalvesScale() {
+        // A „harmincdekás steak" alapadagként ment be háromszáz gramm
+        // helyett; a „20 deka párizsit vettem és megettem a felét" pedig
+        // a teljes kétszáz grammot írta be száz helyett.
+        assertEquals(300, hits("harmincdekás steak").get(0).grams, 0.5);
+        assertEquals(100, hits("20 deka párizsit vettem és megettem a felét")
+                .get(0).grams, 0.5);
+    }
+
 }

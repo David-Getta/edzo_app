@@ -2482,6 +2482,25 @@ public final class Foods {
         // A SZÓRT kakaó por, nem pohár tejes kakaó: a „tejbegríz szórt
         // kakaóval" mellé két és fél deci ital került.
         query = query.replaceAll("(?iu)sz[oó]rt\\s+kaka[oó]", "kakaópor");
+        // A DEKÁS jelző is mennyiség: a „harmincdekás steak" alapadagként
+        // ment be, pedig háromszáz gramm.
+        query = query.replaceAll("(?iu)(?<!\\p{L})t[ií]z\\s?dek[aá]s", "100 g")
+                .replaceAll("(?iu)(?<!\\p{L})h[uú]sz\\s?dek[aá]s", "200 g")
+                .replaceAll("(?iu)(?<!\\p{L})harminc\\s?dek[aá]s", "300 g")
+                .replaceAll("(?iu)(?<!\\p{L})negyven\\s?dek[aá]s", "400 g")
+                .replaceAll("(?iu)(?<!\\p{L})[oö]tven\\s?dek[aá]s", "500 g");
+        // A MEGEVETT FÉL a kimondott mennyiség fele: a „20 deka párizsit
+        // vettem és megettem a felét" száz gramm, nem kétszáz.
+        {
+            java.util.regex.Matcher hm2 = java.util.regex.Pattern.compile(
+                    "(?iu)(\\d{1,3})(\\s?(?:dkg|deka|g|gramm)\\s\\p{L}+"
+                    + "[^.;]{0,30}?megettem a) fel[eé]t(?![\\p{L}])")
+                    .matcher(query);
+            if (hm2.find())
+                query = query.substring(0, hm2.start())
+                        + (Integer.parseInt(hm2.group(1)) / 2) + hm2.group(2)
+                        + query.substring(hm2.end());
+        }
         // A CSIGÁN végzett letolás a konditerem csigája, nem kakaós csiga:
         // a terem-szavak mellett a csiga nem péksütemény.
         if (query.matches("(?iu).*(letol|lehuz|tricepsz|kabel|kettlebell"
