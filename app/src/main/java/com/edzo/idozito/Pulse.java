@@ -100,7 +100,11 @@ public final class Pulse {
         // kimondja, az a reggeli mérésről beszél – akkor is, ha utána az
         // edzés közbeni maximumát is odaírja. A „pihenőpulzus 52, edzés
         // közben max 178" ötvenkettője eddig némán elveszett.
-        if (!s.contains("nyugalmi") && !s.contains("pihenopulzus"))
+        // A REGGELI pulzus is nyugalmi mérés: a „reggel 52-es pulzus,
+        // délben futás 8 km" ötvenkettője eddig elveszett, mert a futás
+        // szava az egész mondatot edzésnek minősítette.
+        if (!s.contains("nyugalmi") && !s.contains("pihenopulzus")
+                && !s.matches(".*(?<![a-z])reggeli?\\s[^,;.]{0,10}?pulzus.*"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})
                 if (s.contains(g)) return -1;

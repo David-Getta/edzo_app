@@ -199,4 +199,13 @@ public class PulseTest {
         assertEquals(49, Pulse.parse("nyugalmi pulzusom lement 50 alá, "
                 + "ma 49!"));
     }
+    @Test public void theMorningPulseSurvivesTheDaysWorkout() {
+        // A „reggel 52-es pulzus, délben futás 8 km" ötvenkettője eddig
+        // elveszett – a futás szava az egészet edzésnek minősítette. Az
+        // edzés közbeni pulzus továbbra sem nyugalmi.
+        assertEquals(52, Pulse.parse(
+                "reggel 52-es pulzus, délben futás 8 km, vacsora csirke rizzsel"));
+        assertEquals(-1, Pulse.parse("futás közben 165 volt a pulzusom"));
+    }
+
 }
