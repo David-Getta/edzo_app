@@ -4646,4 +4646,19 @@ public class ActivitiesParseTest {
         assertEquals(0.8, Activities.parse("úsztam 800 m-t").plans.get(0).km, 0.001);
     }
 
+    @Test public void beatingLazinessStillCounts() {
+        // A „nem volt kedvem, de azért lefutottam 5 km-t" második fele
+        // megtörtént – a kedv hiánya eddig az egészet elvitte. A puszta
+        // kedvtelenség viszont továbbra sem edzés.
+        assertEquals(5, Activities
+                .parse("nem volt kedvem, de azért lefutottam 5 km-t")
+                .plans.get(0).km, 0.001);
+        assertTrue(Activities.parse("nem volt kedvem futni").plans.isEmpty());
+        // Az idei rekord ma történt, nem éves összesítő.
+        Activities.Parsed p = Activities
+                .parse("a legjobb futásom volt idén: 15 km 1:10 alatt");
+        assertEquals(1, p.days);
+        assertEquals(15, p.plans.get(0).km, 0.001);
+    }
+
 }

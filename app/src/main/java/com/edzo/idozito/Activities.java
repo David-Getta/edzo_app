@@ -1188,6 +1188,15 @@ public final class Activities {
             em.appendTail(eb);
             s = eb.toString();
         }
+        // A LEGYŐZÖTT lustaság is edzés: a „nem volt kedvem, de azért
+        // lefutottam 5 km-t" második fele megtörtént – a kedv hiánya eddig
+        // az egészet elvitte.
+        s = s.replaceAll("(?<![a-z])nem (?:volt kedvem|akartam|akarodzott)"
+                + "\\w*[^.;]{0,12}?,\\s*(?=de |azert |megis )", "");
+        // Az IDEI REKORD ma történt: „a legjobb futásom volt idén: 15 km"
+        // – az „idén" szava nélkül nem lesz belőle éves összesítő-időszak.
+        if (s.contains("legjobb") || s.contains("rekord"))
+            s = s.replaceAll("(?<![a-z])iden(?![a-z])", "");
         // A SZINTEMELKEDÉS métere magasság, nem táv: a „szintemelkedés
         // 1200 m a mai túrán" egy 1,2 km-es sétává zsugorodott.
         s = s.replaceAll("(?<![a-z])(szintemelkedes|szintnyereseg)\\w*"
