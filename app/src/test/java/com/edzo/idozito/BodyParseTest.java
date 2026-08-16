@@ -842,4 +842,22 @@ public class BodyParseTest {
         assertEquals(0, BodyParse.parse("a kutyám 28 kg-ot nyom").kg, 0.001);
     }
 
+    @Test public void beingUnderAThresholdKeepsTheRealReading() {
+        assertEquals(74.6, BodyParse.parse("v\u00e9gre 75 alatt vagyok, 74,6").kg, 0.01);
+    }
+
+    @Test public void aWeightMeasuredOnMeIsMine() {
+        assertEquals(84.0, BodyParse.parse("az orvosn\u00e1l 84 kg-ot m\u00e9rtek rajtam").kg, 0.01);
+    }
+
+    @Test public void anAccusativeMeasurementCountsWithoutAUnit() {
+        assertEquals(84.0, BodyParse.parse("\u00e9n 84-et m\u00e9rtem ma").kg, 0.01);
+    }
+
+    @Test public void someoneElsesBenchPressIsNotMyWeight() {
+        BodyParse.Body b = BodyParse.parse(
+                "a sr\u00e1c 90 kg-ot nyomott ki a teremben");
+        assertTrue(b == null || b.kg == 0);
+    }
+
 }

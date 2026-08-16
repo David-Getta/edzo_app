@@ -1342,4 +1342,8 @@ public class FoodsParseTest {
         assertTrue(hits("ekkora adag rizst m\u00e9g nem ettem").isEmpty());
     }
 
+    @Test public void visceralFatIsAScaleRowNotLard() {
+        assertTrue(hits("viszcer\u00e1lis zs\u00edr 9").isEmpty());
+    }
+
 }

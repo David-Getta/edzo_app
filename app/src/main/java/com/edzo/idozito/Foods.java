@@ -2536,6 +2536,10 @@ public final class Foods {
         // mellé. Az ige keveréssé szelídül, a megivott turmix marad.
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:[oö]ssze)?turmixol"
                 + "\\p{L}*", "keverve");
+        // A VISZCERÁLIS zsír az okosmérleg rovata, nem kanál zsír: a
+        // „viszcerális zsír 9" kilenc adag sertészsírként ment volna be.
+        query = query.replaceAll("(?iu)(?:viszcer[aá]lis|zsigeri)\\s+"
+                + "zs[ií]r\\w*\\s?:?\\s?(?:\\d{1,2}(?![\\d,.]))?", "");
         // Az ÚSZÁS VIZE nem ital: a „20 fokos vízben úsztam fél órát"
         // mellé egy pohár ásványvíz került a naplóba.
         if (query.matches("(?iu).*(usz[ot]|[uú]szni|[uú]sztam|[uú]sztunk"

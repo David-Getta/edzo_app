@@ -153,6 +153,9 @@ public final class BodyParse {
      */
     private static final String[] NOT_BODY = {
             "nyomtam", "emeltem", "huztam", "toltam", "vettem", "vasaroltam", "hoztam",
+            // MÁS emelése sem az én mérésem: „a srác 90 kg-ot nyomott ki"
+            // kilencven kilós testsúly lett – az én tagmondatom megmarad.
+            "nyomott", "nyomta", "kinyomta", "emelt", "huzott",
             // Célok és becslések: a „70 kg alatt vagyok" nem hetven kiló, a
             // „szeretnék 75 lenni" meg egyáltalán nem mérés. Egy vágyból
             // csinált bejegyzés a trendet is, a BMI-t is elrontaná.
@@ -259,6 +262,17 @@ public final class BodyParse {
         // száma nem mérés, azt eldobjuk.
         s = s.replaceAll("atlept\\w*\\s+a\\s+\\d{2,3}\\s?-?[ae]s\\s+"
                 + "hatart(?:\\s+lefele|\\s+felfele)?,?\\s*", "sulyom ");
+        // Az „ALATT VAGYOK" küszöbe sem mérés: a „végre 75 alatt vagyok,
+        // 74,6" hetvennégy egész hat – a küszöb száma kiesik.
+        s = s.replaceAll("(?<![\\d,.])\\d{2,3}\\s?(?:ala|alatt|fole|folott)"
+                + "\\s+(?:vagyok|mentem|kerultem|ertem)\\W*", "sulyom ");
+        // A RAJTAM mért szám az enyém, akárki olvasta le a mérleget: az
+        // „az orvosnál 84 kg-ot mértek rajtam" eddig másénak látszott.
+        s = s.replaceAll("mertek\\s+rajtam", "mertem");
+        // A TÁRGYRAGOS mérés kg nélkül is súly: az „én 84-et mértem ma"
+        // mértékegység híján eddig elveszett.
+        s = s.replaceAll("(?<![\\d,.])(\\d{2,3})\\s?-?[ae]?t\\s+mertem",
+                "$1 kg-ot mertem");
         // A FOGYÓKÚRA kiindulópontja múlt, a „ma" utáni szám a mérés: a
         // „83-ról indultam januárban, ma 76" hetvenhat kiló – eddig
         // egyik szám sem lett mérés, mert test-szó nincs a mondatban.
