@@ -1150,4 +1150,15 @@ public class FoodsParseTest {
         assertEquals("Dió", hits("ettem 30 g diót").get(0).food.name);
     }
 
+    @Test public void soletAndHortobagyiResolveCleanly() {
+        // A sólet eddig hiányzott, a hortobágyi húsos palacsinta mellé
+        // pedig egy sima palacsinta is került.
+        assertEquals("Sólet", hits("sólet füstölt tarjával").get(0).food.name);
+        List<Foods.Hit> h = hits("hortobágyi húsos palacsinta");
+        assertEquals(1, h.size());
+        assertEquals("Hortobágyi palacsinta", h.get(0).food.name);
+        assertEquals("Palacsinta",
+                hits("palacsintát ettem lekvárral").get(0).food.name);
+    }
+
 }

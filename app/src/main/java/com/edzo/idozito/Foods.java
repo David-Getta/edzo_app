@@ -188,6 +188,8 @@ public final class Foods {
         // töltött káposzta rokona, nem a párolt köreté.
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta",
                 "toroskaposzta", "toros kaposzta"),
+        // A sólet a zsidó konyha babétele – füstölt hússal kérik.
+        new Food("Sólet", 160, 9, 400, "solet"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
         new Food("Lencse (főtt)", 115, 9, 200, "lencse"),
         new Food("Borsó", 80, 5, 150, "borso"),
@@ -3431,6 +3433,9 @@ public final class Foods {
             {"Marhahús", "Burrito", "Taco", "Quesadilla"},
             // A csusza tejfölös: ez a neve, nem egy külön kanál tejföl.
             {"Tejföl", "Túrós csusza"},
+            // A hortobágyi palacsintában benne a palacsinta: a „hortobágyi
+            // húsos palacsinta" mellé eddig egy sima palacsinta is került.
+            {"Palacsinta", "Hortobágyi palacsinta"},
     };
 
     private static List<Match> dropRedundantBase(String q, List<Match> in) {
