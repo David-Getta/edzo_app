@@ -3752,6 +3752,9 @@ public final class Foods {
                 // csirkés rizs a hétre" hatszáz gramm csirkét írt a MAI
                 // naplóba – abból az ételből, ami a jövő hét ebédje. Az
                 // „ettem" ige nélkül a prep csak előkészület.
+                // A HATÁROZÓS alak is előkészület: az „előre főzve: 5 doboz
+                // csirke rizzsel" öt adagot írt a MAI naplóba.
+                "elore fozve", "elore sutve", "elore elkeszitve",
                 "meal prep", "mealprep", "elore megfoz", "elore fozt",
                 "elore elkeszit", "bekeszitettem", "adagokra osztottam",
                 // A HÉTRE főzött fazék étel is előkészület: a „főztem egy

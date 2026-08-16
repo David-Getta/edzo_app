@@ -1413,4 +1413,9 @@ public class FoodsParseTest {
         assertEquals("Sert\u00e9skaraj", hits("s\u00fclt h\u00fas").get(0).food.name);
     }
 
+    @Test public void cookedAheadPortionsAreNotTodaysMeal() {
+        assertTrue(hits("el\u0151re f\u0151zve: 5 doboz csirke rizzsel").isEmpty());
+        assertFalse(hits("el\u0151re f\u0151zve van a csirke, ettem egy adagot").isEmpty());
+    }
+
 }
