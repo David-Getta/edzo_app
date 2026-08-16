@@ -4689,4 +4689,10 @@ public class ActivitiesParseTest {
                 .parse("olimpiai távú triatlont teljesítettem").plans.get(0).kind.id);
     }
 
+    @Test public void aRidingLessonIsRiding() {
+        // A „lovas oktatáson voltam" eddig üresen jött vissza.
+        assertEquals("egyeb", Activities.parse("lovas oktatáson voltam")
+                .plans.get(0).kind.id);
+    }
+
 }

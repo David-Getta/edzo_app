@@ -438,7 +438,9 @@ public final class Activities {
                     "steppad", "step ora",
                     "tekezunk", "tekezik",
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
-                    "lovagl", "lovagol", "vitorlaz", "szorf", "wakeboard", "golf",
+                    "lovagl", "lovagol",
+                    // A lovas oktatás is lovaglás.
+                    "lovas oktatas", "lovasoktatas", "lovas edzes", "vitorlaz", "szorf", "wakeboard", "golf",
 
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
