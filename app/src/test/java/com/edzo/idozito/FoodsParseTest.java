@@ -1295,4 +1295,14 @@ public class FoodsParseTest {
                 hits("punccsal melegedtünk a korcsolyapályánál").get(0).food.name);
     }
 
+    @Test public void harvestedPotatoesAreNotDinner() {
+        // A többes számú szedés betakarítás – a vitamint szedő egyes szám
+        // és a megevett krumpli marad.
+        assertTrue(hits("krumplit szedtünk a földön 4 órát").isEmpty());
+        assertEquals("Étrend-kiegészítő",
+                hits("magnéziumot szedtem este").get(0).food.name);
+        assertEquals("Burgonya (főtt)",
+                hits("főtt krumplit ettem pörkölttel").get(0).food.name);
+    }
+
 }

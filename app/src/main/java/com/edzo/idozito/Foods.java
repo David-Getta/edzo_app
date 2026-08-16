@@ -3626,6 +3626,10 @@ public final class Foods {
                 // A SZÜRET betakarítás, nem uzsonna: a „leszedtük a diót a
                 // fáról" harminc gramm dióként került a naplóba.
                 "leszedtem", "leszedtuk", "szuretel",
+                // A TÖBBES számú szedés betakarítás: a „krumplit szedtünk
+                // a földön 4 órát" negyed kiló főtt burgonyát írt be. (Az
+                // egyes számú „szedtem" marad: a vitamint szedni szokás.)
+                "szedtunk", "szedtuk",
                 // Ami a kukába ment.
                 "eldobtam", "kidobtam", "kiontottem", "megromlott", "kidobom",
                 // Amit más evett meg.

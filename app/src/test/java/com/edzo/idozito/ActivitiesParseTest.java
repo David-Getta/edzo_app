@@ -4776,4 +4776,16 @@ public class ActivitiesParseTest {
                 .parse("koriztam a korcsolyapályán egy órát").plans.get(0).kind.id);
     }
 
+    @Test public void harvestingIsWorkNotEating() {
+        // A „krumplit szedtünk a földön 4 órát" negyed kiló főtt
+        // burgonyát írt a naplóba – a betakarítás fizikai munka.
+        Activities.Plan p = Activities
+                .parse("krumplit szedtünk a földön 4 órát").plans.get(0);
+        assertEquals("munka", p.kind.id);
+        assertEquals(240, p.minutes);
+        assertEquals("munka", Activities
+                .parse("szüretelni voltunk, egész nap szedtük a szőlőt")
+                .plans.get(0).kind.id);
+    }
+
 }

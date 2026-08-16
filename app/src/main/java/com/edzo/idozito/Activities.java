@@ -385,6 +385,10 @@ public final class Activities {
                     // A bútor-átrendezés is fizikai munka. (A vasalás
                     // szándékosan nincs itt – lásd a vas-szleng tesztjét.)
                     "atrendez",
+                    // A szüret, a betakarítás és a faültetés egész napos
+                    // fizikai munka; a homokzsák-pakolás és a rakodás is.
+                    "szuretel", "krumplit szed", "szolot szed", "almat szed",
+                    "ultett", "faultetes", "homokzsak", "rakodt",
                     // A kaszálás és a cipekedés ugyanaz a fizikai munka: eddig
                     // a „kaszáltam a kertben 90 percet" és a „3 órát
                     // cipekedtem" válasz nélkül maradt.
