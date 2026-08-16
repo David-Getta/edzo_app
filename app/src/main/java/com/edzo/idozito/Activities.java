@@ -1499,6 +1499,11 @@ public final class Activities {
                 "kondi");
         // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
         s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
+        // Az RPE és az RIR terhelés-jelölés, nem darabszám: az „rpe 7
+        // kondi 45 perc" hét napra osztott HÉT edzés lett. (A súlyzós
+        // oldal tovább olvassa az RPE-t a saját mondatából.)
+        s = s.replaceAll("(?<![a-z])(?:rpe|rir)\\s?:?\\s?\\d{1,2}"
+                + "(?:[.,]\\d)?(?![\\d])", " ");
         // A PERC gyakori elütései: a „45 pecet" és a „30 pecig" mellől
         // eddig elveszett a hossz, és az alapidő ment be helyette.
         s = s.replaceAll("(?<=\\d)\\s?(?:pecet|pecig|prec|percig?et)"

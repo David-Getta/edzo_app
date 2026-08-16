@@ -5026,4 +5026,11 @@ public class ActivitiesParseTest {
         assertEquals(30, p.plans.get(0).minutes);
     }
 
+    @Test public void anRpeNumberIsNotAWorkoutCount() {
+        Activities.Parsed p = Activities.parse("rpe 7 kondi 45 perc");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(45, p.plans.get(0).minutes);
+    }
+
 }
