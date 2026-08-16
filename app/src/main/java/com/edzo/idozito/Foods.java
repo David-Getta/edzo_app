@@ -810,7 +810,9 @@ public final class Foods {
                 "rizling", "furmint", "kekfrankos", "cabernet", "chardonnay",
                 // A rozé is bor: az étlapon a harmadik szín, és eddig
                 // egyáltalán nem létezett a felismerőnek.
-                "roze", "rozebor"),
+                // A TOKAJI ASZÚ desszertbor – a „bor" tő nincs a nevében,
+                // ezért eddig üresen jött vissza.
+                "roze", "rozebor", "aszu", "tokaji"),
         // A „borssal" nem egy pohár bor: a „bor" szótő beleesett, és minden
         // borsozott étel mellé 120 kcal ital került. A hosszabb tő nyer, a
         // fűszer pedig a használt mennyiségben gyakorlatilag nulla kalória.

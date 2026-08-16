@@ -1418,4 +1418,10 @@ public class FoodsParseTest {
         assertFalse(hits("el\u0151re f\u0151zve van a csirke, ettem egy adagot").isEmpty());
     }
 
+    @Test public void tokajiAszuIsWine() {
+        assertEquals("Bor (v\u00f6r\u00f6s/feh\u00e9r)",
+                hits("tokaji asz\u00fa egy poh\u00e1r").get(0).food.name);
+        assertEquals("Aszalt gy\u00fcm\u00f6lcs", hits("aszalt szilva").get(0).food.name);
+    }
+
 }
