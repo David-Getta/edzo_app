@@ -113,6 +113,8 @@ public final class Sleep {
     public static double parse(String q) {
         if (q == null) return -1;
         String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
+        // Az „aluttam" gyakori fonetikus elütés.
+        s = s.replace("aluttam", "aludtam");
         // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
         if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))

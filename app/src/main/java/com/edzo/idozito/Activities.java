@@ -109,6 +109,8 @@ public final class Activities {
                     "open water", "openwater", "nyilt vizi", "nyiltvizi"),
             new Kind("kerekpar", "🚴", "Kerékpár", 7.5, true, 60,
                     "kerekpar", "bringa", "bicikli", "bicaj", "canga", "teker", "bmx",
+                    // A „kerkpar" gyakori elütés (kimaradt e).
+                    "kerkpar",
                     // A crossfit-termek levegős biciklije is bicikli: az
                     // „assault bike 10 kalória sprintek" futásnak számított.
                     "assault bike", "airbike", "air bike",

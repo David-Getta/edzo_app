@@ -4704,4 +4704,10 @@ public class ActivitiesParseTest {
                 .parse("övvizsga volt karatéból, sikerült").plans.get(0).kind.id);
     }
 
+    @Test public void commonTyposStillResolve() {
+        // A „kerkpároztam" (kimaradt e) futás lett a bicikli helyett.
+        assertEquals("kerekpar", Activities.parse("kerkpároztam 20 km-t")
+                .plans.get(0).kind.id);
+    }
+
 }

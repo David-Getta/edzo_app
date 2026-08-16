@@ -376,4 +376,9 @@ public class SleepTest {
         assertEquals(-1, Sleep.parse("alvás pontszám 85"), 0.01);
     }
 
+    @Test public void aPhoneticTypoStillSleeps() {
+        // Az „aluttam 8 órát" gyakori fonetikus elütés – eddig elveszett.
+        assertEquals(8, Sleep.parse("aluttam 8 órát"), 0.01);
+    }
+
 }
