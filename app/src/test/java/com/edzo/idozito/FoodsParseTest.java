@@ -1428,4 +1428,10 @@ public class FoodsParseTest {
         assertTrue(hits("zs\u00edr 18%").isEmpty());
     }
 
+    @Test public void portionAdjectivesScaleThePortion() {
+        assertEquals(375, hits("nagy adag t\u00e9szta").get(0).grams, 0.01);
+        assertEquals(100, hits("kis adag rizs").get(0).grams, 0.01);
+        assertEquals(800, hits("dupla adag guly\u00e1s").get(0).grams, 0.01);
+    }
+
 }

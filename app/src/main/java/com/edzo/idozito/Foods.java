@@ -2529,6 +2529,13 @@ public final class Foods {
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
+        // A JELZŐS adag is méret: a „nagy adag tészta" ugyanannyi volt,
+        // mint a sima, a „kis adag rizs" szintén. Másfél, illetve fél
+        // adagra váltjuk – az óvodás és a mini a gyerekadag rokona.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:nagy|b[oő]s[eé]ges|"
+                + "extra nagy|d[uú]s)\\s+adag(?!\\p{L})", "1,5 adag");
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:kis|kicsi|kicsike|"
+                + "[oó]vod[aá]s)\\s+adag(?!\\p{L})", "fél adag");
         // A RECEPTES rövidítés is kanál: a „3 ek olívaolaj" evőkanalanként
         // tíz gramm, de az „ek"-et nem ismertük, így a hármas elveszett.
         query = query.replaceAll("(?iu)(?<!\\p{L})((?:\\d{1,2}|egy|k[eé]t"
