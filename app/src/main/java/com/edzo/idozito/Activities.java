@@ -1166,6 +1166,11 @@ public final class Activities {
         // mentem munkába" órányi görkorcsolya lett a naplóban.
         s = s.replaceAll("(?<![a-z])(?:elektromos|elektro|villany|e-)"
                 + "\\s?roller\\w*", "");
+        // A TANÍTOTT sport a tanítványé: a „megtanítottam a gyereket
+        // biciklizni, két órán át futottam mellette" tekerése a gyereké –
+        // az enyém a mellette futás.
+        s = s.replaceAll("(?<![a-z])(?:meg)?tanitottam [^,;.]{0,24}?"
+                + "\\p{L}+ni,?\\s*", "");
         // A GYEREK futása a gyereké: az „a gyerek 5 kört futott az
         // udvaron" nem az én edzésem – az egyes szám harmadik személyű
         // ige árulja el. A „futottam a gyerekkel" első személye marad.

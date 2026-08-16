@@ -4756,4 +4756,14 @@ public class ActivitiesParseTest {
                 .parse("30 napos guggolás kihívás, ma 150 guggolás").days);
     }
 
+    @Test public void theTaughtSportBelongsToThePupil() {
+        // A „megtanítottam a gyereket biciklizni, két órán át futottam
+        // mellette" tekerése a gyereké – az enyém a kétórás futás.
+        Activities.Parsed p = Activities.parse(
+                "megtanítottam a gyereket biciklizni, két órán át futottam mellette");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(120, p.plans.get(0).minutes);
+    }
+
 }
