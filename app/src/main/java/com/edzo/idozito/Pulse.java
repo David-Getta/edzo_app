@@ -32,10 +32,13 @@ public final class Pulse {
             // A „ma" magában is beékelődhet („nyugalmi pulzusom ma 52"), és
             // a PIHENŐPULZUS ugyanaz a mérés más néven – mindkettő némán
             // elveszett.
+            // A VÁLTOZÁS igéje is beékelődhet: a „pihenőpulzusom lement
+            // 52-ről 49-re" a ról-re átírás után „pulzusom lement 49".
             java.util.regex.Pattern.compile(
                     "(?<![a-z])(?:piheno)?pulzus\\w*\\s?:?\\s?"
                             + "(?:(?:ma|reggel|este|ejjel|hajnalban|delben|"
-                            + "ebredeskor|ebredes utan|most|volt)\\s){0,2}(\\d{2,3})"),
+                            + "ebredeskor|ebredes utan|most|volt|lement|"
+                            + "felment|javult|romlott)\\s){0,2}(\\d{2,3})"),
             // „52-es pulzus", „48 as nyugalmi pulzus"
             java.util.regex.Pattern.compile(
                     "(\\d{2,3})[- ]?[ae]s\\s(?:nyugalmi\\s)?pulzus"),
@@ -51,8 +54,10 @@ public final class Pulse {
             // sportóra-leolvasás legrövidebb alakja, és eddig némán elveszett.
             // A „nyugalmi" magában is kimondja, miről van szó – más
             // nyugalmi értéket senki nem ír egy edzésnaplóba.
+            // A VESSZŐ is beleférhet: a „magas volt ma a nyugalmi, 61"
+            // hatvanegye eddig elveszett.
             java.util.regex.Pattern.compile(
-                    "(?<![a-z])nyugalmi\\w*\\s?:?\\s?(\\d{2,3})(?![0-9])"),
+                    "(?<![a-z])nyugalmi\\w*\\s?[:,]?\\s?(\\d{2,3})(?![0-9])"),
             // Ugyanez fordított szórenddel: „reggel 78,4 kg, 7 óra alvás,
             // 54 nyugalmi". A szám és a szó között itt semmi nem állhat –
             // távolabbról a szám már máshoz tartozhatna.

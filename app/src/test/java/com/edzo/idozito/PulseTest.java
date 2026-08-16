@@ -208,4 +208,16 @@ public class PulseTest {
         assertEquals(-1, Pulse.parse("futás közben 165 volt a pulzusom"));
     }
 
+    @Test public void aDropInRestingPulseKeepsTheNewValue() {
+        assertEquals(49, Pulse.parse("a pihen\u0151pulzusom lement 52-r\u0151l 49-re"));
+    }
+
+    @Test public void aCommaAfterNyugalmiStillBinds() {
+        assertEquals(61, Pulse.parse("magas volt ma a nyugalmi, 61"));
+    }
+
+    @Test public void aPostWorkoutPulseStaysOut() {
+        assertEquals(-1, Pulse.parse("edz\u00e9s ut\u00e1ni pulzus 130"));
+    }
+
 }
