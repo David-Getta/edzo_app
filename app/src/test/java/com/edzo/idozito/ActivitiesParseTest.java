@@ -4695,4 +4695,13 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void bagWorkAndBeltExamsAreMartialArts() {
+        // A „zsákoltam 6 menetet" üresen jött vissza, az „övvizsga volt
+        // karatéból" mellé pedig egy pohár ásványvíz került (öVVIZsga).
+        assertEquals("harcmuveszet", Activities.parse("zsákoltam 6 menetet")
+                .plans.get(0).kind.id);
+        assertEquals("harcmuveszet", Activities
+                .parse("övvizsga volt karatéból, sikerült").plans.get(0).kind.id);
+    }
+
 }

@@ -256,6 +256,8 @@ public final class Activities {
                     // A BOXTEREM egyben fedi a „box" és a „terem" tövet – a
                     // hosszabb tő nyer, egy találat lesz.
                     "boxterem", "bokszterem",
+                    // A ZSÁKOLÁS a bokszzsák püfölése.
+                    "zsakol",
                     "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",

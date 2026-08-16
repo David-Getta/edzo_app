@@ -857,6 +857,9 @@ public final class Foods {
             "half", "cardio",
             // A SORHÁZ épület (és a sörház is hely, nem megivott sör).
             "sorhaz",
+            // Az ÖVVIZSGA közepén a víz – a karate-vizsgából pohár
+            // ásványvíz lett.
+            "ovvizsga",
 
             // A KAKAÓPOR szórás, nem két és fél deci kakaó: a „tejbegríz
             // kakaóporral" mellé eddig egy egész pohár tejes kakaó került a

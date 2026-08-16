@@ -1211,4 +1211,10 @@ public class FoodsParseTest {
                 hits("úsztam és utána ittam egy pohár vizet").get(0).food.name);
     }
 
+    @Test public void aBeltExamHasNoWaterInIt() {
+        // Az övvizsga közepén a víz szótöve ül – pohár ásványvíz lett a
+        // karate-vizsgából.
+        assertTrue(hits("övvizsga volt karatéból, sikerült").isEmpty());
+    }
+
 }
