@@ -4971,4 +4971,14 @@ public class ActivitiesParseTest {
         assertEquals(8.0, p.plans.get(0).km, 0.01);
     }
 
+    @Test public void famousLoopsKnowTheirDistance() {
+        assertEquals(5.3, Activities.parse("k\u00f6rbefutottam a margitszigetet")
+                .plans.get(0).km, 0.01);
+        assertEquals(210.0, Activities.parse("k\u00f6rbetekertem a balatont")
+                .plans.get(0).km, 0.01);
+        // Kimondott táv mellett a kör-táv nem ír felül.
+        assertEquals(3.0, Activities.parse("futottam a margitszigeten 3 km-t")
+                .plans.get(0).km, 0.01);
+    }
+
 }

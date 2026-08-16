@@ -1470,6 +1470,21 @@ public final class Activities {
                 "kondi");
         // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
         s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
+        // A NEVEZETES körök távja kimondatlan is ismert: a margitszigeti
+        // futókör 5,3 km, a Balaton-kör 210 – eddig csak az alapidő ment
+        // be. Csak kimondott KÖR mellett él, és csak ha nincs saját táv.
+        if (!s.matches(".*\\d\\s?km.*")) {
+            if (s.contains("margitsziget")
+                    && (s.contains("korbefut") || s.contains("korbekocog")
+                        || s.matches(".*margitszigeti?\\s?kor\\w*.*")
+                        || s.matches(".*margitsziget\\w*[^,;.]{0,15}kort(?![a-z]).*")))
+                s = s + " 5,3 km";
+            else if (s.contains("balaton")
+                    && (s.contains("korbetekert") || s.contains("korbebicikl")
+                        || s.contains("balaton-kor") || s.contains("balatonkor")
+                        || s.contains("balaton kor")))
+                s = s + " 210 km";
+        }
         // A PÓTLÁS ma történt: a „bepótoltam a tegnapi futást, 8 km"
         // tegnapra került, pedig a pótló futás a mai.
         if (s.contains("potol"))
