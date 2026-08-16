@@ -2558,6 +2558,19 @@ public final class Foods {
         query = query.replaceAll("(?iu)nem\\s+ettem\\s+meg\\s+az?\\s+"
                 + "eg[eé]sz\\s+(\\p{L}+),?\\s*csak\\s+a\\s+fel[eé]t",
                 "ettem fél $1");
+        // Az ÉTEL-EMODZSI is étel: a „🍕 2 szelet" eddig üresen jött
+        // vissza, pedig a sport-emodzsik régóta működnek.
+        {
+            String[][] ef = {{"🍕", "pizza"},
+                    {"🍔", "hamburger"}, {"🍺", "sör"},
+                    {"🍻", "sör"}, {"☕", "kávé"},
+                    {"🍌", "banán"}, {"🍎", "alma"},
+                    {"🥚", "tojás"}, {"🍫", "csoki"},
+                    {"🍝", "tészta"}, {"🍦", "fagyi"},
+                    {"🎂", "torta"}, {"🍩", "fánk"}};
+            for (String[] e : ef)
+                query = query.replace(e[0], " " + e[1] + " ");
+        }
         // A TESTVÍZ százaléka nem pohár víz: a „mérleg 78,8 / víz 55%"
         // mellé két és fél deci ásványvíz került.
         query = query.replaceAll("(?iu)(?<!\\p{L})v[ií]z\\w*\\s?:?\\s?"

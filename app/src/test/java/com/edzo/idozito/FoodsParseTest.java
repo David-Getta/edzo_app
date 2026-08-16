@@ -1387,4 +1387,12 @@ public class FoodsParseTest {
         assertEquals("Chips", h.get(0).food.name);
     }
 
+    @Test public void foodEmojiCountAsFoods() {
+        List<Foods.Hit> h = hits("\ud83c\udf55 2 szelet");
+        assertEquals("Pizza", h.get(0).food.name);
+        assertEquals(200, h.get(0).grams, 0.01);
+        assertEquals("K\u00e1v\u00e9 (fekete)",
+                hits("\u2615 \u00e9s egy croissant").get(0).food.name);
+    }
+
 }
