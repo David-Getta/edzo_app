@@ -2558,6 +2558,13 @@ public final class Foods {
                         + (Integer.parseInt(hm2.group(1)) / 2) + hm2.group(2)
                         + query.substring(hm2.end());
         }
+        // A SOROZAT-jelölés melletti „sor" nem ital: a „gorilla sor: 5x5
+        // fekvenyomás 100 kg" mellé fél liter sör került. A kimondott
+        // ivás-ige vagy a korsó/üveg viszont megvédi a valódi sört.
+        if (query.matches("(?iu).*\\d\\s?x\\s?\\d.*")
+                && !query.matches("(?iu).*(itt[au]|kors[oó]|[uü]veg|doboz).*"))
+            query = query.replaceAll("(?iu)(?<!\\p{L})s[oö]r(?:t|ok)?"
+                    + "(?!\\p{L})", "");
         // A CSIGÁN végzett letolás a konditerem csigája, nem kakaós csiga:
         // a terem-szavak mellett a csiga nem péksütemény.
         if (query.matches("(?iu).*(letol|lehuz|tricepsz|kabel|kettlebell"

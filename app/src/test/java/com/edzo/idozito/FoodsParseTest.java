@@ -1269,4 +1269,12 @@ public class FoodsParseTest {
                 hits("pezsgőt ittunk szilveszterkor").get(0).food.name);
     }
 
+    @Test public void aSetRowIsNotABeer() {
+        // A „gorilla sor: 5x5 fekvenyomás 100 kg" mellé fél liter sör
+        // került. Az edzés utáni MEGIVOTT sör marad.
+        assertTrue(hits("gorilla sor: 5x5 fekvenyomás 100 kg").isEmpty());
+        assertEquals("Sör",
+                hits("3x10 guggolás után megittam egy sört").get(0).food.name);
+    }
+
 }
