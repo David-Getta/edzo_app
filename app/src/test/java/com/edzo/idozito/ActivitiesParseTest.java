@@ -4730,4 +4730,18 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void rehearsalRoomsAndTeamGamesResolve() {
+        // A „doboltam a próbateremben" kétórás kondi lett a terem-tő
+        // miatt; a paintball és a geocaching viszont hiányzott.
+        assertTrue(Activities.parse("doboltam a próbateremben két órát")
+                .plans.isEmpty());
+        assertEquals("egyeb", Activities
+                .parse("paintballoztunk a csapatépítésen").plans.get(0).kind.id);
+        assertEquals(180, Activities
+                .parse("gyalogtúra helyett geocaching volt 3 órát")
+                .plans.get(0).minutes);
+        assertEquals("kondi", Activities.parse("kondiztam a teremben 60 percet")
+                .plans.get(0).kind.id);
+    }
+
 }

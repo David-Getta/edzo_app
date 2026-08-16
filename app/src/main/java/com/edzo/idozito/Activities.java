@@ -152,8 +152,9 @@ public final class Activities {
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
                     // A „jártam egyet" séta-szleng – csak múlt időben: a
-                    // „járok egyet" még szándék.
-                    "jartam egyet",
+                    // „járok egyet" még szándék. A geocaching órákig tartó
+                    // gyaloglás.
+                    "jartam egyet", "geocach",
                     "hegymasz", "megmaszt", "gyalog", "lepcsoz",
                     // A FELMÁSZTAM a kilátóhoz és a VÉGIGJÁRTAM tanösvény is
                     // túra: az egyik üresen jött vissza, a másik futás lett.
@@ -432,6 +433,8 @@ public final class Activities {
                     // A mozgásos videojátékok valódi izzadság: a „Ring Fit
                     // Adventure 30 perc" üresen jött vissza.
                     "ring fit", "ringfit",
+                    // A paintball és a lézerharc órákig tartó futkosás.
+                    "paintball", "lezerharc", "lezer harc", "airsoft",
                     // Az ERGOMÉTER gép is edzés – a KÉZI-ergométer pedig nem
                     // kézilabda: a „kéziergométer a rehab részlegen 10 perc"
                     // tízperces kézilabda-meccs lett a naplóban. A hosszabb
@@ -891,6 +894,9 @@ public final class Activities {
             // Az angol óra-export DISTANCE szavában ott a TÁNC – az
             // „activity: running, distance 10 km" sorból tánc-tétel lett.
             "distance",
+            // A PRÓBATEREM a zenekaré, nem a konditerem: a „doboltam a
+            // próbateremben két órát" kétórás kondiedzés lett.
+            "probaterem", "probaterm",
             "kultur", "struktur", "natur", "faktur", "textur", "karikatur",
             "diktatur", "temperatur", "literatur", "miniatur", "agrikultur",
             // Az akuponk-TÚRA sem túra: az „akupunktúra kezelés a hátamra"
