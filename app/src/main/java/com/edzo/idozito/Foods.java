@@ -576,7 +576,9 @@ public final class Foods {
                 // gyakoribb magyar írásmód, és eddig nem talált.
                 "humussz"),
         new Food("Limonádé", 45, 0, 300, "limonade"),
-        new Food("Fröccs", 40, 0, 300, "froccs"),
+        // A HOSSZÚLÉPÉS is fröccs (a kis- és nagyfröccsöt a tő már fedi;
+        // a „házmester" szándékosan kimarad – az többnyire ember).
+        new Food("Fröccs", 40, 0, 300, "froccs", "hosszulepes"),
         new Food("Kombucha", 20, 0, 330, "kombucha"),
         new Food("Ayran", 30, 1.7, 250, "ayran"),
         new Food("Jégkása", 60, 0, 300, "jegkasa", "slush"),

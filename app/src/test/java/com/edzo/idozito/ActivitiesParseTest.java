@@ -4927,4 +4927,8 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("m\u00e9gsem mentem el futni").plans.isEmpty());
     }
 
+    @Test public void lastYearsMonthIsAMemoryNotTodaysLog() {
+        assertTrue(Activities.parse("tavaly szeptemberben maraton").plans.isEmpty());
+    }
+
 }

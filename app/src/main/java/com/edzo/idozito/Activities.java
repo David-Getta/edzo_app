@@ -1885,7 +1885,12 @@ public final class Activities {
                 || sm.matches(".*(?<![a-z])(?:januar|februar|marcius|aprilis|"
                         + "majus|junius|julius|augusztus|szeptember|oktober|"
                         + "november|december|az? ev eleje|a honap eleje)"
-                        + "\\w*\\s+ota(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*"))
+                        + "\\w*\\s+ota(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*")
+                // A TAVALYI hónap emlék, nem mai napló: a „tavaly
+                // szeptemberben maraton" mai maratonként ment be.
+                || sm.matches(".*(?<![a-z])tavaly\\s+(?:januar|februar|"
+                        + "marcius|aprilis|majus|junius|julius|augusztus|"
+                        + "szeptember|oktober|november|december)\\w*.*"))
             return new Parsed(out, 1, 0, 12);
         // Hétköznapi szavak, amikben egy rövid sportág-szótő lakik: a kultúra
         // nem túra, a tekercs nem kerékpár. Mindenki más előtt kitakarva.

@@ -1366,4 +1366,10 @@ public class FoodsParseTest {
         assertEquals(150, h.get(0).grams, 0.01);
     }
 
+    @Test public void aHosszulepesIsAFroccs() {
+        List<Foods.Hit> h = hits("hossz\u00fal\u00e9p\u00e9s a kertben");
+        assertEquals(1, h.size());
+        assertEquals("Fr\u00f6ccs", h.get(0).food.name);
+    }
+
 }
