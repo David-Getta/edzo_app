@@ -1203,4 +1203,12 @@ public class FoodsParseTest {
                 hits("főtt krumpli pörkölthöz").get(0).food.name);
     }
 
+    @Test public void swimmingWaterIsNotADrink() {
+        // A „20 fokos vízben úsztam fél órát" mellé egy pohár ásványvíz
+        // került. Az úszás utáni megivott pohár víz viszont marad.
+        assertTrue(hits("a 20 fokos vízben úsztam fél órát").isEmpty());
+        assertEquals("Víz / ásványvíz",
+                hits("úsztam és utána ittam egy pohár vizet").get(0).food.name);
+    }
+
 }
