@@ -1417,4 +1417,10 @@ public class StrengthParseTest {
                 "b\u00e1r tudn\u00e9k 100 kg-ot nyomni fekve").isEmpty());
     }
 
+    @Test public void aPbHeadlineIsAOneRepRecord() {
+        List<StrengthParse.Item> it = StrengthParse.parse("pb: 120 kg felh\u00faz\u00e1s");
+        assertEquals(1, it.size());
+        assertEquals(120.0, it.get(0).topWeight(), 0.01);
+    }
+
 }

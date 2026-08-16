@@ -959,7 +959,10 @@ public final class StrengthParse {
                     "megvan", "meglett", "osszejott", "bevallalt",
                     // A „megcsináltam a 100 kilós fekvenyomást" is teljesített
                     // egyes – eddig üresen jött vissza.
-                    "megcsinalt", "kinyomtam", "teljesitett"})
+                    "megcsinalt", "kinyomtam", "teljesitett",
+                    // A „PB" a személyes csúcs rövidítése – a „pb a mai
+                    // napon: 100 kg guggolás" eddig üresen jött vissza.
+                    "pb ", "pb:", "personal best"})
                 if (s.contains(w)) { sets.add(new Set(1, weight)); break; }
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);
