@@ -4965,4 +4965,10 @@ public class ActivitiesParseTest {
         assertEquals(30, p.plans.get(0).minutes);
     }
 
+    @Test public void aMakeupRunHappenedToday() {
+        Activities.Parsed p = Activities.parse("bep\u00f3toltam a tegnapi fut\u00e1st, 8 km");
+        assertEquals(0, p.offset);
+        assertEquals(8.0, p.plans.get(0).km, 0.01);
+    }
+
 }

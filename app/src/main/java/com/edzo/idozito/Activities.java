@@ -1470,6 +1470,10 @@ public final class Activities {
                 "kondi");
         // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
         s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
+        // A PÓTLÁS ma történt: a „bepótoltam a tegnapi futást, 8 km"
+        // tegnapra került, pedig a pótló futás a mai.
+        if (s.contains("potol"))
+            s = s.replaceAll("(?<![a-z])tegnapi?(?![a-z])", "");
         // A KUTYÁVAL kint lenni séta: „a kutyával háromszor voltunk kint,
         // összesen másfél óra" eddig üresen jött vissza – a mondatban
         // nincs sport-szó, csak a kint-lét.
