@@ -3172,6 +3172,9 @@ public final class Activities {
                 // edzésről szól, és a puszta „tervez" tő elvitte az egészet.
                 "tervezek", "tervezem", "tervezunk", "tervezi", "tervezni",
                 "szeretne", "megyek", "lesz idom", "majd lesz",
+                // A FELTÉTELES vágy sem megtörtént: a „bár tudnék 100
+                // kg-ot nyomni fekve" mai fekvenyomás-rekord lett.
+                "tudnek", "tudnank", "barcsak",
                 // Szándék és VÉLEMÉNY: a „szeretek futni" nem egy futás, a
                 // „jó lenne egy futás" pláne nem, és az „el kellene menni"
                 // pont az ellenkezője. Mind a naplóba került, negyvenöt

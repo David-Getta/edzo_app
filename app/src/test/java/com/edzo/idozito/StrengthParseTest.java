@@ -1412,4 +1412,9 @@ public class StrengthParseTest {
         assertEquals(60.0, it.get(0).topWeight(), 0.01);
     }
 
+    @Test public void aConditionalWishIsNotARecord() {
+        assertTrue(StrengthParse.parse(
+                "b\u00e1r tudn\u00e9k 100 kg-ot nyomni fekve").isEmpty());
+    }
+
 }
