@@ -428,4 +428,8 @@ public class SleepTest {
         assertEquals(7.0, Sleep.parse("alv\u00e1s tegnap 7 \u00f3ra volt"), 0.01);
     }
 
+    @Test public void theTransposedSleepTypoStillReads() {
+        assertEquals(8.0, Sleep.parse("aludtma 8 \u00f3r\u00e1t"), 0.01);
+    }
+
 }

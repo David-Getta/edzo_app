@@ -1470,6 +1470,10 @@ public final class Activities {
                 "kondi");
         // A puszta „workout" is edzés – kimondott sport nélkül egyéb mozgás.
         s = s.replaceAll("(?<![a-z])workout(?![a-z])", "edzes");
+        // A PERC gyakori elütései: a „45 pecet" és a „30 pecig" mellől
+        // eddig elveszett a hossz, és az alapidő ment be helyette.
+        s = s.replaceAll("(?<=\\d)\\s?(?:pecet|pecig|prec|percig?et)"
+                + "(?![a-z])", " percet");
         // A NEVEZETES körök távja kimondatlan is ismert: a margitszigeti
         // futókör 5,3 km, a Balaton-kör 210 – eddig csak az alapidő ment
         // be. Csak kimondott KÖR mellett él, és csak ha nincs saját táv.

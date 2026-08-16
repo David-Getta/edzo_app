@@ -4981,4 +4981,9 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    @Test public void commonMinuteTyposStillCount() {
+        assertEquals(45, Activities.parse("kondiztam 45 pecet").plans.get(0).minutes);
+        assertEquals(30, Activities.parse("futottam 30 pecig").plans.get(0).minutes);
+    }
+
 }

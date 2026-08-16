@@ -115,6 +115,8 @@ public final class Sleep {
         String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
         // Az „aluttam" gyakori fonetikus elütés.
         s = s.replace("aluttam", "aludtam");
+        // Az „aludtma" a betűcserés elütés ugyanerre a szóra.
+        s = s.replace("aludtma", "aludtam");
         // A „TUDTAM ALUDNI" is alvás: a „két műszak között csak 4 órát
         // tudtam aludni" eddig elveszett, mert az ige főnévi igenév volt.
         s = s.replaceAll("(?:tudtam|sikerult|birtam)\s+aludni", "aludtam");
