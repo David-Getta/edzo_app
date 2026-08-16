@@ -1225,4 +1225,16 @@ public class FoodsParseTest {
                 hits("libacombot ettem párolt káposztával").get(0).food.name);
     }
 
+    @Test public void raceNutritionResolves() {
+        // Az energiagél, az izo ital és a szőlőcukor eddig hiányzott –
+        // a szőlőcukorból ráadásul száz gramm SZŐLŐ lett.
+        assertEquals(64, hits("két energiagél ment el a hosszú futáson")
+                .get(0).grams, 0.5);
+        assertEquals("Sportital / izotóniás",
+                hits("izo italt ittam a félmaratonon").get(0).food.name);
+        assertEquals("Szőlőcukor",
+                hits("szőlőcukrot ettem a frissítőponton").get(0).food.name);
+        assertEquals("Szőlő", hits("szőlőt ettem uzsonnára").get(0).food.name);
+    }
+
 }

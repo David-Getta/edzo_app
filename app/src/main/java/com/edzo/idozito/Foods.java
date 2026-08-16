@@ -709,7 +709,16 @@ public final class Foods {
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
         new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias",
-                "elektrolit"),
+                // Az „izo ital" a verseny-frissítés rövid neve.
+                "elektrolit", "izo ital"),
+        // A verseny-gél tasaknyi gyors szénhidrát – a hosszú futás
+        // frissítése.
+        new Food("Energiagél", 320, 0, 32, "energiagel", "energia gel",
+                "koffeines gel"),
+        // A SZŐLŐCUKOR dextróz-tabletta, nem fürt szőlő: a frissítőponton
+        // bekapott szem eddig száz gramm gyümölcsként ment be.
+        new Food("Szőlőcukor", 390, 0, 10, "szolocukor", "szolocukr",
+                "dextroz"),
         // Kapszula, tabletta, por: kalóriában elhanyagolható, de ha valaki
         // beírja, ne „ismeretlen ételként" kelljen felvennie.
         new Food("Étrend-kiegészítő", 0, 0, 5,
