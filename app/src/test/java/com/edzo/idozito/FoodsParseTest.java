@@ -1493,4 +1493,17 @@ public class FoodsParseTest {
         assertEquals("Kivi", hits("ettem egy kivit").get(0).food.name);
     }
 
+    @Test public void whatIsOnlyInTheFridgeIsNotEaten() {
+        assertTrue(hits("a h\u0171t\u0151ben van m\u00e9g sajt").isEmpty());
+        assertEquals("Sajt (trappista)", hits("megettem a sajtot").get(0).food.name);
+    }
+
+    @Test public void whatTheKidRefusesAndWhatIsBakedForAPartyAreNotMine() {
+        assertTrue(hits("a gyerek nem eszi meg a levest").isEmpty());
+        assertTrue(hits("s\u00fct\u00f6ttem egy tort\u00e1t a sz\u00fclinapra").isEmpty());
+        // A saját fél pizza viszont megevett étel.
+        assertEquals(150, hits("nem ettem meg az eg\u00e9sz pizz\u00e1t, csak a fel\u00e9t")
+                .get(0).grams, 0.01);
+    }
+
 }

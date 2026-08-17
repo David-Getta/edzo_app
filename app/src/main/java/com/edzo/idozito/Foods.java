@@ -3787,6 +3787,18 @@ public final class Foods {
                 "vettem", "veszek", "vasarol", "hoztam", "hozok",
                 // Főzés jelen időben: a „főzök egy levest" még nem vacsora.
                 "fozok", "sutok", "keszitek", "keszitem", "fozni fogok",
+                // A KAMRA és a HŰTŐ tartalma sem elfogyasztott étel: az „a
+                // hűtőben van még sajt" harminc gramm sajtot írt a naplóba.
+                "hutoben", "kamraban", "fagyasztoban", "a polcon",
+                // MÁS tányérja, tagadva: a „gyerek nem eszi meg a levest"
+                // négyszáz gramm levest írt be – abból, amit épp NEM evett
+                // meg, ráadásul nem is a felhasználó. Csak a HARMADIK
+                // személyű jelen idő: a saját „nem ettem meg az egész
+                // pizzát, csak a felét" fele megevett étel.
+                "nem eszi", "nem eszik",
+                // ÜNNEPRE sütve: a „sütöttem egy tortát a szülinapra" a
+                // vendégeké, nem a mai bevitel.
+                "szulinapra", "vendegeknek", "a bulira", "az unnepre",
                 // A KELESZTÉS előkészület: a „tésztát kelesztettem" kenyérsütés
                 // közbeni mondat, nem egy adag megevett tészta. A dagasztás
                 // ugyanez.
