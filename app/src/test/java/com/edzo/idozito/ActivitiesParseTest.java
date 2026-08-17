@@ -5099,4 +5099,11 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("ban\u00e1n split desszertnek").plans.isEmpty());
     }
 
+    @Test public void aThousandDotDistanceStillReads() {
+        Activities.Parsed p = Activities.parse("1.000 m \u00fasz\u00e1s");
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(1.0, p.plans.get(0).km, 0.01);
+        assertEquals(10.5, Activities.parse("futottam 10.5 km-t").plans.get(0).km, 0.01);
+    }
+
 }

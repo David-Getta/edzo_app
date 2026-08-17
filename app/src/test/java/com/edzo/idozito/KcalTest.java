@@ -365,4 +365,14 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("bmr 1780 kcal"));
     }
 
+    @Test public void theHungarianThousandDotIsNotADecimalPoint() {
+        assertEquals(1500, Kcal.stated("1.500 kcal ma"));
+        assertEquals(1200, Kcal.stated("ettem 1.200 kcal-t"));
+    }
+
+    @Test public void theSpokenKalAbbreviationCounts() {
+        assertEquals(2200, Kcal.stated("2.200 kalt ettem"));
+        assertEquals(-1, Kcal.stated("vettem 3 kalapot"));
+    }
+
 }

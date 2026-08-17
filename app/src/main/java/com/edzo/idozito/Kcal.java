@@ -33,7 +33,9 @@ public final class Kcal {
     private static final Pattern NUM = Pattern.compile(
             // A tárgyrag hozzátapad: a „ma 2200 kcalt ettem" és a „elégettem
             // 750 kcalt" magyarul így hangzik, és eddig egyik sem lett szám.
-            "(\\d+(?:[.,]\\d+)?)\\s*(kcal|kkal|k cal|kalori[a-z]*|cal)"
+            // A „kal" a beszélt rövidítés: a „2200 kalt ettem" eddig
+            // elveszett. A szó-végi tiltás miatt a „3 kalapot" nem kalória.
+            "(\\d+(?:[.,]\\d+)?)\\s*(kcal|kkal|k cal|kalori[a-z]*|cal|kal)"
                     + "(?:-?[oöea]?t)?(?![a-z])");
 
     /**

@@ -67,7 +67,12 @@ public final class Hu {
      */
     public static String digits(String s) {
         if (s == null) return "";
-        String out = s;
+        // A magyar EZRES PONT nem tizedesjel: az „1.500 kcal" másfél
+        // kalóriaként esett ki a naplóból, a „10.000 lépés" meg tíz
+        // lépésként. Pontosan három számjegy után írjuk egybe – a „10.5 km"
+        // egyetlen tizedesjegye így érintetlen marad.
+        String out = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\.(\\d{3})(?![\\d])",
+                "$1$2");
         for (String[] w : NUM_WORDS) {
             int p = out.indexOf(w[0]);
             while (p >= 0) {
@@ -253,6 +258,9 @@ public final class Hu {
      */
     public static String correction(String s) {
         if (s == null || s.isEmpty()) return s == null ? "" : s;
+        // Az EZRES PONT itt is: a mozgás-olvasó nem a digits() ágon jön,
+        // és az „1.000 m úszás" távja enélkül elveszett.
+        s = s.replaceAll("(?<![\\d.,])(\\d{1,3})\\.(\\d{3})(?![\\d])", "$1$2");
         // A HIÁNYZÓ kettőzött mássalhangzó a leggyakoribb magyar elütés:
         // az „edzetem", az „alutam" és a „seteltam" telefonon percenként
         // születik, és eddig mindegyik üresen jött vissza. Csak ezt a pár
