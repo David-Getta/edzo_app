@@ -5182,4 +5182,19 @@ public class ActivitiesParseTest {
         assertEquals(14.8, p.plans.get(0).km, 0.01);
     }
 
+    @Test public void swimDrillsAndButterflyAreSwimming() {
+        assertEquals("uszas", Activities.parse("l\u00e1btemp\u00f3 deszk\u00e1val 200 m")
+                .plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("kartemp\u00f3 300 m").plans.get(0).kind.id);
+        assertEquals("uszas", Activities.parse("pillang\u00f3 100 m").plans.get(0).kind.id);
+    }
+
+    @Test public void theChestMachineAndSkateboardStayThemselves() {
+        assertTrue(Activities.parse("pillang\u00f3 g\u00e9p 3x12 40 kg").plans.isEmpty()
+                || !"uszas".equals(Activities.parse("pillang\u00f3 g\u00e9p 3x12 40 kg")
+                        .plans.get(0).kind.id));
+        assertEquals("korcsolya", Activities.parse("g\u00f6rdeszk\u00e1ztam egy \u00f3r\u00e1t")
+                .plans.get(0).kind.id);
+    }
+
 }

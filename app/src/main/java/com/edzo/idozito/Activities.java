@@ -78,6 +78,11 @@ public final class Activities {
                     // A sznorkelezés is úszás – pipával. A tő a szó közepe,
                     // így az angolos „snorkel" írásmódot is fedi.
                     "norkel",
+                    // Az úszóedzés eszközei és tempói: a „lábtempó deszkával
+                    // 200 m" és a „kartempó 300 m" eddig FUTÁS lett. (A puszta
+                    // „deszkával" nem lehet tő – a gördeszka is az.)
+                    "labtempo", "lab tempo", "kartempo", "kar tempo",
+                    "uszodeszka", "uszo deszka",
                     "uszoverseny",
                     // Az „úszó intervall 10x50 m" a bare-táv szabályon át
                     // futássá vált – a jelzős alak is úszás. (A puszta
@@ -1352,6 +1357,15 @@ public final class Activities {
                 + "kilences|tizes|huszas|harmincas)t)(?![a-z])",
                 "tekertem $1 km-t");
         s = s.replaceAll("(?<![a-z])tekertem\\s+km-t(?![a-z])", "tekertem");
+        // A PILLANGÓ a medencében úszásnem: a „pillangó 100 m" eddig
+        // futásként ment be. Csak akkor írjuk úszássá, ha méteres táv áll
+        // mellette, és más sportszó nincs a mondatban – a „pillangó gép
+        // 3x12" így a teremé marad, a lepke pedig nem lesz edzés.
+        if (s.matches(".*(?<![a-z])pillango\\w*.*")
+                && s.matches(".*\\d\\s?m(?![a-z]).*")
+                && !s.contains("gep")
+                && kindByText(s.replaceAll("pillango\\w*", "")) == null)
+            s = s + " uszas";
         // A PARKRUN mindig öt kilométer: a szombat reggeli futás távja a
         // világon mindenhol ugyanaz – kimondatlanul is tudjuk. Csak akkor
         // szúrjuk be, ha nincs kimondott táv és MÁSIK sport-szó sem – a
