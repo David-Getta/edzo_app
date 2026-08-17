@@ -1152,12 +1152,19 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A KETTŐSPONTOS IDŐPONT nem darabszám: a „20:15-kor edzés" húsz
+        // edzéssé vált húsz napra osztva, mert az alábbi szórend-csere a
+        // PERCRE illeszkedett („15-kor"), és a húszas gazdátlan számként
+        // maradt. Elsőként írjuk órás alakra – a perc így el sem jut a
+        // többi szabályig. (A „25:30 alatt" versenyidő nem ragos: marad.)
+        s = s.replaceAll("(?<![\\d,.:])([01]?\\d|2[0-3]):[0-5]\\d\\s?-?"
+                + "(?:kor|orakor)(?![a-z])", "$1-kor");
         // Az ÓRAKOR nem köredzés: a „reggel 6-kor edzés" hat órája beleírta
         // a „kor edzes" betűsort a szövegbe, és hatszoros köredzés lett
         // belőle. A szórend cseréje mindent helyretesz: az „edzés 6-kor"
         // alakban az óra óra marad. A kötőjeles alak mindig időpont; a
         // szóközös csak napszak-szó után az (a „3 kör edzés" köröket mond).
-        s = s.replaceAll("(?<![\\d,.])(\\d{1,2})-kor (edzes\\w*)", "$2 $1-kor");
+        s = s.replaceAll("(?<![\\d,.:])(\\d{1,2})-kor (edzes\\w*)", "$2 $1-kor");
         s = s.replaceAll("(?<![a-z])(reggel|este|delutan|delelott|hajnalban|"
                 + "hajnali) (\\d{1,2})[- ]?kor (edzes\\w*)", "$1 $3 $2-kor");
         // A MUNKANAP órái nem edzésórák: a „8 órás munkanap után futottam
@@ -3935,8 +3942,19 @@ public final class Activities {
         // A kimondott óra pontosabb minden napszaknál: a „reggel 6-kor" hatot
         // jelent, nem nyolcat. A délutáni napszak a 12 alatti órát átteszi
         // délutánra („este 8-kor" = 20 óra), mert este nincs nyolc óra.
+        // A KETTŐSPONTOS óra a percével együtt egy időpont: a „18:30-kor
+        // kezdődött a foci" a PERCET olvasta óraszámnak (harminc óra nincs),
+        // és a bejegyzés délre került. A -kor rag teszi félreérthetetlenné –
+        // enélkül a „45:12" versenyidő is időpontnak látszana.
+        java.util.regex.Matcher cm = java.util.regex.Pattern
+                .compile("(?<![\\d,.:])(\\d{1,2}):[0-5]\\d\\s?-?(?:kor|orakor)"
+                        + "(?![a-z])").matcher(s);
+        if (cm.find()) {
+            int h = Integer.parseInt(cm.group(1));
+            if (h >= 0 && h <= 23) return h;
+        }
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d,.])(\\d{1,2})\\s?-?(?:kor|orakor)(?![a-z])").matcher(s);
+                .compile("(?<![\\d,.:])(\\d{1,2})\\s?-?(?:kor|orakor)(?![a-z])").matcher(s);
         if (m.find()) {
             int h = Integer.parseInt(m.group(1));
             if (h >= 0 && h <= 23) {

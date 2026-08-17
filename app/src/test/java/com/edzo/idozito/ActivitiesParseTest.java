@@ -5131,4 +5131,19 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("a h\u00e9ten 3x edzettem").days);
     }
 
+    @Test public void aColonClockTimeIsAnHourNotACount() {
+        Activities.Parsed p = Activities.parse("20:15-kor edz\u00e9s");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(20, p.hour);
+        assertEquals(18, Activities.parse("18:30-kor kezd\u0151d\u00f6tt a foci").hour);
+    }
+
+    @Test public void aRaceTimeIsNotAClockTime() {
+        Activities.Parsed p = Activities.parse("fut\u00e1s 5 km 25:30 alatt");
+        assertEquals(1, p.plans.size());
+        assertEquals(26, p.plans.get(0).minutes);
+    }
+
 }
