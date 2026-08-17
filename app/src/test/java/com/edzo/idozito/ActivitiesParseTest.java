@@ -5051,4 +5051,11 @@ public class ActivitiesParseTest {
         assertEquals(45, p.plans.get(0).minutes);
     }
 
+    @Test public void commonTypistErrorsStillLog() {
+        assertEquals(60, Activities.parse("edzetem 1 \u00f3r\u00e1t").plans.get(0).minutes);
+        Activities.Parsed p = Activities.parse("set\u00e9ltam egy \u00f3r\u00e1t");
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(60, p.plans.get(0).minutes);
+    }
+
 }

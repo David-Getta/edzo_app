@@ -253,6 +253,19 @@ public final class Hu {
      */
     public static String correction(String s) {
         if (s == null || s.isEmpty()) return s == null ? "" : s;
+        // A HIÁNYZÓ kettőzött mássalhangzó a leggyakoribb magyar elütés:
+        // az „edzetem", az „alutam" és a „seteltam" telefonon percenként
+        // születik, és eddig mindegyik üresen jött vissza. Csak ezt a pár
+        // igét javítjuk – valódi szó egyikkel sem ütközik.
+        s = s.replaceAll("(?iu)(?<!\\p{L})edzetem(?!\\p{L})", "edzettem");
+        // A csere ÉKEZET NÉLKÜLI alakot ír vissza: a hívók egy része már
+        // normalizált szöveget ad ide, és az ékezetes eredményt onnan
+        // semmi nem venné észre.
+        s = s.replaceAll("(?iu)(?<!\\p{L})edzet[uü]nk(?!\\p{L})", "edzettunk");
+        s = s.replaceAll("(?iu)(?<!\\p{L})alu[dt]?tam(?!\\p{L})", "aludtam");
+        s = s.replaceAll("(?iu)(?<!\\p{L})s[eé]t[eé]lt([ae])m(?!\\p{L})",
+                "setalt$1m");
+        s = s.replaceAll("(?iu)(?<!\\p{L})futotam(?!\\p{L})", "futottam");
         // Az APOSZTRÓFOS sportjelölés perc és másodperc: a „90' foci"
         // kilencven darab focivá vált ötven napra szétosztva, mert az
         // aposztróf a normalizálásban elveszett, a szám meg darabszám
