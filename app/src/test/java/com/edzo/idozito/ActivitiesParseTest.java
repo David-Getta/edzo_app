@@ -2915,9 +2915,15 @@ public class ActivitiesParseTest {
                 + "4000 lépés").plans;
         assertEquals(1, p.size());
         assertEquals(4000, p.get(0).steps);
-        // A kimondott idejű tevékenység mellett marad mindkettő.
-        assertEquals(2, Activities.parse("2 óra takarítás közben "
-                + "4000 lépés").plans.size());
+        // A kimondott idejű tevékenység mellett is EGY bejegyzés marad: a
+        // két óra takarítás közben megtett lépések ugyanabban a két órában
+        // történtek, két sorban viszont a mozgásidő duplázódott volna. A
+        // lépésszám átköltözik a megmaradó sorra.
+        List<Activities.Plan> q = Activities.parse("2 óra takarítás közben "
+                + "4000 lépés").plans;
+        assertEquals(1, q.size());
+        assertEquals(120, q.get(0).minutes);
+        assertEquals(4000, q.get(0).steps);
     }
 
     /**
@@ -5206,6 +5212,17 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("8 \u00f3ra alv\u00e1s, 45 perc kondi")
                 .plans.get(0).minutes);
         assertEquals(120, Activities.parse("edz\u00e9s 2 \u00f3ra").plans.get(0).minutes);
+    }
+
+    @Test public void stepsDuringAStatedActivityDoNotAddASecondEntry() {
+        List<Activities.Plan> p = Activities.parse(
+                "k\u00f6ly\u00f6kkel j\u00e1tsz\u00f3t\u00e9ren 1,5 \u00f3ra, k\u00f6zben 5000 l\u00e9p\u00e9s").plans;
+        assertEquals(1, p.size());
+        assertEquals(90, p.get(0).minutes);
+        assertEquals(5000, p.get(0).steps);
+        // A „közben" a MÁSIK tevékenységhez tartozik: az esti edzés külön sor.
+        assertEquals(2, Activities.parse(
+                "bev\u00e1s\u00e1rl\u00e1s k\u00f6zben 3000 l\u00e9p\u00e9s, este 40 perc kondi").plans.size());
     }
 
 }

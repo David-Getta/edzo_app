@@ -2672,9 +2672,25 @@ public final class Foods {
         // fekvenyomás 100 kg" mellé fél liter sör került. A kimondott
         // ivás-ige vagy a korsó/üveg viszont megvédi a valódi sört.
         if (query.matches("(?iu).*\\d\\s?x\\s?\\d.*")
-                && !query.matches("(?iu).*(itt[au]|kors[oó]|[uü]veg|doboz).*"))
-            query = query.replaceAll("(?iu)(?<!\\p{L})s[oö]r(?:t|ok)?"
-                    + "(?!\\p{L})", "");
+                && !query.matches("(?iu).*(itt[au]|kors[oó]|[uü]veg|doboz).*")) {
+            // A maszk HELYHEZ kötött: a „hosszú meccs, 2x30 perc kézilabda,
+            // utána 2 sör a kocsmában" söre elveszett, mert a mondat MÁSIK
+            // felében állt egy sorozatjelölés. Csak a sorozat mellett álló
+            // „sor" esik ki – a fél mondattal odébb ivott sör megmarad.
+            java.util.regex.Matcher sm = java.util.regex.Pattern
+                    .compile("(?iu)(?<!\\p{L})s[oö]r(?:t|ok)?(?!\\p{L})")
+                    .matcher(query);
+            StringBuffer sb = new StringBuffer();
+            while (sm.find()) {
+                String around = query.substring(
+                        Math.max(0, sm.start() - 12),
+                        Math.min(query.length(), sm.end() + 14));
+                sm.appendReplacement(sb, around.matches("(?iu).*\\d\\s?x\\s?\\d.*")
+                        ? "" : java.util.regex.Matcher.quoteReplacement(sm.group()));
+            }
+            sm.appendTail(sb);
+            query = sb.toString();
+        }
         // A CSIGÁN végzett letolás a konditerem csigája, nem kakaós csiga:
         // a terem-szavak mellett a csiga nem péksütemény.
         if (query.matches("(?iu).*(letol|lehuz|tricepsz|kabel|kettlebell"

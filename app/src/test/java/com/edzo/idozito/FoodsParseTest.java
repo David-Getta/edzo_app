@@ -1480,4 +1480,12 @@ public class FoodsParseTest {
         assertEquals("Gofri", hits("gofri tejsz\u00ednhabbal").get(0).food.name);
     }
 
+    @Test public void aBeerAfterTheMatchSurvivesASetNotation() {
+        List<Foods.Hit> h = hits("hossz\u00fa meccs volt, 2x30 perc k\u00e9zilabda, "
+                + "ut\u00e1na 2 s\u00f6r a kocsm\u00e1ban");
+        assertEquals(1, h.size());
+        assertEquals("S\u00f6r", h.get(0).food.name);
+        assertTrue(hits("gorilla sor: 5x5 fekvenyom\u00e1s 100 kg").isEmpty());
+    }
+
 }

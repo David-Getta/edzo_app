@@ -2932,6 +2932,25 @@ public final class Activities {
                 kept.add(p);
             }
             out = kept;
+            // Ha a KÍSÉRŐ tevékenység hossza ki van mondva, a lépésekből
+            // számolt séta már benne van: a „játszótéren 1,5 óra, közben
+            // 5000 lépés" másfél órához további harmincnyolc percet adott.
+            // A lépésszám nem vész el, csak átköltözik a megmaradó sorra.
+            Plan stated = null, walk = null;
+            for (Plan p : out) {
+                if ("tura".equals(p.kind.id) && p.steps > 0) walk = p;
+                else if (p.minutes != p.kind.defaultMin || p.km > 0) stated = p;
+            }
+            // Csak akkor, ha a KIMONDOTT hossz a „közben" ELŐTT áll: a
+            // „bevásárlás közben 3000 lépés, este 40 perc kondi" lépései a
+            // bevásárláshoz tartoznak, nem az esti edzéshez.
+            boolean durationFirst = rawText.matches(
+                    "(?s).*\\d\\s?(?:ora|perc)\\w*[^0-9]{0,25}kozben.*");
+            if (stated != null && walk != null && out.size() == 2 && durationFirst) {
+                out = new ArrayList<>();
+                out.add(new Plan(stated.kind, stated.count, stated.minutes,
+                        stated.km, walk.steps));
+            }
         }
         // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót
         // sem mond ki: a „ma 14 000 lépés, 9,8 km" a tíz és fél kilométeres
