@@ -5058,4 +5058,11 @@ public class ActivitiesParseTest {
         assertEquals(60, p.plans.get(0).minutes);
     }
 
+    @Test public void theThousandShorthandAndTrailingStepCountRead() {
+        Activities.Parsed p = Activities.parse("15e l\u00e9p\u00e9s");
+        assertEquals(15000, p.plans.get(0).steps);
+        assertEquals(3000, Activities.parse("ma kev\u00e9s l\u00e9p\u00e9s volt, 3000")
+                .plans.get(0).steps);
+    }
+
 }

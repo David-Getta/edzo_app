@@ -1510,6 +1510,14 @@ public final class Activities {
         // eddig elveszett a hossz, és az alapidő ment be helyette.
         s = s.replaceAll("(?<=\\d)\\s?(?:pecet|pecig|prec|percig?et)"
                 + "(?![a-z])", " percet");
+        // Az „E" végű rövidítés ezret jelent: a „15e lépés" tizenötezer –
+        // eddig üresen jött vissza. (Csak szám után, közvetlenül tapadva.)
+        s = s.replaceAll("(?<![\\d.,])(\\d{1,3})e(?![a-z0-9])", "$1 ezer");
+        // A LÉPÉSSZÁM állhat a szó UTÁN is: a „ma kevés lépés volt, 3000"
+        // hármezre eddig elveszett, mert a szám a következő tagmondatban
+        // állt.
+        s = s.replaceAll("lepes\\w*\\s*(?:volt)?\\s*[,:]\\s*"
+                + "(\\d{3,6})(?![\\d.,])", "$1 lepes");
         // A NEVEZETES körök távja kimondatlan is ismert: a margitszigeti
         // futókör 5,3 km, a Balaton-kör 210 – eddig csak az alapidő ment
         // be. Csak kimondott KÖR mellett él, és csak ha nincs saját táv.
