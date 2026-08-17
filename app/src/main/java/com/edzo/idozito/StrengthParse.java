@@ -400,6 +400,15 @@ public final class StrengthParse {
         if (nrm.matches(".*(pillango|butterfly).*")
                 && nrm.matches(".*(?:usz|medence|technik)\\w*.*")
                 && !nrm.contains("gep")) return out;
+        // A NAP FEJLÉCE megmondja, melyik nyomásról van szó: a „váll:
+        // nyomás 3x8 40" gyakorlata eddig elveszett, mert a puszta „nyomás"
+        // nem gyakorlatnév (a fekvenyomás és a lábtolás is az lenne).
+        if (nrm.matches("^\\s*vall\\w*\\s*(?:nap)?\\s*[:,-].*"))
+            text = text.replaceAll("(?iu)(?<![\\p{L}])nyom[aá]s(?![\\p{L}])",
+                    "vállból nyomás");
+        else if (nrm.matches("^\\s*mell\\w*\\s*(?:nap)?\\s*[:,-].*"))
+            text = text.replaceAll("(?iu)(?<![\\p{L}])nyom[aá]s(?![\\p{L}])",
+                    "fekvenyomás");
         String clean = dropDumbbellPair(maskDistance(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(stripPercent(stripListMarkers(
                         Hu.correction(Foods.norm(text))))))))));

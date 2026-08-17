@@ -1439,4 +1439,14 @@ public class StrengthParseTest {
                 StrengthParse.parse("fekvenyom\u00e1s 3x10 60 kg").get(0).name);
     }
 
+    @Test public void theDayHeaderTellsWhichPressItIs() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "v\u00e1ll: nyom\u00e1s 3x8 40, oldalemel\u00e9s 3x15 8");
+        assertEquals(2, it.size());
+        assertEquals("V\u00e1llb\u00f3l nyom\u00e1s", it.get(0).name);
+        assertEquals(40.0, it.get(0).topWeight(), 0.01);
+        assertEquals("Fekvenyom\u00e1s",
+                StrengthParse.parse("mell nap: nyom\u00e1s 3x8 60").get(0).name);
+    }
+
 }
