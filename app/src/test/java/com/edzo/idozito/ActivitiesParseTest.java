@@ -5271,4 +5271,13 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    @Test public void takingTheDogOutIsAWalk() {
+        Activities.Parsed p = Activities.parse(
+                "a kuty\u00e1t vittem ki k\u00e9tszer, \u00f6sszesen 40 perc");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(20, p.plans.get(0).minutes);
+    }
+
 }

@@ -1643,9 +1643,16 @@ public final class Activities {
         // A KUTYÁVAL kint lenni séta: „a kutyával háromszor voltunk kint,
         // összesen másfél óra" eddig üresen jött vissza – a mondatban
         // nincs sport-szó, csak a kint-lét.
-        if (s.contains("kutya") || s.contains("kutyu") || s.contains("eb "))
+        if (s.contains("kutya") || s.contains("kutyu") || s.contains("eb ")) {
             s = s.replaceAll("(?<![a-z])(?:kint volt(?:unk|am)|volt(?:unk|am)"
                     + "\\s+kint)(?![a-z])", "setaltunk");
+            // A KIVITTEM is séta: az „a kutyát vittem ki kétszer, összesen
+            // 40 perc" eddig üresen jött vissza – pedig ez a leggyakoribb
+            // magyar alak. (A „kivittem a szemetet" nem esik ide: ott nincs
+            // kutya a mondatban.)
+            s = s.replaceAll("(?<![a-z])(?:ki)?vitt(?:em|uk)\\s*(?:ki)?"
+                    + "(?![a-z])", "setaltam");
+        }
         // A NORVÉG 4x4 az intervall sémája, nem négy alkalom: a „norvég
         // 4x4 futás" négy napra szétosztott négy futás lett. A mértékegység
         // nélküli NxM az intervall-mondatban csak a séma.
