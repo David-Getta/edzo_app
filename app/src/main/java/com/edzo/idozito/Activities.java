@@ -1571,6 +1571,18 @@ public final class Activities {
                             + s.substring(km.end());
             }
         }
+        // A MÚLTBELI szemrehányás nem a mai edzés napja: a „hétvégén túl
+        // sokat ettem, de ma visszaálltam: saláta, csirke, és 1,5 óra
+        // bringa" bringája a hétvégére került. Csak akkor ejtjük az
+        // időszakot, ha az ELSŐ tagmondatban nincs sportszó – a „tegnap
+        // futottam, de ma pihenek" tegnapja marad.
+        {
+            java.util.regex.Matcher pm = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(hetvegen|mult heten|tegnap|tegnapelott)"
+                    + "(?![a-z])([^,;.]*)[,;.]\\s*de\\s+ma(?![a-z])").matcher(s);
+            if (pm.find() && kindByText(pm.group(2)) == null)
+                s = s.substring(0, pm.start(1)) + s.substring(pm.end(1));
+        }
         // Az EBBŐL a teljes időből vág ki egy részt: az „uszodában 45
         // percet voltam, ebből kb 30 perc úszás volt" negyvenöt perc
         // úszásként ment be – pedig a felhasználó maga mondta meg, hogy

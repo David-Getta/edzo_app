@@ -5236,4 +5236,15 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    @Test public void aPastRegretIsNotTheDayOfTodaysWorkout() {
+        Activities.Parsed p = Activities.parse("a h\u00e9tv\u00e9g\u00e9n t\u00fal sokat ettem, "
+                + "de ma vissza\u00e1lltam: sal\u00e1ta, csirke, \u00e9s 1,5 \u00f3ra bringa");
+        assertEquals(0, p.offset);
+        assertEquals(1, p.days);
+        assertEquals(90, p.plans.get(0).minutes);
+        // A tegnapi EDZÉS tegnapi marad.
+        assertEquals(10.0, Activities.parse("tegnap futottam 10 km-t, de ma pihenek")
+                .plans.get(0).km, 0.01);
+    }
+
 }
