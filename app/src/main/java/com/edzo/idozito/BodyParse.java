@@ -254,6 +254,11 @@ public final class BodyParse {
         // A maskTimeUnder a SZÁMNÉV-fordítás előtt fut: az „egy hét alatt"
         // hete a digits() után már „7", és a szabály nem ismerné fel benne az
         // időtartamot – az „alatt" pedig összehasonlításnak látszana.
+        // A SORTÖRÉS tagmondat-határ: a listásan beírt reggeli adatsor
+        // („78,2 kg" új sorban „52 nyugalmi pulzus") a normalizálás után
+        // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
+        // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
+        q = q.replaceAll("[\\r\\n]+", ", ");
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(
                         dropOthersWeight(Foods.norm(q)))))));

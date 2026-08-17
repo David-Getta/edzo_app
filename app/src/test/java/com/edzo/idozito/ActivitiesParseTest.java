@@ -5106,4 +5106,16 @@ public class ActivitiesParseTest {
         assertEquals(10.5, Activities.parse("futottam 10.5 km-t").plans.get(0).km, 0.01);
     }
 
+    @Test public void aMultilineStrengthLogIsNotTwelveRowingSessions() {
+        Activities.Parsed p = Activities.parse(
+                "3x10 fekvenyom\u00e1s 60 kg\n3x12 evez\u00e9s 50 kg");
+        assertEquals(1, p.days);
+        for (Activities.Plan pl : p.plans)
+            assertTrue("evezes".equals(pl.kind.id) ? pl.count == 1 : true);
+    }
+
+    @Test public void anEmptyResultNeverSpansDays() {
+        assertEquals(1, Activities.parse("3x12 evez\u00e9s 50 kg").days);
+    }
+
 }

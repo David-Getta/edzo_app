@@ -918,4 +918,8 @@ public class BodyParseTest {
         assertEquals(18.0, BodyParse.parse("zs\u00edr 18%").fatPct, 0.01);
     }
 
+    @Test public void aMultilineMorningLogKeepsTheWeight() {
+        assertEquals(78.2, BodyParse.parse("78,2 kg\n52 nyugalmi pulzus").kg, 0.01);
+    }
+
 }

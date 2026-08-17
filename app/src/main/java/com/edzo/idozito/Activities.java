@@ -1942,7 +1942,14 @@ public final class Activities {
         // kondi-edzés lett belőle. A sor eleje csak a normalizálás ELŐTT
         // látszik – az egymás utáni szóközöket (és a sortörést) a norm()
         // egyetlen szóközzé vonja össze.
-        char[] q = shortForms(Hu.correction(Foods.norm(maskListMarkers(text)))).toCharArray();
+        // A SORTÖRÉS tagmondat-határ: a listásan beírt edzésnapló („3x10
+        // fekvenyomás 60 kg" új sorban „3x12 evezés 50 kg") a normalizálás
+        // után egyetlen sorrá olvadt, és a második sor ismétlésszámából
+        // TIZENKÉT evezés-edzés lett, tizenkét napra szétosztva. A
+        // listajelek felismerése után váltunk vesszőre, hogy a sor eleji
+        // sorszámokat még lássa a maszkoló.
+        char[] q = shortForms(Hu.correction(Foods.norm(
+                maskListMarkers(text).replaceAll("[\\r\\n]+", ", ")))).toCharArray();
         // A kiírt számnév-pár is tartomány: „húsz-huszonöt perc kondi". A
         // nyers alak ELŐTT fut, mert az osztó pár felismerése („öt-öt km")
         // is számjegyet keres.
@@ -2942,6 +2949,10 @@ public final class Activities {
             }
             if (any) out = fixed;
         }
+        // Bejegyzés nélkül nincs mit szétosztani: a „3x12 evezés 50 kg"
+        // sorozat-száma tizenkét naposra tágította az időszakot, pedig egy
+        // mozgás sem került bele. Az üres eredmény mindig egyetlen nap.
+        if (out.isEmpty()) return new Parsed(out, 1, offset, findHour(s));
         return new Parsed(out, days, offset, findHour(s));
     }
 
