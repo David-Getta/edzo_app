@@ -1454,4 +1454,16 @@ public class FoodsParseTest {
         assertTrue(hits("felesleges volt az eg\u00e9sz").isEmpty());
     }
 
+    @Test public void aSharedDishIsSplitBetweenTheEaters() {
+        List<Foods.Hit> h = hits("megosztottunk egy pizz\u00e1t ketten");
+        assertEquals(1, h.size());
+        assertEquals(150, h.get(0).grams, 0.01);
+        assertEquals(150, hits("ketten ett\u00fck meg a pizz\u00e1t").get(0).grams, 0.01);
+    }
+
+    @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
+        List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
+        assertEquals(40, h.get(0).grams, 0.01);
+    }
+
 }

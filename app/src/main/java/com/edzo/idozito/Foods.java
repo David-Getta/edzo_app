@@ -2731,6 +2731,27 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"
                 + "(?:egy\\s+|az?\\s+)?", "fél ");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
+        // A MEGOSZTOTT fogás fejenként a töredéke: a „megosztottunk egy
+        // pizzát ketten" és a „ketten ettük meg a pizzát" egész pizzaként
+        // ment be – kétszer annyi kalóriával, mint amennyi megvolt.
+        {
+            String[][] share = {{"ketten", "fél "}, {"k[eé]t személy",  "fél "},
+                    {"h[aá]rman", "harmad "}, {"n[eé]gyen", "negyed "}};
+            for (String[] sh : share) {
+                if (!query.matches("(?iu).*(?<!\\p{L})" + sh[0] + "(?!\\p{L}).*"))
+                    continue;
+                if (!query.matches("(?iu).*(?:megosztott|osztoztunk|ettük meg"
+                        + "|ettuk meg|osztottuk).*")) continue;
+                query = query.replaceAll("(?iu)(?<!\\p{L})" + sh[0]
+                        + "(?!\\p{L})", "");
+                query = query.replaceAll("(?iu)(?<!\\p{L})(?:megosztottunk|"
+                        + "megosztottuk|osztoztunk|osztottuk)\\s+"
+                        + "(?:egy\\s+|az?\\s+)?", sh[1]);
+                query = query.replaceAll("(?iu)(?<!\\p{L})ett[uü]k\\s+meg\\s+"
+                        + "(?:egy\\s+|az?\\s+)?", sh[1]);
+                break;
+            }
+        }
         // AZ EGÉSZ megevése két adag: „az egész pizzát megettem egyedül"
         // egyetlen szokásos adagként (300 g) ment be – az egész pizza a
         // duplája. Csak evés-ige mellett él.
