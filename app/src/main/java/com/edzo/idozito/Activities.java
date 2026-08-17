@@ -1571,6 +1571,13 @@ public final class Activities {
                             + s.substring(km.end());
             }
         }
+        // Az EBBŐL a teljes időből vág ki egy részt: az „uszodában 45
+        // percet voltam, ebből kb 30 perc úszás volt" negyvenöt perc
+        // úszásként ment be – pedig a felhasználó maga mondta meg, hogy
+        // csak harminc. A minősített (kisebb) érték a valódi mozgás.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:perc|ora)\\w*"
+                + "([^,;.0-9]{0,20})(?=,?\\s*(?:ebbol|amibol|ebben)(?![a-z]))",
+                "$1");
         // Az ALVÁS órája nem edzéshossz: a „keveset aludtam (5 óra), de
         // azért lementem 30 percre a terembe" ÖTÓRÁS kondi-edzést írt be –
         // az alvás számából. A mozgás-olvasó számára az alvás-szó melletti

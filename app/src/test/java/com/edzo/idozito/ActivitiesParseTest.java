@@ -5225,4 +5225,15 @@ public class ActivitiesParseTest {
                 "bev\u00e1s\u00e1rl\u00e1s k\u00f6zben 3000 l\u00e9p\u00e9s, este 40 perc kondi").plans.size());
     }
 
+    @Test public void ebbolNarrowsTheStatedTime() {
+        Activities.Parsed p = Activities.parse("az uszod\u00e1ban 45 percet voltam, "
+                + "ebb\u0151l kb 30 perc \u00fasz\u00e1s volt, a t\u00f6bbi jakuzzi");
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(30, p.plans.get(0).minutes);
+        // A táv MINŐSÍTÉSE marad a régi: az utolsó 3 km a tizennyolcból van.
+        assertEquals(18.0, Activities.parse("18 km, ebb\u0151l az utols\u00f3 3 km temp\u00f3ban")
+                .plans.get(0).km, 0.01);
+    }
+
 }
