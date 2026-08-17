@@ -3468,6 +3468,10 @@ public final class Activities {
         // hétre osztott edzésként ment be. Szóhatárral, hogy a „tervezett
         // 10 helyett 6 lett" megtörtént edzése ne essen ki.
         if (s.matches(".*(?<![a-z])a terv(?![a-z]).*")) return true;
+        // A LESZ jövő idő: az „a tanfolyam a teremben lesz" egy órás
+        // kondi-edzést írt be egy meg sem tartott alkalomból. Szóhatárral,
+        // hogy a „meglesz" és a „leszaladtam" ne essen ide.
+        if (s.matches(".*(?<![a-z])lesz(?![a-z]).*")) return true;
         // A CÉL nem napló – kivéve, ha TELJESÜLT: az „a heti célom 4 edzés"
         // négy megtörtént edzésként került be a hét elején, amikor még egy
         // sem volt. A „meglett a napi cél, 12 000 lépés" viszont pont a
@@ -3728,6 +3732,12 @@ public final class Activities {
                 // kötelező mellé: a „nincs kedvem, de azért futottam" él.
                 "nincs edzes", "nincsen edzes", "nincs mozgas", "nincs futas",
                 "kihagytam", "kimaradt", "elmarad",
+                // A SZERELÉS nem edzés: a „kifogyott a bringám gumija" és a
+                // „megjavíttattam a kerékpáromat" egy órás kerékpározásként
+                // ment be – a járműről szól, nem az útról.
+                "javitt", "javitot", "megjavit", "javittat", "megszerel",
+                "szerel", "gumija", "gumit cserel",
+                "pumpal", "olajoztam", "lancot",
                 // A KAPOTT TERV nem megtörtént edzés: az „edző adott egy új
                 // tervet: 3x heti kondi, de ma még csak 20 perc bicikli"
                 // háromhetes időszakot és egy órás kondit írt be a tervből.

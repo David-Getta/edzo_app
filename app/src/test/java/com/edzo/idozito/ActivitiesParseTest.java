@@ -5280,4 +5280,12 @@ public class ActivitiesParseTest {
         assertEquals(20, p.plans.get(0).minutes);
     }
 
+    @Test public void bikeRepairAndAFutureClassAreNotWorkouts() {
+        assertTrue(Activities.parse("kifogyott a bring\u00e1m gumija").plans.isEmpty());
+        assertTrue(Activities.parse("megjav\u00edttattam a ker\u00e9kp\u00e1romat").plans.isEmpty());
+        assertTrue(Activities.parse("a tanfolyam a teremben lesz").plans.isEmpty());
+        // A megtett út marad.
+        assertEquals(20.0, Activities.parse("tekertem 20 km-t").plans.get(0).km, 0.01);
+    }
+
 }
