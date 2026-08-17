@@ -836,4 +836,9 @@ public class RehabTest {
         assertEquals("csipo", Rehab.forComplaint("f\u00e1j a tomporom fut\u00e1s ut\u00e1n").id);
     }
 
+    @Test public void hipOpeningIsAMobilityGoal() {
+        assertEquals("csipo", Rehab.forGoal("cs\u00edp\u0151 nyit\u00e1s \u00fcl\u00e9s ut\u00e1n").id);
+        assertNull(Rehab.forGoal("a bolt nyit\u00e1s ut\u00e1n futottam 5 km-t"));
+    }
+
 }

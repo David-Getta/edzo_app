@@ -699,6 +699,10 @@ public final class Rehab {
                 // mozgásforma („45 perc nyújtás", „combnyújtás 30 perc"), és
                 // cél-szóként elvenné az edzés-naplótól.
                 "gyakorlat", "lazit", "bemelegit", "atmozgat",
+                // A NYITÁS a mobilitás hétköznapi szava: a „csípő nyitás
+                // ülés után" eddig üresen jött vissza. Testtájnév nélkül
+                // úgysem lesz belőle cél, így a boltnyitás nem zavar.
+                "nyitas", "nyito gyakorlat", "kinyit",
                 "mit csinaljak", "mit ajanlasz", "mit javasolsz",
                 // Az ERŐSÍTÉS is ide került: a „boka erősítés" korábban egy
                 // hatvanperces kondi-bejegyzés lett a naplóban – vagyis egy
