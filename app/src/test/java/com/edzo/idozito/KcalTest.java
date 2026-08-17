@@ -375,4 +375,14 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("vettem 3 kalapot"));
     }
 
+    @Test public void anAchievedMacroGoalIsData() {
+        assertEquals(140, Kcal.protein("el\u00e9rtem a feh\u00e9rjec\u00e9lt, 140 g"));
+        assertEquals(1900, Kcal.stated("el\u00e9rtem a kal\u00f3riac\u00e9lt, 1900 kcal"));
+    }
+
+    @Test public void anUnmetMacroGoalIsStillNotData() {
+        assertEquals(-1, Kcal.protein("a feh\u00e9rjec\u00e9lom 140 g"));
+        assertEquals(-1, Kcal.stated("napi c\u00e9l 2000 kcal"));
+    }
+
 }

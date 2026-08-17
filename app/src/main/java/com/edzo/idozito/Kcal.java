@@ -249,7 +249,7 @@ public final class Kcal {
             // mond: a „kalóriadeficitben vagyok, kb 400 kcal" négyszáza a
             // deficit mértéke, nem bevitel és nem égetés – eddig mindkettőnek
             // beszámoltuk. A „ma 1750 lett" viszont beszámoló.
-            boolean done = s.matches(".*(?<![a-z])(lett|volt|ossze\\w*|ma|tegnap"
+            boolean done = achieved(s) || s.matches(".*(?<![a-z])(lett|volt|ossze\\w*|ma|tegnap"
                     + "|bevitel|bevittem|megettem|ettem|ittam|elegettem|egettem"
                     + "|egetes|reggeli|ebed|vacsora)(?![a-z]).*");
             if (!done) return -1;
@@ -325,7 +325,11 @@ public final class Kcal {
             // fehérjéé: az étel neve folytatódik, tehát nem tápérték-sor.
             + "(?![a-z])(?!\\s?(?:turmix|shake|sejk|por|italpor|szelet|pudding))");
     private static final Pattern PROT_BEFORE = Pattern.compile(
-            "(?<![a-z])(?:feherje|protein)(?![a-z])\\s*:?\\s*(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?(?![a-z])");
+            // A CÉL szava is a fehérjéé: az „elértem a fehérjecélt, 140 g"
+            // száma eddig sehova nem kapcsolódott. (Hogy a nem teljesült cél
+            // ne kerüljön be, arról a GOAL-szűrő gondoskodik.)
+            "(?<![a-z])(?:feherje|protein)(?:cel\\w*)?(?![a-z])"
+                    + "[^0-9]{0,4}(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?(?![a-z])");
 
     /**
      * A mondatban kimondott fehérje grammban, vagy -1.
@@ -337,7 +341,17 @@ public final class Kcal {
     public static int protein(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
-        for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
+        // A TELJESÍTETT cél már adat: az „elértem a fehérjecélt, 140 g"
+        // eddig üresen jött vissza – a cél szava elnémította, pedig épp
+        // arról szól, hogy megvan.
+        if (!achieved(s)) {
+            for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
+            // Az ÖSSZETETT cél-szó ugyanígy tilt: a „fehérjecélom 140 g"
+            // kívánság, nem bevitel – a szóhatáros lista nem látja meg
+            // benne a célt.
+            if (s.matches(".*(?:feherje|kaloria|kalori|szenhidrat|zsir"
+                    + "|lepes|makro)cel\\w*.*")) return -1;
+        }
         double sum = 0;
         // Mértékegység NÉLKÜL csak életszerű makró-szám lehet fehérje: az
         // „ittam egy proteint" egyese az italok DARABSZÁMA, nem egy gramm
@@ -353,6 +367,12 @@ public final class Kcal {
         }
         int r = (int) Math.round(sum);
         return r >= MIN_PROT && r <= MAX_PROT ? r : -1;
+    }
+
+    /** Teljesítés-ige: a cél szava ilyenkor nem tilt (már megvan). */
+    private static boolean achieved(String s) {
+        return s.matches(".*(?<![a-z])(elertem|teljesitettem|teljesult|meglett"
+                + "|megvan|osszejott|sikerult|megcsinaltam)(?![a-z]).*");
     }
 
     private static double num(String s) {
