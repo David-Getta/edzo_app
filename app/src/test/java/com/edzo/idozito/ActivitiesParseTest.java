@@ -5247,4 +5247,28 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    @Test public void takingTheStairsInsteadOfTheLiftCounts() {
+        Activities.Parsed p = Activities.parse("ma nem volt id\u0151m edzeni, de a "
+                + "l\u00e9pcs\u0151t v\u00e1lasztottam a lift helyett, 12 emelet");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(6, p.plans.get(0).minutes);
+        // A sport HELYETT tovább is kiesik: a futás elmaradt, az úszás megvolt.
+        Activities.Parsed q = Activities.parse("fut\u00e1s helyett \u00fasztam 1 km-t");
+        assertEquals(1, q.plans.size());
+        assertEquals("uszas", q.plans.get(0).kind.id);
+    }
+
+    @Test public void aCoachsPlanIsNotAWorkout() {
+        Activities.Parsed p = Activities.parse("az edz\u0151 adott egy \u00faj tervet: "
+                + "3x heti kondi, de ma m\u00e9g csak 20 perc bicikli");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertTrue(Activities.parse("3x heti kondi a terv").plans.isEmpty());
+        // A tervezett helyett a valódi marad.
+        assertEquals(6.0, Activities.parse("a tervezett 10 helyett 6 km lett")
+                .plans.get(0).km, 0.01);
+    }
+
 }

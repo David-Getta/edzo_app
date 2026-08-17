@@ -3457,6 +3457,10 @@ public final class Activities {
                 // ami még el sem kezdődött.
                 "benevez", "beneveztem", "nevezes", "jelentkeztem egy"})
             if (s.contains(w)) return true;
+        // A mondat VÉGÉN álló terv is terv: a „3x heti kondi a terv" három
+        // hétre osztott edzésként ment be. Szóhatárral, hogy a „tervezett
+        // 10 helyett 6 lett" megtörtént edzése ne essen ki.
+        if (s.matches(".*(?<![a-z])a terv(?![a-z]).*")) return true;
         // A CÉL nem napló – kivéve, ha TELJESÜLT: az „a heti célom 4 edzés"
         // négy megtörtént edzésként került be a hét elején, amikor még egy
         // sem volt. A „meglett a napi cél, 12 000 lépés" viszont pont a
@@ -3687,6 +3691,19 @@ public final class Activities {
                             + "(?:\\s?-?\\s?(?:km|m|perc|ora|kg|kilo)\\w*)?\\s*$")
                     .matcher(s.substring(a, h));
             if (nm.find()) a += nm.start();
+            // A „HELYETT" előtt nem mindig edzés áll: a „lépcsőt választottam
+            // a lift helyett, 12 emelet" egésze eltűnt, pedig a lépcsőzés
+            // megtörtént – a kihagyott dolog itt a LIFT, ami nem is mozgás.
+            // Ilyenkor csak a megnevezett dolgot vesszük ki, a tagmondatot nem.
+            {
+                int w0 = h;
+                while (w0 > 0 && s.charAt(w0 - 1) == ' ') w0--;
+                int w1 = w0;
+                while (w0 > 0 && Character.isLetterOrDigit(s.charAt(w0 - 1))) w0--;
+                String noun = s.substring(w0, w1);
+                if (!noun.isEmpty() && kindByText(noun) == null
+                        && !noun.matches("\\d+")) a = w0;
+            }
             blank(q, a, h + 7);
             h = s.indexOf("helyett", h + 1);
         }
@@ -3704,6 +3721,11 @@ public final class Activities {
                 // kötelező mellé: a „nincs kedvem, de azért futottam" él.
                 "nincs edzes", "nincsen edzes", "nincs mozgas", "nincs futas",
                 "kihagytam", "kimaradt", "elmarad",
+                // A KAPOTT TERV nem megtörtént edzés: az „edző adott egy új
+                // tervet: 3x heti kondi, de ma még csak 20 perc bicikli"
+                // háromhetes időszakot és egy órás kondit írt be a tervből.
+                // Csak a terv tagmondata esik ki – a mai bicikli marad.
+                "tervet adott", "uj tervet", "tervet kaptam", "tervet irt",
                 "lemondtam", "neztem", "neztuk", "vegignez", "vegigneztem",
                 "rendeltem", "vettem", "berlet",
                 // A MEGnéztem is nézés: a „megnéztem a maratont a tv-ben"
