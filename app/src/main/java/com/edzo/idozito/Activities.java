@@ -1461,6 +1461,28 @@ public final class Activities {
                 + "(\\d{1,3}(?:[.,]\\d+)?)[- ]?n[ae]l\\s+"
                 + "(?:felad|kiszall|leall|megall|abbahagy)\\w*",
                 "$3 km $2");
+        // A BEFEJEZÉS tagadása nem az edzés tagadása: a „nem bírtam
+        // befejezni az edzést, 20 perc után feladtam" húsz perc mozgás.
+        // A tagadó ige eddig az egész mondatot elvitte, pedig a mondat
+        // másik fele épp azt mondja meg, mennyi lett belőle. Csak akkor
+        // lép működésbe, ha a mondat ki is mondja a megtett mennyiséget
+        // és a félbehagyást – enélkül tényleg nem tudjuk, mennyi volt.
+        if (s.matches("(?s).*(?:felad|abbahagy|leall|megall|kiszall)\\w*.*")
+                && s.matches("(?s).*\\d\\s?(?:perc|km|m)\\w*.*"))
+            s = s.replaceAll("(?<![a-z])nem (?:birtam|tudtam|sikerult)\\s+"
+                    + "(?:befejezni|vegigcsinalni|vegigmenni|vegigvinni|"
+                    + "vegigfutni)\\w*\\s*,?\\s*", "");
+        // A FÉLBEHAGYOTT edzés annyi perc, amennyi megvolt belőle: az
+        // „edzés 20 perc után feladtam" húsz perc mozgás. A sport nevével
+        // („futás 20 perc után feladtam") ez eddig is működött, a semleges
+        // „edzés" szóval viszont az egész bejegyzés elveszett – az „edzés
+        // után" alakot a felismerő étkezés-időzítőnek látta, és kitörölte
+        // a mozgás egyetlen szavát. Aki feladta, épp azt írja le, ameddig
+        // bírta; ez a nap legőszintébb sora, nem szabad elnyelni.
+        s = s.replaceAll("(?<![a-z])(?:az?\\s)?edzes\\w*\\W{0,3}\\s?"
+                + "(\\d{1,3})\\s?perc(?:et|es)?\\s?utan\\s+"
+                + "(?=felad|abbahagy|leall|megall|kiszall|hazament|"
+                + "haza kellett|vege)", "$1 perc edzes ");
         // Fordított szórenddel is: a „feladtam a versenyt a 30. km-nél"
         // harminc megtett kilométer – a feladás tagadó igéje mégis az
         // egészet elvitte.

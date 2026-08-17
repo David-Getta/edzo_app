@@ -5288,4 +5288,36 @@ public class ActivitiesParseTest {
         assertEquals(20.0, Activities.parse("tekertem 20 km-t").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A f\u00e9lbehagyott edz\u00e9s annyi perc, amennyi megvolt bel\u0151le. A sport
+     * nev\u00e9vel ez eddig is m\u0171k\u00f6d\u00f6tt, a semleges \u201eedz\u00e9s" sz\u00f3val nem.
+     */
+    @Test
+    public void anAbandonedWorkoutKeepsTheMinutesItLasted() {
+        Activities.Parsed p = Activities.parse("edz\u00e9s 20 perc ut\u00e1n feladtam");
+        assertEquals(1, p.plans.size());
+        assertEquals(20, p.plans.get(0).minutes);
+        assertEquals(20, Activities.parse("az edz\u00e9st 20 perc ut\u00e1n abbahagytam")
+                .plans.get(0).minutes);
+    }
+
+    /**
+     * A BEFEJEZ\u00c9S tagad\u00e1sa nem az edz\u00e9s tagad\u00e1sa: a mondat m\u00e1sik fele
+     * \u00e9pp azt mondja meg, mennyi lett bel\u0151le.
+     */
+    @Test
+    public void failingToFinishStillKeepsWhatWasDone() {
+        Activities.Parsed p = Activities.parse(
+                "nem b\u00edrtam befejezni az edz\u00e9st, 20 perc ut\u00e1n feladtam");
+        assertEquals(1, p.plans.size());
+        assertEquals(20, p.plans.get(0).minutes);
+    }
+
+    /** A puszta tagad\u00e1s viszont marad tagad\u00e1s. */
+    @Test
+    public void aPlainNegationIsStillNoWorkout() {
+        assertTrue(Activities.parse("nem b\u00edrtam futni ma").plans.isEmpty());
+        assertTrue(Activities.parse("edz\u00e9s elmaradt ma").plans.isEmpty());
+    }
+
 }
