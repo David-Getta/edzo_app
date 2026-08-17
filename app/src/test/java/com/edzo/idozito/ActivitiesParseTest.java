@@ -5088,4 +5088,15 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    @Test public void strengthProgramNamesAreGymSessions() {
+        assertEquals("kondi", Activities.parse("stronglifts 5x5 ma").plans.get(0).kind.id);
+        assertEquals("kondi",
+                Activities.parse("german volume training ma").plans.get(0).kind.id);
+        assertEquals(50, Activities.parse("split nap ma 50 perc").plans.get(0).minutes);
+    }
+
+    @Test public void aBananaSplitIsNotASplitDay() {
+        assertTrue(Activities.parse("ban\u00e1n split desszertnek").plans.isEmpty());
+    }
+
 }

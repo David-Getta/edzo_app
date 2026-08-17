@@ -250,7 +250,14 @@ public final class Activities {
                     // Hot Iron rudas óra, a Deepwork saját testsúlyos, a
                     // functional training az angol írásmód.
                     "hot iron", "hotiron", "deepwork", "deep work",
-                    "functional training", "functional edzes"),
+                    "functional training", "functional edzes",
+                    // A NEMZETKÖZI erőprogramok nevét a magyar termekben is
+                    // így mondják: a „stronglifts 5x5" és a „german volume
+                    // training" eddig üresen jött vissza. (A „split" önmagában
+                    // nem lehet tő – a banán split desszert.)
+                    "stronglifts", "strong lifts", "german volume", "gvt edzes",
+                    "felso-also split", "also-felso split", "split edzes",
+                    "split nap", "splitet"),
             new Kind("kezilabda", "🤾", "Kézilabda", 8.0, false, 90,
                     "kezilabda", "kezi edzes", "keziedzes", "kezi"),
             new Kind("foci", "⚽", "Foci", 7.0, false, 90,
