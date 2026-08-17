@@ -5078,4 +5078,14 @@ public class ActivitiesParseTest {
         assertEquals(10.0, p.plans.get(0).km, 0.01);
     }
 
+    @Test public void gettingOffOneStopEarlyIsAShortWalk() {
+        Activities.Parsed p = Activities.parse(
+                "lesz\u00e1lltam egy meg\u00e1ll\u00f3val kor\u00e1bban \u00e9s gyalogoltam");
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(10, p.plans.get(0).minutes);
+        assertEquals(15, Activities.parse(
+                "k\u00e9t meg\u00e1ll\u00f3val kor\u00e1bban sz\u00e1lltam le, gyalog 15 perc")
+                .plans.get(0).minutes);
+    }
+
 }

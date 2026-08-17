@@ -1524,6 +1524,13 @@ public final class Activities {
         // eddig elveszett a hossz, és az alapidő ment be helyette.
         s = s.replaceAll("(?<=\\d)\\s?(?:pecet|pecig|prec|percig?et)"
                 + "(?![a-z])", " percet");
+        // Az EGY MEGÁLLÓNYI séta tíz perc, nem másfél óra: a „leszálltam
+        // egy megállóval korábban és gyalogoltam" a mozgásforma teljes
+        // alapértelmezett hosszát kapta – kilencven percet egy rövid
+        // sétáért. Kimondott hossz mellett nem szólunk bele.
+        if (s.matches(".*megallo\\w*\\s+(?:korabban|elobb).*")
+                && !s.matches(".*\\d\\s?(?:perc|ora|km|lepes).*"))
+            s = s + " 10 perc";
         // Az „E" végű rövidítés ezret jelent: a „15e lépés" tizenötezer –
         // eddig üresen jött vissza. (Csak szám után, közvetlenül tapadva.)
         s = s.replaceAll("(?<![\\d.,])(\\d{1,3})e(?![a-z0-9])", "$1 ezer");
