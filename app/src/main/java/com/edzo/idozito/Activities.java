@@ -1531,6 +1531,13 @@ public final class Activities {
         // eddig elveszett a hossz, és az alapidő ment be helyette.
         s = s.replaceAll("(?<=\\d)\\s?(?:pecet|pecig|prec|percig?et)"
                 + "(?![a-z])", " percet");
+        // A BETEGSÉG hossza nem az edzés időszaka: a „beteg voltam egy
+        // hetig, ma volt az első edzés: 30 perc" harminc perce MA történt,
+        // mégis hét napra oszlott szét a naplóban.
+        s = s.replaceAll("(?<![a-z])(?:beteg|lazas|megfazva|serult|serulten|"
+                + "korhazban|karantenban)\\s*(?:volt\\w*)?\\s+"
+                + "(?:\\d{1,2}|egy|ket|harom|negy|ot|hat)\\s?"
+                + "(?:het|nap|honap)\\w*", " ");
         // Az EGY MEGÁLLÓNYI séta tíz perc, nem másfél óra: a „leszálltam
         // egy megállóval korábban és gyalogoltam" a mozgásforma teljes
         // alapértelmezett hosszát kapta – kilencven percet egy rövid
@@ -3530,6 +3537,10 @@ public final class Activities {
         String s = Foods.norm(text == null ? "" : text);
         for (String w : new String[]{"nem ", "megsem ", "sem ", "se ",
                 "kihagytam", "kimaradt", "elmarad",
+                // A „ma nincs edzés" ugyanaz, mint a „ma nem edzettem" – de
+                // csak a mozgás-szóval együtt: a „nincs kedvem, de azért
+                // futottam" futása megtörtént.
+                "nincs edzes", "nincsen edzes", "nincs mozgas", "nincs futas",
                 "lemondtam", "pihenonap", "pihenes", "pihentem", "rest day"}) {
             int p = s.indexOf(w);
             if (p >= 0 && (p == 0 || !Character.isLetter(s.charAt(p - 1)))) return true;
@@ -3580,6 +3591,11 @@ public final class Activities {
                 // „semmi" nem esik ide: ott a tő után betű áll, nem szóköz.
                 // A rövid „se" ugyanaz: „ott se voltam a teremben".
                 "sem ", "se ",
+                // A NINCS is tagadás: a „beteg vagyok, ma nincs edzés"
+                // negyvenöt perces egyéb mozgásként került a naplóba – vagyis
+                // pont az ellenkezője annak, amit leírt. A mozgás-szó
+                // kötelező mellé: a „nincs kedvem, de azért futottam" él.
+                "nincs edzes", "nincsen edzes", "nincs mozgas", "nincs futas",
                 "kihagytam", "kimaradt", "elmarad",
                 "lemondtam", "neztem", "neztuk", "vegignez", "vegigneztem",
                 "rendeltem", "vettem", "berlet",

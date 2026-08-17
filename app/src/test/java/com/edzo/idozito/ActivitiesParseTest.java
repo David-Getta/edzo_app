@@ -5118,4 +5118,17 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.parse("3x12 evez\u00e9s 50 kg").days);
     }
 
+    @Test public void nincsEdzesIsNotAWorkout() {
+        assertTrue(Activities.parse("beteg vagyok, ma nincs edz\u00e9s").plans.isEmpty());
+        assertTrue(Activities.parse("ma nincs edz\u00e9s").plans.isEmpty());
+    }
+
+    @Test public void theLengthOfAnIllnessIsNotTheWorkoutPeriod() {
+        Activities.Parsed p = Activities.parse(
+                "beteg voltam egy hetig, ma volt az els\u0151 edz\u00e9s: 30 perc");
+        assertEquals(1, p.days);
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(7, Activities.parse("a h\u00e9ten 3x edzettem").days);
+    }
+
 }
