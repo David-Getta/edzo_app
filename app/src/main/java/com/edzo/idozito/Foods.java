@@ -2536,6 +2536,14 @@ public final class Foods {
         // „néhány szem szőlő" öt grammként ment be – egyetlen szőlőszemként.
         query = query.replaceAll("(?iu)(?<!\\p{L})(n[eé]h[aá]ny|p[aá]r)"
                 + "(?=\\s+szem)", "5");
+        // A CUKORMENTES NAP nem étel: a „cukormentes nap volt, semmi
+        // édesség" háromszázharminc gramm „cukormentes / light" ételt írt a
+        // naplóba – épp abból a napból, amin a felhasználó semmi ilyet nem
+        // evett. A jelző itt a NAPRA vonatkozik, nem egy tányérra.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:cukormentes|"
+                + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
+                + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
+                + "(?:\\p{L}*)", " ");
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");

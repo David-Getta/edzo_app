@@ -1506,4 +1506,20 @@ public class FoodsParseTest {
                 .get(0).grams, 0.01);
     }
 
+    /**
+     * A „cukormentes nap" a NAPRA vonatkozik, nem egy t\u00e1ny\u00e9rra: eddig
+     * h\u00e1romsz\u00e1zharminc gramm „cukormentes / light" \u00e9tel lett bel\u0151le.
+     */
+    @Test
+    public void aSugarFreeDayIsNotAFood() {
+        assertTrue(hits("cukormentes nap volt, semmi \u00e9dess\u00e9g").isEmpty());
+        assertTrue(hits("cukormentes napom van").isEmpty());
+    }
+
+    /** A jelz\u0151s \u00e9tel viszont marad \u00e9tel. */
+    @Test
+    public void aGlutenFreeBreadIsStillBread() {
+        assertFalse(hits("glut\u00e9nmentes keny\u00e9r 2 szelet").isEmpty());
+    }
+
 }
