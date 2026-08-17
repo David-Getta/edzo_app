@@ -564,6 +564,36 @@ public final class Rehab {
     };
 
     /**
+     * Idegrendszeri és gyulladásos vészjel a rögzített listán túl.
+     *
+     * A DERÉKFÁJÁS melletti vizelési panasz a gerincvelő alsó szakaszának
+     * jelzése: erre órák alatt kell orvos, nem gyakorlatsor. Az ÉRZÉSKIESÉS
+     * ugyanígy, a forró-piros-duzzadt ízület pedig gyulladás. Egyikre sem
+     * jött eddig semmilyen válasz.
+     *
+     * @return a panasz megnevezése, vagy null
+     */
+    private static String otherWarning(String s) {
+        // A KIMONDOTT tagadás erősebb: a „derékfájás, de vizeléssel nincs
+        // baj" épp azt mondja, hogy ez a jel HIÁNYZIK.
+        if (s.matches("(?s).*(nincs baj|nincs panasz|nem gond|rendben van"
+                + "|nincs vele baj|nem fordult elo).*")) return null;
+        boolean back = s.matches("(?s).*(derek|dereka|hat |gerinc|lumb|keresztcsont).*");
+        if (back && s.matches("(?s).*(vizele\\w*|szekele\\w*|inkontinen\\w*"
+                + "|nem tartom a vizelet\\w*).*"))
+            return "derékfájás vizelési panasszal";
+        if (s.matches("(?s).*(elvesztettem az erzest|nincs erzes|erzeskieses"
+                + "|nem erzem a lab\\w*|nem erzem a kez\\w*).*"))
+            return "érzéskiesés";
+        boolean joint = s.matches("(?s).*(izulet\\w*|terd\\w*|boka\\w*|konyok\\w*"
+                + "|csuklo\\w*|vall\\w*|csipo\\w*).*");
+        if (joint && s.contains("piros")
+                && s.matches("(?s).*(meleg|forro|dagadt|duzzad\\w*|belaz\\w*).*"))
+            return "forró, piros, duzzadt ízület";
+        return null;
+    }
+
+    /**
      * Szívre utaló panasz SZÓRENDTŐL függetlenül.
      *
      * A rögzített szókapcsolatok (HEART_SIGNS) csak a leggyakoribb alakokat
@@ -629,9 +659,11 @@ public final class Rehab {
                         + "is, ha csak enyhének érzed.";
         for (String neg : new String[]{"nem zsibbad", "mar nem", "elmult", "nem dagadt"})
             if (s.contains(neg)) return null;
+        String extra = otherWarning(s);
         for (String[] r : RED_SIGNS)
-            if (s.contains(r[0]))
-                return "Amit leírtál (" + r[1] + "), arra nem gyakorlatsor a jó válasz. "
+            if (s.contains(r[0]) || (extra != null && r[0].equals("zsibbad")))
+                return "Amit leírtál (" + (extra != null ? extra : r[1])
+                        + "), arra nem gyakorlatsor a jó válasz. "
                         + "Ez a jel azt jelenti, hogy a panaszt meg kell nézetni: "
                         + "kérj időpontot orvostól vagy gyógytornásztól, és addig ne "
                         + "terheld. Ha ez elmúlt, és csak a régi merevség maradt, "

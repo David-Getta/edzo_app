@@ -819,4 +819,16 @@ public class RehabTest {
         assertNull(Rehab.redFlag("mellkas 105 cm"));
     }
 
+    @Test public void backPainWithBladderTroubleIsAnEmergencySign() {
+        assertNotNull(Rehab.redFlag(
+                "vizel\u00e9si probl\u00e9m\u00e1m van a der\u00e9kf\u00e1j\u00e1s mellett"));
+        assertNull(Rehab.redFlag("der\u00e9kf\u00e1j\u00e1s, de vizel\u00e9ssel nincs baj"));
+    }
+
+    @Test public void lostSensationAndAHotRedJointAreRedFlags() {
+        assertNotNull(Rehab.redFlag("elvesztettem az \u00e9rz\u00e9st a l\u00e1bfejemben"));
+        assertNotNull(Rehab.redFlag("bel\u00e1z a t\u00e9rdem \u00e9s piros"));
+        assertNull(Rehab.redFlag("f\u00e1j a t\u00e9rdem, piros a cip\u0151m"));
+    }
+
 }
