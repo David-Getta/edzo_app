@@ -910,6 +910,10 @@ public final class Foods {
             // A SAJÁT zsír a mérleg rovata, nem sertészsír: a „zsírom 18
             // százalék" egy kanál olajat írt a naplóba.
             "zsirom", "zsirszazalek",
+            // A KIVITTEM belsejében ott a KIVI: a „kivittem a szemetet"
+            // nyolcvan gramm kivit írt a naplóba. A kettőzött t megvédi a
+            // gyümölcs tárgyesetét („ettem egy kivit").
+            "kivitt", "kivisz", "kivitel", "kivive",
             // A TÁNCOLÁS belsejében lakó „kola" egy fél liter üdítőt
             // naplózott: a „vacsora és táncolás hajnalig" mellé.
             "tancol", "tancolas", "tancolt", "tancolunk",

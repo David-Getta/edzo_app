@@ -1488,4 +1488,9 @@ public class FoodsParseTest {
         assertTrue(hits("gorilla sor: 5x5 fekvenyom\u00e1s 100 kg").isEmpty());
     }
 
+    @Test public void takingOutTheTrashIsNotAKiwi() {
+        assertTrue(hits("kivittem a szemetet").isEmpty());
+        assertEquals("Kivi", hits("ettem egy kivit").get(0).food.name);
+    }
+
 }
