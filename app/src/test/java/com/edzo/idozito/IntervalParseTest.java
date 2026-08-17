@@ -822,4 +822,24 @@ public class IntervalParseTest {
                 "7:00 zabk\u00e1sa, 12:30 csirke rizzsel, 19:00 toj\u00e1sr\u00e1ntotta"));
     }
 
+    /**
+     * A s\u00falyz\u00f3s szett nem intervallum: az „5x5 100 kg, pihi 3 perc"
+     * \u00f6tsz\u00f6r \u00f6tje sorozat \u00e9s ism\u00e9tl\u00e9s, nem k\u00f6r.
+     */
+    @Test
+    public void aWeightedSetIsNotAnIntervalPlan() {
+        assertNull(IntervalParse.parse("guggol\u00e1s 5x5 100 kg, pihi 3 perc"));
+        assertNull(IntervalParse.parse("fekvenyom\u00e1s 4x8 70 kg, 2 perc pihi"));
+    }
+
+    /** Az id\u0151re men\u0151 k\u00f6r viszont terv marad, s\u00faly mellett is. */
+    @Test
+    public void timedRoundsStayAPlanEvenWithAWeight() {
+        IntervalParse.Plan p = IntervalParse.parse(
+                "10x30 mp kettlebell swing 16 kg, 30 mp pihen\u0151");
+        assertNotNull(p);
+        assertEquals(10, p.rounds);
+        assertEquals(30, p.work);
+    }
+
 }

@@ -382,7 +382,34 @@ public final class IntervalParse {
         // pihenővel – negyvenperces időzítő egy félórás estére. Egyenlő
         // munka és pihenő egyetlen körben sosem valódi terv.
         if (rounds <= 1 && rest > 0 && work == rest && !saysPlan(s)) return null;
+        // A SÚLYZÓS SZETT nem intervallum: a „guggolás 5x5 100 kg, pihi
+        // 3 perc" ötször ötje sorozat és ismétlés, a pihi pedig a sorozatok
+        // közti szünet. Eddig ötkörös, háromperc munka – háromperc pihenő
+        // időzítő lett belőle, vagyis fél óra a semmiből egy erőedzés
+        // mellé. A súly kimondása dönt: kilogrammot senki nem ír egy
+        // intervall-tervbe.
+        if (weightedSets(s) && !saysPlan(s)) return null;
         return build(rounds, work, rest, warmIn(s), coolIn(s));
+    }
+
+    /**
+     * Súlyzós sorozat-jelölés: „5x5 100 kg”, „4×8 70 kg”. A szorzat mindkét
+     * tagja ismétlésszám (idő-egység nem áll utána), és a mondat kilogrammot
+     * is kimond.
+     */
+    private static boolean weightedSets(String s) {
+        if (!s.matches(".*\\d\\s?kg(?![a-z]).*")) return false;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?![\\dx])")
+                .matcher(s);
+        while (m.find()) {
+            String tail = s.substring(m.end());
+            // A „8x400 m” és a „10x30 mp” nem szett: ott a második szám táv
+            // vagy idő, nem ismétlésszám.
+            if (tail.matches("(?s)\\s?(m|km|mp|perc|masodperc|min)(?![a-z]).*")) continue;
+            return true;
+        }
+        return false;
     }
 
     /** Csak időtartam áll a mondatban, más szó nélkül („2 perc", „90 mp"). */
