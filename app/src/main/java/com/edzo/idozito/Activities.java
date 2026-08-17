@@ -1663,8 +1663,13 @@ public final class Activities {
         // (futás 10) nem merünk dönteni – az lehet km is.
         // A NAP és a HÉT egység is kizárás: az „edzés 4 napig" négyese
         // időszak-hossz, nem négy perc edzés.
+        // A LABDAJÁTÉK is idő-alapú: a „foci 30" harminc perc játék, nem
+        // harminc kilométer – eddig a mozgásforma alapértelmezett hossza
+        // (kilencven perc) került be helyette.
         s = s.replaceAll("(?<![a-z])(kardio|sulyzo|kondi|joga|nyujtas|pilates"
-                + "|hiit|edzes|gyuras)\\s+(\\d{1,3})"
+                + "|hiit|edzes|gyuras|foci|kezilabda|kosarlabda|roplabda"
+                + "|tenisz|squash|tollas|pingpong|boksz|karate|judo|zumba"
+                + "|aerobik|crossfit|tabata)\\s+(\\d{1,3})"
                 + "(?!\\d)(?![.,]\\d)(?![:%-])(?!\\s?(?:perc|ora|km|kg|kcal|mp|lepes|x|kor"
                 + "|nap|het(?:ig|en|re)|es(?![a-z])|as(?![a-z])|os(?![a-z])|m(?![a-z])|h(?![a-z])"
                 + "|p(?![a-z])))", "$1 $2 perc");

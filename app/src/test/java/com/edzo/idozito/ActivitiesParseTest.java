@@ -5039,4 +5039,16 @@ public class ActivitiesParseTest {
         assertEquals(30, p.plans.get(0).minutes);
     }
 
+    @Test public void aBareNumberAfterABallSportIsMinutes() {
+        Activities.Parsed p = Activities.parse("foci 30");
+        assertEquals("foci", p.plans.get(0).kind.id);
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(45, Activities.parse("kos\u00e1rlabda 45").plans.get(0).minutes);
+    }
+
+    @Test public void aDistanceSportKeepsItsBareNumberAmbiguous() {
+        Activities.Parsed p = Activities.parse("fut\u00e1s 10");
+        assertEquals(45, p.plans.get(0).minutes);
+    }
+
 }

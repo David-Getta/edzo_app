@@ -39,7 +39,14 @@ public final class Sentence {
      * @param foods a felismerhető ételek (a sajátokkal együtt), vagy null
      */
     public static Kind of(String q, List<Foods.Food> foods, long now) {
-        if (q == null || q.trim().length() < 3) return Kind.NONE;
+        // A rövidke bejegyzés is bejegyzés, ha szám ÉS mértékegység van
+        // benne: az „5k" a futók legrövidebb naplósora, mégis a három
+        // karakteres alsó korláton akadt fenn – a „10k" átment, az „5k"
+        // nem. A többi kétbetűs szó („ok", „hm") a felismerőkön úgyis
+        // fennakad.
+        if (q == null) return Kind.NONE;
+        if (q.trim().length() < 3 && !q.trim().matches("\\d\\s?[a-zA-Z]"))
+            return Kind.NONE;
         // A KÉRDÉS nem bejegyzés: a „mennyi kalória van a banánban?" banánt
         // naplózott volna, a „mit egyek edzés előtt?" pedig edzést. Aki
         // kérdez, az nem most evett és nem most edzett – a kérdőjel a

@@ -362,4 +362,9 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.NONE, Sentence.also("fáj a térdem futás után", all, now));
         assertEquals(Sentence.Kind.NONE, Sentence.also("merev a nyakam", all, now));
     }
+    @Test public void aTwoCharacterRunEntryStillRoutes() {
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.of("5k", null, NOW));
+        assertEquals(Sentence.Kind.NONE, Sentence.of("ok", null, NOW));
+    }
+
 }
