@@ -1324,6 +1324,20 @@ public final class Activities {
                         + "(?:gyors |laza |konnyu |kis )?" + t[0]
                         + "t(?![a-z])", "$1 " + t[1] + " km-t");
         }
+        // Ugyanez SZÁMJEGGYEL írva: a „lefutottam egy 10-est" ugyanaz a
+        // mondat, csak számmal – eddig üresen jött vissza.
+        s = s.replaceAll("(?<![a-z])((?:le)?(?:futottam|turaztam|tekertem"
+                + "|kocogtam|turtam)) egy (?:gyors |laza |konnyu |kis )?"
+                + "(\\d{1,2})\\s?-?[ae]st(?![a-z])", "$1 $2 km-t");
+        // A CSAVARTAM és a PÖRGETTEM a bringások szava: a „megcsavartam
+        // egy 10-est" tíz kilométer kerékpározás – enélkül a csupasz táv
+        // futásnak számított volna, vagy semmi nem lett belőle.
+        s = s.replaceAll("(?<![a-z])(?:meg|le)?(?:csavartam|porgettem)\\s+egy"
+                + "\\s+(?:gyors |laza |konnyu |kis )?"
+                + "(?:(\\d{1,2})\\s?-?[ae]st|(?:otos|hatos|hetes|nyolcas|"
+                + "kilences|tizes|huszas|harmincas)t)(?![a-z])",
+                "tekertem $1 km-t");
+        s = s.replaceAll("(?<![a-z])tekertem\\s+km-t(?![a-z])", "tekertem");
         // A PARKRUN mindig öt kilométer: a szombat reggeli futás távja a
         // világon mindenhol ugyanaz – kimondatlanul is tudjuk. Csak akkor
         // szúrjuk be, ha nincs kimondott táv és MÁSIK sport-szó sem – a

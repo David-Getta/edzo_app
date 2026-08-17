@@ -5065,4 +5065,17 @@ public class ActivitiesParseTest {
                 .plans.get(0).steps);
     }
 
+    @Test public void cyclistSlangDistancesAreCycling() {
+        Activities.Parsed p = Activities.parse("megcsavartam egy 10-est");
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(10.0, p.plans.get(0).km, 0.01);
+        assertTrue(Activities.parse("megcsavartam a kupakot").plans.isEmpty());
+    }
+
+    @Test public void aDigitRunnerSlangDistanceIsRunning() {
+        Activities.Parsed p = Activities.parse("lefutottam egy 10-est");
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(10.0, p.plans.get(0).km, 0.01);
+    }
+
 }
