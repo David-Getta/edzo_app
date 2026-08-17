@@ -800,4 +800,23 @@ public class RehabTest {
         assertNotNull(Rehab.redFlag("elt\u00f6rt a l\u00e1bam s\u00edel\u00e9sn\u00e9l"));
     }
 
+    @Test public void chestPainIsARedFlagWhateverTheWordOrder() {
+        assertNotNull(Rehab.redFlag("szor\u00edt\u00f3 f\u00e1jdalom a mellkasban"));
+        assertNotNull(Rehab.redFlag("f\u00e1jt a mellkasom edz\u00e9s alatt"));
+        assertNotNull(Rehab.redFlag("belenyilallt a mellkasomba"));
+        assertNotNull(Rehab.redFlag("kalap\u00e1lt a sz\u00edvem \u00e9s f\u00e1jt a mellkasom"));
+    }
+
+    @Test public void faintingAndColdSweatAreRedFlags() {
+        assertNotNull(Rehab.redFlag("eszm\u00e9letemet vesztettem"));
+        assertNotNull(Rehab.redFlag("h\u00e1nyingerem lett \u00e9s hideg verejt\u00e9k"));
+        assertNotNull(Rehab.redFlag("elsz\u00e9d\u00fcltem edz\u00e9s k\u00f6zben"));
+    }
+
+    @Test public void aChestDayIsNotAHeartWarning() {
+        assertNull(Rehab.redFlag("mellkas nap: fekvenyom\u00e1s 3x10 60 kg"));
+        assertNull(Rehab.redFlag("megf\u00e1jdult a mellizmom fekvenyom\u00e1s k\u00f6zben"));
+        assertNull(Rehab.redFlag("mellkas 105 cm"));
+    }
+
 }

@@ -564,6 +564,48 @@ public final class Rehab {
     };
 
     /**
+     * Szívre utaló panasz SZÓRENDTŐL függetlenül.
+     *
+     * A rögzített szókapcsolatok (HEART_SIGNS) csak a leggyakoribb alakokat
+     * fedik, a magyar mondat viszont szabadon rendezi őket: a „szorító
+     * fájdalom a mellkasban", a „fájt a mellkasom edzés alatt" és a
+     * „belenyilallt a mellkasomba" mind ugyanazt írja le, és egyikre sem
+     * jött semmilyen válasz. Itt a tévedés ára aszimmetrikus: egy fölösleges
+     * figyelmeztetés kellemetlen, egy elmaradó nem javítható.
+     *
+     * A MELLIZOM kivétel: a „megfájdult a mellizmom fekvenyomás közben"
+     * izompanasz, nem szívügy.
+     */
+    private static boolean heartWarning(String s) {
+        boolean muscle = s.matches("(?s).*(mellizom|mellizm|borda|szegycsont"
+                + "izomlaz).*");
+        boolean chest = s.matches("(?s).*(?<![a-z])(mellkas\\w*|szivem tajek\\w*"
+                + "|szivtaj\\w*)(?![a-z]).*");
+        // SZÓHATÁRRAL: a „mellkas nap: FEKVENYOMÁS 3x10" belsejében is ott
+        // a „nyomás", és a mellkasnap piros zászlót kapott tőle.
+        boolean pain = s.matches("(?s).*(?<![a-z])(faj|fajt|fajdalom|fajdalmas"
+                + "|szorit\\w*|szorito|nyomo|nyomas|nyilall\\w*|belenyilall\\w*"
+                + "|feszul\\w*|eget|szur|szurt)(?![a-z]).*");
+        if (chest && pain && !muscle) return true;
+        // Az ESZMÉLETVESZTÉS önmagában is az: a „eszméletemet vesztettem" és
+        // az „összeestem" nem gyakorlat-kérdés.
+        if (s.matches("(?s).*(?<![a-z])(eszmeletemet vesztettem|eszmeletvesztes"
+                + "|osszeestem|ajultam el|elajult\\w*)(?![a-z]).*")) return true;
+        // A HIDEG VEREJTÉK a hányingerrel vagy szédüléssel együtt klasszikus
+        // keringési jel.
+        if (s.contains("hideg verejtek") || s.contains("hideg verite"))
+            if (s.matches("(?s).*(hanyinger|szedul|mellkas|rosszul).*"))
+                return true;
+        // A TERHELÉS alatti szédülés is: az „elszédültem edzés közben" a
+        // keringés jelzése, nem izomprobléma.
+        if (s.matches("(?s).*(?<![a-z])(elszedultem|megszedultem|szedultem)"
+                + "(?![a-z]).*")
+                && s.matches("(?s).*(edzes|futas|mozgas|emeles|guggol|sorozat"
+                + "|kozben|utan).*")) return true;
+        return false;
+    }
+
+    /**
      * Figyelmeztetés a piros zászlós panaszra, vagy null.
      *
      * Az app eddig HALLGATOTT ezekre: a „zsibbad a kezem" mondatra nem jött
@@ -578,7 +620,7 @@ public final class Rehab {
         // aszimmetrikus. Egy felesleges figyelmeztetés kellemetlen, egy
         // elmaradó viszont nem javítható.
         for (String h : HEART_SIGNS)
-            if (s.contains(h))
+            if (s.contains(h) || heartWarning(s))
                 return "Amit leírtál (mellkasi panasz), arra semmilyen "
                         + "gyakorlatsor nem jó válasz. Hagyd abba a mozgást, ülj "
                         + "vagy feküdj le, és kérj SÜRGŐS orvosi segítséget – ha "
