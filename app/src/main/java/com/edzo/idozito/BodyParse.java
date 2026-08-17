@@ -310,6 +310,25 @@ public final class BodyParse {
         // vérnyomás 160/95-e ugyanígy kiesik.)
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.])",
                 " ");
+        // A KÜSZÖB száma kiesik, ha valódi mérés is áll mellette: a
+        // „mérleg megint 80 fölött, 80,3" nyolcvanhármadából semmi nem
+        // lett, mert az összehasonlítás elnémította a tagmondatot.
+        s = s.replaceAll("(?<![\\d,.])\\d{2,3}(?:[.,]\\d)?\\s?"
+                + "(?:ala|alatt|fole|folott|felett)(?![a-z])(?=[^0-9]*\\d)", " ");
+        // A NAP KÉT MÉRÉSE közül a KÉSŐBBI a mai adat: a „ma reggel még
+        // 79,8 volt, este már 79,2" és a „hétfőn 80,5, ma 79,4" egyaránt
+        // üresen jött vissza – az első számot a múlt idő elvitte, a
+        // másodikhoz meg nem tartozott mérés-szó.
+        {
+            java.util.regex.Matcher tm = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)[^0-9]{1,30}?"
+                    + "(?<![a-z])(?:ma|most|este|mar|estere)(?![a-z])"
+                    + "[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])")
+                    .matcher(s);
+            if (tm.find())
+                s = s.substring(0, tm.start()) + "sulyom " + tm.group(2)
+                        + s.substring(tm.end());
+        }
         // A PLATÓ fordulatai is mérések: a „78-on állok", a „beálltam
         // 78-ra" és a „tartom a 78-at" eddig üresen jött vissza.
         s = s.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)"

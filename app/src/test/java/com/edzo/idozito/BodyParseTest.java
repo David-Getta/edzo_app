@@ -922,4 +922,16 @@ public class BodyParseTest {
         assertEquals(78.2, BodyParse.parse("78,2 kg\n52 nyugalmi pulzus").kg, 0.01);
     }
 
+    @Test public void theLaterOfTwoWeighInsIsTodaysNumber() {
+        assertEquals(79.2, BodyParse.parse("ma reggel m\u00e9g 79,8 volt, este m\u00e1r 79,2").kg, 0.01);
+        assertEquals(79.4, BodyParse.parse("h\u00e9tf\u0151n 80,5, ma 79,4 - megy lefel\u00e9").kg, 0.01);
+    }
+
+    @Test public void aThresholdNextToARealReadingFallsAway() {
+        assertEquals(80.3, BodyParse.parse("a m\u00e9rleg megint 80 f\u00f6l\u00f6tt, 80,3").kg, 0.01);
+        // Mérés nélkül a küszöb marad tiltó: a cél nem mérés.
+        BodyParse.Body b = BodyParse.parse("70 kg alatt szeretn\u00e9k lenni");
+        assertTrue(b == null || b.kg == 0);
+    }
+
 }
