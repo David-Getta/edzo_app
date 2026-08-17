@@ -1446,4 +1446,12 @@ public class FoodsParseTest {
         assertEquals(40, hits("ittam egy kortynyi vizet").get(0).grams, 0.01);
     }
 
+    @Test public void aBareFelesIsAShotOfPalinka() {
+        List<Foods.Hit> h = hits("k\u00e9t feles \u00e9s egy s\u00f6r");
+        assertEquals(2, h.size());
+        assertEquals("P\u00e1linka / t\u00f6m\u00e9ny", h.get(0).food.name);
+        assertEquals(80, h.get(0).grams, 0.01);
+        assertTrue(hits("felesleges volt az eg\u00e9sz").isEmpty());
+    }
+
 }

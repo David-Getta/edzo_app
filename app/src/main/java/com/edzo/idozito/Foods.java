@@ -2576,6 +2576,11 @@ public final class Foods {
         query = query.replaceAll("(?iu)nem\\s+ettem\\s+meg\\s+az?\\s+"
                 + "eg[eé]sz\\s+(\\p{L}+),?\\s*csak\\s+a\\s+fel[eé]t",
                 "ettem fél $1");
+        // A RAGTALAN „feles" is pálinka: a „két feles és egy sör" pálinkája
+        // eddig elveszett – a ragos alakok (felest, felesek) régóta megvannak,
+        // de a puszta szótő nem lehet étel-tő: a FELESLEGES is így kezdődik.
+        query = query.replaceAll("(?iu)((?:\\d{1,2}|egy|k[eé]t|h[aá]rom|n[eé]gy"
+                + "|[oö]t|hat)\\s+)feles(?!\\p{L})", "$1pálinka");
         // A KÖVETKEZŐ tagmondat litere a vízé: az „ittam sok vizet, kb
         // 2,5 litert" két és fél deci lett a két és fél liter helyett.
         query = query.replaceAll("(?iu)vizet,?\\s*(?:kb\\.?\\s*)?"
