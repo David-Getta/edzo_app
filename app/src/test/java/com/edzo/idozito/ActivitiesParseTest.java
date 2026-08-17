@@ -5159,4 +5159,14 @@ public class ActivitiesParseTest {
         assertEquals(6, Activities.parse("ma 6 kor futottam").hour);
     }
 
+    @Test public void aStepGoalIsNotAWalkButAnAchievedGoalIs() {
+        assertTrue(Activities.parse("minden nap 10 000 l\u00e9p\u00e9s a c\u00e9l")
+                .plans.isEmpty());
+        Activities.Parsed p = Activities.parse("meglett a napi c\u00e9l, 12 000 l\u00e9p\u00e9s");
+        assertEquals(1, p.plans.size());
+        assertEquals(12000, p.plans.get(0).steps);
+        assertEquals(10000, Activities.parse("el\u00e9rtem a c\u00e9lt: 10 000 l\u00e9p\u00e9s")
+                .plans.get(0).steps);
+    }
+
 }

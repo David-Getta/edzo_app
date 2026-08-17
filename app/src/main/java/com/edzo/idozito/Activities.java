@@ -3383,18 +3383,30 @@ public final class Activities {
                 // Szóhatárral: a „TERVezett 10 helyett" egy megtörtént
                 // edzésről szól, és eddig az egész mondat kiesett tőle.
                 "a terv ", "a terv:", "terv:", "tervem", "a tervek",
-                // A CÉL sem napló: az „a heti célom 4 edzés" négy megtörtént
-                // edzésként került be – a hét elején, amikor még egy sem volt.
-                "celom", "celunk", "celja a", "heti cel", "napi cel", "cel:",
-                // A cél BEÁLLÍTÁSA sem edzés: a „beállítottam a 10000 lépéses
-                // célt" hét és fél kilométeres sétát írt a naplóba – abból a
-                // számból, amennyit az ember MAJD el akar érni naponta.
-                "lepeses cel", "a celt", "celt allitottam", "celt tuztem",
                 // A NEVEZÉS nem futás: a „beneveztem egy félmaratonra"
                 // huszonegy kilométert írt a naplóba egy olyan versenyről,
                 // ami még el sem kezdődött.
                 "benevez", "beneveztem", "nevezes", "jelentkeztem egy"})
             if (s.contains(w)) return true;
+        // A CÉL nem napló – kivéve, ha TELJESÜLT: az „a heti célom 4 edzés"
+        // négy megtörtént edzésként került be a hét elején, amikor még egy
+        // sem volt. A „meglett a napi cél, 12 000 lépés" viszont pont a
+        // megtörténtről szól, és eddig ez is némán elveszett.
+        boolean achieved = s.matches(".*(?<![a-z])(elertem|elerve|teljesitettem"
+                + "|teljesult|meglett|megvan|osszejott|sikerult|megcsinaltam"
+                + "|hoztam)(?![a-z]).*");
+        if (!achieved)
+            for (String w : new String[]{"celom", "celunk", "celja a",
+                    "heti cel", "napi cel", "cel:",
+                    // A cél BEÁLLÍTÁSA sem edzés: a „beállítottam a 10000
+                    // lépéses célt" hét és fél kilométeres sétát írt a
+                    // naplóba – abból a számból, amennyit az ember MAJD el
+                    // akar érni naponta.
+                    "lepeses cel", "a celt", "celt allitottam", "celt tuztem",
+                    // A mondat VÉGÉN álló cél ugyanez: a „minden nap 10 000
+                    // lépés a cél" hét és fél kilométeres sétaként ment be.
+                    "a cel", "lenne a cel", "legyen a cel"})
+                if (s.contains(w)) return true;
         // A PÓTLÁS jelen ideje terv: a „hétvégén pótolom az edzést" egy
         // majdani edzés – eddig megtörténtként került be. Két kivétel: a
         // NAPLÓ pótlása („pótolom: tegnap 30 perc jóga" – utólag beírt,
