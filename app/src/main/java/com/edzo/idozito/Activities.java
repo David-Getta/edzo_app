@@ -1571,6 +1571,15 @@ public final class Activities {
                             + s.substring(km.end());
             }
         }
+        // Az ALVÁS órája nem edzéshossz: a „keveset aludtam (5 óra), de
+        // azért lementem 30 percre a terembe" ÖTÓRÁS kondi-edzést írt be –
+        // az alvás számából. A mozgás-olvasó számára az alvás-szó melletti
+        // óraszám nem létezik; az alvásnaplónak külön szövege van.
+        s = s.replaceAll("(?<![a-z])(alud\\w*|alvas\\w*|aludt\\w*)"
+                + "([^,;.]{0,10}?)\\(?\\s*\\d{1,2}(?:[.,]\\d)?\\s?ora\\w*\\)?",
+                "$1$2");
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?\\s?ora\\w*\\s+"
+                + "(alvas\\w*|alud\\w*)", "$1");
         // A BETEGSÉG hossza nem az edzés időszaka: a „beteg voltam egy
         // hetig, ma volt az első edzés: 30 perc" harminc perce MA történt,
         // mégis hét napra oszlott szét a naplóban.

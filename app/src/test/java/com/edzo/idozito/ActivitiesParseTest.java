@@ -5197,4 +5197,15 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    @Test public void sleepHoursAreNotWorkoutMinutes() {
+        Activities.Parsed p = Activities.parse(
+                "neh\u00e9z nap, keveset aludtam (5 \u00f3ra), de az\u00e9rt lementem "
+                + "30 percre a terembe");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(45, Activities.parse("8 \u00f3ra alv\u00e1s, 45 perc kondi")
+                .plans.get(0).minutes);
+        assertEquals(120, Activities.parse("edz\u00e9s 2 \u00f3ra").plans.get(0).minutes);
+    }
+
 }
