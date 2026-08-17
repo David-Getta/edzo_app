@@ -5169,4 +5169,17 @@ public class ActivitiesParseTest {
                 .plans.get(0).steps);
     }
 
+    @Test public void aSecondMeterDistanceIsAlsoLogged() {
+        Activities.Parsed p = Activities.parse("\u00fasztam 500 m-t, majd m\u00e9g 300 m-t");
+        assertEquals(2, p.plans.size());
+        assertEquals(0.5, p.plans.get(0).km, 0.01);
+        assertEquals(0.3, p.plans.get(1).km, 0.01);
+    }
+
+    @Test public void elevationGainIsStillNotASecondWalk() {
+        Activities.Parsed p = Activities.parse("t\u00fara 14,8 km 3:45:00 620 m emelked\u00e9s");
+        assertEquals(1, p.plans.size());
+        assertEquals(14.8, p.plans.get(0).km, 0.01);
+    }
+
 }

@@ -2584,7 +2584,15 @@ public final class Activities {
                 int te = (int) t[2];
                 String tail = beforeBlank.substring(Math.min(beforeBlank.length(), (int) t[0]),
                         Math.min(beforeBlank.length(), te + 4));
-                if (!tail.contains("km")) continue;
+                // A MÉTERES második táv is táv, ha tárgyragos: az „úsztam
+                // 500 m-t, majd még 300 m-t" háromszáz métere eddig
+                // elveszett – a kilométeres alak két bejegyzést kapott, a
+                // méteres egyet. A szintemelkedés („620 m emelkedés") és a
+                // pálya hossza továbbra sem táv: azok ragtalanok.
+                boolean meterDist = tail.matches("(?s).*\\d\\s?"
+                        + "(?:m-t|m-et|metert|m-en|meteren)\\b.*")
+                        && !tail.matches("(?s).*(emelked|szint|palya).*");
+                if (!tail.contains("km") && !meterDist) continue;
                 int said2 = minutesFor(mins, (int) t[0], (int) t[2],
                         -1, Integer.MAX_VALUE, 0);
                 for (Plan p : out) if (p.minutes == said2) said2 = 0;
