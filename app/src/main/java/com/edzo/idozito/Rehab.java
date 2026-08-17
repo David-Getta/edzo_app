@@ -800,8 +800,15 @@ public final class Rehab {
                 // eddig válasz nélkül maradt.
                 {"csipo", "csipom", "csipoje", "csipoprotezis", "csipo",
                         "farizom", "farizmo",
+                        // A TOMPOR a csípő külső csontos pontja – a futók
+                        // gyakori panasza, és eddig üres választ kapott.
+                        "tompor", "tomporom",
                         "farpofa", "gluteusz"},
-                {"achilles", "achilles", "vadlim", "sarkam", "sarok faj", "sarokfaj"},
+                // A LÁBIKRA a vádli hétköznapi neve: a „görcsöl a lábikrám"
+                // eddig válasz nélkül maradt, pedig az Achilles-vádli sor
+                // pont erre való.
+                {"achilles", "achilles", "vadlim", "vadli", "labikra", "labikram",
+                        "sarkam", "sarok faj", "sarokfaj"},
                 // A sarkantyú és a plantaris fasciitis a TALP sora, nem az
                 // Achillesé: a fájdalom a talp elülső-belső élén ébred, és a
                 // talpi szalagot kell terhelni hozzá.

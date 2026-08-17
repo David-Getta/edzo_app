@@ -831,4 +831,9 @@ public class RehabTest {
         assertNull(Rehab.redFlag("f\u00e1j a t\u00e9rdem, piros a cip\u0151m"));
     }
 
+    @Test public void everydayNamesForCalfAndHipResolve() {
+        assertEquals("achilles", Rehab.forComplaint("g\u00f6rcs\u00f6l a l\u00e1bikr\u00e1m \u00e9jjel").id);
+        assertEquals("csipo", Rehab.forComplaint("f\u00e1j a tomporom fut\u00e1s ut\u00e1n").id);
+    }
+
 }
