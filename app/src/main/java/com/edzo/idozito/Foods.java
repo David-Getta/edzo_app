@@ -127,7 +127,9 @@ public final class Foods {
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
                 "brios", "molnark", "bagel"),
         new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
-                "protein zabkasa", "overnight oats", "oats"),
+                "protein zabkasa", "overnight oats", "oats",
+                // Az angol zabkása-nevek a magyar naplóban is előfordulnak.
+                "porridge"),
         new Food("Müzli", 380, 9, 60, "muzli", "granola",
                 // Ékezet nélkül gépelve leggyakrabban így: „musli".
                 "musli"),
@@ -425,7 +427,10 @@ public final class Foods {
                 // hozzon MELLÉ egy kész turmixot is („whey protein 30 g").
                 "whey protein", "kazein protein", "kollagen"),
         new Food("Proteinszelet", 350, 30, 60, "proteinszelet", "protein szelet",
-                "feherjeszelet", "feherje szelet", "energiaszelet"),
+                "feherjeszelet", "feherje szelet", "energiaszelet",
+                // A „protein bar" eddig protein TURMIX volt: háromszáz
+                // gramm ital egy hatvangrammos szelet helyett.
+                "protein bar", "proteinbar"),
         // A Pöttyös a túró rudi márkaneve – a „Pöttyös óriás guru" is az.
         new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi", "pottyos"),
         new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque",
@@ -2586,6 +2591,15 @@ public final class Foods {
         query = query.replaceAll("(?iu)vizet,?\\s*(?:kb\\.?\\s*)?"
                 + "(\\d+(?:[.,]\\d+)?)\\s?litert?(?!\\p{L})",
                 "$1 liter vizet");
+        // Az ANGOL ételnevek szóhatárral, nem szótőként: a „fries" a
+        // GOFRIES ragozott alak belsejében is ott van, a „chicken" pedig
+        // a saját ragozott alakját nyelné el. Külön szó csak külön szót
+        // cserél.
+        query = query.replaceAll("(?iu)(?<!\\p{L})chicken\\s+wings?(?!\\p{L})",
+                "csirkeszárny");
+        query = query.replaceAll("(?iu)(?<!\\p{L})chicken(?!\\p{L})", "csirke");
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:french\\s+)?fries(?!\\p{L})",
+                "sültkrumpli");
         // Az ÉTEL-EMODZSI is étel: a „🍕 2 szelet" eddig üresen jött
         // vissza, pedig a sport-emodzsik régóta működnek.
         {

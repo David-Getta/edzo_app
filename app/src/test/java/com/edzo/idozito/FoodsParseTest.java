@@ -1466,4 +1466,18 @@ public class FoodsParseTest {
         assertEquals(40, h.get(0).grams, 0.01);
     }
 
+    @Test public void englishGymFoodNamesResolve() {
+        assertEquals("Zabpehely", hits("porridge reggelire").get(0).food.name);
+        assertEquals("Proteinszelet", hits("protein bar edz\u00e9s ut\u00e1n").get(0).food.name);
+        assertEquals("Csirkemell (s\u00fclt/grill)", hits("chicken salad").get(0).food.name);
+        assertEquals("Csirkecomb", hits("chicken wings").get(0).food.name);
+    }
+
+    @Test public void friesIsSideOrderNotPartOfGofri() {
+        List<Foods.Hit> h = hits("cheat day: burger \u00e9s fries");
+        assertEquals(2, h.size());
+        assertEquals("S\u00fclt krumpli", h.get(1).food.name);
+        assertEquals("Gofri", hits("gofri tejsz\u00ednhabbal").get(0).food.name);
+    }
+
 }
