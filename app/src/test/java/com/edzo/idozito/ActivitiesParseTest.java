@@ -5146,4 +5146,17 @@ public class ActivitiesParseTest {
         assertEquals(26, p.plans.get(0).minutes);
     }
 
+    @Test public void trackLapsMultiplyByTheLapLength() {
+        Activities.Parsed p = Activities.parse("10 k\u00f6r a 400 m-es p\u00e1ly\u00e1n");
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(4.0, p.plans.get(0).km, 0.01);
+        assertEquals(3.2, Activities.parse(
+                "8 k\u00f6rt futottam a 400 m\u00e9teres p\u00e1ly\u00e1n").plans.get(0).km, 0.01);
+    }
+
+    @Test public void lapsOnALakeAreNotAnHourOfTheClock() {
+        assertEquals(12, Activities.parse("3 k\u00f6r a tavon kajakkal").hour);
+        assertEquals(6, Activities.parse("ma 6 kor futottam").hour);
+    }
+
 }

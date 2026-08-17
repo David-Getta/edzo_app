@@ -1538,6 +1538,25 @@ public final class Activities {
         // eddig elveszett a hossz, és az alapidő ment be helyette.
         s = s.replaceAll("(?<=\\d)\\s?(?:pecet|pecig|prec|percig?et)"
                 + "(?![a-z])", " percet");
+        // A PÁLYAKÖR a pálya hosszával szorzódik: a „10 kör a 400 m-es
+        // pályán" négy kilométer – eddig négyszáz méter lett belőle, mert
+        // csak a pálya hosszát láttuk távnak.
+        {
+            java.util.regex.Matcher km = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,3})\\s?kor\\w*[^,;.\\d]{0,20}?"
+                    + "(\\d{3,4})\\s?m(?:-?es|eter\\w*)?\\s+palya\\w*")
+                    .matcher(s);
+            if (km.find()) {
+                int laps = Integer.parseInt(km.group(1));
+                int lap = Integer.parseInt(km.group(2));
+                double total = laps * lap / 1000.0;
+                if (laps >= 1 && laps <= 200 && lap >= 100 && lap <= 2000
+                        && total <= 100)
+                    s = s.substring(0, km.start())
+                            + Hu.d1(total).replace('.', ',') + " km"
+                            + s.substring(km.end());
+            }
+        }
         // A BETEGSÉG hossza nem az edzés időszaka: a „beteg voltam egy
         // hetig, ma volt az első edzés: 30 perc" harminc perce MA történt,
         // mégis hét napra oszlott szét a naplóban.
@@ -3953,9 +3972,19 @@ public final class Activities {
             int h = Integer.parseInt(cm.group(1));
             if (h >= 0 && h <= 23) return h;
         }
+        // A SZÓKÖZÖS „3 kor" ékezet nélkül a KÖR is lehet: a „3 kör a
+        // tavon" hajnali háromra tette a bejegyzést. A kötőjeles alak
+        // mindig időpont marad; a szóközösnél a PÁLYA, a tó és a medence
+        // dönti el, hogy körökről van szó.
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d,.:])(\\d{1,2})\\s?-?(?:kor|orakor)(?![a-z])").matcher(s);
-        if (m.find()) {
+                .compile("(?<![\\d,.:])(\\d{1,2})(\\s?-\\s?kor|\\s?orakor"
+                        + "|\\s+kor)(?![a-z])").matcher(s);
+        while (m.find()) {
+            boolean spaced = m.group(2).matches("\\s+kor");
+            if (spaced && s.substring(m.end(),
+                    Math.min(s.length(), m.end() + 28))
+                    .matches("(?s).*(palya|stadion|tavon|to korul|medence"
+                        + "|salak|tartan|futokor).*")) continue;
             int h = Integer.parseInt(m.group(1));
             if (h >= 0 && h <= 23) {
                 if (h < 12) {
