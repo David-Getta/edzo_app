@@ -5437,4 +5437,31 @@ public class ActivitiesParseTest {
                 .plans.size());
     }
 
+    /**
+     * A MUNKA/PIHEN\u0150 p\u00e1r nem alkalomsz\u00e1m: a „20/10 tabata" \u00e9s a „30/30
+     * intervall 10x" perjeles p\u00e1rj\u00e1b\u00f3l t\u00edz, illetve harminc K\u00dcL\u00d6N edz\u00e9s
+     * lett – ugyanannyi napra sz\u00e9tter\u00edtve, egyetlen edz\u00e9sb\u0151l.
+     */
+    @Test
+    public void aWorkRestPairIsNotASessionCount() {
+        Activities.Parsed p = Activities.parse("20/10 tabata");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(1, Activities.parse("30/30 intervall 10x").plans.get(0).count);
+        assertEquals(1, Activities.parse("30/30 intervall 10x").days);
+    }
+
+    /**
+     * A d\u00e9lut\u00e1ni \u00d3RA sem alkalomsz\u00e1m: a „18 kor edz\u00e9s" hat \u00f3rai edz\u00e9s,
+     * nem tizennyolc k\u00fcl\u00f6n alkalom. A „3 k\u00f6r edz\u00e9s" viszont h\u00e1rom k\u00f6r.
+     */
+    @Test
+    public void anAfternoonHourIsNotACircuitCount() {
+        Activities.Parsed p = Activities.parse("18 k\u00f6r edz\u00e9s");
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(18, p.hour);
+        assertEquals(3, Activities.parse("3 k\u00f6r edz\u00e9s, mindegyik 10 perc")
+                .plans.get(0).count);
+    }
+
 }

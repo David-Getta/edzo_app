@@ -1222,6 +1222,12 @@ public final class Activities {
                 // kilométer – eddig a negyven perc elveszett, és a
                 // mozgásforma átlagából lett kilencven perc.
                 + "(?=tempo(?:val|ban|ra|t|m|ja|nk|hoz)?(?![a-z]))", "$1:00-as ");
+        // A MUNKA/PIHENŐ pár nem alkalomszám: a „20/10 tabata" és a
+        // „30/30 intervall 10x" perjeles párja szakasz-hossz. Eddig tíz,
+        // illetve harminc KÜLÖN edzés lett belőle – tíz-, illetve
+        // harmincnapos szakaszra szétterítve, egyetlen negyedórás edzésből.
+        // (Az időzítő-terv külön olvassa a mondatot, annak a pár megmarad.)
+        s = s.replaceAll("(?<![\\d,.:])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.:])", " ");
         // A TERVEZETT és a MEGLETT: a „10 km-t terveztem, 12 lett belőle"
         // tizenkét kilométer – eddig a tervezett tíz ment be, vagyis épp a
         // ráadás veszett el. A második szám a megtett, mert a mondat maga
@@ -4177,6 +4183,10 @@ public final class Activities {
                     Math.min(s.length(), m.end() + 28))
                     .matches("(?s).*(palya|stadion|tavon|to korul|medence"
                         + "|salak|tartan|futokor).*")) continue;
+            // A KETTŐSPONT a körök felsorolását nyitja: az „5 kör: 400 m
+            // futás, 15 fekvőtámasz" hajnali ötre került a naplóban.
+            // Időpont után kettőspont nem áll – az már perc lenne.
+            if (spaced && s.substring(m.end()).matches("(?s)\\s*:.*")) continue;
             int h = Integer.parseInt(m.group(1));
             if (h >= 0 && h <= 23) {
                 if (h < 12) {
@@ -5866,6 +5876,18 @@ public final class Activities {
     private static int countBefore(String s, int at) {
         int[] n = numberBefore(s, at, NUM_REACH);
         if (n == null) return 1;
+        // Az IDŐPONT nem alkalomszám: a „18 kor edzés" hat órai edzés, nem
+        // tizennyolc külön alkalom – eddig tizennyolc bejegyzés lett belőle,
+        // tizennyolc napra szétterítve. A „3 kör edzés" viszont valóban
+        // három: ott az óra-felismerő sem lát időpontot.
+        String tail = s.substring(n[1]);
+        boolean clock = tail.matches("(?s)\\s*-\\s*(?:kor|orakor)(?![a-z]).*")
+                || tail.matches("(?s)\\s*orakor(?![a-z]).*")
+                // A SZÓKÖZÖS alak csak délutáni órán egyértelmű: a „3 kör
+                // edzés" három kör, a „18 kor edzés" viszont hat óra –
+                // tizennyolc köredzést senki nem csinál.
+                || (tail.matches("(?s)\\s+kor(?![a-z]).*") && n[2] >= 13);
+        if (clock && findHour(s) == n[2]) return 1;
         return Math.max(1, Math.min(50, n[2]));
     }
 
