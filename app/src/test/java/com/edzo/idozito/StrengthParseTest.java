@@ -1542,4 +1542,20 @@ public class StrengthParseTest {
                 .get(0).sets.get(0).weight, 0.01);
     }
 
+    /**
+     * A SOROZAT m\u00e1sodik sz\u00e1ma nem lista-jel: a „guggol\u00e1s 5x5. valami"
+     * \u00f6t\u00f6se ism\u00e9tl\u00e9s, m\u00e9gis a lista-sorsz\u00e1mok k\u00f6z\u00e9 esett – a
+     * gyakorlat teljesen kiesett az er\u0151napl\u00f3b\u00f3l, ha b\u00e1rmi k\u00f6vette.
+     */
+    @Test
+    public void aSetIsNotLostWhenSomethingFollowsIt() {
+        assertEquals(1, StrengthParse.parse("guggol\u00e1s 5x5. valami").size());
+        java.util.List<StrengthParse.Item> l = StrengthParse.parse(
+                "fekvenyom\u00e1s 4x8 65 kg, guggol\u00e1s 5x5. Este 30 perc laza bringa.");
+        assertEquals(2, l.size());
+        // A val\u00f3di sz\u00e1mozott lista marad lista.
+        assertEquals(2, StrengthParse.parse(
+                "1. guggol\u00e1s 3x10 2. fekvenyom\u00e1s 3x8").size());
+    }
+
 }

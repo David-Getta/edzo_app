@@ -279,7 +279,11 @@ public final class StrengthParse {
         // szét.
         s = s.replaceAll("(?:^|(?<=[^0-9]\\s))[-–—•]\\s+(?=[a-z0-9])", ", ");
         if (s.startsWith(", ")) s = s.substring(2);
-        return s.replaceAll("(?<![\\d,.])(\\d{1,2})[.)]\\s+(?=[a-z])", " ");
+        // A SOROZAT második száma nem lista-jel: a „guggolás 5x5. valami"
+        // ötöse ismétlés, és a mondatból „5x valami" maradt – a gyakorlat
+        // teljesen kiesett az erőnaplóból, ha bármi követte a sorozatot.
+        return s.replaceAll("(?<![\\d,.])(?<!\\dx)(?<!\\d×)"
+                + "(\\d{1,2})[.)]\\s+(?=[a-z])", " ");
     }
 
     /**
