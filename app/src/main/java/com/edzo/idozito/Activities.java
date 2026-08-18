@@ -1273,8 +1273,13 @@ public final class Activities {
         // jump 4x5" harcművészet-bejegyzést, a „nordic curl 3x5" túrát
         // csinált – mindkettő erőgyakorlat, a saját nevében hordva egy
         // másik sportág szavát.
-        s = s.replaceAll("(?<![a-z])box(?=[- ]?(?:jump|ugras))", " ");
-        s = s.replaceAll("(?<![a-z])nordic(?=[- ]?(?:curl|hamstring))", " ");
+        // A gyakorlat SZETT-jelölésével együtt takarjuk ki: a magára maradt
+        // „4x5" különben a következő tagmondat sportjának alkalomszáma lett
+        // („…box jump 4x5. csütörtök: úszás 40 perc" → négy úszás).
+        s = s.replaceAll("(?<![a-z])box[- ]?(?:jump|ugras)\\w*"
+                + "(?:\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3})?", " ");
+        s = s.replaceAll("(?<![a-z])nordic[- ]?(?:curl|hamstring)\\w*"
+                + "(?:\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3})?", " ");
         // A PRE WORKOUT ital, nem edzés: a „pre workout ital edzés előtt"
         // mellé eddig egy negyvenöt perces „egyéb mozgás" került a naplóba –
         // egy pohár italból. Az étkezés-felismerő a saját szövegéből
