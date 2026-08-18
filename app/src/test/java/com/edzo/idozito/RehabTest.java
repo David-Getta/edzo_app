@@ -841,4 +841,15 @@ public class RehabTest {
         assertNull(Rehab.forGoal("a bolt nyit\u00e1s ut\u00e1n futottam 5 km-t"));
     }
 
+    /**
+     * A MEGH\u00daZ\u00c1S a leggyakoribb h\u00e9tk\u00f6znapi s\u00e9r\u00fcl\u00e9s-sz\u00f3: a „bok\u00e1mat
+     * h\u00faztam meg, mikor kezdhetek" eddig v\u00e1lasz n\u00e9lk\u00fcl maradt.
+     */
+    @Test
+    public void aPulledJointIsAComplaint() {
+        Rehab.Area a = Rehab.forComplaint("bok\u00e1mat h\u00faztam meg, mikor kezdhetek");
+        assertNotNull(a);
+        assertEquals("boka", a.id);
+    }
+
 }

@@ -407,6 +407,11 @@ public final class Rehab {
                 // A „kiugrott a derekam" a magyar hexensussz, a „begyulladt
                 // az Achillesem" igekötős gyulladás – egyik sem talált eddig.
                 "kiugrott", "begyullad",
+                // A MEGHÚZÁS a leggyakoribb hétköznapi sérülés-szó: a
+                // „bokámat húztam meg, mikor kezdhetek" eddig válasz nélkül
+                // maradt, pedig ez pontosan a rehab-sor kérdése.
+                "meghuztam", "huztam meg", "megrantottam", "megrantotta",
+                "meghuzta", "huzta meg",
                 // Az INSTABILITÁS is panasz, fájdalom-szó nélkül: a „bokám
                 // gyakran kifordul futás közben" és az „instabil a térdem"
                 // eddig válasz nélkül maradt – pedig pont ezekre való a sor.

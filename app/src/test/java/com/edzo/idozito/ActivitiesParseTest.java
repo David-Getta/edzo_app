@@ -5425,4 +5425,16 @@ public class ActivitiesParseTest {
         assertEquals("kondi", p.plans.get(0).kind.id);
     }
 
+    /**
+     * A JELEN IDEJ\u0170 tagad\u00e1s is tagad\u00e1s: a „hask\u00f6z\u00e9p gyenge, plank nem
+     * megy" mondatb\u00f3l egy hatvan perces kondi-bejegyz\u00e9s lett.
+     */
+    @Test
+    public void aPresentTenseNegationBlocksTheEntry() {
+        assertTrue(Activities.parse("hask\u00f6z\u00e9p gyenge, plank nem megy").plans.isEmpty());
+        // A m\u00e1sik tagmondat val\u00f3di edz\u00e9se megmarad.
+        assertEquals(1, Activities.parse("futottam 5 km-t, de a plank nem megy")
+                .plans.size());
+    }
+
 }

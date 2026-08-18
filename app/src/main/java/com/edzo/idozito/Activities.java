@@ -5740,6 +5740,10 @@ public final class Activities {
             if (p == 0 || !Character.isLetter(s.charAt(p - 1))) {
                 boolean undone = false;
                 for (String v : new String[]{"voltam", "volt", "mentem", "ment",
+                        // A JELEN IDEJŰ alak is tagadás: a „hasközép gyenge,
+                        // plank nem megy" mondatból egy hatvan perces
+                        // kondi-bejegyzés lett – abból, ami épp NEM megy.
+                        "megy",
                         "jutottam", "sikerult", "tudtam", "birtam", "ertem ra",
                         "jott ossze", "lett belole",
                         // „Csak átöltöztem, edzés nem lett": a hátravetett

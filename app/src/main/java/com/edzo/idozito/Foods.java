@@ -866,6 +866,10 @@ public final class Foods {
             // a rizs, az állCSÚSZÁSban a csusza. A rehab-lap ezeket a neveket
             // mutatja, tehát pont ezeket másolja be az ember.
             "farizom", "farizmo", "allcsusz", "allcsusztat",
+            // A COMBIZOM-ban a comb: a „meghúztam a combizmomat" mellé eddig
+            // egy százötven grammos csirkecomb került a naplóba – egy
+            // sérülés-mondatból. A combhajlító és a combcsont ugyanez.
+            "combizm", "combizo", "combhajlit", "combcsont", "combfeszit",
             // A KORIZÁS szlengjében is rizs lakik: a „görkoriztam a
             // rakparton" nyolc kilométeréhez eddig egy adag főtt rizs is
             // került a naplóba.

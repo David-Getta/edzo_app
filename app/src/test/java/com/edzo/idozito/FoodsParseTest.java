@@ -1566,4 +1566,16 @@ public class FoodsParseTest {
         assertEquals("Lekv\u00e1r", l.get(0).food.name);
     }
 
+    /**
+     * A COMBIZOM-ban a comb: a „megh\u00faztam a combizmomat" mell\u00e9 eddig egy
+     * sz\u00e1z\u00f6tven grammos csirkecomb ker\u00fclt a napl\u00f3ba – egy s\u00e9r\u00fcl\u00e9sb\u0151l.
+     */
+    @Test
+    public void aThighMuscleIsNotAChickenThigh() {
+        assertTrue(hits("megh\u00faztam a combizmomat").isEmpty());
+        assertTrue(hits("f\u00e1j a combizom").isEmpty());
+        // A val\u00f3di csirkecomb marad.
+        assertFalse(hits("csirkecomb rizzsel").isEmpty());
+    }
+
 }
