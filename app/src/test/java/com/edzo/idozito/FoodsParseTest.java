@@ -1578,4 +1578,27 @@ public class FoodsParseTest {
         assertFalse(hits("csirkecomb rizzsel").isEmpty());
     }
 
+    /**
+     * A K\u00c1V\u00c9BA \u00f6nt\u00f6tt tej nem egy poh\u00e1r tej: az „egy b\u00f6gre k\u00e1v\u00e9 tejjel"
+     * mell\u00e9 eddig k\u00e9tdecinyi tej ker\u00fclt – sz\u00e1znegyven kal\u00f3ria egy
+     * l\u00f6ttyint\u00e9sb\u0151l.
+     */
+    @Test
+    public void aSplashOfMilkInCoffeeIsNotAGlass() {
+        for (Foods.Hit h : hits("egy b\u00f6gre k\u00e1v\u00e9 tejjel"))
+            if (h.food.name.equals("Tej")) assertEquals(30.0, h.grams, 0.01);
+        for (Foods.Hit h : hits("k\u00e1v\u00e9t ittam tejjel"))
+            if (h.food.name.equals("Tej")) assertEquals(30.0, h.grams, 0.01);
+        // A poh\u00e1r tej marad poh\u00e1r tej.
+        assertEquals(200.0, hits("ittam 2 dl tejet").get(0).grams, 0.01);
+    }
+
+    /** A k\u00fcl\u00f6n \u00edrt „tejes k\u00e1v\u00e9" ugyanaz a tejesk\u00e1v\u00e9. */
+    @Test
+    public void aSpacedMilkCoffeeIsOneDrink() {
+        java.util.List<Foods.Hit> l = hits("tejes k\u00e1v\u00e9");
+        assertEquals(1, l.size());
+        assertTrue(l.get(0).food.name, l.get(0).food.name.startsWith("Tejesk\u00e1v\u00e9"));
+    }
+
 }

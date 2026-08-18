@@ -2552,6 +2552,15 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A KÁVÉBA öntött tej nem egy pohár tej: az „egy bögre kávé tejjel"
+        // mellé eddig kétdecinyi tej került a naplóba – száznegyven kalória
+        // egy löttyintésből. A tejes alak összetett szó, csak épp külön
+        // írva: a „tejes kávé" ugyanaz a tejeskávé.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(k[aá]v[eé]\\p{L}*|tea\\p{L}*|"
+                + "kaka[oó]\\p{L}*)([^,;.]{0,14}?)\\s+tejjel(?!\\p{L})",
+                "$1$2, 30 g tej");
+        query = query.replaceAll("(?iu)(?<!\\p{L})tejes\\s+k[aá]v[eé](\\p{L}*)",
+                "tejeskave$1");
         // A „BŐRÖN SÜLT" nem bor: az ékezetek nélkül a „bőr" és a „bor"
         // ugyanaz a három betű, és a „sült csirkecomb bőrön sült krumplival"
         // mellé eddig egy pohár vörösbor is bekerült a naplóba. A jelzős
