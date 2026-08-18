@@ -869,6 +869,8 @@ public class IntervalParseTest {
     @Test
     public void oneRoundWithoutRestIsNotAPlan() {
         assertNull(IntervalParse.parse("5 perc szauna, 30 perc \u00fasz\u00e1s"));
+        // K\u00e9t k\u00fcl\u00f6nb\u00f6z\u0151 tev\u00e9kenys\u00e9g ideje sem munka/pihen\u0151 p\u00e1r.
+        assertNull(IntervalParse.parse("30 perc busszal, 20 perc gyalogl\u00e1s"));
         // A kimondott terv \u00e9s a puszta id\u0151mez\u0151 marad.
         assertNotNull(IntervalParse.parse("amrap 20 perc"));
         assertNotNull(IntervalParse.parse("2 perc"));

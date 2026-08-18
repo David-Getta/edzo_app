@@ -5023,7 +5023,17 @@ public final class Activities {
                 // 30 perc úszás" ötperces úszást írt a naplóba.
                 || w.startsWith("szauna") || w.startsWith("zuhany")
                 || w.startsWith("oltoz") || w.startsWith("masszazs")
-                || w.startsWith("jakuzzi") || w.startsWith("gozfurdo");
+                || w.startsWith("jakuzzi") || w.startsWith("gozfurdo")
+                // A JÁRMŰVEL megtett út sem mozgás: a „20 perc autóval a
+                // terembe, 45 perc edzés" húsz perces kondi-edzést írt a
+                // naplóba, a valódi negyvenöt meg elveszett. (A biciklivel
+                // és a gyalog megtett út SZÁNDÉKOSAN nincs itt: az mozgás.)
+                || w.equals("autoval") || w.equals("kocsival")
+                || w.equals("busszal") || w.equals("vonattal")
+                || w.equals("villamossal") || w.equals("metroval")
+                || w.equals("taxival") || w.equals("motorral")
+                || w.equals("repulovel") || w.equals("hajoval")
+                || w.equals("trolival") || w.equals("hevvel");
         return desk && !s.contains("kerti munka") && !s.contains("fizikai munka")
                 && !s.contains("haz koruli");
     }

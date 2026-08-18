@@ -5674,4 +5674,17 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A J\u00c1RM\u0170VEL megtett \u00fat sem mozg\u00e1s: a „20 perc aut\u00f3val a terembe,
+     * 45 perc edz\u00e9s" h\u00fasz perces kondi-edz\u00e9st \u00edrt a napl\u00f3ba.
+     */
+    @Test
+    public void travelMinutesByVehicleAreNotTheWorkout() {
+        assertEquals(45, Activities.parse("20 perc aut\u00f3val a terembe, 45 perc edz\u00e9s")
+                .plans.get(0).minutes);
+        // A bicikli \u00e9s a gyaloglás viszont mozg\u00e1s.
+        assertEquals(10, Activities.parse("10 perc biciklivel a boltba")
+                .plans.get(0).minutes);
+    }
+
 }
