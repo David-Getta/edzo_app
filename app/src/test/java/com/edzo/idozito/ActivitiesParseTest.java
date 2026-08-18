@@ -5687,4 +5687,21 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A J\u00c1RM\u0170VEL megtett T\u00c1V sem edz\u00e9s-t\u00e1v: a „200 km vezet\u00e9s" k\u00e9tsz\u00e1z
+     * kilom\u00e9teres FUT\u00c1ST \u00edrt a napl\u00f3ba – h\u00fasz \u00f3r\u00e1t.
+     */
+    @Test
+    public void kilometresByVehicleAreNotWorkoutDistance() {
+        assertTrue(Activities.parse("200 km vezet\u00e9s, semmi mozg\u00e1s").plans.isEmpty());
+        Activities.Parsed p = Activities.parse(
+                "40 km aut\u00f3val a hegyekbe, ott 8 km t\u00fara");
+        assertEquals(1, p.plans.size());
+        assertEquals(8.0, p.plans.get(0).km, 0.01);
+        assertEquals(1, Activities.parse("30 km-t vezettem, azt\u00e1n 5 km fut\u00e1s")
+                .plans.size());
+        // A bicikli t\u00e1vja marad.
+        assertEquals(40.0, Activities.parse("40 km biciklivel").plans.get(0).km, 0.01);
+    }
+
 }

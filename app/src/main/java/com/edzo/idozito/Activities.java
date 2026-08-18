@@ -1298,6 +1298,17 @@ public final class Activities {
                 + "(?:\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3})?", " ");
         s = s.replaceAll("(?<![a-z])nordic[- ]?(?:curl|hamstring)\\w*"
                 + "(?:\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3})?", " ");
+        // A JÁRMŰVEL megtett táv nem edzés-táv: a „200 km vezetés" kétszáz
+        // kilométeres FUTÁST írt a naplóba – húsz órát –, a „40 km autóval a
+        // hegyekbe, ott 8 km túra" pedig egy negyven kilométeres túrát a
+        // valódi nyolc mellé. A biciklivel és gyalog megtett táv marad.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,4}(?:[.,]\\d)?\\s?km(?:-t|-en|-re)?\\s+"
+                + "(?=(?:autoval|kocsival|busszal|vonattal|villamossal|"
+                + "metroval|taxival|motorral|repulovel|hajoval|vezetes|"
+                + "vezettem|vezetek|autoztam|buszoztam|vonatoztam)(?![a-z]))",
+                " ");
+        s = s.replaceAll("(?<![\\d,.])\\d{1,4}(?:[.,]\\d)?\\s?km(?:-t)?\\s+"
+                + "(?:vezet\\w*|autoz\\w*|buszoz\\w*|vonatoz\\w*)", " ");
         // A PRE WORKOUT ital, nem edzés: a „pre workout ital edzés előtt"
         // mellé eddig egy negyvenöt perces „egyéb mozgás" került a naplóba –
         // egy pohár italból. Az étkezés-felismerő a saját szövegéből
