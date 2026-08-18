@@ -877,4 +877,18 @@ public class IntervalParseTest {
         assertNotNull(IntervalParse.parse("emom 12 perc"));
     }
 
+    /**
+     * Az ID\u0150PONT „-kor" ragja nem k\u00f6r: a „6:15-kor keltem" miatt a napi
+     * napl\u00f3-sor tervnek l\u00e1tszott, \u00e9s egyk\u00f6r\u00f6s id\u0151z\u00edt\u0151 lett bel\u0151le.
+     */
+    @Test
+    public void aClockSuffixIsNotARound() {
+        assertNull(IntervalParse.parse("ma reggel 6:15-kor keltem, 7,5 \u00f3r\u00e1t "
+                + "aludtam. 45 perc kondi. Este 30 perc laza bringa."));
+        // A val\u00f3di k\u00f6r marad k\u00f6r.
+        IntervalParse.Plan p = IntervalParse.parse("8 k\u00f6r: 20 mp sprint, 40 mp s\u00e9ta");
+        assertNotNull(p);
+        assertEquals(8, p.rounds);
+    }
+
 }

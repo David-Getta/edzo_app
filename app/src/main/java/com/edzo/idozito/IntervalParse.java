@@ -879,7 +879,14 @@ public final class IntervalParse {
                 // A „KORahajnali", a „korán" és a „korosztály" nem kör: a
                 // szó eleji „kor" miatt a hajnali ébredésből egykörös
                 // időzítő lett.
-                boolean notRound = w.equals("kor")
+                // Az IDŐPONT „-kor" ragja sem kör: a „6:15-kor keltem" miatt
+                // a mondat tervnek látszott, és a naplóból egykörös,
+                // negyvenöt perces időzítő lett. A rag előtt szám áll.
+                boolean clockSuffix = w.equals("kor") && p > 0
+                        && (Character.isDigit(s.charAt(p - 1))
+                            || (s.charAt(p - 1) == '-' && p > 1
+                                && Character.isDigit(s.charAt(p - 2))));
+                boolean notRound = clockSuffix || w.equals("kor")
                         && (s.startsWith("an", p + 3) || s.startsWith("ai", p + 3)
                             || s.startsWith("abb", p + 3)
                             || s.startsWith("ahajnal", p + 3)
