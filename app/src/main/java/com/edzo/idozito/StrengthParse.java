@@ -966,7 +966,14 @@ public final class StrengthParse {
         // „fekvenyomás max 120 kg”: a legnehezebb, amit egyszer megnyomott.
         // Csak ha van súly ÉS nincs semmilyen ismétlés-adat – a „3 szett
         // maximumig” ismétlésszáma ismeretlen, abból nem találunk ki egyet.
-        if (sets.isEmpty() && weight > 0 && s.matches(".*(^|[^a-z])max.*"))
+        // A magyar FELSŐFOK ugyanezt mondja: a „fekvenyomás ma 60 kg volt a
+        // legtöbb" és a „guggolásban a legnehezebb 100 kg" ugyanaz a csúcs,
+        // csak épp az „max" szó nélkül – eddig mindkettő üresen jött vissza.
+        if (sets.isEmpty() && weight > 0
+                && (s.matches(".*(^|[^a-z])max.*")
+                    || s.matches(".*(^|[^a-z])leg(tobb|nehezebb|jobb|nagyobb)"
+                            + "\\w*([^a-z]|$).*")
+                    || s.matches(".*(^|[^a-z])(csucssuly|top szett|top set)\\w*.*")))
             sets.add(new Set(1, weight));
         // A CSÚCS-mondat ugyanez, magyarul: „végre lement a 100 kg-os
         // fekvenyomás", „sikerült a 200 kg-os holtemelés", „megdöntöttem a

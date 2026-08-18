@@ -1449,4 +1449,29 @@ public class StrengthParseTest {
                 StrengthParse.parse("mell nap: nyom\u00e1s 3x8 60").get(0).name);
     }
 
+    /**
+     * A magyar FELS\u0150FOK ugyanaz a cs\u00facs, mint a „max": a „fekvenyom\u00e1s ma
+     * 60 kg volt a legt\u00f6bb" eddig \u00fcresen j\u00f6tt vissza.
+     */
+    @Test
+    public void aHungarianSuperlativeIsAMaxAttempt() {
+        java.util.List<StrengthParse.Item> l =
+                StrengthParse.parse("fekvenyom\u00e1s ma 60 kg volt a legt\u00f6bb");
+        assertEquals(1, l.size());
+        assertEquals(1, l.get(0).sets.get(0).reps);
+        assertEquals(60.0, l.get(0).sets.get(0).weight, 0.01);
+        assertEquals(1, StrengthParse.parse(
+                "guggol\u00e1sban a legnehezebb 100 kg volt").size());
+        assertEquals(1, StrengthParse.parse("holtemel\u00e9s top szett 140 kg").size());
+    }
+
+    /** Ism\u00e9tl\u00e9s-adat mellett viszont a val\u00f3di sorozat marad. */
+    @Test
+    public void aSupersetiveNextToRealSetsDoesNotOverrideThem() {
+        java.util.List<StrengthParse.Item> l = StrengthParse.parse(
+                "fekvenyom\u00e1s 3x8 60 kg, a legjobb szett az utols\u00f3");
+        assertEquals(3, l.get(0).sets.size());
+        assertEquals(8, l.get(0).sets.get(0).reps);
+    }
+
 }
