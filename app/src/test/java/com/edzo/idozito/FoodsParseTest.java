@@ -1612,9 +1612,11 @@ public class FoodsParseTest {
         assertEquals("Kefir", Foods.closest(all, "kefri").name);
         assertEquals("Ban\u00e1n", Foods.closest(all, "banna").name);
         assertEquals("Joghurt", Foods.closest(all, "joghrut").name);
-        // A h\u00e9tk\u00f6znapi szavak tov\u00e1bbra sem kapnak tippet.
+        // A h\u00e9tk\u00f6znapi szavak tov\u00e1bbra sem kapnak tippet – \u00f6t bet\u0171n\u00e9l a
+        // CSER\u00c9LT bet\u0171 t\u00fal k\u00f6zel visz: a „hasam" a has\u00e1b, a „fogam" a fogas,
+        // a „l\u00e1zas" a lazac egy hib\u00e1nyira van.
         for (String w : new String[]{"valami", "asztal", "szoba", "fotel",
-                "tan\u00e1r", "orvos"})
+                "tan\u00e1r", "orvos", "hasam", "fogam", "l\u00e1zas", "karom", "t\u00e9rdem"})
             assertTrue(w, Foods.closest(all, w) == null);
     }
 

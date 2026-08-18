@@ -1751,6 +1751,13 @@ public final class Foods {
                     if (Math.abs(ns.length() - tok.length()) > max) continue;
                     int d = editDistance(tok, ns, max);
                     if (d <= 0 || d > max) continue;
+                    // Öt betűnél csak a FELCSERÉLT betű elég biztos jel: a
+                    // „kefri" a kefir, a „banna" a banán, a „tojsa" a tojás –
+                    // egyetlen ujjmozdulat mind. A cserélt betűs „hasam"
+                    // viszont a hasáb, a „fogam" a fogas, a „lázas" a lazac
+                    // közelébe esik, és ezek a szavak ebben az appban napi
+                    // vendégek. A rossz tipp bosszantóbb, mint a semmi.
+                    if (tok.length() < 6 && !swapped(tok, ns)) continue;
                     // Azonos távolságnál a hosszabb szótő a jobb tipp: több
                     // betű egyezik, tehát kevesebb a véletlen.
                     if (d < bestDist || (d == bestDist && ns.length() > bestLen)) {
@@ -1759,6 +1766,18 @@ public final class Foods {
                 }
         }
         return best;
+    }
+
+    /** Pontosan két SZOMSZÉDOS betű felcserélve – más eltérés nincs. */
+    private static boolean swapped(String a, String b) {
+        if (a.length() != b.length()) return false;
+        int n = a.length(), i = 0;
+        while (i < n && a.charAt(i) == b.charAt(i)) i++;
+        if (i + 1 >= n) return false;
+        if (a.charAt(i) != b.charAt(i + 1) || a.charAt(i + 1) != b.charAt(i))
+            return false;
+        for (int j = i + 2; j < n; j++) if (a.charAt(j) != b.charAt(j)) return false;
+        return true;
     }
 
     /**
