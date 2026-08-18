@@ -5630,4 +5630,18 @@ public class ActivitiesParseTest {
         assertEquals(30, p.plans.get(0).minutes);
     }
 
+    /**
+     * A M\u0170SZAK \u00f3r\u00e1i nem edz\u00e9s\u00f3r\u00e1k rag n\u00e9lk\u00fcl sem: a „12 \u00f3ra m\u0171szak ut\u00e1n
+     * 20 perc s\u00e9ta" s\u00e9t\u00e1ja tizenk\u00e9t \u00d3R\u00c1S gyalogl\u00e1s lett.
+     */
+    @Test
+    public void shiftHoursWithoutTheAdjectiveDoNotBecomeTheWalk() {
+        assertEquals(20, Activities.parse("12 \u00f3ra m\u0171szak ut\u00e1n 20 perc s\u00e9ta")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("8 \u00f3ra munka ut\u00e1n 30 perc fut\u00e1s")
+                .plans.get(0).minutes);
+        // A kerti munka val\u00f3di mozg\u00e1sforma: az \u00f3r\u00e1i maradnak.
+        assertEquals(120, Activities.parse("2 \u00f3ra kerti munka").plans.get(0).minutes);
+    }
+
 }

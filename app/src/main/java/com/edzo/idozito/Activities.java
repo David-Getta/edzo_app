@@ -1200,6 +1200,15 @@ public final class Activities {
                 + "autozas|vonatozas|repules|vezetes|ules|uldogeles|"
                 + "alvas|szundi|pihenes)",
                 "$1");
+        // Ugyanez RAG NÉLKÜL: a „12 óra műszak után 20 perc séta" séta-sora
+        // tizenkét ÓRÁS gyaloglás lett – a műszak hossza ráragadt a húsz
+        // percre. A jelzős alak („12 órás műszak") eddig is védett volt, a
+        // beszélt „12 óra műszak" nem.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?\\s?ora(?:t|n|ig)?\\s+"
+                + "(munkanap|muszak|meeting|ertekezlet|konferencia|eloadas|"
+                + "utazas|autozas|vonatozas|repules|vezetes|ules|uldogeles|"
+                + "tanulas|munka)(?![a-z])",
+                "$1");
         // A 18 ÓRÁS SPINNING a hatkor kezdődő óra, nem tizennyolc órányi
         // tekerés: 16 óránál hosszabb edzése senkinek sincs, ezért a
         // 16–23 órás jelző mindig kezdési időpont. Órakor-alakra írjuk
