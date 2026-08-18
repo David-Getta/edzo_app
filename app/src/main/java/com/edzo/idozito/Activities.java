@@ -2570,14 +2570,14 @@ public final class Activities {
             used[h[2]] = true;
             Kind kind = ALL[h[2]];
             int nextHit = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
-            int count = countBefore(s, h[0]);
+            int count = countBefore(s, h[0], kind);
             // „futottam háromszor a héten": a szorzószám a mozgás UTÁN is
             // állhat – magyarul ez a természetesebb szórend, és eddig némán
             // elveszett: három futásból egy lett a naplóban.
             // Csak akkor, ha a szorzószám nem a KÖVETKEZŐ mozgásé: a
             // „hétvégén 1-1 túra és kétszer úsztam" kettese az úszásé, mert az
             // úszás a saját darabszámaként már megtalálta.
-            boolean nextTookIt = nextHit != Integer.MAX_VALUE && countBefore(s, nextHit) > 1;
+            boolean nextTookIt = nextHit != Integer.MAX_VALUE && countBefore(s, nextHit, null) > 1;
             if (count <= 1 && !nextTookIt)
                 for (int[] mu : mults)
                     if (mu[0] > h[0] && mu[0] < nextHit && mu[1] > 1) {
@@ -2833,7 +2833,7 @@ public final class Activities {
                 // előtt" és az „edzés közben".
                 if (timePhraseAfter(s, p + w.length())) continue;
                 Kind other = byId("egyeb");
-                int n = countBefore(s, p);
+                int n = countBefore(s, p, null);
                 // A szorzószám itt is állhat hátul: „a héten edzettem négyszer".
                 if (n <= 1)
                     for (int[] mu : mults)
@@ -5936,13 +5936,25 @@ public final class Activities {
     }
 
     /** Darabszám a mozgás neve előtt; ha nincs, egy alkalom. */
-    private static int countBefore(String s, int at) {
+    private static int countBefore(String s, int at, Kind kind) {
         int[] n = numberBefore(s, at, NUM_REACH);
         if (n == null) return 1;
         // Az IDŐPONT nem alkalomszám: a „18 kor edzés" hat órai edzés, nem
         // tizennyolc külön alkalom – eddig tizennyolc bejegyzés lett belőle,
         // tizennyolc napra szétterítve. A „3 kör edzés" viszont valóban
         // három: ott az óra-felismerő sem lát időpontot.
+        // Az ISMÉTLÉSSZÁM nem alkalomszám: a „guggolás 4x5 úszás 40 perc"
+        // ÖT úszást írt a naplóba – a sorozat második száma átszivárgott a
+        // következő sport alkalomszámába. A kondinál viszont marad: ott a
+        // „3x10 fekvőtámasz" harminc ismétlése adja az edzés hosszát.
+        if (kind != null && !"kondi".equals(kind.id) && n[0] >= 2
+                && s.charAt(n[0] - 1) == 'x'
+                && Character.isDigit(s.charAt(n[0] - 2))) return 1;
+        // A SOROZATSZÁM ugyanígy: a „3x8. futás 5 km" három futást írt be.
+        if (kind != null && !"kondi".equals(kind.id) && n[1] < s.length()
+                && s.charAt(n[1]) == 'x'
+                && n[1] + 1 < s.length() && Character.isDigit(s.charAt(n[1] + 1)))
+            return 1;
         String tail = s.substring(n[1]);
         boolean clock = tail.matches("(?s)\\s*-\\s*(?:kor|orakor)(?![a-z]).*")
                 || tail.matches("(?s)\\s*orakor(?![a-z]).*")

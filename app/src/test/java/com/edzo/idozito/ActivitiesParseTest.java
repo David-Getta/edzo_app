@@ -5565,4 +5565,20 @@ public class ActivitiesParseTest {
                 Activities.parse("nordic walking 1 \u00f3ra").plans.get(0).kind.id);
     }
 
+    /**
+     * Az ISM\u00c9TL\u00c9SSZ\u00c1M nem alkalomsz\u00e1m: a „guggol\u00e1s 4x5 \u00fasz\u00e1s 40 perc"
+     * \u00d6T \u00fasz\u00e1st \u00edrt a napl\u00f3ba – a sorozat m\u00e1sodik sz\u00e1ma \u00e1tsziv\u00e1rgott a
+     * k\u00f6vetkez\u0151 sport alkalomsz\u00e1m\u00e1ba.
+     */
+    @Test
+    public void aRepCountDoesNotLeakToTheNextSport() {
+        Activities.Parsed p = Activities.parse("guggol\u00e1s 4x5 \u00fasz\u00e1s 40 perc");
+        assertEquals(2, p.plans.size());
+        for (Activities.Plan pl : p.plans) assertEquals(pl.kind.id, 1, pl.count);
+        // A kondi saj\u00e1t \u00e1ga marad: a „3x10 fekv\u0151t\u00e1masz" harminc ism\u00e9tl\u00e9se
+        // adja az edz\u00e9s hossz\u00e1t, a „2x45 perc foci" pedig k\u00e9t meccs.
+        assertEquals(6, Activities.parse("3x10 fekv\u0151t\u00e1masz").plans.get(0).minutes);
+        assertEquals(2, Activities.parse("2x45 perc foci").plans.get(0).count);
+    }
+
 }
