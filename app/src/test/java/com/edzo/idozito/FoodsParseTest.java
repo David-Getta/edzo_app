@@ -1660,4 +1660,17 @@ public class FoodsParseTest {
         assertEquals("T\u00far\u00f3", hits("t\u00far\u00f3 200 g").get(0).food.name);
     }
 
+    /**
+     * A V\u00cdZ H\u0150FOKA nem elfogyasztott v\u00edz: az „\u00fasz\u00e1s 30 perc; v\u00edz 20 fok"
+     * mell\u00e9 eddig k\u00e9t \u00e9s f\u00e9l deci iv\u00f3v\u00edz ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void theWaterTemperatureIsNotADrink() {
+        assertTrue(hits("\u00fasz\u00e1s 30 perc; v\u00edz 20 fok").isEmpty());
+        assertTrue(hits("a v\u00edz 24 fokos volt").isEmpty());
+        // A meg\u00edvott v\u00edz marad.
+        assertEquals(500.0, hits("ittam 2 poh\u00e1r vizet").get(0).grams, 0.01);
+        assertEquals(300.0, hits("v\u00edz 20 fok, ittam 3 dl-t").get(0).grams, 0.01);
+    }
+
 }

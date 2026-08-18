@@ -2580,6 +2580,13 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A VÍZ HŐFOKA nem elfogyasztott víz: az „úszás 30 perc; víz 20 fok"
+        // és „a víz 24 fokos volt" mellé eddig két és fél deci ivóvíz került
+        // a naplóba – a medence hőmérsékletéből. A fok szava dönt.
+        query = query.replaceAll("(?iu)(?<!\\p{L})v[ií]z\\p{L}*\\s*(?:volt\\s*)?"
+                + "\\d{1,2}\\s?fok\\p{L}*", " ");
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:a\\s+)?v[ií]z\\p{L}*"
+                + "(?=[^,;.]{0,12}?\\d{1,2}\\s?fok)", " ");
         // A KÁVÉBA öntött tej nem egy pohár tej: az „egy bögre kávé tejjel"
         // mellé eddig kétdecinyi tej került a naplóba – száznegyven kalória
         // egy löttyintésből. A tejes alak összetett szó, csak épp külön
