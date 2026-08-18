@@ -5732,4 +5732,17 @@ public class ActivitiesParseTest {
         assertEquals("kerekpar", p.plans.get(0).kind.id);
     }
 
+    /**
+     * A K\u00d3RH\u00c1Z \u00e9s a rendel\u0151 \u00f3r\u00e1i is \u00fclve telnek: az „1 \u00f3ra k\u00f3rh\u00e1zban
+     * voltam, ut\u00e1na 20 perc s\u00e9ta" hatvan perces s\u00e9t\u00e1t \u00edrt a napl\u00f3ba.
+     */
+    @Test
+    public void hospitalHoursAreNotWalkingHours() {
+        assertEquals(20, Activities.parse(
+                "1 \u00f3ra k\u00f3rh\u00e1zban voltam, ut\u00e1na 20 perc s\u00e9ta")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("2 \u00f3ra orvosn\u00e1l, este 30 perc bringa")
+                .plans.get(0).minutes);
+    }
+
 }

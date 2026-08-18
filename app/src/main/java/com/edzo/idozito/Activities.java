@@ -5042,6 +5042,12 @@ public final class Activities {
                 // sorbanállás, aztán 30 perc kondi" negyvenöt perce a sorban
                 // telt, a „30 perc késés miatt rövidítettem, 20 perc futás"
                 // harminca a késésé – mindkettő a mozgás hosszává vált.
+                // A KÓRHÁZ és a rendelő órái is ülve telnek: az „1 óra
+                // kórházban voltam, utána 20 perc séta" hatvan perces
+                // sétát írt a naplóba.
+                || w.startsWith("korhaz") || w.startsWith("rendelo")
+                || w.startsWith("orvosnal") || w.startsWith("ugyelet")
+                || w.startsWith("varoterem") || w.startsWith("varoban")
                 || w.startsWith("keses") || w.startsWith("sorbanallas")
                 || w.startsWith("varakoz") || w.startsWith("kestem")
                 // Az EDZÉS KÖRÜLI, mozdulatlan percek: a „5 perc szauna,
