@@ -5549,4 +5549,20 @@ public class ActivitiesParseTest {
                 "futottam 5 km-t, azt\u00e1n farmer walk 2x40 m").plans.size());
     }
 
+    /**
+     * A L\u00c1DAUGR\u00c1S nem boksz, a NORDIC CURL nem nordic walking: mindkett\u0151
+     * er\u0151gyakorlat, a saj\u00e1t nev\u00e9ben hordva egy m\u00e1sik sport\u00e1g szav\u00e1t.
+     */
+    @Test
+    public void anExerciseNameCarryingAnotherSportsWordStaysAnExercise() {
+        assertTrue(Activities.parse("box jump 4x5").plans.isEmpty());
+        assertTrue(Activities.parse("box ugr\u00e1s 3x8").plans.isEmpty());
+        assertTrue(Activities.parse("nordic curl 3x5").plans.isEmpty());
+        // A val\u00f3di sport marad.
+        assertEquals("harcmuveszet",
+                Activities.parse("boksz edz\u00e9s 45 perc").plans.get(0).kind.id);
+        assertEquals("tura",
+                Activities.parse("nordic walking 1 \u00f3ra").plans.get(0).kind.id);
+    }
+
 }

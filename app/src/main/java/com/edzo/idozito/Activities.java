@@ -1262,8 +1262,14 @@ public final class Activities {
         // nyolcvan méteres gyaloglásként került be.
         // A tagmondat egészét kitakarjuk: a néhány tíz méteres cipelés se
         // túra, se futás – erőgyakorlat, aminek nincs saját sora.
-        s = s.replaceAll("[^,;.]*(?<![a-z])farmer[- ]?(?:seta|setat|walk|jaras)"
+        s = s.replaceAll("[^,;.]*(?<![a-z])farmers?[- ]?(?:seta|setat|walk|jaras)"
                 + "\\w*[^,;.]*", " ");
+        // A LÁDAUGRÁS nem boksz, a NORDIC CURL nem nordic walking: a „box
+        // jump 4x5" harcművészet-bejegyzést, a „nordic curl 3x5" túrát
+        // csinált – mindkettő erőgyakorlat, a saját nevében hordva egy
+        // másik sportág szavát.
+        s = s.replaceAll("(?<![a-z])box(?=[- ]?(?:jump|ugras))", " ");
+        s = s.replaceAll("(?<![a-z])nordic(?=[- ]?(?:curl|hamstring))", " ");
         // A PRE WORKOUT ital, nem edzés: a „pre workout ital edzés előtt"
         // mellé eddig egy negyvenöt perces „egyéb mozgás" került a naplóba –
         // egy pohár italból. Az étkezés-felismerő a saját szövegéből
