@@ -1542,4 +1542,28 @@ public class FoodsParseTest {
         assertEquals("Cukormentes / light", hits("cukormentes k\u00f3la").get(0).food.name);
     }
 
+    /**
+     * A „B\u0150R\u00d6N S\u00dcLT" nem bor: \u00e9kezetek n\u00e9lk\u00fcl a „b\u0151r" \u00e9s a „bor"
+     * ugyanaz a h\u00e1rom bet\u0171, \u00e9s eddig egy poh\u00e1r bor is bement a napl\u00f3ba.
+     */
+    @Test
+    public void skinOnRoastIsNotWine() {
+        java.util.List<Foods.Hit> l = hits("s\u00fclt csirkecomb b\u0151r\u00f6n s\u00fclt krumplival");
+        for (Foods.Hit h : l) assertFalse(h.food.name.startsWith("Bor"));
+        assertEquals(2, l.size());
+        // A boros p\u00f6rk\u00f6ltben a bor a szaftban van, nem a poh\u00e1rban.
+        for (Foods.Hit h : hits("boros marhap\u00f6rk\u00f6lt"))
+            assertFalse(h.food.name.startsWith("Bor"));
+        // A val\u00f3di poh\u00e1r viszont marad.
+        assertEquals("Bor (v\u00f6r\u00f6s/feh\u00e9r)", hits("ittam k\u00e9t poh\u00e1r bort").get(0).food.name);
+    }
+
+    /** A BIRSALMASAJT nem sajt, hanem bes\u0171r\u00edtett gy\u00fcm\u00f6lcs. */
+    @Test
+    public void quinceCheeseIsNotCheese() {
+        java.util.List<Foods.Hit> l = hits("egy szelet birsalmasajt");
+        assertEquals(1, l.size());
+        assertEquals("Lekv\u00e1r", l.get(0).food.name);
+    }
+
 }

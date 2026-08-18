@@ -341,7 +341,11 @@ public final class Foods {
         // A gyümölcsnév+lekvár összetétel hosszabb töve veri a lé-tövet: a
         // „baracklekvár" barackle-kezdete fél liter GYÜMÖLCSLÉT írt be.
         new Food("Lekvár", 250, 0.4, 25, "lekvar", "baracklekvar",
-                "szilvalekvar", "eperlekvar", "malnalekvar", "meggylekvar"),
+                "szilvalekvar", "eperlekvar", "malnalekvar", "meggylekvar",
+                // A BIRSALMASAJT nem sajt, hanem besűrített gyümölcs: eddig
+                // a „sajt" szótő vitte el, és trappista került a naplóba egy
+                // szelet gyümölcskocka helyett.
+                "birsalmasajt", "birssajt", "birsalma sajt"),
         new Food("Méz", 320, 0.3, 20, "mez"),
         new Food("Cukor", 400, 0, 10, "cukor", "cukrot", "cukrok", "cukrom"),
         new Food("Vattacukor", 400, 0, 30, "vattacukor"),
@@ -2544,6 +2548,18 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A „BŐRÖN SÜLT" nem bor: az ékezetek nélkül a „bőr" és a „bor"
+        // ugyanaz a három betű, és a „sült csirkecomb bőrön sült krumplival"
+        // mellé eddig egy pohár vörösbor is bekerült a naplóba. A jelzős
+        // alakok a húsé, nem a poháré.
+        query = query.replaceAll("(?iu)(?<!\\p{L})b[oő]r[oö]n(?=\\s+s[uü]lt)", " ");
+        query = query.replaceAll("(?iu)(?<!\\p{L})b[oő]r[oö]s(?=\\s+(?:csirke|comb|"
+                + "hal|lazac|kacsa|liba|malac|cs\u00fcl[oö]k|szalonna|"
+                // A boros PÖRKÖLT is az étel jelzője: a bor a szaftban van,
+                // nem a pohárban.
+                + "p[oö]rk[oö]lt|paprik[aá]s|p[aá]rolt|marha|kakas|"
+                + "ny[uú]l|vadd?iszn[oó]|szarvas))", " ");
+        query = query.replaceAll("(?iu)(?<!\\p{L})b[oő]r[eé]vel(?![\\p{L}])", " ");
         // A „cukormentes" JELZŐ is csak jelző, ha VALÓDI étel áll utána: a
         // „cukormentes csoki 30 g" mellé eddig egy egész üdítőnyi adag
         // „cukormentes / light" tétel is bement – harminc gramm csoki és
