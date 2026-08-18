@@ -1488,4 +1488,29 @@ public class StrengthParseTest {
         assertEquals(4, l.get(0).sets.get(2).reps);
     }
 
+    /**
+     * Egyetlen er\u0151gyakorlat neve se csin\u00e1ljon M\u00c1S sport\u00e1g\u00fa bejegyz\u00e9st.
+     *
+     * A keresztpr\u00f3ba h\u00e1rmat tal\u00e1lt: a „box jump" harcm\u0171v\u00e9szetet, a „nordic
+     * curl" \u00e9s a „farmers walk" t\u00far\u00e1t. A kondi marad megengedett: a
+     * s\u00falyz\u00f3s gyakorlat neve jogosan hoz l\u00e9tre kondi-alkalmat.
+     */
+    @Test
+    public void noExerciseNameLooksLikeAnotherSport() {
+        StringBuilder bad = new StringBuilder();
+        for (String[] mv : StrengthParse.MOVES)
+            for (int i = 1; i < mv.length; i++) {
+                if (mv[i].length() < 4) continue;
+                // A sorozatsz\u00e1m a val\u00f3di haszn\u00e1lat: a napl\u00f3ban a gyakorlat
+                // neve mellett mindig ott a szett.
+                Activities.Parsed p = Activities.parse(mv[i] + " 3x10");
+                if (p.plans.isEmpty()) continue;
+                String id = p.plans.get(0).kind.id;
+                if (!"kondi".equals(id) && !"evezes".equals(id) && !"joga".equals(id))
+                    bad.append("\n  ").append(mv[0]).append(" | ").append(mv[i])
+                       .append(" -> ").append(id);
+            }
+        assertTrue("m\u00e1s sport\u00e1gnak l\u00e1tszik:" + bad, bad.length() == 0);
+    }
+
 }

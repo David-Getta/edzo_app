@@ -1256,8 +1256,13 @@ public final class Activities {
         // lépcsőn 3x12" mellé eddig egy kilencven perces túra is bekerült a
         // naplóba – a rehab-lapról kimásolt gyakorlatnév miatt. Sorozat-
         // jelölés mellett a lépcső csak a helyszín.
-        if (s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*"))
+        if (s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*")) {
             s = s.replaceAll("(?<![a-z])lepcso\\w*", " ");
+            // A HEGYMÁSZÓ sorozatszámmal a talajgyakorlat, nem a hegy: a
+            // „hegymászó 3x20" túra-bejegyzést csinált. Sorozat nélkül a
+            // szó marad hegymászás.
+            s = s.replaceAll("(?<![a-z])hegymaszo(?![a-z])", " ");
+        }
         // A FARMER-SÉTA súlyzós cipelés, nem séta: a „farmer walk 2x40 m"
         // nyolcvan méteres gyaloglásként került be.
         // A tagmondat egészét kitakarjuk: a néhány tíz méteres cipelés se
