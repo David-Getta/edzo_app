@@ -5597,4 +5597,22 @@ public class ActivitiesParseTest {
         assertEquals(60, Activities.parse("fut\u00e1s 1h").plans.get(0).minutes);
     }
 
+    /**
+     * A SOROZAT m\u00e1sodik sz\u00e1ma nem sorsz\u00e1m: a „guggol\u00e1s 4x5. \u00fasz\u00e1s 40 perc"
+     * \u00f6t\u00f6se ism\u00e9tl\u00e9s, \u00e9s a mondatb\u00f3l „4x" maradt – abb\u00f3l pedig N\u00c9GY \u00fasz\u00e1s
+     * lett a napl\u00f3ban.
+     */
+    @Test
+    public void aSetNotationBeforeAPeriodIsNotAnOrdinal() {
+        Activities.Parsed p = Activities.parse("guggol\u00e1s 4x5. \u00fasz\u00e1s 40 perc");
+        assertEquals(2, p.plans.size());
+        for (Activities.Plan pl : p.plans) assertEquals(pl.kind.id, 1, pl.count);
+        assertEquals(1, Activities.parse("3x8. fut\u00e1s 5 km").plans.get(0).count);
+        // A val\u00f3di sorsz\u00e1m marad sorsz\u00e1m.
+        assertEquals(1, Activities.parse("letudtam a heti 3. fut\u00e1st")
+                .plans.get(0).count);
+        assertEquals(30.0, Activities.parse("feladtam a versenyt a 30. km-n\u00e9l")
+                .plans.get(0).km, 0.01);
+    }
+
 }

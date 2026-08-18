@@ -5411,7 +5411,11 @@ public final class Activities {
         // EMELET sorszáma ugyanígy megmászott magasság: a „lépcsőn mentem
         // fel a 8. emeletre" nyolcasa nélkül kilencven perc séta lett.
         m = java.util.regex.Pattern
-                .compile("(?<![\\d.,])(\\d{1,2})\\.(?=\\s?\\p{L})"
+                // A SOROZAT második száma nem sorszám: a „guggolás 4x5.
+                // úszás 40 perc" ötöse ismétlés, és a mondatból „4x" maradt –
+                // abból pedig NÉGY úszás lett a naplóban. Az „x" előtte
+                // kizárja a sorszám-olvasatot.
+                .compile("(?<![\\d.,])(?<!\\dx)(?<!\\d×)(\\d{1,2})\\.(?=\\s?\\p{L})"
                         + "(?!\\s?(?:km(?![\\p{L}])|emelet))").matcher(text);
         while (m.find())
             for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
