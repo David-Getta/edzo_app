@@ -1673,4 +1673,22 @@ public class FoodsParseTest {
         assertEquals(300.0, hits("v\u00edz 20 fok, ittam 3 dl-t").get(0).grams, 0.01);
     }
 
+    /**
+     * A t\u00f6ltve \u00e9rkez\u0151 fog\u00e1s tartalma benne van a fog\u00e1sban: a „wrap
+     * csirk\u00e9vel" mell\u00e9 eddig egy csirkemell is beker\u00fclt, a „protein shake
+     * tejjel" mell\u00e9 k\u00e9t deci tej.
+     */
+    @Test
+    public void aFilledDishDoesNotDoubleCountItsFilling() {
+        java.util.List<Foods.Hit> l = hits("wrap csirk\u00e9vel");
+        assertEquals(1, l.size());
+        assertEquals("Tortilla / wrap", l.get(0).food.name);
+        java.util.List<Foods.Hit> sh = hits("protein shake tejjel");
+        assertEquals(1, sh.size());
+        assertEquals("Protein turmix", sh.get(0).food.name);
+        // A poh\u00e1r tej \u00e9s a k\u00fcl\u00f6n csirkemell marad.
+        assertEquals("Tej", hits("ittam 2 dl tejet").get(0).food.name);
+        assertEquals(150.0, hits("csirkemell 150 g").get(0).grams, 0.01);
+    }
+
 }

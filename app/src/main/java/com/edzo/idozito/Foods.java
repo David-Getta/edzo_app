@@ -3713,7 +3713,11 @@ public final class Foods {
             {"Rizs (főtt)", "Rizottó", "Rizses hús", "Sushi", "Poke bowl", "Tejberizs"},
             // A TEJES KAKAÓ-ban benne a tej: az „ittam egy tejes kakaót"
             // egy pohár tejet is naplózott a kakaó mellé.
-            {"Tej", "Kakaó (tejes)"},
+            {"Tej", "Kakaó (tejes)",
+                    // A PROTEIN TURMIX is tejjel készül: a „protein shake
+                    // tejjel" mellé eddig két deci tej is bekerült a naplóba,
+                    // pedig a turmix adagja már tartalmazza a folyadékot.
+                    "Protein turmix", "Gyümölcsturmix / smoothie"},
             {"Saláta (zöld)", "Görög saláta", "Csirkés saláta", "Tonhalsaláta",
                     "Caprese saláta", "Uborkasaláta", "Céklasaláta", "Krumplisaláta",
                     "Franciasaláta / coleslaw"},
@@ -3791,7 +3795,10 @@ public final class Foods {
             {"Zöldség (vegyes / párolt)", "Wok (zöldséges-húsos)"},
             {"Csirkemell (sült/grill)", "Wok (zöldséges-húsos)", "Curry", "Gyros", "Kebab",
                     "Csirkés saláta", "Csirkés wrap", "Burrito", "Quesadilla",
-                    "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)", "Rizottó"},
+                    "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)", "Rizottó",
+                    // A töltve érkező tekercs is: a „wrap csirkével" egy
+                    // wrap, nem wrap PLUSZ egy csirkemell.
+                    "Tortilla / wrap"},
             // A burrito és a taco töltve érkezik: a „burrito marhahússal"
             // egy burrito, nem burrito PLUSZ egy szelet marha.
             {"Marhahús", "Burrito", "Taco", "Quesadilla"},
