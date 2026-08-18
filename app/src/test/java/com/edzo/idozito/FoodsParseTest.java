@@ -1601,4 +1601,21 @@ public class FoodsParseTest {
         assertTrue(l.get(0).food.name, l.get(0).food.name.startsWith("Tejesk\u00e1v\u00e9"));
     }
 
+    /**
+     * \u00d6t bet\u0171t\u0151l is j\u00e1r elg\u00e9pel\u00e9s-tipp: a „kefri" \u00e9s a „banna" ugyanolyan
+     * egy-ujjmozdulatos el\u00fct\u00e9s, mint a „joghrut" – hat bet\u0171s korl\u00e1ttal
+     * viszont az \u00f6tbet\u0171s \u00e9telek kimaradtak a tippekb\u0151l.
+     */
+    @Test
+    public void fiveLetterTyposGetATipToo() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals("Kefir", Foods.closest(all, "kefri").name);
+        assertEquals("Ban\u00e1n", Foods.closest(all, "banna").name);
+        assertEquals("Joghurt", Foods.closest(all, "joghrut").name);
+        // A h\u00e9tk\u00f6znapi szavak tov\u00e1bbra sem kapnak tippet.
+        for (String w : new String[]{"valami", "asztal", "szoba", "fotel",
+                "tan\u00e1r", "orvos"})
+            assertTrue(w, Foods.closest(all, w) == null);
+    }
+
 }

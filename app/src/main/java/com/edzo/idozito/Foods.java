@@ -1718,7 +1718,7 @@ public final class Foods {
      * nem ismerem". Pedig ismerjük, csak egy betűvel odébb.
      *
      * Szigorú, mert a rossz tipp bosszantóbb, mint a semmi: szavanként
-     * nézzük, legalább négy betűtől, és EGY hiba fér bele – hosszú
+     * nézzük, legalább öt betűtől, és EGY hiba fér bele – hosszú
      * szótőnél (kilenc betűtől) kettő. A felcserélt betű is egy hibának
      * számít, mert a telefonon az a leggyakoribb elütés: a „joghrut" egy
      * ujjmozdulat a joghurttól. Enélkül a „valami" szalámi lett volna, az
@@ -1733,10 +1733,15 @@ public final class Foods {
         Food best = null;
         int bestDist = Integer.MAX_VALUE, bestLen = 0;
         for (String tok : q.split("[^a-z0-9]+")) {
-            if (tok.length() < 6) continue;
+            // Öt betűtől: a „kefri" (kefir) és a „banna" (banán) ugyanolyan
+            // egy-ujjmozdulatos elütés, mint a „joghrut" – hat betűs korláttal
+            // viszont az ötbetűs ételek kimaradtak a tippekből. Rövidebbre
+            // nem megyünk: négy betűn belül már két hétköznapi szó is
+            // egyetlen hibányira van egymástól.
+            if (tok.length() < 5) continue;
             for (Food f : list)
                 for (String ns : f.nstems) {
-                    if (ns.length() < 6 || ns.indexOf(' ') >= 0) continue;
+                    if (ns.length() < 5 || ns.indexOf(' ') >= 0) continue;
                     // A szó ELEJE nem szokott elgépelődni, viszont erős jel.
                     // Enélkül a „neki" gyorséttermi menü lett, a „saját" sajt,
                     // a „tiszta" tészta. A rossz tipp bosszantóbb, mint a
