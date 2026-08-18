@@ -886,7 +886,11 @@ public final class IntervalParse {
                         && (Character.isDigit(s.charAt(p - 1))
                             || (s.charAt(p - 1) == '-' && p > 1
                                 && Character.isDigit(s.charAt(p - 2))));
-                boolean notRound = clockSuffix || w.equals("kor")
+                // A KORTY, a KORSÓ és a KÓRHÁZ sem kör: a „3 korty bor"
+                // miatt a mondat kimondott tervnek számított.
+                boolean notRound = clockSuffix
+                        || (w.equals("kor") && !roundWord(s, p))
+                        || w.equals("kor")
                         && (s.startsWith("an", p + 3) || s.startsWith("ai", p + 3)
                             || s.startsWith("abb", p + 3)
                             || s.startsWith("ahajnal", p + 3)
@@ -984,10 +988,30 @@ public final class IntervalParse {
         return 0;
     }
 
+    /** A „kor" helyén valóban a KÖR szó áll-e (nem korty, korsó, kórház…)? */
+    private static boolean roundWord(String s, int p) {
+        int e = p + 3;
+        StringBuilder suf = new StringBuilder();
+        while (e < s.length() && Character.isLetter(s.charAt(e))) suf.append(s.charAt(e++));
+        String t = suf.toString();
+        return t.isEmpty() || t.equals("t") || t.equals("e") || t.equals("ok")
+                || t.equals("oket") || t.equals("ben") || t.equals("re")
+                || t.equals("rel") || t.equals("onkent") || t.equals("os")
+                || t.equals("nkent") || t.equals("ig");
+    }
+
     /** A megadott szó ELŐTT álló szám („3 kör”), vagy 0. */
     private static int numberBefore(String s, String word) {
         int p = s.indexOf(word);
         while (p >= 0) {
+            // A „KORTY", a „KORSÓ" és a „KÓRHÁZ" nem kör: a „30 perc laza
+            // bringa, 3 korty bor" hármasából háromkörös időzítő-terv lett,
+            // és a bringa el is tűnt a naplóból – a mondat tervnek
+            // minősült. A magyar rag viszont szabad („körben", „köröket").
+            if (word.equals("kor") && !roundWord(s, p)) {
+                p = s.indexOf(word, p + 1);
+                continue;
+            }
             int e = p;
             while (e > 0 && s.charAt(e - 1) == ' ') e--;
             int b = e;

@@ -891,4 +891,18 @@ public class IntervalParseTest {
         assertEquals(8, p.rounds);
     }
 
+    /**
+     * A KORTY, a KORS\u00d3 \u00e9s a K\u00d3RH\u00c1Z nem k\u00f6r: a „30 perc laza bringa,
+     * 3 korty bor" h\u00e1rmas\u00e1b\u00f3l h\u00e1romk\u00f6r\u00f6s id\u0151z\u00edt\u0151-terv lett – \u00e9s a
+     * bringa el is t\u0171nt a napl\u00f3b\u00f3l, mert a mondat tervnek min\u0151s\u00fclt.
+     */
+    @Test
+    public void aSipIsNotARound() {
+        assertNull(IntervalParse.parse("30 perc laza bringa. 3 korty bor."));
+        // A ragozott k\u00f6r marad k\u00f6r.
+        assertEquals(3, IntervalParse.parse("3 k\u00f6r 40 mp munka 20 mp pihen\u0151").rounds);
+        assertEquals(5, IntervalParse.parse("5 k\u00f6r\u00f6nk\u00e9nt 1 perc pihen\u0151").rounds);
+        assertEquals(8, IntervalParse.parse("8 k\u00f6r: 20 mp sprint, 40 mp s\u00e9ta").rounds);
+    }
+
 }

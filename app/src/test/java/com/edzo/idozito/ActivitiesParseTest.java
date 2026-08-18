@@ -5719,4 +5719,17 @@ public class ActivitiesParseTest {
                 "10 km-re volt a start, oda is gyalogoltam").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A borra tett megjegyz\u00e9s nem viheti el az edz\u00e9st: a „30 perc laza
+     * bringa. 3 korty bor." bringája elt\u0171nt a napl\u00f3b\u00f3l, mert a „korty"
+     * k\u00f6rsz\u00e1mnak l\u00e1tszott, \u00e9s az eg\u00e9sz mondat id\u0151z\u00edt\u0151-tervv\u00e9 v\u00e1lt.
+     */
+    @Test
+    public void aSipOfWineDoesNotSwallowTheWorkout() {
+        Activities.Parsed p = Activities.parse("30 perc laza bringa. 3 korty bor.");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+    }
+
 }
