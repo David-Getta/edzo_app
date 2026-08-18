@@ -821,7 +821,13 @@ public final class Rehab {
                 // A sarkantyú és a plantaris fasciitis a TALP sora, nem az
                 // Achillesé: a fájdalom a talp elülső-belső élén ébred, és a
                 // talpi szalagot kell terhelni hozzá.
-                {"talp", "talpam", "talpa", "talpfaj", "plantaris", "sarkantyu", "talp"},
+                {"talp", "talpam", "talpa", "talpfaj", "plantaris", "sarkantyu", "talp",
+                        // A LÁBFEJ és a LÁBBOLTOZAT ugyanennek a sornak a
+                        // szava: a „lábfej erősítés" eddig egy hatvanperces
+                        // kondi-bejegyzés lett a naplóban, pedig a talp sora
+                        // pont erről szól.
+                        "labfej", "labfejem", "labboltozat", "talpboltozat",
+                        "lababujj", "labujj"},
                 // A LÁBSZÁR ugyanaz a panasz, csak hétköznapibb néven: a
                 // „lábszárfájás futás után" eddig válasz nélkül maradt, pedig
                 // a kezdő futók leggyakoribb baja.

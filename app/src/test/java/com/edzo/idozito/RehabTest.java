@@ -852,4 +852,15 @@ public class RehabTest {
         assertEquals("boka", a.id);
     }
 
+    /**
+     * A L\u00c1BFEJ \u00e9s a L\u00c1BBOLTOZAT a talp sor\u00e1nak szava: a „l\u00e1bfej er\u0151s\u00edt\u00e9s"
+     * eddig egy hatvanperces kondi-bejegyz\u00e9s lett a napl\u00f3ban.
+     */
+    @Test
+    public void theFootIsTheSoleArea() {
+        assertEquals("talp", Rehab.forGoal("l\u00e1bfej er\u0151s\u00edt\u00e9s").id);
+        assertEquals("talp", Rehab.forGoal("l\u00e1bboltozat er\u0151s\u00edt\u00e9s").id);
+        assertEquals("talp", Rehab.forComplaint("f\u00e1j a l\u00e1bfejem").id);
+    }
+
 }
