@@ -5377,4 +5377,18 @@ public class ActivitiesParseTest {
         assertEquals(120, p.plans.get(0).minutes);
     }
 
+    /**
+     * A TIZEDES „k" ugyanaz a r\u00f6vid\u00edt\u00e9s: a „8,5k l\u00e9p\u00e9s" nyolcezer\u00f6tsz\u00e1z.
+     * Eg\u00e9sz sz\u00e1mmal ez eddig is ment, tizedessel a bejegyz\u00e9s elveszett.
+     */
+    @Test
+    public void aDecimalThousandSuffixWorksToo() {
+        Activities.Parsed p = Activities.parse("ma l\u00e9ptem 8.5k l\u00e9p\u00e9st");
+        assertEquals(1, p.plans.size());
+        assertEquals(8500, p.plans.get(0).steps);
+        // Fut\u00e1sn\u00e1l ugyanez t\u00e1v: az „5,5k fut\u00e1s" \u00f6t \u00e9s f\u00e9l kilom\u00e9ter.
+        assertEquals(5.5, Activities.parse("5,5k fut\u00e1s").plans.get(0).km, 0.01);
+        assertEquals(5.0, Activities.parse("5k fut\u00e1s").plans.get(0).km, 0.01);
+    }
+
 }

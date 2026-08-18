@@ -1959,8 +1959,22 @@ public final class Activities {
                 {"hatora", "6 ora"}, {"nyolcora", "8 ora"}})
             s = s.replaceAll("(?<![a-z])" + w[0] + "(s|st|sat|sra|ban|n|t)?(?![a-z])", w[1]);
         boolean steps = s.contains("lepes") || s.contains("lepest") || s.contains("lepett");
-        return s.replaceAll("(?<![\\d.,])(\\d{1,3})\\s?k(?![a-z0-9])",
-                steps ? "$1000" : "$1 km");
+        // A TIZEDES „k" ugyanaz a rövidítés: a „8,5k lépés" nyolcezerötszáz,
+        // az „5,5k" futásnál öt és fél kilométer. Egész számmal ez eddig is
+        // ment, tizedessel viszont az egész bejegyzés elveszett – pedig az
+        // óra épp így írja ki.
+        java.util.regex.Matcher km = java.util.regex.Pattern
+                .compile("(?<![\\d.,])(\\d{1,3})(?:[.,](\\d))?\\s?k(?![a-z0-9])")
+                .matcher(s);
+        StringBuffer b = new StringBuffer();
+        while (km.find()) {
+            String rep = steps
+                    ? km.group(1) + (km.group(2) != null ? km.group(2) + "00" : "000")
+                    : km.group(1) + (km.group(2) != null ? "," + km.group(2) : "") + " km";
+            km.appendReplacement(b, java.util.regex.Matcher.quoteReplacement(rep));
+        }
+        km.appendTail(b);
+        return b.toString();
     }
 
     /**
