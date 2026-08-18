@@ -818,6 +818,11 @@ public final class StrengthParse {
                         // hatvanas száma a doboz MAGASSÁGA, nem hatvan kiló –
                         // eddig hatvan kilós ládaugrás került a rekordba.
                         .compile("^\\s*(\\d{1,3}(?:[.,]\\d{1,2})?)(?![\\dx×])"
+                                // Az RPE és a RIR száma sem súly: a
+                                // „guggolás 3x8 8-as rpe" nyolcasa a
+                                // nehézség – nyolc kilós guggolásként
+                                // került a rekordba.
+                                + "(?!\\s?-?\\s?(?:as|es|os)?\\s?(?:rpe|rir))"
                                 + "(?!\\s?(?:cm|centi|mm|m(?![a-z])|meter|perc|mp|masodperc))")
                         .matcher(s.substring(m.end()));
                 if (w2.find()) {
@@ -1294,6 +1299,12 @@ public final class StrengthParse {
 
     /** Súly kilóban: „60 kg”, „60kg”, „60 kilóval”, „60-nal”. 0 = nincs. */
     private static double weightIn(String s) {
+        // Az RPE száma nem súly: a „guggolás 3x8 8-as rpe" nyolcasa a
+        // nehézség-jelölés, nem a rúdon lévő súly – nyolc kilós guggolásként
+        // került a naplóba, és a rekordot is elrontotta volna. (Az RPE-t a
+        // nyers tagmondatból olvassuk, ezért itt nyugodtan kitakarható.)
+        s = s.replaceAll("(?<![a-z])\\d{1,2}\\s*-?\\s*(?:as|es|os)?\\s*rpe(?![a-z])", " ");
+        s = s.replaceAll("(?<![a-z])rpe\\s*-?\\s*\\d{1,2}(?![0-9])", " ");
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(kg|kilo|kilogramm)").matcher(s);
         if (m.find()) {

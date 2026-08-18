@@ -1528,4 +1528,18 @@ public class StrengthParseTest {
         assertEquals(8, StrengthParse.parse("guggol\u00e1s 5x5 rir 2").get(0).rpe);
     }
 
+    /**
+     * Az RPE sz\u00e1ma nem s\u00faly: a „guggol\u00e1s 3x8 8-as rpe" nyolcasa a
+     * neh\u00e9zs\u00e9g-jel\u00f6l\u00e9s – nyolc kil\u00f3s guggol\u00e1sk\u00e9nt ker\u00fclt a rekordba.
+     */
+    @Test
+    public void anRpeNumberIsNotAWeight() {
+        StrengthParse.Item it = StrengthParse.parse("guggol\u00e1s 3x8 8-as rpe").get(0);
+        assertEquals(0.0, it.sets.get(0).weight, 0.01);
+        assertEquals(8, it.rpe);
+        // A val\u00f3di, m\u00e9rt\u00e9kegys\u00e9g n\u00e9lk\u00fcli s\u00faly marad.
+        assertEquals(80.0, StrengthParse.parse("guggol\u00e1s 3x8 80")
+                .get(0).sets.get(0).weight, 0.01);
+    }
+
 }
