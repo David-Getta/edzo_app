@@ -398,4 +398,19 @@ public class KcalTest {
         assertEquals(150, Kcal.protein("150 gramm feh\u00e9rj\u00e9t ettem eddig"));
     }
 
+    /**
+     * A MOZG\u00c1S mell\u00e9 \u00edrt kal\u00f3ria \u00e9get\u00e9s, nem bevitel: az „edz\u00e9s 45 perc,
+     * 380 kcal" sz\u00e1ma eddig a napi BEVITELHEZ ad\u00f3dott.
+     */
+    @Test
+    public void aWorkoutsCaloriesAreBurnedNotEaten() {
+        assertEquals(-1, Kcal.stated("edz\u00e9s 45 perc, 380 kcal"));
+        assertEquals(380, Kcal.burned("edz\u00e9s 45 perc, 380 kcal"));
+        assertEquals(-1, Kcal.stated("3200 l\u00e9p\u00e9s, 140 kcal"));
+        // Ev\u00e9s-ige mellett a bevitel er\u0151sebb.
+        assertEquals(600, Kcal.stated("edz\u00e9s ut\u00e1n ettem 600 kcal-t"));
+        // Az \u00e9tkez\u00e9s neve is er\u0151sebb a mozg\u00e1s\u00e9n\u00e1l.
+        assertEquals(450, Kcal.stated("reggeli 450 kcal, edz\u00e9s 45 perc"));
+    }
+
 }

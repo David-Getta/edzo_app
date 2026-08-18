@@ -147,7 +147,17 @@ public final class Kcal {
                 "kcal-t mutatott", "kaloriat mutatott", "kcal-t mert",
                 "kaloriat mert", "kcal-t irt", "kaloriat irt"})
             if (s.contains(w)) return true;
-        return false;
+        // A MOZGÁS mellé írt kalória ugyanígy égetés, márkanév nélkül is: az
+        // „edzés 45 perc, 380 kcal" és a „3200 lépés, 140 kcal" száma eddig a
+        // napi BEVITELHEZ adódott – egy edzésből lett háromszáznyolcvan
+        // megevett kalória, vagyis a mérleg mindkét oldala rossz irányba
+        // mozdult. Evés-ige mellett nem él (fent kiszálltunk), és a REGGELI
+        // szava is felmenti: az étkezés neve erősebb, mint a mozgásé.
+        if (s.contains("reggeli")) return false;
+        return s.matches("(?s).*(?<![a-z])(edzes\\w*|edzettem|futas\\w*|futottam"
+                + "|lepes\\w*|lepest|setal\\w*|bringa\\w*|kerekpar\\w*|uszas\\w*"
+                + "|usztam|kondi\\w*|jogaztam|turaztam|spinning|kardio\\w*"
+                + "|intervall\\w*|tabata)(?![a-z]).*");
     }
 
     /**
