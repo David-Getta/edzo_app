@@ -369,4 +369,25 @@ public class RoutinesTest {
         for (Rehab.Area a : Rehab.AREAS)
             assertNotNull(a.name, Rehab.forGoal(a.name + " mobilizálás"));
     }
+    /**
+     * Az \u00d3RAJEL kettőspontja nem n\u00e9vhat\u00e1r: a „Ma reggel 6:15-kor keltem…"
+     * napl\u00f3-bejegyz\u00e9sb\u0151l eddig „Ma reggel 6" nev\u0171 edz\u00e9snap-aj\u00e1nlat lett.
+     */
+    @Test
+    public void aClockColonIsNotARoutineName() {
+        assertNull(Routines.parseShared("Ma reggel 6:15-kor keltem, 7,5 \u00f3r\u00e1t "
+                + "aludtam. D\u00e9lel\u0151tt 45 perc kondi: fekvenyom\u00e1s 4x8 65 kg, "
+                + "evez\u00e9s 4x10 50 kg."));
+    }
+
+    /** A val\u00f3di nap-n\u00e9v viszont marad. */
+    @Test
+    public void aRealDayNameStillParses() {
+        Routines.Routine r = Routines.parseShared(
+                "Mellnap: fekvenyom\u00e1s, t\u00e1rogat\u00e1s, tol\u00f3dzkod\u00e1s");
+        assertNotNull(r);
+        assertEquals("Mellnap", r.name);
+        assertEquals(3, r.moves.size());
+    }
+
 }

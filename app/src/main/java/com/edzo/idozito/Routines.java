@@ -208,8 +208,19 @@ public final class Routines {
         String t = text.trim();
         if (t.isEmpty()) return null;
         String name = null, body = t;
-        int c = t.indexOf(':');
-        if (c > 0 && c <= MAX_NAME + 6) {
+        // Az ÓRAJEL kettőspontja nem névhatár: a „Ma reggel 6:15-kor keltem,
+        // …" napló-bejegyzésből eddig „Ma reggel 6" nevű edzésnap-ajánlat
+        // lett, mert az első kettőspont az órajel közepén állt. A nap neve
+        // után szó áll, nem számjegy.
+        int c = -1;
+        for (int i = 1; i < t.length() && i <= MAX_NAME + 6; i++) {
+            if (t.charAt(i) != ':') continue;
+            if (Character.isDigit(t.charAt(i - 1)) && i + 1 < t.length()
+                    && Character.isDigit(t.charAt(i + 1))) continue;
+            c = i;
+            break;
+        }
+        if (c > 0) {
             name = clean(t.substring(0, c));
             body = t.substring(c + 1);
         }
