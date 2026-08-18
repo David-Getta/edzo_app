@@ -4919,7 +4919,15 @@ public final class Activities {
                 && s.substring(m[0], m[2]).indexOf(':') >= 0) return true;
         int i = m[2];
         for (int w = 0; w < 2 && i < s.length(); w++) {
-            while (i < s.length() && !Character.isLetter(s.charAt(i))) i++;
+            // TAGMONDATHATÁRON megállunk: a „kondi: 45p; alvás: 7h" napi
+            // sorában a negyvenöt perc a kondié – eddig a pontosvessző utáni
+            // alvás-szó vitte el, és a kondi az alap-hatvan percet kapta.
+            // (A bemelegítés-vizsgálat régóta így néz előre.)
+            while (i < s.length() && !Character.isLetter(s.charAt(i))) {
+                char c = s.charAt(i);
+                if (c == ',' || c == ';' || c == '.') return false;
+                i++;
+            }
             int e = i;
             while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
             if (e == i) break;

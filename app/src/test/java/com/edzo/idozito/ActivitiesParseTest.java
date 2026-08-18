@@ -5615,4 +5615,19 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /**
+     * TAGMONDATHAT\u00c1RON meg\u00e1llunk: a „kondi: 45p; alv\u00e1s: 7h" napi sor\u00e1ban
+     * a negyven\u00f6t perc a kondi\u00e9 – eddig a pontosvessz\u0151 ut\u00e1ni alv\u00e1s-sz\u00f3
+     * vitte el, \u00e9s a kondi az alap-hatvan percet kapta.
+     */
+    @Test
+    public void aSleepWordBeyondTheClauseDoesNotTakeTheMinutes() {
+        assertEquals(45, Activities.parse("kondi: 45p; alv\u00e1s: 7h")
+                .plans.get(0).minutes);
+        // A tagmondaton BEL\u00dcLI alv\u00e1s-sz\u00f3 tov\u00e1bbra is elveszi.
+        Activities.Parsed p = Activities.parse("aludtam 8 \u00f3r\u00e1t, reggel futottam 5 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
 }
