@@ -946,4 +946,17 @@ public class BodyParseTest {
         assertFalse(BodyParse.parse("megettem 140 g csirk\u00e9t, s\u00falyom 78,2 kg").isEmpty());
     }
 
+    /**
+     * A HELYESB\u00cdT\u00c9S tagadott sz\u00e1ma nem n\u00e9m\u00edtja el a m\u00e9r\u00e9st: a „bocs,
+     * el\u00edrtam: 78,2 kg volt, nem 87,2" hetvennyolc kil\u00f3ja az igazi.
+     */
+    @Test
+    public void aTypoFixKeepsTheRealWeight() {
+        assertEquals(78.2, BodyParse.parse(
+                "bocs, el\u00edrtam: 78,2 kg volt, nem 87,2").kg, 0.01);
+        assertEquals(78.2, BodyParse.parse("78,2 kg volt, nem 87,2 kg").kg, 0.01);
+        // A „hanem"-es alak m\u00e1sodik sz\u00e1ma tov\u00e1bbra is az igazi.
+        assertEquals(78, BodyParse.parse("nem 80 kg vagyok, hanem 78").kg, 0.01);
+    }
+
 }

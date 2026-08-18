@@ -122,6 +122,10 @@ public final class BodyParse {
             // elnémította, pedig aki elérte, az épp most állt a mérlegen.
             // (A puszta „a célsúlyom 72 kg" kívánság marad, nem mérés.)
             "elertem",
+            // A HELYESBÍTÉS is mérés-mondat: a „bocs, elírtam: 78,2 kg" az
+            // aznapi mérés javítása – eddig a bevezető tagmondat miatt az
+            // egész kiesett, mert kimondás-szó nem volt mellette.
+            "elirtam", "elgepeltem", "javitom", "javitva", "helyesbitek",
             // A KIINDULÓPONT ragozott kilója is testsúly-mondat: a „83,5
             // kilóról indultam januárban, ma 78,2" mai értéke csak akkor
             // kerülhet be, ha a mondat mérésnek látszik.
@@ -265,6 +269,13 @@ public final class BodyParse {
         // senki nem grammban ír. (A „kg" g-je nem esik ide: betű előzi meg.)
         q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,4}([.,]\\d+)?\\s?"
                 + "(?<![\\p{L}])(?:g|gramm)(?![\\p{L}])", " ");
+        // A HELYESBÍTÉS tagadott száma nem mérés, de nem is némítja el a
+        // mondatot: a „78,2 kg volt, nem 87,2" hetvennyolc kilója az igazi –
+        // eddig az egész bejegyzés elveszett, vagyis a nap mérése kimaradt
+        // egy elütés miatt.
+        if (q.matches("(?s).*\\d\\s?kg.*"))
+            q = q.replaceAll("(?iu),\\s*nem\\s+\\d{1,3}(?:[.,]\\d+)?"
+                    + "\\s?(?:kg|kil\u00f3\\p{L}*|kilo\\p{L}*)?[\\s.!]*$", " ");
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(
                         dropOthersWeight(Foods.norm(q)))))));

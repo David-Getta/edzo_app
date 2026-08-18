@@ -5410,4 +5410,19 @@ public class ActivitiesParseTest {
         assertEquals(5.0, p.plans.get(0).km, 0.01);
     }
 
+    /**
+     * A TERVEZETT \u00e9s a MEGLETT: a „10 km-t terveztem, 12 lett bel\u0151le"
+     * tizenk\u00e9t kilom\u00e9ter – eddig a tervezett t\u00edz ment be.
+     */
+    @Test
+    public void whatCameOfItBeatsWhatWasPlanned() {
+        assertEquals(12.0, Activities.parse("10 km-t terveztem, 12 lett bel\u0151le")
+                .plans.get(0).km, 0.01);
+        // A sport szava a megtett mennyis\u00e9g mell\u00e9 ker\u00fcl.
+        Activities.Parsed p = Activities.parse("40 perc kondit terveztem, 55 lett bel\u0151le");
+        assertEquals(1, p.plans.size());
+        assertEquals(55, p.plans.get(0).minutes);
+        assertEquals("kondi", p.plans.get(0).kind.id);
+    }
+
 }

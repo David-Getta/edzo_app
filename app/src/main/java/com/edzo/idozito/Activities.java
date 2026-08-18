@@ -1222,6 +1222,16 @@ public final class Activities {
                 // kilométer – eddig a negyven perc elveszett, és a
                 // mozgásforma átlagából lett kilencven perc.
                 + "(?=tempo(?:val|ban|ra|t|m|ja|nk|hoz)?(?![a-z]))", "$1:00-as ");
+        // A TERVEZETT és a MEGLETT: a „10 km-t terveztem, 12 lett belőle"
+        // tizenkét kilométer – eddig a tervezett tíz ment be, vagyis épp a
+        // ráadás veszett el. A második szám a megtett, mert a mondat maga
+        // mondja ki, hogy abból LETT valami. A sport szava (ha a szám és a
+        // tervezés közé esik) átkerül a megtett mennyiség mellé.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d)?)\\s?(km|perc)[-\\w]*"
+                + "((?:\\s+[a-z]+)?)\\s+"
+                + "(?:terveztem|akartam|lett volna|szerettem volna)"
+                + "[^.;\\d]{0,14}?,?\\s*(\\d{1,3}(?:[.,]\\d)?)\\s+lett"
+                + "(?:\\s+bel[oő]le)?", "$4 $2$3");
         // A BEMELEGÍTÉS perce nem a futásé: a „futás 8 km, 10 perces
         // levezetéssel" tíz perce eddig elvitte a nyolc kilométer idejét.
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?perces\\s+"
