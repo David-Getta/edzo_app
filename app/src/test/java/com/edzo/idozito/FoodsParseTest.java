@@ -1643,4 +1643,21 @@ public class FoodsParseTest {
         assertTrue("\u00e9telnek l\u00e1tszik:" + bad, bad.length() == 0);
     }
 
+    /**
+     * A R\u00c9TES t\u00f6ltel\u00e9ke benne van a t\u00e9szt\u00e1ban: a „k\u00e1poszt\u00e1s r\u00e9tes" mell\u00e9
+     * eddig m\u00e1sf\u00e9l deka nyers k\u00e1poszta is beker\u00fclt, a „t\u00far\u00f3s r\u00e9tes" mell\u00e9
+     * egy adag t\u00far\u00f3.
+     */
+    @Test
+    public void aStrudelsFillingIsInTheStrudel() {
+        for (String q : new String[]{"k\u00e1poszt\u00e1s r\u00e9tes", "t\u00far\u00f3s r\u00e9tes",
+                "alm\u00e1s r\u00e9tes"}) {
+            java.util.List<Foods.Hit> l = hits(q);
+            assertEquals(q, 1, l.size());
+            assertEquals(q, "R\u00e9tes", l.get(0).food.name);
+        }
+        // A k\u00fcl\u00f6n t\u00e1lalt t\u00f6ltel\u00e9k marad \u00f6n\u00e1ll\u00f3.
+        assertEquals("T\u00far\u00f3", hits("t\u00far\u00f3 200 g").get(0).food.name);
+    }
+
 }

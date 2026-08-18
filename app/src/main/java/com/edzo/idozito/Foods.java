@@ -3746,8 +3746,13 @@ public final class Foods {
             {"Gyümölcsturmix / smoothie", "Protein turmix"},
             // A pite tölteléke benne van a pite kalóriájában: a „meggyes pite"
             // nem pite PLUSZ egy adag meggy.
-            {"Cseresznye / meggy", "Pite (almás/gyümölcsös)"},
-            {"Alma", "Pite (almás/gyümölcsös)"},
+            {"Cseresznye / meggy", "Pite (almás/gyümölcsös)", "Rétes"},
+            {"Alma", "Pite (almás/gyümölcsös)", "Rétes"},
+            // A RÉTES tölteléke ugyanígy benne van a tésztában: a „káposztás
+            // rétes" mellé eddig másfél deka nyers káposzta is bekerült, a
+            // „túrós rétes" mellé egy adag túró.
+            {"Káposzta", "Rétes", "Töltött káposzta"},
+            {"Túró", "Rétes", "Túrós csusza", "Túrógombóc"},
             // A szendvics és a hamburger adagja is a feltéttel együtt értendő:
             // a „sonkás-sajtos melegszendvics" egy szendvics, nem szendvics
             // PLUSZ egy adag sonka PLUSZ egy adag sajt – az együtt már két
