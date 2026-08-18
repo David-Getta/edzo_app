@@ -5478,4 +5478,23 @@ public class ActivitiesParseTest {
         assertEquals(6, p.plans.get(0).minutes);
     }
 
+    /**
+     * A „3x MAX" szettsz\u00e1m, nem alkalomsz\u00e1m: a „h\u00faz\u00f3dzkod\u00e1s saj\u00e1t
+     * s\u00fallyal 3x max" H\u00c1ROM k\u00fcl\u00f6n, hatvan perces edz\u00e9st \u00edrt a napl\u00f3ba.
+     */
+    @Test
+    public void setsToFailureAreNotSeparateSessions() {
+        Activities.Parsed p = Activities.parse("h\u00faz\u00f3dzkod\u00e1s saj\u00e1t s\u00fallyal 3x max");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        // A val\u00f3di alkalomsz\u00e1m marad.
+        assertEquals(3, Activities.parse("3 edz\u00e9s a h\u00e9ten").plans.get(0).count);
+    }
+
+    /** A l\u00e9pcs\u0151 az emeletsz\u00e1m m\u00f6g\u00f6tt is mozg\u00e1s: „12 emelet l\u00e9pcs\u0151". */
+    @Test
+    public void floorsBeforeTheStairsWordCountToo() {
+        assertEquals(6, Activities.parse("12 emelet l\u00e9pcs\u0151").plans.get(0).minutes);
+    }
+
 }

@@ -765,6 +765,13 @@ public final class StrengthParse {
         // sorozat és súly nélkül.
         if (name == null && s.contains("kettlebell")) name = "Kettlebell lendítés";
         if (name == null) return null;
+        // A RÁMPA két listája: „60-70-80 kg 8-6-4”. A kilós lista a SÚLYOKÉ,
+        // a másik az ismétléseké – eddig a felismerő a mondat első listáját
+        // vette ismétlésnek, és „60-70-80 ismétlés" került a naplóba nyolc,
+        // hat és négy helyett. A fordított szórend („8-6-4 60-70-80 kg")
+        // eddig is jó volt, ezért arra írjuk át.
+        s = s.replaceAll("(?<![\\d.,])(\\d{2,3}(?:-\\d{2,3}){1,4})\\s?(?:kg|kilo)"
+                + "\\s+(\\d{1,2}(?:-\\d{1,2}){1,4})(?![\\d.,-])", "$2 $1 kg");
         // A TEMPÓ-jelölés nem ismétlés: a „tempó 3-1-1-0" négy szakasz
         // másodperce (le, alul, fel, fent), nem négy sorozat. Kimondott
         // tempó-szó nélkül a kötőjeles lista továbbra is piramis („12-10-8").

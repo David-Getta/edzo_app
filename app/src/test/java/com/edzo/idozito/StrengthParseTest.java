@@ -1474,4 +1474,18 @@ public class StrengthParseTest {
         assertEquals(8, l.get(0).sets.get(0).reps);
     }
 
+    /**
+     * A R\u00c1MPA k\u00e9t list\u00e1ja: a „60-70-80 kg 8-6-4" kil\u00f3s list\u00e1ja a s\u00falyok\u00e9,
+     * a m\u00e1sik az ism\u00e9tl\u00e9sek\u00e9 – eddig „60-70-80 ism\u00e9tl\u00e9s" ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void aRampsKilosAreNotReps() {
+        java.util.List<StrengthParse.Item> l =
+                StrengthParse.parse("fekvenyom\u00e1s 60-70-80 kg 8-6-4");
+        assertEquals(1, l.size());
+        assertEquals(3, l.get(0).sets.size());
+        assertEquals(8, l.get(0).sets.get(0).reps);
+        assertEquals(4, l.get(0).sets.get(2).reps);
+    }
+
 }

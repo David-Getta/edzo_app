@@ -1229,7 +1229,7 @@ public final class Activities {
         // kimondja, hogy megmászták.
         s = s.replaceAll("(?<![a-z])lepcso(?!z)\\w*\\s*,?\\s*(\\d{1,3})\\s?emelet",
                 "lepcsozes $1 emelet");
-        s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emeletet?\\s+lepcso(?!z)\\w*",
+        s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emelet(?:et)?\\s+lepcso(?!z)\\w*",
                 "lepcsozes $1 emelet");
         // A LIFT HELYETT használt lépcső napi szokás, nem kilencven perc
         // túra: a „ma csak a lépcsőt használtam a lift helyett" mondatból
@@ -1238,6 +1238,12 @@ public final class Activities {
         // marad; szám nélkül viszont csak egy jó szokás leírása.
         if (s.contains("lift") && !s.matches("(?s).*\\d.*"))
             s = s.replaceAll("(?<![a-z])lepcso\\w*", " ");
+        // A „3x MAX" szettszám, nem alkalomszám: a „húzódzkodás saját
+        // súllyal 3x max" HÁROM külön, hatvan perces edzést írt a naplóba
+        // egyetlen gyakorlat helyett. Az ismétlésszám ismeretlen marad, de a
+        // nap attól még egy edzés.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\s?[x×]\\s*"
+                + "(?=(?:max|maxig|kifulladasig|failure|amrap)(?![a-z]))", " ");
         // A MUNKA/PIHENŐ pár nem alkalomszám: a „20/10 tabata" és a
         // „30/30 intervall 10x" perjeles párja szakasz-hossz. Eddig tíz,
         // illetve harminc KÜLÖN edzés lett belőle – tíz-, illetve
