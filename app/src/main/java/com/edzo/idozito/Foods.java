@@ -870,6 +870,9 @@ public final class Foods {
             // egy százötven grammos csirkecomb került a naplóba – egy
             // sérülés-mondatból. A combhajlító és a combcsont ugyanez.
             "combizm", "combizo", "combhajlit", "combcsont", "combfeszit",
+            // A NYÍLTVÍZI úszásban benne a víz: a „nyíltvízi úszás 2 km"
+            // mellé eddig egy pohár ásványvíz is bekerült a naplóba.
+            "nyiltvizi", "nyilt vizi",
             // A KORIZÁS szlengjében is rizs lakik: a „görkoriztam a
             // rakparton" nyolc kilométeréhez eddig egy adag főtt rizs is
             // került a naplóba.
@@ -2586,6 +2589,22 @@ public final class Foods {
                 "$1$2, 30 g tej");
         query = query.replaceAll("(?iu)(?<!\\p{L})tejes\\s+k[aá]v[eé](\\p{L}*)",
                 "tejeskave$1");
+        // A SZÜRET nem étkezés: a „krumplit szedtem 3 órát" és a „szőlőt
+        // szedtünk egész nap" kerti munka – a termés neve mellé eddig egy
+        // adag főtt burgonya, illetve fél kiló szőlő került a naplóba. A
+        // többes számú alak eddig is védett volt, az egyes számú nem: a
+        // „szedtem" magában vitamin is lehet, ezért csak a termés nevével
+        // együtt takarjuk ki.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:krumpli|burgony|sz[oő]l[oő]|"
+                + "alm[aá]|meggy|cseresny|szilv|di[oó]|barack|m[aá]ln|eper|epr|"
+                + "paradicsom|paprik|ubork|k[oö]rt)\\p{L}*\\s+szed\\p{L}*", " ");
+        // A KAGYLÓ-gyakorlat nem tenger gyümölcse: az oldalfekvésben végzett
+        // „kagyló gumival 3x15" mellé eddig egy adag kagyló került az
+        // étkezésnaplóba. A gyakorlat szavai döntenek – a tányéron lévő
+        // kagyló marad kagyló.
+        if (query.matches("(?siu).*(clamshell|gumival|gumiszalag|oldalfekv|"
+                + "\\d\\s?[x×]\\s?\\d).*"))
+            query = query.replaceAll("(?iu)(?<!\\p{L})kagyl[oó]\\p{L}*", " ");
         // A „BŐRÖN SÜLT" nem bor: az ékezetek nélkül a „bőr" és a „bor"
         // ugyanaz a három betű, és a „sült csirkecomb bőrön sült krumplival"
         // mellé eddig egy pohár vörösbor is bekerült a naplóba. A jelzős

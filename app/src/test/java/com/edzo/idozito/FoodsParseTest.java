@@ -1620,4 +1620,27 @@ public class FoodsParseTest {
             assertTrue(w, Foods.closest(all, w) == null);
     }
 
+    /**
+     * Egyetlen sportn\u00e9v \u00e9s rehab-gyakorlatn\u00e9v se hozzon l\u00e9tre \u00e9tel-t\u00e9telt.
+     *
+     * A keresztpr\u00f3ba h\u00e1rom \u00fctk\u00f6z\u00e9st tal\u00e1lt: a „ny\u00edltv\u00edzi" \u00fasz\u00e1s mell\u00e9
+     * \u00e1sv\u00e1nyv\u00edz, a „krumplit szed" kerti munka mell\u00e9 f\u0151tt burgonya, a
+     * „Kagyl\u00f3 (clamshell)" rehab-gyakorlat mell\u00e9 tenger gy\u00fcm\u00f6lcsei ker\u00fclt.
+     */
+    @Test
+    public void noSportOrRehabNameIsAFood() {
+        StringBuilder bad = new StringBuilder();
+        for (Activities.Kind k : Activities.ALL)
+            for (String w : k.words) {
+                if (w.length() < 4) continue;
+                if (!Foods.parse(DB, w).isEmpty())
+                    bad.append("\n  ").append(k.id).append(" | ").append(w);
+            }
+        for (Rehab.Area a : Rehab.AREAS)
+            for (Rehab.Ex e : a.moves)
+                if (!Foods.parse(DB, e.name).isEmpty())
+                    bad.append("\n  ").append(a.id).append(" | ").append(e.name);
+        assertTrue("\u00e9telnek l\u00e1tszik:" + bad, bad.length() == 0);
+    }
+
 }
