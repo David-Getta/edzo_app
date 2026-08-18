@@ -5581,4 +5581,20 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("2x45 perc foci").plans.get(0).count);
     }
 
+    /**
+     * A r\u00f6vid „h" ugyanaz az \u00f3ra: a t\u00f6m\u00f6r napi sorb\u00f3l („fut\u00e1s: 10km;
+     * kondi: 45p; alv\u00e1s: 7h") MINDK\u00c9T mozg\u00e1s n\u00e9gysz\u00e1zh\u00fasz percet kapott –
+     * az alv\u00e1s \u00f3r\u00e1j\u00e1b\u00f3l.
+     */
+    @Test
+    public void aSleepHourInShortFormIsNotAWorkoutLength() {
+        Activities.Parsed p = Activities.parse(
+                "fut\u00e1s: 10km; kondi: 45p; alv\u00e1s: 7h");
+        assertEquals(2, p.plans.size());
+        for (Activities.Plan pl : p.plans)
+            assertTrue(pl.kind.id + " " + pl.minutes, pl.minutes < 400);
+        // A mozg\u00e1s saj\u00e1t „h"-ja marad hossz.
+        assertEquals(60, Activities.parse("fut\u00e1s 1h").plans.get(0).minutes);
+    }
+
 }

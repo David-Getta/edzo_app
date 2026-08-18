@@ -1712,10 +1712,16 @@ public final class Activities {
         // azért lementem 30 percre a terembe" ÖTÓRÁS kondi-edzést írt be –
         // az alvás számából. A mozgás-olvasó számára az alvás-szó melletti
         // óraszám nem létezik; az alvásnaplónak külön szövege van.
+        // A RÖVID „h" ugyanaz az óra: az „alvás: 7h" hétszáz… hétszer hatvan
+        // perces edzést írt a naplóba – a tömör, pontosvesszős napi sorból
+        // („futás: 10km; kondi: 45p; alvás: 7h") MINDKÉT mozgás négyszázhúsz
+        // percet kapott. Az alvás-szó melletti óraszám a mozgás-olvasó
+        // számára nem létezik, akármelyik alakban áll.
         s = s.replaceAll("(?<![a-z])(alud\\w*|alvas\\w*|aludt\\w*)"
-                + "([^,;.]{0,10}?)\\(?\\s*\\d{1,2}(?:[.,]\\d)?\\s?ora\\w*\\)?",
+                + "([^,;.]{0,10}?)\\(?\\s*\\d{1,2}(?:[.,]\\d)?"
+                + "\\s?(?:ora\\w*|h(?![a-z]))\\)?",
                 "$1$2");
-        s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?\\s?ora\\w*\\s+"
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?\\s?(?:ora\\w*|h)\\s+"
                 + "(alvas\\w*|alud\\w*)", "$1");
         // A BETEGSÉG hossza nem az edzés időszaka: a „beteg voltam egy
         // hetig, ma volt az első edzés: 30 perc" harminc perce MA történt,
