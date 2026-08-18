@@ -1222,6 +1222,22 @@ public final class Activities {
                 // kilométer – eddig a negyven perc elveszett, és a
                 // mozgásforma átlagából lett kilencven perc.
                 + "(?=tempo(?:val|ban|ra|t|m|ja|nk|hoz)?(?![a-z]))", "$1:00-as ");
+        // A puszta „lépcső" az EMELETEK mellett maga a mozgás: a „lépcső,
+        // 12 emelet" és a „12 emelet lépcső" eddig üresen jött vissza, mert
+        // szótő csak a „lépcsőzés" volt – a „lépcsőház" és a „lépcsőn ültem"
+        // miatt a rövid alak önmagában nem lehet tő. Az emeletszám viszont
+        // kimondja, hogy megmászták.
+        s = s.replaceAll("(?<![a-z])lepcso(?!z)\\w*\\s*,?\\s*(\\d{1,3})\\s?emelet",
+                "lepcsozes $1 emelet");
+        s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emeletet?\\s+lepcso(?!z)\\w*",
+                "lepcsozes $1 emelet");
+        // A LIFT HELYETT használt lépcső napi szokás, nem kilencven perc
+        // túra: a „ma csak a lépcsőt használtam a lift helyett" mondatból
+        // másfél órás gyaloglás lett – a mozgásforma alapidejéből. Ha az
+        // emeletek száma ki van mondva („12 emelet"), az valódi adat, és
+        // marad; szám nélkül viszont csak egy jó szokás leírása.
+        if (s.contains("lift") && !s.matches("(?s).*\\d.*"))
+            s = s.replaceAll("(?<![a-z])lepcso\\w*", " ");
         // A MUNKA/PIHENŐ pár nem alkalomszám: a „20/10 tabata" és a
         // „30/30 intervall 10x" perjeles párja szakasz-hossz. Eddig tíz,
         // illetve harminc KÜLÖN edzés lett belőle – tíz-, illetve

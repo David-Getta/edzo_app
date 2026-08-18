@@ -5464,4 +5464,18 @@ public class ActivitiesParseTest {
                 .plans.get(0).count);
     }
 
+    /**
+     * A LIFT HELYETT haszn\u00e1lt l\u00e9pcs\u0151 napi szok\u00e1s, nem kilencven perc t\u00fara:
+     * a mondatb\u00f3l m\u00e1sf\u00e9l \u00f3r\u00e1s gyalogl\u00e1s lett a mozg\u00e1sforma alapidej\u00e9b\u0151l.
+     */
+    @Test
+    public void takingTheStairsInsteadOfTheLiftIsNotAHike() {
+        assertTrue(Activities.parse("ma csak a l\u00e9pcs\u0151t haszn\u00e1ltam a lift helyett")
+                .plans.isEmpty());
+        // Az emeletsz\u00e1m viszont val\u00f3di adat.
+        Activities.Parsed p = Activities.parse("lift helyett l\u00e9pcs\u0151, 12 emelet");
+        assertEquals(1, p.plans.size());
+        assertEquals(6, p.plans.get(0).minutes);
+    }
+
 }
