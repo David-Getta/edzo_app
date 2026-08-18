@@ -382,6 +382,12 @@ public final class IntervalParse {
         // pihenővel – negyvenperces időzítő egy félórás estére. Egyenlő
         // munka és pihenő egyetlen körben sosem valódi terv.
         if (rounds <= 1 && rest > 0 && work == rest && !saysPlan(s)) return null;
+        // EGY kör, pihenő nélkül nem ritmus: az „5 perc szauna, 30 perc
+        // úszás" ötperces „tervet" ajánlott – két kimondott időből, amelyek
+        // közül az egyik nem is mozgás. A kimondott terv (amrap, tabata,
+        // „x kör") a saját ágán úgyis visszatér, a puszta időmező pedig az
+        // onlyTime-on.
+        if (rounds <= 1 && rest <= 0 && !saysPlan(s) && !onlyTime(s)) return null;
         // A SÚLYZÓS SZETT nem intervallum: a „guggolás 5x5 100 kg, pihi
         // 3 perc" ötször ötje sorozat és ismétlés, a pihi pedig a sorozatok
         // közti szünet. Eddig ötkörös, háromperc munka – háromperc pihenő

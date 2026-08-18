@@ -5658,4 +5658,20 @@ public class ActivitiesParseTest {
         assertEquals(120, Activities.parse("2 \u00f3ra takar\u00edt\u00e1s").plans.get(0).minutes);
     }
 
+    /**
+     * A V\u00c1RAKOZ\u00c1S \u00e9s az EDZ\u00c9S K\u00d6R\u00dcLI mozdulatlan percek nem edz\u00e9sid\u0151k:
+     * a „45 perc sorban\u00e1ll\u00e1s, azt\u00e1n 30 perc kondi" negyven\u00f6t perces kondit,
+     * az „5 perc szauna, 30 perc \u00fasz\u00e1s" \u00f6tperces \u00fasz\u00e1st \u00edrt a napl\u00f3ba.
+     */
+    @Test
+    public void waitingAndSaunaMinutesAreNotTheWorkout() {
+        assertEquals(30, Activities.parse("45 perc sorban\u00e1ll\u00e1s, azt\u00e1n 30 perc kondi")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("5 perc szauna, 30 perc \u00fasz\u00e1s")
+                .plans.get(0).minutes);
+        assertEquals(20, Activities.parse(
+                "30 perc k\u00e9s\u00e9s miatt r\u00f6vid\u00edtettem, 20 perc fut\u00e1s")
+                .plans.get(0).minutes);
+    }
+
 }

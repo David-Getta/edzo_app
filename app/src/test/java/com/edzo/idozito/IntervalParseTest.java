@@ -861,4 +861,18 @@ public class IntervalParseTest {
         assertEquals(8, p.rounds);
     }
 
+    /**
+     * EGY k\u00f6r, pihen\u0151 n\u00e9lk\u00fcl nem ritmus: az „5 perc szauna, 30 perc \u00fasz\u00e1s"
+     * \u00f6tperces id\u0151z\u00edt\u0151-tervet aj\u00e1nlott – k\u00e9t kimondott id\u0151b\u0151l, amelyek
+     * k\u00f6z\u00fcl az egyik nem is mozg\u00e1s.
+     */
+    @Test
+    public void oneRoundWithoutRestIsNotAPlan() {
+        assertNull(IntervalParse.parse("5 perc szauna, 30 perc \u00fasz\u00e1s"));
+        // A kimondott terv \u00e9s a puszta id\u0151mez\u0151 marad.
+        assertNotNull(IntervalParse.parse("amrap 20 perc"));
+        assertNotNull(IntervalParse.parse("2 perc"));
+        assertNotNull(IntervalParse.parse("emom 12 perc"));
+    }
+
 }

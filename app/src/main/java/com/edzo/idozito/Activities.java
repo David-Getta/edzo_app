@@ -5012,7 +5012,18 @@ public final class Activities {
                 // görnyedtem 10 órát, este 20 perc gerinctorna" tíz órája
                 // hatszáz perc jógává vált.
                 || w.startsWith("gornyed") || w.startsWith("monitor")
-                || w.startsWith("szamitogep") || w.startsWith("laptop");
+                || w.startsWith("szamitogep") || w.startsWith("laptop")
+                // A VÁRAKOZÁS és a KÉSÉS perce sem edzésidő: a „45 perc
+                // sorbanállás, aztán 30 perc kondi" negyvenöt perce a sorban
+                // telt, a „30 perc késés miatt rövidítettem, 20 perc futás"
+                // harminca a késésé – mindkettő a mozgás hosszává vált.
+                || w.startsWith("keses") || w.startsWith("sorbanallas")
+                || w.startsWith("varakoz") || w.startsWith("kestem")
+                // Az EDZÉS KÖRÜLI, mozdulatlan percek: a „5 perc szauna,
+                // 30 perc úszás" ötperces úszást írt a naplóba.
+                || w.startsWith("szauna") || w.startsWith("zuhany")
+                || w.startsWith("oltoz") || w.startsWith("masszazs")
+                || w.startsWith("jakuzzi") || w.startsWith("gozfurdo");
         return desk && !s.contains("kerti munka") && !s.contains("fizikai munka")
                 && !s.contains("haz koruli");
     }
