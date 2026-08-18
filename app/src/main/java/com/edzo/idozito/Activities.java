@@ -1252,6 +1252,18 @@ public final class Activities {
         // nap attól még egy edzés.
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\s?[x×]\\s*"
                 + "(?=(?:max|maxig|kifulladasig|failure|amrap)(?![a-z]))", " ");
+        // A LÉPCSŐ a gyakorlat helyszíne, nem a mozgásforma: a „vádliemelés
+        // lépcsőn 3x12" mellé eddig egy kilencven perces túra is bekerült a
+        // naplóba – a rehab-lapról kimásolt gyakorlatnév miatt. Sorozat-
+        // jelölés mellett a lépcső csak a helyszín.
+        if (s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*"))
+            s = s.replaceAll("(?<![a-z])lepcso\\w*", " ");
+        // A FARMER-SÉTA súlyzós cipelés, nem séta: a „farmer walk 2x40 m"
+        // nyolcvan méteres gyaloglásként került be.
+        // A tagmondat egészét kitakarjuk: a néhány tíz méteres cipelés se
+        // túra, se futás – erőgyakorlat, aminek nincs saját sora.
+        s = s.replaceAll("[^,;.]*(?<![a-z])farmer[- ]?(?:seta|setat|walk|jaras)"
+                + "\\w*[^,;.]*", " ");
         // A PRE WORKOUT ital, nem edzés: a „pre workout ital edzés előtt"
         // mellé eddig egy negyvenöt perces „egyéb mozgás" került a naplóba –
         // egy pohár italból. Az étkezés-felismerő a saját szövegéből

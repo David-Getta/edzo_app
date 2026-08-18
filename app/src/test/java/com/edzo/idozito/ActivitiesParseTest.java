@@ -5529,4 +5529,24 @@ public class ActivitiesParseTest {
         assertTrue("mozg\u00e1snak l\u00e1tszik:" + bad, bad.length() == 0);
     }
 
+    /**
+     * A L\u00c9PCS\u0150 a gyakorlat helysz\u00edne, nem a mozg\u00e1sforma: a „v\u00e1dliemel\u00e9s
+     * l\u00e9pcs\u0151n 3x12" mell\u00e9 eddig egy kilencven perces t\u00fara is beker\u00fclt.
+     */
+    @Test
+    public void stairsInsideAnExerciseNameAreOnlyTheVenue() {
+        assertTrue(Activities.parse("v\u00e1dliemel\u00e9s l\u00e9pcs\u0151n 3x12").plans.isEmpty());
+        // A l\u00e9pcs\u0151z\u00e9s mint mozg\u00e1s marad.
+        assertEquals(8, Activities.parse("l\u00e9pcs\u0151z\u00e9s 15 emelet").plans.get(0).minutes);
+    }
+
+    /** A farmer-s\u00e9ta s\u00falyz\u00f3s cipel\u00e9s: nyolcvan m\u00e9teres gyalogl\u00e1s lett bel\u0151le. */
+    @Test
+    public void aFarmerWalkIsNotAWalk() {
+        assertTrue(Activities.parse("farmer walk 2x40 m").plans.isEmpty());
+        // A mondat m\u00e1sik fele megmarad.
+        assertEquals(1, Activities.parse(
+                "futottam 5 km-t, azt\u00e1n farmer walk 2x40 m").plans.size());
+    }
+
 }
