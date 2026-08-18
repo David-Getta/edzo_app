@@ -1691,4 +1691,19 @@ public class FoodsParseTest {
         assertEquals(150.0, hits("csirkemell 150 g").get(0).grams, 0.01);
     }
 
+    /**
+     * A KORTY az italok falatja: a „3 korty bor" n\u00e9gysz\u00e1z\u00f6tven grammk\u00e9nt
+     * ment be – h\u00e1rom poh\u00e1rnyik\u00e9nt.
+     */
+    @Test
+    public void aSipIsNotAGlass() {
+        assertEquals(75.0, hits("3 korty bor").get(0).grams, 0.01);
+        // A poh\u00e1r \u00e9s a kors\u00f3 marad.
+        assertEquals(300.0, hits("k\u00e9t poh\u00e1r bor").get(0).grams, 0.01);
+        assertEquals(500.0, hits("egy kors\u00f3 s\u00f6r").get(0).grams, 0.01);
+        // A FELESPOH\u00c1R egy sz\u00f3ban is m\u00e9r\u0151sz\u00f3: a „k\u00e9t felespoh\u00e1r whisky"
+        // egyetlen felesnek sz\u00e1m\u00edtott.
+        assertEquals(80.0, hits("k\u00e9t felespoh\u00e1r whisky").get(0).grams, 0.01);
+    }
+
 }

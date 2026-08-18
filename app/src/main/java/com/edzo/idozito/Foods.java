@@ -1970,7 +1970,8 @@ public final class Foods {
              // A ragozott alak a név UTÁN áll: „pizzából ettem 2 szeletet".
              "szeletet", "szelettel",
              "gombóc", "gomboc", "pohar", "pohár",
-             "korso", "korsó", "feles", "csesze", "csésze", "doboz", "uveg", "üveg",
+             "korso", "korsó", "feles", "felespohar", "felespohár",
+             "csesze", "csésze", "doboz", "uveg", "üveg",
              "kupica", "stampedli", "korty", "kortyot", "kortynyi",
              "kancso", "kancsó",
              // A „szem" a magyar konyhában darabszó: „tíz szem mandula",
@@ -3314,6 +3315,11 @@ public final class Foods {
         // A falat és a harapás ételtől függetlenül pár deka: aki ennyit
         // ír, az pont azt mondja, hogy alig evett belőle.
         if (unit.startsWith("falat") || unit.startsWith("harapas")) return 15;
+        // A KORTY az italok falatja: a „3 korty bor" négyszázötven grammként
+        // ment be – három pohárnyiként –, pedig aki kortyot ír, épp azt
+        // mondja, hogy alig ivott belőle. Egy korty nagyjából két és fél
+        // centi.
+        if (unit.startsWith("korty")) return 25;
         if (unit.startsWith("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
         // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
         // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a
