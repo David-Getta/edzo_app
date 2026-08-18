@@ -5704,4 +5704,19 @@ public class ActivitiesParseTest {
         assertEquals(40.0, Activities.parse("40 km biciklivel").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A HELY T\u00c1VOLS\u00c1GA \u00e9s a MAGASS\u00c1G nem megtett t\u00e1v: az „a terem 2 km-re
+     * van t\u0151lem" k\u00e9t kilom\u00e9teres fut\u00e1st, az „a hegy teteje 700 m magasan
+     * van" h\u00e9tsz\u00e1z m\u00e9terest \u00edrt a napl\u00f3ba.
+     */
+    @Test
+    public void aPlacesDistanceIsNotACoveredDistance() {
+        for (Activities.Plan p : Activities.parse("a terem 2 km-re van t\u0151lem").plans)
+            assertEquals(p.kind.id, 0.0, p.km, 0.01);
+        assertTrue(Activities.parse("a hegy teteje 700 m magasan van").plans.isEmpty());
+        // Ha meg is tette, a t\u00e1v marad.
+        assertEquals(10.0, Activities.parse(
+                "10 km-re volt a start, oda is gyalogoltam").plans.get(0).km, 0.01);
+    }
+
 }

@@ -1298,6 +1298,20 @@ public final class Activities {
                 + "(?:\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3})?", " ");
         s = s.replaceAll("(?<![a-z])nordic[- ]?(?:curl|hamstring)\\w*"
                 + "(?:\\s*\\d{1,2}\\s?[x×]\\s?\\d{1,3})?", " ");
+        // A HELY TÁVOLSÁGA nem megtett táv: az „a terem 2 km-re van tőlem"
+        // két kilométeres futást írt a naplóba, pedig a mondat egy edzést se
+        // említ. A MAGASSÁG ugyanez: az „a hegy teteje 700 m magasan van"
+        // hétszáz méteres futás lett. Ha viszont a mondat ki is mondja, hogy
+        // meg is tette („oda is gyalogoltam", „körbefutottam"), a táv marad.
+        if (!s.matches("(?s).*(?<![a-z])(mentem|gyalogoltam|futottam|tekertem|"
+                + "bicikliztem|usztam|korbefutottam|odafutottam|elgyalogoltam|"
+                + "megtettem|leusztam|lefutottam)(?![a-z]).*")) {
+            s = s.replaceAll("(?<![\\d,.])\\d{1,4}(?:[.,]\\d)?\\s?(?:km|m)-re\\s+"
+                    + "(?:van|volt|esik|talalhato|fekszik|lakom|lakunk)"
+                    + "(?![a-z])", " ");
+        }
+        s = s.replaceAll("(?<![\\d,.])\\d{1,4}(?:[.,]\\d)?\\s?m(?:-en|-re)?\\s+"
+                + "magas\\w*", " ");
         // A JÁRMŰVEL megtett táv nem edzés-táv: a „200 km vezetés" kétszáz
         // kilométeres FUTÁST írt a naplóba – húsz órát –, a „40 km autóval a
         // hegyekbe, ott 8 km túra" pedig egy negyven kilométeres túrát a
