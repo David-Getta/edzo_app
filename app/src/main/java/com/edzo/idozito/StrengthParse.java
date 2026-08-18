@@ -758,6 +758,12 @@ public final class StrengthParse {
 
     /** Egy tagmondat → gyakorlat + sorozatok, vagy null. */
     private static Item parseOne(String s) {
+        // Az RPE a NYERS tagmondatból: a súly keresése közben a mondat
+        // átalakul, és a „holtemelés 5x5 rpe 7" hetese súly-jelöltként
+        // kiesett – a nehézség-jelölés csak akkor maradt meg, ha súly is
+        // volt mellette. Pedig épp a saját testsúlyos és a százalékos
+        // edzésnél az RPE az egyetlen terhelés-adat.
+        final String raw = s;
         String name = moveIn(s);
         // A puszta „kettlebell" MÁS gyakorlatnév mellett nem mond semmit (a
         // kettlebell-guggolás guggolás), egyedül viszont mindenki a lendítésre
@@ -1002,7 +1008,7 @@ public final class StrengthParse {
                 if (s.contains(w)) { sets.add(new Set(1, weight)); break; }
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);
-        it.rpe = rpeIn(s);
+        it.rpe = rpeIn(raw);
         return it;
     }
 
@@ -1012,18 +1018,22 @@ public final class StrengthParse {
      * szám a mondatban.
      */
     private static int rpeIn(String s) {
-        java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("rpe\\s*-?\\s*(\\d{1,2})|(\\d{1,2})\\s*-?\\s*(?:as|es|os)?\\s*rpe")
-                .matcher(s);
-        while (m.find()) {
-            String g = m.group(1) != null ? m.group(1) : m.group(2);
-            if (g == null) continue;
-            try {
-                int v = Integer.parseInt(g);
-                if (v >= 6 && v <= 10) return v;
-            } catch (NumberFormatException ignored) {
+        // A két szórend KÜLÖN fut: egyetlen vagylagos mintában a „5x5 rpe 7"
+        // ötöse illeszkedett az „N rpe" ágra, és a keresés az „rpe" szó UTÁN
+        // folytatódott – a hetes már nem is látszott. Így a nehézség-jelölés
+        // csak súly mellett maradt meg.
+        for (String p : new String[]{"rpe\\s*-?\\s*(\\d{1,2})",
+                "(\\d{1,2})\\s*-?\\s*(?:as|es|os)?\\s*rpe"}) {
+            java.util.regex.Matcher m0 = java.util.regex.Pattern.compile(p).matcher(s);
+            while (m0.find()) {
+                try {
+                    int v = Integer.parseInt(m0.group(1));
+                    if (v >= 6 && v <= 10) return v;
+                } catch (NumberFormatException ignored) {
+                }
             }
         }
+        java.util.regex.Matcher m;
         // RIR („reps in reserve"): a tartalék-ismétlés jelölése, RPE-re
         // váltva – RIR 2 = RPE 8. Csak a 0–4 sáv életszerű.
         m = java.util.regex.Pattern.compile("rir\\s*-?\\s*(\\d)").matcher(s);

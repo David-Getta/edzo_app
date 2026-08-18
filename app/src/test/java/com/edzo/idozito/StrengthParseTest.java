@@ -1513,4 +1513,19 @@ public class StrengthParseTest {
         assertTrue("m\u00e1s sport\u00e1gnak l\u00e1tszik:" + bad, bad.length() == 0);
     }
 
+    /**
+     * Az RPE s\u00faly n\u00e9lk\u00fcl is neh\u00e9zs\u00e9g-jel\u00f6l\u00e9s: a „holtemel\u00e9s 5x5 rpe 7"
+     * hetese elveszett, mert a mint\u00e1ban az „5x5" \u00f6t\u00f6se illeszkedett az
+     * „N rpe" \u00e1gra, \u00e9s a keres\u00e9s az „rpe" sz\u00f3 UT\u00c1N folytat\u00f3dott.
+     */
+    @Test
+    public void rpeSurvivesWithoutAWeight() {
+        assertEquals(7, StrengthParse.parse("holtemel\u00e9s 5x5 rpe 7").get(0).rpe);
+        assertEquals(8, StrengthParse.parse("guggol\u00e1s 3x5 rpe 8").get(0).rpe);
+        // S\u00faly mellett tov\u00e1bbra is megvan.
+        assertEquals(7, StrengthParse.parse("fekvenyom\u00e1s 3x5 60 kg rpe 7").get(0).rpe);
+        // A RIR-b\u0151l sz\u00e1m\u00edtott \u00e9rt\u00e9k is.
+        assertEquals(8, StrengthParse.parse("guggol\u00e1s 5x5 rir 2").get(0).rpe);
+    }
+
 }
