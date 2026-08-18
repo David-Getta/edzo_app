@@ -1252,6 +1252,11 @@ public final class Activities {
         // nap attól még egy edzés.
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\s?[x×]\\s*"
                 + "(?=(?:max|maxig|kifulladasig|failure|amrap)(?![a-z]))", " ");
+        // A PRE WORKOUT ital, nem edzés: a „pre workout ital edzés előtt"
+        // mellé eddig egy negyvenöt perces „egyéb mozgás" került a naplóba –
+        // egy pohár italból. Az étkezés-felismerő a saját szövegéből
+        // dolgozik, ott a név megmarad étrend-kiegészítőnek.
+        s = s.replaceAll("(?<![a-z])pre[ -]?workout\\w*", " ");
         // A MUNKA/PIHENŐ pár nem alkalomszám: a „20/10 tabata" és a
         // „30/30 intervall 10x" perjeles párja szakasz-hossz. Eddig tíz,
         // illetve harminc KÜLÖN edzés lett belőle – tíz-, illetve

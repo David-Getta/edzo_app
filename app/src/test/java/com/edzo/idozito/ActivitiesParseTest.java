@@ -5511,4 +5511,22 @@ public class ActivitiesParseTest {
             assertTrue(w, Activities.closestKind(w) == null);
     }
 
+    /**
+     * Egyetlen \u00e9teln\u00e9v se hozzon l\u00e9tre mozg\u00e1s-bejegyz\u00e9st.
+     *
+     * A keresztpr\u00f3ba egyet tal\u00e1lt: a „pre workout" ital mell\u00e9 egy
+     * negyven\u00f6t perces „egy\u00e9b mozg\u00e1s" ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void noFoodNameIsAWorkout() {
+        StringBuilder bad = new StringBuilder();
+        for (Foods.Food f : Foods.ALL)
+            for (String w : f.nstems) {
+                if (w.length() < 4) continue;
+                if (!Activities.parse(w).plans.isEmpty())
+                    bad.append("\n  ").append(f.name).append(" | ").append(w);
+            }
+        assertTrue("mozg\u00e1snak l\u00e1tszik:" + bad, bad.length() == 0);
+    }
+
 }
