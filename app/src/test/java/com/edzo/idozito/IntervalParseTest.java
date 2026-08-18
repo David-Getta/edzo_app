@@ -842,4 +842,23 @@ public class IntervalParseTest {
         assertEquals(30, p.work);
     }
 
+    /**
+     * A bemeleg\u00edt\u00e9s–edz\u00e9s–levezet\u00e9s h\u00e1rmas nem ritmus: a nap fel\u00e9p\u00edt\u00e9s\u00e9b\u00f6l
+     * eddig egyk\u00f6r\u00f6s, negyvenperc munka – t\u00edzperc pihen\u0151 terv lett.
+     */
+    @Test
+    public void aWarmupMainCooldownTrioIsNotAPlan() {
+        assertNull(IntervalParse.parse(
+                "10 perc bemeleg\u00edt\u00e9s, 40 perc fut\u00e1s, 10 perc levezet\u00e9s"));
+    }
+
+    /** K\u00f6rsz\u00e1mmal egy\u00fctt viszont val\u00f3di terv marad. */
+    @Test
+    public void roundsSurviveNextToAWarmup() {
+        IntervalParse.Plan p = IntervalParse.parse(
+                "bemeleg\u00edt\u00e9s 10 perc, azt\u00e1n 8 k\u00f6r 30/30");
+        assertNotNull(p);
+        assertEquals(8, p.rounds);
+    }
+
 }

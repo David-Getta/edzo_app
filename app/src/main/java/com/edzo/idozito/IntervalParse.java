@@ -389,6 +389,14 @@ public final class IntervalParse {
         // mellé. A súly kimondása dönt: kilogrammot senki nem ír egy
         // intervall-tervbe.
         if (weightedSets(s) && !saysPlan(s)) return null;
+        // A BEMELEGÍTÉS–EDZÉS–LEVEZETÉS hármas nem ritmus: a „10 perc
+        // bemelegítés, 40 perc futás, 10 perc levezetés" egyetlen negyven
+        // perces futás. Eddig egykörös, negyvenperc munka – tízperc pihenő
+        // időzítő-terv lett belőle: a nap felépítéséből egy ötvenperces
+        // ketyegő. Körszámmal együtt viszont valódi terv marad, a
+        // bemelegítés pont oda való.
+        if (rounds <= 1 && !saysPlan(s) && (warmIn(s) > 0 || coolIn(s) > 0))
+            return null;
         return build(rounds, work, rest, warmIn(s), coolIn(s));
     }
 

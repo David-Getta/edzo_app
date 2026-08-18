@@ -1201,10 +1201,16 @@ public final class Activities {
         // kettőspontos alakra írjuk át – azt a percszámítás már jól érti,
         // és a távból számolja a valódi időt.
         s = s.replaceAll("(?<![\\d,.:])(\\d{1,2})\\s?perc(?:es)?\\s?"
-                + "(\\d{1,2})\\s?(?:masodperc|mp)?-?[ae]?s?\\s+(?=tempo)",
+                + "(\\d{1,2})\\s?(?:masodperc|mp)?-?[ae]?s?\\s+"
+                + "(?=tempo(?:val|ban|ra|t|m|ja|nk|hoz)?(?![a-z]))",
                 "$1:$2-as ");
         s = s.replaceAll("(?<![\\d,.:])(\\d{1,2})\\s?perc(?:es)?"
-                + "(?:\\s?(?:/|per)\\s?km)?\\s+(?=tempo)", "$1:00-as ");
+                + "(?:\\s?(?:/|per)\\s?km)?\\s+"
+                // A „TEMPÓS" JELZŐ nem tempó-érték: a „40 perc tempós
+                // gyaloglás" negyven perc séta, nem negyvenperces
+                // kilométer – eddig a negyven perc elveszett, és a
+                // mozgásforma átlagából lett kilencven perc.
+                + "(?=tempo(?:val|ban|ra|t|m|ja|nk|hoz)?(?![a-z]))", "$1:00-as ");
         // A BEMELEGÍTÉS perce nem a futásé: a „futás 8 km, 10 perces
         // levezetéssel" tíz perce eddig elvitte a nyolc kilométer idejét.
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?perces\\s+"
@@ -4719,7 +4725,21 @@ public final class Activities {
             int e = i;
             while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
             if (e == i) break;
-            if (isWarmupWord(s.substring(i, e))) return true;
+            if (isWarmupWord(s.substring(i, e))) {
+                // A JELZŐS alak viszont maga a mozgás: a „10 perc levezető
+                // nyújtás" tíz perc nyújtás, nem egy tíz perces függelék egy
+                // másik edzés mellett – eddig a tíz perc elveszett, és a
+                // nyújtás a mozgásforma átlagából kapott negyvenötöt. A
+                // „bemelegítő futás" ugyanígy futás.
+                int j = e;
+                while (j < s.length() && !Character.isLetter(s.charAt(j))
+                        && s.charAt(j) != ',' && s.charAt(j) != ';'
+                        && s.charAt(j) != '.') j++;
+                int k = j;
+                while (k < s.length() && Character.isLetter(s.charAt(k))) k++;
+                if (k > j && kindByText(s.substring(j, k)) != null) return false;
+                return true;
+            }
             i = e;
         }
         return false;

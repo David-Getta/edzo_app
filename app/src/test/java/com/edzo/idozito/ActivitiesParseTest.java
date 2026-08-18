@@ -5320,4 +5320,39 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("edz\u00e9s elmaradt ma").plans.isEmpty());
     }
 
+    /**
+     * A JELZ\u0150S bemeleg\u00edt\u0151/levezet\u0151 maga a mozg\u00e1s: a „10 perc levezet\u0151
+     * ny\u00fajt\u00e1s" t\u00edz perc ny\u00fajt\u00e1s, nem egy m\u00e1sik edz\u00e9s f\u00fcggel\u00e9ke.
+     */
+    @Test
+    public void anAdjectiveWarmupIsTheWorkoutItself() {
+        Activities.Parsed p = Activities.parse("20 perc fut\u00e1s, 10 perc levezet\u0151 ny\u00fajt\u00e1s");
+        assertEquals(2, p.plans.size());
+        assertEquals(20, p.plans.get(0).minutes);
+        assertEquals(10, p.plans.get(1).minutes);
+    }
+
+    /** A f\u00fcggel\u00e9k viszont f\u00fcggel\u00e9k marad. */
+    @Test
+    public void aStandaloneWarmupStaysAnAppendix() {
+        Activities.Parsed p = Activities.parse("20 perc bemeleg\u00edt\u00e9s + 40 perc foci");
+        assertEquals(1, p.plans.size());
+        assertEquals(40, p.plans.get(0).minutes);
+    }
+
+    /**
+     * A „TEMP\u00d3S" jelz\u0151 nem temp\u00f3-\u00e9rt\u00e9k: a „40 perc temp\u00f3s gyaloglás"
+     * negyven perc s\u00e9ta – eddig negyvenperces kilom\u00e9ternek olvasta.
+     */
+    @Test
+    public void aBriskAdjectiveIsNotAPace() {
+        assertEquals(40, Activities.parse("40 perc temp\u00f3s gyalogl\u00e1s")
+                .plans.get(0).minutes);
+        assertEquals(50, Activities.parse("50 perc temp\u00f3s bringa")
+                .plans.get(0).minutes);
+        // A val\u00f3di temp\u00f3 marad temp\u00f3: \u00f6t perc/km t\u00edz kilom\u00e9teren \u00f6tven perc.
+        assertEquals(50, Activities.parse("5 perces temp\u00f3val futottam 10 km-t")
+                .plans.get(0).minutes);
+    }
+
 }
