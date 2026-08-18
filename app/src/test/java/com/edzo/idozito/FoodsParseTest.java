@@ -1522,4 +1522,24 @@ public class FoodsParseTest {
         assertFalse(hits("glut\u00e9nmentes keny\u00e9r 2 szelet").isEmpty());
     }
 
+    /**
+     * A „cukormentes" JELZ\u0150: a „cukormentes csoki 30 g" mell\u00e9 eddig egy
+     * eg\u00e9sz \u00fcd\u00edt\u0151nyi adag „cukormentes / light" t\u00e9tel is bement.
+     */
+    @Test
+    public void sugarFreeBeforeARealFoodIsOnlyAnAdjective() {
+        java.util.List<Foods.Hit> l = hits("cukormentes csoki 30 g");
+        assertEquals(1, l.size());
+        assertEquals("Csokol\u00e1d\u00e9", l.get(0).food.name);
+        assertEquals(1, hits("cukormentes joghurt 150 g").size());
+    }
+
+    /** Saj\u00e1t t\u00e9tel n\u00e9lk\u00fcli \u00e9teln\u00e9l viszont marad a nulla kal\u00f3ri\u00e1s sor. */
+    @Test
+    public void sugarFreeStaysAnItemOnItsOwn() {
+        assertEquals(1, hits("cukormentes r\u00e1g\u00f3").size());
+        assertEquals("Cukormentes / light", hits("cukormentes r\u00e1g\u00f3").get(0).food.name);
+        assertEquals("Cukormentes / light", hits("cukormentes k\u00f3la").get(0).food.name);
+    }
+
 }

@@ -2544,6 +2544,19 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A „cukormentes" JELZŐ is csak jelző, ha VALÓDI étel áll utána: a
+        // „cukormentes csoki 30 g" mellé eddig egy egész üdítőnyi adag
+        // „cukormentes / light" tétel is bement – harminc gramm csoki és
+        // mellé háromszázharminc gramm semmi. A szó önmagában viszont a
+        // nulla kalóriás tétel marad („cukormentes rágó", „cukrozatlan"),
+        // mert a rágónak nincs saját sora – ezért csak azokat az ételeket
+        // soroljuk fel, amelyeknek van saját tételük és cukormentes
+        // változatuk is. Az ital-alak („cukormentes kóla") szintén marad.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:cukormentes|cukorment[eo]s|"
+                + "cukorszeg[eé]ny)\\s+(?=(?:csoki|csokol[aá]d|keksz|s[uü]ti|"
+                + "s[uü]tem[eé]ny|joghurt|lekv[aá]r|dzsem|puding|fagyi|fagylalt|"
+                + "m[uü]zli|kaka[oó]|kompo?[oó]t|torta|palacsinta|zabk[aá]sa|"
+                + "m[aá]rt[aá]s|ketchup|mogyor[oó]kr[eé]m|szelet)\\p{L}*)", " ");
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
