@@ -3625,11 +3625,20 @@ public final class Activities {
         boolean often = false;
         for (String w : new String[]{"hetente", "naponta", "havonta", "masodnaponta",
                 "minden nap", "minden masodnap", "altalaban", "rendszeresen",
+                // A MÁSNAPOS ritmus ugyanaz a rend, csak más szóval: a
+                // „minden másnap futok" mai, negyvenöt perces futás lett.
+                "minden masnap", "minden masodik nap", "minden heten",
+                "minden hetvegen", "hetvegente",
                 "mostanaban", "manapsag"})
             if (s.contains(w)) { often = true; break; }
         if (often)
             for (String w : new String[]{"futok", "edzek", "megyek", "csinalom",
-                    "tekerek", "jogazok", "sulyzozok", "gyakorlok"})
+                    "tekerek", "jogazok", "sulyzozok", "gyakorlok",
+                    // A többi sportág jelen ideje ugyanígy a rend szava: a
+                    // „minden hétvégén túrázok" nem egy megtörtént túra.
+                    "turazok", "uszok", "biciklizek", "bringazok", "focizok",
+                    "kondizok", "sportolok", "mozgok", "setalok", "kocogok",
+                    "evezek", "boxolok", "tancolok", "korcsolyazok"})
                 if (s.matches(".*(?<![a-z])" + w + "(?![a-z]).*")) return true;
         // A HETI BEOSZTÁS is a rend leírása: a „push pull legs, heti 6 edzés"
         // hatosa a rendszer neve mellett álló ütem, nem hat megtörtént edzés –
@@ -5254,6 +5263,13 @@ public final class Activities {
                 // héttel EZELŐTTRE, mert a „2 hete" időpontnak látszott.
                 "minden reggel", "minden este", "minden delutan",
                 "minden delelott", "minden hajnalban", "minden ebedszunet",
+                // A MÁSNAPOS ritmus ugyanaz a szokás, csak más szóval: a
+                // „minden másnap futok" a heti rendről szól, mégis egy mai,
+                // negyvenöt perces futás lett belőle. A hétvégi rend is:
+                // „hétvégente túrázunk".
+                "minden masnap", "masnaponta", "ketnaponta", "kethetente",
+                "minden masodik nap", "minden heten", "minden hetvegen",
+                "hetvegente", "minden honapban",
                 "altalaban", "rendszeresen"})
             if (cl.contains(w)) { rest = cl.replace(w, " "); break; }
         // A gyakoriság-szót ki kell venni a múlt idő vizsgálata elől: a

@@ -5391,4 +5391,23 @@ public class ActivitiesParseTest {
         assertEquals(5.0, Activities.parse("5k fut\u00e1s").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A M\u00c1SNAPOS ritmus ugyanaz a heti rend, csak m\u00e1s sz\u00f3val: a „minden
+     * m\u00e1snap futok" mai, negyven\u00f6t perces fut\u00e1s lett bel\u0151le.
+     */
+    @Test
+    public void anEveryOtherDayHabitIsNotAWorkout() {
+        assertTrue(Activities.parse("minden m\u00e1snap futok").plans.isEmpty());
+        assertTrue(Activities.parse("minden h\u00e9tv\u00e9g\u00e9n t\u00far\u00e1zok").plans.isEmpty());
+        assertTrue(Activities.parse("hetente k\u00e9tszer \u00faszok").plans.isEmpty());
+    }
+
+    /** A megt\u00f6rt\u00e9nt edz\u00e9s a szok\u00e1s mellett is megmarad. */
+    @Test
+    public void arealWorkoutSurvivesNextToAHabit() {
+        Activities.Parsed p = Activities.parse("minden m\u00e1snap futok, ma 5 km volt");
+        assertEquals(1, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+    }
+
 }
