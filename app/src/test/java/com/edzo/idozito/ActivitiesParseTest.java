@@ -5497,4 +5497,18 @@ public class ActivitiesParseTest {
         assertEquals(6, Activities.parse("12 emelet l\u00e9pcs\u0151").plans.get(0).minutes);
     }
 
+    /**
+     * A legr\u00f6videbb sportnevek elg\u00e9pel\u00e9se is tipp: a „futsa" \u00e9s az „uszsa"
+     * egy ujjmozdulat a fut\u00e1st\u00f3l \u00e9s az \u00fasz\u00e1st\u00f3l.
+     */
+    @Test
+    public void shortSportTyposGetATipToo() {
+        assertEquals("futas", Activities.closestKind("futsa").id);
+        assertEquals("uszas", Activities.closestKind("uszsa").id);
+        // A cser\u00e9lt bet\u0171 viszont t\u00fal k\u00f6zel visz: a „t\u00e9rdem" nem a terem.
+        for (String w : new String[]{"t\u00e9rdem", "hasam", "l\u00e1zas", "valami",
+                "fejem", "karom"})
+            assertTrue(w, Activities.closestKind(w) == null);
+    }
+
 }

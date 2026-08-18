@@ -1757,7 +1757,8 @@ public final class Foods {
                     // viszont a hasáb, a „fogam" a fogas, a „lázas" a lazac
                     // közelébe esik, és ezek a szavak ebben az appban napi
                     // vendégek. A rossz tipp bosszantóbb, mint a semmi.
-                    if (tok.length() < 6 && !swapped(tok, ns)) continue;
+                    if ((tok.length() < 6 || ns.length() < 6)
+                            && !swapped(tok, ns)) continue;
                     // Azonos távolságnál a hosszabb szótő a jobb tipp: több
                     // betű egyezik, tehát kevesebb a véletlen.
                     if (d < bestDist || (d == bestDist && ns.length() > bestLen)) {
@@ -1769,7 +1770,7 @@ public final class Foods {
     }
 
     /** Pontosan két SZOMSZÉDOS betű felcserélve – más eltérés nincs. */
-    private static boolean swapped(String a, String b) {
+    static boolean swapped(String a, String b) {
         if (a.length() != b.length()) return false;
         int n = a.length(), i = 0;
         while (i < n && a.charAt(i) == b.charAt(i)) i++;

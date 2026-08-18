@@ -1071,15 +1071,23 @@ public final class Activities {
         Kind best = null;
         int bestDist = Integer.MAX_VALUE, bestLen = 0;
         for (String tok : q.split("[^a-z0-9]+")) {
-            if (tok.length() < 6) continue;
+            // Öt betűtől: a „futsa" és az „uszsa" ugyanolyan egy-ujjmozdulatos
+            // elütés, mint a hosszabbak – hat betűs korláttal viszont a
+            // legrövidebb sportnevek (futás, úszás) kimaradtak a tippekből.
+            if (tok.length() < 5) continue;
             for (Kind k : ALL)
                 for (String ns : k.words) {
-                    if (ns.length() < 6 || ns.indexOf(' ') >= 0) continue;
+                    if (ns.length() < 5 || ns.indexOf(' ') >= 0) continue;
                     if (!ns.regionMatches(0, tok, 0, 3)) continue;
                     int max = ns.length() >= 9 ? 2 : 1;
                     if (Math.abs(ns.length() - tok.length()) > max) continue;
                     int d = Foods.editDistance(tok, ns, max);
                     if (d <= 0 || d > max) continue;
+                    // Öt betűnél csak a FELCSERÉLT betű elég biztos jel –
+                    // ugyanaz a szabály, mint az ételeknél: a cserélt betű
+                    // ott a „hasam"-ot a hasábhoz vitte.
+                    if ((tok.length() < 6 || ns.length() < 6)
+                            && !Foods.swapped(tok, ns)) continue;
                     if (d < bestDist || (d == bestDist && ns.length() > bestLen)) {
                         best = k; bestDist = d; bestLen = ns.length();
                     }
