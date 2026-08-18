@@ -1207,7 +1207,16 @@ public final class Activities {
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d)?\\s?ora(?:t|n|ig)?\\s+"
                 + "(munkanap|muszak|meeting|ertekezlet|konferencia|eloadas|"
                 + "utazas|autozas|vonatozas|repules|vezetes|ules|uldogeles|"
-                + "tanulas|munka)(?![a-z])",
+                + "tanulas|munka"
+                // A SZABADIDŐS ülés ugyanilyen: a „2 óra film után 15 perc
+                // nyújtás" nyújtása két ÓRÁS lett, a „3 óra kártyázás,
+                // aztán 20 perc torna" tornája három órás.
+                + "|film|sorozat|sorozatnezes|tevezes|kartyazas|jatek|"
+                + "jatszas|varakozas|buszozas|vonatozas|olvasas|"
+                + "telefonalas|gepezes|fozes|sutes"
+                // A TAKARÍTÁS szándékosan KIMARAD: az saját mozgásforma
+                // (fizikai munka), az órái valódi mozgás-órák.
+                + ")(?![a-z])",
                 "$1");
         // A 18 ÓRÁS SPINNING a hatkor kezdődő óra, nem tizennyolc órányi
         // tekerés: 16 óránál hosszabb edzése senkinek sincs, ezért a

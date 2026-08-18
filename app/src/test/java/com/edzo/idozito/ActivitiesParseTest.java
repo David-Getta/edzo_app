@@ -5644,4 +5644,18 @@ public class ActivitiesParseTest {
         assertEquals(120, Activities.parse("2 \u00f3ra kerti munka").plans.get(0).minutes);
     }
 
+    /**
+     * A SZABADID\u0150S \u00fcl\u00e9s \u00f3r\u00e1i sem edz\u00e9s\u00f3r\u00e1k: a „2 \u00f3ra film ut\u00e1n 15 perc
+     * ny\u00fajt\u00e1s" ny\u00fajt\u00e1sa k\u00e9t \u00d3R\u00c1S lett.
+     */
+    @Test
+    public void leisureSittingHoursDoNotBecomeTheWorkout() {
+        assertEquals(15, Activities.parse("2 \u00f3ra film ut\u00e1n 15 perc ny\u00fajt\u00e1s")
+                .plans.get(0).minutes);
+        assertEquals(20, Activities.parse("3 \u00f3ra k\u00e1rty\u00e1z\u00e1s, azt\u00e1n 20 perc torna")
+                .plans.get(0).minutes);
+        // A takar\u00edt\u00e1s saj\u00e1t mozg\u00e1sforma: az \u00f3r\u00e1i maradnak.
+        assertEquals(120, Activities.parse("2 \u00f3ra takar\u00edt\u00e1s").plans.get(0).minutes);
+    }
+
 }
