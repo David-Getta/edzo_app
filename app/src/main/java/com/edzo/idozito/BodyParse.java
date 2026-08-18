@@ -259,6 +259,12 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // A GRAMMBAN mondott szám sosem testsúly: az „elértem a fehérjecélt,
+        // 140 g" száznegyvene fehérje, mégis száznegyven KILÓS mérés lett
+        // belőle – egy nap alatt hatvan kilós ugrás a trendben. Testsúlyt
+        // senki nem grammban ír. (A „kg" g-je nem esik ide: betű előzi meg.)
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,4}([.,]\\d+)?\\s?"
+                + "(?<![\\p{L}])(?:g|gramm)(?![\\p{L}])", " ");
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(
                         dropOthersWeight(Foods.norm(q)))))));

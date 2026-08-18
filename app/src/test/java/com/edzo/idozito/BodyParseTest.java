@@ -934,4 +934,16 @@ public class BodyParseTest {
         assertTrue(b == null || b.kg == 0);
     }
 
+    /**
+     * A GRAMMBAN mondott sz\u00e1m sosem tests\u00faly: az „el\u00e9rtem a feh\u00e9rjec\u00e9lt,
+     * 140 g" sz\u00e1znegyvene feh\u00e9rje – eddig sz\u00e1znegyven KIL\u00d3S m\u00e9r\u00e9s lett.
+     */
+    @Test
+    public void aGramFigureIsNeverABodyWeight() {
+        assertTrue(BodyParse.parse("el\u00e9rtem a feh\u00e9rjec\u00e9lt, 140 g").isEmpty());
+        // A kilós m\u00e9r\u00e9s marad, a „kg" g-je nem esik ide.
+        assertFalse(BodyParse.parse("78,4 kg reggel").isEmpty());
+        assertFalse(BodyParse.parse("megettem 140 g csirk\u00e9t, s\u00falyom 78,2 kg").isEmpty());
+    }
+
 }

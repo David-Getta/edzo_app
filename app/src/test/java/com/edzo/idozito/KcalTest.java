@@ -385,4 +385,17 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("napi c\u00e9l 2000 kcal"));
     }
 
+    /**
+     * A MARAD\u00c9K nem bevitel: a „m\u00e9g 40 g feh\u00e9rje kell ma" negyvene az,
+     * ami HI\u00c1NYZIK a napb\u00f3l – eddig megevett feh\u00e9rjek\u00e9nt ker\u00fclt be.
+     */
+    @Test
+    public void aRemainingProteinTargetIsNotIntake() {
+        assertEquals(-1, Kcal.protein("m\u00e9g 40 g feh\u00e9rje kell ma"));
+        // Az ar\u00e1ny sem mennyis\u00e9g: az 1,8 g/testsúlykil\u00f3b\u00f3l k\u00e9t gramm lett.
+        assertEquals(-1, Kcal.protein("feh\u00e9rje 1,8 g/testsúlykil\u00f3"));
+        // A val\u00f3di bevitel marad.
+        assertEquals(150, Kcal.protein("150 gramm feh\u00e9rj\u00e9t ettem eddig"));
+    }
+
 }

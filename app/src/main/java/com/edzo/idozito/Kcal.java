@@ -352,6 +352,15 @@ public final class Kcal {
             if (s.matches(".*(?:feherje|kaloria|kalori|szenhidrat|zsir"
                     + "|lepes|makro)cel\\w*.*")) return -1;
         }
+        // A MARADÉK nem bevitel: a „még 40 g fehérje kell ma" negyvene az,
+        // ami HIÁNYZIK a napból – eddig megevett fehérjeként került a
+        // makró-naplóba, vagyis pont az ellenkezőjeként.
+        if (s.matches("(?s).*(?<![a-z])(?:meg|hatra)\\s[^.;]{0,28}?"
+                + "(?:kell|kellene|hianyzik|van hatra)(?![a-z]).*")) return -1;
+        // Az ARÁNY nem mennyiség: az „1,8 g/testsúlykiló" a napi cél
+        // szorzója, nem két gramm fehérje – és a kettő volt belőle.
+        if (s.matches("(?s).*\\d\\s?g\\s?/\\s?(?:ttkg|kg|kilo|testsuly|testtomeg).*"))
+            return -1;
         double sum = 0;
         // Mértékegység NÉLKÜL csak életszerű makró-szám lehet fehérje: az
         // „ittam egy proteint" egyese az italok DARABSZÁMA, nem egy gramm
