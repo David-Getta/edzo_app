@@ -5355,4 +5355,26 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A S\u00cdT\u00daRA s\u00edz\u00e9s, nem gyalogl\u00e1s: a n\u00e9gy \u00f3r\u00e1t eddig a „t\u00fara" sz\u00f3t\u0151
+     * vitte el, \u00e9s a napl\u00f3ba s\u00e9ta ker\u00fclt.
+     */
+    @Test
+    public void aSkiTourIsSkiingNotHiking() {
+        Activities.Parsed p = Activities.parse("s\u00edt\u00fara 4 \u00f3ra a hegyekben");
+        assertEquals(1, p.plans.size());
+        assertEquals(240, p.plans.get(0).minutes);
+        assertEquals("si", p.plans.get(0).kind.id);
+        // A sima t\u00fara marad t\u00fara.
+        assertEquals("tura", Activities.parse("t\u00fara 2 \u00f3ra").plans.get(0).kind.id);
+    }
+
+    /** Az angol „surfing" is mozg\u00e1s – eddig semmi nem lett bel\u0151le. */
+    @Test
+    public void surfingIsAWorkout() {
+        Activities.Parsed p = Activities.parse("surfing 2 \u00f3ra a Balatonon");
+        assertEquals(1, p.plans.size());
+        assertEquals(120, p.plans.get(0).minutes);
+    }
+
 }

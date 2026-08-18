@@ -379,6 +379,12 @@ public final class Activities {
                     // A FELSZERELÉS neve is kimondja a sportot: a „3 óra
                     // sítalpon" és a „deszkán voltunk" ugyanaz a nap.
                     "snowboard", "sifutas", "sifut", "sitalp", "sipalya",
+                    // A SÍTÚRA sízés, nem gyaloglás: a „sítúra 4 óra a
+                    // hegyekben" négy óráját eddig a „túra" szótő vitte el,
+                    // és a naplóba séta került – az óránkénti energia a
+                    // felénél is kevesebb.
+                    "situra", "si tura", "sielo tura", "skitour", "ski tour",
+                    "turasi", "tura si",
                     "sielni", "sielt", "sielunk",
                     // A LESIKLÁS maga a sportág neve, a SÍTÁBOR pedig a
                     // helyszíné: a „sítábor egész héten, napi 5 óra
@@ -489,6 +495,11 @@ public final class Activities {
                     "lovagl", "lovagol",
                     // A lovas oktatás is lovaglás.
                     "lovas oktatas", "lovasoktatas", "lovas edzes", "vitorlaz", "szorf", "wakeboard", "golf",
+                    // Ugyanez angolul és a rokon vízi eszközökkel: a
+                    // „surfing 2 óra a Balatonon" eddig semmi nem volt.
+                    // A puszta „surf" SZÁNDÉKOSAN nincs itt: a neten is
+                    // szörfölnek.
+                    "surfing", "hullamlovaglas", "szorfdeszka",
 
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
