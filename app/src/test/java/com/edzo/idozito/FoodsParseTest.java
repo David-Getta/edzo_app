@@ -1751,4 +1751,25 @@ public class FoodsParseTest {
         assertEquals("Hagyma", hits("egy fej hagyma").get(0).food.name);
     }
 
+    /**
+     * Amit v\u00e9g\u00fcl NEM ett\u00fcnk meg: a „majdnem megettem egy f\u00e1nkot, de nem"
+     * hatvan gramm f\u00e1nkot \u00edrt a napl\u00f3ba, a „megk\u00edn\u00e1ltak s\u00fctivel, de nem
+     * k\u00e9rtem" pedig sz\u00e1z gramm s\u00fctem\u00e9nyt – egy visszautas\u00edtott
+     * k\u00edn\u00e1l\u00e1sb\u00f3l. Mindk\u00e9t mondatban ott az ev\u00e9s-ige, ez\u00e9rt a
+     * kiv\u00e9tel-lista felmentette \u0151ket.
+     */
+    @Test
+    public void whatWasAlmostEatenIsNotEaten() {
+        assertTrue(hits("majdnem megettem egy f\u00e1nkot, de nem").isEmpty());
+        assertTrue(hits("majdnem megittam egy s\u00f6rt").isEmpty());
+        assertTrue(hits("megk\u00edn\u00e1ltak s\u00fctivel, de nem k\u00e9rtem").isEmpty());
+        // A mondat KÖZEP\u00c9N \u00e1ll\u00f3 tagad\u00e1s marad tagmondat-hat\u00f3k\u00f6r\u0171.
+        assertEquals(150.0,
+                hits("ettem egy alm\u00e1t, de nem ettem meg az eg\u00e9szet").get(0).grams, 0.01);
+        assertEquals(200.0,
+                hits("nem ettem semmit reggel, csak egy k\u00e1v\u00e9t").get(0).grams, 0.01);
+        assertEquals(150.0,
+                hits("ettem egy joghurtot, de nem voltam \u00e9hes").get(0).grams, 0.01);
+    }
+
 }

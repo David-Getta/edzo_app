@@ -4002,6 +4002,21 @@ public final class Foods {
                 for (String w : new String[]{"eszem", "eszek", "eszunk", "megeszem",
                         "iszom", "megiszom", "bekapok", "rendelek"})
                     if (wholeWord(s, w)) return true;
+        // A MAJDNEM az ellenkezőjét jelenti: a „majdnem megettem egy fánkot,
+        // de nem" hatvan gramm fánkot írt a naplóba – abból, amit a
+        // felhasználó épp hogy NEM evett meg. Az evés-ige itt is ott van a
+        // mondatban, ezért a kivétel-lista különben felmentené.
+        if (s.matches("(?s).*(?<![a-z])majdnem\\s+(?:meg|be|el)?"
+                + "(?:ettem|ittam|kaptam|rendeltem|vettem|haraptam)(?![a-z]).*"))
+            return true;
+        // A mondat végi „DE NEM" visszavonja az egészet: a „megkínáltak
+        // sütivel, de nem kértem" száz gramm süteményt írt a naplóba – egy
+        // visszautasított kínálásból. A mondat KÖZEPÉN álló tagadás marad
+        // tagmondat-hatókörű: az „ettem egy almát, de nem ettem meg az
+        // egészet" almája megvolt.
+        if (s.matches("(?s).*(?<![a-z])de (?:vegul |aztan |megsem )?nem"
+                + "(?:\\s+(?:kertem|ettem|ittam|nyultam hozza|ettem meg))?"
+                + "\\s*[.!]*$")) return true;
         if (!intent) return false;
         // Az evés-igét SZÓHATÁRRAL keressük: a „Vettem" végén ott az „ettem",
         // és enélkül a bevásárlás úgy nézett ki, mint egy vacsora.
