@@ -238,6 +238,14 @@ public final class Kcal {
         // rendben, kalória 2200" kétezer-kétszáza eddig némán elveszett.
         s = s.replaceAll("(?<![a-z])kaloria\\w*\\s?:?\\s?(\\d{3,4})(?!\\d)"
                 + "(?![.,]\\d)(?!\\s?kcal)", "$1 kcal");
+        // A KÉT IRÁNY egy tagmondatban, elválasztó jel nélkül: a „napi
+        // összegzés: 2100 kcal bevitel 2600 kcal égetés" MINDKÉT száma
+        // elveszett, mert a mondat egyetlen tagmondat volt, és abban a két
+        // irány kioltotta egymást – se bevitel, se égetés nem került a
+        // naplóba. Az irány-szó a maga elé írt számhoz tartozik, tehát
+        // MÖGÉ tesszük a határt.
+        s = s.replaceAll("(\\d\\s?kcal\\s+(?:bevitel|egetes|elegetes)\\w*)"
+                + "\\s+(?=\\d)", "$1, ");
         // A CÉL is csak a saját tagmondatát viszi el: a „napi cél 1800 kcal,
         // ma 1750 lett" második fele valódi bevitel.
         boolean anyGoal = false;

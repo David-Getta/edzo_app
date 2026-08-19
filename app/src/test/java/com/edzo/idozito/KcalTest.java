@@ -426,4 +426,21 @@ public class KcalTest {
         assertEquals(2200, Kcal.stated("ettem 2200 kcal-t"));
     }
 
+    /**
+     * A K\u00c9T IR\u00c1NY egy tagmondatban, elv\u00e1laszt\u00f3 jel n\u00e9lk\u00fcl: a „napi
+     * \u00f6sszegz\u00e9s: 2100 kcal bevitel 2600 kcal \u00e9get\u00e9s" MINDK\u00c9T sz\u00e1ma
+     * elveszett – se bevitel, se \u00e9get\u00e9s nem ker\u00fclt a napl\u00f3ba, mert a k\u00e9t
+     * ir\u00e1ny egyetlen tagmondaton bel\u00fcl kioltotta egym\u00e1st.
+     */
+    @Test
+    public void bothDirectionsSurviveWithoutASeparator() {
+        String s = "napi \u00f6sszegz\u00e9s: 2100 kcal bevitel 2600 kcal \u00e9get\u00e9s";
+        assertEquals(2100, Kcal.stated(s));
+        assertEquals(2600, Kcal.burned(s));
+        // A vessz\u0151s alak v\u00e1ltozatlan.
+        String c = "bevitel: 2100 kcal, \u00e9get\u00e9s: 2600 kcal";
+        assertEquals(2100, Kcal.stated(c));
+        assertEquals(2600, Kcal.burned(c));
+    }
+
 }
