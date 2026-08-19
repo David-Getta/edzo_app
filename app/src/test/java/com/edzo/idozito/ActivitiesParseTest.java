@@ -1908,8 +1908,11 @@ public class ActivitiesParseTest {
                 summary("5 kör: 500 m evezés, 15 kettlebell swing"));
         // A kimondott alkalom megvédi magát: ott a szám után az edzés szó áll.
         assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
-        // A saját nevén futó mozgás sem sérül: a „3 futás" három futás.
-        assertEquals("7d+0: 3×futas/45", summary("3 futás és 3x10 fekvenyomás a héten"));
+        // A saját nevén futó mozgás sem sérül: a „3 futás" három futás. A
+        // fekvenyomás EGY kondiedzés mellé – a sorozatszáma továbbra sem
+        // alkalomszám.
+        assertEquals("7d+0: 3×futas/45, 1×kondi/60",
+                summary("3 futás és 3x10 fekvenyomás a héten"));
     }
 
     /**
@@ -5763,6 +5766,21 @@ public class ActivitiesParseTest {
         // A VAL\u00d3DI t\u00e1v ford\u00edtva viszont t\u00e1v marad.
         Activities.Parsed r = Activities.parse("800 m\u00e9tert \u00fasztam");
         assertEquals(0.8, r.plans.get(0).km, 0.001);
+    }
+
+    /**
+     * A H\u00c1ROM NAGY gyakorlat is edz\u00e9s: a „fekvenyom\u00e1s 5x3 100 kg" \u00e9s a
+     * „holtemel\u00e9s 5x3 140 kg" bekerült ugyan az er\u0151napl\u00f3ba, de NEM lett
+     * bel\u0151le edz\u00e9s – a nap \u00fcresen \u00e1llt a napt\u00e1rban. A guggol\u00e1s r\u00e9g
+     * saj\u00e1t t\u0151 volt, a m\u00e1sik kett\u0151 hi\u00e1nyzott.
+     */
+    @Test
+    public void theBigLiftsAreWorkoutsToo() {
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("fekvenyom\u00e1s 5x3 100 kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("holtemel\u00e9s 5x3 140 kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("v\u00e1llnyom\u00e1s 4x8 40 kg"));
+        // A guggol\u00e1s v\u00e1ltozatlan.
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("guggol\u00e1s 5x3 140 kg"));
     }
 
 }

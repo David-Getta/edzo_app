@@ -238,6 +238,13 @@ public final class Activities {
                     "toltuk a vasat", "nyomtam a vasat", "vasaztam",
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
+                    // A HÁROM NAGY gyakorlat neve eddig hiányzott, pedig a
+                    // guggolás rég itt van: a „fekvenyomás 5x3 100 kg" és a
+                    // „holtemelés 5x3 140 kg" bekerült ugyan az erőnaplóba,
+                    // de NEM lett belőle edzés – a nap üresen állt a
+                    // naptárban, a sorozat meg lógott a levegőben.
+                    "fekvenyomas", "holtemeles", "felhuzas", "vallnyomas",
+                    "sulyemeles",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
                     // A termi napok ANGOL neve legalább olyan gyakori a
                     // magyar edzők és edzettek szájában, mint a magyar: a
