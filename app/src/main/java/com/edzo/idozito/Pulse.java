@@ -58,8 +58,14 @@ public final class Pulse {
             // nyugalmi értéket senki nem ír egy edzésnaplóba.
             // A VESSZŐ is beleférhet: a „magas volt ma a nyugalmi, 61"
             // hatvanegye eddig elveszett.
+            // …de a vessző utáni szám csak akkor a pulzus, ha nem egy MÁSIK
+            // mérés kezdete: az „52 nyugalmi, 80,4 kg" mondatban a nyolcvan
+            // a mérleg száma, mégis pulzusként ment be – a valódi ötvenkettő
+            // meg elveszett, mert ez a minta hamarabb talált, mint a
+            // fordított szórendű alatta.
             java.util.regex.Pattern.compile(
-                    "(?<![a-z])nyugalmi\\w*\\s?[:,]?\\s?(\\d{2,3})(?![0-9])"),
+                    "(?<![a-z])nyugalmi\\w*\\s?[:,]?\\s?(\\d{2,3})"
+                            + "(?![0-9])(?![,.]\\d)(?!\\s?(?:kg|kilo|cm|%))"),
             // Ugyanez fordított szórenddel: „reggel 78,4 kg, 7 óra alvás,
             // 54 nyugalmi". A szám és a szó között itt semmi nem állhat –
             // távolabbról a szám már máshoz tartozhatna.

@@ -1613,9 +1613,15 @@ public final class Activities {
                     + "(25|50|75|100|150|200|400|800)"
                     + "(?![\\d])(?!\\s?(?:kg|perc|mp|ora|kcal|m(?![a-z])|km))",
                     "$1x$2 m");
+            // A GRAMM nem méter: az „úszás 1500 m, vacsora 200 g joghurt"
+            // mondatban a kétszáz gramm joghurtból KÉTSZÁZ MÉTERES táv lett
+            // – a tiltólistán ott volt a kg, a puszta „g" viszont nem. Egy
+            // úszós napló minden 25-tel osztható étel-grammja távvá vált.
             java.util.regex.Matcher um = java.util.regex.Pattern.compile(
-                    "(?<![\\d,.x])(\\d{3,4})(?![\\d])(?!\\s?(?:kg|perc|mp|"
-                    + "ora|kcal|ft|forint|lepes|x|m(?![a-z])|km))").matcher(s);
+                    "(?<![\\d,.x])(\\d{3,4})(?![\\d])(?!\\s?(?:kg|dkg|gramm|"
+                    + "gr(?![a-z])|g(?![a-z])|ml|dl|liter|db|darab|szelet|"
+                    + "perc|mp|ora|kcal|ft|forint|lepes|x|m(?![a-z])|km))")
+                    .matcher(s);
             StringBuffer ub = new StringBuffer();
             while (um.find()) {
                 int n = Integer.parseInt(um.group(1));

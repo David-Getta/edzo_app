@@ -6072,4 +6072,25 @@ public class ActivitiesParseTest {
                 summary("bemeleg\u00edt\u00e9s 20 perc, azt\u00e1n 40 perc foci"));
     }
 
+    /**
+     * A GRAMM nem m\u00e9ter: az „\u00fasz\u00e1s 1500 m, vacsora 200 g joghurt"
+     * mondatban a k\u00e9tsz\u00e1z gramm joghurtb\u00f3l K\u00c9TSZ\u00c1Z M\u00c9TERES t\u00e1v lett – az
+     * \u00fasz\u00f3k m\u00e9rt\u00e9kegys\u00e9g n\u00e9lk\u00fcli t\u00e1vj\u00e1nak tilt\u00f3list\u00e1j\u00e1n ott volt a kg,
+     * a puszta „g" viszont nem. Egy \u00fasz\u00f3s napl\u00f3 minden 25-tel oszthat\u00f3
+     * \u00e9tel-grammja t\u00e1vv\u00e1 v\u00e1lt.
+     */
+    @Test
+    public void aGramIsNotAMetreEvenInASwimEntry() {
+        Activities.Parsed p = Activities.parse(
+                "\u00fasz\u00e1s 1500 m 35 perc. 40 perc gyaloglás. vacsora 200 g joghurt");
+        assertEquals(2, p.plans.size());
+        assertEquals(1.5, p.plans.get(0).km, 0.001);
+        assertEquals(0.0, p.plans.get(1).km, 0.001);
+        // Az \u00fasz\u00f3k m\u00e9rt\u00e9kegys\u00e9g n\u00e9lk\u00fcli t\u00e1vja marad.
+        assertEquals(1.5, Activities.parse("\u00fasz\u00e1s 40 perc, 1500 vegyes")
+                .plans.get(0).km, 0.001);
+        assertEquals(0.4, Activities.parse("\u00fasz\u00e1s 4x100 gyors")
+                .plans.get(0).km, 0.001);
+    }
+
 }

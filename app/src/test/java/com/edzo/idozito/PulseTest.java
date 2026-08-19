@@ -224,4 +224,19 @@ public class PulseTest {
         assertEquals(54, Pulse.parse("78,2 kg / 54 rhr / 7,5h alv\u00e1s"));
     }
 
+    /**
+     * A vessz\u0151 ut\u00e1ni sz\u00e1m csak akkor a pulzus, ha nem egy M\u00c1SIK m\u00e9r\u00e9s
+     * kezdete: az „52 nyugalmi, 80,4 kg" mondatban a nyolcvan a m\u00e9rleg
+     * sz\u00e1ma, m\u00e9gis pulzusk\u00e9nt ment be – a val\u00f3di \u00f6tvenkett\u0151 elveszett.
+     */
+    @Test
+    public void theWeightAfterTheCommaIsNotThePulse() {
+        assertEquals(52, Pulse.parse("52 nyugalmi, 80,4 kg"));
+        assertEquals(52, Pulse.parse("Ma: 6:20 alv\u00e1s, 52 nyugalmi, 80,4 kg"));
+        // A megszokott alakok v\u00e1ltozatlanok.
+        assertEquals(49, Pulse.parse("hrv 62 ms, nyugalmi 49"));
+        assertEquals(61, Pulse.parse("magas volt ma a nyugalmi, 61"));
+        assertEquals(52, Pulse.parse("nyugalmi pulzus 52, 80,4 kg"));
+    }
+
 }
