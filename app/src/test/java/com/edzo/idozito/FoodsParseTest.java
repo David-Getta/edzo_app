@@ -1889,4 +1889,22 @@ public class FoodsParseTest {
                 .get(0).grams, 0.01);
     }
 
+
+    /**
+     * A C\u00c9L nem adag: az \u201e\u00faj c\u00e9lok: heti 4 edz\u00e9s, napi 10000 l\u00e9p\u00e9s, 2 liter
+     * v\u00edz, 1800 kcal" k\u00e9t liter vizet \u00edrt a MAI napl\u00f3ba \u2013 abb\u00f3l a
+     * mondatb\u00f3l, ami \u00e9pp a j\u00f6v\u0151r\u0151l sz\u00f3l.
+     */
+    @Test
+    public void aGoalIsNotAPortion() {
+        assertTrue(hits("\u00daj c\u00e9lok: heti 4 edz\u00e9s, napi 10000 l\u00e9p\u00e9s, "
+                + "2 liter v\u00edz, 1800 kcal.").isEmpty());
+        assertTrue(hits("A c\u00e9lom napi 2 liter v\u00edz \u00e9s 1800 kcal.").isEmpty());
+        assertTrue(hits("Mostant\u00f3l minden nap iszom 2 liter vizet.").isEmpty());
+        // A megt\u00f6rt\u00e9nt iv\u00e1s marad.
+        assertEquals(2000.0, hits("Ma megittam 2 liter vizet.").get(0).grams, 0.01);
+        assertEquals(150.0, hits("Mostant\u00f3l figyelek magamra, ma ettem egy alm\u00e1t.")
+                .get(0).grams, 0.01);
+    }
+
 }

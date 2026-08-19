@@ -4059,6 +4059,12 @@ public final class Foods {
                 // étel ugyanígy – a „megsült a kenyerem" még nem falat.
                 "a hetre", "egesz hetre", "tobb napra", "napokra",
                 "megsult", "most sul", "sul a sutoben",
+                // A CÉL nem adag: az „új célok: heti 4 edzés, napi 10000
+                // lépés, 2 liter víz, 1800 kcal" két liter vizet írt a MAI
+                // naplóba – abból a mondatból, ami épp a jövőről szól. A
+                // célszám a szándék mértéke, nem a megivott mennyiség.
+                "uj cel", "celok", "celom", "celkitu", "celul tuz",
+                "elhatarozas", "fogadalm", "fogadalom",
                 // Feltételes mód: a „rendelnék egy pizzát" nem rendelés.
                 "rendelnek", "sutnek", "foznek", "keszitenek", "ennek egy"})
             if (s.contains(w)) { intent = true; break; }
@@ -4072,6 +4078,17 @@ public final class Foods {
             if (s.startsWith(p))
                 for (String w : new String[]{"eszem", "eszek", "eszunk", "megeszem",
                         "iszom", "megiszom", "bekapok", "rendelek"})
+                    if (wholeWord(s, w)) return true;
+        // A MOSTANTÓL jövő idő: a „mostantól minden nap iszom 2 liter vizet"
+        // két liter vizet írt a MAI naplóba – egy fogadalomból. A jelen idejű
+        // ige miatt az alábbi kivétel-lista különben felmentené, ezért – a
+        // mondatkezdő „majd"-hoz hasonlóan – itt dől el. Csak a JELEN idejű
+        // igével: a „mostantól figyelek, ma ettem egy almát" almája megvolt.
+        for (String p : new String[]{"mostantol", "ezentul", "holnaptol",
+                "jovo hettol", "a jovoben"})
+            if (s.contains(p))
+                for (String w : new String[]{"eszem", "eszek", "eszunk", "megeszem",
+                        "iszom", "iszunk", "megiszom", "bekapok", "rendelek"})
                     if (wholeWord(s, w)) return true;
         // A MAJDNEM az ellenkezőjét jelenti: a „majdnem megettem egy fánkot,
         // de nem" hatvan gramm fánkot írt a naplóba – abból, amit a

@@ -3167,6 +3167,20 @@ public final class Activities {
         // alkalom. Az előnézet ki is írja, hány napra kerül.
         if (days <= 1 && offset == 0 && out.size() == 1 && out.get(0).count > 3)
             days = Math.min(365, out.get(0).count);
+        // Az IDŐSZAK össztávja nem egy edzés távja: a „havi mérleg: 18 edzés,
+        // 200 km futás" kétszáz kilométert tett EGYETLEN napra – húsz órás
+        // futásként. A kimondott alkalomszám mondja meg, hány edzés összege a
+        // táv; a percet is annyifelé osztjuk. Csak akkor, ha az alkalomszám
+        // máshova nem került be (egyetlen terv, egy alkalommal).
+        if (days > 1 && out.size() == 1 && out.get(0).count == 1
+                && out.get(0).km > 0 && out.get(0).steps <= 0) {
+            int n = sessionsSaid(s);
+            if (n >= 2 && n <= days) {
+                Plan p0 = out.get(0);
+                out.set(0, new Plan(p0.kind, n, Math.max(1, Math.round(p0.minutes / (float) n)),
+                        p0.km / n, 0));
+            }
+        }
         // Az INTERVALL-terv szakaszai nem külön edzések. A „20 mp sprint 40 mp
         // séta, 12 kör" a futásnak és a sétának is a MOZGÁSFORMA szokásos
         // hosszát adta – negyvenöt plusz kilencven percet egy tizenkét perces
@@ -4023,6 +4037,23 @@ public final class Activities {
                 + dp + "\\s+is(?![a-z]).*");
     }
 
+    /**
+     * A kimondott ALKALOMSZÁM: „12 edzés", „18 alkalom".
+     *
+     * Az összegző mondat két számot mond ki: hány edzés volt, és mennyi lett
+     * összesen. A táv az alkalomszámmal osztva egy edzésé – enélkül az egész
+     * havi kilométer egyetlen napra kerül. Csak a KÖZVETLENÜL a szó előtt
+     * álló szám számít, hogy a „145 km futás" távja ne alkalomszám legyen.
+     */
+    private static int sessionsSaid(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,2})\\s+(?:edzes|edzest|edzesem|alkalom|alkalmam)"
+                + "(?![a-z])").matcher(s);
+        if (!m.find()) return 0;
+        try { return Integer.parseInt(m.group(1)); }
+        catch (NumberFormatException e) { return 0; }
+    }
+
     /** Az EMOM és az AMRAP kimondott perce az EGÉSZ blokk hossza. */
     private static boolean blockLengthSaid(String s) {
         if (s == null) return false;
@@ -4625,6 +4656,14 @@ public final class Activities {
                 if (days >= 1) return new int[]{hm.start(), hm.end(), days};
             }
         }
+        // A HAVI összegző FEJLÉCE maga az időszak: a „havi mérleg: 18 edzés,
+        // 200 km" huszonnyolc nap termését sorolja, mégis egyetlen mai,
+        // kétszáz kilométeres futás lett belőle. A „heti" alak ragozottként
+        // már időszak, a „havi" viszont más tőből képződik, ezért itt.
+        java.util.regex.Matcher hv = java.util.regex.Pattern.compile(
+                "(?<![a-z])havi\\s+(?:merleg|osszegz\\w*|osszefoglal\\w*|"
+                + "kimutatas\\w*|statisztik\\w*|jelentes\\w*|riport\\w*)").matcher(s);
+        if (hv.find()) return new int[]{hv.start(), hv.end(), 30};
         // Egy hét = 7 nap, egy hónap = 30. A legkorábbi találat dönt.
         int[] best = null;
         for (int[] c : new int[][]{spanAt(s, "nap", 1), spanAt(s, "het", 7), spanAt(s, "honap", 30)})
@@ -4756,6 +4795,15 @@ public final class Activities {
                 // csupasz „hét" sem: a „ma deload hét van, edzettem 45
                 // percet" mai edzése eddig hét napra terült szét.
                 if ((mult == 7 || mult == 30) && word.length() > unit.length())
+                    return new int[]{p, end, mult};
+                // A MUTATÓ NÉVMÁS a ragtalan alakot is időszakká teszi: az
+                // „ez a hónap: 12 edzés, 145 km futás" havi összegzője
+                // egyetlen MAI, száznegyvenöt kilométeres futásként ment be –
+                // tizennégy és fél óra egy napon. Az „ez a hét" és az „ez a
+                // hónap" pont a lezárt időszakot nevezi meg; a jelzőként álló
+                // csupasz „hét" (deload hét) viszont kizárva marad.
+                if ((mult == 7 || mult == 30) && word.equals(unit)
+                        && s.substring(0, p).matches("(?s).*(?<![a-z])(?:ez|az|e) a?\\s*$"))
                     return new int[]{p, end, mult};
                 continue;
             }

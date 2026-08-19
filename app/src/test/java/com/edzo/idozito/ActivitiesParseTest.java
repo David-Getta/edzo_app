@@ -6224,4 +6224,33 @@ public class ActivitiesParseTest {
         assertEquals(2.4, Activities.parse("6x400 m\u00e9ter").plans.get(0).km, 0.001);
     }
 
+
+    /**
+     * Az \u00d6SSZEGZ\u0150 fejl\u00e9ce id\u0151szak, a t\u00e1v pedig annyi edz\u00e9s\u00e9, ah\u00e1ny
+     * alkalmat kimond: az \u201eez a h\u00f3nap: 12 edz\u00e9s, 145 km fut\u00e1s"
+     * sz\u00e1znegyven\u00f6t kilom\u00e9tere EGYETLEN mai napra ker\u00fclt \u2013 tizenn\u00e9gy \u00e9s f\u00e9l
+     * \u00f3r\u00e1s fut\u00e1sk\u00e9nt.
+     */
+    @Test
+    public void aPeriodSummarySplitsItsTotalOverTheSessions() {
+        Activities.Parsed p = Activities.parse(
+                "Ez a h\u00f3nap: 12 edz\u00e9s, 145 km fut\u00e1s, 3 kg fogy\u00e1s.");
+        assertEquals(30, p.days);
+        assertEquals(12, p.plans.get(0).count);
+        assertEquals(145.0 / 12, p.plans.get(0).km, 0.01);
+        Activities.Parsed w = Activities.parse("Ez a h\u00e9t: 4 edz\u00e9s, 30 km fut\u00e1s.");
+        assertEquals(7, w.days);
+        assertEquals(4, w.plans.get(0).count);
+        assertEquals(7.5, w.plans.get(0).km, 0.01);
+        Activities.Parsed m = Activities.parse("Havi m\u00e9rleg: 18 edz\u00e9s, 200 km fut\u00e1s.");
+        assertEquals(30, m.days);
+        assertEquals(18, m.plans.get(0).count);
+        // A JELZ\u0150K\u00c9NT \u00e1ll\u00f3 csupasz \u201eh\u00e9t" tov\u00e1bbra sem id\u0151szak.
+        assertEquals(1, Activities.parse(
+                "Ma deload h\u00e9t van, edzettem 45 percet.").days);
+        // Egyetlen mai fut\u00e1s t\u00e1vja osztatlan marad.
+        assertEquals(10.0, Activities.parse("Ma futottam 10 km-t.")
+                .plans.get(0).km, 0.01);
+    }
+
 }
