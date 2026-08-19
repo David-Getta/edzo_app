@@ -1622,4 +1622,26 @@ public class StrengthParseTest {
         assertEquals(140.0, b.get(0).topWeight(), 0.001);
     }
 
+    /**
+     * A SORT\u00d6R\u00c9S tagmondat-hat\u00e1r: az edz\u00e9snapl\u00f3t sokan soronk\u00e9nt \u00edrj\u00e1k
+     * vagy m\u00e1solj\u00e1k be, \u00e9s a „3x10 fekvenyom\u00e1s 60 kg" al\u00e1 \u00edrt „3x12
+     * evez\u00e9s 50 kg" N\u00c9M\u00c1N elveszett – a normaliz\u00e1l\u00e1s a sort\u00f6r\u00e9sb\u0151l
+     * sz\u00f3k\u00f6zt csin\u00e1lt, a tagmondat-v\u00e1g\u00f3 pedig csak a vessz\u0151t ismerte.
+     */
+    @Test
+    public void aNewlineSeparatesExercises() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "3x10 fekvenyom\u00e1s 60 kg\n3x12 evez\u00e9s 50 kg");
+        assertEquals(2, it.size());
+        assertEquals("Fekvenyom\u00e1s", it.get(0).name);
+        assertEquals("Evez\u00e9s", it.get(1).name);
+        // Sorsz\u00e1mmal jel\u00f6lve is.
+        List<StrengthParse.Item> n = StrengthParse.parse(
+                "1) 3x10 fekvenyom\u00e1s 60 kg\n2) 3x12 evez\u00e9s 50 kg");
+        assertEquals(2, n.size());
+        // A vessz\u0151s alak v\u00e1ltozatlan.
+        assertEquals(2, StrengthParse.parse(
+                "3x10 fekvenyom\u00e1s 60 kg, 3x12 evez\u00e9s 50 kg").size());
+    }
+
 }

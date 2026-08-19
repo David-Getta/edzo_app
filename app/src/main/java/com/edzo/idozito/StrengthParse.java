@@ -370,6 +370,13 @@ public final class StrengthParse {
     public static List<Item> parse(String text) {
         List<Item> out = new ArrayList<>();
         if (text == null || text.trim().isEmpty()) return out;
+        // A SORTÖRÉS tagmondat-határ: az edzésnaplót sokan soronként írják
+        // vagy másolják be, és a „3x10 fekvenyomás 60 kg" alá írt „3x12
+        // evezés 50 kg" NÉMÁN elveszett – a normalizálás a sortörésből
+        // szóközt csinált, a tagmondat-vágó pedig csak a vesszőt ismerte.
+        // Az utolsó gyakorlat eltűnése a leglátványosabb adatvesztés, mert
+        // a felhasználó pont azt írta le utoljára.
+        text = text.replaceAll("[\\r\\n]+", ", ");
         // A TERV nem napló. A „holnap guggolás 5x5 100 kg" és a „kellene 5x5
         // 80 kg-ot guggolnom" ugyanazokból a számokból áll, mint a megtörtént
         // sorozat – csak épp még nem történt meg. A mozgás-oldalon ez a
