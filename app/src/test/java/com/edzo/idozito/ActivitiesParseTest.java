@@ -5909,4 +5909,25 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/20", summary("leguggoltam 100-at s\u00falyok n\u00e9lk\u00fcl"));
     }
 
+    /**
+     * A gyakorlat NEVE n\u00e9ha nem der\u00fcl ki, az edz\u00e9s m\u00e9gis megt\u00f6rt\u00e9nt: a
+     * „nyomtam 3x10-et 60 kg-mal" \u00dcRESEN j\u00f6tt vissza – se sorozat, se
+     * edz\u00e9s, vagyis a nap egyetlen munk\u00e1ja nyomtalanul elt\u0171nt. A puszta
+     * „nyom\u00e1s" t\u00e9nyleg lehet fekvenyom\u00e1s \u00e9s l\u00e1btol\u00e1s is, de a
+     * kondiedz\u00e9s biztos, ha sorozatjel\u00f6l\u00e9s, kil\u00f3 \u00e9s emel\u0151-ige \u00e1ll
+     * egym\u00e1s mellett.
+     */
+    @Test
+    public void anUnnamedLiftIsStillAGymSession() {
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("nyomtam 3x10-et 60 kg-mal"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("emeltem 3x5-\u00f6t 100 kg-mal"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("h\u00faztam 5x3-at 120 kg-mal"));
+        // A h\u00e1rom jel egy\u00fctt kell: a bev\u00e1s\u00e1rl\u00e1s nem edz\u00e9s.
+        assertTrue(Activities.parse("vettem 2x10 kg lisztet").plans.isEmpty());
+        assertTrue(Activities.parse("nyomtam a gombot").plans.isEmpty());
+        // \u00c9s ami M\u00c1S\u00c9, az tov\u00e1bbra sem az \u00e9n edz\u00e9sem.
+        assertTrue(Activities.parse(
+                "a sr\u00e1c nyomott 3x10-et 100 kg-mal").plans.isEmpty());
+    }
+
 }

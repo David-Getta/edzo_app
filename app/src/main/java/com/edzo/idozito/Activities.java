@@ -2774,6 +2774,22 @@ public final class Activities {
                             : Math.max(5, Math.min(60, reps / 5)), 0));
             }
         }
+        // A gyakorlat NEVE néha nem derül ki, az edzés mégis megtörtént: a
+        // „nyomtam 3x10-et 60 kg-mal" és az „emeltem 3x5-öt 100 kg-mal"
+        // ÜRESEN jött vissza – se sorozat, se edzés, vagyis a nap egyetlen
+        // munkája nyomtalanul eltűnt. A puszta „nyomás" tényleg lehet
+        // fekvenyomás és lábtolás is, ezért az erőnaplóba nem találunk ki
+        // gyakorlatot; a KONDIEDZÉS viszont biztos, ha sorozatjelölés, kiló
+        // és emelő-ige áll egymás mellett.
+        if (out.isEmpty()
+                && rawText.matches("(?s).*(?<![\\d,.])\\d{1,2}\\s?[x×]\\s?\\d{1,3}.*")
+                && rawText.matches("(?s).*\\d\\s?(?:kg|kilo)\\w*.*")
+                && rawText.matches("(?s).*(?<![a-z])(nyomtam|nyomtunk|nyomok"
+                        + "|emeltem|emeltunk|emelek|toltam|toltunk"
+                        + "|huztam|huztunk)(?![a-z]).*")) {
+            Kind gym = byId("kondi");
+            if (gym != null) out.add(new Plan(gym, 1, gym.defaultMin, 0));
+        }
 
         // Két napszak, két kimondott idő, EGY mozgásforma: két edzés volt.
         //
