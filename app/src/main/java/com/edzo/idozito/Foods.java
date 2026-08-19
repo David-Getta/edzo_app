@@ -2593,6 +2593,16 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A MÉRŐSZALAG adata nem étel: a „comb 55 cm" a comb körfogata,
+        // mégis százötven gramm CSIRKECOMB került mellé az étkezésnaplóba.
+        // A centi a döntő – a tányéron lévő csirkecombot senki nem méri
+        // mérőszalaggal.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(comb|mell|kar|has|d[eé]r[eé]k|"
+                + "cs[ií]p[oő]|v[aá]dli|bicepsz|lapocka|nyak)\\p{L}*\\s*:?\\s*"
+                + "\\d{1,3}(?:[.,]\\d)?\\s?cm(?![\\p{L}])", " ");
+        query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}(?:[.,]\\d)?\\s?cm\\s+"
+                + "(comb|mell|kar|has|d[eé]r[eé]k|cs[ií]p[oő]|v[aá]dli|bicepsz|"
+                + "lapocka|nyak)\\p{L}*(?![\\p{L}])", " ");
         // Az ADAG jelzője egybeírva is jelző: a „duplaadag csirkemell" egy
         // sima adag lett, a „feladag rizs" pedig egy egész – vagyis a
         // mennyiség épp az ellenkezőjére fordult. Külön írva mindkettő

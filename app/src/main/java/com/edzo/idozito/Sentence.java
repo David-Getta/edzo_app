@@ -192,6 +192,13 @@ public final class Sentence {
             case BODY:
                 if (Sleep.parse(q) > 0) out.add(Kind.SLEEP);
                 if (Pulse.parse(q) > 0) out.add(Kind.PULSE);
+                // A mérés mellé az ÉTKEZÉS is odaférhet – a fordítottja rég
+                // megvan. Az „ebéd: 200 g csirkemell. Comb 55 cm." mondatban
+                // a mérés nyert, és a kétszáz gramm csirkemell nyomtalanul
+                // eltűnt: a mérés-mondat egyetlen naplót sem ajánlott fel
+                // az étrendből. (A mérőszalag adatát az étel-oldal már
+                // kitakarja, tehát a comb centije nem lesz csirkecomb.)
+                if (foods != null && !Foods.parse(foods, q).isEmpty()) out.add(Kind.MEAL);
                 break;
             // Az étkezés mellé is odaférhet a mérés: az „ettem egy pizzát és
             // aludtam 9 órát" kilenc órája eddig sehol nem jelent meg.

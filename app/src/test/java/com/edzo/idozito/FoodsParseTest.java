@@ -1855,4 +1855,20 @@ public class FoodsParseTest {
         assertEquals(1000.0, h.get(1).grams, 0.01);
     }
 
+    /**
+     * A M\u00c9R\u0150SZALAG adata nem \u00e9tel: a „comb 55 cm" a comb k\u00f6rfogata,
+     * m\u00e9gis sz\u00e1z\u00f6tven gramm CSIRKECOMB ker\u00fclt mell\u00e9 az \u00e9tkez\u00e9snapl\u00f3ba.
+     */
+    @Test
+    public void aTapeMeasureReadingIsNotFood() {
+        assertTrue(hits("comb 55 cm").isEmpty());
+        assertTrue(hits("38 cm comb").isEmpty());
+        // A m\u00e9r\u00e9s mellett \u00e1ll\u00f3 VAL\u00d3DI \u00e9tel megmarad.
+        List<Foods.Hit> h = hits("Eb\u00e9d: 200 g csirkemell. Comb 55 cm.");
+        assertEquals(1, h.size());
+        assertEquals(200.0, h.get(0).grams, 0.01);
+        // A t\u00e1ny\u00e9ron l\u00e9v\u0151 csirkecomb marad \u00e9tel.
+        assertEquals(200.0, hits("s\u00fclt csirkecomb 200 g").get(0).grams, 0.01);
+    }
+
 }

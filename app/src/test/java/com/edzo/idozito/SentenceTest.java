@@ -367,4 +367,23 @@ public class SentenceTest {
         assertEquals(Sentence.Kind.NONE, Sentence.of("ok", null, NOW));
     }
 
+    /**
+     * A m\u00e9r\u00e9s mell\u00e9 az \u00c9TKEZ\u00c9S is oda\u00e9r: az „eb\u00e9d: 200 g csirkemell.
+     * Comb 55 cm." mondatban a m\u00e9r\u00e9s nyert, \u00e9s a k\u00e9tsz\u00e1z gramm
+     * csirkemell nyomtalanul elt\u0171nt – a ford\u00edtottja (\u00e9tkez\u00e9s mellett
+     * m\u00e9r\u00e9s) r\u00e9g megvolt.
+     */
+    @Test
+    public void aMeasurementSentenceStillOffersTheMeal() {
+        java.util.List<Foods.Food> db = java.util.Arrays.asList(Foods.ALL);
+        long now = System.currentTimeMillis();
+        assertEquals(Sentence.Kind.BODY,
+                Sentence.of("Eb\u00e9d: 200 g csirkemell. Comb 55 cm.", db, now));
+        assertTrue(Sentence.extras("Eb\u00e9d: 200 g csirkemell. Comb 55 cm.", db, now)
+                .contains(Sentence.Kind.MEAL));
+        // A tiszta m\u00e9r\u00e9s-mondat nem aj\u00e1nl \u00e9tkez\u00e9st.
+        assertTrue(Sentence.extras("megm\u00e9rtem magam: 71,3 kg, comb 55 cm", db, now)
+                .isEmpty());
+    }
+
 }
