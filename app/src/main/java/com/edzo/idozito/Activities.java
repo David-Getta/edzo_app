@@ -5961,7 +5961,16 @@ public final class Activities {
         // Ha a mondat máshol KIMONDOTT percet hordoz („5 emelet, 30 perc
         // séta"), az emeletből számolt perc nem írhatja felül – az emelet
         // ilyenkor csak kiesik, a séta harminc perce marad.
-        boolean saidMinutes = s.matches(".*(?<!\\p{L})\\d{1,3}\\s?perc.*");
+        // …de csak a GYALOGLÁS kimondott perce írhatja felül. Az „5 emeletet
+        // mentem fel a lépcsőn. Este 40 perc bringa." mondatban a negyven
+        // perc a BRINGÁÉ, a lépcsőzés mégis kiesett tőle, és a séta a
+        // mozgásforma szokásos hosszát kapta: öt emeletből MÁSFÉL ÓRA
+        // gyaloglás lett. A percnek a lépcsőzés tagmondatában, gyaloglás-szó
+        // mellett kell állnia.
+        String walk = "(?:seta|setal|gyalog|lepcso|tura|kocog)\\w*";
+        boolean saidMinutes =
+                s.matches("(?s).*(?<!\\p{L})\\d{1,3}\\s?perc[^.;,]{0,20}?" + walk + ".*")
+                || s.matches("(?s).*" + walk + "[^.;,]{0,20}?\\d{1,3}\\s?perc.*");
         while (m.find()) {
             int floors;
             try { floors = Integer.parseInt(m.group(1)); } catch (NumberFormatException e) { continue; }

@@ -6135,4 +6135,22 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/30", summary("munka 30 perc kondi"));
     }
 
+    /**
+     * Csak a GYALOGL\u00c1S kimondott perce \u00edrhatja fel\u00fcl az emeletsz\u00e1mot: az
+     * „5 emeletet mentem fel a l\u00e9pcs\u0151n. Este 40 perc bringa." mondatban a
+     * negyven perc a BRING\u00c1\u00c9, a l\u00e9pcs\u0151z\u00e9s m\u00e9gis kiesett t\u0151le, \u00e9s a
+     * s\u00e9ta a mozg\u00e1sforma szok\u00e1sos hossz\u00e1t kapta: \u00f6t emeletb\u0151l M\u00c1SF\u00c9L
+     * \u00d3RA gyalogl\u00e1s lett.
+     */
+    @Test
+    public void anotherWorkoutsMinutesDoNotEatTheFloors() {
+        assertEquals("1d+0: 1\u00d7tura/3, 1\u00d7kerekpar/40",
+                summary("5 emeletet mentem fel a l\u00e9pcs\u0151n. Este 40 perc bringa."));
+        assertEquals("1d+0: 1\u00d7tura/4, 1\u00d7kerekpar/40",
+                summary("8 emeletet gyalogoltam, 40 perc bringa"));
+        // A GYALOGL\u00c1S kimondott perce tov\u00e1bbra is er\u0151sebb.
+        assertEquals("1d+0: 1\u00d7tura/30", summary("5 emelet, 30 perc s\u00e9ta"));
+        assertEquals("1d+0: 1\u00d7tura/10", summary("l\u00e9pcs\u0151ztem 20 emeletet"));
+    }
+
 }
