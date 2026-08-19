@@ -6153,4 +6153,22 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7tura/10", summary("l\u00e9pcs\u0151ztem 20 emeletet"));
     }
 
+    /**
+     * Az „ODA" sz\u00f3 el is maradhat: a „munk\u00e1ba menet 15 perc bicikli,
+     * vissza 18 perc" visszat\u00fatja N\u00c9M\u00c1N elveszett – a napi ingáz\u00e1s fele.
+     */
+    @Test
+    public void theReturnLegAddsUpWithoutTheWordThere() {
+        assertEquals("1d+0: 1\u00d7kerekpar/33",
+                summary("Munk\u00e1ba menet 15 perc bicikli, vissza 18 perc"));
+        assertEquals("1d+0: 1\u00d7kerekpar/33",
+                summary("bicikli 15 perc, hazafel\u00e9 18 perc"));
+        // A megszokott alak v\u00e1ltozatlan.
+        assertEquals("1d+0: 1\u00d7kerekpar/53",
+                summary("munk\u00e1ba bicikliv\u00e9l: oda 25, vissza 28 perc"));
+        // A „vissza" ut\u00e1n \u00e1ll\u00f3 M\u00c1SIK mozg\u00e1s nem a visszat\u00fat.
+        assertEquals("1d+0: 1\u00d7kondi/45, 1\u00d7tura/10",
+                summary("kondi 45 perc, vissza 10 perc gyalogl\u00e1s"));
+    }
+
 }

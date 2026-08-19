@@ -2108,6 +2108,21 @@ public final class Activities {
             if (sum >= 2 && sum <= 24 * 60)
                 s = s.substring(0, ov.start()) + sum + " perc" + s.substring(ov.end());
         }
+        // Az „ODA" szó el is maradhat: a „munkába menet 15 perc bicikli,
+        // vissza 18 perc" visszaútja NÉMÁN elveszett – a napi ingázás fele.
+        // A záró tagmondatban a „vissza" után csak a perc állhat: a
+        // „kondi 45 perc, vissza 10 perc gyaloglás" tíz perce a gyaloglásé,
+        // nem a kondi visszaútja.
+        java.util.regex.Matcher ov2 = java.util.regex.Pattern
+                .compile("(\\d{1,3})\\s?perc([^.;\\d]{0,20}?)[,;]\\s?(?:es\\s)?"
+                        + "(?:vissza|hazafele|visszaut\\w*)\\s?(\\d{1,3})\\s?perc"
+                        + "(?![^.;,]*\\p{L})").matcher(s);
+        if (ov2.find()) {
+            int sum = Integer.parseInt(ov2.group(1)) + Integer.parseInt(ov2.group(3));
+            if (sum >= 2 && sum <= 24 * 60)
+                s = s.substring(0, ov2.start()) + sum + " perc" + ov2.group(2)
+                        + s.substring(ov2.end());
+        }
         // Szóközzel tagolt ezres: „10 000" → „10000". A KETTŐSPONT megvédi az
         // óraállást: a „túra 14,8 km 3:45:00 620 m emelkedés" mondatban a
         // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem
