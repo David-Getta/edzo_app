@@ -4418,6 +4418,12 @@ public final class Activities {
                 d = Double.parseDouble(m.group(2).replace(',', '.'));
             } catch (NumberFormatException e) { continue; }
             if (n < 2 || d <= 0) continue;
+            // A NAPSZAK szava ÓRÁT jelöl, nem kört: a „reggel 7 kor 5 km
+            // futás" hetese időpont – körnek olvasva HARMINCÖT kilométeres
+            // futás lett belőle, és a becsült idő három és fél óra.
+            String pre = s.substring(Math.max(0, m.start() - 14), m.start());
+            if (pre.matches("(?s).*(?<![a-z])(reggel|este|delben|delelott"
+                    + "|delutan|ejjel|hajnalban|ejszaka)\\w*\\s*$")) continue;
             // Az intervall-ismétlés RÖVID: kétszáz métertől néhány
             // kilométerig. A „8x 60 km" nem intervallum – összeszorozva
             // négyszáznyolcvan kilométeres futás lett belőle, huszonnégy

@@ -6206,4 +6206,22 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/20", summary("100 fekv\u0151t\u00e1masz"));
     }
 
+    /**
+     * A NAPSZAK szava \u00d3R\u00c1T jel\u00f6l, nem k\u00f6rt: a „reggel 7 kor 5 km fut\u00e1s"
+     * hetese id\u0151pont – k\u00f6rnek olvasva HARMINC\u00d6T kilom\u00e9teres fut\u00e1s lett
+     * bel\u0151le, h\u00e1rom \u00e9s f\u00e9l \u00f3r\u00e1s becs\u00fclt id\u0151vel.
+     */
+    @Test
+    public void aDaypartMakesItAClockNotLaps() {
+        Activities.Parsed p = Activities.parse("reggel 7 kor 5 km fut\u00e1s");
+        assertEquals(5.0, p.plans.get(0).km, 0.001);
+        assertEquals(7, p.hour);
+        assertEquals(3.0, Activities.parse("este 6 kor 3 km fut\u00e1s")
+                .plans.get(0).km, 0.001);
+        // Napszak n\u00e9lk\u00fcl a k\u00f6r marad szorz\u00f3.
+        assertEquals(1.2, Activities.parse("3 kor 400 m fut\u00e1s")
+                .plans.get(0).km, 0.001);
+        assertEquals(2.4, Activities.parse("6x400 m\u00e9ter").plans.get(0).km, 0.001);
+    }
+
 }
