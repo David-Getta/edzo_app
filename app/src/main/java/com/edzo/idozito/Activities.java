@@ -1473,6 +1473,16 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])iden(?![a-z])", "");
         // A SZINTEMELKEDÉS métere magasság, nem táv: a „szintemelkedés
         // 1200 m a mai túrán" egy 1,2 km-es sétává zsugorodott.
+        // A JELZŐ nem szakítja meg a darabszámot: a „két különböző edzés" és
+        // a „három rövid futás" EGY alkalomként ment be, mert a szám és a
+        // mozgás szava közé beékelődött egy jelző – a heti összesítőből így
+        // hiányzott a fele. Csak ezt a pár, mennyiséget nem hordozó jelzőt
+        // vesszük ki; a „3 km futás" száma és mértékegysége érintetlen.
+        s = s.replaceAll("(?<![a-z])(\\d{1,2}|egy|ket|ketto|harom|negy|ot|hat|"
+                + "het|nyolc|kilenc|tiz)\\s+(?:kulonbozo|kulonfele|rovid|"
+                + "hosszu|kemeny|konnyu|laza|gyors|komoly|rendes|jo)\\s+"
+                + "(?=(?:edzes|mozgas|futas|seta|tura|uszas|kondi|bringazas|"
+                + "kerekpar))", "$1 ");
         // A MÉTER kiírva is méter: a „túra 850 méter szintemelkedéssel"
         // rövidítés nélkül átcsúszott a szűrőn, és nyolcszázötven méteres,
         // vagyis 0,85 km-es túraként ment be – egy egész napos hegymenet

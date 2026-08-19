@@ -5980,4 +5980,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).count);
     }
 
+    /**
+     * A JELZ\u0150 nem szak\u00edtja meg a darabsz\u00e1mot: a „k\u00e9t k\u00fcl\u00f6nb\u00f6z\u0151 edz\u00e9s"
+     * \u00e9s a „h\u00e1rom r\u00f6vid fut\u00e1s" EGY alkalomk\u00e9nt ment be, mert a sz\u00e1m \u00e9s a
+     * mozg\u00e1s szava k\u00f6z\u00e9 be\u00e9kel\u0151d\u00f6tt egy jelz\u0151 – a heti \u00f6sszes\u00edt\u0151b\u0151l
+     * \u00edgy hi\u00e1nyzott a fele.
+     */
+    @Test
+    public void anAdjectiveDoesNotBreakTheCount() {
+        assertEquals(3, Activities.parse("ma h\u00e1rom k\u00fcl\u00f6nb\u00f6z\u0151 mozg\u00e1s volt")
+                .plans.get(0).count);
+        assertEquals(2, Activities.parse("k\u00e9t k\u00fcl\u00f6nb\u00f6z\u0151 edz\u00e9s ma")
+                .plans.get(0).count);
+        assertEquals(3, Activities.parse("h\u00e1rom r\u00f6vid fut\u00e1s a h\u00e9ten")
+                .plans.get(0).count);
+        // A M\u00c9RT\u00c9KEGYS\u00c9GES sz\u00e1m \u00e9rintetlen: a „3 km fut\u00e1s" egy fut\u00e1s.
+        assertEquals(1, Activities.parse("3 km fut\u00e1s").plans.get(0).count);
+        assertEquals(3.0, Activities.parse("3 km fut\u00e1s").plans.get(0).km, 0.001);
+    }
+
 }
