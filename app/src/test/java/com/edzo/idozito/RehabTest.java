@@ -927,4 +927,18 @@ public class RehabTest {
         assertFalse(Rehab.vagueComplaint("l\u00e1bnap volt ma"));
     }
 
+    /**
+     * A R\u00d6VID\u00dcL\u00c9S szava a k\u00f3dban p\u00e9ld\u00e1nak is ott \u00e1llt („feszes a
+     * v\u00e1dlim"), a list\u00e1r\u00f3l m\u00e9gis kimaradt: a „feszes a cs\u00edp\u0151hajl\u00edt\u00f3m"
+     * v\u00e1lasz n\u00e9lk\u00fcl maradt, m\u00edg a „fesz\u00fcl a v\u00e1dlim" m\u0171k\u00f6d\u00f6tt.
+     */
+    @Test
+    public void tightnessIsAComplaintToo() {
+        assertEquals("csipo", Rehab.forComplaint("feszes a cs\u00edp\u0151hajl\u00edt\u00f3m").id);
+        assertEquals("comb", Rehab.forComplaint("feszes a combhajl\u00edt\u00f3m").id);
+        assertEquals("derek", Rehab.forComplaint("feszes a h\u00e1tam").id);
+        // A meglev\u0151 igei alak v\u00e1ltozatlan.
+        assertNotNull(Rehab.forComplaint("fesz\u00fcl a v\u00e1dlim"));
+    }
+
 }

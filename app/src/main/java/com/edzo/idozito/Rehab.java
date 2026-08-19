@@ -448,7 +448,10 @@ public final class Rehab {
                 "gyenge a", "gyengek a", "gyengeseg", "elgyengult", "nem birja",
                 "nem birom megtartani", "elfarad",
                 // A RÖVIDÜLÉS ugyanígy: „rövid a combhajlítóm", „feszes a vádlim".
-                "rovid a", "roviduelt", "roviduelt", "beszukult",
+                // A „feszes" mégis kimaradt a listáról, pedig a fenti példa
+                // épp ő: a „feszes a vádlim" és a „feszes a csípőhajlítóm"
+                // válasz nélkül maradt, míg a „feszül a vádlim" működött.
+                "rovid a", "roviduelt", "roviduelt", "beszukult", "feszes",
                 "ropog", "recseg", "kattog", "roppan", "huzodott", "huzodo",
                 // Az igekötős húzódás is húzódás: a „meghúzódott a hátam a
                 // 120 kg-os felhúzásnál" eddig válasz nélkül maradt. A
