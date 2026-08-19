@@ -418,6 +418,12 @@ sem talált, tehát ha talál, az tényleg ott van.
   („2-3 szelet kenyér" = két és fél), és a birtokos tört is tört
   („az alma fele", „a fele adag rizs", „a pizza negyede", „a szendvics
   harmada", „a pizza háromnegyede")
+- **A perjeles tört is tört**: az „1/2 kg csirkemell" fél kiló, az „1/2 tábla
+  csoki" fél tábla, az „1/2 óra futás" fél óra – a munka/pihenő pár
+  („3 kör 40/20") és a piramis („fekvenyomás 60/10") viszont ritmus és súly
+  marad
+- **A részletekben megivott víz összeadódik**: az „1 liter víz reggel,
+  1 liter délután" két liter a napi vízcélban
 - **A mennyiség a név után is állhat**: „banán 2 db", „tojás (3 db)",
   „kenyér (2 szelet)" – a bevásárlólista-szórend legalább olyan gyakori,
   mint a fordítottja
