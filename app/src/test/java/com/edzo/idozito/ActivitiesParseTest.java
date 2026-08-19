@@ -6171,4 +6171,22 @@ public class ActivitiesParseTest {
                 summary("kondi 45 perc, vissza 10 perc gyalogl\u00e1s"));
     }
 
+    /**
+     * A GYALOG megtett k\u00eds\u00e9r\u00e9s az \u00c9N mozg\u00e1som: a „gyalog vittem a
+     * gyereket oviba, 15 perc" tizen\u00f6t perce val\u00f3di s\u00e9ta – eddig a
+     * k\u00eds\u00e9r\u00e9s szav\u00e1val egy\u00fctt elt\u0171nt. Az EDZ\u00c9SRE k\u00eds\u00e9r\u00e9s marad
+     * kiz\u00e1rva: ott a gyerek mozog, nem \u00e9n.
+     */
+    @Test
+    public void walkingTheChildToNurseryIsMyWalk() {
+        assertEquals("1d+0: 1\u00d7tura/15",
+                summary("gyalog vittem a gyereket oviba, 15 perc"));
+        assertEquals("1d+0: 1\u00d7tura/15, 1\u00d7futas/60",
+                summary("Reggel elvittem a gyereket \u00f3vod\u00e1ba gyalog, 15 perc "
+                        + "oda-vissza. Ut\u00e1na 1 \u00f3ra fut\u00e1s."));
+        // A gyerek edz\u00e9se tov\u00e1bbra sem az eny\u00e9m.
+        assertTrue(Activities.parse("elvittem a gyereket edz\u00e9sre").plans.isEmpty());
+        assertTrue(Activities.parse("a gyerek edz\u00e9s\u00e9n voltam").plans.isEmpty());
+    }
+
 }

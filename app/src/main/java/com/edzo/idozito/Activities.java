@@ -4260,6 +4260,19 @@ public final class Activities {
                 // séta" harminc perce eddig a pihenő szavával együtt eltűnt.
                 if (boundary && w.startsWith("pihen")
                         && p >= 6 && s.startsWith("aktiv ", p - 6)) boundary = false;
+                // A GYALOG megtett kísérés az ÉN mozgásom: a „gyalog vittem
+                // a gyereket oviba, 15 perc" tizenöt perce valódi séta –
+                // eddig a kísérés szavával együtt eltűnt. Az EDZÉSRE kísérés
+                // marad kizárva: ott a gyerek mozog, nem én.
+                if (boundary
+                        && (w.contains("gyerek") || w.contains("fiam")
+                            || w.contains("lanyom") || w.startsWith("kisertem")
+                            || w.startsWith("elkisertem") || w.startsWith("vittem"))
+                        && s.matches("(?s).*(?<![a-z])(gyalog|gyalogolt\\w*"
+                            + "|setalt\\w*|biciklivel|bringaval|kerekparral"
+                            + "|futva)(?![a-z]).*")
+                        && !s.matches("(?s).*(?<![a-z])(edzesre|meccsre|tornara"
+                            + "|orara|edzesen|meccsen)(?![a-z]).*")) boundary = false;
                 // A kimaradt BEJEGYZÉS nem kimaradt edzés: a „kimaradt a
                 // tegnapi bejegyzés: futottam 8 km-t" pótlás – a futás
                 // megtörtént, csak a napló maradt le róla. Az „elfelejtettem
