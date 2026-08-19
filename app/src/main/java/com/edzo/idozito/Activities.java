@@ -246,6 +246,13 @@ public final class Activities {
                     "fekvenyomas", "holtemeles", "felhuzas", "vallnyomas",
                     "sulyemeles",
                     "labnap", "mellnap", "vallnap", "karnap", "akadalypalya",
+                    // A saját testsúlyos klasszikusok eddig hiányoztak: a
+                    // „20 perc burpee" és a „15 perc hasizom" ÜRESEN jött
+                    // vissza – húsz perc munka tűnt el a naplóból, pedig a
+                    // fekvőtámasz és a felülés rég szótő.
+                    "burpee", "hasizom", "hasizmoz", "haspres",
+                    "jumping jack", "jumpingjack", "mountain climber",
+                    "mountainclimber",
                     // A termi napok ANGOL neve legalább olyan gyakori a
                     // magyar edzők és edzettek szájában, mint a magyar: a
                     // „kemény leg day, 75 perc" eddig üres választ kapott.

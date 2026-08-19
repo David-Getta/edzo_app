@@ -892,4 +892,13 @@ public class RehabTest {
         assertEquals("derek", Rehab.forGoal("er\u0151s\u00edteni szeretn\u00e9m a h\u00e1tamat").id);
     }
 
+    /**
+     * A HASIZOM a kondi szava lett a mozg\u00e1s-oldalon, de a f\u00e1jdalom-mondat
+     * tov\u00e1bbra is a rehab ajtaja: a „f\u00e1j a hasizmom" panasz, nem edz\u00e9s.
+     */
+    @Test
+    public void abPainStaysAComplaint() {
+        assertNotNull(Rehab.forComplaint("f\u00e1j a hasizmom"));
+    }
+
 }

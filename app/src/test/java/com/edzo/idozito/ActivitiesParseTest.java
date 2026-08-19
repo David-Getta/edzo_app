@@ -5853,4 +5853,16 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("l\u00e9p\u00e9sc\u00e9l 10000").plans.isEmpty());
     }
 
+    /**
+     * A saj\u00e1t tests\u00falyos klasszikusok eddig hi\u00e1nyoztak: a „20 perc
+     * burpee" \u00e9s a „15 perc hasizom" \u00dcRESEN j\u00f6tt vissza – h\u00fasz perc munka
+     * t\u0171nt el a napl\u00f3b\u00f3l, pedig a fekv\u0151t\u00e1masz \u00e9s a fel\u00fcl\u00e9s r\u00e9g sz\u00f3t\u0151.
+     */
+    @Test
+    public void theBodyweightClassicsAreWorkoutsToo() {
+        assertEquals("1d+0: 1\u00d7kondi/20", summary("20 perc burpee"));
+        assertEquals("1d+0: 1\u00d7kondi/15", summary("15 perc hasizom"));
+        assertEquals("1d+0: 1\u00d7kondi/15", summary("15 perc jumping jack"));
+    }
+
 }
