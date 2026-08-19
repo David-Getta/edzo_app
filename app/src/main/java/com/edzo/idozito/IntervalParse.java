@@ -372,7 +372,13 @@ public final class IntervalParse {
             // futás a napló, nem egy kitalált időzítő.
             // (A „5 körönként 1 perc pihenő" marad terv: ott a szakaszt nem
             // a táv határozza meg, csak épp nincs kimondva.)
-            if (rest > 0 && timeCount(s) < 2
+            // A BEMELEGÍTÉS ideje sem tesz munkaidőt a táv mellé: a „sprint
+            // edzés: 8x200 méter, közte 90 másodperc pihi, bemelegítés 15
+            // perc kocogás" második ideje a bemelegítésé – a kettő együtt
+            // kilencven másodperc munkából és tizenöt perc pihenőből álló,
+            // két órás tervvé állt össze. A táv-alapú szakasz hosszát
+            // továbbra sem találjuk ki.
+            if (rest > 0
                     && s.matches("(?s).*\\d{1,2}\\s?[x×]\\s?\\d{2,4}\\s?"
                             + "(?:kilometer\\w*|meter\\w*|km|m)(?![a-z]).*"))
                 return null;

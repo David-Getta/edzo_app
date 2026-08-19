@@ -938,4 +938,23 @@ public class IntervalParseTest {
         assertEquals(8, IntervalParse.parse("40/20 tabata").rounds);
     }
 
+
+    /**
+     * A BEMELEG\u00cdT\u00c9S ideje nem tesz munkaid\u0151t a t\u00e1v mell\u00e9: a \u201esprint edz\u00e9s:
+     * 8x200 m\u00e9ter, k\u00f6zte 90 m\u00e1sodperc pihi, bemeleg\u00edt\u00e9s 15 perc kocog\u00e1s"
+     * kilencven m\u00e1sodperc munk\u00e1b\u00f3l \u00e9s tizen\u00f6t perc pihen\u0151b\u0151l \u00e1ll\u00f3, k\u00e9t \u00f3r\u00e1s
+     * tervv\u00e9 \u00e1llt \u00f6ssze.
+     */
+    @Test
+    public void aWarmupTimeDoesNotInventAWorkInterval() {
+        assertNull(IntervalParse.parse("sprint edz\u00e9s: 8x200 m\u00e9ter, k\u00f6zte "
+                + "90 m\u00e1sodperc pihi, bemeleg\u00edt\u00e9s 15 perc kocog\u00e1s"));
+        assertNull(IntervalParse.parse("10x400 m\u00e9ter 90 mp pihen\u0151vel"));
+        // A kimondott munkaid\u0151s terv marad.
+        IntervalParse.Plan p = IntervalParse.parse("4x4 perc kem\u00e9ny fut\u00e1s, k\u00f6zte 3 perc pihi");
+        assertNotNull(p);
+        assertEquals(240, p.work);
+        assertEquals(180, p.rest);
+    }
+
 }

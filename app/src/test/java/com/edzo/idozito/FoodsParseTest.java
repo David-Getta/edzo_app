@@ -1907,4 +1907,20 @@ public class FoodsParseTest {
                 .get(0).grams, 0.01);
     }
 
+
+    /**
+     * A TEGNAPI poh\u00e1r nem a mai v\u00edzbe folyik: a \u201etegnap 2 liter vizet ittam,
+     * ma eddig csak 8 dl-t" k\u00e9t liter nyolc decit \u00edrt a MAI napl\u00f3ba.
+     */
+    @Test
+    public void yesterdaysWaterDoesNotJoinTodaysTotal() {
+        assertEquals(2000.0, hits("Tegnap 2 liter vizet ittam, ma eddig csak 8 dl-t.")
+                .get(0).grams, 0.01);
+        // A mai r\u00e9szletek tov\u00e1bbra is \u00f6sszead\u00f3dnak.
+        assertEquals(2000.0, hits("1 liter v\u00edz reggel, 1 liter d\u00e9lut\u00e1n.")
+                .get(0).grams, 0.01);
+        assertEquals(2000.0, hits("Reggel 5 dl v\u00edz, d\u00e9lben 5 dl, este 1 liter.")
+                .get(0).grams, 0.01);
+    }
+
 }

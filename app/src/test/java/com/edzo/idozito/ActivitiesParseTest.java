@@ -6253,4 +6253,39 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+
+    /**
+     * Az \u00d6SSZESEN oszt\u00f3ja a MOZG\u00c1SFORM\u00c1K sz\u00e1ma: a \u201ekonditerem: mellkas nap,
+     * fekvenyom\u00e1s 5x5 80 kg, tol\u00f3dzkod\u00e1s 4x10. \u00d6sszesen 70 perc." k\u00e9t
+     * kondi-sz\u00f3t\u00f6vet tartalmaz, de egyetlen edz\u00e9st \u2013 a hetven perc m\u00e9gis
+     * harminc\u00f6tre felez\u0151d\u00f6tt.
+     */
+    @Test
+    public void oneKindTwiceNamedDoesNotHalveTheTotal() {
+        assertEquals(70, Activities.parse("Konditerem: mellkas nap, fekvenyom\u00e1s "
+                + "5x5 80 kg, tol\u00f3dzkod\u00e1s 4x10. \u00d6sszesen 70 perc.")
+                .plans.get(0).minutes);
+        // K\u00c9T mozg\u00e1sforma k\u00f6z\u00f6tt viszont tov\u00e1bbra is oszlik.
+        Activities.Parsed p = Activities.parse("Fut\u00e1s \u00e9s kondi, \u00f6sszesen 70 perc.");
+        assertEquals(2, p.plans.size());
+        assertEquals(35, p.plans.get(0).minutes);
+        assertEquals(35, p.plans.get(1).minutes);
+    }
+
+    /**
+     * A R\u00c9SZLET \u00e9s az \u00d6SSZEG ugyanaz az edz\u00e9s: az \u201e\u00fasz\u00e1s: 20x50 m\u00e9ter
+     * gyorson, 20 mp pihi szettek k\u00f6zt, \u00f6sszesen 1200 m\u00e9ter meleg\u00edt\u00e9ssel"
+     * egy ezer- \u00e9s egy ezerk\u00e9tsz\u00e1z m\u00e9teres \u00fasz\u00e1st is be\u00edrt.
+     */
+    @Test
+    public void theStatedTotalReplacesTheDetail() {
+        Activities.Parsed p = Activities.parse("\u00dasz\u00e1s: 20x50 m\u00e9ter gyorson, "
+                + "20 mp pihi szettek k\u00f6zt, \u00f6sszesen 1200 m\u00e9ter meleg\u00edt\u00e9ssel.");
+        assertEquals(1, p.plans.size());
+        assertEquals(1.2, p.plans.get(0).km, 0.01);
+        // K\u00e9t K\u00dcL\u00d6N edz\u00e9s megmarad, ha egyik\u00fck sem maga az \u00f6sszeg.
+        assertEquals(2, Activities.parse(
+                "Reggel 5 km fut\u00e1s, este 8 km fut\u00e1s, \u00f6sszesen 13 km.").plans.size());
+    }
+
 }

@@ -2681,10 +2681,18 @@ public final class Activities {
         // mondja ki, nem fejenként annyit. Enélkül mindkét mozgás megkapta a
         // teljes időt, és a nap kétszer annyi mozgással zárult, mint amennyi
         // volt – ráadásul pont abban a mondatban, amivel az ember összegez.
-        if (mins.size() == 1 && keep.size() > 1
+        // Az osztó a MOZGÁSFORMÁK száma, nem a találatoké: a „konditerem:
+        // fekvenyomás 5x5 80 kg. Összesen 70 perc." két kondi-szótövet
+        // tartalmaz, de egyetlen edzést – a hetven perc mégis harmincötre
+        // feleződött, mert a két találat két osztónak látszott.
+        int kindsKept = 0;
+        boolean[] seenKind = new boolean[ALL.length];
+        for (int[] h : keep)
+            if (!seenKind[h[2]]) { seenKind[h[2]] = true; kindsKept++; }
+        if (mins.size() == 1 && kindsKept > 1
                 && (s.contains("osszesen") || s.contains("osszessegeben"))) {
             java.util.Arrays.fill(minsOf, 0);
-            loneAfterAll = Math.max(1, mins.get(0)[1] / keep.size());
+            loneAfterAll = Math.max(1, mins.get(0)[1] / kindsKept);
         } else if (mins.size() == 1 && keep.size() > 1) {
             int[] last = keep.get(keep.size() - 1);
             int lastEnd = wordEnd(s, last[0] + last[1] - 1);
@@ -3105,6 +3113,28 @@ public final class Activities {
             out.set(0, new Plan(p0.kind,
                     Math.min(50, p0.count * Math.max(1, days / freq)),
                     p0.minutes, p0.km, p0.steps));
+        }
+        // A RÉSZLET és az ÖSSZEG ugyanaz az edzés: az „úszás: 20x50 méter
+        // gyorson, 20 mp pihi szettek közt, összesen 1200 méter melegítéssel"
+        // egy ezer- és egy ezerkétszáz méteres úszást is beírt – ugyanazt a
+        // medencét kétszer, kétezer-kétszáz méterként. A kimondott össztávot
+        // viselő terv az igazi, a részlet beleolvad.
+        double totKm = totalKmSaid(rawText);
+        if (totKm > 0 && out.size() > 1) {
+            List<Plan> merged = new ArrayList<>();
+            for (Plan p : out) {
+                int at = -1;
+                for (int i = 0; i < merged.size(); i++)
+                    if (merged.get(i).kind == p.kind) { at = i; break; }
+                if (at < 0) { merged.add(p); continue; }
+                Plan prev = merged.get(at);
+                // Csak akkor olvad össze, ha az egyikük ÉPP a kimondott
+                // összeg: a „reggel 5 km futás, este 8 km futás, összesen
+                // 13 km" két külön futása megmarad.
+                if (Math.abs(p.km - totKm) < 0.01) merged.set(at, p);
+                else if (Math.abs(prev.km - totKm) >= 0.01) merged.add(p);
+            }
+            out = merged;
         }
         // Az ÖSSZESEN a teljes mennyiség, alkalmanként az N-ed rész jár:
         // a „háromszor sétáltam, összesen 90 perc" három KILENCVENPERCES
@@ -4052,6 +4082,19 @@ public final class Activities {
         if (!m.find()) return 0;
         try { return Integer.parseInt(m.group(1)); }
         catch (NumberFormatException e) { return 0; }
+    }
+
+    /** A kimondott ÖSSZTÁV kilométerben, vagy 0. */
+    private static double totalKmSaid(String s) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![a-z])osszes(?:en|segeben)\\s+(\\d{1,5}(?:[.,]\\d{1,2})?)\\s?"
+                + "(km|kilometer\\w*|meter\\w*|m)(?![a-z])").matcher(s);
+        if (!m.find()) return 0;
+        double v;
+        try { v = Double.parseDouble(m.group(1).replace(',', '.')); }
+        catch (NumberFormatException e) { return 0; }
+        if (!m.group(2).startsWith("k")) v /= 1000;
+        return v > 0 && v <= 500 ? v : 0;
     }
 
     /** Az EMOM és az AMRAP kimondott perce az EGÉSZ blokk hossza. */

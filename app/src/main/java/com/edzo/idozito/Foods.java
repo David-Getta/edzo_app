@@ -3321,6 +3321,19 @@ public final class Foods {
                     .compile("(?<![\\d,.])(\\d{1,4}(?:[.,]\\d{1,2})?)\\s?"
                             + "(liter|l|dl|deci|ml)(?![\\p{L}])").matcher(q);
             while (vm.find()) {
+                // A TEGNAPI pohár nem a mai vízbe folyik: a „tegnap 2 liter
+                // vizet ittam, ma eddig csak 8 dl-t" két liter nyolc decit
+                // írt a MAI naplóba – a tegnapi napot is beleszámolva.
+                int cb = 0;
+                for (int bi = vm.start() - 1; bi >= 0; bi--) {
+                    char c = q.charAt(bi);
+                    if (c == '.' || c == ',' || c == ';' || c == '!' || c == '?') {
+                        cb = bi + 1; break;
+                    }
+                }
+                if (q.substring(cb, vm.start()).matches("(?s).*(?<![a-z])"
+                        + "(tegnap|tegnapelott|multkor|a heten|osszesen)\\w*.*"))
+                    continue;
                 double v = Double.parseDouble(vm.group(1).replace(',', '.'));
                 String u = vm.group(2);
                 sum += u.equals("ml") ? v
