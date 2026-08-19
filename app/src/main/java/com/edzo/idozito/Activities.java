@@ -5055,7 +5055,14 @@ public final class Activities {
         while (b > 0 && s.charAt(b - 1) == ' ') b--;
         int a = b;
         while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
-        if (a < b && isWarmupWord(s.substring(a, b))) return true;
+        if (a < b && isWarmupWord(s.substring(a, b)))
+            // …de a MEGNEVEZETT mozgás itt is megtartja a perceit: a
+            // „bemelegítés 10 perc futópad" tíz perce valódi futás – eddig
+            // függelékként esett ki, és a futópad a mozgásforma átlagából
+            // kapott negyvenöt percet, vagyis egy tízperces melegítésből
+            // háromnegyed órás edzés lett. A puszta „bemelegítés 20 perc"
+            // változatlanul függelék.
+            return kindRightAfter(s, m[2]) == null;
         int i = m[2];
         for (int w = 0; w < 2 && i < s.length(); w++) {
             // Tagmondathatáron megállunk: a „wod 20 perc, cool down 5 perc"
@@ -5094,6 +5101,24 @@ public final class Activities {
             i = e;
         }
         return false;
+    }
+
+    /**
+     * A megnevezett mozgás közvetlenül az idő UTÁN, vagy null.
+     *
+     * Tagmondathatáron megállunk: a „bemelegítés 10 perc, aztán 40 perc
+     * foci" tíz perce a bemelegítésé, nem a focié.
+     */
+    private static Kind kindRightAfter(String s, int from) {
+        int i = from;
+        while (i < s.length() && !Character.isLetter(s.charAt(i))) {
+            char c = s.charAt(i);
+            if (c == ',' || c == ';' || c == '.') return null;
+            i++;
+        }
+        int e = i;
+        while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
+        return e > i ? kindByText(s.substring(i, e)) : null;
     }
 
     private static boolean isWarmupWord(String w) {

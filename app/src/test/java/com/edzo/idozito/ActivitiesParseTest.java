@@ -6053,4 +6053,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    /**
+     * A megnevezett bemeleg\u00edt\u00e9s FORD\u00cdTOTT sz\u00f3renddel is megtartja a
+     * perceit: a „bemeleg\u00edt\u00e9s 10 perc fut\u00f3pad" t\u00edz perce val\u00f3di fut\u00e1s –
+     * eddig f\u00fcggel\u00e9kk\u00e9nt esett ki, \u00e9s a fut\u00f3pad a mozg\u00e1sforma \u00e1tlag\u00e1b\u00f3l
+     * kapott negyven\u00f6t percet, vagyis egy t\u00edzperces meleg\u00edt\u00e9sb\u0151l
+     * h\u00e1romnegyed \u00f3r\u00e1s edz\u00e9s lett.
+     */
+    @Test
+    public void aNamedWarmupKeepsItsMinutesInAnyWordOrder() {
+        assertEquals("1d+0: 1\u00d7futas/10", summary("bemeleg\u00edt\u00e9s 10 perc fut\u00f3pad"));
+        assertEquals("1d+0: 1\u00d7kerekpar/10", summary("levezet\u00e9s 10 perc bringa"));
+        assertEquals("1d+0: 1\u00d7futas/10, 1\u00d7kondi/40",
+                summary("bemeleg\u00edt\u00e9s 10 perc fut\u00f3pad, ut\u00e1na 40 perc kondi"));
+        // A PUSZTA bemeleg\u00edt\u00e9s v\u00e1ltozatlanul f\u00fcggel\u00e9k.
+        assertTrue(Activities.parse("bemeleg\u00edt\u00e9s 20 perc").plans.isEmpty());
+        assertEquals("1d+0: 1\u00d7foci/40",
+                summary("bemeleg\u00edt\u00e9s 20 perc, azt\u00e1n 40 perc foci"));
+    }
+
 }
