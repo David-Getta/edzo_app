@@ -2682,6 +2682,15 @@ public final class Activities {
             // van. A „körkörös edzés: 4 kör, 10 fekvőtámasz, 15 guggolás,
             // 20 hasizom" eddig öt percet kapott – az első szám ötöde –,
             // pedig ez négyszer negyvenöt ismétlés, jó fél óra munka.
+            // A MEGTERHELT sorozat hossza nem az ismétlésszámból jön: az
+            // „5x5 guggolás 100 kg" huszonöt ismétlése ÖT percnek látszott,
+            // pedig a rúddal végzett munka java a szettek közti pihenés.
+            // Egy komplett erőedzés ment így öt percként a naplóba, a heti
+            // összesítőbe és a kalóriába. A „3x10 fekvenyomás 60 kg" már
+            // eddig is a szokásos hosszt kapta – most már ugyanaz a
+            // guggolásra is. A súly nélküli sor („100 fekvőtámasz") marad
+            // ismétlésből becsült.
+            if (reps > 0 && minutes <= 0 && loadedSetIn(rawText)) reps = 0;
             int estReps = reps;
             if (minutes <= 0 && reps > 0) {
                 int total = 0;
@@ -3839,6 +3848,14 @@ public final class Activities {
         for (String v : new String[]{"le", "be", "meg", "el", "ki", "fel", "at",
                 "ra", "oda", "vissza", "ossze", "szet", "vegig", "korbe"})
             if (v.equals(pre)) return true;
+        return false;
+    }
+
+    /** Van-e a mondatban kilóval terhelt sorozat (rúd, kézisúlyzó, gép). */
+    private static boolean loadedSetIn(String raw) {
+        if (raw == null) return false;
+        for (StrengthParse.Item it : StrengthParse.parse(raw))
+            if (it.topWeight() > 0) return true;
         return false;
     }
 

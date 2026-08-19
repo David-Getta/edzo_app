@@ -5801,4 +5801,20 @@ public class ActivitiesParseTest {
                 summary("15 perc bemeleg\u00edt\u00e9s ut\u00e1n 45 perc foci"));
     }
 
+    /**
+     * A MEGTERHELT sorozat hossza nem az ism\u00e9tl\u00e9ssz\u00e1mb\u00f3l j\u00f6n: az „5x5
+     * guggol\u00e1s 100 kg" huszon\u00f6t ism\u00e9tl\u00e9se \u00d6T percnek l\u00e1tszott, pedig a
+     * r\u00faddal v\u00e9gzett munka java a szettek k\u00f6zti pihen\u00e9s. Egy komplett
+     * er\u0151edz\u00e9s ment \u00edgy \u00f6t perck\u00e9nt a napl\u00f3ba \u00e9s a heti \u00f6sszes\u00edt\u0151be.
+     */
+    @Test
+    public void aLoadedBarbellSetIsNotFiveMinutes() {
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("5x5 guggol\u00e1s 100 kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("8x8 guggol\u00e1s 60 kg"));
+        // A S\u00daLY N\u00c9LK\u00dcLI ism\u00e9tl\u00e9s marad becs\u00fclt: a „100 fekv\u0151t\u00e1masz"
+        // \u00e9s a k\u00f6r\u00f6s saj\u00e1t tests\u00falyos sor nem v\u00e1ltozik.
+        assertEquals("1d+0: 1\u00d7kondi/20", summary("100 fekv\u0151t\u00e1masz"));
+        assertEquals("1d+0: 1\u00d7kondi/5", summary("20 kettlebell swing \u00e9s 10 burpee"));
+    }
+
 }
