@@ -168,6 +168,12 @@ public final class BodyParse {
             "nyomott", "nyomta", "kinyomta", "emelt", "huzott",
             // A GYAKORLAT súlya sem testsúly: az „edzés rutin: fekvenyomás
             // 3x10 60 kg" hatvana a rúdon van, nem a mérlegen.
+            // A gyakorlat IGÉJE ugyanúgy nem mérés: a „leguggoltam 100-at
+            // súly nélkül" mondatban a „súly" szó mérésnek mutatta a
+            // százat, és száz kilós testsúly került a trendbe – abból,
+            // hogy valaki száz guggolást csinált teher nélkül.
+            "leguggoltam", "guggoltam", "leguggolt", "guggolt",
+            "kinyomtam", "megnyomtam", "felhuztam", "kihuztam",
             "fekvenyomas", "guggolas", "felhuzas", "holtemeles",
             "huzodzkodas", "tolodzkodas", "fekvotamasz", "kitores",
             "szakitas", "lokes", "vallbol",

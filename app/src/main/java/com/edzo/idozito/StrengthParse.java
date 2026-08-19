@@ -997,7 +997,14 @@ public final class StrengthParse {
                 // fekve" sem száz fekvenyomás. Kivétel, ha a szám közvetlenül
                 // a gyakorlat nevét jelzi („csináltam 100 guggolást") – az
                 // tényleg darabszám, és magyarul csak így mondjuk.
-                if (r >= 100 && r <= 500 && weight == 0 && isLoaded(name)) {
+                // A KIMONDOTT „súly nélkül" felülírja: a „leguggoltam 100-at
+                // súlyok nélkül" száz saját testsúlyos guggolás – eddig EGY
+                // ismétlés lett belőle SZÁZ KILÓVAL, vagyis a száz guggolás
+                // eltűnt, és a helyére egy kitalált százkilós csúcs került a
+                // rekordok és az 1RM közé. A mondat épp az ellenkezőjét
+                // mondja, mint amit beírtunk.
+                if (r >= 100 && r <= 500 && weight == 0 && isLoaded(name)
+                        && !bodyweightSaid(s)) {
                     int at = moveAt(s, name);
                     boolean modifiesName = at >= e && at - e <= 2;
                     if (!modifiesName) {
@@ -1378,6 +1385,13 @@ public final class StrengthParse {
             return c == '@';
         }
         return false;
+    }
+
+    /** Kimondja-e a mondat, hogy SÚLY NÉLKÜL, saját testsúllyal ment. */
+    private static boolean bodyweightSaid(String s) {
+        return s != null && s.matches("(?s).*(?:suly\\w* nelkul|sulyzo\\w* nelkul"
+                + "|teher nelkul|rud nelkul|sajat tests?uly\\w*|testsulyos"
+                + "|csak tests?uly\\w*|semmi suly).*");
     }
 
     /** A súlyt jelölő eszközragos szám („100-zal") ne legyen ismétlésszám. */

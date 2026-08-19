@@ -1600,4 +1600,23 @@ public class StrengthParseTest {
         assertEquals(60.0, p.get(0).topWeight(), 0.001);
     }
 
+    /**
+     * A kimondott „S\u00daLY N\u00c9LK\u00dcL" fel\u00fclírja a r\u00fad-szab\u00e1lyt: a
+     * „leguggoltam 100-at s\u00falyok n\u00e9lk\u00fcl" sz\u00e1z saj\u00e1t tests\u00falyos
+     * guggol\u00e1s – eddig EGY ism\u00e9tl\u00e9s lett bel\u0151le SZ\u00c1Z KIL\u00d3VAL, vagyis a
+     * sz\u00e1z guggol\u00e1s elt\u0171nt, \u00e9s a hely\u00e9re kital\u00e1lt sz\u00e1zkil\u00f3s cs\u00facs
+     * ker\u00fclt a rekordok \u00e9s az 1RM k\u00f6z\u00e9.
+     */
+    @Test
+    public void sayingNoWeightMakesTheNumberReps() {
+        List<StrengthParse.Item> it = StrengthParse.parse("leguggoltam 100-at s\u00falyok n\u00e9lk\u00fcl");
+        assertEquals(100, it.get(0).sets.get(0).reps);
+        assertEquals(0.0, it.get(0).topWeight(), 0.001);
+        List<StrengthParse.Item> r = StrengthParse.parse("leguggoltam 120-at r\u00fad n\u00e9lk\u00fcl");
+        assertEquals(120, r.get(0).sets.get(0).reps);
+        // A R\u00daD-szab\u00e1ly v\u00e1ltozatlan, ha nincs ilyen kik\u00f6t\u00e9s.
+        List<StrengthParse.Item> b = StrengthParse.parse("leguggoltam 140-et");
+        assertEquals(140.0, b.get(0).topWeight(), 0.001);
+    }
+
 }

@@ -989,4 +989,18 @@ public class BodyParseTest {
         assertEquals(0.0, BodyParse.parse("a c\u00e9l 75 kg").kg, 0.001);
     }
 
+    /**
+     * A gyakorlat IG\u00c9JE nem m\u00e9r\u00e9s: a „leguggoltam 100-at s\u00faly n\u00e9lk\u00fcl"
+     * mondatban a „s\u00faly" sz\u00f3 m\u00e9r\u00e9snek mutatta a sz\u00e1zat, \u00e9s SZ\u00c1Z KIL\u00d3S
+     * testsúly ker\u00fclt a trendbe – abb\u00f3l, hogy valaki sz\u00e1z guggol\u00e1st
+     * csin\u00e1lt teher n\u00e9lk\u00fcl.
+     */
+    @Test
+    public void theVerbOfALiftIsNotAWeighIn() {
+        assertEquals(0.0, BodyParse.parse("leguggoltam 100-at s\u00faly n\u00e9lk\u00fcl").kg, 0.001);
+        assertEquals(0.0, BodyParse.parse("kinyomtam 100-at").kg, 0.001);
+        // A val\u00f3di m\u00e9r\u00e9s v\u00e1ltozatlan.
+        assertEquals(78.4, BodyParse.parse("ma reggel 78,4 kg voltam").kg, 0.001);
+    }
+
 }
