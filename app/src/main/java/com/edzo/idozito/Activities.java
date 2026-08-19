@@ -1624,6 +1624,18 @@ public final class Activities {
                 }
             }
         }
+        // A FELADOTT edzés hossza a MEGTETT idő: a „nem bírtam
+        // végigcsinálni, 20 perc után feladtam a 45 perces edzést" negyvenöt
+        // percet írt a naplóba – abból, amiből húsz lett meg. A feladás után
+        // álló hossz a tervé, nem a megtett úté.
+        java.util.regex.Matcher gv = java.util.regex.Pattern
+                .compile("(?<![\\d,.])\\d{1,3}\\s?perc\\w*\\s+utan\\s+"
+                        + "(?:[a-z]+\\s+){0,2}?(?:feladtam|feladtuk|"
+                        + "abbahagytam|abbahagytuk|lealltam|leallitottam|"
+                        + "kiszalltam|kiszalltunk)(?![a-z])").matcher(s);
+        if (gv.find())
+            s = s.substring(0, gv.end()) + s.substring(gv.end())
+                    .replaceAll("(?<![\\d,.])\\d{1,3}\\s?perc\\w*", " ");
         // Az úszók MÉTER NÉLKÜL írják a távot: a „4x100 gyors" és az
         // „1500 vegyes" métert mond, de mértékegység híján a táv eddig
         // elveszett, és az alap-45 perc ment be. Csak úszó-mondatban, és
@@ -4258,6 +4270,16 @@ public final class Activities {
                 // háromhetes időszakot és egy órás kondit írt be a tervből.
                 // Csak a terv tagmondata esik ki – a mai bicikli marad.
                 "tervet adott", "uj tervet", "tervet kaptam", "tervet irt",
+                // A MEGTERVEZETT edzés sem megtörtént edzés: a „ma megint nem
+                // sikerült elmenni edzeni, pedig terveztem 45 perc kondit"
+                // negyvenöt perc kondit írt a naplóba – pont abból a
+                // tagmondatból, ami a meg nem valósult szándékról szól.
+                // A puszta „terveztem" nem elég: a „terveztem 45 perc kondit,
+                // és meg is csináltam" edzése megtörtént. A FELTÉTELES mód és
+                // az ellentétes „pedig" viszont kimondja, hogy elmaradt.
+                "pedig terveztem", "pedig akartam", "pedig mentem volna",
+                "szerettem volna", "kellett volna", "mentem volna",
+                "akartam volna", "terveztem volna", "tervben volt",
                 "lemondtam", "neztem", "neztuk", "vegignez", "vegigneztem",
                 "rendeltem", "vettem", "berlet",
                 // A MEGnéztem is nézés: a „megnéztem a maratont a tv-ben"

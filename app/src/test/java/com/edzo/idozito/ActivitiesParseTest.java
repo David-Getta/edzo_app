@@ -6338,4 +6338,22 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+
+    /**
+     * A FELADOTT edz\u00e9s hossza a MEGTETT id\u0151, a megtervezett edz\u00e9s pedig nem
+     * edz\u00e9s: a \u201enem b\u00edrtam v\u00e9gigcsin\u00e1lni, 20 perc ut\u00e1n feladtam a 45 perces
+     * edz\u00e9st" negyven\u00f6t percet \u00edrt be, a \u201ema megint nem siker\u00fclt elmenni
+     * edzeni, pedig terveztem 45 perc kondit" szint\u00e9n.
+     */
+    @Test
+    public void anAbandonedWorkoutCountsOnlyWhatWasDone() {
+        assertEquals(20, Activities.parse("Nem b\u00edrtam v\u00e9gigcsin\u00e1lni, 20 perc "
+                + "ut\u00e1n feladtam a 45 perces edz\u00e9st.").plans.get(0).minutes);
+        assertEquals(0, Activities.parse("Ma megint nem siker\u00fclt elmenni "
+                + "edzeni, pedig terveztem 45 perc kondit.").plans.size());
+        // A megval\u00f3sult terv marad.
+        assertEquals(45, Activities.parse("Terveztem 45 perc kondit, \u00e9s meg "
+                + "is csin\u00e1ltam 45 percet.").plans.get(0).minutes);
+    }
+
 }

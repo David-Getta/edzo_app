@@ -2110,6 +2110,25 @@ public final class Foods {
         // az ugyanaz a szó – vagyis a szám közvetlenül az ételhez tartozik.
         String raw = q.substring(numEnd, foodPos);
         if (raw.matches("^\\s?[a-z0-9]+$")) return "";
+        // A KÉTSZAVAS jelző is beférhet a mérőszó és az étel közé: a „3 db
+        // teljes kiőrlésű kifli" egyetlen kiflit írt a naplóba – a hármas
+        // elveszett, mert az alábbi szabály csak EGY szónyi jelzőt tűrt el.
+        // A jelző képzett alakja (–ű, –os, –i, –ott) elárulja, hogy nem új
+        // étel áll ott; a kötőszó viszont felsorolást nyit, ott megállunk.
+        int sp0 = between.indexOf(' ');
+        if (sp0 > 0) {
+            String first = between.substring(0, sp0);
+            String rest = between.substring(sp0 + 1).trim();
+            boolean unitFirst = false;
+            for (String w : COUNT_WORDS) if (w.equals(first)) unitFirst = true;
+            for (String w : PORTION_WORDS) if (w.equals(first)) unitFirst = true;
+            for (String w : new String[]{"adag", "adagot", "adagnyi", "porcio", "tabla"})
+                if (w.equals(first)) unitFirst = true;
+            if (unitFirst && rest.matches("[a-z]+(?: [a-z]+)?")
+                    && !rest.matches("(?s).*(?<![a-z])(es|meg|vagy|plusz)(?![a-z]).*")
+                    && rest.matches("(?s).*(?:u|os|as|i|ott|ett|att|lt)$"))
+                return first;
+        }
         int sp = between.lastIndexOf(' ');
         if (sp > 0) {
             String head = between.substring(0, sp).trim();

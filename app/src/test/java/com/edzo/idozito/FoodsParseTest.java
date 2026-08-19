@@ -1923,4 +1923,23 @@ public class FoodsParseTest {
                 .get(0).grams, 0.01);
     }
 
+
+    /**
+     * A K\u00c9TSZAVAS jelz\u0151 is bef\u00e9rhet a m\u00e9r\u0151sz\u00f3 \u00e9s az \u00e9tel k\u00f6z\u00e9: a \u201e3 db
+     * teljes ki\u0151rl\u00e9s\u0171 kifli" egyetlen kiflit \u00edrt a napl\u00f3ba \u2013 a h\u00e1rmas
+     * elveszett, mert a szab\u00e1ly csak egy sz\u00f3nyi jelz\u0151t t\u0171rt el.
+     */
+    @Test
+    public void aTwoWordAdjectiveKeepsThePieceCount() {
+        assertEquals(165.0, hits("Eb\u00e9dre 3 db teljes ki\u0151rl\u00e9s\u0171 kifli.")
+                .get(0).grams, 0.01);
+        assertEquals(110.0, hits("2 db teljes ki\u0151rl\u00e9s\u0171 zsemle.").get(0).grams, 0.01);
+        assertEquals(70.0, hits("2 szelet h\u00e1zi s\u00fclt keny\u00e9r.").get(0).grams, 0.01);
+        // A k\u00f6t\u0151sz\u00f3 felsorol\u00e1st nyit: ott a sz\u00e1m az els\u0151\u00e9.
+        java.util.List<Foods.Hit> h = hits("2 db sajt \u00e9s kifli.");
+        assertEquals(2, h.size());
+        assertEquals(60.0, h.get(0).grams, 0.01);
+        assertEquals(0.0, h.get(1).grams, 0.01);
+    }
+
 }
