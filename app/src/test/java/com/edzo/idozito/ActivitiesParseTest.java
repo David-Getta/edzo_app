@@ -6288,4 +6288,54 @@ public class ActivitiesParseTest {
                 "Reggel 5 km fut\u00e1s, este 8 km fut\u00e1s, \u00f6sszesen 13 km.").plans.size());
     }
 
+
+    /**
+     * A N\u00c9Z\u0150 nem j\u00e1tszik: a \u201ema a gyerekkel voltam a foci edz\u00e9sen, \u00e9n csak
+     * n\u00e9ztem a p\u00e1lya sz\u00e9l\u00e9r\u0151l" kilencven perc focit \u00edrt a napl\u00f3ba \u2013 a
+     * tagad\u00f3 sz\u00f3 a m\u00e1sik tagmondatban \u00e1llt, \u00edgy nem \u00e9rt el a m\u00e9rk\u0151z\u00e9sig.
+     */
+    @Test
+    public void aSpectatorLogsNothing() {
+        assertEquals(0, Activities.parse("Ma a gyerekkel voltam a foci "
+                + "edz\u00e9sen, \u00e9n csak n\u00e9ztem a p\u00e1lya sz\u00e9l\u00e9r\u0151l.").plans.size());
+        assertEquals(0, Activities.parse("Este a meccsen szurkoltunk a fiamnak.")
+                .plans.size());
+        // A SAJ\u00c1T mozg\u00e1s-ige mellett a n\u00e9z\u00e9s csak a maga tagmondat\u00e1t viszi.
+        assertEquals(1, Activities.parse("Csak n\u00e9ztem a telefonom, azt\u00e1n "
+                + "futottam 5 km-t.").plans.size());
+        assertEquals(30, Activities.parse("30 perc fut\u00e1s, k\u00f6zben n\u00e9ztem a "
+                + "meccset a t\u00e9v\u00e9n.").plans.get(0).minutes);
+    }
+
+    /**
+     * A K\u00d6R\u00d6NK\u00c9NT szava kimondja, hogy k\u00f6r\u00f6kr\u0151l van sz\u00f3: a \u201es\u00falyz\u00f3s edz\u00e9s
+     * otthon: 3 k\u00f6r, k\u00f6r\u00f6nk\u00e9nt 15 guggol\u00e1s" hajnali h\u00e1romra tette a
+     * bejegyz\u00e9st \u2013 \u00e9kezet n\u00e9lk\u00fcl a \u201ek\u00f6r" \u00e9s a \u201e-kor" egybeesik.
+     */
+    @Test
+    public void roundsPerRoundAreNotAClock() {
+        assertEquals(12, Activities.parse("S\u00falyz\u00f3s edz\u00e9s otthon: 3 k\u00f6r, "
+                + "k\u00f6r\u00f6nk\u00e9nt 15 guggol\u00e1s, 12 fekv\u0151t\u00e1masz, 20 hasizom.").hour);
+        // A val\u00f3di id\u0151pont marad.
+        assertEquals(7, Activities.parse("reggel 7 kor 5 km fut\u00e1s").hour);
+    }
+
+    /**
+     * Az EGY \u00daT t\u00e1vja a fele: a \u201ebring\u00e1val j\u00e1rtam be a mel\u00f3helyre, oda 25
+     * perc, vissza 30 perc, kb 9 km egy \u00fat" kilenc kilom\u00e9tert \u00edrt a napl\u00f3ba
+     * a t\u00e9nylegesen letekert tizennyolc helyett.
+     */
+    @Test
+    public void aOneWayDistanceCountsTwiceOnARoundTrip() {
+        Activities.Parsed p = Activities.parse("Bring\u00e1val j\u00e1rtam be a "
+                + "mel\u00f3helyre, oda 25 perc, vissza 30 perc, kb 9 km egy \u00fat.");
+        assertEquals(18.0, p.plans.get(0).km, 0.01);
+        assertEquals(55, p.plans.get(0).minutes);
+        assertEquals(15.0, Activities.parse("Bicikli munk\u00e1ba, 7,5 km egy \u00fat, "
+                + "oda-vissza.").plans.get(0).km, 0.01);
+        // Egyir\u00e1ny\u00fa \u00fat t\u00e1vja marad.
+        assertEquals(3.0, Activities.parse("Hazafel\u00e9 s\u00e9t\u00e1ltam 3 km-t.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

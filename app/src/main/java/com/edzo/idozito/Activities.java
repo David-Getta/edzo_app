@@ -1604,6 +1604,26 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // Az EGY ÚT távja a fele: a „bringával jártam be a melóhelyre, oda
+        // 25 perc, vissza 30 perc, kb 9 km egy út" kilenc kilométert írt a
+        // naplóba – a ténylegesen letekert tizennyolc helyett. Az „egy út"
+        // épp azt mondja ki, hogy a szám csak az egyik irányé.
+        if (s.contains("vissza") || s.contains("haza")) {
+            java.util.regex.Matcher one = java.util.regex.Pattern
+                    .compile("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+                            + "(?:km|kilometer\\w*)\\s+(?:egy ut(?:ra)?|"
+                            + "egy irany\\w*|utankent|iranyonkent)(?![a-z])")
+                    .matcher(s);
+            if (one.find()) {
+                double v = Double.parseDouble(one.group(1).replace(',', '.')) * 2;
+                if (v > 0 && v <= 400) {
+                    String num = v == Math.rint(v) ? String.valueOf((long) v)
+                            : String.valueOf(v).replace('.', ',');
+                    s = s.substring(0, one.start()) + num + " km"
+                            + s.substring(one.end());
+                }
+            }
+        }
         // Az úszók MÉTER NÉLKÜL írják a távot: a „4x100 gyors" és az
         // „1500 vegyes" métert mond, de mértékegység híján a táv eddig
         // elveszett, és az alap-45 perc ment be. Csak úszó-mondatban, és
@@ -2329,6 +2349,24 @@ public final class Activities {
         if (sm.contains("vedd ki") || sm.contains("vegyel ki")
                 || sm.contains("torold") || sm.contains("torolni")
                 || sm.contains("duplan ment"))
+            return new Parsed(out, 1, 0, 12);
+        // A NÉZŐ nem játszik: a „ma a gyerekkel voltam a foci edzésen, én
+        // csak néztem a pálya széléről" kilencven perc focit írt a naplóba –
+        // egy mondatból, ami épp azt mondja, hogy a felhasználó végig a pálya
+        // szélén állt. A tagadó szó a MÁSIK tagmondatban áll, ezért a
+        // tagmondat-hatókörű kitakarás nem ért el a mérkőzésig. A „csak"
+        // szócska és a szurkolás a mondat egészére szól – de csak akkor, ha
+        // semmilyen SAJÁT mozgás-ige nincs mellette („csak néztem a
+        // telefonom, aztán futottam 5 km-t").
+        if ((sm.matches("(?s).*(?<![a-z])csak\\s+(?:neztem|neztuk|vegigneztem|"
+                    + "figyeltem|szurkoltam)(?![a-z]).*")
+                || sm.matches("(?s).*(?<![a-z])(?:szurkoltam|szurkoltunk|"
+                    + "drukkoltam|drukkoltunk)(?![a-z]).*"))
+                && !sm.matches("(?s).*(?<![a-z])(futottam|futottunk|edzettem|"
+                    + "edzettunk|usztam|usztunk|jatszottam|jatszottunk|"
+                    + "bicikliztem|bringaztam|setaltam|setaltunk|turaztam|"
+                    + "turaztunk|kondiztam|kocogtam|eveztem|tancoltam)"
+                    + "(?![a-z]).*"))
             return new Parsed(out, 1, 0, 12);
         if (sm.contains("osszesito")
                 || sm.matches(".*(?<![a-z])(iden|tavaly|szezonban|a szezon)"
@@ -4605,6 +4643,12 @@ public final class Activities {
             // futás, 15 fekvőtámasz" hajnali ötre került a naplóban.
             // Időpont után kettőspont nem áll – az már perc lenne.
             if (spaced && s.substring(m.end()).matches("(?s)\\s*:.*")) continue;
+            // A KÖRÖNKÉNT szava kimondja, hogy körökről van szó: a „súlyzós
+            // edzés otthon: 3 kör, körönként 15 guggolás" hajnali háromra
+            // tette a bejegyzést, mert ékezet nélkül a „kör" és a „-kor"
+            // egybeesik.
+            if (spaced && s.matches("(?s).*(?<![a-z])(koronkent|korben|"
+                    + "korokben|koronkenti)\\w*.*")) continue;
             int h = Integer.parseInt(m.group(1));
             if (h >= 0 && h <= 23) {
                 if (h < 12) {
