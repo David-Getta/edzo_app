@@ -5783,4 +5783,22 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/60", summary("guggol\u00e1s 5x3 140 kg"));
     }
 
+    /**
+     * A MEGNEVEZETT mozg\u00e1s a bemeleg\u00edt\u00e9s szava el\u0151tt: a „20 perc
+     * szobabicikli bemeleg\u00edt\u00e9s ut\u00e1n 30 perc s\u00falyz\u00f3z\u00e1s" h\u00fasz perce
+     * val\u00f3di tekeré\u0073 – eddig f\u00fcggel\u00e9kk\u00e9nt kiesett, \u00e9s a bicikli a
+     * mozg\u00e1sforma \u00e1tlag\u00e1b\u00f3l kapott hatvan percet: egy h\u00faszperces
+     * meleg\u00edt\u00e9sb\u0151l \u00f3r\u00e1s edz\u00e9s lett a napl\u00f3ban.
+     */
+    @Test
+    public void aNamedWarmupKeepsItsOwnMinutes() {
+        assertEquals("1d+0: 1\u00d7kerekpar/20, 1\u00d7kondi/30",
+                summary("20 perc szobabicikli bemeleg\u00edt\u00e9s ut\u00e1n 30 perc s\u00falyz\u00f3z\u00e1s"));
+        assertEquals("1d+0: 1\u00d7futas/10, 1\u00d7kondi/40",
+                summary("10 perc fut\u00e1s bemeleg\u00edt\u00e9s ut\u00e1n 40 perc kondi"));
+        // A PUSZTA bemeleg\u00edt\u00e9s v\u00e1ltozatlan: mozg\u00e1sn\u00e9v n\u00e9lk\u00fcl f\u00fcggel\u00e9k.
+        assertEquals("1d+0: 1\u00d7foci/45",
+                summary("15 perc bemeleg\u00edt\u00e9s ut\u00e1n 45 perc foci"));
+    }
+
 }

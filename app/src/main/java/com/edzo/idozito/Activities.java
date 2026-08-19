@@ -4903,6 +4903,14 @@ public final class Activities {
             int e = i;
             while (e < s.length() && Character.isLetter(s.charAt(e))) e++;
             if (e == i) break;
+            // A MEGNEVEZETT mozgás a bemelegítés szava ELŐTT: a „20 perc
+            // szobabicikli bemelegítés után 30 perc súlyzózás" húsz perce
+            // valódi tekerés – eddig bemelegítés-függelékként kiesett, és a
+            // bicikli a mozgásforma átlagából kapott hatvan percet, vagyis
+            // egy húszperces melegítésből órás edzés lett a naplóban. A
+            // puszta „15 perc bemelegítés után 45 perc foci" változatlan:
+            // ott a bemelegítés mellett nincs mozgásnév.
+            if (kindByText(s.substring(i, e)) != null) return false;
             if (isWarmupWord(s.substring(i, e))) {
                 // A JELZŐS alak viszont maga a mozgás: a „10 perc levezető
                 // nyújtás" tíz perc nyújtás, nem egy tíz perces függelék egy
