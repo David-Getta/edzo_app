@@ -5836,4 +5836,21 @@ public class ActivitiesParseTest {
                 summary("10 km fut\u00e1s 50 perc alatt \u00e9s 100 fekv\u0151t\u00e1masz"));
     }
 
+    /**
+     * A L\u00c9P\u00c9SSZ\u00c1M elv\u00e1laszt\u00f3 jel n\u00e9lk\u00fcl is l\u00e9p\u00e9ssz\u00e1m: a „l\u00e9p\u00e9ssz\u00e1m
+     * 9842" \u00e9s a „napi l\u00e9p\u00e9ssz\u00e1m 9842" – ahogy az \u00f3r\u00e1k \u00e9s a telefonok
+     * ki\u00edrj\u00e1k – kettőspont n\u00e9lk\u00fcl \u00fcresen j\u00f6tt vissza, vagyis egy eg\u00e9sz
+     * nap gyalogl\u00e1sa elt\u0171nt.
+     */
+    @Test
+    public void theStepCountNeedsNoColon() {
+        assertEquals("1d+0: 1\u00d7tura/76", summary("l\u00e9p\u00e9ssz\u00e1m 9842"));
+        assertEquals("1d+0: 1\u00d7tura/76", summary("napi l\u00e9p\u00e9ssz\u00e1m 9842"));
+        assertEquals("1d+0: 1\u00d7tura/76", summary("l\u00e9p\u00e9ssz\u00e1mom 9842"));
+        // A megszokott sorrend v\u00e1ltozatlan.
+        assertEquals("1d+0: 1\u00d7tura/76", summary("9842 l\u00e9p\u00e9s"));
+        // A L\u00c9P\u00c9SC\u00c9L nem megtett l\u00e9p\u00e9s.
+        assertTrue(Activities.parse("l\u00e9p\u00e9sc\u00e9l 10000").plans.isEmpty());
+    }
+
 }

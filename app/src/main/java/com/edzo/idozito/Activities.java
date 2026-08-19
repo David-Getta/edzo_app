@@ -1798,7 +1798,11 @@ public final class Activities {
         // A LÉPÉSSZÁM állhat a szó UTÁN is: a „ma kevés lépés volt, 3000"
         // hármezre eddig elveszett, mert a szám a következő tagmondatban
         // állt.
-        s = s.replaceAll("lepes\\w*\\s*(?:volt)?\\s*[,:]\\s*"
+        // Az ELVÁLASZTÓ jel el is maradhat: a „lépésszám 9842" és a „napi
+        // lépésszám 9842" – ahogy az órák és a telefonok kiírják – kettőspont
+        // nélkül üresen jött vissza, vagyis egy egész nap gyaloglása tűnt el.
+        // A LÉPÉSCÉL kimarad: az még nem megtett lépés.
+        s = s.replaceAll("lepes(?!cel)\\w*\\s*(?:volt)?\\s*[,:]?\\s*"
                 + "(\\d{3,6})(?![\\d.,])", "$1 lepes");
         // A NEVEZETES körök távja kimondatlan is ismert: a margitszigeti
         // futókör 5,3 km, a Balaton-kör 210 – eddig csak az alapidő ment
