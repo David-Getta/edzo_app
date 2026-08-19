@@ -5948,4 +5948,17 @@ public class ActivitiesParseTest {
                 summary("minden reggel futok 5 km-t, de ma 10 km-t futottam"));
     }
 
+    /**
+     * A -NTE / -NK\u00c9NT k\u00e9pz\u0151 maga a gyakoris\u00e1g: a „reggelente futok" \u00e9s
+     * az „est\u00e9nk\u00e9nt ny\u00fajtok" negyven\u00f6t perces MAI bejegyz\u00e9s lett, pedig
+     * a heti rendr\u0151l sz\u00f3l.
+     */
+    @Test
+    public void theAdverbialHabitFormIsAHabitToo() {
+        assertTrue(Activities.parse("reggelente futok").plans.isEmpty());
+        assertTrue(Activities.parse("est\u00e9nk\u00e9nt ny\u00fajtok").plans.isEmpty());
+        // A megt\u00f6rt\u00e9nt reggeli fut\u00e1s v\u00e1ltozatlan.
+        assertEquals("1d+0: 1\u00d7futas/30", summary("reggel futottam 5 km-t"));
+    }
+
 }

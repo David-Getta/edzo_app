@@ -3855,6 +3855,12 @@ public final class Activities {
                 // került a naplóba, egy heti rend leírásából.
                 "minden reggel", "minden este", "minden delutan",
                 "minden delelott", "minden hajnalban", "minden ebedszunet",
+                // A -NTE / -NKÉNT képző maga a gyakoriság: a „reggelente
+                // futok" és az „esténként nyújtok" negyvenöt perces mai
+                // bejegyzés lett, pedig a heti rendről szól. (A „hétfőnként"
+                // a napnév-ágon már eddig is kiesett.)
+                "reggelente", "estente", "estenkent", "delelottonkent",
+                "delutanonkent", "ejjelente", "ejszakankent", "hajnalonta",
                 "mostanaban", "manapsag"})
             if (s.contains(w)) { often = true; break; }
         if (often)
@@ -3871,7 +3877,9 @@ public final class Activities {
                     "futunk", "edzunk", "turazunk", "uszunk", "biciklizunk",
                     "bringazunk", "focizunk", "kondizunk", "sportolunk",
                     "mozgunk", "setalunk", "kocogunk", "evezunk",
-                    "tancolunk", "jarunk", "megyunk"})
+                    "tancolunk", "jarunk", "megyunk",
+                    // A nyújtás és a jóga jelen ideje is a rend szava.
+                    "nyujtok", "nyujtunk", "jogazunk", "gyaloglok", "gyalogolok"})
                 if (s.matches(".*(?<![a-z])" + w + "(?![a-z]).*")) return true;
         // A HETI BEOSZTÁS is a rend leírása: a „push pull legs, heti 6 edzés"
         // hatosa a rendszer neve mellett álló ütem, nem hat megtörtént edzés –
