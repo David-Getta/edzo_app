@@ -5930,4 +5930,22 @@ public class ActivitiesParseTest {
                 "a sr\u00e1c nyomott 3x10-et 100 kg-mal").plans.isEmpty());
     }
 
+    /**
+     * A NAPSZAKKAL mondott szok\u00e1s ugyanaz a rend: a „minden reggel futok
+     * 5 km-t" mai, \u00f6t kilom\u00e9teres fut\u00e1sk\u00e9nt ker\u00fclt a napl\u00f3ba – egy heti
+     * rend le\u00edr\u00e1s\u00e1b\u00f3l. A t\u00f6bbes sz\u00e1m\u00fa alak ugyan\u00edgy: a „h\u00e9tv\u00e9g\u00e9nte
+     * t\u00far\u00e1zunk" egy h\u00e9tre elosztott, kilencvenperces t\u00far\u00e1t \u00edrt be.
+     */
+    @Test
+    public void aHabitWithADaypartIsStillAHabit() {
+        assertTrue(Activities.parse("minden reggel futok 5 km-t").plans.isEmpty());
+        assertTrue(Activities.parse("h\u00e9tv\u00e9g\u00e9nte t\u00far\u00e1zunk").plans.isEmpty());
+        assertTrue(Activities.parse("minden d\u00e9lut\u00e1n bringazunk").plans.isEmpty());
+        // A MEGT\u00d6RT\u00c9NT f\u00e9l megmarad a szok\u00e1s mellett.
+        assertEquals("1d+0: 1\u00d7kondi/45",
+                summary("hetente h\u00e1romszor edzek, ma 45 perc kondi volt"));
+        assertEquals("1d+0: 1\u00d7futas/60",
+                summary("minden reggel futok 5 km-t, de ma 10 km-t futottam"));
+    }
+
 }

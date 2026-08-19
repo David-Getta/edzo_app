@@ -3849,6 +3849,12 @@ public final class Activities {
                 // „minden másnap futok" mai, negyvenöt perces futás lett.
                 "minden masnap", "minden masodik nap", "minden heten",
                 "minden hetvegen", "hetvegente",
+                // A NAPSZAKKAL mondott szokás ugyanaz a rend – a
+                // tagmondat-kitakaró már régóta ismerte, ez a lista nem: a
+                // „minden reggel futok 5 km-t" mai, öt kilométeres futásként
+                // került a naplóba, egy heti rend leírásából.
+                "minden reggel", "minden este", "minden delutan",
+                "minden delelott", "minden hajnalban", "minden ebedszunet",
                 "mostanaban", "manapsag"})
             if (s.contains(w)) { often = true; break; }
         if (often)
@@ -3858,7 +3864,14 @@ public final class Activities {
                     // „minden hétvégén túrázok" nem egy megtörtént túra.
                     "turazok", "uszok", "biciklizek", "bringazok", "focizok",
                     "kondizok", "sportolok", "mozgok", "setalok", "kocogok",
-                    "evezek", "boxolok", "tancolok", "korcsolyazok"})
+                    "evezek", "boxolok", "tancolok", "korcsolyazok",
+                    // TÖBBES számban ugyanez a rend: a „hétvégente túrázunk"
+                    // egy hetven kilométeres hétként ment be – hét napra
+                    // elosztott, kilencvenperces túraként.
+                    "futunk", "edzunk", "turazunk", "uszunk", "biciklizunk",
+                    "bringazunk", "focizunk", "kondizunk", "sportolunk",
+                    "mozgunk", "setalunk", "kocogunk", "evezunk",
+                    "tancolunk", "jarunk", "megyunk"})
                 if (s.matches(".*(?<![a-z])" + w + "(?![a-z]).*")) return true;
         // A HETI BEOSZTÁS is a rend leírása: a „push pull legs, heti 6 edzés"
         // hatosa a rendszer neve mellett álló ütem, nem hat megtörtént edzés –
