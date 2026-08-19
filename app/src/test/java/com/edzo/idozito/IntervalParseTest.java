@@ -923,4 +923,19 @@ public class IntervalParseTest {
                 "4x4 perc intervall 3 perc pihen\u0151vel").rounds);
     }
 
+    /**
+     * A MAKR\u00d3-h\u00e1rmas nem ritmus: a „makr\u00f3k: 180/220/70" feh\u00e9rje,
+     * sz\u00e9nhidr\u00e1t \u00e9s zs\u00edr grammban – eddig sz\u00e1zhatvan m\u00e1sodperc munka \u00e9s
+     * k\u00e9tsz\u00e1zh\u00fasz pihen\u0151 id\u0151z\u00edt\u0151-tervet aj\u00e1nlott r\u00e1 az app. A
+     * munka-pihen\u0151 p\u00e1r K\u00c9T sz\u00e1mb\u00f3l \u00e1ll.
+     */
+    @Test
+    public void aMacroTripleIsNotARhythm() {
+        assertNull(IntervalParse.parse("makr\u00f3k: 180/220/70"));
+        assertNull(IntervalParse.parse("180/220/70"));
+        // A val\u00f3di munka/pihen\u0151 p\u00e1r v\u00e1ltozatlan.
+        assertEquals(3, IntervalParse.parse("3 k\u00f6r 40/20").rounds);
+        assertEquals(8, IntervalParse.parse("40/20 tabata").rounds);
+    }
+
 }

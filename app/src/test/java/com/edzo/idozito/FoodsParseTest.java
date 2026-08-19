@@ -1772,4 +1772,16 @@ public class FoodsParseTest {
                 hits("ettem egy joghurtot, de nem voltam \u00e9hes").get(0).grams, 0.01);
     }
 
+    /**
+     * A MAKR\u00d3-FEJL\u00c9C nem \u00e9tel: a „feh\u00e9rje/sz\u00e9nhidr\u00e1t/zs\u00edr 180/220/70"
+     * sorb\u00f3l t\u00edz gramm OLAJ ker\u00fclt az \u00e9tkez\u00e9snapl\u00f3ba – a „zs\u00edr" itt a
+     * t\u00e1p\u00e9rt\u00e9k neve, nem a serpeny\u0151ben l\u00e9v\u0151 zsiradék.
+     */
+    @Test
+    public void aMacroHeaderIsNotFood() {
+        assertTrue(hits("feh\u00e9rje/sz\u00e9nhidr\u00e1t/zs\u00edr 180/220/70").isEmpty());
+        // A mag\u00e1ban \u00e1ll\u00f3 zs\u00edr marad val\u00f3di \u00e9tel.
+        assertFalse(hits("10 g zs\u00edr").isEmpty());
+    }
+
 }

@@ -2593,6 +2593,15 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A MAKRÓ-FEJLÉC nem étel: a „fehérje/szénhidrát/zsír 180/220/70"
+        // sorból tíz gramm OLAJ került az étkezésnaplóba – a „zsír" szava a
+        // tápérték neve itt, nem a serpenyőben lévő zsiradék. Csak a
+        // perjellel összefűzött fejlécet takarjuk ki; a magában álló „zsír"
+        // marad valódi étel.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(feh[eé]rje|sz[eé]nhidr[aá]t"
+                + "|zs[ií]r|carb|protein|fat)"
+                + "(\\s?/\\s?(feh[eé]rje|sz[eé]nhidr[aá]t|zs[ií]r|carb|protein"
+                + "|fat))+", " ");
         // A VÍZ HŐFOKA nem elfogyasztott víz: az „úszás 30 perc; víz 20 fok"
         // és „a víz 24 fokos volt" mellé eddig két és fél deci ivóvíz került
         // a naplóba – a medence hőmérsékletéből. A fok szava dönt.

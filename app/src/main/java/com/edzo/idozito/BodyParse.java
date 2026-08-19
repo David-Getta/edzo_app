@@ -287,6 +287,12 @@ public final class BodyParse {
         // senki nem grammban ír. (A „kg" g-je nem esik ide: betű előzi meg.)
         q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,4}([.,]\\d+)?\\s?"
                 + "(?<![\\p{L}])(?:g|gramm)(?![\\p{L}])", " ");
+        // A PERJELES HÁRMAS sem mérés: a „180/220/70" makró-sor (fehérje,
+        // szénhidrát, zsír grammban) hetven kilós méréssé vált a
+        // súlytrendben – az utolsó tagjából. A testsúlyt senki nem írja le
+        // két másik szám mögé perjellel.
+        q = q.replaceAll("(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}\\s?/\\s?"
+                + "\\d{1,3}(?![\\d,.])", " ");
         // A HELYESBÍTÉS tagadott száma nem mérés, de nem is némítja el a
         // mondatot: a „78,2 kg volt, nem 87,2" hetvennyolc kilója az igazi –
         // eddig az egész bejegyzés elveszett, vagyis a nap mérése kimaradt

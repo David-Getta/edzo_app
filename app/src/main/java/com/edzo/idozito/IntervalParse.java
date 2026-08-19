@@ -120,6 +120,13 @@ public final class IntervalParse {
         // app – száznegyven másodperc munka, kilencvenöt pihenő.
         if (s.contains("vernyomas") || s.contains("ver nyomas")
                 || s.contains("higanymilli") || s.contains("hgmm")) return null;
+        // A MAKRÓ-hármas sem ritmus: a „makrók: 180/220/70" fehérje,
+        // szénhidrát és zsír grammban – eddig százhatvan másodperc munka és
+        // kétszázhúsz pihenő időzítő-tervet ajánlott rá az app. A munka-
+        // pihenő pár KÉT számból áll; ahol három van egymás után perjellel,
+        // ott arányról van szó, nem szakaszokról.
+        if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}\\s?/\\s?"
+                + "\\d{1,3}(?![\\d,.]).*")) return null;
         // Az ÉTKEZÉSI IDŐPONTOK sora sem ritmus: a „7:00 zabkása, 12:30
         // csirke rizzsel" órajelei munka/pihenő párnak látszottak, és
         // időzítő-tervet ajánlott rájuk az app.

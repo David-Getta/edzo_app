@@ -1022,4 +1022,16 @@ public class BodyParseTest {
         assertEquals(0.0, BodyParse.parse("beteg vagyok, l\u00e1zam van 38,5").kg, 0.01);
     }
 
+    /**
+     * A PERJELES H\u00c1RMAS sem m\u00e9r\u00e9s: a „180/220/70" makr\u00f3-sor utols\u00f3
+     * tagj\u00e1b\u00f3l hetven kil\u00f3s m\u00e9r\u00e9s lett a s\u00falytrendben.
+     */
+    @Test
+    public void aSlashTripleIsNotAWeighIn() {
+        assertEquals(0.0, BodyParse.parse("180/220/70").kg, 0.001);
+        assertEquals(0.0, BodyParse.parse("makr\u00f3k: 180/220/70").kg, 0.001);
+        // A val\u00f3di m\u00e9r\u00e9s v\u00e1ltozatlan.
+        assertEquals(70.0, BodyParse.parse("70 kg vagyok").kg, 0.001);
+    }
+
 }
