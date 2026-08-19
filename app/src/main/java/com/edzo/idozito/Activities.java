@@ -2676,7 +2676,13 @@ public final class Activities {
             if (reps > 0) {
                 boolean local = false;
                 for (int[] m : mins) if (m[0] > h[0] && m[0] < next) local = true;
-                if (!local) minutes = 0;
+                // Az EMOM és az AMRAP kimondott perce az EGÉSZ blokké, akkor
+                // is, ha a mozgásnév előtt áll: az „emom 12 perc, 10
+                // kettlebell swing percenként" tizenkét perce a munka hossza
+                // – eddig az ismétlésszámból becsült öt perc került a
+                // naplóba, vagyis az edzés kétharmada eltűnt. (A többi
+                // ismétlés-mondatnál a távoli idő tényleg másé.)
+                if (!local && !blockLengthSaid(beforeBlank)) minutes = 0;
             }
             // A KÖREDZÉS hossza az EGÉSZ körből jön, és annyiszor, ahány kör
             // van. A „körkörös edzés: 4 kör, 10 fekvőtámasz, 15 guggolás,
@@ -3849,6 +3855,11 @@ public final class Activities {
                 "ra", "oda", "vissza", "ossze", "szet", "vegig", "korbe"})
             if (v.equals(pre)) return true;
         return false;
+    }
+
+    /** Az EMOM és az AMRAP kimondott perce az EGÉSZ blokk hossza. */
+    private static boolean blockLengthSaid(String s) {
+        return s != null && s.matches("(?s).*(?<![a-z])(emom|e2mom|amrap)\\w*.*");
     }
 
     /** Van-e a mondatban kilóval terhelt sorozat (rúd, kézisúlyzó, gép). */

@@ -5817,4 +5817,23 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/5", summary("20 kettlebell swing \u00e9s 10 burpee"));
     }
 
+    /**
+     * Az EMOM \u00e9s az AMRAP kimondott perce az EG\u00c9SZ blokk\u00e9: az „emom 12
+     * perc, 10 kettlebell swing percenk\u00e9nt" tizenk\u00e9t perce a munka
+     * hossza – eddig az ism\u00e9tl\u00e9ssz\u00e1mb\u00f3l becs\u00fclt \u00f6t perc ker\u00fclt a
+     * napl\u00f3ba, vagyis az edz\u00e9s k\u00e9tharmada elt\u0171nt.
+     */
+    @Test
+    public void theStatedEmomLengthBeatsTheRepEstimate() {
+        assertEquals("1d+0: 1\u00d7kondi/12",
+                summary("emom 12 perc, 10 kettlebell swing percenk\u00e9nt"));
+        assertEquals("1d+0: 1\u00d7kondi/20",
+                summary("emom 20 perc, 5 fekv\u0151t\u00e1masz percenk\u00e9nt"));
+        assertEquals("1d+0: 1\u00d7kondi/15",
+                summary("amrap 15 perc: 5 h\u00faz\u00f3dzkod\u00e1s, 10 fekv\u0151t\u00e1masz, 15 guggol\u00e1s"));
+        // A T\u00c1VOLI id\u0151 m\u00e1s mondatban tov\u00e1bbra sem az ism\u00e9tl\u00e9ses t\u00e9tel\u00e9.
+        assertEquals("1d+0: 1\u00d7futas/50, 1\u00d7kondi/20",
+                summary("10 km fut\u00e1s 50 perc alatt \u00e9s 100 fekv\u0151t\u00e1masz"));
+    }
+
 }
