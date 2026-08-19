@@ -71,6 +71,16 @@ public final class Pulse {
             // távolabbról a szám már máshoz tartozhatna.
             java.util.regex.Pattern.compile(
                     "(\\d{2,3})\\s?-?[ae]?s?\\s?nyugalmi(?![a-z])"),
+            // Az ÉBREDÉSKOR mért érték nyugalmi pulzus akkor is, ha a szám a
+            // pulzus-szó ELŐTT áll: a „reggel ébredéskor 48 volt a pulzusom,
+            // edzés után 145" mérése némán elveszett – a „nyugalmi" szót
+            // ugyanis nem mondta ki senki, pedig az ébredés maga a nyugalom.
+            // Az edzés utáni érték nem eshet ide: az az ébredés-szó UTÁN,
+            // de a pulzus-szó után áll.
+            java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:ebredeskor|ebredes utan|felebredve|"
+                            + "felkeleskor|kelesnel)[^0-9]{0,14}?(\\d{2,3})"
+                            + "[^0-9]{0,16}?pulzus"),
     };
 
     /**
@@ -116,7 +126,11 @@ public final class Pulse {
         // A REGGELI pulzus is nyugalmi mérés: a „reggel 52-es pulzus,
         // délben futás 8 km" ötvenkettője eddig elveszett, mert a futás
         // szava az egész mondatot edzésnek minősítette.
+        // Az ÉBREDÉSKOR szó ugyanilyen erős: a „reggel ébredéskor 48 volt a
+        // pulzusom, edzés után 145" mérése az edzés szava miatt némán
+        // elveszett – pedig az ébredés maga a nyugalmi állapot.
         if (!s.contains("nyugalmi") && !s.contains("pihenopulzus")
+                && !s.contains("ebredeskor") && !s.contains("ebredes utan")
                 && !s.matches(".*(?<![a-z])reggeli?\\s[^,;.]{0,10}?pulzus.*"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})

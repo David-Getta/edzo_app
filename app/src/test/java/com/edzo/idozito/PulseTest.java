@@ -239,4 +239,19 @@ public class PulseTest {
         assertEquals(52, Pulse.parse("nyugalmi pulzus 52, 80,4 kg"));
     }
 
+
+    /**
+     * Az \u00c9BRED\u00c9SKOR m\u00e9rt \u00e9rt\u00e9k nyugalmi pulzus akkor is, ha a sz\u00e1m a
+     * pulzus-sz\u00f3 EL\u0150TT \u00e1ll: a \u201ereggel \u00e9bred\u00e9skor 48 volt a pulzusom, edz\u00e9s
+     * ut\u00e1n 145" m\u00e9r\u00e9se n\u00e9m\u00e1n elveszett.
+     */
+    @Test
+    public void theWakeupReadingIsARestingPulse() {
+        assertEquals(48, Pulse.parse("Reggel \u00e9bred\u00e9skor 48 volt a pulzusom, "
+                + "edz\u00e9s ut\u00e1n 145."));
+        assertEquals(48, Pulse.parse("\u00c9bred\u00e9s ut\u00e1n 48 a pulzusom."));
+        // A kimondott nyugalmi alak marad.
+        assertEquals(48, Pulse.parse("Nyugalmi pulzus 48."));
+    }
+
 }

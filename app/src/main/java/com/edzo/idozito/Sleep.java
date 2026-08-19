@@ -172,11 +172,16 @@ public final class Sleep {
             // Az ALVÁS-SZÓ UTÁN álló óraszám is hossz: az „alvás 7 óra
             // volt" szórendjét eddig egyik minta sem fedte – a szám mindig
             // a szó ELŐTT állt („7 óra alvás").
+            // A PERC is hozzátartozik: a „Garmin: 12500 lépés, alvás 7 óra
+            // 20 perc" hét órát írt be – a húsz perc minden éjszaka
+            // elveszett, mert ez az ág az óra-számnál megállt.
             cm = java.util.regex.Pattern
                     .compile("(?<![a-z])(?:alvas\\w*|sleep)\\s?:?\\s?"
-                            + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?ora").matcher(s);
+                            + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?ora\\w*"
+                            + "(?:\\s?(?:es\\s+)?(\\d{1,2})\\s?perc)?").matcher(s);
             if (cm.find()) {
                 double v = Double.parseDouble(cm.group(1).replace(',', '.'));
+                if (cm.group(2) != null) v += Integer.parseInt(cm.group(2)) / 60.0;
                 if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
             }
             // Óra-jeles rövidítés: „aludtam 7h30", „7h 30m". Az óra-appok és a

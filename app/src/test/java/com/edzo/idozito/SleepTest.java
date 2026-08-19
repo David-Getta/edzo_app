@@ -440,4 +440,19 @@ public class SleepTest {
         assertEquals(7.0, Sleep.parse("alutam 7 \u00f3r\u00e1t"), 0.01);
     }
 
+
+    /**
+     * A PERC is hozz\u00e1tartozik: a \u201eGarmin: 12500 l\u00e9p\u00e9s, alv\u00e1s 7 \u00f3ra 20 perc"
+     * h\u00e9t \u00f3r\u00e1t \u00edrt be \u2013 a h\u00fasz perc minden \u00e9jszaka elveszett, mert az
+     * alv\u00e1s-sz\u00f3 UT\u00c1NI \u00e1g az \u00f3ra-sz\u00e1mn\u00e1l meg\u00e1llt.
+     */
+    @Test
+    public void theMinutesAfterTheSleepWordCount() {
+        assertEquals(7.3, Sleep.parse("alv\u00e1s 7 \u00f3ra 20 perc"), 0.01);
+        assertEquals(7.3, Sleep.parse("Garmin: 2450 kcal akt\u00edv kal\u00f3ria, "
+                + "12500 l\u00e9p\u00e9s, 68 \u00e1tlagpulzus, alv\u00e1s 7 \u00f3ra 20 perc."), 0.01);
+        // A perc n\u00e9lk\u00fcli alak marad.
+        assertEquals(7.0, Sleep.parse("alv\u00e1s 7 \u00f3ra volt"), 0.01);
+    }
+
 }
