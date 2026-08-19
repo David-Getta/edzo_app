@@ -6016,4 +6016,24 @@ public class ActivitiesParseTest {
         assertEquals(40, IntervalParse.parse("3 k\u00f6r 40/20").work);
     }
 
+    /**
+     * A felsorol\u00e1s EGY SORBAN is felsorol\u00e1s: az „1. 5 km fut\u00e1s, 2. 30 perc
+     * kondi" kettes\u00e9t eddig csak sor elej\u00e9n ismert\u00fck fel, vessz\u0151vel vagy
+     * perjellel \u00edrva viszont darabsz\u00e1m lett bel\u0151le – K\u00c9T kondiedz\u00e9s egy
+     * helyett.
+     */
+    @Test
+    public void anInlineListMarkerIsNotACount() {
+        assertEquals("1d+0: 1\u00d7futas/30, 1\u00d7kondi/30",
+                summary("1. 5 km fut\u00e1s, 2. 30 perc kondi"));
+        assertEquals("1d+0: 1\u00d7futas/30, 1\u00d7kondi/30",
+                summary("1. 5 km fut\u00e1s / 2. 30 perc kondi"));
+        // A VAL\u00d3DI darabsz\u00e1m \u00e9rintetlen.
+        assertEquals("1d+0: 2\u00d7futas/45, 3\u00d7tura/90",
+                summary("reggel 2 fut\u00e1s, d\u00e9lut\u00e1n 3 s\u00e9ta"));
+        // \u00c9s a tizedes vessz\u0151 sem s\u00e9r\u00fcl.
+        assertEquals(2.5, Activities.parse("fut\u00e1s 2,5 km, \u00fasz\u00e1s 1,5 km")
+                .plans.get(0).km, 0.001);
+    }
+
 }

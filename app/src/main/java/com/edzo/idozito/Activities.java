@@ -5642,6 +5642,15 @@ public final class Activities {
             // gazdátlanul maradt, és a kondi a szokásos hatvan percét kapta.
             if (m.start(1) > 0) sb.setCharAt(m.start(1), ',');
         }
+        // A felsorolás EGY SORBAN is felsorolás: az „1. 5 km futás, 2. 30
+        // perc kondi" kettesét eddig csak sor elején ismertük fel, vesszővel
+        // vagy perjellel írva viszont darabszám lett belőle – KÉT kondiedzés
+        // egy helyett. A sorszám utáni SZÁM zárja ki a tizedes törtet: a
+        // „2,5 km" vesszős, nem pontos.
+        m = java.util.regex.Pattern
+                .compile("(?<=[,;/])[ \\t]*(\\d{1,2})[.)][ \\t]+(?=\\d)").matcher(text);
+        while (m.find())
+            for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
         m = java.util.regex.Pattern
                 .compile("(?i)(?<![a-zöüó])nap\\s?(\\d{1,2})\\s*[:.]").matcher(text);
         while (m.find())
