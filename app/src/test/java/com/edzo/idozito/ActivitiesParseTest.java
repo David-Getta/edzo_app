@@ -5961,4 +5961,23 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7futas/30", summary("reggel futottam 5 km-t"));
     }
 
+    /**
+     * K\u00c9T napszak, kimondott „is"-sel: a „reggel \u00e9s este is edzettem" EGY
+     * negyven\u00f6t perces bejegyz\u00e9s lett, vagyis a nap fele elt\u0171nt a
+     * napl\u00f3b\u00f3l, a statisztik\u00e1b\u00f3l \u00e9s az XP-b\u0151l. Mennyis\u00e9g n\u00e9lk\u00fcl eddig
+     * egyik \u00e1g sem sz\u00e1molta k\u00e9tszer.
+     */
+    @Test
+    public void twiceADayCountsTwiceWithoutAnAmount() {
+        assertEquals(2, Activities.parse("reggel \u00e9s este is edzettem")
+                .plans.get(0).count);
+        assertEquals(2, Activities.parse("reggel \u00e9s este is futottam")
+                .plans.get(0).count);
+        assertEquals(2, Activities.parse("d\u00e9lel\u0151tt \u00e9s d\u00e9lut\u00e1n is futottam")
+                .plans.get(0).count);
+        // Az „is" a kulcs: k\u00e9t napszak \u00f6nmag\u00e1ban nem k\u00e9t edz\u00e9s.
+        assertEquals(1, Activities.parse("reggel f\u00e1radt voltam, este edzettem")
+                .plans.get(0).count);
+    }
+
 }

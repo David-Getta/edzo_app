@@ -2814,6 +2814,12 @@ public final class Activities {
                 // időtartamnál értettük, a távnál nem – a napi tíz kilométer
                 // fele eltűnt a naplóból, a statisztikából és az XP-ből.
                 out.set(0, new Plan(p.kind, 2, p.minutes, p.km));
+            } else if (mins.isEmpty() && kms.isEmpty() && bothDayParts(s)) {
+                // MENNYISÉG nélkül is két edzés: a „reggel és este is
+                // edzettem" EGY negyvenöt perces bejegyzés lett, vagyis a
+                // nap fele eltűnt. A kimondott „is" a kulcs – a „reggel
+                // fáradt voltam, este edzettem" továbbra is egy edzés.
+                out.set(0, new Plan(p.kind, 2, p.minutes, p.km));
             }
         }
 
@@ -2979,6 +2985,11 @@ public final class Activities {
                 if (n <= 1)
                     for (int[] mu : mults)
                         if (mu[0] > p && mu[1] > 1) { n = Math.min(50, mu[1]); break; }
+                // KÉT napszak, kimondott „is"-sel: a „reggel és este is
+                // edzettem" EGY bejegyzés lett, vagyis a nap fele eltűnt. A
+                // megnevezett sportágnál ez a szabály fentebb már él; itt, a
+                // sportnév nélküli „edzés" ágán hiányzott.
+                if (n <= 1 && bothDayParts(s)) n = 2;
                 // Az „alkalom" csak SZÁMMAL edzés. Magában a leghétköznapibb
                 // magyar főnév: a „születésnapi alkalomból tortát ettem"
                 // mondatból eddig negyvenöt perc mozgás lett – az edzés
@@ -3941,6 +3952,19 @@ public final class Activities {
                 "ra", "oda", "vissza", "ossze", "szet", "vegig", "korbe"})
             if (v.equals(pre)) return true;
         return false;
+    }
+
+    /**
+     * KÉT napszak, kimondott „is"-sel: „reggel és este is edzettem".
+     *
+     * A puszta napszak-számolás kevés: a „reggel fáradt voltam, este
+     * edzettem" is két napszakot említ, mégis egy edzés. Az „is" viszont
+     * épp azt mondja ki, hogy MINDKETTŐKOR megtörtént.
+     */
+    private static boolean bothDayParts(String s) {
+        String dp = "(?:reggel|delelott|delben|delutan|este|ejjel|hajnalban)";
+        return s.matches("(?s).*(?<![a-z])" + dp + "\\s+(?:is\\s+)?(?:es|meg)\\s+"
+                + dp + "\\s+is(?![a-z]).*");
     }
 
     /** Az EMOM és az AMRAP kimondott perce az EGÉSZ blokk hossza. */
