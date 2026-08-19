@@ -3292,6 +3292,25 @@ public final class Foods {
             if (piece > 0) grams[k] = piece;
         }
         for (int k = 0; k < foods.size(); k++) out.add(new Hit(foods.get(k), grams[k]));
+        // A NAPI VÍZ több részletben fogy: az „1 liter víz reggel, 1 liter
+        // délután" EGY litert írt a naplóba, mert egy étel a mondatban
+        // egyszer szerepelhet – a napi vízcél így félig telt meg abból, ami
+        // valójában megvolt. Csak akkor összegzünk, ha a mondat EGYETLEN
+        // étele a víz: ott minden kimondott térfogat csak víz lehet.
+        if (out.size() == 1 && out.get(0).food.name.startsWith("Víz")) {
+            double sum = 0;
+            java.util.regex.Matcher vm = java.util.regex.Pattern
+                    .compile("(?<![\\d,.])(\\d{1,4}(?:[.,]\\d{1,2})?)\\s?"
+                            + "(liter|l|dl|deci|ml)(?![\\p{L}])").matcher(q);
+            while (vm.find()) {
+                double v = Double.parseDouble(vm.group(1).replace(',', '.'));
+                String u = vm.group(2);
+                sum += u.equals("ml") ? v
+                        : u.equals("dl") || u.equals("deci") ? v * 100 : v * 1000;
+            }
+            if (sum > out.get(0).grams && sum <= 8000)
+                out.set(0, new Hit(out.get(0).food, sum));
+        }
         // „…de csak a felét ettem meg": a hátravetett tört az egész étkezésre
         // vonatkozik. Csak egyetlen ételnél merjük alkalmazni – többnél nem
         // tudni, melyikre gondolt.

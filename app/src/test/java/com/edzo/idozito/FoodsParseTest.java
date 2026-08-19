@@ -1834,4 +1834,25 @@ public class FoodsParseTest {
         assertEquals(300.0, hits("dupla adag csirkemell").get(0).grams, 0.01);
     }
 
+    /**
+     * A NAPI V\u00cdZ t\u00f6bb r\u00e9szletben fogy: az „1 liter v\u00edz reggel, 1 liter
+     * d\u00e9lut\u00e1n" EGY litert \u00edrt a napl\u00f3ba, mert egy \u00e9tel a mondatban
+     * egyszer szerepelhet – a napi v\u00edzc\u00e9l \u00edgy f\u00e9lig telt meg abb\u00f3l, ami
+     * val\u00f3j\u00e1ban megvolt.
+     */
+    @Test
+    public void waterDrunkInPartsAddsUp() {
+        assertEquals(2000.0, hits("1 liter v\u00edz reggel, 1 liter d\u00e9lut\u00e1n")
+                .get(0).grams, 0.01);
+        assertEquals(500.0, hits("2 dl v\u00edz reggel \u00e9s 3 dl v\u00edz este")
+                .get(0).grams, 0.01);
+        assertEquals(1000.0, hits("500 ml v\u00edz edz\u00e9s alatt \u00e9s 500 ml ut\u00e1na")
+                .get(0).grams, 0.01);
+        // Egyetlen adag v\u00e1ltozatlan, \u00e9s m\u00e1s \u00e9tel mellett nem \u00f6sszegz\u00fcnk.
+        assertEquals(2000.0, hits("megittam 2 liter vizet ma").get(0).grams, 0.01);
+        List<Foods.Hit> h = hits("2 dl tej \u00e9s 1 liter v\u00edz");
+        assertEquals(2, h.size());
+        assertEquals(1000.0, h.get(1).grams, 0.01);
+    }
+
 }
