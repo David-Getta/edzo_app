@@ -6093,4 +6093,27 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    /**
+     * Csak az „\u00c9S" tud k\u00e9t mozg\u00e1st elv\u00e1lasztani: sz\u00f3k\u00f6zzel \u00edrva az „1 \u00f3ra
+     * 5 perc" mindig EGY id\u0151tartam. A „szombaton 25 km bringa 1 \u00f3ra 5 perc,
+     * vas\u00e1rnap 12 km t\u00fara 3 \u00f3ra" mondatban a m\u00e1sik mozg\u00e1s neve blokkolta az
+     * \u00f6sszevon\u00e1st: a bringa hatvan percet kapott, az \u00d6T PERC a t\u00far\u00e1hoz
+     * v\u00e1ndorolt, a t\u00fara h\u00e1rom \u00f3r\u00e1ja meg elveszett – egy h\u00e1rom\u00f3r\u00e1s hegyi
+     * t\u00fara \u00d6T PERCK\u00c9NT ment a napl\u00f3ba.
+     */
+    @Test
+    public void anHourAndMinutesIsOneDurationNextToAnotherWorkout() {
+        Activities.Parsed p = Activities.parse(
+                "szombaton 25 km bringa 1 \u00f3ra 5 perc, vas\u00e1rnap 12 km t\u00fara 3 \u00f3ra");
+        assertEquals(2, p.plans.size());
+        assertEquals(65, p.plans.get(0).minutes);
+        assertEquals(180, p.plans.get(1).minutes);
+        assertEquals("1d+0: 1\u00d7futas/80, 1\u00d7kondi/45",
+                summary("fut\u00e1s 1 \u00f3ra 20 perc, kondi 45 perc"));
+        // Az „\u00c9S" k\u00e9t mozg\u00e1s k\u00f6z\u00f6tt tov\u00e1bbra is elv\u00e1laszt.
+        assertEquals("1d+0: 1\u00d7kondi/60, 1\u00d7futas/30",
+                summary("kondi 1 \u00f3ra \u00e9s 30 perc fut\u00e1s"));
+        assertEquals("1d+0: 1\u00d7futas/90", summary("1 \u00f3ra \u00e9s 30 perc fut\u00e1s"));
+    }
+
 }

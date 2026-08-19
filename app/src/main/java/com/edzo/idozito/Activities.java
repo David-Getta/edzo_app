@@ -5598,7 +5598,16 @@ public final class Activities {
             // el, nem egy időtartam két felét. A jel az, hogy az első szám
             // ELŐTT is, a második UTÁN is áll mozgásforma – az „1 óra és 30
             // perc futás" előtt nem áll semmi, az tényleg másfél óra futás.
-            if (kindWordIn(s, 0, a[0]) && kindWordIn(s, b[2], s.length())) continue;
+            // …de csak az „ÉS" tud két mozgást elválasztani. Szóközzel írva
+            // az „1 óra 5 perc" mindig EGY időtartam – magyarul senki nem
+            // ért alatta két dolgot. A „szombaton 25 km bringa 1 óra 5 perc,
+            // vasárnap 12 km túra 3 óra" mondatban a másik mozgás neve
+            // blokkolta az összevonást: a bringa hatvan percet kapott, az
+            // ÖT PERC a túrához vándorolt, a túra három órája meg elveszett
+            // – egy háromórás hegyi túra öt percként ment a naplóba.
+            if (gap.equals("es")
+                    && kindWordIn(s, 0, a[0])
+                    && kindWordIn(s, b[2], s.length())) continue;
             out.set(i, new int[]{a[0], a[1] + b[1], b[2], 0});
             out.remove(i + 1);
         }
