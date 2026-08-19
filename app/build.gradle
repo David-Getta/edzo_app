@@ -15,7 +15,7 @@ android {
         // A CI a VERSION_CODE env-változóból növekvő értéket ad, hogy az
         // automatikus frissítés (Obtainium/Android) minden buildnél működjön.
         versionCode System.getenv('VERSION_CODE') ? System.getenv('VERSION_CODE').toInteger() : 3
-        versionName '113.42'
+        versionName '113.43'
     }
 
     compileOptions {

@@ -959,4 +959,34 @@ public class BodyParseTest {
         assertEquals(78, BodyParse.parse("nem 80 kg vagyok, hanem 78").kg, 0.01);
     }
 
+    /**
+     * A TEGNAPI sz\u00e1m a tegnapi, az \u00e1rva k\u00f6t\u0151sz\u00f3 meg nem adat: a „ma
+     * reggel 82,3 kg, de tegnap 82,9 volt" k\u00e9t sz\u00e1ma k\u00f6z\u00fcl EGYIK sem
+     * ker\u00fclt a napl\u00f3ba – a mai m\u00e9r\u00e9s is elveszett a tegnapi mellett.
+     */
+    @Test
+    public void todaysNumberWinsOverYesterdays() {
+        assertEquals(82.3, BodyParse.parse(
+                "ma reggel 82,3 kg de tegnap 82,9 volt").kg, 0.001);
+        assertEquals(82.3, BodyParse.parse(
+                "ma reggel 82,3 kg tegnap 82,9 kg").kg, 0.001);
+        // A puszta k\u00f6t\u0151sz\u00f3 sem n\u00e9m\u00edtja el a m\u00e9r\u00e9st.
+        assertEquals(82.3, BodyParse.parse("ma reggel 82,3 kg de 82,9 volt").kg, 0.001);
+        // A MAGÁBAN \u00e1ll\u00f3 tegnapi m\u00e9r\u00e9s marad, ami volt.
+        assertEquals(82.9, BodyParse.parse("tegnap 82,9 kg volt").kg, 0.001);
+    }
+
+    /**
+     * A V\u00c1GY a saj\u00e1t tagmondata, vessz\u0151 n\u00e9lk\u00fcl is: a „60 kg vagyok
+     * szeretn\u00e9k 65-\u00f6t" mondatot az eg\u00e9sz mondatra kiterjed\u0151 tilt\u00e1s
+     * eln\u00e9m\u00edtotta, \u00e9s a MAI m\u00e9r\u00e9s is elveszett a v\u00e1ggyal egy\u00fctt.
+     */
+    @Test
+    public void theWishDoesNotSwallowTheMeasurement() {
+        assertEquals(60.0, BodyParse.parse("60 kg vagyok szeretn\u00e9k 65-\u00f6t").kg, 0.001);
+        // A puszta v\u00e1gy tov\u00e1bbra sem m\u00e9r\u00e9s.
+        assertEquals(0.0, BodyParse.parse("szeretn\u00e9k 75 kg lenni").kg, 0.001);
+        assertEquals(0.0, BodyParse.parse("a c\u00e9l 75 kg").kg, 0.001);
+    }
+
 }

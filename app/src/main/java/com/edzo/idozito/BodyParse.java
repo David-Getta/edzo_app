@@ -247,6 +247,18 @@ public final class BodyParse {
                 + "(?![a-z])[^,;.\\d]{0,12}?"
                 + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
                 + "(?:kg|kilo\\w*|cm|centi\\w*|%|szazalek)?\\s?volt(?![a-z])", "");
+        // A TEGNAPI szám a tegnapi: a „ma reggel 82,3 kg de tegnap 82,9 volt"
+        // két száma közül eddig EGYIK sem került a naplóba – a mai mérés is
+        // elveszett a tegnapi mellett. A fenti szabály csak a hetekben-
+        // hónapokban mért múltat ismerte, pedig a mérleget naponta nézik.
+        // Csak akkor vágunk, ha a tegnapi szám ELŐTT áll egy mai mérés –
+        // a magában álló „tegnap 82,9 kg volt" mondat marad, ami volt.
+        if (s.matches("(?s).*\\d\\s?(?:kg|kilo|cm|centi|%|szazalek).*"
+                + "(?<![a-z])(?:tegnap|tegnapelott|multkor)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:tegnapelott|tegnap|multkor)(?![a-z])"
+                    + "[^,;.\\d]{0,12}?\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                    + "(?:(?:kg|kilo|cm|centi|%|szazalek)\\w*|volt(?![a-z]))"
+                    + "(?:\\s?volt(?![a-z]))?", "");
         return s;
     }
 
@@ -385,6 +397,13 @@ public final class BodyParse {
         // lettem, végre 80 alá mentem" nyolcvana ugyanígy: a küszöb a másik
         // tagmondaté, a hetvennyolc a mérleg száma. Ha minden tagmondat
         // tiltott, az egész mondat az – a „a cél 75 kg" továbbra sem mérés.
+        // A VÁGY a saját tagmondata, vessző nélkül is: a „60 kg vagyok
+        // szeretnék 65-öt" mondatot – ahogy a legtöbben írják – az egész
+        // mondatra kiterjedő tiltás elnémította, és a MAI mérés is elveszett
+        // a vággyal együtt. A tiltó szó elé határt teszünk, így a mérés
+        // tagmondata megmarad.
+        s = s.replaceAll("(?<=[a-z0-9]) (?=(?:szeretnek|szeretnem|akarok|"
+                + "celom)(?![a-z]))", ", ");
         boolean anyBlocked = false;
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {
@@ -782,6 +801,13 @@ public final class BodyParse {
                         // A BÜSZKESÉG szava is csak kíséret: a „77,7 kg –
                         // eddigi legjobb" mérés, a jelző nem veszi el.
                         + "eddigi|legjobb|rekord|csucs|uj|vegre|kerek|"
+                        // A PUSZTA KÖTŐSZÓ nem adat: a „ma reggel 82,3 kg, de
+                        // tegnap 82,9 volt" mondatból a tegnapi szám kivágása
+                        // után egyetlen árva „de" maradt – és ettől a MAI
+                        // mérés is kiesett. A kötőszó és a hangulatszó nem
+                        // mond ellent semminek, csak ott áll a mérés mellett.
+                        + "de|es|viszont|azonban|pedig|illetve|mar|csak|"
+                        + "sajnos|szerencsere|amugy|egyebkent|szoval|"
                         // A „pont", a „kereken" és a „kg-nál tartok" is csak
                         // kíséret: a „reggel éhgyomorra 68 kg pont" és a
                         // „82 kg-nál tartok" mérés – eddig mindkettő kiesett.
