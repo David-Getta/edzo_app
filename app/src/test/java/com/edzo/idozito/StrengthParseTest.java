@@ -1664,4 +1664,27 @@ public class StrengthParseTest {
                 "f\u00e1jt a v\u00e1llam, m\u00e9gis fekvenyom\u00e1s 3x8 60 kg").size());
     }
 
+
+    /**
+     * A SZ\u00d3K\u00d6Z\u00d6S szorz\u00f3jel is \u00f6sszek\u00f6t: a \u201e3 x 12 bicepsz, 3 x 15 tricepsz"
+     * m\u00e1sodik t\u00e9tel\u00e9n\u00e9l a tizen\u00f6t\u00f6s el\u00e9 ker\u00fclt a t\u00e9tel-hat\u00e1r, \u00e9s a h\u00e1rmas
+     * sorozatsz\u00e1m lemaradt r\u00f3la \u2013 a tricepszb\u0151l egyetlen sorozat lett h\u00e1rom
+     * helyett, vagyis a volumen harmada.
+     */
+    @Test
+    public void aSpacedTimesSignKeepsItsSeries() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "Ma 3 x 12 bicepsz 12 kg-mal, \u00e9s 3 x 15 tricepsz k\u00f6t\u00e9len 25 kg.");
+        assertEquals(2, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(3, it.get(1).sets.size());
+        assertEquals(15, it.get(1).sets.get(0).reps);
+        assertEquals(25.0, it.get(1).sets.get(0).weight, 0.01);
+        // A tapad\u00f3 alak \u00e9s a puszta ism\u00e9tl\u00e9s-felsorol\u00e1s v\u00e1ltozatlan.
+        assertEquals(3, StrengthParse.parse("3x10 fekvenyom\u00e1s 60 kg")
+                .get(0).sets.size());
+        assertEquals(3, StrengthParse.parse(
+                "50 guggol\u00e1s 40 fekv\u0151t\u00e1masz 30 hasizom").size());
+    }
+
 }

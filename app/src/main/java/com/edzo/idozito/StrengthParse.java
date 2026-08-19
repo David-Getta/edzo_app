@@ -1297,7 +1297,13 @@ public final class StrengthParse {
         StringBuilder out = new StringBuilder();
         int last = 0;
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d.,x×])(\\d{1,3})\\s+(?=[a-z])").matcher(s);
+                // A SZÓKÖZÖS szorzójel is összeköt: a „3 x 12 bicepsz, 3 x 15
+                // tricepsz" második tételénél a tizenötös elé került a határ,
+                // és a hármas sorozatszám lemaradt róla – a tricepszből
+                // egyetlen sorozat lett három helyett. A tapadó „3x15" alakot
+                // a rövid visszatekintés eddig is védte.
+                .compile("(?<![\\d.,x×])(?<!x\\s)(?<!×\\s)(\\d{1,3})\\s+(?=[a-z])")
+                .matcher(s);
         while (m.find()) {
             if (moveAtStart(s.substring(m.end())) == null) continue;
             if (moveIn(s.substring(0, m.start())) == null) continue;
