@@ -2593,6 +2593,17 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // A TÖRT alakú mennyiség: az „1/2 kg csirkemell" fél kiló – eddig
+        // KÉT kiló lett belőle, mert a perjel előtti egyes elveszett, és a
+        // nevezőt vettük mennyiségnek. Négyszeres adag került a naplóba,
+        // vagyis több mint ezer kalória a semmiből. Csak mértékegység előtt
+        // írjuk át, hogy a munka/pihenő pár és a piramis ne sérüljön.
+        for (String[] fr : new String[][]{{"1/2", "0,5"}, {"1/4", "0,25"},
+                {"3/4", "0,75"}, {"1/3", "0,33"}, {"2/3", "0,67"},
+                {"1/8", "0,125"}})
+            query = query.replaceAll("(?<![\\d,.])" + fr[0].charAt(0) + "\\s?/\\s?"
+                    + fr[0].charAt(2) + "(?=\\s?(?:kg|kil[oó]|dkg|deka|liter|dl|"
+                    + "deci|ml|gramm|g|l)(?![\\p{L}]))", fr[1]);
         // A MAKRÓ-FEJLÉC nem étel: a „fehérje/szénhidrát/zsír 180/220/70"
         // sorból tíz gramm OLAJ került az étkezésnaplóba – a „zsír" szava a
         // tápérték neve itt, nem a serpenyőben lévő zsiradék. Csak a
@@ -3070,6 +3081,13 @@ public final class Foods {
             else if (q.startsWith("gramm", j)) { numPos.add(start); numVal.add(val); i = j + 5; }
             else if (q.startsWith("deci", j)) { numPos.add(start); numVal.add(val * 100); i = j + 4; }
             else if (q.startsWith("dl", j)) { numPos.add(start); numVal.add(val * 100); i = j + 2; }
+            // A HOSSZABB alak előbb: a „300 milliliter víz" az „ml" ágra
+            // esett, a maradék „illiliter" pedig elszakította a számot az
+            // ételtől – kétszázötven grammos alapadag ment be háromszáz
+            // helyett.
+            else if (q.startsWith("milliliter", j)) {
+                numPos.add(start); numVal.add(val); i = j + 10;
+            }
             else if (q.startsWith("ml", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
             // Kiírva is: a puszta „l" ág megköveteli, hogy ne betű kövesse.
             else if (q.startsWith("liter", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 5; }

@@ -1784,4 +1784,30 @@ public class FoodsParseTest {
         assertFalse(hits("10 g zs\u00edr").isEmpty());
     }
 
+    /**
+     * A T\u00d6RT alak\u00fa mennyis\u00e9g: az „1/2 kg csirkemell" f\u00e9l kil\u00f3 – eddig
+     * K\u00c9T kil\u00f3 lett bel\u0151le, mert a perjel el\u0151tti egyes elveszett, \u00e9s a
+     * nevez\u0151t vett\u00fck mennyis\u00e9gnek. N\u00e9gyszeres adag ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void aFractionIsAFraction() {
+        assertEquals(500.0, hits("1/2 kg csirkemell").get(0).grams, 0.01);
+        assertEquals(250.0, hits("1/4 kg t\u00far\u00f3").get(0).grams, 0.01);
+        assertEquals(750.0, hits("3/4 l tej").get(0).grams, 0.01);
+        assertEquals(500.0, hits("1/2 liter tej").get(0).grams, 0.01);
+        // A kii\u0301rt alak v\u00e1ltozatlan.
+        assertEquals(500.0, hits("f\u00e9l kil\u00f3 alma").get(0).grams, 0.01);
+    }
+
+    /**
+     * A HOSSZABB alak el\u0151bb: a „300 milliliter v\u00edz" az „ml" \u00e1gra esett, a
+     * marad\u00e9k „illiliter" pedig elszak\u00edtotta a sz\u00e1mot az \u00e9telt\u0151l –
+     * k\u00e9tsz\u00e1z\u00f6tven grammos alapadag ment be h\u00e1romsz\u00e1z helyett.
+     */
+    @Test
+    public void theSpelledOutMillilitreCounts() {
+        assertEquals(300.0, hits("300 milliliter v\u00edz").get(0).grams, 0.01);
+        assertEquals(300.0, hits("3 deciliter tej").get(0).grams, 0.01);
+    }
+
 }
