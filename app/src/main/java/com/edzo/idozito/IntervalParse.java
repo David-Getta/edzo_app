@@ -356,6 +356,19 @@ public final class IntervalParse {
         if (work <= 0) {
             // Ha csak a pihenőt nevezték meg („egy perc plank, 30 mp pihenő”),
             // a munkaidő az első kimondott idő.
+            //
+            // De ha a mondat EGYETLEN ideje maga a pihenő, a munkaidőt nem
+            // tudjuk: a „10x400 méter 90 mp pihenővel" kilencvenese a
+            // pihenő – munkaidőnek is beírva 90/90-es terv született, aminek
+            // a négyszáz méterhez semmi köze, és a valódi bejegyzés (négy
+            // kilométer futás) mögé szorult. Táv-alapú intervallumnál a
+            // futás a napló, nem egy kitalált időzítő.
+            // (A „5 körönként 1 perc pihenő" marad terv: ott a szakaszt nem
+            // a táv határozza meg, csak épp nincs kimondva.)
+            if (rest > 0 && timeCount(s) < 2
+                    && s.matches("(?s).*\\d{1,2}\\s?[x×]\\s?\\d{2,4}\\s?"
+                            + "(?:kilometer\\w*|meter\\w*|km|m)(?![a-z]).*"))
+                return null;
             work = firstSeconds(s);
             if (rest <= 0 && work > 600) return null;
         }

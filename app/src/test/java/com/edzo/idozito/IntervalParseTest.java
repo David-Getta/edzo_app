@@ -905,4 +905,22 @@ public class IntervalParseTest {
         assertEquals(8, IntervalParse.parse("8 k\u00f6r: 20 mp sprint, 40 mp s\u00e9ta").rounds);
     }
 
+    /**
+     * A T\u00c1V-alap\u00fa intervallum nem id\u0151z\u00edt\u0151: a „10x400 m\u00e9ter 90 mp
+     * pihen\u0151vel" kilencvenese a PIHEN\u0150 – munkaid\u0151nek is be\u00edrva 90/90-es
+     * terv sz\u00fcletett, aminek a n\u00e9gysz\u00e1z m\u00e9terhez semmi k\u00f6ze, \u00e9s a val\u00f3di
+     * bejegyz\u00e9s (n\u00e9gy kilom\u00e9ter fut\u00e1s) m\u00f6g\u00e9 szorult.
+     */
+    @Test
+    public void aDistanceIntervalIsNotATimer() {
+        assertNull(IntervalParse.parse("10x400 m\u00e9ter 90 mp pihen\u0151vel"));
+        assertNull(IntervalParse.parse("6x800 m\u00e9ter 2 perc pihen\u0151vel"));
+        assertNull(IntervalParse.parse("4x1000 m\u00e9ter 3 perc pihen\u0151vel"));
+        // A K\u00d6RSZ\u00c1M \u00e9s a pihen\u0151 t\u00e1v n\u00e9lk\u00fcl marad terv.
+        assertEquals(5, IntervalParse.parse("5 k\u00f6r\u00f6nk\u00e9nt 1 perc pihen\u0151").rounds);
+        // A kimondott munka\u00fcd\u0151 mellett a t\u00e1v sem baj.
+        assertEquals(4, IntervalParse.parse(
+                "4x4 perc intervall 3 perc pihen\u0151vel").rounds);
+    }
+
 }
