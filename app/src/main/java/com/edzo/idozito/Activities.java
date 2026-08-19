@@ -253,6 +253,14 @@ public final class Activities {
                     "burpee", "hasizom", "hasizmoz", "haspres",
                     "jumping jack", "jumpingjack", "mountain climber",
                     "mountainclimber",
+                    // A gyakorlat ANGOL neve ugyanúgy edzésnap: a „3x8
+                    // benchpress 60kg" bekerült az erőnaplóba, de nem lett
+                    // belőle edzés – a nap üresen állt a naptárban. (A
+                    // magyar nevek most kaptak szótövet, ez a párjuk.)
+                    "bench press", "benchpress", "deadlift", "squat",
+                    "pullup", "pull up", "chinup", "chin up", "pushup",
+                    "push up", "leg press", "legpress", "lat pulldown",
+                    "pulldown", "shoulder press", "overhead press",
                     // A termi napok ANGOL neve legalább olyan gyakori a
                     // magyar edzők és edzettek szájában, mint a magyar: a
                     // „kemény leg day, 75 perc" eddig üres választ kapott.

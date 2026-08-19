@@ -5865,4 +5865,17 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/15", summary("15 perc jumping jack"));
     }
 
+    /**
+     * A gyakorlat ANGOL neve ugyan\u00fagy edz\u00e9snap: a „3x8 benchpress 60kg"
+     * beker\u00fclt az er\u0151napl\u00f3ba, de nem lett bel\u0151le edz\u00e9s – a nap \u00fcresen
+     * \u00e1llt a napt\u00e1rban. A magyar nevek p\u00e1rja.
+     */
+    @Test
+    public void theEnglishLiftNamesAreWorkoutsToo() {
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("3x8 benchpress 60kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("deadlift 5x3 140kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("squat 3x10 80kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("lat pulldown 3x12 50 kg"));
+    }
+
 }
