@@ -429,6 +429,11 @@ public final class StrengthParse {
         else if (nrm.matches("^\\s*mell\\w*\\s*(?:nap)?\\s*[:,-].*"))
             text = text.replaceAll("(?iu)(?<![\\p{L}])nyom[aá]s(?![\\p{L}])",
                     "fekvenyomás");
+        // A FÁJDALOM-SKÁLA nem sorozat: a „fájt a vállam a fekvenyomás után,
+        // 6/10" hatosából HAT fekvenyomás lett a naplóban – abból a számból,
+        // amivel a felhasználó a fájdalmát mondja meg. A tíz nevező
+        // egyértelmű: súlyt és ismétlést senki nem ír le így.
+        text = text.replaceAll("(?<![\\d,.])(?:10|[0-9])\\s?/\\s?10(?![\\d])(?![,.]\\d)", " ");
         // Ugyanez a perjel körszó nélkül is idő: a „8x20/10 fekvőtámasz"
         // tízese ott sem súly. A tétel megmarad (nyolcszor húsz), csak a
         // pihenő másodperce nem lesz belőle kiló.

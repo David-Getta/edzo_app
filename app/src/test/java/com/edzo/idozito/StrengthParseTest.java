@@ -1644,4 +1644,24 @@ public class StrengthParseTest {
                 "3x10 fekvenyom\u00e1s 60 kg, 3x12 evez\u00e9s 50 kg").size());
     }
 
+    /**
+     * A F\u00c1JDALOM-SK\u00c1LA nem sorozat: a „f\u00e1jt a v\u00e1llam a fekvenyom\u00e1s ut\u00e1n,
+     * 6/10" hatos\u00e1b\u00f3l HAT fekvenyom\u00e1s lett a napl\u00f3ban – abb\u00f3l a sz\u00e1mb\u00f3l,
+     * amivel a felhaszn\u00e1l\u00f3 a f\u00e1jdalm\u00e1t mondja meg.
+     */
+    @Test
+    public void aPainScaleIsNotASet() {
+        assertTrue(StrengthParse.parse(
+                "Ma nagyon f\u00e1jt a v\u00e1llam a fekvenyom\u00e1s ut\u00e1n, 6/10.").isEmpty());
+        assertTrue(StrengthParse.parse("f\u00e1j a v\u00e1llam 6/10").isEmpty());
+        // A PIRAMIS perjele marad s\u00faly/ism\u00e9tl\u00e9s.
+        assertEquals(60.0, StrengthParse.parse("fekvenyom\u00e1s 60/10")
+                .get(0).topWeight(), 0.001);
+        assertEquals(100.0, StrengthParse.parse("guggol\u00e1s 100/10")
+                .get(0).topWeight(), 0.001);
+        // \u00c9s a panasz mellett megt\u00f6rt\u00e9nt sorozat is megmarad.
+        assertEquals(1, StrengthParse.parse(
+                "f\u00e1jt a v\u00e1llam, m\u00e9gis fekvenyom\u00e1s 3x8 60 kg").size());
+    }
+
 }
