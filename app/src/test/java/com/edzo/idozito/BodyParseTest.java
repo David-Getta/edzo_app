@@ -1003,4 +1003,23 @@ public class BodyParseTest {
         assertEquals(78.4, BodyParse.parse("ma reggel 78,4 kg voltam").kg, 0.001);
     }
 
+    /**
+     * A SZ\u00c1M N\u00c9LK\u00dcLI tagmondat nem ronthatja el a m\u00e9r\u00e9st: a „Ma
+     * pihen\u0151nap volt. 78,9 kg reggel." els\u0151 mondat\u00e1ban egyetlen olyan
+     * sz\u00f3 van („pihen\u0151nap"), amit a „csak sz\u00e1mok maradtak" vizsg\u00e1lat nem
+     * ismer – \u00e9s emiatt az EG\u00c9SZ bejegyz\u00e9sb\u0151l semmi nem lett, a reggeli
+     * m\u00e9rleg sz\u00e1ma is elveszett.
+     */
+    @Test
+    public void aClauseWithoutNumbersCannotSpoilTheMeasurement() {
+        assertEquals(78.9, BodyParse.parse("Ma pihen\u0151nap volt. 78,9 kg reggel.").kg, 0.01);
+        assertEquals(78.9, BodyParse.parse(
+                "Ma pihen\u0151nap volt, csak 6200 l\u00e9p\u00e9st tettem meg. "
+                + "Ettem egy joghurtot \u00e9s k\u00e9t szelet kenyeret sonk\u00e1val. "
+                + "78,9 kg reggel.").kg, 0.01);
+        // A K\u00d6R\u00dcLM\u00c9NY szava viszont sz\u00e1m n\u00e9lk\u00fcl is magyar\u00e1z: a l\u00e1z marad l\u00e1z.
+        assertEquals(0.0, BodyParse.parse("h\u0151emelked\u00e9sem van, 37,8").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("beteg vagyok, l\u00e1zam van 38,5").kg, 0.01);
+    }
+
 }

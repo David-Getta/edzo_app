@@ -502,6 +502,19 @@ public final class BodyParse {
             // „vádli 38 cm" körfogat, hiába gyakorlatnév is a vádli.
             if (!other && !part.contains("cm") && !part.contains("centi")
                     && StrengthParse.nameIn(part) != null) other = true;
+            // A SZÁM NÉLKÜLI, mérés-szót sem tartalmazó tagmondat nem szólhat
+            // bele: a „Ma pihenőnap volt. 78,9 kg reggel." első mondatában
+            // egyetlen olyan szó van („pihenőnap"), amit a „csak számok
+            // maradtak" vizsgálat nem ismer – és emiatt az EGÉSZ bejegyzésből
+            // semmi nem lett, a reggeli mérleg száma is elveszett. Amiben
+            // nincs szám és nincs mérés-szó, abban mérés sincs.
+            // Kivétel a KÖRÜLMÉNY szava: a láz, a várandósság és a kezelés
+            // tagmondatában sincs szám, a szomszéd tagmondat számát mégis
+            // ők magyarázzák („hőemelkedésem van, 37,8").
+            if (!part.matches("(?s).*\\d.*") && !hasBodyWord(part)
+                    && !part.matches("(?s).*(laz|hoemelked|homerseklet|beteg"
+                        + "|terhes|varandos|szoptat|kezeles|kura|terapia"
+                        + "|dieta).*")) continue;
             if (other) { dropped = true; continue; }
             if (keep.length() > 0) keep.append(' ');
             keep.append(part.trim());
