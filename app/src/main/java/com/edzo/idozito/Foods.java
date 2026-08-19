@@ -695,6 +695,10 @@ public final class Foods {
                 "konjac teszta", "shirataki teszta", "konjac", "shirataki"),
         new Food("Padlizsán", 25, 1, 200, "padlizsan"),
         new Food("Hagyma", 40, 1.1, 50, "hagyma"),
+        // A FOKHAGYMA nem hagyma: az „egy gerezd fokhagyma" a hagyma
+        // tövére esett, és ötven gramm vöröshagyma ment a naplóba egy
+        // néhány grammos gerezd helyett. A gerezd az adagja.
+        new Food("Fokhagyma", 149, 6.4, 5, "fokhagyma"),
         new Food("Ananász", 50, 0.5, 150, "ananassz", "ananasz"),
         new Food("Málna", 52, 1.2, 100, "malna"),
         new Food("Áfonya", 57, 0.7, 100, "afonya"),
@@ -1998,7 +2002,10 @@ public final class Foods {
              // falat csoki" eddig teljes adagnak (25 g) számított, az „egy
              // harapás hamburger" egy egész burgernek.
              "falat", "falatot", "falatnyi", "harapas", "harapast",
-             "harapasnyi"};
+             "harapasnyi",
+             // A fokhagyma GEREZDben áll: a „két gerezd fokhagyma" eddig
+             // ugyanannyi volt, mint az egy gerezd.
+             "gerezd", "gerezdet", "gerezdnyi"};
 
     /**
      * Folyadék-mérőszavak millilitere a víznél. A „pohár" a tipikus adag

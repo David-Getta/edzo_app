@@ -423,7 +423,7 @@ sem talált, tehát ha talál, az tényleg ott van.
   mint a fordítottja
 - **A kötőjel is számít**: a „sonkás-sajtos szendvics" három tétel (a magyar
   melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy
-- **356 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **357 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket

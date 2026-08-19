@@ -1736,4 +1736,19 @@ public class FoodsParseTest {
         assertEquals("K\u00e1v\u00e9 (fekete)", hits("ittam egy fekete k\u00e1v\u00e9t").get(0).food.name);
     }
 
+    /**
+     * A FOKHAGYMA nem hagyma: az „egy gerezd fokhagyma" a hagyma t\u00f6v\u00e9re
+     * esett, \u00e9s \u00f6tven gramm v\u00f6r\u00f6shagyma ment a napl\u00f3ba egy n\u00e9h\u00e1ny
+     * grammos gerezd helyett. A gerezd az adagja – \u00e9s m\u00e9r\u0151sz\u00f3 is: a „k\u00e9t
+     * gerezd" eddig ugyanannyi volt, mint az egy.
+     */
+    @Test
+    public void garlicIsNotOnion() {
+        assertEquals("Fokhagyma", hits("egy gerezd fokhagyma").get(0).food.name);
+        assertEquals(5.0, hits("egy gerezd fokhagyma").get(0).grams, 0.01);
+        assertEquals(10.0, hits("k\u00e9t gerezd fokhagyma").get(0).grams, 0.01);
+        // A v\u00f6r\u00f6shagyma marad hagyma.
+        assertEquals("Hagyma", hits("egy fej hagyma").get(0).food.name);
+    }
+
 }
