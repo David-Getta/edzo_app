@@ -57,7 +57,8 @@ public final class Sentence {
             // derékfájásra?" pont az a kérdés, amire jó válaszunk van –
             // kérdőjellel is. Bejegyzés ebből sem lesz, tehát nem árthat.
             if (Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null
-                    || Rehab.redFlag(q) != null) return Kind.REHAB;
+                    || Rehab.redFlag(q) != null
+                    || Rehab.vagueComplaint(q)) return Kind.REHAB;
             return Kind.NONE;
         }
         if (!StrengthParse.parse(q).isEmpty()) return Kind.STRENGTH;
@@ -85,7 +86,11 @@ public final class Sentence {
         // nem ajánlunk rá, de a hallgatás rosszabb – ott a figyelmeztetés
         // vár rá, nem egy „nem értem".
         if (Rehab.forComplaint(q) != null || Rehab.forGoal(q) != null
-                || Rehab.redFlag(q) != null) return Kind.REHAB;
+                || Rehab.redFlag(q) != null
+                // Az ÁLTALÁNOS panasz („fáj a lábam") is a rehab ajtaja:
+                // testtájat nem tudunk mondani rá, de a „nem értem" a
+                // legrosszabb válasz – a lap testtáj nélkül nyílik ki.
+                || Rehab.vagueComplaint(q)) return Kind.REHAB;
         Activities.Parsed a = Activities.parse(q, now);
         if (a != null && !a.isEmpty()) return Kind.WORKOUT;
         if (iv != null) return Kind.INTERVAL;

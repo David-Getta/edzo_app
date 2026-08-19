@@ -381,17 +381,37 @@ public final class Rehab {
     }
 
     /**
-     * Panaszból testtáj: „fáj a vállam" → a váll-sor.
+     * Panasz \u00e1ltal\u00e1nos testr\u00e9szre: „f\u00e1j a l\u00e1bam".
      *
-     * Az app mondat-elvű: ha a felhasználó bármelyik mezőbe beírja, hogy mi
-     * fáj, a legjobb válasz nem a „nem értem", hanem a megfelelő megelőző
-     * sor felajánlása. Kimondott fájdalom-szó kell hozzá („fáj",
-     * „fájdalom", „húzódik") ÉS egy testtájnév – e nélkül a „vállból
-     * nyomás" is panasznak látszana.
+     * A magyar leggyakoribb panasz-mondata \u00e9pp a legkev\u00e9sb\u00e9 pontos: a
+     * „l\u00e1b" lehet t\u00e9rd, boka, comb, v\u00e1dli \u00e9s talp is. Eddig erre SEMMI
+     * nem j\u00f6tt vissza – a t\u00e9rdre, a bok\u00e1ra \u00e9s minden m\u00e1sra igen. A
+     * hallgat\u00e1s azt \u00fczeni, hogy nem \u00e9rtj\u00fck; pedig \u00e9rtj\u00fck, csak azt nem
+     * tudjuk, HOL. Ilyenkor a rehab-lap ny\u00edlik ki testt\u00e1j n\u00e9lk\u00fcl, \u00e9s a
+     * felhaszn\u00e1l\u00f3 v\u00e1lasztja ki – ez \u0151szint\u00e9bb, mint tal\u00e1lgatni.
      */
-    public static Area forComplaint(String q) {
-        if (q == null) return null;
+    public static boolean vagueComplaint(String q) {
+        if (q == null) return false;
         String s = Foods.norm(q);
+        if (areaOf(s) != null) return false;
+        if (redFlag(q) != null) return false;
+        if (!s.matches("(?s).*(?<![a-z])(lab|labam|labaim|labamban|labaimban"
+                + "|labaid|kar|karom|karjaim|karomban|izmaim|izmom|izmaimban"
+                + "|testem|mindenem|izuleteim|izuletem)"
+                + "(?![a-z]).*")) return false;
+        for (String neg : new String[]{"nem faj", "mar nem", "elmult",
+                "meggyogyult", "nem fajt", "fajdalommentes"})
+            if (s.contains(neg)) return false;
+        return saysPain(s);
+    }
+
+    /**
+     * Panasz-e a mondat, testtájtól függetlenül.
+     *
+     * A fájdalom-szó felismerése önálló kérdés a testtáj megtalálásától:
+     * a „fáj a lábam" panasz akkor is, ha a láb nem egy konkrét sor neve.
+     */
+    private static boolean saysPain(String s) {
         boolean pain = false;
         for (String w : new String[]{"faj", "fajdalom", "fajdalmas", "huzodik", "huzodas",
                 "serules", "megserult", "kificamodott", "ficam", "gyullad",
@@ -502,7 +522,22 @@ public final class Rehab {
                 }
                 if (pain) break;
             }
-        if (!pain) return null;
+        return pain;
+    }
+
+    /**
+     * Panaszból testtáj: „fáj a vállam" → a váll-sor.
+     *
+     * Az app mondat-elvű: ha a felhasználó bármelyik mezőbe beírja, hogy mi
+     * fáj, a legjobb válasz nem a „nem értem", hanem a megfelelő megelőző
+     * sor felajánlása. Kimondott fájdalom-szó kell hozzá („fáj",
+     * „fájdalom", „húzódik") ÉS egy testtájnév – e nélkül a „vállból
+     * nyomás" is panasznak látszana.
+     */
+    public static Area forComplaint(String q) {
+        if (q == null) return null;
+        String s = Foods.norm(q);
+        if (!saysPain(s)) return null;
         // A tagadott vagy elmúlt panasz jó hír, nem kérés: a „nem fáj a
         // vállam" és a „már nem fáj" után nincs mit ajánlani.
         for (String neg : new String[]{"nem faj", "mar nem", "elmult", "meggyogyult",

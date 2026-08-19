@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -899,6 +900,31 @@ public class RehabTest {
     @Test
     public void abPainStaysAComplaint() {
         assertNotNull(Rehab.forComplaint("f\u00e1j a hasizmom"));
+    }
+
+    /**
+     * A magyar leggyakoribb panasz-mondata \u00e9pp a legkev\u00e9sb\u00e9 pontos: a
+     * „f\u00e1j a l\u00e1bam" lehet t\u00e9rd, boka, comb, v\u00e1dli \u00e9s talp is. Eddig
+     * erre SEMMI nem j\u00f6tt vissza – a t\u00e9rdre \u00e9s a bok\u00e1ra igen. \u00c9rtj\u00fck,
+     * csak azt nem tudjuk, HOL: a lap testt\u00e1j n\u00e9lk\u00fcl ny\u00edlik ki.
+     */
+    @Test
+    public void aVagueComplaintStillOpensTheRehabPage() {
+        assertTrue(Rehab.vagueComplaint("f\u00e1j a l\u00e1bam"));
+        assertTrue(Rehab.vagueComplaint("f\u00e1j a karom"));
+        assertTrue(Rehab.vagueComplaint("f\u00e1j mindenem edz\u00e9s ut\u00e1n"));
+        // Testt\u00e1jat nem tal\u00e1lunk ki hozz\u00e1.
+        assertNull(Rehab.forComplaint("f\u00e1j a l\u00e1bam"));
+        // A PONTOS panasz v\u00e1ltozatlanul a saj\u00e1t sor\u00e1t hozza.
+        assertFalse(Rehab.vagueComplaint("f\u00e1j a t\u00e9rdem"));
+        assertEquals("terd", Rehab.forComplaint("f\u00e1j a t\u00e9rdem").id);
+        // A tagadott \u00e9s a m\u00e1r elm\u00falt panasz nem k\u00e9r\u00e9s.
+        assertFalse(Rehab.vagueComplaint("nem f\u00e1j a l\u00e1bam"));
+        assertFalse(Rehab.vagueComplaint("m\u00e1r nem f\u00e1j a l\u00e1bam"));
+        // A piros z\u00e1szl\u00f3ra a figyelmeztet\u00e9s a v\u00e1lasz, nem a lap.
+        assertFalse(Rehab.vagueComplaint("zsibbad a l\u00e1bam"));
+        // A l\u00e1bnap edz\u00e9s, nem panasz.
+        assertFalse(Rehab.vagueComplaint("l\u00e1bnap volt ma"));
     }
 
 }
