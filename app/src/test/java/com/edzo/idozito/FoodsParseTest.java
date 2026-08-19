@@ -1871,4 +1871,22 @@ public class FoodsParseTest {
         assertEquals(200.0, hits("s\u00fclt csirkecomb 200 g").get(0).grams, 0.01);
     }
 
+    /**
+     * A z\u00e1r\u00f3 mennyis\u00e9g akkor is sz\u00e1m\u00edt, ha el\u0151tte M\u00c1SIK mondat \u00e1ll: a
+     * „Sok volt a stressz, csak s\u00e9t\u00e1ltam 25 percet. Vacsi marad\u00e9k pizza,
+     * 2 szelet." mondat\u00e1ban a huszon\u00f6t PERC tiltotta le a k\u00e9t szeletet,
+     * pedig az a m\u00e1sik mondatban \u00e1ll – \u00edgy egy eg\u00e9sz pizza ment be k\u00e9t
+     * szelet helyett. A mondatv\u00e9gi pont sem z\u00e1rhatja ki a mennyis\u00e9get.
+     */
+    @Test
+    public void theTrailingAmountSurvivesAnEarlierSentence() {
+        assertEquals(200.0, hits(
+                "Sok volt a stressz, csak s\u00e9t\u00e1ltam 25 percet. "
+                + "Vacsi marad\u00e9k pizza, 2 szelet.").get(0).grams, 0.01);
+        assertEquals(200.0, hits("Vacsi marad\u00e9k pizza, 2 szelet").get(0).grams, 0.01);
+        // A SAJ\u00c1T sz\u00e1mmal \u00edrt fej tov\u00e1bbra sem k\u00e9rdez vissza.
+        assertEquals(700.0, hits("eb\u00e9dre t\u00f6lt\u00f6tt k\u00e1poszta volt, k\u00e9t adag")
+                .get(0).grams, 0.01);
+    }
+
 }

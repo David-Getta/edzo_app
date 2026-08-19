@@ -2480,7 +2480,7 @@ public final class Foods {
         String s = norm(query);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "[,;]\\s*(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
-                        + "kanal|marek|falat|gomboc|db|darab)\\w*\\s*$").matcher(s);
+                        + "kanal|marek|falat|gomboc|db|darab)\\w*[\\s.!?]*$").matcher(s);
         String head, amount;
         if (m.find()) {
             head = s.substring(0, m.start());
@@ -2502,20 +2502,28 @@ public final class Foods {
                             + "otot|hatot|hetet|nyolcat|kilencet|tizet"
                             + "|ketto|harom|negy)(?:\\s+is)?"
                             + "(?:\\s+(?:megettem|ettem meg|ettem|megittam|ittam meg|"
-                            + "ittam|elfogyasztottam|lecsuszott|lement))?\\s*$").matcher(s);
+                            + "ittam|elfogyasztottam|lecsuszott|lement))?[\\s.!?]*$").matcher(s);
             if (!c.find()) return query;
             head = s.substring(0, c.start());
             amount = plainNumber(c.group(1));
             if (amount == null) return query;
         }
-        if (head.matches(".*\\d.*")) return query;
-        List<Match> hm = matches(list, head);
+        // A két feltételt az ÉTEL MONDATÁRA nézzük, nem az egész szövegre: a
+        // „Sok volt a stressz, csak sétáltam 25 percet. Vacsi maradék pizza,
+        // 2 szelet." mondatában a huszonöt PERC tiltotta le a két szeletet,
+        // pedig az a másik mondatban áll – így egy egész pizza ment be két
+        // szelet helyett. A mondathatár után kezdődik az étel feje.
+        int cut = Math.max(head.lastIndexOf('.'), head.lastIndexOf(';'));
+        String tail = cut >= 0 ? head.substring(cut + 1) : head;
+        if (tail.matches(".*\\d.*")) return query;
+        List<Match> hm = matches(list, tail);
         if (hm.size() != 1) return query;
+        int off = cut >= 0 ? cut + 1 : 0;
         // A mennyiséget közvetlenül az étel elé írjuk, és a fej SAJÁT
         // határozatlan névelőjét („egy adag palacsintát", „egy fagyit")
         // elhagyjuk – az „egy" különben a szomszédság jogán legyőzné a
         // kimondott számot, és megint egy adag menne be hat helyett.
-        int pos = hm.get(0).pos;
+        int pos = off + hm.get(0).pos;
         String before = head.substring(0, pos)
                 .replaceAll("(?:^|\\s)egy(?:\\s+(?:adag|nagy|kis))?\\s*$", " ");
         return before + amount + " " + head.substring(pos);
