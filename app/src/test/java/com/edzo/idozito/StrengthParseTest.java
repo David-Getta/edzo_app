@@ -1346,8 +1346,11 @@ public class StrengthParseTest {
                 "AMRAP fekvőtámasz: 42 db egy sorozatban").get(0);
         assertEquals(42, it.totalReps());
         assertEquals(0.0, it.topWeight(), 0.01);
-        assertEquals(0, Activities.parse("rest-pause tricepsznyújtás "
+        // A pluszos jel\u00f6l\u00e9sb\u0151l EGY edz\u00e9s lesz, nem h\u00e1rom.
+        assertEquals(1, Activities.parse("rest-pause tricepsznyújtás "
                 + "15+5+5").plans.size());
+        assertEquals(1, Activities.parse("rest-pause tricepsznyújtás "
+                + "15+5+5").plans.get(0).count);
     }
     @Test public void aCompletedHeavySingleIsLogged() {
         // A „megcsináltam a 100 kilós fekvenyomást" teljesített egyes –

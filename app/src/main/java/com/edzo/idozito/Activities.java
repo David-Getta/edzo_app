@@ -2088,7 +2088,13 @@ public final class Activities {
         // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem
         // lett időtartam – a kimondott három és háromnegyed óra helyére a
         // tempóból becsült százhetvennyolc perc lépett.
-        s = s.replaceAll("(?<![\\d.,:])(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
+        // A SZORZÓJEL is megvédi: a „guggolás 5x5 100 kg" mondatban az „5 100"
+        // ezres tagolásnak látszott, és „5x5100 kg" lett belőle – onnantól a
+        // mondat nem volt edzés, vagyis a nap üresen állt a naptárban. Csak a
+        // háromjegyű súlynál (100 kg fölött) harapott, tehát pont azoknál,
+        // akik a legtöbbet emelik.
+        s = s.replaceAll("(?<![\\d.,:])(?<!\\dx)(?<!\\d×)"
+                + "(\\d{1,3})\\s(\\d{3})(?![\\d.,])", "$1$2");
         // PONTTAL tagolt ezres a lépésszámban: a „12.500 lépés" tizenkét és
         // fél ezer lépés, nem tizenkét egész öt tized – abból négyszáz méter
         // séta lett. Csak a lépés szó előtt merjük: a „levittem 5.300 km-re"
@@ -2743,6 +2749,30 @@ public final class Activities {
             // tempóból számolva 41 óra lenne).
             minutes = Math.min(minutes, 24 * 60);
             out.add(new Plan(kind, count, minutes, kmOf[i]));
+        }
+        // A gyakorlat IGÉJE is edzés: a „guggoltam 5x5 100 kg" és a
+        // „húzódzkodtam 5x5-öt" bekerült az erőnaplóba, de nem lett belőle
+        // edzés – a nap üresen állt a naptárban, a sorozat meg lógott a
+        // levegőben. A főnévi alak („5x5 guggolás") régóta jó, az igei nem:
+        // a napló attól függött, melyiket írja a felhasználó. Ha van
+        // sorozat, de nincs mozgás, akkor a sorozat MAGA a mozgás.
+        if (out.isEmpty()) {
+            List<StrengthParse.Item> lifted = StrengthParse.parse(rawText);
+            if (!lifted.isEmpty()) {
+                int reps = 0;
+                boolean loaded = false;
+                for (StrengthParse.Item it : lifted) {
+                    reps += it.totalReps();
+                    if (it.topWeight() > 0) loaded = true;
+                }
+                Kind gym = byId("kondi");
+                // A megterhelt sorozatnál a szettek közti pihenés a munka
+                // java, ott a szokásos hossz áll közelebb az igazsághoz.
+                if (gym != null)
+                    out.add(new Plan(gym, 1, loaded || reps <= 0
+                            ? gym.defaultMin
+                            : Math.max(5, Math.min(60, reps / 5)), 0));
+            }
         }
 
         // Két napszak, két kimondott idő, EGY mozgásforma: két edzés volt.

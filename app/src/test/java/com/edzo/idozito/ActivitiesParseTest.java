@@ -5538,7 +5538,9 @@ public class ActivitiesParseTest {
      */
     @Test
     public void stairsInsideAnExerciseNameAreOnlyTheVenue() {
-        assertTrue(Activities.parse("v\u00e1dliemel\u00e9s l\u00e9pcs\u0151n 3x12").plans.isEmpty());
+        // A l\u00e9pcs\u0151 nem s\u00e9ta: a sorozat konditermi edz\u00e9s, nem gyalogl\u00e1s.
+        assertEquals("kondi",
+                Activities.parse("v\u00e1dliemel\u00e9s l\u00e9pcs\u0151n 3x12").plans.get(0).kind.id);
         // A l\u00e9pcs\u0151z\u00e9s mint mozg\u00e1s marad.
         assertEquals(8, Activities.parse("l\u00e9pcs\u0151z\u00e9s 15 emelet").plans.get(0).minutes);
     }
@@ -5876,6 +5878,35 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7kondi/60", summary("deadlift 5x3 140kg"));
         assertEquals("1d+0: 1\u00d7kondi/60", summary("squat 3x10 80kg"));
         assertEquals("1d+0: 1\u00d7kondi/60", summary("lat pulldown 3x12 50 kg"));
+    }
+
+    /**
+     * A SZORZ\u00d3JEL is megv\u00e9di az ezres tagol\u00e1st: a „guggol\u00e1s 5x5 100 kg"
+     * mondatban az „5 100" ezres tagol\u00e1snak l\u00e1tszott, \u00e9s „5x5100 kg" lett
+     * bel\u0151le – onnant\u00f3l a mondat nem volt edz\u00e9s, a nap \u00fcresen \u00e1llt a
+     * napt\u00e1rban. Csak a h\u00e1romjegy\u0171 s\u00falyn\u00e1l harapott, teh\u00e1t pont
+     * azokn\u00e1l, akik a legt\u00f6bbet emelik.
+     */
+    @Test
+    public void theMultiplierProtectsTheThousandsSeparator() {
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("guggol\u00e1s 5x5 100 kg"));
+        assertEquals("1d+0: 1\u00d7kondi/60", summary("holtemel\u00e9s 3x3 140 kg"));
+        // A val\u00f3di ezres tagol\u00e1s v\u00e1ltozatlan.
+        assertEquals(7.5, Activities.parse("10 000 l\u00e9p\u00e9s").plans.get(0).km, 0.05);
+        assertEquals(1.5, Activities.parse("le\u00fasztam 1 500 m\u00e9tert").plans.get(0).km, 0.01);
+    }
+
+    /**
+     * A gyakorlat IG\u00c9JE is edz\u00e9s: a „guggoltam 5x5" \u00e9s a „h\u00faz\u00f3dzkodtam
+     * 5x5-\u00f6t" beker\u00fclt az er\u0151napl\u00f3ba, de nem lett bel\u0151le edz\u00e9s – a nap
+     * \u00fcresen \u00e1llt a napt\u00e1rban. A f\u0151n\u00e9vi alak („5x5 guggol\u00e1s") r\u00e9g\u00f3ta j\u00f3
+     * volt: a napl\u00f3 att\u00f3l f\u00fcgg\u00f6tt, melyiket \u00edrja a felhaszn\u00e1l\u00f3.
+     */
+    @Test
+    public void aSetIsAWorkoutEvenWithoutAMovementNoun() {
+        assertEquals("1d+0: 1\u00d7kondi/5", summary("h\u00faz\u00f3dzkodtam 5x5-\u00f6t"));
+        assertEquals("1d+0: 1\u00d7kondi/12", summary("fel\u00fcltem 3x20-at"));
+        assertEquals("1d+0: 1\u00d7kondi/20", summary("leguggoltam 100-at s\u00falyok n\u00e9lk\u00fcl"));
     }
 
 }
