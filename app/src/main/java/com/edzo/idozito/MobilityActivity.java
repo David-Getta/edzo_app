@@ -92,6 +92,13 @@ public class MobilityActivity extends Activity {
                 }
                 body.post(() -> areaSheet(fhit));
             }
+            // ÁLTALÁNOS panasz („fáj a lábam"): testtájat nem tudunk mondani
+            // rá – a láb lehet térd, boka, comb, vádli és talp is –, de a
+            // rehab-fület akkor is ki kell nyitni. Enélkül a mondat ide
+            // hozta a felhasználót, és a bemelegítés-lapon találta magát,
+            // vagyis a válasz úgy nézett ki, mintha félreértettük volna.
+            if (hit == null && flag == null && Rehab.vagueComplaint(sent))
+                section = 3;
         }
         // A Könyvtár rehab-kártyája testtáj nélkül nyitja a fület.
         if (getIntent().getBooleanExtra("open_rehab", false)) {
