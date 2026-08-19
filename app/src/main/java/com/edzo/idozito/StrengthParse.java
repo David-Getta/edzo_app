@@ -936,6 +936,15 @@ public final class StrengthParse {
             if (reps <= 0 && series > 0 && series <= 20 && seriesWord != null) {
                 int after = numberAfter(s, seriesWord);
                 if (after > 0 && after <= maxRep) reps = after;
+                // A FORDÍTOTT sorrend ugyanolyan gyakori a teremben: a „40
+                // fekvőtámasz 3 sorozatban" ismétlésszáma a mondat ELEJÉN
+                // áll. Eddig a sorozatszám ismétlés nélkül maradt, és a
+                // mondatból EGYÁLTALÁN nem lett bejegyzés – a negyven
+                // fekvőtámasz némán eltűnt az erőnaplóból.
+                if (reps <= 0) {
+                    int before = repsBeforeSeries(s, seriesWord);
+                    if (before > 0 && before <= maxRep) reps = before;
+                }
             }
             if (reps > 0 && reps <= maxRep) {
                 int n = series > 0 && series <= 20 ? series : 1;
@@ -1361,6 +1370,40 @@ public final class StrengthParse {
     private static boolean isWeightSuffixed(String s, int end) {
         String rest = s.substring(end);
         return rest.matches("^\\s?-?\\s?(zal|val|vel|nal|nel|lal|lel|al|el)\\b.*");
+    }
+
+    /**
+     * A sorozatszó ELÉ, a gyakorlatnév elé írt ismétlésszám: „40 fekvőtámasz
+     * 3 sorozatban”.
+     *
+     * Csak akkor hívjuk, ha sorozatszám már van, ismétlés viszont nincs.
+     * A mértékegységes számok (60 kg, 5 perc, 400 m) és a magához a
+     * sorozatszóhoz tartozó szám kimaradnak – ami marad, az az ismétlés.
+     */
+    private static int repsBeforeSeries(String s, String word) {
+        int p = s.indexOf(word);
+        if (p < 0) return 0;
+        // A sorozatSZÁM maga nem ismétlés: az előtte álló szóközöket
+        // levágva a szám vége pont itt van.
+        int q = p;
+        while (q > 0 && s.charAt(q - 1) == ' ') q--;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\dx×,.])(\\d{1,3})(?![\\d,.])").matcher(s);
+        int best = 0;
+        while (m.find()) {
+            if (m.end() >= q) break;
+            String rest = s.substring(m.end()).trim();
+            if (rest.startsWith("kg") || rest.startsWith("kilo")
+                    || rest.startsWith("perc") || rest.startsWith("ora")
+                    || rest.startsWith("mp") || rest.startsWith("masodperc")
+                    || rest.startsWith("km") || rest.startsWith("meter")
+                    || rest.startsWith("m ") || rest.startsWith("%")
+                    || rest.startsWith("x") || rest.startsWith("×")) continue;
+            if (isWeightSuffixed(s, m.end())) continue;
+            if (isAtWeight(s, m.start())) continue;
+            best = Integer.parseInt(m.group(1));
+        }
+        return best;
     }
 
     /**

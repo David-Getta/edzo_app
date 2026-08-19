@@ -5745,4 +5745,24 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A M\u00c9TER ki\u00edrva is magass\u00e1g: a „t\u00fara 850 m\u00e9ter
+     * szintemelked\u00e9ssel" a r\u00f6vid\u00edt\u00e9s hi\u00e1ny\u00e1ban 0,85 km-es t\u00far\u00e1v\u00e1
+     * zsugorodott – egy eg\u00e9sz napos hegymenet helyett.
+     */
+    @Test
+    public void spelledOutMetresOfClimbAreNotDistance() {
+        Activities.Parsed p = Activities.parse(
+                "szombaton 3 \u00f3ra 20 perc t\u00fara 850 m\u00e9ter szintemelked\u00e9ssel");
+        assertEquals(1, p.plans.size());
+        assertEquals(0.0, p.plans.get(0).km, 0.001);
+        assertEquals(200, p.plans.get(0).minutes);
+        // A r\u00f6vid\u00edtett alak eddig is j\u00f3 volt, maradjon az.
+        Activities.Parsed q = Activities.parse("t\u00fara 1200 m szintemelked\u00e9s");
+        assertEquals(0.0, q.plans.get(0).km, 0.001);
+        // A VAL\u00d3DI t\u00e1v ford\u00edtva viszont t\u00e1v marad.
+        Activities.Parsed r = Activities.parse("800 m\u00e9tert \u00fasztam");
+        assertEquals(0.8, r.plans.get(0).km, 0.001);
+    }
+
 }

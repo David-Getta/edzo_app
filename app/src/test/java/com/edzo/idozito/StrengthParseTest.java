@@ -1558,4 +1558,26 @@ public class StrengthParseTest {
                 "1. guggol\u00e1s 3x10 2. fekvenyom\u00e1s 3x8").size());
     }
 
+    /**
+     * A FORD\u00cdTOTT sorrend is sorozat: a „40 fekv\u0151t\u00e1masz 3 sorozatban"
+     * mondatb\u00f3l EGY\u00c1LTAL\u00c1N nem lett bejegyz\u00e9s, mert a sorozatsz\u00e1m
+     * ism\u00e9tl\u00e9s n\u00e9lk\u00fcl kisz\u00e1llt – a negyven fekv\u0151t\u00e1masz n\u00e9m\u00e1n elt\u0171nt.
+     */
+    @Test
+    public void repsBeforeTheSetCountStillCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("40 fekv\u0151t\u00e1masz 3 sorozatban");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(40, it.get(0).sets.get(0).reps);
+        List<StrengthParse.Item> h = StrengthParse.parse("20 h\u00faz\u00f3dzkod\u00e1s 4 sorozatban");
+        assertEquals(4, h.get(0).sets.size());
+        assertEquals(20, h.get(0).sets.get(0).reps);
+        // A megszokott sorrend v\u00e1ltozatlan.
+        List<StrengthParse.Item> f = StrengthParse.parse("3 sorozat 40 fekv\u0151t\u00e1masz");
+        assertEquals(3, f.get(0).sets.size());
+        assertEquals(40, f.get(0).sets.get(0).reps);
+        // A S\u00daLY sz\u00e1ma nem ism\u00e9tl\u00e9s: ism\u00e9tl\u00e9s n\u00e9lk\u00fcl nincs mit menteni.
+        assertTrue(StrengthParse.parse("60 kg guggol\u00e1s 3 sorozatban").isEmpty());
+    }
+
 }
