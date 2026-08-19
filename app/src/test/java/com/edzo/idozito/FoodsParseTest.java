@@ -1821,4 +1821,17 @@ public class FoodsParseTest {
         assertEquals(150.0, hits("1/2 pizza").get(0).grams, 0.01);
     }
 
+    /**
+     * Az ADAG jelz\u0151je egybe\u00edrva is jelz\u0151: a „duplaadag csirkemell" egy
+     * sima adag lett, a „f\u00e9ladag rizs" pedig egy eg\u00e9sz – vagyis a
+     * mennyis\u00e9g \u00e9pp az ellenkez\u0151j\u00e9re fordult.
+     */
+    @Test
+    public void theJoinedPortionAdjectiveStillCounts() {
+        assertEquals(300.0, hits("duplaadag csirkemell").get(0).grams, 0.01);
+        assertEquals(100.0, hits("f\u00e9ladag rizs").get(0).grams, 0.01);
+        // K\u00fcl\u00f6n \u00edrva eddig is j\u00f3 volt.
+        assertEquals(300.0, hits("dupla adag csirkemell").get(0).grams, 0.01);
+    }
+
 }

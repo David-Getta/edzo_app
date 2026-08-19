@@ -2593,6 +2593,12 @@ public final class Foods {
                 + "s[oó]mentes|glut[eé]nmentes|laktózmentes|hústalan|"
                 + "h[uú]smentes)\\s+(?:nap|h[eé]t|h[oó]nap|id[oő]szak)"
                 + "(?:\\p{L}*)", " ");
+        // Az ADAG jelzője egybeírva is jelző: a „duplaadag csirkemell" egy
+        // sima adag lett, a „feladag rizs" pedig egy egész – vagyis a
+        // mennyiség épp az ellenkezőjére fordult. Külön írva mindkettő
+        // rendben volt.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(dupla|f[eé]l|m[aá]sf[eé]l|"
+                + "harmad|negyed|tripla)adag(?![\\p{L}])", "$1 adag");
         // A TÖRT alakú mennyiség: az „1/2 kg csirkemell" fél kiló – eddig
         // KÉT kiló lett belőle, mert a perjel előtti egyes elveszett, és a
         // nevezőt vettük mennyiségnek. Négyszeres adag került a naplóba,
