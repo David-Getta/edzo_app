@@ -1706,4 +1706,19 @@ public class FoodsParseTest {
         assertEquals(80.0, hits("k\u00e9t felespoh\u00e1r whisky").get(0).grams, 0.01);
     }
 
+    /**
+     * Ami BELEF\u00c9R a keretbe, azt m\u00e9g nem ett\u00fck meg: a „m\u00e9g 2 szelet
+     * pizza belef\u00e9r" k\u00e9tsz\u00e1z gramm pizz\u00e1t \u00edrt a napl\u00f3ba abb\u00f3l,
+     * amit a felhaszn\u00e1l\u00f3 \u00e9pp csak m\u00e9rlegel.
+     */
+    @Test
+    public void whatFitsInTheBudgetIsNotEatenYet() {
+        assertTrue(hits("m\u00e9g 2 szelet pizza belef\u00e9r").isEmpty());
+        assertTrue(hits("belef\u00e9rne m\u00e9g egy s\u00f6r").isEmpty());
+        // De az EV\u00c9S-ige felment: a marad\u00e9k keretet meg is lehet enni.
+        assertEquals(150.0,
+                hits("a marad\u00e9k kal\u00f3ri\u00e1n megettem egy joghurtot").get(0).grams, 0.01);
+        assertEquals(200.0, hits("megettem 2 szelet pizz\u00e1t").get(0).grams, 0.01);
+    }
+
 }

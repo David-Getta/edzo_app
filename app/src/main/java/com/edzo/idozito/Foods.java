@@ -3944,6 +3944,12 @@ public final class Foods {
                 // Vágy és kíváncsiság: „megkívántam a csokit", „meg akarok
                 // kóstolni egy tiramisut", „receptet keresek".
                 "megkivantam", "megkivanom", "kostolni", "recept",
+                // A KERETBE FÉRŐ étel még nem megevett étel: a „még 2 szelet
+                // pizza belefér" kétszáz gramm pizzát írt a naplóba – abból,
+                // amit a felhasználó épp csak MÉRLEGEL. A „maradék kalórián
+                // megettem egy joghurtot" evés-igéje viszont felment.
+                "belefer", "beleferne", "fer bele", "ferne bele",
+                "beleferhet", "meg befer",
                 // A KIHAGYÁS beszámolója sem étkezés: a „3 hetet bírtam ki
                 // cukor nélkül" büszkeség, nem adag – eddig háromszázharminc
                 // gramm cukormentes étel lett belőle. Ugyanígy a lemondás:
