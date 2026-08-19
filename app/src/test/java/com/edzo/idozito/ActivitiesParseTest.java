@@ -6189,4 +6189,21 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("a gyerek edz\u00e9s\u00e9n voltam").plans.isEmpty());
     }
 
+    /**
+     * A KETT\u0150SPONTOS fejl\u00e9c perce az eg\u00e9sz blokk\u00e9: a „20 perc otthoni
+     * edz\u00e9s: 3 k\u00f6r 10 fekv\u0151t\u00e1masz 15 guggol\u00e1s" h\u00fasz perce a munka
+     * hossza – eddig az ism\u00e9tl\u00e9ssz\u00e1mb\u00f3l becs\u00fclt huszonh\u00e9t perc ment a
+     * napl\u00f3ba, mert a kimondott id\u0151 a mozg\u00e1sn\u00e9v EL\u0150TT \u00e1llt.
+     */
+    @Test
+    public void theHeaderMinutesBeforeTheColonWin() {
+        assertEquals(20, Activities.parse(
+                "20 perc otthoni edz\u00e9s: 3 k\u00f6r 10 fekv\u0151t\u00e1masz 15 guggol\u00e1s")
+                .plans.get(0).minutes);
+        assertEquals(45, Activities.parse("45 perc edz\u00e9s: fut\u00e1s 5 km")
+                .plans.get(0).minutes);
+        // A becsl\u00e9s marad ott, ahol nincs kimondott blokk-hossz.
+        assertEquals("1d+0: 1\u00d7kondi/20", summary("100 fekv\u0151t\u00e1masz"));
+    }
+
 }

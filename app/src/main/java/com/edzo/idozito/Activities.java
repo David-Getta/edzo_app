@@ -4025,7 +4025,14 @@ public final class Activities {
 
     /** Az EMOM és az AMRAP kimondott perce az EGÉSZ blokk hossza. */
     private static boolean blockLengthSaid(String s) {
-        return s != null && s.matches("(?s).*(?<![a-z])(emom|e2mom|amrap)\\w*.*");
+        if (s == null) return false;
+        // A KETTŐSPONTOS fejléc perce is az egész blokké: a „20 perc otthoni
+        // edzés: 3 kör 10 fekvőtámasz 15 guggolás" húsz perce a munka
+        // hossza – eddig az ismétlésszámból becsült huszonhét perc ment a
+        // naplóba, mert a kimondott idő a mozgásnév ELŐTT állt.
+        if (s.matches("(?s).*\\d{1,3}\\s?(?:perc|ora)\\w*[^:.;]{0,20}?"
+                + "(?:edzes|edzest|kor|korkepzes|blokk)\\w*\\s*:.*")) return true;
+        return s.matches("(?s).*(?<![a-z])(emom|e2mom|amrap)\\w*.*");
     }
 
     /** Van-e a mondatban kilóval terhelt sorozat (rúd, kézisúlyzó, gép). */
