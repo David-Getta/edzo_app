@@ -1580,4 +1580,24 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("60 kg guggol\u00e1s 3 sorozatban").isEmpty());
     }
 
+    /**
+     * A TABATA PERJELE id\u0151, nem s\u00faly: a „tabata 8x20/10 fekv\u0151t\u00e1masz"
+     * t\u00edzes\u00e9t S\u00daLYK\u00c9NT \u00edrtuk a napl\u00f3ba – t\u00edz kil\u00f3s fekv\u0151t\u00e1masz ker\u00fclt a
+     * rekordok \u00e9s az 1RM k\u00f6z\u00e9, holott a h\u00fasz \u00e9s a t\u00edz m\u00e1sodperc: munka
+     * \u00e9s pihen\u0151. Ugyanebb\u0151l a mondatb\u00f3l az intervallum-felismer\u0151 helyes
+     * tervet ad, itt csak k\u00e1rt tenn\u00e9nk.
+     */
+    @Test
+    public void theTabataSlashIsTimeNotWeight() {
+        assertTrue(StrengthParse.parse("tabata 8x20/10 fekv\u0151t\u00e1masz").isEmpty());
+        assertTrue(StrengthParse.parse("tabata 8 k\u00f6r 20/10 fekv\u0151t\u00e1masz").isEmpty());
+        // K\u00f6rsz\u00f3 n\u00e9lk\u00fcl a t\u00e9tel megmarad, de a pihen\u0151b\u0151l nem lesz kil\u00f3.
+        List<StrengthParse.Item> it = StrengthParse.parse("8x20/10 fekv\u0151t\u00e1masz");
+        assertEquals(1, it.size());
+        assertEquals(0.0, it.get(0).topWeight(), 0.001);
+        // A PIRAMIS perjele viszont s\u00faly/ism\u00e9tl\u00e9s marad.
+        List<StrengthParse.Item> p = StrengthParse.parse("fekvenyom\u00e1s 60/10");
+        assertEquals(60.0, p.get(0).topWeight(), 0.001);
+    }
+
 }

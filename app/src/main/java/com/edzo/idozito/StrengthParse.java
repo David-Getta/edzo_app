@@ -397,6 +397,15 @@ public final class StrengthParse {
                 "fiatalkoromban", "gyerekkoromban", "evekkel ezelott"})
             if (nrm.contains(w) && !nrm.matches(".*(?<![a-z])(ma|most|tegnap)(?![a-z]).*"))
                 return out;
+        // A TABATA PERJELE idő, nem súly: a „tabata 8x20/10 fekvőtámasz"
+        // tízesét SÚLYKÉNT írtuk a naplóba – tíz kilós fekvőtámasz került a
+        // rekordok és az 1RM közé, holott a húsz és a tíz másodperc: munka
+        // és pihenő. A kör × munka/pihenő hármas az intervallum-felismerőé,
+        // ő ugyanebből a mondatból helyes tervet ad; itt csak kárt tennénk.
+        // A körszám NÉLKÜLI perjel marad a piramisé („fekvenyomás 60/10").
+        if (nrm.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.]).*")
+                && nrm.matches("(?s).*(?<![a-z])(tabata|emom|amrap|interval)"
+                        + "\\w*.*")) return out;
         // A PILLANGÓ az uszodában úszásnem, a teremben mellgép: a „pillangó
         // technikát gyakoroltam, 4x50" négyszer ötven ismétléses mellgép
         // lett – egy úszóedzésből. Úszó-szó vagy a „technika" mellett a
@@ -413,6 +422,11 @@ public final class StrengthParse {
         else if (nrm.matches("^\\s*mell\\w*\\s*(?:nap)?\\s*[:,-].*"))
             text = text.replaceAll("(?iu)(?<![\\p{L}])nyom[aá]s(?![\\p{L}])",
                     "fekvenyomás");
+        // Ugyanez a perjel körszó nélkül is idő: a „8x20/10 fekvőtámasz"
+        // tízese ott sem súly. A tétel megmarad (nyolcszor húsz), csak a
+        // pihenő másodperce nem lesz belőle kiló.
+        text = text.replaceAll("(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s?/\\s?"
+                + "\\d{1,3}(?![\\d,.])", "$1");
         String clean = dropDumbbellPair(maskDistance(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(stripPercent(stripListMarkers(
                         Hu.correction(Foods.norm(text))))))))));
