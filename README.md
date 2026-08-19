@@ -427,8 +427,10 @@ sem talált, tehát ha talál, az tényleg ott van.
 - **A mennyiség a név után is állhat**: „banán 2 db", „tojás (3 db)",
   „kenyér (2 szelet)" – a bevásárlólista-szórend legalább olyan gyakori,
   mint a fordítottja
-- **A kötőjel is számít**: a „sonkás-sajtos szendvics" három tétel (a magyar
-  melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy
+- **A kötőjel is számít**: a „sonkás-sajtos rántotta" három tétel (a magyar
+  melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy.
+  A „sonkás-sajtos szendvics" is egy tétel: ott a feltét már benne van a
+  szendvics adagjában
 - **357 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
