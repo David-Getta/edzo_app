@@ -443,4 +443,21 @@ public class KcalTest {
         assertEquals(2600, Kcal.burned(c));
     }
 
+    /**
+     * A TERMI G\u00c9P neve ugyanolyan mozg\u00e1s-sz\u00f3: az „50 perc elliptikus
+     * tr\u00e9ner, 430 kcal" n\u00e9gysz\u00e1zharminca EL\u00c9GETETT kal\u00f3ria, m\u00e9gis a napi
+     * BEVITELHEZ ad\u00f3dott – egy edz\u00e9sb\u0151l lett n\u00e9gysz\u00e1zharminc megevett
+     * kal\u00f3ria, vagyis a m\u00e9rleg mindk\u00e9t oldala rossz ir\u00e1nyba mozdult.
+     */
+    @Test
+    public void aMachineNameMarksTheCaloriesAsBurned() {
+        assertEquals(-1, Kcal.stated("50 perc elliptikus tr\u00e9ner, 430 kcal"));
+        assertEquals(430, Kcal.burned("50 perc elliptikus tr\u00e9ner, 430 kcal"));
+        assertEquals(-1, Kcal.stated("30 perc fut\u00f3pad 320 kcal"));
+        assertEquals(-1, Kcal.stated("crossfit wod 25 perc 380 kcal"));
+        // Az EV\u00c9S-ige tov\u00e1bbra is er\u0151sebb.
+        assertEquals(600, Kcal.stated("edz\u00e9s ut\u00e1n ettem 600 kcal-t"));
+        assertEquals(450, Kcal.stated("reggeli 450 kcal"));
+    }
+
 }

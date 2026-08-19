@@ -159,10 +159,18 @@ public final class Kcal {
         // mozdult. Evés-ige mellett nem él (fent kiszálltunk), és a REGGELI
         // szava is felmenti: az étkezés neve erősebb, mint a mozgásé.
         if (s.contains("reggeli")) return false;
+        // A TERMI GÉP neve ugyanolyan mozgás-szó: az „50 perc elliptikus
+        // tréner, 430 kcal" négyszázharminca ELÉGETETT kalória, mégis a napi
+        // BEVITELHEZ adódott – egy edzésből lett négyszázharminc megevett
+        // kalória, vagyis a mérleg mindkét oldala rossz irányba mozdult.
         return s.matches("(?s).*(?<![a-z])(edzes\\w*|edzettem|futas\\w*|futottam"
                 + "|lepes\\w*|lepest|setal\\w*|bringa\\w*|kerekpar\\w*|uszas\\w*"
                 + "|usztam|kondi\\w*|jogaztam|turaztam|spinning|kardio\\w*"
-                + "|intervall\\w*|tabata)(?![a-z]).*");
+                + "|intervall\\w*|tabata"
+                + "|elliptikus|crosstrainer|szobabicikli|evezogep|futopad"
+                + "|trener|crossfit|wod|emom|amrap|hiit"
+                + "|guggolas|fekvenyomas|holtemeles|fekvotamasz"
+                + "|gyaloglas|kocogas|falmaszas|boxedzes)(?![a-z]).*");
     }
 
     /**
