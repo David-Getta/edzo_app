@@ -1721,4 +1721,19 @@ public class FoodsParseTest {
         assertEquals(200.0, hits("megettem 2 szelet pizz\u00e1t").get(0).grams, 0.01);
     }
 
+    /**
+     * A FEH\u00c9R K\u00c1V\u00c9 magyarul tejesk\u00e1v\u00e9: az „ittam egy feh\u00e9r k\u00e1v\u00e9t"
+     * FEKETE k\u00e1v\u00e9k\u00e9nt ment be, vagyis a tej kal\u00f3ri\u00e1ja csendben
+     * lemaradt a napr\u00f3l.
+     */
+    @Test
+    public void whiteCoffeeIsCoffeeWithMilk() {
+        assertEquals("Tejesk\u00e1v\u00e9 / cappuccino",
+                hits("ittam egy feh\u00e9r k\u00e1v\u00e9t").get(0).food.name);
+        assertEquals(250.0, hits("ittam egy feh\u00e9r k\u00e1v\u00e9t").get(0).grams, 0.01);
+        // A hossz\u00fa \u00e9s a r\u00f6vid k\u00e1v\u00e9 marad fekete – ott t\u00e9nyleg nincs tej.
+        assertEquals("K\u00e1v\u00e9 (fekete)", hits("hossz\u00fa k\u00e1v\u00e9").get(0).food.name);
+        assertEquals("K\u00e1v\u00e9 (fekete)", hits("ittam egy fekete k\u00e1v\u00e9t").get(0).food.name);
+    }
+
 }

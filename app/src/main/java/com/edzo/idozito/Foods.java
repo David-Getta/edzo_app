@@ -803,7 +803,12 @@ public final class Foods {
                 "kapucsino", "kapuccino", "kapucino",
                 // A bécsi kávéház szava, a magyar cukrászdában is ez áll az
                 // étlapon – tejszínhabos tejeskávé.
-                "melange", "melanzs"),
+                "melange", "melanzs",
+                // A FEHÉR KÁVÉ magyarul tejeskávé: az „ittam egy fehér kávét"
+                // eddig FEKETE kávéként ment be, vagyis a tej kalóriája
+                // csendben lemaradt a napról. (A „hosszú kávé" és a „rövid
+                // kávé" marad fekete – ott tényleg nincs tej.)
+                "feher kave", "feherkave", "tejszines kave"),
         new Food("Tea (cukrozatlan)", 1, 0, 250, "tea", "matcha"),
         // A víz nulla kalória, de attól még értsük: az „ittam 1,5 liter
         // vizet" ne legyen „nem értem" – és a napló is teljesebb tőle.
