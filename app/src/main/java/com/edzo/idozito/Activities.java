@@ -1355,6 +1355,15 @@ public final class Activities {
         // illetve harminc KÜLÖN edzés lett belőle – tíz-, illetve
         // harmincnapos szakaszra szétterítve, egyetlen negyedórás edzésből.
         // (Az időzítő-terv külön olvassa a mondatot, annak a pár megmarad.)
+        // A TÖRT alakú mennyiség: az „1/2 óra futás" fél óra, a „3/4 óra
+        // kondi" negyvenöt perc – eddig MINDKETTŐ a mozgásforma szokásos
+        // hosszát kapta, mert a perjeles alakból nem lett szám. Az „1/2 km
+        // séta" távja ugyanígy elveszett. A számláló 1–3, a nevező 2–8, és
+        // szó áll utána, így a munka/pihenő pár („40/20") nem sérül.
+        for (String[] fr : new String[][]{{"12", "0,5"}, {"14", "0,25"},
+                {"34", "0,75"}, {"13", "0,33"}, {"23", "0,67"}})
+            s = s.replaceAll("(?<![\\d,.])" + fr[0].charAt(0) + "\\s?/\\s?"
+                    + fr[0].charAt(1) + "(?![\\d,.])(?=\\s?[a-z])", fr[1]);
         s = s.replaceAll("(?<![\\d,.:])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.:])", " ");
         // A TERVEZETT és a MEGLETT: a „10 km-t terveztem, 12 lett belőle"
         // tizenkét kilométer – eddig a tervezett tíz ment be, vagyis épp a

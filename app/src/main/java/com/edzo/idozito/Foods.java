@@ -2596,14 +2596,15 @@ public final class Foods {
         // A TÖRT alakú mennyiség: az „1/2 kg csirkemell" fél kiló – eddig
         // KÉT kiló lett belőle, mert a perjel előtti egyes elveszett, és a
         // nevezőt vettük mennyiségnek. Négyszeres adag került a naplóba,
-        // vagyis több mint ezer kalória a semmiből. Csak mértékegység előtt
-        // írjuk át, hogy a munka/pihenő pár és a piramis ne sérüljön.
+        // vagyis több mint ezer kalória a semmiből. Ugyanez az adagszóval:
+        // az „1/2 tábla csoki" kétszáz gramm lett, az „1/2 pizza" hatszáz.
+        // A számláló 1–3, a nevező 2–8, és szó áll utána – a munka/pihenő
+        // pár („40/20") és a piramis („60/10") így nem sérül.
         for (String[] fr : new String[][]{{"1/2", "0,5"}, {"1/4", "0,25"},
                 {"3/4", "0,75"}, {"1/3", "0,33"}, {"2/3", "0,67"},
                 {"1/8", "0,125"}})
             query = query.replaceAll("(?<![\\d,.])" + fr[0].charAt(0) + "\\s?/\\s?"
-                    + fr[0].charAt(2) + "(?=\\s?(?:kg|kil[oó]|dkg|deka|liter|dl|"
-                    + "deci|ml|gramm|g|l)(?![\\p{L}]))", fr[1]);
+                    + fr[0].charAt(2) + "(?![\\d,.])(?=\\s?\\p{L})", fr[1]);
         // A MAKRÓ-FEJLÉC nem étel: a „fehérje/szénhidrát/zsír 180/220/70"
         // sorból tíz gramm OLAJ került az étkezésnaplóba – a „zsír" szava a
         // tápérték neve itt, nem a serpenyőben lévő zsiradék. Csak a

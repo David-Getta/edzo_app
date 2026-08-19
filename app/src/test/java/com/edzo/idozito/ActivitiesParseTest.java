@@ -5999,4 +5999,21 @@ public class ActivitiesParseTest {
         assertEquals(3.0, Activities.parse("3 km fut\u00e1s").plans.get(0).km, 0.001);
     }
 
+    /**
+     * A T\u00d6RT alak\u00fa mennyis\u00e9g: az „1/2 \u00f3ra fut\u00e1s" f\u00e9l \u00f3ra, a „3/4 \u00f3ra
+     * kondi" negyven\u00f6t perc – eddig MINDKETT\u0150 a mozg\u00e1sforma szok\u00e1sos
+     * hossz\u00e1t kapta, mert a perjeles alakb\u00f3l nem lett sz\u00e1m. Az „1/2 km
+     * s\u00e9ta" t\u00e1vja ugyan\u00edgy elveszett.
+     */
+    @Test
+    public void aFractionOfAnHourIsAFraction() {
+        assertEquals("1d+0: 1\u00d7futas/30", summary("1/2 \u00f3ra fut\u00e1s"));
+        assertEquals("1d+0: 1\u00d7kondi/45", summary("3/4 \u00f3ra kondi"));
+        assertEquals("1d+0: 1\u00d7joga/15", summary("1/4 \u00f3ra ny\u00fajt\u00e1s"));
+        assertEquals(0.5, Activities.parse("1/2 km s\u00e9ta").plans.get(0).km, 0.001);
+        // A munka/pihen\u0151 p\u00e1r nem t\u00f6rt: a ritmus \u00e9rintetlen.
+        assertEquals(3, IntervalParse.parse("3 k\u00f6r 40/20").rounds);
+        assertEquals(40, IntervalParse.parse("3 k\u00f6r 40/20").work);
+    }
+
 }

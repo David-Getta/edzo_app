@@ -1810,4 +1810,15 @@ public class FoodsParseTest {
         assertEquals(300.0, hits("3 deciliter tej").get(0).grams, 0.01);
     }
 
+    /**
+     * A T\u00d6RT az ADAGSZ\u00d3 el\u0151tt is t\u00f6rt: az „1/2 t\u00e1bla csoki" k\u00e9tsz\u00e1z
+     * gramm lett, az „1/2 pizza" hatsz\u00e1z – a nevez\u0151t vett\u00fck darabsz\u00e1mnak.
+     */
+    @Test
+    public void aFractionOfAPortionIsAFraction() {
+        assertEquals(50.0, hits("1/2 t\u00e1bla csoki").get(0).grams, 0.01);
+        assertEquals(100.0, hits("1/2 adag rizs").get(0).grams, 0.01);
+        assertEquals(150.0, hits("1/2 pizza").get(0).grams, 0.01);
+    }
+
 }
