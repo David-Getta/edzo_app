@@ -2623,10 +2623,16 @@ public final class Activities {
         // futás vinné el, pedig az a kondihoz van közelebb.
         boolean[] used = new boolean[ALL.length];
         int[] minsOf = new int[keep.size()];
+        // A KÖZELEBBI idő elveheti a helyet a távolabbitól: a „szauna 15
+        // perc. Este 1 óra 20 perc tenisz." mondatban a szauna gazdátlan
+        // tizenöt perce foglalta el a tenisz helyét – csak mert előbb állt a
+        // mondatban –, és a tenisz kimondott nyolcvan perce elveszett. Egy
+        // másfél órás meccs ment be tizenöt percként.
+        int[] minsD = new int[keep.size()];
+        java.util.Arrays.fill(minsD, Integer.MAX_VALUE);
         for (int[] m : mins) {
             int best = -1, bestD = Integer.MAX_VALUE, bestPre = 2;
             for (int i = 0; i < keep.size(); i++) {
-                if (minsOf[i] != 0) continue;
                 int prevH = i > 0 ? keep.get(i - 1)[0] : -1;
                 int nextH = i + 1 < keep.size() ? keep.get(i + 1)[0] : Integer.MAX_VALUE;
                 if (m[0] <= prevH || m[0] >= nextH) continue;
@@ -2634,11 +2640,13 @@ public final class Activities {
                 int ae = wordEnd(s, keep.get(i)[0] + keep.get(i)[1] - 1);
                 int d = m[2] <= a ? a - m[2] : m[0] >= ae ? m[0] - ae : 0;
                 int pre = ae <= m[0] ? 0 : 1;
+                // A foglalt helyre csak SZIGORÚAN közelebbi idő léphet.
+                if (minsOf[i] != 0 && d >= minsD[i]) continue;
                 if (d < bestD || (d == bestD && pre < bestPre)) {
                     bestD = d; bestPre = pre; best = i;
                 }
             }
-            if (best >= 0) minsOf[best] = m[1];
+            if (best >= 0) { minsOf[best] = m[1]; minsD[best] = bestD; }
         }
         // Ugyanaz a mozgás kétszer megnevezve („crossfit wod 20 perc"): a
         // második említés kiesik a listából, de a hozzá tapadt idő nem veszhet

@@ -6116,4 +6116,23 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: 1\u00d7futas/90", summary("1 \u00f3ra \u00e9s 30 perc fut\u00e1s"));
     }
 
+    /**
+     * A K\u00d6ZELEBBI id\u0151 elveheti a helyet a t\u00e1volabbit\u00f3l: a „szauna 15
+     * perc. Este 1 \u00f3ra 20 perc tenisz." mondatban a szauna gazd\u00e1tlan
+     * tizen\u00f6t perce foglalta el a tenisz hely\u00e9t – csak mert el\u0151bb \u00e1llt a
+     * mondatban –, \u00e9s a tenisz kimondott nyolcvan perce elveszett: egy
+     * m\u00e1sf\u00e9l \u00f3r\u00e1s meccs ment be tizen\u00f6t perck\u00e9nt.
+     */
+    @Test
+    public void theNearerDurationWins() {
+        assertEquals("1d+0: 1\u00d7tenisz/80",
+                summary("szauna 15 perc. Este 1 \u00f3ra 20 perc tenisz."));
+        assertEquals("1d+0: 1\u00d7tenisz/80", summary("tv 15 perc. Este 80 perc tenisz."));
+        // Az \u00dcL\u0150 \u00d3R\u00c1K \u00e9s a tagmondat-hat\u00e1r v\u00e1ltozatlanok.
+        assertEquals("1d+0: 1\u00d7joga/20",
+                summary("hossz\u00fa nap, 11 \u00f3ra munka, este 20 perc ny\u00fajt\u00e1s"));
+        assertEquals("1d+0: 1\u00d7tura/30", summary("2 \u00f3ra tv, 30 perc s\u00e9ta"));
+        assertEquals("1d+0: 1\u00d7kondi/30", summary("munka 30 perc kondi"));
+    }
+
 }
