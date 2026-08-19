@@ -6036,4 +6036,21 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+    /**
+     * Csak a KIMONDOTT \u00f6sszeg oszlik: a „reggel \u00e9s este is futottam,
+     * \u00f6sszesen 2 liter v\u00edz" mondatban egyetlen edz\u00e9sadat sincs kimondva,
+     * a szab\u00e1ly m\u00e9gis elfelezte a mozg\u00e1sforma szok\u00e1sos hossz\u00e1t – k\u00e9t
+     * huszonk\u00e9t perces fut\u00e1s lett a k\u00e9t negyven\u00f6tperces\u00e9b\u0151l, egy
+     * V\u00cdZMENNYIS\u00c9G miatt.
+     */
+    @Test
+    public void onlyAStatedTotalGetsDivided() {
+        assertEquals("1d+0: 2\u00d7futas/45",
+                summary("reggel \u00e9s este is futottam. \u00f6sszesen 2 liter v\u00edz."));
+        // A val\u00f3di \u00f6sszeg v\u00e1ltozatlanul oszlik.
+        assertEquals("1d+0: 3\u00d7tura/30", summary("h\u00e1romszor s\u00e9t\u00e1ltam, \u00f6sszesen 90 perc"));
+        assertEquals(10.0, Activities.parse("h\u00e1romszor futottam, \u00f6sszesen 30 km")
+                .plans.get(0).km, 0.001);
+    }
+
 }

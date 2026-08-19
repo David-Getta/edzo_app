@@ -3086,7 +3086,15 @@ public final class Activities {
                     || rawText.contains("osszessegeben"))) {
             Plan p0 = out.get(0);
             int c = p0.count;
-            out.set(0, new Plan(p0.kind, c, Math.max(1, p0.minutes / c),
+            // Csak a KIMONDOTT összeg oszlik: a „reggel és este is futottam,
+            // összesen 2 liter víz" mondatban egyetlen edzésadat sincs
+            // kimondva, a szabály mégis elfelezte a mozgásforma szokásos
+            // hosszát – két huszonkét perces futás lett a két
+            // negyvenötpercesből, egy VÍZMENNYISÉG miatt. Ha semmit nem
+            // mondtak ki, nincs mit szétosztani.
+            boolean said = !mins.isEmpty() || !kms.isEmpty() || p0.steps > 0;
+            out.set(0, new Plan(p0.kind, c,
+                    said ? Math.max(1, p0.minutes / c) : p0.minutes,
                     p0.km > 0 ? p0.km / c : 0, p0.steps / c));
         }
         // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.
