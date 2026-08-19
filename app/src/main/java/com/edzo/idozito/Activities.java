@@ -2757,7 +2757,7 @@ public final class Activities {
         }
         for (int i = 0; i < keep.size(); i++) {
             int[] h = keep.get(i);
-            if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i]))
+            if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i], minsOf[i]))
                 continue;                           // egy mozgásforma egyszer szerepel
             used[h[2]] = true;
             Kind kind = ALL[h[2]];
@@ -6432,10 +6432,20 @@ public final class Activities {
      * A táv az egyetlen elég erős jel: a maraton-példában a második említés
      * ugyanazt a távot kapja (a táv-hozzárendelés átmásolja), tehát nem tér el.
      */
-    private static boolean separateSession(List<Plan> out, Kind kind, double km) {
-        if (km <= 0) return false;
+    private static boolean separateSession(List<Plan> out, Kind kind, double km, int minutes) {
+        if (km > 0) {
+            for (Plan p : out)
+                if (p.kind == kind && (p.km <= 0 || Math.abs(p.km - km) < 0.001)) return false;
+            return true;
+        }
+        // A SAJÁT, eltérő hosszú második említés is külön edzés: a „reggeli
+        // túra 12 km 3 óra, este könnyű 20 perc séta" húszperces sétája
+        // beleolvadt a túrába – a két hossz átlaga, száz perc lett mindkettő,
+        // és a napra huszonnégy kilométer került tizenkettő helyett. A táv
+        // mellett a KIMONDOTT hossz ugyanolyan erős jel.
+        if (minutes <= 0) return false;
         for (Plan p : out)
-            if (p.kind == kind && (p.km <= 0 || Math.abs(p.km - km) < 0.001)) return false;
+            if (p.kind == kind && (p.minutes <= 0 || p.minutes == minutes)) return false;
         return true;
     }
 

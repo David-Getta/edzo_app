@@ -6356,4 +6356,22 @@ public class ActivitiesParseTest {
                 + "is csin\u00e1ltam 45 percet.").plans.get(0).minutes);
     }
 
+
+    /**
+     * A SAJ\u00c1T, elt\u00e9r\u0151 hossz\u00fa m\u00e1sodik eml\u00edt\u00e9s is k\u00fcl\u00f6n edz\u00e9s: a \u201ereggeli t\u00fara
+     * 12 km 3 \u00f3ra, este k\u00f6nny\u0171 20 perc s\u00e9ta" h\u00faszperces s\u00e9t\u00e1ja beleolvadt a
+     * t\u00far\u00e1ba \u2013 a k\u00e9t hossz \u00e1tlaga, sz\u00e1z perc lett mindkett\u0151, \u00e9s a napra
+     * huszonn\u00e9gy kilom\u00e9ter ker\u00fclt tizenkett\u0151 helyett.
+     */
+    @Test
+    public void aSecondMentionWithItsOwnLengthIsItsOwnSession() {
+        Activities.Parsed p = Activities.parse("Vas\u00e1rnap: reggeli t\u00fara 12 km "
+                + "3 \u00f3ra, d\u00e9lut\u00e1n pihi, este k\u00f6nny\u0171 20 perc s\u00e9ta.");
+        assertEquals(2, p.plans.size());
+        assertEquals(12.0, p.plans.get(0).km, 0.01);
+        assertEquals(180, p.plans.get(0).minutes);
+        assertEquals(0.0, p.plans.get(1).km, 0.01);
+        assertEquals(20, p.plans.get(1).minutes);
+    }
+
 }

@@ -473,9 +473,12 @@ public class ActivitiesTest {
         assertEquals(1, p.plans.size());
         assertEquals(2, p.plans.get(0).count);
         assertEquals(45, p.plans.get(0).minutes);      // 60 + 30 = 90 összesen
+        // A SAJÁT, eltérő hosszú második említés külön edzés: a két futás a
+        // maga hosszával kerül be, nem a kettő átlagával. Az összeg ugyanaz.
         Activities.Parsed q = Activities.parse("reggel 30 perc futás, este 45 perc futás", now);
-        assertEquals(2, q.plans.get(0).count);
-        assertEquals(37, q.plans.get(0).minutes);      // 30 + 45 = 75 összesen
+        assertEquals(2, q.plans.size());
+        assertEquals(30, q.plans.get(0).minutes);
+        assertEquals(45, q.plans.get(1).minutes);      // 30 + 45 = 75 összesen
         // Két KÜLÖNBÖZŐ mozgás nem esik ebbe: mindegyik a sajátját kapja.
         Activities.Parsed r = Activities.parse("reggel 30 perc futás, este 45 perc kondi", now);
         assertEquals(2, r.plans.size());
