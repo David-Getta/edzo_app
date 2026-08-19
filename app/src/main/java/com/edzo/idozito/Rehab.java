@@ -618,9 +618,15 @@ public final class Rehab {
                 + "|szivtaj\\w*)(?![a-z]).*");
         // SZÓHATÁRRAL: a „mellkas nap: FEKVENYOMÁS 3x10" belsejében is ott
         // a „nyomás", és a mellkasnap piros zászlót kapott tőle.
+        // A FŐNÉVI alak is fájdalom: a „szúrás a mellkasomban futás közben"
+        // mondatra semmilyen válasz nem jött, mert a lista csak az IGÉT
+        // ismerte („szúr"), a főnevet („szúrás") nem. Itt a tévedés ára
+        // aszimmetrikus – egy elmaradó figyelmeztetés nem javítható.
         boolean pain = s.matches("(?s).*(?<![a-z])(faj|fajt|fajdalom|fajdalmas"
+                + "|fajas|fajasa|fajast|fajasom"
                 + "|szorit\\w*|szorito|nyomo|nyomas|nyilall\\w*|belenyilall\\w*"
-                + "|feszul\\w*|eget|szur|szurt)(?![a-z]).*");
+                + "|feszul\\w*|eget|egeto|egetes|szur|szurt|szuras|szurasa"
+                + "|szurast|szuro)(?![a-z]).*");
         if (chest && pain && !muscle) return true;
         // Az ESZMÉLETVESZTÉS önmagában is az: a „eszméletemet vesztettem" és
         // az „összeestem" nem gyakorlat-kérdés.
@@ -778,7 +784,12 @@ public final class Rehab {
                         "tartas javit", "egyenes tartas", "roskadt", "roggyant",
                         "lapocka", "hat kozepe", "hatam kozepe", "mellkasi gerinc",
                         "gorbe hat", "gorbult hat", "gorbe a hat"},
-                {"derek", "derekam", "dereka", "derek", "hatam", "hatfaj", "also hat",
+                // A TÁRGYESET is a hát szava: a „szeretnék erősebb hátat"
+                // válasz nélkül maradt, pedig az „erősebb térdet szeretnék"
+                // rég működött. A „hatat" nem a számnév tárgyesete – az
+                // „hatot" volna –, tehát nincs mivel ütköznie.
+                {"derek", "derekam", "dereka", "derek", "hatam", "hatat",
+                        "hatamat", "hatfaj", "also hat",
                         "gerincem", "gerinc",
                         // A porckorong- és csigolyasérv a deréké: ott is a
                         // törzs stabilizálása a dolog, csak még óvatosabban.

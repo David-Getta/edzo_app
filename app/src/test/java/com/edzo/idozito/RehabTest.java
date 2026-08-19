@@ -863,4 +863,33 @@ public class RehabTest {
         assertEquals("talp", Rehab.forComplaint("f\u00e1j a l\u00e1bfejem").id);
     }
 
+    /**
+     * A F\u0150N\u00c9VI alak is f\u00e1jdalom: a „sz\u00far\u00e1s a mellkasomban fut\u00e1s
+     * k\u00f6zben" mondatra semmilyen v\u00e1lasz nem j\u00f6tt, mert a lista csak az
+     * IG\u00c9T ismerte („sz\u00far"). Itt a t\u00e9ved\u00e9s \u00e1ra aszimmetrikus: egy
+     * felesleges figyelmeztet\u00e9s kellemetlen, egy elmarad\u00f3 nem jav\u00edthat\u00f3.
+     */
+    @Test
+    public void theNounFormOfChestPainIsAlsoARedFlag() {
+        assertNotNull(Rehab.redFlag("sz\u00far\u00e1s a mellkasomban fut\u00e1s k\u00f6zben"));
+        assertNotNull(Rehab.redFlag("sz\u00far\u00f3 f\u00e1jdalom a mellkasomban"));
+        assertNotNull(Rehab.redFlag("f\u00e1j\u00e1s a mellkasomban"));
+        assertNotNull(Rehab.redFlag("\u00e9get\u0151 \u00e9rz\u00e9s a mellkasomban"));
+        // A fals riaszt\u00e1s is \u00e1rt: a mellkasnap \u00e9s az izoml\u00e1z marad n\u00e9ma.
+        assertNull(Rehab.redFlag("mellkas nap: fekvenyom\u00e1s 3x10"));
+        assertNull(Rehab.redFlag("izoml\u00e1z a mellizmomban"));
+    }
+
+    /**
+     * A T\u00c1RGYESET is a h\u00e1t szava: a „szeretn\u00e9k er\u0151sebb h\u00e1tat" v\u00e1lasz
+     * n\u00e9lk\u00fcl maradt, pedig az „er\u0151sebb t\u00e9rdet szeretn\u00e9k" r\u00e9g m\u0171k\u00f6d\u00f6tt.
+     */
+    @Test
+    public void aStrongerBackIsAGoalToo() {
+        Rehab.Area a = Rehab.forGoal("szeretn\u00e9k er\u0151sebb h\u00e1tat");
+        assertNotNull(a);
+        assertEquals("derek", a.id);
+        assertEquals("derek", Rehab.forGoal("er\u0151s\u00edteni szeretn\u00e9m a h\u00e1tamat").id);
+    }
+
 }
