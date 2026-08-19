@@ -413,4 +413,17 @@ public class KcalTest {
         assertEquals(450, Kcal.stated("reggeli 450 kcal, edz\u00e9s 45 perc"));
     }
 
+    /**
+     * Az IGEK\u00d6T\u0150S keret-mondat is c\u00e9l: a „bef\u00e9rek m\u00e9g 300 kcal-ba"
+     * h\u00e1romsz\u00e1za a MARAD\u00c9K, m\u00e9gis megevett kal\u00f3riak\u00e9nt ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void aRemainingAllowanceIsNotIntake() {
+        assertEquals(-1, Kcal.stated("bele f\u00e9rek m\u00e9g 300 kcal-ba"
+                .replace("bele f", "belef")));
+        // A val\u00f3di bevitel marad.
+        assertEquals(1850, Kcal.stated("ma 1850 kcal-n\u00e1l j\u00e1rok"));
+        assertEquals(2200, Kcal.stated("ettem 2200 kcal-t"));
+    }
+
 }

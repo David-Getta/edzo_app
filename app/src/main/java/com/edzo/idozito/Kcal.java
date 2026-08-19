@@ -68,6 +68,11 @@ public final class Kcal {
     private static final String[] GOAL = {
             "cel", "celom", "celt", "celja", "celig", "keret", "keretbe", "keretem",
             "limit", "maradt", "marad", "fer", "ferek", "hianyzik", "hianyzo",
+            // Az IGEKÖTŐS alak ugyanaz a keret-mondat: a „beleférek még
+            // 300 kcal-ba" háromszáza a MARADÉK, mégis megevett kalóriaként
+            // került a naplóba – a szóhatáros lista a „fér"-t csak magában
+            // látta meg.
+            "belefer", "beleferek", "belefert", "beleferne", "beleferek meg",
             "szeretnek", "akarok", "legyen", "napi",
             // A DEFICIT és a többlet a cél nyelve, nem a bevitelé: az „500
             // kalóriás deficitben vagyok" ötszáz elfogyasztott kalóriaként
