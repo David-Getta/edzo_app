@@ -2421,6 +2421,18 @@ public final class Foods {
         return parse(all(c), query);
     }
 
+    /** Tárgyragos vagy számjegyes darabszám értéke, 0 ha nem az. */
+    private static int plainValue(String t) {
+        String w = plainNumber(t);
+        if (w == null) return 0;
+        String[][] map = {{"egy", "1"}, {"ket", "2"}, {"harom", "3"},
+                {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
+                {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"}};
+        for (String[] r : map) if (r[0].equals(w)) return Integer.parseInt(r[1]);
+        try { return Integer.parseInt(w); }
+        catch (NumberFormatException e) { return 0; }
+    }
+
     /** Tárgyragos számnév alapalakja („hatot" → „hat", „6-ot" → „6"), vagy null. */
     private static String plainNumber(String t) {
         String[][] map = {{"egyet", "egy"}, {"kettot", "ket"}, {"harmat", "harom"},
@@ -2598,6 +2610,46 @@ public final class Foods {
     }
 
     /**
+     * A RÁADÁS hozzáadódik: „2 szelet pizzát ettem, este még egyet".
+     *
+     * Az „ebédre 2 szelet pizzát ettem, este még egyet" HÁROM szelet, de
+     * kettő ment be – a záró tagmondat darabszáma nyomtalanul eltűnt. A
+     * magyar így toldja meg a mennyiséget, és az étrend-naplóban épp az
+     * ilyen ráadás a lényeg.
+     *
+     * Szűkre szabva: a fejben pontosan EGY étel és pontosan EGY szám
+     * állhat, különben nem tudni, mihez adjuk hozzá.
+     */
+    private static String addSecondHelping(List<Food> list, String query) {
+        String s = norm(query);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "[,;]\\s*(?:[^,;]{0,20}?\\s)?(?<![a-z])meg\\s+"
+                        + "(\\d{1,2}|egyet|kettot|harmat|negyet|otot)"
+                        + "(?![a-z])[\\s.!?]*$").matcher(s);
+        if (!m.find()) return query;
+        int addN = plainValue(m.group(1));
+        if (addN <= 0) return query;
+        String head = s.substring(0, m.start());
+        if (matches(list, head).size() != 1) return query;
+        java.util.regex.Matcher n = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,2})(?![\\d,.])").matcher(head);
+        int start = -1, end = -1, first = 0, seen = 0;
+        while (n.find()) {
+            seen++;
+            if (seen > 1) return query;
+            start = n.start();
+            end = n.end();
+            try { first = Integer.parseInt(n.group(1)); }
+            catch (NumberFormatException e) { return query; }
+        }
+        if (seen != 1) return query;
+        int sum = first + addN;
+        if (sum < 2 || sum > 30) return query;
+        return head.substring(0, start) + sum + head.substring(end);
+    }
+
+    /**
+     * MÁS tányérja nem az én naplóm: „a férjem pizzát evett, én salátát".    /**
      * MÁS tányérja nem az én naplóm: „a férjem pizzát evett, én salátát".
      *
      * A pizza a férjé, mégis bekerült az étrendbe – háromszáz kalória olyan
@@ -3086,6 +3138,7 @@ public final class Foods {
         }
         query = withoutOthersPlates(query);
         query = maskMacroWords(query);
+        query = addSecondHelping(list, query);
         query = amountFromTheOtherClause(list, query);
         List<Match> ms = dropVenueMenu(matches(list, query), norm(query));
         ms = dropSmoothieDouble(ms, norm(query));

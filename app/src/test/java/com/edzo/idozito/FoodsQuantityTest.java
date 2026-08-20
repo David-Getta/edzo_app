@@ -526,4 +526,21 @@ public class FoodsQuantityTest {
             if (h.food.name.startsWith("Palacsinta")) palacsinta = h.grams;
         assertEquals(180.0, palacsinta, 0.01);
     }
+
+    /**
+     * A ráadás hozzáadódik.
+     *
+     * Az „ebédre 2 szelet pizzát ettem, este még egyet" HÁROM szelet, de
+     * kettő ment be: a záró tagmondat darabszáma nyomtalanul eltűnt. A
+     * magyar így toldja meg a mennyiséget.
+     */
+    @Test public void aSecondHelpingIsAddedToTheFirst() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(300.0, Foods.parse(all, "ebédre 2 szelet pizzát ettem, "
+                + "este még egyet").get(0).grams, 0.01);
+        assertEquals(165.0, Foods.parse(all, "reggel 1 tojást ettem, délben "
+                + "még kettőt").get(0).grams, 0.01);
+        // A ráadás MÁSIK étele nem a mennyiség: ott két tétel van.
+        assertEquals(2, Foods.parse(all, "ma 2 tojást ettem, meg 1 kávé").size());
+    }
 }
