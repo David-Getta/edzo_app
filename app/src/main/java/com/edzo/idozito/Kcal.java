@@ -109,6 +109,10 @@ public final class Kcal {
             // kalóriaként ment a naplóba, a valódi kétezer-hatszáz meg
             // elveszett mellőle.
             "vittem be", "vittunk be", "vittem bele",
+            // A KAJA a bevitel hétköznapi szava: a „reggel mérés: 77,8 kg.
+            // Edzés: 45 perc kondi. Kaja: 1900 kcal." ezerkilencszáza
+            // ELÉGETETT kalóriaként ment a naplóba – az edzés szava miatt.
+            "kaja", "etkezes", "etel", "bevive",
             "elfogyasztottam", "megittam", "ittam",
             // Az ebéd és a vacsora főnévként is étkezés – a „reggeli"
             // szándékosan kimarad, mert jelzőként a napszakot mondja

@@ -493,4 +493,19 @@ public class KcalTest {
         assertEquals(600, Kcal.burned("Ma 2100 kcal-t ettem, elégettem 600-at."));
     }
 
+
+    /**
+     * A KAJA a bevitel hétköznapi szava: a „reggel mérés: 77,8 kg. Edzés: 45
+     * perc kondi. Kaja: 1900 kcal." ezerkilencszáza ELÉGETETT kalóriaként
+     * ment a naplóba – az edzés szava miatt.
+     */
+    @Test
+    public void theWordKajaMeansIntake() {
+        String q = "Reggel mérés: 77,8 kg. Edzés: 45 perc kondi. Kaja: 1900 kcal.";
+        assertEquals(1900, Kcal.stated(q));
+        assertEquals(-1, Kcal.burned(q));
+        // Az edzés melletti kalória továbbra is égetés.
+        assertEquals(520, Kcal.burned("Futás 45 perc, 520 kcal."));
+    }
+
 }

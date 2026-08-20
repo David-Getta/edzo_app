@@ -3835,7 +3835,11 @@ public final class Activities {
         }
         String[][] ws = {{"kethetente", "14"}, {"hetente", "7"}, {"minden heten", "7"},
                 {"havonta", "30"}, {"minden honapban", "30"},
-                {"ketnaponta", "2"}, {"masnaponta", "2"}, {"minden masodik nap", "2"}};
+                {"ketnaponta", "2"}, {"masnaponta", "2"}, {"minden masodik nap", "2"},
+                // A „MINDEN MÁSNAP" ugyanaz a ritmus: az „elmúlt két hétben
+                // minden másnap futottam 5 km-t" egyetlen futást írt a
+                // naplóba a hétből.
+                {"minden masnap", "2"}, {"minden mashogy", "2"}};
         for (String[] w : ws) {
             int p = s.indexOf(w[0]);
             if (p < 0) continue;
@@ -4170,7 +4174,10 @@ public final class Activities {
         // jövőnek mutatta az egész mondatot. A „szerint" épp azt mondja ki,
         // hogy a leírtak MEGVALÓSULTAK – a jövő idő többi jele (holnap,
         // fogok) az alábbi listán úgyis megmarad.
-        s = s.replaceAll("(?<![a-z])terv\\w*\\s+szerint(?![a-z])", " ");
+        // Az ÖSSZETETT szó is terv: az „edzéstervem szerint ma pihenőnap
+        // van, de csináltam 20 perc mobilitást" húsz perce elveszett, mert
+        // a szóhatár az „edzéstervem" belsejébe esett.
+        s = s.replaceAll("\\p{L}*terv\\w*\\s+szerint(?![a-z])", " ");
         // A LEGYŐZÖTT lustaság is edzés: a „ma nem volt kedvem semmihez, de
         // azért leguggoltam 50-et" ötven guggolása némán elveszett. A
         // mozgás-oldal a saját előkészítésében leveszi a kedv hiányát, az
@@ -4681,6 +4688,13 @@ public final class Activities {
                 "kisertem a nagyi", "kisertem anyu", "kisertem apu",
                 "elkisertem a nagyi", "elkisertem anyu", "elkisertem apu",
                 "vittem a nagyi", "vittem anyu", "vittem apu",
+                // A BIRTOKOS szórend ugyanaz: az „a gyerek focimeccsére
+                // vittem el, én közben 40 percet sétáltam a pálya körül"
+                // kilencven perc focit írt a naplómba – a gyerek meccséből.
+                "gyerek foci", "gyerek meccse", "gyerek edzese", "gyerek uszas",
+                "gyerek tornaja", "fiam meccse", "fiam edzese", "lanyom meccse",
+                "lanyom edzese", "meccsere vittem", "edzesere vittem",
+                "meccsere kisertem", "edzesere kisertem",
                 // A MAJDNEM nem történt meg: a „majdnem elmentem futni" és a
                 // „kis híján elmentem edzeni" negyvenöt perces bejegyzés
                 // lett. (A „majdnem 10 km-t futottam" viszont megtörtént –
@@ -4753,8 +4767,13 @@ public final class Activities {
                         && s.matches("(?s).*(?<![a-z])(gyalog|gyalogolt\\w*"
                             + "|setalt\\w*|biciklivel|bringaval|kerekparral"
                             + "|futva)(?![a-z]).*")
-                        && !s.matches("(?s).*(?<![a-z])(edzesre|meccsre|tornara"
-                            + "|orara|edzesen|meccsen)(?![a-z]).*")) boundary = false;
+                        // Az ÖSSZETETT szó is a gyerek eseménye: az „a gyerek
+                        // FOCImeccsére vittem el, én közben 40 percet
+                        // sétáltam" kilencven perc focit írt a naplómba – a
+                        // szóhatár a „focimeccsére" belsejébe esett.
+                        && !s.matches("(?s).*(edzesre|meccsre|meccsere|edzesere"
+                            + "|tornara|tornajara|orara|edzesen|meccsen)"
+                            + "(?![a-z]).*")) boundary = false;
                 // A kimaradt BEJEGYZÉS nem kimaradt edzés: a „kimaradt a
                 // tegnapi bejegyzés: futottam 8 km-t" pótlás – a futás
                 // megtörtént, csak a napló maradt le róla. Az „elfelejtettem

@@ -6817,4 +6817,41 @@ public class ActivitiesParseTest {
         assertNotNull(IntervalParse.parse("4x4 perc kemény futás, közte 3 perc pihi"));
     }
 
+
+    /**
+     * Az ÖSSZETETT szó is a gyerek eseménye, és az összetett „edzéstervem"
+     * is terv: az „a gyerek focimeccsére vittem el, én közben 40 percet
+     * sétáltam a pálya körül" kilencven perc focit írt a naplómba, az
+     * „edzéstervem szerint ma pihenőnap van, de csináltam 20 perc
+     * mobilitást" húsz perce meg elveszett.
+     */
+    @Test
+    public void compoundWordsKeepTheirMeaning() {
+        Activities.Parsed p = Activities.parse("A gyerek focimeccsére vittem "
+                + "el, én közben 40 percet sétáltam a pálya körül.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(40, p.plans.get(0).minutes);
+        Activities.Parsed r = Activities.parse("Az edzéstervem szerint ma "
+                + "pihenőnap van, de csináltam 20 perc mobilitást.");
+        assertEquals(1, r.plans.size());
+        assertEquals(20, r.plans.get(0).minutes);
+        // A puszta pihenőnap továbbra sem edzés.
+        assertEquals(0, Activities.parse("Ma pihenőnap.").plans.size());
+    }
+
+    /**
+     * A „MINDEN MÁSNAP" ugyanaz a ritmus, mint a „másnaponta": az „elmúlt két
+     * hétben minden másnap futottam 5 km-t" egyetlen futást írt a naplóba a
+     * hétből.
+     */
+    @Test
+    public void everyOtherDayIsAFrequency() {
+        Activities.Parsed p = Activities.parse("Az elmúlt két hétben minden "
+                + "másnap futottam 5 km-t.");
+        assertEquals(14, p.days);
+        assertEquals(7, p.plans.get(0).count);
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+    }
+
 }
