@@ -7429,4 +7429,25 @@ public class ActivitiesParseTest {
         assertEquals(14, Activities.parse("Két hete kondi 45 perc.").offset);
     }
 
+    /**
+     * A meccs sportág nélkül is mozgás.
+     *
+     * Az „a meccsen 60 percet játszottam, aztán lecseréltek" hatvan perce
+     * NYOMTALANUL eltűnt: a mérkőzés szava magában nem sportág, a
+     * bejegyzésből pedig semmi nem lett.
+     */
+    @Test
+    public void aMatchWithoutASportIsStillMovement() {
+        Activities.Parsed p = Activities.parse("A meccsen 60 percet "
+                + "játszottam, aztán lecseréltek.");
+        assertEquals(1, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes);
+        // A néző és a kísérő továbbra sem játszik.
+        assertTrue(Activities.parse("A gyerek focimeccsére kísértem el, "
+                + "én a lelátón ültem végig.").plans.isEmpty());
+        // A megnevezett sport nyer a gyűjtőnév felett.
+        assertEquals("foci", Activities.parse("A focimeccsen 60 percet "
+                + "játszottam.").plans.get(0).kind.id);
+    }
+
 }

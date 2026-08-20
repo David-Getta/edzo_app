@@ -3530,8 +3530,13 @@ public final class Activities {
             // A „HIIT" és az „intervall" itt, a tartalék ágon van, nem
             // szótőként: időzítős programok nevében is gyakori szó („Zsírégető
             // HIIT"), és ott a program neve a helyes válasz, nem egy sportág.
+            // A MECCS sportág nélkül is mozgás: az „a meccsen 60 percet
+            // játszottam, aztán lecseréltek" hatvan perce NYOMTALANUL
+            // eltűnt, mert a mérkőzés szava magában nem sportág. Aki
+            // játszott, az mozgott – a nézőt és a kísérőt a fenti
+            // szabályok úgyis kiszűrik.
             for (String w : new String[]{"edzes", "edzett", "edzeget", "edzeni", "alkalom",
-                    "mozgas", "hiit", "intervall"}) {
+                    "mozgas", "hiit", "intervall", "meccs", "merkozes"}) {
                 int p = s.indexOf(w);
                 if (p < 0) continue;
                 // Az „edzés UTÁN" nem edzés, hanem IDŐPONT. Az „edzés után
