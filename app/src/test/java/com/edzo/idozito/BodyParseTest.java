@@ -1050,4 +1050,20 @@ public class BodyParseTest {
         assertEquals(80.4, BodyParse.parse("80,4 kg reggel.").kg, 0.01);
     }
 
+
+    /**
+     * A SZ\u00dcLET\u00c9SNAP sz\u00e1mai \u00c9VEK: a \u201ema volt a sz\u00fclet\u00e9snapom, 42 lettem, \u00e9s
+     * 42 fekv\u0151t\u00e1maszt csin\u00e1ltam" negyvenk\u00e9t KIL\u00d3S m\u00e9r\u00e9st \u00edrt a trendbe \u2013 az
+     * \u00e9letkorb\u00f3l.
+     */
+    @Test
+    public void anAgeOnABirthdayIsNotAWeight() {
+        assertEquals(0.0, BodyParse.parse("Ma volt a sz\u00fclet\u00e9snapom, 42 lettem, "
+                + "\u00e9s 42 fekv\u0151t\u00e1maszt csin\u00e1ltam.").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("Bet\u00f6lt\u00f6ttem a 42-t.").kg, 0.01);
+        // Kimondott kg mellett a sz\u00fclinapi m\u00e9rleg is m\u00e9rleg.
+        assertEquals(78.0, BodyParse.parse("Sz\u00fclinapomon 78 kg voltam.").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("Ma 78 kg vagyok.").kg, 0.01);
+    }
+
 }

@@ -1610,6 +1610,13 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A HÁTRAVETETT „nem" ugyanúgy tagadás: a „ma szauna és jakuzzi volt
+        // csak, edzés nem" negyvenöt perces egyéb mozgást írt a naplóba –
+        // pont abból a szóból, amit a felhasználó épp tagad. A tagadás-kereső
+        // a szó ELŐTT álló „nem"-et látja, ezért a sorrendet megfordítjuk.
+        s = s.replaceAll("(?<![a-z])(edzes|mozgas|sport|futas|kondi|uszas|"
+                + "bringazas|kerekpar|seta|tura|joga)(\\w*)\\s+nem(?![a-z])",
+                "nem $1$2");
         // A „HÚSZ PERCE" időpont, nem hossz: a „húsz perce jöttem meg a
         // futásból, nagyon fájt a bal térdem" húszperces futást írt a naplóba
         // – abból a számból, ami azt mondja meg, mikor ért haza. A birtokos
@@ -2394,6 +2401,13 @@ public final class Activities {
         // „szoktam futni, ma 8 km-t futottam" nyolc kilométere eddig
         // nyomtalanul eltűnt, mert a szokás-szabály az EGÉSZ mondatra élt.
         stripHabitClause(q);
+        // A JÖVŐ tagmondata sem viheti el a megtörtént edzést: a „tegnap 45
+        // percet futottam, ma pihenek, holnap kondi lesz" negyvenöt perce
+        // nyomtalanul eltűnt, mert a mondat VÉGÉN álló terv az EGÉSZ
+        // bejegyzést jövőnek mutatta. Ha marad tervtelen tagmondat, csak a
+        // jövőbelieket takarjuk ki; ha az egész mondat terv, marad a régi
+        // viselkedés, és semmit nem mentünk belőle.
+        stripFutureClause(q);
         if (looksLikeFuture(new String(q))) return new Parsed(out, 1, 0, 12);
         // Az ÉVES-HAVI ÖSSZEGZŐ nem egy edzés: az „összesen 1250 km futás
         // idén", „a Garmin évi összesítője: 210 edzés" és a „legjobb
@@ -2686,15 +2700,19 @@ public final class Activities {
         //    ezért nem irány, hanem távolság dönt. Kézilabdához nem rendelünk
         //    távot – ott a szám nem jelent útvonalat.
         double[] kmOf = new double[keep.size()];
+        int[] kmD = new int[keep.size()];
+        java.util.Arrays.fill(kmD, Integer.MAX_VALUE);
         for (double[] t : kms) {
             int best = -1, bestD = Integer.MAX_VALUE, bestPre = 2;
             for (int i = 0; i < keep.size(); i++) {
                 if (!ALL[keep.get(i)[2]].distance) continue;
-                // Amelyik mozgás már kapott távot, az kiesik a versenyből –
-                // különben a „bicikli 20 km, futás 5 km" húsz kilométerét a
-                // futás vitte el, az ötöt pedig eldobtuk, mert a futásnak már
-                // volt távja. Két rossz bejegyzés egy mondatból.
-                if (kmOf[i] != 0) continue;
+                // Amelyik mozgás már kapott KÖZELEBBI távot, az kiesik a
+                // versenyből – különben a „bicikli 20 km, futás 5 km" húsz
+                // kilométerét a futás vitte el, az ötöt pedig eldobtuk.
+                // A KÖZELEBBI táv viszont felülír: a „reggel 5 km, délben
+                // úszás 1000 m" öt kilométere a sportnév nélküli első
+                // tagmondaté, mégis az úszás vitte el – ötkilométeres úszás
+                // lett belőle, az ezer méter meg nyomtalanul eltűnt.
                 // A TELJES szó számít, nem csak a szótő: az „úsztam" úszás-töve
                 // három betű, a szó hat – a köz különben a következő mozgáshoz
                 // tűnt közelebbinek, és a két táv helyet cserélt.
@@ -2704,6 +2722,18 @@ public final class Activities {
                 // A KÖZ számít, nem a szavak közepe – ugyanaz az elv, mint az
                 // időtartamnál.
                 int d = te <= a ? a - te : ts >= ae ? ts - ae : 0;
+                // A KÖZELEBBI táv felülír: a „reggel 5 km, délben úszás
+                // 1000 m" öt kilométere a sportnév nélküli első tagmondaté,
+                // mégis az úszás vitte el – ötkilométeres úszás lett belőle,
+                // az ezer méter meg nyomtalanul eltűnt. Távolabbról viszont
+                // nem vehető el, amit egy mozgás már megkapott: a „bicikli
+                // 20 km, futás 5 km" húszasát így nem viszi el a futás.
+                // A NÉVBŐL jövő táv (maraton = 42,2 km) nem írhatja felül a
+                // kimondottat: a „félmaraton 19,5 km" tizenkilenc és fél
+                // kilométere a valódi. A névből jövő bejegyzés nulla
+                // szélességű – kezdete és vége ugyanaz a hely.
+                boolean implied = (int) t[0] == (int) t[2];
+                if (kmOf[i] != 0 && (implied || d >= kmD[i])) continue;
                 // Egyenlő köznél az ELŐTTE álló mozgás nyer: magyarul a szám a
                 // már kimondott mozgáshoz tapad („úsztam 1 km-t, futottam 5
                 // km-t"), és egy karakternyi különbségen nem múlhat, hogy
@@ -2713,7 +2743,7 @@ public final class Activities {
                     bestD = d; bestPre = pre; best = i;
                 }
             }
-            if (best >= 0) kmOf[best] = t[1];
+            if (best >= 0) { kmOf[best] = t[1]; kmD[best] = bestD; }
         }
         // Ha ugyanaz a mozgás kétszer szerepel („leFUTOTTAM a MARATONT"), a táv
         // a második találathoz is tapadhat – a terv viszont az elsőből készül.
@@ -3541,6 +3571,53 @@ public final class Activities {
         // mozgás sem került bele. Az üres eredmény mindig egyetlen nap.
         if (out.isEmpty()) return new Parsed(out, 1, offset, findHour(s));
         return new Parsed(out, days, offset, findHour(s));
+    }
+
+
+    /**
+     * A JÖVŐ tagmondatainak kitakarása – ha van mellettük megtörtént is.
+     *
+     * A „tegnap 45 percet futottam, ma pihenek, holnap kondi lesz" harmadik
+     * tagmondata terv, az első viszont megtörtént edzés. A jövő-felismerő az
+     * EGÉSZ mondatra élt, így a negyvenöt perc némán elveszett.
+     */
+    private static void stripFutureClause(char[] q) {
+        String s = new String(q);
+        java.util.List<int[]> future = new ArrayList<>();
+        boolean anyKept = false;
+        int start = 0;
+        for (int i = 0; i <= s.length(); i++) {
+            if (i < s.length() && s.charAt(i) != ',' && s.charAt(i) != ';'
+                    && s.charAt(i) != '.') continue;
+            String cl = s.substring(start, i);
+            if (!cl.trim().isEmpty()) {
+                if (!plannedClause(cl)) {
+                    anyKept = true;
+                } else if (anyKept) {
+                    // Csak a megtörtént UTÁN álló terv takarható ki: a „ha
+                    // lesz időm, futok" feltétele a MÖGÖTTE álló tagmondatra
+                    // vonatkozik – ott a futás is szándék, nem edzés.
+                    future.add(new int[]{start, i});
+                }
+            }
+            start = i + 1;
+        }
+        for (int[] f : future) blank(q, f[0], f[1]);
+    }
+
+
+    /**
+     * KIMONDOTT terv-tagmondat: „holnap kondi lesz", „majd bepótolom".
+     *
+     * Szándékosan szűkebb, mint a teljes jövő-felismerő: itt csak az
+     * egyértelmű időjelölő és segédige számít. A képesség („futni tudok"),
+     * a pótlás („pótolom: tegnap 30 perc jóga") és a feltétel a maga
+     * tagmondatában marad – azokat a teljes mondatra futó vizsgálat kezeli.
+     */
+    private static boolean plannedClause(String cl) {
+        return cl.matches("(?s).*(?<![a-z])(holnap\\w*|holnaputan\\w*|jovo het\\w*"
+                + "|jovo hon\\w*|fogok|fogunk|tervezek|tervezem|tervezunk"
+                + "|lesz|leszek|leszunk)(?![a-z]).*");
     }
 
     /**

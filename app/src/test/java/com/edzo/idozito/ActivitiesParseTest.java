@@ -6478,4 +6478,61 @@ public class ActivitiesParseTest {
         assertEquals(20, Activities.parse("20 perc fut\u00e1s.").plans.get(0).minutes);
     }
 
+
+    /**
+     * A J\u00d6V\u0150 tagmondata nem viheti el a megt\u00f6rt\u00e9nt edz\u00e9st: a \u201etegnap 45
+     * percet futottam, ma pihenek, holnap kondi lesz" negyven\u00f6t perce
+     * nyomtalanul elt\u0171nt, mert a mondat V\u00c9G\u00c9N \u00e1ll\u00f3 terv az eg\u00e9sz bejegyz\u00e9st
+     * j\u00f6v\u0151nek mutatta.
+     */
+    @Test
+    public void aTrailingPlanDoesNotEraseWhatHappened() {
+        Activities.Parsed p = Activities.parse(
+                "Tegnap 45 percet futottam, ma pihenek, holnap kondi lesz.");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(45, p.plans.get(0).minutes);
+        assertEquals(5.0, Activities.parse("Ma 5 km fut\u00e1s, holnap is tervezek "
+                + "egyet.").plans.get(0).km, 0.01);
+        // A tiszt\u00e1n j\u00f6v\u0151 idej\u0171 mondat tov\u00e1bbra sem napl\u00f3.
+        assertEquals(0, Activities.parse("Holnap futok 5 km-t.").plans.size());
+        assertEquals(0, Activities.parse("Ha lesz id\u0151m, futok.").plans.size());
+        assertEquals(0, Activities.parse("Este megyek edzeni.").plans.size());
+    }
+
+    /**
+     * A H\u00c1TRAVETETT \u201enem" ugyan\u00fagy tagad\u00e1s: a \u201ema szauna \u00e9s jakuzzi volt
+     * csak, edz\u00e9s nem" negyven\u00f6t perces egy\u00e9b mozg\u00e1st \u00edrt a napl\u00f3ba \u2013 pont
+     * abb\u00f3l a sz\u00f3b\u00f3l, amit a felhaszn\u00e1l\u00f3 \u00e9pp tagad.
+     */
+    @Test
+    public void aTrailingNoNegatesTheActivity() {
+        assertEquals(0, Activities.parse("Ma szauna \u00e9s jakuzzi volt csak, "
+                + "edz\u00e9s nem.").plans.size());
+        // Az \u00e1ll\u00edt\u00f3 mondat marad.
+        assertEquals(1, Activities.parse("Ma edz\u00e9s volt, 45 perc.").plans.size());
+    }
+
+    /**
+     * A K\u00d6ZELEBBI t\u00e1v fel\u00fcl\u00edrja a t\u00e1volabbit: a \u201ereggel 5 km, d\u00e9lben \u00fasz\u00e1s
+     * 1000 m" \u00f6t kilom\u00e9tere a sportn\u00e9v n\u00e9lk\u00fcli els\u0151 tagmondat\u00e9, m\u00e9gis az
+     * \u00fasz\u00e1s vitte el \u2013 \u00f6tkilom\u00e9teres \u00fasz\u00e1s lett bel\u0151le, az ezer m\u00e9ter meg
+     * nyomtalanul elt\u0171nt.
+     */
+    @Test
+    public void theNearerDistanceWins() {
+        Activities.Parsed p = Activities.parse(
+                "Reggel 5 km, d\u00e9lben \u00fasz\u00e1s 1000 m, este j\u00f3ga 30 perc.");
+        assertEquals(2, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(1.0, p.plans.get(0).km, 0.01);
+        // Amit egy mozg\u00e1s K\u00d6ZELR\u0150L kapott, azt nem viszi el m\u00e1s.
+        Activities.Parsed b = Activities.parse("Bicikli 20 km, fut\u00e1s 5 km.");
+        assertEquals(20.0, b.plans.get(0).km, 0.01);
+        assertEquals(5.0, b.plans.get(1).km, 0.01);
+        // A n\u00e9vb\u0151l j\u00f6v\u0151 t\u00e1v nem \u00edrja fel\u00fcl a kimondottat.
+        assertEquals(19.5, Activities.parse("f\u00e9lmaraton 19,5 km")
+                .plans.get(0).km, 0.001);
+    }
+
 }

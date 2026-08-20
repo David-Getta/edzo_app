@@ -293,6 +293,16 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // A SZÜLETÉSNAP számai ÉVEK: a „ma volt a születésnapom, 42 lettem,
+        // és 42 fekvőtámaszt csináltam" negyvenkét KILÓS mérést írt a
+        // trendbe – az életkorból. A „42 éves lettem" alakot az éves szó
+        // eddig is védte, a puszta „42 lettem" viszont a mérleg számának
+        // látszott. Kimondott kg mellett marad a mérés (a szülinapi mérleg
+        // ugyanúgy mérleg).
+        if (Foods.norm(q).matches("(?s).*(?<![a-z])(?:szuletesnap|szulinap|"
+                + "betoltottem|betoltotte)\\w*.*")
+                && !Foods.norm(q).matches("(?s).*(?<![a-z])(?:kg|kilo)\\w*.*"))
+            return new Body(0, 0);
         // A GRAMMBAN mondott szám sosem testsúly: az „elértem a fehérjecélt,
         // 140 g" száznegyvene fehérje, mégis száznegyven KILÓS mérés lett
         // belőle – egy nap alatt hatvan kilós ugrás a trendben. Testsúlyt
