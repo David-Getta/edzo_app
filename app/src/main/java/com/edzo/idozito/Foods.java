@@ -2500,7 +2500,11 @@ public final class Foods {
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 // A KÖRÜLBELÜL szava nem mennyiség: a „kb 3 szeletet ettem
                 // belőle" hármasa elé állva eddig elrontotta a mintát.
-                "[,;]\\s*(?:kb\\.?|korulbelul|nagyjabol|talan|olyan)?\\s*"
+                // Az ALANY kimondása nem zavarhat: a közös tálból evő ember
+                // kiteszi magát („a pizzából én 4 szeletet ettem"), és eddig
+                // ez az egyetlen „én" ütötte el a négy szeletet.
+                "[,;]\\s*(?:(?:en|mi|mar|csak|viszont)\\s+)?"
+                        + "(?:kb\\.?|korulbelul|nagyjabol|talan|olyan)?\\s*"
                         + "(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
                         + "kanal|marek|falat|gomboc|db|darab)\\w*"
                         // Az EVÉS IGÉJE mögötte is állhat: az „a süti, amit
@@ -2509,10 +2513,17 @@ public final class Foods {
                         // mert a mennyiség nem a mondat végén állt.
                         + "(?:\\s+(?:megettem|ettem meg|ettem|megittam|ittam meg|"
                         + "ittam|elfogyasztottam)(?:\\s+(?:belole|beloluk|abbol))?)?"
-                        + "[\\s.!?]*$").matcher(s);
-        String head, amount;
+                        // A mennyiség tagmondata NEM KÖTELEZŐEN zárja a
+                        // mondatot: az „este pizza volt, én 4 szeletet ettem,
+                        // plusz egy sör" négy szelete eddig egyetlen adaggá
+                        // zsugorodott, mert a sör tagmondata mögötte állt. A
+                        // maradékot érintetlenül visszafűzzük, hogy a sör is
+                        // bekerüljön.
+                        + "[\\s.!?]*(?=[,;]|$)").matcher(s);
+        String head, amount, rest;
         if (m.find()) {
             head = s.substring(0, m.start());
+            rest = s.substring(m.end());
             // A ragos alakot alapalakra írjuk („két tányérral" → „két
             // tányér"): a mennyiség-olvasó a mértékegység alapalakját ismeri.
             amount = m.group(1) + " " + m.group(2);
@@ -2526,14 +2537,17 @@ public final class Foods {
             // Az alanyesetű szám az „is" nyomatékkal is darabszám: a „gin
             // tonik a bárban, kettő is" két pohár – eddig egy ment be.
             java.util.regex.Matcher c = java.util.regex.Pattern.compile(
-                    "[,;]\\s*(?:megettem|ettem|megittam|ittam)?\\s*"
+                    "[,;]\\s*(?:(?:en|mi|mar|csak|viszont)\\s+)?"
+                            + "(?:megettem|ettem|megittam|ittam)?\\s*"
                             + "(\\d{1,2}(?:-?(?:ot|et|at))?|egyet|kettot|harmat|negyet|"
                             + "otot|hatot|hetet|nyolcat|kilencet|tizet"
                             + "|ketto|harom|negy)(?:\\s+is)?"
                             + "(?:\\s+(?:megettem|ettem meg|ettem|megittam|ittam meg|"
-                            + "ittam|elfogyasztottam|lecsuszott|lement))?[\\s.!?]*$").matcher(s);
+                            + "ittam|elfogyasztottam|lecsuszott|lement))?"
+                            + "[\\s.!?]*(?=[,;]|$)").matcher(s);
             if (!c.find()) return query;
             head = s.substring(0, c.start());
+            rest = s.substring(c.end());
             amount = plainNumber(c.group(1));
             if (amount == null) return query;
         }
@@ -2555,7 +2569,7 @@ public final class Foods {
         int pos = off + hm.get(0).pos;
         String before = head.substring(0, pos)
                 .replaceAll("(?:^|\\s)egy(?:\\s+(?:adag|nagy|kis))?\\s*$", " ");
-        return before + amount + " " + head.substring(pos);
+        return before + amount + " " + head.substring(pos) + rest;
     }
 
     /**

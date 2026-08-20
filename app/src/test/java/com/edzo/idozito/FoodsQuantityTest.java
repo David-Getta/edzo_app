@@ -469,4 +469,28 @@ public class FoodsQuantityTest {
                 .get(0).grams, 0.01);
         assertEquals(25.0, Foods.parse(all, "pár szem szőlő").get(0).grams, 0.01);
     }
+
+    /**
+     * A mennyiség tagmondata nem kötelezően zárja a mondatot.
+     *
+     * Az „este pizza volt, én 4 szeletet ettem, plusz egy sör" négy szelete
+     * eddig egyetlen adaggá zsugorodott: a mennyiséget csak a mondat végén
+     * kereste a beolvasó, itt pedig a sör tagmondata állt mögötte. Az „én"
+     * kimondása külön is elrontotta – a közös tálból evő ember pedig
+     * rendszerint kiteszi az alanyt.
+     */
+    @Test public void aTrailingClauseDoesNotHideTheCount() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all,
+                "este pizza volt, én 4 szeletet ettem, plusz egy sör");
+        assertEquals(400.0, hits.get(0).grams, 0.01);
+        // A mögötte álló tagmondat nem veszhet el a mennyiséggel együtt.
+        assertEquals(2, hits.size());
+        // Az alany önmagában sem üti el a számot.
+        assertEquals(400.0, Foods.parse(all, "este pizza volt, én 4 szeletet "
+                + "ettem").get(0).grams, 0.01);
+        // A puszta darabszám ugyanígy viselkedik.
+        assertEquals(360.0, Foods.parse(all, "sütöttem palacsintát, én hatot "
+                + "ettem meg, a többit a gyerekek").get(0).grams, 0.01);
+    }
 }
