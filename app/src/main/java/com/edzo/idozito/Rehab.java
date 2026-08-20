@@ -802,7 +802,12 @@ public final class Rehab {
         // A „csípős" étel és a „vállal" ige nem testtáj – kitakarjuk, mielőtt
         // a rövid tövek („csipo", „vall") beleakadnának. A „fáj a hasam a
         // csípős kajától" panasz, de nem csípő-ügy.
-        s = s.replace("csipos", "#").replace("vallal", "#");
+        // Az INTERVALL végén ott ül a „váll": a „ma 4x400 m intervall,
+        // köztük 2 perc lazítás" mondatból VÁLL-rehab lett – a lazítás
+        // cél-szónak számít, a váll meg az intervall belsejéből jött. A
+        // bejegyzés ráadásul a panasz-oldalra került az edzés helyett.
+        s = s.replace("csipos", "#").replace("vallal", "#")
+                .replace("intervall", "#");
         String[][] map = {
                 {"boka", "bokam", "bokaja", "boka"},
                 // A térd KÜLSŐ oldala más panasz, mint az elülső – az

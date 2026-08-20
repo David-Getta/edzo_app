@@ -960,4 +960,20 @@ public class RehabTest {
         assertNull(Rehab.forComplaint("Elment a kedvem az edz\u00e9st\u0151l."));
     }
 
+    /**
+     * Az intervall v\u00e9g\u00e9n ott \u00fcl a \u201ev\u00e1ll".
+     *
+     * A \u201ema 4x400 m intervall, k\u00f6zt\u00fck 2 perc laz\u00edt\u00e1s" mondatb\u00f3l V\u00c1LL-rehab
+     * lett: a laz\u00edt\u00e1s c\u00e9l-sz\u00f3nak sz\u00e1m\u00edt, a v\u00e1ll meg az intervall
+     * belsej\u00e9b\u0151l j\u00f6tt. A bejegyz\u00e9s a panasz-oldalra ker\u00fclt az edz\u00e9s
+     * helyett.
+     */
+    @Test
+    public void theWordIntervalHidesNoShoulder() {
+        assertNull(Rehab.forGoal("Ma 4x400 m intervall, k\u00f6zt\u00fck 2 perc "
+                + "laz\u00edt\u00e1s."));
+        // A val\u00f3di v\u00e1ll-c\u00e9l marad.
+        assertEquals("vall", Rehab.forGoal("v\u00e1ll laz\u00edt\u00e1s k\u00e9ne").id);
+    }
+
 }
