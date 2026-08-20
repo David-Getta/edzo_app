@@ -451,12 +451,12 @@ public final class BodyParse {
         // tagmondata megmarad.
         s = s.replaceAll("(?<=[a-z0-9]) (?=(?:szeretnek|szeretnem|akarok|"
                 + "celom)(?![a-z]))", ", ");
-        boolean anyBlocked = adjectiveKg(s);
+        boolean anyBlocked = adjectiveKg(s) || liftStem(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {
             StringBuilder keepB = new StringBuilder();
             for (String cl : s.split("[,;.](?!\\d)")) {
-                boolean bad = adjectiveKg(cl);
+                boolean bad = adjectiveKg(cl) || liftStem(cl);
                 for (String n : NOT_BODY) if (word(cl, n)) { bad = true; break; }
                 if (bad) continue;
                 if (keepB.length() > 0) keepB.append(", ");
@@ -500,7 +500,7 @@ public final class BodyParse {
     private static String dropOtherLogs(String s) {
         if (s.indexOf(',') < 0 && s.indexOf(';') < 0 && s.indexOf('.') < 0) return s;
         StringBuilder keep = new StringBuilder();
-        boolean dropped = false;
+        boolean dropped = false, prevOther = false;   // súlyzós tagmondat volt-e
         // A vessző magyarul tizedesjel is: a „78,4" NEM két tagmondat.
         for (String part : s.split("[,;.](?!\\d)")) {
             boolean other = false;
@@ -541,8 +541,23 @@ public final class BodyParse {
             // a mérlegen – a „voltam" miatt mégis negyven kilós mérés lett
             // belőle a súlytrendben. A CENTIVEL írt tagmondat marad: a
             // „vádli 38 cm" körfogat, hiába gyakorlatnév is a vádli.
-            if (!other && !part.contains("cm") && !part.contains("centi")
-                    && StrengthParse.nameIn(part) != null) other = true;
+            boolean lift = part.matches(".*\\d\\s?x\\s?\\d.*");
+            if (!part.contains("cm") && !part.contains("centi")
+                    && StrengthParse.nameIn(part) != null) lift = true;
+            if (!other && lift) other = true;
+            // A CSUPASZ SZÁM az eldobott tagmondat FOLYTATÁSA: az „új PR
+            // fekvenyomásban, 100 kg, és közben 82 kg vagyok" száza a rúdon
+            // van – a vessző viszont külön tagmondatba tette, a
+            // gyakorlatnév nélküli „100 kg" pedig átcsúszott a rostán, és
+            // száz kilós TESTSÚLY került a trendbe. Szó nélküli tagmondat
+            // nem kezd új gondolatot.
+            if (!other && prevOther
+                    && part.matches("\\s*\\d{1,3}([.,]\\d{1,2})?\\s*"
+                        + "(kg|kilo\\w*)?\\s*")) other = true;
+            // Csak a SÚLYZÓS tagmondat folytatódhat így: az „aludtam 8 órát,
+            // 78 kg" hetvennyolca valódi mérés, ott a szomszéd tagmondat
+            // egészen másról szól.
+            prevOther = lift;
             // A SZÁM NÉLKÜLI, mérés-szót sem tartalmazó tagmondat nem szólhat
             // bele: a „Ma pihenőnap volt. 78,9 kg reggel." első mondatában
             // egyetlen olyan szó van („pihenőnap"), amit a „csak számok
@@ -885,6 +900,26 @@ public final class BodyParse {
                         + "(?![a-z])", " ")
                 .replaceAll("[^a-z]", " ").trim();
         return rest.isEmpty();
+    }
+
+    /**
+     * RAGOZOTT gyakorlatnév a tagmondatban: „guggolásban", „fekvenyomásban".
+     *
+     * A tiltólista szóhatárt vár, ezért a ragos alak átcsúszott rajta: az
+     * „elértem az új személyes csúcsomat guggolásban: 120 kg" SZÁZHÚSZ KILÓS
+     * TESTSÚLYT írt a trendbe – a rúdon lévő súlyt. Egy ilyen bejegyzés a
+     * súlygörbét, a BMI-t és a kalóriakeretet is elrontja.
+     */
+    private static boolean liftStem(String s) {
+        // A CENTIVEL írt tagmondat körfogat marad: a „bicepszem 40 cm" a
+        // kar körfogata, hiába gyakorlatnév is a bicepsz.
+        if (s.contains("cm") || s.contains("centi")) return false;
+        for (String w : new String[]{"fekvenyomas", "guggolas", "felhuzas",
+                "holtemeles", "huzodzkodas", "tolodzkodas", "fekvotamasz",
+                "kitores", "vallbol nyomas", "vallnyomas", "labtolas",
+                "bicepsz", "tricepsz", "szakitas", "lokes", "evezes"})
+            if (s.matches("(?s).*(?<![a-z])" + w + "\\w*.*")) return true;
+        return false;
     }
 
     /** Egész szóként szerepel-e a mondatban. */

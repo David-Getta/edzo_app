@@ -5463,8 +5463,15 @@ public final class Activities {
                 // „a heti tervem szerint ma futottam 5 km-t" mai futása hét
                 // napra terült szét, pedig a mondat kimondja, hogy MA volt.
                 // A „heti terhelés: 60 km" ma-szó nélkül marad heti összeg.
+                // Az EGYSZERI alkalom igéje is erősebb a jelzőnél: az
+                // „elmentem a heti crossfit órára, 60 perc" egyetlen órája
+                // hét napra terült szét – a „heti" ott a KURZUS neve, nem
+                // az összegzés időszaka.
                 if (word.equals("heti")
-                        && s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")) continue;
+                        && (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")
+                            || s.matches("(?s).*(?<![a-z])(elmentem|elmentunk"
+                                + "|elugrottam|ott voltam|reszt vettem"
+                                + "|beneveztem)(?![a-z]).*"))) continue;
                 if ((mult == 7 || mult == 30) && word.length() > unit.length())
                     return new int[]{p, end, mult};
                 // A MUTATÓ NÉVMÁS a ragtalan alakot is időszakká teszi: az

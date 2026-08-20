@@ -1099,4 +1099,21 @@ public class BodyParseTest {
         assertEquals(80.0, BodyParse.parse("Ma 80 kg vagyok.").kg, 0.01);
     }
 
+    /**
+     * A ragozott gyakorlatn\u00e9v sem m\u00e9r\u00e9s.
+     *
+     * A tilt\u00f3lista sz\u00f3hat\u00e1rt v\u00e1r, ez\u00e9rt a ragos alak \u00e1tcs\u00faszott rajta: az
+     * \u201eel\u00e9rtem az \u00faj szem\u00e9lyes cs\u00facsomat guggol\u00e1sban: 120 kg" SZ\u00c1ZH\u00daSZ
+     * KIL\u00d3S tests\u00falyt \u00edrt a trendbe \u2013 a r\u00fadon l\u00e9v\u0151 s\u00falyt. A vessz\u0151 ut\u00e1ni
+     * csupasz sz\u00e1m ugyanennek a tagmondatnak a folytat\u00e1sa.
+     */
+    @Test public void anInflectedLiftNameIsNotAMeasurement() {
+        assertEquals(0.0, BodyParse.parse("Ma el\u00e9rtem az \u00faj szem\u00e9lyes "
+                + "cs\u00facsomat guggol\u00e1sban: 120 kg.").kg, 0.01);
+        assertEquals(82.0, BodyParse.parse("\u00daj PR fekvenyom\u00e1sban, 100 kg, "
+                + "\u00e9s k\u00f6zben 82 kg vagyok.").kg, 0.01);
+        // A val\u00f3di m\u00e9r\u00e9s marad, a k\u00f6rfogat is.
+        assertEquals(78.0, BodyParse.parse("aludtam 8 \u00f3r\u00e1t, 78 kg").kg, 0.01);
+        assertEquals(40.0, BodyParse.parse("bicepszem 40 cm").cm[4], 0.01);
+    }
 }

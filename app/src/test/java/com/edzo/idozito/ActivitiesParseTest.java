@@ -7114,4 +7114,19 @@ public class ActivitiesParseTest {
                 + "5 km futás.").plans.size());
     }
 
+    /**
+     * A heti kurzus egyetlen alkalma nem hét nap.
+     *
+     * Az „elmentem a heti crossfit órára, 60 perc" egyetlen órája hét napra
+     * terült szét a naptárban – a „heti" ott a KURZUS neve, nem az
+     * összegzés időszaka.
+     */
+    @Test
+    public void aWeeklyClassIsOneOccasion() {
+        assertEquals(1, Activities.parse("Elmentem a heti crossfit órára, "
+                + "60 perc.").days);
+        // A heti összegzés marad heti.
+        assertEquals(7, Activities.parse("Heti terhelés: 60 km.").days);
+    }
+
 }
