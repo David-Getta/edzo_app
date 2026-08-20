@@ -508,4 +508,21 @@ public class KcalTest {
         assertEquals(520, Kcal.burned("Futás 45 perc, 520 kcal."));
     }
 
+    /**
+     * A ragozott fehérje is fehérje.
+     *
+     * A „ma összesen 1850 kcal-t ettem, 140 g fehérjével" száznegyvene
+     * sehova nem került: a minta csak az alanyesetet és a tárgyesetet
+     * ismerte, a határozóragos alakot nem.
+     */
+    @Test
+    public void anInflectedProteinWordStillCounts() {
+        assertEquals(140.0, Kcal.protein("Ma összesen 1850 kcal-t ettem, "
+                + "140 g fehérjével."), 0.01);
+        assertEquals(1850, Kcal.stated("Ma összesen 1850 kcal-t ettem, "
+                + "140 g fehérjével."));
+        // Az étel neve továbbra sem tápérték-sor.
+        assertEquals(-1.0, Kcal.protein("150 g protein turmix"), 0.01);
+    }
+
 }

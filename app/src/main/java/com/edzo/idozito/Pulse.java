@@ -44,8 +44,11 @@ public final class Pulse {
                             + "nyugalomban|pihenoben|nyugalmi allapotban|"
                             + "felment|javult|romlott)\\s){0,2}(\\d{2,3})"),
             // „52-es pulzus", „48 as nyugalmi pulzus"
+            // Az Ö HANGRENDŰ toldalék is ugyanez: az „55-ös pulzussal
+            // ébredtem" és a „reggel 55-ös pulzus" némán elveszett, mert a
+            // minta csak az „-es" és az „-as" alakot ismerte.
             java.util.regex.Pattern.compile(
-                    "(\\d{2,3})[- ]?[ae]s\\s(?:nyugalmi\\s)?pulzus"),
+                    "(\\d{2,3})[- ]?[aeo]s\\s(?:nyugalmi\\s)?pulzus"),
             // Az óra-appok rövidítése.
             java.util.regex.Pattern.compile("(?<![a-z])rhr\\s?:?\\s?(\\d{2,3})"),
             // Fordítva is: az „54 rhr" a tömör napló-sor alakja.
@@ -140,6 +143,12 @@ public final class Pulse {
         if (!s.contains("nyugalmi") && !s.contains("pihenopulzus")
                 && !s.contains("nyugalomban") && !s.contains("pihenoben")
                 && !s.contains("ebredeskor") && !s.contains("ebredes utan")
+                // Az ÉBREDÉS IGÉJE ugyanilyen erős: az „edzés után 55-ös
+                // pulzussal ébredtem, jól regenerálódtam" ötvenötje a
+                // reggeli mérés – az edzés szava mégis elnémította. Aki
+                // ébredéskor mér, az a nyugalmi értékét méri.
+                && !s.matches(".*(?<![a-z])(?:ebredtem|felebredtem|keltem)"
+                        + "(?![a-z]).*")
                 && !s.matches(".*(?<![a-z])reggeli?\\s[^,;.]{0,10}?pulzus.*"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})

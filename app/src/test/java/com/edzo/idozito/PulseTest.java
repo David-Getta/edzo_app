@@ -268,4 +268,23 @@ public class PulseTest {
         assertEquals(-1, Pulse.parse("Fut\u00e1s k\u00f6zben 165 volt a pulzusom."));
     }
 
+    /**
+     * Az \u00f6 hangrend\u0171 toldal\u00e9k \u00e9s az \u00e9bred\u00e9s ig\u00e9je.
+     *
+     * Az \u201e55-\u00f6s pulzussal \u00e9bredtem" n\u00e9m\u00e1n elveszett: a minta csak az \u201e-es"
+     * \u00e9s az \u201e-as" alakot ismerte. Az \u201eedz\u00e9s ut\u00e1n 55-\u00f6s pulzussal
+     * \u00e9bredtem, j\u00f3l regener\u00e1l\u00f3dtam" \u00f6tven\u00f6tj\u00e9t r\u00e1ad\u00e1sul az edz\u00e9s szava is
+     * eln\u00e9m\u00edtotta \u2013 pedig aki \u00e9bred\u00e9skor m\u00e9r, az a nyugalmi \u00e9rt\u00e9k\u00e9t m\u00e9ri.
+     */
+    @Test
+    public void anOInflectionAndTheWakingVerbCount() {
+        assertEquals(55, Pulse.parse("55-\u00f6s pulzussal \u00e9bredtem."));
+        assertEquals(55, Pulse.parse("Reggel 55-\u00f6s pulzus."));
+        assertEquals(55, Pulse.parse("Edz\u00e9s ut\u00e1n 55-\u00f6s pulzussal \u00e9bredtem, "
+                + "j\u00f3l regener\u00e1l\u00f3dtam."));
+        // Az edz\u00e9s k\u00f6zbeni \u00e9rt\u00e9k tov\u00e1bbra sem nyugalmi.
+        assertEquals(-1, Pulse.parse("Fut\u00e1s k\u00f6zben 165 volt az "
+                + "\u00e1tlagpulzusom."));
+    }
+
 }

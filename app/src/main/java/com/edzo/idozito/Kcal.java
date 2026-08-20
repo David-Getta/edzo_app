@@ -371,7 +371,11 @@ public final class Kcal {
      * ÉTEL neve, nem a tápérték-táblázat sora.
      */
     private static final Pattern PROT_AFTER = Pattern.compile(
-            "(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?\\s*(?<![a-z])(feherje|feherjet|protein|proteint)"
+            // A RAGOZOTT alak is fehérje: a „ma összesen 1850 kcal-t ettem,
+            // 140 g fehérjével" száznegyvene eddig sehova nem került, mert
+            // csak az alanyesetet és a tárgyesetet ismertük.
+            "(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?\\s*(?<![a-z])"
+            + "(?:feherje|protein)(?:t|vel|val|bol|hez|nel|nal)?"
             // A „150 g protein turmix" száz-ötven grammja a TURMIXÉ, nem a
             // fehérjéé: az étel neve folytatódik, tehát nem tápérték-sor.
             + "(?![a-z])(?!\\s?(?:turmix|shake|sejk|por|italpor|szelet|pudding))");
