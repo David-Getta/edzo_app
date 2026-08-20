@@ -1228,6 +1228,13 @@ public final class Activities {
                 && s.matches("(?s).*(?<![a-z])hat nap(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])hat nap(?![a-z])"
                     + "(?!\\s+(?:alatt|mulva|utan|ota|kihagyas))", " ");
+        // A HAVI jelző szám nélkül időszak, ahogy a HETI is: a „havi
+        // összesítés: 120 km futás, 12 edzés" százhúsz kilométere EGY
+        // NAPRA került – tizenkét óra futás egyetlen napon. A „hónapi"
+        // alakot a hossz-olvasó már ismeri, a rendhagyó „havi"-t nem. A
+        // szám előtt álló „havi 4 edzés" gyakoriság marad, azt a
+        // gyakoriság-szabály viszi.
+        s = s.replaceAll("(?<![a-z])havi(?![a-z])(?!\\s+\\d)", "honapi");
         // A KIÍRT KÖRSZÁM: az „öt kör a pályán, egyenként 400 m" öt köre öt
         // KÜLÖN futásnak látszott, öt napra osztva – a kétezer méterből
         // négyszáz maradt. A számjegyes „5 kör" régóta helyesen összeadódik;
@@ -2595,7 +2602,14 @@ public final class Activities {
                     + "turaztunk|kondiztam|kocogtam|eveztem|tancoltam)"
                     + "(?![a-z]).*"))
             return new Parsed(out, 1, 0, 12);
-        if (sm.contains("osszesito")
+        // A HETI és a HAVI összesítő nem esik ide: azt az app KEZELI – hét,
+        // illetve harminc napra osztva. A „heti összesítőm: 42 km futás,
+        // 3 kondi, 1 úszás" bejegyzésből eddig SEMMI nem lett, pedig a
+        // „heti összesítés" ugyanezzel a tartalommal rendben bement. Az
+        // évadra és az évre szóló összesítő marad emlék, nem napló.
+        if ((sm.contains("osszesito")
+                && !sm.matches("(?s).*(?<![a-z])(heti|havi|honapi|hetes"
+                        + "|honapos)\\w*.*"))
                 || sm.matches(".*(?<![a-z])(iden|tavaly|szezonban|a szezon)"
                         + "(?![a-z]).*(?<![a-z])osszesen(?![a-z]).*")
                 || sm.matches(".*(?<![a-z])osszesen(?![a-z]).*"
@@ -5483,7 +5497,7 @@ public final class Activities {
                 // „elmentem a heti crossfit órára, 60 perc" egyetlen órája
                 // hét napra terült szét – a „heti" ott a KURZUS neve, nem
                 // az összegzés időszaka.
-                if (word.equals("heti")
+                if ((word.equals("heti") || word.equals("honapi"))
                         && (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")
                             || s.matches("(?s).*(?<![a-z])(elmentem|elmentunk"
                                 + "|elugrottam|ott voltam|reszt vettem"

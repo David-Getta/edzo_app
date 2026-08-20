@@ -7174,4 +7174,27 @@ public class ActivitiesParseTest {
                 + "fekvenyomás 3x8 70 kg.").plans.size());
     }
 
+    /**
+     * A heti és a havi összesítő napló, nem emlék.
+     *
+     * A „heti összesítőm: 42 km futás, 3 kondi, 1 úszás" bejegyzésből SEMMI
+     * nem lett, pedig a „heti összesítés" ugyanezzel a tartalommal rendben
+     * bement – az összesítő szava az évadra szólót is, a hetit is
+     * elnémította. A „havi összesítés: 120 km futás, 12 edzés" pedig
+     * EGYETLEN napra tette a százhúsz kilométert: a rendhagyó „havi" jelzőt
+     * a hossz-olvasó nem ismerte.
+     */
+    @Test
+    public void weeklyAndMonthlySummariesAreKept() {
+        Activities.Parsed p = Activities.parse("A heti összesítőm: 42 km "
+                + "futás, 3 kondi, 1 úszás.");
+        assertEquals(7, p.days);
+        assertEquals(3, p.plans.size());
+        assertEquals(30, Activities.parse("Havi összesítés: 120 km futás, "
+                + "12 edzés.").days);
+        // Az évi összesítő marad emlék.
+        assertTrue(Activities.parse("Az évi összesítő: 1200 km "
+                + "futás.").plans.isEmpty());
+    }
+
 }
