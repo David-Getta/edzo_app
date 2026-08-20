@@ -2498,8 +2498,18 @@ public final class Foods {
     private static String amountFromTheOtherClause(List<Food> list, String query) {
         String s = norm(query);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
-                "[,;]\\s*(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
-                        + "kanal|marek|falat|gomboc|db|darab)\\w*[\\s.!?]*$").matcher(s);
+                // A KÖRÜLBELÜL szava nem mennyiség: a „kb 3 szeletet ettem
+                // belőle" hármasa elé állva eddig elrontotta a mintát.
+                "[,;]\\s*(?:kb\\.?|korulbelul|nagyjabol|talan|olyan)?\\s*"
+                        + "(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
+                        + "kanal|marek|falat|gomboc|db|darab)\\w*"
+                        // Az EVÉS IGÉJE mögötte is állhat: az „a süti, amit
+                        // vittek a munkahelyre, kb 3 szeletet ettem belőle"
+                        // három szelete eddig egyetlen adagra zsugorodott,
+                        // mert a mennyiség nem a mondat végén állt.
+                        + "(?:\\s+(?:megettem|ettem meg|ettem|megittam|ittam meg|"
+                        + "ittam|elfogyasztottam)(?:\\s+(?:belole|beloluk|abbol))?)?"
+                        + "[\\s.!?]*$").matcher(s);
         String head, amount;
         if (m.find()) {
             head = s.substring(0, m.start());

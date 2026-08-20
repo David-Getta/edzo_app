@@ -1942,4 +1942,22 @@ public class FoodsParseTest {
         assertEquals(0.0, h.get(1).grams, 0.01);
     }
 
+
+    /**
+     * Az EVÉS IGÉJE a mennyiség mögött is állhat: az „a süti, amit vittek a
+     * munkahelyre, kb 3 szeletet ettem belőle" három szelete egyetlen
+     * adagra zsugorodott, mert a mennyiség nem a mondat végén állt.
+     */
+    @Test
+    public void aTrailingAmountSurvivesTheVerbAfterIt() {
+        assertEquals(240.0, hits("a süti amit vittek a munkahelyre, "
+                + "kb 3 szeletet ettem belőle").get(0).grams, 0.01);
+        assertEquals(240.0, hits("sütit vittek a munkahelyre, "
+                + "3 szeletet ettem belőle").get(0).grams, 0.01);
+        // A korábbi alakok változatlanok.
+        assertEquals(200.0, hits("Vacsi maradék pizza, 2 szelet.").get(0).grams, 0.01);
+        assertEquals(700.0, hits("ebédre töltött káposzta volt, két adag")
+                .get(0).grams, 0.01);
+    }
+
 }
