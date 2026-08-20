@@ -2750,8 +2750,14 @@ public final class Activities {
         //    távot – ott a szám nem jelent útvonalat.
         double[] kmOf = new double[keep.size()];
         int[] kmD = new int[keep.size()];
+        boolean[] kmDuring = new boolean[keep.size()];
         java.util.Arrays.fill(kmD, Integer.MAX_VALUE);
         for (double[] t : kms) {
+            // A KÖZTE tagmondat távja a szakaszok közti pihenő, nem az edzés
+            // távja: a „3 kör 800 m, közte 400 m kocogás" négyszáz métert írt
+            // a naplóba a kétezer-négyszázból – a levezető kocogás elvitte a
+            // teljes futás helyét, mert közelebb állt a mozgás szavához.
+            boolean during = duringClause(s, (int) t[0]);
             int best = -1, bestD = Integer.MAX_VALUE, bestPre = 2;
             for (int i = 0; i < keep.size(); i++) {
                 if (!ALL[keep.get(i)[2]].distance) continue;
@@ -2783,6 +2789,7 @@ public final class Activities {
                 // szélességű – kezdete és vége ugyanaz a hely.
                 boolean implied = (int) t[0] == (int) t[2];
                 if (kmOf[i] != 0 && (implied || d >= kmD[i])) continue;
+                if (kmOf[i] != 0 && during && !kmDuring[i]) continue;
                 // Egyenlő köznél az ELŐTTE álló mozgás nyer: magyarul a szám a
                 // már kimondott mozgáshoz tapad („úsztam 1 km-t, futottam 5
                 // km-t"), és egy karakternyi különbségen nem múlhat, hogy
@@ -2792,7 +2799,11 @@ public final class Activities {
                     bestD = d; bestPre = pre; best = i;
                 }
             }
-            if (best >= 0) { kmOf[best] = t[1]; kmD[best] = bestD; }
+            if (best >= 0) {
+                kmOf[best] = t[1];
+                kmD[best] = bestD;
+                kmDuring[best] = during;
+            }
         }
         // Ha ugyanaz a mozgás kétszer szerepel („leFUTOTTAM a MARATONT"), a táv
         // a második találathoz is tapadhat – a terv viszont az elsőből készül.

@@ -6684,4 +6684,24 @@ public class ActivitiesParseTest {
                 + "este könnyű 20 perc séta.").plans.size());
     }
 
+
+    /**
+     * A KÖZTE tagmondat távja a szakaszok közti pihenő, nem az edzés távja:
+     * a „3 kör 800 m, közte 400 m kocogás" négyszáz métert írt a naplóba a
+     * kétezer-négyszázból – a levezető kocogás elvitte a teljes futás
+     * helyét, mert közelebb állt a mozgás szavához.
+     */
+    @Test
+    public void theRecoveryDistanceDoesNotReplaceTheWorkout() {
+        Activities.Parsed p = Activities.parse("3 kör 800 m, közte 400 m kocogás.");
+        assertEquals(1, p.plans.size());
+        assertEquals(2.4, p.plans.get(0).km, 0.01);
+        // A kimondott össztáv és a két külön mozgás változatlan.
+        assertEquals(4.0, Activities.parse("10x400 m, közte 90 mp pihi, "
+                + "összesen 4 km.").plans.get(0).km, 0.01);
+        Activities.Parsed b = Activities.parse("Bicikli 20 km, futás 5 km.");
+        assertEquals(20.0, b.plans.get(0).km, 0.01);
+        assertEquals(5.0, b.plans.get(1).km, 0.01);
+    }
+
 }
