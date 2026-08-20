@@ -3949,8 +3949,15 @@ public final class Activities {
                 // sorozat ismétlésszámával – így csak az kerül vissza a
                 // helyére, amit tényleg a gyakorlattól vettünk el.
                 boolean generic = "kondi".equals(p.kind.id) || "egyeb".equals(p.kind.id);
+                // A KIMONDOTT HOSSZ nem véd meg a téves darabszámtól: a
+                // „3x8 fekvenyomás 60kg, 3x10 evezés 50kg, 3x12 bicepsz
+                // 12kg – kb 50 perc" NYOLC edzésre esett szét, nyolc napra
+                // osztva, mert a nyolcas az ismétlésszámból jött. A
+                // szabály eddig csak az alapértelmezett hosszú tervet
+                // javította – pedig a kimondott ötven perc épp azt erősíti
+                // meg, hogy EGY edzésről van szó.
                 if (generic && p.count > 1 && p.km <= 0
-                        && p.minutes == p.kind.defaultMin && repsMatch(lifts, p.count)) {
+                        && repsMatch(lifts, p.count)) {
                     fixed.add(new Plan(p.kind, 1, p.minutes, p.km, p.steps));
                     // A napok száma is ebből a számból jött („20 kettlebell
                     // swing" húsz napra osztva) – az sem áll meg nélküle.

@@ -7278,4 +7278,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    /**
+     * A kimondott hossz nem véd meg a téves darabszámtól.
+     *
+     * A „3x8 fekvenyomás 60kg, 3x10 evezés 50kg, 3x12 bicepsz 12kg – kb 50
+     * perc" NYOLC edzésre esett szét, nyolc napra osztva: a nyolcas az
+     * ismétlésszámból jött. A javítás eddig csak az alapértelmezett hosszú
+     * tervre élt – pedig a kimondott ötven perc épp azt erősíti meg, hogy
+     * EGY edzésről van szó.
+     */
+    @Test
+    public void aStatedLengthDoesNotKeepTheWrongCount() {
+        Activities.Parsed p = Activities.parse("3x8 fekvenyomás 60kg, "
+                + "3x10 evezés 50kg, 3x12 bicepsz 12kg - kb 50 perc");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(50, p.plans.get(0).minutes);
+    }
+
 }
