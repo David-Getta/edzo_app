@@ -2060,4 +2060,21 @@ public class FoodsParseTest {
         // A mai ebéd marad mai ebéd.
         assertFalse(Foods.parse(all, "ma ebédre csirkés rizs").isEmpty());
     }
+
+    /**
+     * A ropogós bőr nem bor.
+     *
+     * Ékezet nélkül a kettő egybeesik: az „este megettem egy egész
+     * csirkecombot ropogós bőrrel" mellé másfél deci BOR is bekerült az
+     * étrendbe. A bor eszközragja „borral" (a-hangrend), a bőré „bőrrel" –
+     * ez elválasztja őket.
+     */
+    @Test public void crispySkinIsNotWine() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (Foods.Hit h : Foods.parse(all, "este megettem egy egész "
+                + "csirkecombot ropogós bőrrel"))
+            assertFalse(h.food.name.startsWith("Bor "));
+        // A valódi bor marad bor.
+        assertFalse(Foods.parse(all, "ittam egy pohár bort").isEmpty());
+    }
 }

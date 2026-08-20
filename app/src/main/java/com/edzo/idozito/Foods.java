@@ -1078,6 +1078,11 @@ public final class Foods {
             // A BOR mindenütt: felHÁBORító, szoBOR, BORravaló, bíBOROs,
             // kóBOR, világháBORú.
             "felhaborit", "szobor", "borraval", "biboros", "kobor", "boris",
+            // A ROPOGÓS BŐR nem bor: ékezet nélkül a kettő egybeesik, és a
+            // „megettem egy egész csirkecombot ropogós bőrrel" mellé
+            // másfél deci BOR is bekerült az étrendbe. A bor eszközragja
+            // „borral" (a-hangrend), a bőré „bőrrel" – ez elválasztja őket.
+            "borrel",
             // A KÓLA: karCOLás, bonCOLás. (A parkolás már régóta itt van.)
             "karcol", "boncol", "csonkol", "foncsor",
             // A LIBA: nappaLIBAn. A BAB: fürdőSZOBÁBAn – a szoba a
