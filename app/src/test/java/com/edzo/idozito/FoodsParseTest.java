@@ -2045,4 +2045,19 @@ public class FoodsParseTest {
         // A pótlás nélküli felejtés marad kihagyás.
         assertTrue(Foods.looksUneaten("elfelejtettem bevenni a vitaminokat"));
     }
+
+    /**
+     * A heti ebédek megfőzése előkészület.
+     *
+     * A „ma este megfőztem a heti ebédeket, 5 adag csirkés rizs"
+     * HÉTSZÁZÖTVEN GRAMM csirkét írt a MAI naplóba – abból az ételből, ami
+     * a jövő heti ebéd.
+     */
+    @Test public void cookingTheWeeksLunchesIsNotEating() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "ma este megfőztem a heti ebédeket, "
+                + "5 adag csirkés rizs").isEmpty());
+        // A mai ebéd marad mai ebéd.
+        assertFalse(Foods.parse(all, "ma ebédre csirkés rizs").isEmpty());
+    }
 }

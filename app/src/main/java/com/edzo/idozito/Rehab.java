@@ -498,6 +498,12 @@ public final class Rehab {
         // „elment a hátam, alig bírok mozogni" és a „ma edzés közben elment
         // a térdem" eddig válasz nélkül maradt. Csak TESTRÉSZ előtt él, hogy
         // az „elment a kedvem" és az „elment a busz" ne essen ide.
+        // A KÖZBEÉKELT nyomaték nem szakítja el az igét a tárgyától: a
+        // „bemelegítés nélkül kezdtem, meg is húztam a combomat" húzódása
+        // eddig CÉLNAK számított, nem panasznak.
+        if (!pain && s.matches("(?s).*(?<![a-z])(?:meg|be|el)\\s+is\\s+"
+                + "(?:huztam|rantottam|randitottam|serultem)(?![a-z]).*"))
+            pain = true;
         if (!pain && s.matches("(?s).*(?<![a-z])elment\\s+a[z]?\\s+"
                 + "(?:terd|derek|hat|nyak|vall|boka|csipo|comb|konyok"
                 + "|csuklo|sarok|gerinc|labam|kezem)\\w*.*")) pain = true;

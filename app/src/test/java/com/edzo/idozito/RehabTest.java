@@ -976,4 +976,16 @@ public class RehabTest {
         assertEquals("vall", Rehab.forGoal("v\u00e1ll laz\u00edt\u00e1s k\u00e9ne").id);
     }
 
+    /**
+     * A k\u00f6zbe\u00e9kelt nyomat\u00e9k nem szak\u00edtja el az ig\u00e9t a t\u00e1rgy\u00e1t\u00f3l.
+     *
+     * A \u201ebemeleg\u00edt\u00e9s n\u00e9lk\u00fcl kezdtem, meg is h\u00faztam a combomat" h\u00faz\u00f3d\u00e1sa
+     * c\u00e9lnak sz\u00e1m\u00edtott, nem panasznak.
+     */
+    @Test
+    public void anEmphasisWordDoesNotHideTheInjury() {
+        assertEquals("comb", Rehab.forComplaint("Bemeleg\u00edt\u00e9s n\u00e9lk\u00fcl "
+                + "kezdtem, meg is h\u00faztam a combomat.").id);
+    }
+
 }

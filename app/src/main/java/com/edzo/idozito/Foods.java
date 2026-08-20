@@ -4204,6 +4204,12 @@ public final class Foods {
                 // nagy fazék gulyást a hétre" nem mai adag. A SÜTŐBEN sülő
                 // étel ugyanígy – a „megsült a kenyerem" még nem falat.
                 "a hetre", "egesz hetre", "tobb napra", "napokra",
+                // A HETI EBÉDEK megfőzése is előkészület: a „ma este
+                // megfőztem a heti ebédeket, 5 adag csirkés rizs"
+                // HÉTSZÁZÖTVEN GRAMM csirkét írt a MAI naplóba – abból az
+                // ételből, ami a jövő heti ebéd.
+                "heti ebed", "heti vacsor", "heti kaja", "heti adag",
+                "hetre valo", "hetre elore",
                 "megsult", "most sul", "sul a sutoben",
                 // A CÉL nem adag: az „új célok: heti 4 edzés, napi 10000
                 // lépés, 2 liter víz, 1800 kcal" két liter vizet írt a MAI
