@@ -7237,4 +7237,25 @@ public class ActivitiesParseTest {
                 + "naponta.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * Az órától óráig tartó edzés hossza kiszámolható.
+     *
+     * A „ma reggel 6-tól 7-ig futottam a parkban" hatvan perce elveszett, és
+     * a futás a negyvenöt perces alapértelmezést kapta – kevesebb került a
+     * naplóba, mint amennyit az ember lefutott.
+     */
+    @Test
+    public void aClockRangeGivesTheDuration() {
+        assertEquals(60, Activities.parse("Ma reggel 6-tól 7-ig futottam "
+                + "a parkban.").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("Reggel 6 órától 7 óráig "
+                + "futottam.").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("Ma 19:00-tól 20:00-ig "
+                + "kondi.").plans.get(0).minutes);
+        // A munkaidő nem edzés: ott nem számolunk hosszt.
+        Activities.Parsed p = Activities.parse("8-tól 16-ig dolgoztam, "
+                + "este 30 perc futás.");
+        assertEquals(30, p.plans.get(0).minutes);
+    }
+
 }

@@ -1235,6 +1235,32 @@ public final class Activities {
         // szám előtt álló „havi 4 edzés" gyakoriság marad, azt a
         // gyakoriság-szabály viszi.
         s = s.replaceAll("(?<![a-z])havi(?![a-z])(?!\\s+\\d)", "honapi");
+        // Az ÓRÁTÓL ÓRÁIG tartó edzés hossza kiszámolható: a „ma reggel
+        // 6-tól 7-ig futottam a parkban" hatvan perce elveszett, és a futás
+        // a negyvenöt perces alapértelmezést kapta – vagyis a naplóba
+        // kevesebb került, mint amennyit az ember tényleg lefutott. Az
+        // alvás és a munkaidő kimarad: azoknak saját olvasójuk van.
+        if (!s.matches("(?s).*(?<![a-z])(alud\\w*|alvas\\w*|elaludt\\w*"
+                + "|fekudt\\w*|keltem|dolgozt\\w*|melozt\\w*|muszak\\w*"
+                + "|ugyelet\\w*)(?![a-z]).*")) {
+            java.util.regex.Matcher tr = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.:])(\\d{1,2})(?::([0-5]\\d))?\\s?-?\\s?"
+                            + "(?:ora)?tol\\s+(\\d{1,2})(?::([0-5]\\d))?"
+                            + "\\s?-?\\s?(?:ora)?ig(?![a-z])").matcher(s);
+            if (tr.find()) {
+                int h1 = Integer.parseInt(tr.group(1));
+                int n1 = tr.group(2) == null ? 0 : Integer.parseInt(tr.group(2));
+                int h2 = Integer.parseInt(tr.group(3));
+                int n2 = tr.group(4) == null ? 0 : Integer.parseInt(tr.group(4));
+                if (h1 <= 23 && h2 <= 23) {
+                    int d = (h2 * 60 + n2) - (h1 * 60 + n1);
+                    if (d < 0) d += 24 * 60;
+                    if (d > 0 && d <= 8 * 60)
+                        s = s.substring(0, tr.start()) + d + " perc"
+                                + s.substring(tr.end());
+                }
+            }
+        }
         // A NAPONTA ugyanaz, mint a NAPI: az „a hétvégén 2 napig túráztunk a
         // Bükkben, naponta kb 20 km" húsz kilométere NYOMTALANUL eltűnt, a
         // „napi 20 km" viszont rendben napi húszat írt be – ugyanarra a
