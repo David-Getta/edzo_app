@@ -7258,4 +7258,24 @@ public class ActivitiesParseTest {
         assertEquals(30, p.plans.get(0).minutes);
     }
 
+    /**
+     * A „futotta" itt nem futás.
+     *
+     * A „ma az egész nap ülőmunka volt, este csak 20 perc sétára futotta"
+     * mondatban a szó annyit tesz, hogy „ennyire tellett" – mégis egy
+     * negyvenöt perces FUTÁS került tőle a naplóba, a valódi húszperces
+     * séta mellé.
+     */
+    @Test
+    public void theWordForSufficingIsNotARun() {
+        Activities.Parsed p = Activities.parse("Ma az egész nap ülőmunka "
+                + "volt, este csak 20 perc sétára futotta.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(20, p.plans.get(0).minutes);
+        // A lefutott maraton marad futás.
+        assertEquals("futas", Activities.parse("Lefutotta a maratont.")
+                .plans.get(0).kind.id);
+    }
+
 }

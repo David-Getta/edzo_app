@@ -3889,6 +3889,12 @@ public final class Foods {
                     "Mákos tészta", "Grízes tészta", "Káposztás tészta",
                     "Grenadírmars (krumplis tészta)", "Pad thai"},
             {"Rizs (főtt)", "Rizottó", "Rizses hús", "Sushi", "Poke bowl", "Tejberizs"},
+            // A HAL a megnevezett hal VISSZAUTALÁSA: a „vacsora: 2 db
+            // lazacfilé sült zöldséggel, kb 300 g hal" háromszáz gramm
+            // lazac MELLÉ még háromszáz gramm fehér halat is beírt –
+            // hatszáz gramm abból a háromszázból, amit az ember megevett.
+            {"Hal (fehér)", "Lazac", "Tonhal", "Tükörponty / halrudak",
+                    "Rántott hal", "Halászlé", "Tonhalsaláta"},
             // A TEJES KAKAÓ-ban benne a tej: az „ittam egy tejes kakaót"
             // egy pohár tejet is naplózott a kakaó mellé.
             {"Tej", "Kakaó (tejes)",
@@ -4012,7 +4018,24 @@ public final class Foods {
                     && (q.startsWith("os", base.pos + base.len)
                         || q.startsWith("as", base.pos + base.len)
                         || q.startsWith("es", base.pos + base.len));
-            if (base != null && dish && !adjective
+            // A puszta MENNYISÉG-tagmondat visszautalás, nem új tétel: a
+            // „vacsora: 2 db lazacfilé sült zöldséggel, kb 300 g hal"
+            // háromszáz grammja ugyanaz a lazac – a vessző miatt mégis
+            // külön fehér halként is bekerült, vagyis hatszáz gramm abból a
+            // háromszázból, amit az ember megevett. Ha a tagmondatban a
+            // gyűjtőnév előtt CSAK a mennyiség áll, az a korábbi ételre
+            // mutat vissza.
+            boolean restated = false;
+            if (base != null && dishAt != null && base.pos > dishAt.pos) {
+                int cs = base.pos;
+                while (cs > 0 && q.charAt(cs - 1) != ',' && q.charAt(cs - 1) != ';'
+                        && q.charAt(cs - 1) != '.' && q.charAt(cs - 1) != ':') cs--;
+                restated = q.substring(cs, base.pos).matches(
+                        "\\s*(?:kb\\.?|korulbelul|nagyjabol|olyan|talan)?\\s*"
+                        + "\\d{1,4}([.,]\\d{1,2})?\\s*"
+                        + "(?:g|gr|gramm|dkg|db|darab|szelet)?\\s*");
+            }
+            if (base != null && dish && !adjective && !restated
                     && listedSeparately(q, base, dishAt)) continue;
             if (base != null && dish) out.remove(base);
         }

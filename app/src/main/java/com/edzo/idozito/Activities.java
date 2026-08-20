@@ -1235,6 +1235,12 @@ public final class Activities {
         // szám előtt álló „havi 4 edzés" gyakoriság marad, azt a
         // gyakoriság-szabály viszi.
         s = s.replaceAll("(?<![a-z])havi(?![a-z])(?!\\s+\\d)", "honapi");
+        // A „FUTOTTA" itt nem futás: az „este csak 20 perc sétára futotta"
+        // mondatban a szó annyit tesz, hogy „ennyire tellett" – mégis egy
+        // negyvenöt perces FUTÁS került tőle a naplóba, a valódi húszperces
+        // séta mellé. A „lefutotta a maratont" marad futás.
+        s = s.replaceAll("(?<=\\p{L}r[ae]\\s)futott[ae](?![a-z])", " ");
+        s = s.replaceAll("(?<![a-z])futotta\\s+ra(?![a-z])", " ");
         // Az ÓRÁTÓL ÓRÁIG tartó edzés hossza kiszámolható: a „ma reggel
         // 6-tól 7-ig futottam a parkban" hatvan perce elveszett, és a futás
         // a negyvenöt perces alapértelmezést kapta – vagyis a naplóba

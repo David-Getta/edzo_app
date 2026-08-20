@@ -2013,4 +2013,21 @@ public class FoodsParseTest {
         assertEquals(2000.0, Foods.parse(all, "ittam 2 liter vizet")
                 .get(0).grams, 0.01);
     }
+
+    /**
+     * A gyűjtőnév a megnevezett étel visszautalása.
+     *
+     * A „vacsora: 2 db lazacfilé sült zöldséggel, kb 300 g hal" háromszáz
+     * grammja ugyanaz a lazac – a vessző miatt mégis külön fehér halként is
+     * bekerült, vagyis hatszáz gramm abból a háromszázból, amit az ember
+     * megevett.
+     */
+    @Test public void aGenericNameCanBeABackReference() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "vacsora: 2 db lazacfilé "
+                + "sült zöldséggel, kb 300 g hal");
+        for (Foods.Hit h : hits) assertFalse(h.food.name.startsWith("Hal ("));
+        // A valódi felsorolás két tétel marad.
+        assertEquals(2, Foods.parse(all, "vacsora: lazac és hal").size());
+    }
 }
