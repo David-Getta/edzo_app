@@ -7367,4 +7367,27 @@ public class ActivitiesParseTest {
         assertEquals(20, p.plans.get(0).minutes);
     }
 
+    /**
+     * A maratonra készülni nem maratont futni.
+     *
+     * A „ma kezdődött a felkészülésem a maratonra" mondatból NEGYVENKÉT
+     * KILOMÉTERES futás lett a mai napra – a verseny neve önmagában távot
+     * is jelent. A -ra/-re rag célt jelöl; a lefutott maraton tárgyesetben
+     * áll.
+     */
+    @Test
+    public void preparingForARaceIsNotRunningIt() {
+        assertTrue(Activities.parse("Ma kezdődött a felkészülésem a "
+                + "maratonra.").plans.isEmpty());
+        assertTrue(Activities.parse("Neveztem a maratonra.").plans.isEmpty());
+        // A felkészülés napi futása megmarad.
+        Activities.Parsed p = Activities.parse("Készülök a félmaratonra, "
+                + "ma 12 km.");
+        assertEquals(1, p.plans.size());
+        assertEquals(12.0, p.plans.get(0).km, 0.01);
+        // A lefutott maraton marad maraton.
+        assertEquals(42.2, Activities.parse("Ma lefutottam a maratont.")
+                .plans.get(0).km, 0.3);
+    }
+
 }

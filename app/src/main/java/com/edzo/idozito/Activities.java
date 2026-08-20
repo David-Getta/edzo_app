@@ -1278,6 +1278,16 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])(meg|majd|aztan|utana)\\s+"
                     + "(\\d{1,3}(?:[.,]\\d{1,2})?)[- ]?(?:et|at|ot)(?![a-z])",
                     "$1 $2 km");
+        // A MARATONRA készülni nem maratont futni: a „ma kezdődött a
+        // felkészülésem a maratonra" mondatból egy NEGYVENKÉT KILOMÉTERES
+        // futás lett a mai napra – a verseny neve önmagában távot is
+        // jelent. A -ra/-re rag magyarul mindig célt jelöl; a lefutott
+        // maraton tárgyesetben áll („lefutottam a maratont").
+        if (s.matches("(?s).*(?<![a-z])(felkeszul\\w*|keszulok|keszulunk"
+                + "|keszules\\w*|nevezt\\w*|nevezek|jelentkezt\\w*"
+                + "|edzesterv\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:fel|negyed)?maraton(?:ra|re)"
+                    + "(?![a-z])", " ");
         // A NAPONTA ugyanaz, mint a NAPI: az „a hétvégén 2 napig túráztunk a
         // Bükkben, naponta kb 20 km" húsz kilométere NYOMTALANUL eltűnt, a
         // „napi 20 km" viszont rendben napi húszat írt be – ugyanarra a
