@@ -377,6 +377,14 @@ public final class StrengthParse {
         // Az utolsó gyakorlat eltűnése a leglátványosabb adatvesztés, mert
         // a felhasználó pont azt írta le utoljára.
         text = text.replaceAll("[\\r\\n]+", ", ");
+        // A KÜSZÖB nem a megemelt súly: a „ma végre 100 kg fölé mentem
+        // fekvenyomásban, 102,5 kg lett" száza a HATÁR, amit átlépett – a
+        // rekordba mégis az került, a valódi száz-kettő és fél helyett. Aki
+        // átlépett egy kerek számot, annak épp a mögötte álló érték az
+        // eredménye.
+        text = text.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}([.,]\\d{1,2})?\\s?"
+                + "(?:kg|kil[oó]\\p{L}*)\\s+(?:f[oö]l[eé]|f[oö]l[oö]tt|felett|"
+                + "al[aá]|alatt)(?![\\p{L}])", " ");
         // A TERV nem napló. A „holnap guggolás 5x5 100 kg" és a „kellene 5x5
         // 80 kg-ot guggolnom" ugyanazokból a számokból áll, mint a megtörtént
         // sorozat – csak épp még nem történt meg. A mozgás-oldalon ez a

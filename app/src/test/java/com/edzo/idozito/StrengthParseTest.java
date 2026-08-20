@@ -1823,4 +1823,22 @@ public class StrengthParseTest {
         assertEquals(40.0, two.get(1).sets.get(0).weight, 0.01);
     }
 
+    /**
+     * A küszöb nem a megemelt súly.
+     *
+     * A „ma végre 100 kg fölé mentem fekvenyomásban, 102,5 kg lett" száza a
+     * HATÁR, amit átlépett – a rekordba mégis az került, a valódi
+     * száz-kettő és fél helyett.
+     */
+    @Test public void aThresholdIsNotTheLiftedWeight() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma végre 100 kg "
+                + "fölé mentem fekvenyomásban, 102,5 kg lett.");
+        assertEquals(1, it.size());
+        assertEquals(102.5, it.get(0).topWeight(), 0.01);
+        // A valódi sorozat súlya marad.
+        List<StrengthParse.Item> ok = StrengthParse.parse("Fekvenyomás 3x8 "
+                + "60 kg, 80 kg alatt maradtam.");
+        assertEquals(60.0, ok.get(0).topWeight(), 0.01);
+    }
+
 }
