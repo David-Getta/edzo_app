@@ -6423,4 +6423,59 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+
+    /**
+     * A \u201eHETI 3-szor" ugyanaz a gyakoris\u00e1g, mint a \u201ehetente h\u00e1romszor": az
+     * \u201eelm\u00falt h\u00f3napban \u00e1tlagosan heti 3-szor sportoltam" h\u00e1rom alkalmat \u00edrt
+     * a napl\u00f3ba tizenh\u00e1rom helyett.
+     */
+    @Test
+    public void aWeeklyAdjectiveWithANumberIsAFrequency() {
+        Activities.Parsed p = Activities.parse(
+                "Az elm\u00falt h\u00f3napban \u00e1tlagosan heti 3-szor sportoltam.");
+        assertEquals(30, p.days);
+        assertEquals(12, p.plans.get(0).count);
+        assertEquals(4, Activities.parse("Az elm\u00falt h\u00f3napban heti 40 km fut\u00e1s.")
+                .plans.get(0).count);
+        // Sz\u00e1m n\u00e9lk\u00fcl a \u201eheti" csak jelz\u0151 marad.
+        assertEquals(7, Activities.parse("Heti terhel\u00e9s: 60 km.").days);
+    }
+
+    /**
+     * A TERV SZERINT megt\u00f6rt\u00e9nt edz\u00e9sr\u0151l sz\u00f3l: az \u201ea tervem szerint ma
+     * futottam 5 km-t" \u00f6t kilom\u00e9tere n\u00e9m\u00e1n elveszett, mert a terv szava
+     * j\u00f6v\u0151nek mutatta az eg\u00e9sz mondatot. A MAI nap kimond\u00e1sa pedig er\u0151sebb a
+     * puszta \u201eheti" jelz\u0151n\u00e9l.
+     */
+    @Test
+    public void aPlanFollowedIsAWorkoutDone() {
+        Activities.Parsed p = Activities.parse("A tervem szerint ma futottam 5 km-t.");
+        assertEquals(1, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed w = Activities.parse("A heti tervem szerint ma futottam 5 km-t.");
+        assertEquals(1, w.days);
+        assertEquals(5.0, w.plans.get(0).km, 0.01);
+        // A val\u00f3di terv marad terv.
+        assertEquals(0, Activities.parse("A terv: guggol\u00e1s 5x5 100 kg.").plans.size());
+        assertEquals(0, Activities.parse("A tervem szerint holnap futok 5 km-t.")
+                .plans.size());
+    }
+
+    /**
+     * A \u201eH\u00daSZ PERCE" id\u0151pont, nem hossz: a \u201eh\u00fasz perce j\u00f6ttem meg a
+     * fut\u00e1sb\u00f3l" h\u00faszperces fut\u00e1st \u00edrt a napl\u00f3ba \u2013 abb\u00f3l a sz\u00e1mb\u00f3l, ami azt
+     * mondja meg, mikor \u00e9rt haza.
+     */
+    @Test
+    public void minutesAgoIsNotADuration() {
+        assertEquals(45, Activities.parse("H\u00fasz perce j\u00f6ttem meg a fut\u00e1sb\u00f3l, "
+                + "nagyon f\u00e1jt a bal t\u00e9rdem.").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("20 perce fejeztem be a kondit.")
+                .plans.get(0).minutes);
+        // A t\u00e1rgyragos alak marad hossz.
+        assertEquals(20, Activities.parse("20 percet futottam.")
+                .plans.get(0).minutes);
+        assertEquals(20, Activities.parse("20 perc fut\u00e1s.").plans.get(0).minutes);
+    }
+
 }

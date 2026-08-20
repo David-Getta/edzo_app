@@ -1610,6 +1610,17 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A „HÚSZ PERCE" időpont, nem hossz: a „húsz perce jöttem meg a
+        // futásból, nagyon fájt a bal térdem" húszperces futást írt a naplóba
+        // – abból a számból, ami azt mondja meg, mikor ért haza. A birtokos
+        // rag („perce") és a megérkezés igéje együtt félreérthetetlen; a „20
+        // percet futottam" tárgyragos alakja marad hossz.
+        s = s.replaceAll("(?<![\\da-z,.])(?:\\d{1,3}|egy|ket|ketto|harom|negy|ot|"
+                + "hat|het|nyolc|kilenc|tiz|tizenot|husz|harminc|negyven|otven)"
+                + "\\s?perce(?![a-z])"
+                + "(?=[^.;]{0,26}(?<![a-z])(?:jottem|jottunk|ertem haza|"
+                + "erkeztem|erkeztunk|fejeztem be|befejeztem|befejeztuk|"
+                + "vegeztem|vegeztunk|szalltam le|kezdtem el|elkezdtem))", " ");
         // A KÖR HOSSZA szorzódik a körök számával: a „ma 3 kört futottam a
         // parkban, egy kör 2,5 km" két és fél kilométert írt a naplóba a hét
         // és félből – a másik két kör nyomtalanul eltűnt. A körszámot ki is
@@ -3538,6 +3549,17 @@ public final class Activities {
      */
     private static int stripFrequency(char[] q) {
         String s = new String(q);
+        // A „HETI 3-szor" ugyanaz a gyakoriság, mint a „hetente háromszor":
+        // a szám előtt álló „heti" a periódust mondja ki. Az „elmúlt
+        // hónapban átlagosan heti 3-szor sportoltam" három alkalmat írt a
+        // naplóba tizenhárom helyett. Szám nélkül viszont csak jelző marad
+        // („a heti tervem szerint"), ott nincs mit szétosztani.
+        java.util.regex.Matcher hw = java.util.regex.Pattern
+                .compile("(?<![a-z])(heti|havi)\\s+(?=\\d)").matcher(s);
+        if (hw.find()) {
+            blank(q, hw.start(), hw.start() + hw.group(1).length());
+            return hw.group(1).equals("heti") ? 7 : 30;
+        }
         String[][] ws = {{"kethetente", "14"}, {"hetente", "7"}, {"minden heten", "7"},
                 {"havonta", "30"}, {"minden honapban", "30"},
                 {"ketnaponta", "2"}, {"masnaponta", "2"}, {"minden masodik nap", "2"}};
@@ -3870,6 +3892,12 @@ public final class Activities {
     public static boolean looksLikeFuture(String text) {
         if (text == null) return false;
         String s = Foods.norm(text);
+        // A TERV SZERINT megtörtént edzésről szól: az „a tervem szerint ma
+        // futottam 5 km-t" öt kilométere némán elveszett, mert a terv szava
+        // jövőnek mutatta az egész mondatot. A „szerint" épp azt mondja ki,
+        // hogy a leírtak MEGVALÓSULTAK – a jövő idő többi jele (holnap,
+        // fogok) az alábbi listán úgyis megmarad.
+        s = s.replaceAll("(?<![a-z])terv\\w*\\s+szerint(?![a-z])", " ");
         // A magyar jelen idő gyakran jövőt jelent: az „este megyek edzeni" és a
         // „ha lesz időm, futok" SZÁNDÉK, nem megtörtént edzés – eddig mindkettő
         // bekerült a naplóba, a szériába és az XP-be. A múlt idő ragja más
@@ -4944,6 +4972,12 @@ public final class Activities {
                 // „a hónapban") – a puszta „nap" nem, és a jelzőként álló
                 // csupasz „hét" sem: a „ma deload hét van, edzettem 45
                 // percet" mai edzése eddig hét napra terült szét.
+                // A MAI nap kimondása erősebb a puszta „heti" jelzőnél: az
+                // „a heti tervem szerint ma futottam 5 km-t" mai futása hét
+                // napra terült szét, pedig a mondat kimondja, hogy MA volt.
+                // A „heti terhelés: 60 km" ma-szó nélkül marad heti összeg.
+                if (word.equals("heti")
+                        && s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")) continue;
                 if ((mult == 7 || mult == 30) && word.length() > unit.length())
                     return new int[]{p, end, mult};
                 // A MUTATÓ NÉVMÁS a ragtalan alakot is időszakká teszi: az
