@@ -7047,4 +7047,24 @@ public class ActivitiesParseTest {
         assertEquals(3, r.plans.get(0).count);
     }
 
+    /**
+     * A hát nap nem hat nap.
+     *
+     * Ékezet nélkül a testrész és a számnév egybeesik: a „kondiedzés: hát
+     * nap, húzódzkodás 4x6, evezés gépen 4x10 50 kg" EGYETLEN edzése hat
+     * napra terült szét a naptárban.
+     */
+    @Test
+    public void aBackDayIsNotSixDays() {
+        assertEquals(1, Activities.parse("Kondiedzés: hát nap, húzódzkodás "
+                + "4x6, evezés gépen 4x10 50 kg.").days);
+        assertEquals(1, Activities.parse("Ma hát nap volt a "
+                + "konditeremben.").days);
+        // A valódi időszak marad hat nap.
+        assertEquals(6, Activities.parse("Az elmúlt hat napban 3-szor "
+                + "futottam.").days);
+        assertEquals(6, Activities.parse("Hat nap alatt 4 edzés a "
+                + "kondiban.").days);
+    }
+
 }

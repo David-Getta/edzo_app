@@ -493,4 +493,20 @@ public class FoodsQuantityTest {
         assertEquals(360.0, Foods.parse(all, "sütöttem palacsintát, én hatot "
                 + "ettem meg, a többit a gyerekek").get(0).grams, 0.01);
     }
+
+    /**
+     * A tiltó szám az étel saját tagmondatában számít.
+     *
+     * Az „este 8 után már nem ettem semmit, csak vizet ittam, kb 1,5 litert"
+     * nyolcasa a másik tagmondatban áll, mégis letiltotta a másfél litert –
+     * negyed liter víz ment be másfél helyett. A liter ráadásul nem is
+     * szerepelt a mértékegységek közt.
+     */
+    @Test public void aNumberInAnotherClauseDoesNotBlockTheAmount() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(1500.0, Foods.parse(all, "este 8 után már nem ettem "
+                + "semmit, csak vizet ittam, kb 1,5 litert").get(0).grams, 0.01);
+        assertEquals(1500.0, Foods.parse(all, "csak vizet ittam, kb 1,5 "
+                + "litert").get(0).grams, 0.01);
+    }
 }

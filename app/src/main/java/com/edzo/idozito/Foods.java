@@ -2505,8 +2505,12 @@ public final class Foods {
                 // ez az egyetlen „én" ütötte el a négy szeletet.
                 "[,;]\\s*(?:(?:en|mi|mar|csak|viszont)\\s+)?"
                         + "(?:kb\\.?|korulbelul|nagyjabol|talan|olyan)?\\s*"
-                        + "(\\d{1,2}|[a-z]{2,10})\\s+(adag|tanyer|szelet|pohar|bogre|"
-                        + "kanal|marek|falat|gomboc|db|darab)\\w*"
+                        // A LITER is mértékegység, és tizedes is lehet: a
+                        // „csak vizet ittam, kb 1,5 litert" másfél litere
+                        // eddig negyed literes pohárra zsugorodott.
+                        + "(\\d{1,2}(?:[.,]\\d{1,2})?|[a-z]{2,10})\\s+"
+                        + "(adag|tanyer|szelet|pohar|bogre|"
+                        + "kanal|marek|falat|gomboc|db|darab|liter|dl|deci|ml)\\w*"
                         // Az EVÉS IGÉJE mögötte is állhat: az „a süti, amit
                         // vittek a munkahelyre, kb 3 szeletet ettem belőle"
                         // három szelete eddig egyetlen adagra zsugorodott,
@@ -2558,10 +2562,17 @@ public final class Foods {
         // szelet helyett. A mondathatár után kezdődik az étel feje.
         int cut = Math.max(head.lastIndexOf('.'), head.lastIndexOf(';'));
         String tail = cut >= 0 ? head.substring(cut + 1) : head;
-        if (tail.matches(".*\\d.*")) return query;
         List<Match> hm = matches(list, tail);
         if (hm.size() != 1) return query;
         int off = cut >= 0 ? cut + 1 : 0;
+        // A tiltó szám az étel SAJÁT TAGMONDATÁBAN számít: az „este 8 után
+        // már nem ettem semmit, csak vizet ittam, kb 1,5 litert" nyolcasa a
+        // másik tagmondatban áll, mégis letiltotta a másfél litert – negyed
+        // liter víz ment be másfél helyett.
+        int cb = off + hm.get(0).pos;
+        while (cb > off && head.charAt(cb - 1) != ',' && head.charAt(cb - 1) != ';'
+                && head.charAt(cb - 1) != '.') cb--;
+        if (head.substring(cb).matches("(?s).*\\d.*")) return query;
         // A mennyiséget közvetlenül az étel elé írjuk, és a fej SAJÁT
         // határozatlan névelőjét („egy adag palacsintát", „egy fagyit")
         // elhagyjuk – az „egy" különben a szomszédság jogán legyőzné a

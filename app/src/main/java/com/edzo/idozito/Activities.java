@@ -1218,6 +1218,16 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A HÁT NAP nem hat nap: ékezet nélkül a testrész és a számnév
+        // egybeesik, és a „kondiedzés: hát nap, húzódzkodás 4x6, evezés
+        // gépen 4x10" egyetlen edzése HAT NAPRA terült szét a naptárban. Az
+        // edzőtermi környezet dönti el, melyikről van szó; a valódi
+        // időszakot („hat nap alatt", „hat nap múlva") kihagyjuk.
+        if ((s.contains("kondi") || s.contains("edzoterem") || s.contains("edzes")
+                || s.contains("gym") || s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*"))
+                && s.matches("(?s).*(?<![a-z])hat nap(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])hat nap(?![a-z])"
+                    + "(?!\\s+(?:alatt|mulva|utan|ota|kihagyas))", " ");
         // A KETTŐSPONTOS IDŐPONT nem darabszám: a „20:15-kor edzés" húsz
         // edzéssé vált húsz napra osztva, mert az alábbi szórend-csere a
         // PERCRE illeszkedett („15-kor"), és a húszas gazdátlan számként
