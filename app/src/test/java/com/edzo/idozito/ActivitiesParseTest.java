@@ -7297,4 +7297,19 @@ public class ActivitiesParseTest {
         assertEquals(50, p.plans.get(0).minutes);
     }
 
+    /**
+     * A nevezetes futókör is helyszín, nem óraállás.
+     *
+     * A „ma 3 kör a Margitszigeten, ez kb 16 km" HAJNALI HÁROMRA tette a
+     * bejegyzést: ékezet nélkül a „kör" és a „-kor" egybeesik, a sziget
+     * pedig nem szerepelt a helyszínek között.
+     */
+    @Test
+    public void aFamousLoopIsAPlaceNotAnHour() {
+        assertEquals(12, Activities.parse("ma 3 kör a Margitszigeten, "
+                + "ez kb 16 km").hour);
+        // A napszakkal kimondott óra marad óra.
+        assertEquals(17, Activities.parse("Délután 5 kor 8 km futás.").hour);
+    }
+
 }

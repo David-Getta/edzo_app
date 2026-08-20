@@ -5254,8 +5254,11 @@ public final class Activities {
             boolean spaced = m.group(2).matches("\\s+kor");
             if (spaced && s.substring(m.end(),
                     Math.min(s.length(), m.end() + 28))
+                    // A NEVEZETES FUTÓKÖR is helyszín: a „ma 3 kör a
+                    // Margitszigeten, ez kb 16 km" hajnali háromra került.
                     .matches("(?s).*(palya|stadion|tavon|to korul|medence"
-                        + "|salak|tartan|futokor).*")) continue;
+                        + "|salak|tartan|futokor|margitsziget|sziget"
+                        + "|liget|korut|korben).*")) continue;
             // A KETTŐSPONT a körök felsorolását nyitja: az „5 kör: 400 m
             // futás, 15 fekvőtámasz" hajnali ötre került a naplóban.
             // Időpont után kettőspont nem áll – az már perc lenne.
