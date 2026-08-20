@@ -7217,4 +7217,24 @@ public class ActivitiesParseTest {
         for (Activities.Plan pl : q.plans) assertEquals(40, pl.minutes);
     }
 
+    /**
+     * A „naponta" ugyanaz, mint a „napi".
+     *
+     * Az „a hétvégén 2 napig túráztunk a Bükkben, naponta kb 20 km" húsz
+     * kilométere NYOMTALANUL eltűnt – a „napi 20 km" viszont ugyanabban a
+     * mondatban rendben napi húszat írt be. Ugyanarra a bejegyzésre két
+     * gyökeresen más eredmény, csak a szó alakja miatt.
+     */
+    @Test
+    public void everyDayMeansPerDay() {
+        Activities.Parsed p = Activities.parse("A hétvégén 2 napig "
+                + "túráztunk a Bükkben, naponta kb 20 km.");
+        assertEquals(2, p.days);
+        assertEquals(20.0, p.plans.get(0).km, 0.01);
+        assertEquals(2, p.plans.get(0).count);
+        // Hátravetve is ugyanaz.
+        assertEquals(20.0, Activities.parse("2 napig túráztunk, 20 km "
+                + "naponta.").plans.get(0).km, 0.01);
+    }
+
 }

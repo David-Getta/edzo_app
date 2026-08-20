@@ -1235,6 +1235,15 @@ public final class Activities {
         // szám előtt álló „havi 4 edzés" gyakoriság marad, azt a
         // gyakoriság-szabály viszi.
         s = s.replaceAll("(?<![a-z])havi(?![a-z])(?!\\s+\\d)", "honapi");
+        // A NAPONTA ugyanaz, mint a NAPI: az „a hétvégén 2 napig túráztunk a
+        // Bükkben, naponta kb 20 km" húsz kilométere NYOMTALANUL eltűnt, a
+        // „napi 20 km" viszont rendben napi húszat írt be – ugyanarra a
+        // mondatra két gyökeresen más eredmény.
+        s = s.replaceAll("(?<![a-z])naponta\\s+(?=(?:kb\\.?|korulbelul"
+                + "|nagyjabol)?\\s*\\d)", "napi ");
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,5}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:km|kilometer\\w*|m|lepes\\w*|perc\\w*))"
+                + "\\s+naponta(?![a-z])", "napi $1");
         // A KIÍRT KÖRSZÁM: az „öt kör a pályán, egyenként 400 m" öt köre öt
         // KÜLÖN futásnak látszott, öt napra osztva – a kétezer méterből
         // négyszáz maradt. A számjegyes „5 kör" régóta helyesen összeadódik;
