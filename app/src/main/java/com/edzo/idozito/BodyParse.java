@@ -156,6 +156,18 @@ public final class BodyParse {
     }
 
     /**
+     * A „kg-OS" jelzős alak sosem testsúly.
+     *
+     * Az „elértem a 100 kg-os fekvenyomást!" száz kilós TESTSÚLYT írt a
+     * trendbe – abból, ami a rúdon volt. A saját súlyát senki nem így mondja
+     * („80 kg-os vagyok"), a felszerelést és a rekordot viszont mindenki:
+     * „20 kg-os súlyzó", „5 kilós kézisúlyzó", „100 kg-os fekvenyomás".
+     */
+    private static boolean adjectiveKg(String s) {
+        return s.matches("(?s).*\\d\\s?-?\\s?(?:kg|kilo)\\s?-?(?:os|s)(?![a-z]).*");
+    }
+
+    /**
      * Szavak, amelyektől a mondat biztosan NEM mérés – a súly másé.
      *
      * Mind egész szóként keresve: a rövid szótő máshol elrejtve („húsz”-ban a
@@ -416,12 +428,12 @@ public final class BodyParse {
         // tagmondata megmarad.
         s = s.replaceAll("(?<=[a-z0-9]) (?=(?:szeretnek|szeretnem|akarok|"
                 + "celom)(?![a-z]))", ", ");
-        boolean anyBlocked = false;
+        boolean anyBlocked = adjectiveKg(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {
             StringBuilder keepB = new StringBuilder();
             for (String cl : s.split("[,;.](?!\\d)")) {
-                boolean bad = false;
+                boolean bad = adjectiveKg(cl);
                 for (String n : NOT_BODY) if (word(cl, n)) { bad = true; break; }
                 if (bad) continue;
                 if (keepB.length() > 0) keepB.append(", ");

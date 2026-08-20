@@ -254,4 +254,18 @@ public class PulseTest {
         assertEquals(48, Pulse.parse("Nyugalmi pulzus 48."));
     }
 
+
+    /**
+     * A NYUGALOMBAN ugyanaz a m\u00e9r\u00e9s m\u00e1s ragoz\u00e1sban: az \u201ea v\u00e9rem 130/85, a
+     * pulzusom nyugalomban 58" \u00f6tvennyolca n\u00e9m\u00e1n elveszett.
+     */
+    @Test
+    public void restingInAnyInflectionCounts() {
+        assertEquals(58, Pulse.parse("A v\u00e9rem 130/85, a pulzusom nyugalomban 58."));
+        assertEquals(58, Pulse.parse("Nyugalomban 58 a pulzusom."));
+        assertEquals(52, Pulse.parse("Pihen\u0151ben 52."));
+        // Az edz\u00e9s k\u00f6zbeni \u00e9rt\u00e9k tov\u00e1bbra sem nyugalmi.
+        assertEquals(-1, Pulse.parse("Fut\u00e1s k\u00f6zben 165 volt a pulzusom."));
+    }
+
 }

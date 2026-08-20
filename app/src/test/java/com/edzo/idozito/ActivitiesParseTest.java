@@ -6404,4 +6404,23 @@ public class ActivitiesParseTest {
                 + "2x25 perc.").plans.get(0).minutes);
     }
 
+
+    /**
+     * A K\u00d6R HOSSZA szorz\u00f3dik a k\u00f6r\u00f6k sz\u00e1m\u00e1val: a \u201ema 3 k\u00f6rt futottam a
+     * parkban, egy k\u00f6r 2,5 km" k\u00e9t \u00e9s f\u00e9l kilom\u00e9tert \u00edrt a napl\u00f3ba a h\u00e9t \u00e9s
+     * f\u00e9lb\u0151l \u2013 a m\u00e1sik k\u00e9t k\u00f6r nyomtalanul elt\u0171nt.
+     */
+    @Test
+    public void theLapLengthMultipliesWithTheLapCount() {
+        assertEquals(7.5, Activities.parse("Ma 3 k\u00f6rt futottam a parkban, "
+                + "egy k\u00f6r 2,5 km.").plans.get(0).km, 0.01);
+        assertEquals(7.5, Activities.parse("3 k\u00f6rt futottam, k\u00f6r\u00f6nk\u00e9nt 2,5 km.")
+                .plans.get(0).km, 0.01);
+        assertEquals(1.6, Activities.parse("4 k\u00f6rt \u00fasztam, egy k\u00f6r 400 m\u00e9ter.")
+                .plans.get(0).km, 0.01);
+        // K\u00f6r n\u00e9lk\u00fcl a t\u00e1v marad.
+        assertEquals(5.0, Activities.parse("Ma futottam 5 km-t.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

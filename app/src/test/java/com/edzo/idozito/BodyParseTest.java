@@ -1034,4 +1034,20 @@ public class BodyParseTest {
         assertEquals(70.0, BodyParse.parse("70 kg vagyok").kg, 0.001);
     }
 
+
+    /**
+     * A \u201ekg-OS" jelz\u0151s alak sosem tests\u00faly: az \u201eel\u00e9rtem a 100 kg-os
+     * fekvenyom\u00e1st!" sz\u00e1z kil\u00f3s TESTS\u00daLYT \u00edrt a trendbe \u2013 abb\u00f3l, ami a
+     * r\u00fadon volt.
+     */
+    @Test
+    public void anAdjectiveKiloIsNotBodyWeight() {
+        assertEquals(0.0, BodyParse.parse("El\u00e9rtem a 100 kg-os fekvenyom\u00e1st!").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("Vettem egy 20 kg-os s\u00falyz\u00f3t.").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("5 kil\u00f3s k\u00e9zis\u00falyz\u00f3val edzettem.").kg, 0.01);
+        // A val\u00f3di m\u00e9r\u00e9s marad.
+        assertEquals(80.0, BodyParse.parse("Ma 80 kg vagyok.").kg, 0.01);
+        assertEquals(80.4, BodyParse.parse("80,4 kg reggel.").kg, 0.01);
+    }
+
 }

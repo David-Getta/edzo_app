@@ -38,6 +38,10 @@ public final class Pulse {
                     "(?<![a-z])(?:piheno)?pulzus\\w*\\s?:?\\s?"
                             + "(?:(?:ma|reggel|este|ejjel|hajnalban|delben|"
                             + "ebredeskor|ebredes utan|most|volt|lement|"
+                            // A NYUGALOMBAN ugyanaz a mérés más ragozásban: az
+                            // „a vérem 130/85, a pulzusom nyugalomban 58"
+                            // ötvennyolca némán elveszett.
+                            + "nyugalomban|pihenoben|nyugalmi allapotban|"
                             + "felment|javult|romlott)\\s){0,2}(\\d{2,3})"),
             // „52-es pulzus", „48 as nyugalmi pulzus"
             java.util.regex.Pattern.compile(
@@ -65,6 +69,10 @@ public final class Pulse {
             // fordított szórendű alatta.
             java.util.regex.Pattern.compile(
                     "(?<![a-z])nyugalmi\\w*\\s?[:,]?\\s?(\\d{2,3})"
+                            + "(?![0-9])(?![,.]\\d)(?!\\s?(?:kg|kilo|cm|%))"),
+            // A NYUGALOMBAN és a PIHENŐBEN ugyanazt a mérést nevezi meg.
+            java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:nyugalomban|pihenoben)\\s?[:,]?\\s?(\\d{2,3})"
                             + "(?![0-9])(?![,.]\\d)(?!\\s?(?:kg|kilo|cm|%))"),
             // Ugyanez fordított szórenddel: „reggel 78,4 kg, 7 óra alvás,
             // 54 nyugalmi". A szám és a szó között itt semmi nem állhat –
@@ -130,6 +138,7 @@ public final class Pulse {
         // pulzusom, edzés után 145" mérése az edzés szava miatt némán
         // elveszett – pedig az ébredés maga a nyugalmi állapot.
         if (!s.contains("nyugalmi") && !s.contains("pihenopulzus")
+                && !s.contains("nyugalomban") && !s.contains("pihenoben")
                 && !s.contains("ebredeskor") && !s.contains("ebredes utan")
                 && !s.matches(".*(?<![a-z])reggeli?\\s[^,;.]{0,10}?pulzus.*"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",

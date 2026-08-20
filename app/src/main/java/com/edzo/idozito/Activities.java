@@ -1610,6 +1610,33 @@ public final class Activities {
                             + s.substring(ing.end());
             }
         }
+        // A KÖR HOSSZA szorzódik a körök számával: a „ma 3 kört futottam a
+        // parkban, egy kör 2,5 km" két és fél kilométert írt a naplóba a hét
+        // és félből – a másik két kör nyomtalanul eltűnt. A körszámot ki is
+        // takarjuk, nehogy a kész össztávot még egyszer megszorozza valaki.
+        java.util.regex.Matcher lapN = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,2})\\s?kor(?:t|ok|okat|oket)?(?![a-z])")
+                .matcher(s);
+        if (lapN.find()) {
+            java.util.regex.Matcher lapL = java.util.regex.Pattern
+                    .compile("(?<![a-z])(?:egy kor|koronkent|korenkent)\\w*\\s*"
+                            + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+                            + "(km|kilometer\\w*|meter\\w*|m)(?![a-z])")
+                    .matcher(s);
+            int n = Integer.parseInt(lapN.group(1));
+            if (n >= 2 && n <= 30 && lapL.find(lapN.end())) {
+                double v = Double.parseDouble(lapL.group(1).replace(',', '.'));
+                double tot = n * v;
+                if (v > 0 && tot <= (lapL.group(2).startsWith("k") ? 300 : 300000)) {
+                    String num = tot == Math.rint(tot) ? String.valueOf((long) tot)
+                            : String.valueOf(tot).replace('.', ',');
+                    s = s.substring(0, lapL.start()) + num + " " + lapL.group(2)
+                            + s.substring(lapL.end());
+                    s = s.substring(0, lapN.start()) + " "
+                            + s.substring(lapN.end());
+                }
+            }
+        }
         // Az EGY ÚT távja a fele: a „bringával jártam be a melóhelyre, oda
         // 25 perc, vissza 30 perc, kb 9 km egy út" kilenc kilométert írt a
         // naplóba – a ténylegesen letekert tizennyolc helyett. Az „egy út"
