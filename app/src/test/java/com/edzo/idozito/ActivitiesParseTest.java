@@ -7028,4 +7028,23 @@ public class ActivitiesParseTest {
         assertEquals(45, q.plans.get(0).minutes);
     }
 
+    /**
+     * Az „N-szer M méter" ismétlés, nem N külön edzés.
+     *
+     * A „ma 3-szor 1000 métert úsztam" háromezer méter, de ezer maradt
+     * belőle: a rag alkalomszámnak számított, a táv meg egyszer ment be. A
+     * rövid „3x1000 m" alak régóta helyesen összeadódott – ez ugyanaz,
+     * csak kimondva.
+     */
+    @Test
+    public void aSpelledOutRepeatSumsTheDistance() {
+        Activities.Parsed p = Activities.parse("Ma 3-szor 1000 métert úsztam.");
+        assertEquals(3.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed q = Activities.parse("Ma 5-ször 200 métert úsztam.");
+        assertEquals(1.0, q.plans.get(0).km, 0.01);
+        // A heti gyakoriság nem szorzó: ott a táv egy edzésé.
+        Activities.Parsed r = Activities.parse("A héten 3-szor futottam.");
+        assertEquals(3, r.plans.get(0).count);
+    }
+
 }

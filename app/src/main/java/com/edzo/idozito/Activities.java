@@ -2347,6 +2347,17 @@ public final class Activities {
         // alkalommal" egyetlen futásként került be, vagyis a hét
         // kétharmada eltűnt a naplóból.
         s = s.replaceAll("(?<![\\d.,])(\\d{1,2})\\s?alkalo?m(?:mal|at)(?![a-z])", "$1-szor");
+        // Az „N-SZOR M MÉTER" ismétlés, nem N külön edzés: a „ma 3-szor 1000
+        // métert úsztam" háromezer méter – eddig ezer maradt belőle, mert a
+        // rag alkalomszámnak számított, a táv meg egyszer ment be. A rövid
+        // „3x1000 m" alak régóta helyesen összeadódik; ez ugyanaz, kimondva.
+        // A GYAKORISÁG kimarad: a „hetente 3-szor 5 km" öt kilométeres
+        // edzéseket jelent, nem tizenötöt.
+        if (!s.matches("(?s).*(?<![a-z])(heti|hetente|havi|havonta|naponta"
+                + "|napi)\\s+\\d{1,2}\\s?-?\\s?(?:szor|szer).*")) {
+            s = s.replaceAll("(?<![\\d.,])(\\d{1,2})\\s?-?\\s?(?:szor|szer)\\s+"
+                    + "(\\d{2,4})\\s?(m(?![a-z])|meter\\w*|km(?![a-z]))", "$1x$2 $3");
+        }
         // A kiírt számnév ÓRÁS összetételben: a „kétórás túra" két óra, nem a
         // túra alapértelmezett kilencven perce. A számnév-szótár szóhatárt
         // vár, így az összetételt nem látta.
