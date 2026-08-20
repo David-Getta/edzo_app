@@ -2446,7 +2446,12 @@ public class ActivitiesParseTest {
                 + "fekve 3x8 60, evezés 3x10 50").plans;
         assertEquals(1, p.size());
         assertEquals("kondi", p.get(0).kind.id);
-        assertTrue(Activities.parse("evezés 3x10 50 kg").plans.isEmpty());
+        // A terem-bejegyzés viszont MEGMARAD: az „evezés 3x10 50 kg" egy
+        // súlyzós edzés, ugyanúgy, mint a „guggolás 3x10 60 kg" – csak
+        // éppen olyan gyakorlattal, aminek a neve egy kardió-gépé is.
+        List<Activities.Plan> r = Activities.parse("evezés 3x10 50 kg").plans;
+        assertEquals(1, r.size());
+        assertEquals("kondi", r.get(0).kind.id);
         // A kimondott idő megvédi magát: az alapértéktől eltérő hossz marad.
         assertEquals(40, Activities.parse("40 perc evezőgép").plans.get(0).minutes);
         // Az ISMÉTLÉSSZÁM sem alkalomszám: a „3x12 evezés 60 kg" tizenkettese
@@ -6568,6 +6573,42 @@ public class ActivitiesParseTest {
         // A percek \u00f6sszead\u00e1sa v\u00e1ltozatlan.
         assertEquals(33, Activities.parse("Munk\u00e1ba menet 15 perc bicikli, "
                 + "vissza 18 perc.").plans.get(0).minutes);
+    }
+
+
+    /**
+     * A KIHAGYÁS hossza nem edzés-időszak: a „fél évig nem sportoltam, ma
+     * kezdtem újra: 15 perc laza kerékpár" tizenöt perce száznyolcvanhárom
+     * napra terült szét – a mai újrakezdés a szériából is kimaradt.
+     */
+    @Test
+    public void theLengthOfABreakIsNotASpan() {
+        assertEquals(1, Activities.parse("Fél évig nem sportoltam, ma "
+                + "kezdtem újra: 15 perc laza kerékpár.").days);
+        assertEquals(1, Activities.parse("Két hétig nem edzettem, ma "
+                + "30 perc futás.").days);
+        // A valódi időszak marad.
+        assertEquals(7, Activities.parse("Az elmúlt héten 3 futás.").days);
+        assertEquals(14, Activities.parse("Két hétig túráztunk, összesen 60 km.").days);
+    }
+
+    /**
+     * A gyakorlat NEVE nem külön mozgásforma az idő szétosztásánál sem: a
+     * „kondi: guggolás 5x5 90 kg, fekvenyomás 5x5 70 kg, evezés 5x5 60 kg.
+     * Összesen 55 perc." ötvenöt percét kettéosztotta, és a fele egy
+     * kitalált evezőgépezésre ment.
+     */
+    @Test
+    public void aLiftNameDoesNotHalveTheStatedTime() {
+        Activities.Parsed p = Activities.parse("Kondi: guggolás 5x5 90 kg, "
+                + "fekvenyomás 5x5 70 kg, evezés 5x5 60 kg. Összesen 55 perc, RPE 8.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        assertEquals(55, p.plans.get(0).minutes);
+        // A SAJÁT, közelről kapott idő megvédi a gépet.
+        Activities.Parsed q = Activities.parse("Evezőgép 20 perc, guggolás 3x8 80 kg.");
+        assertEquals(2, q.plans.size());
+        assertEquals(20, q.plans.get(0).minutes);
     }
 
 }

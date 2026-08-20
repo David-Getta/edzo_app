@@ -2830,8 +2830,25 @@ public final class Activities {
         // feleződött, mert a két találat két osztónak látszott.
         int kindsKept = 0;
         boolean[] seenKind = new boolean[ALL.length];
-        for (int[] h : keep)
-            if (!seenKind[h[2]]) { seenKind[h[2]] = true; kindsKept++; }
+        // A GYAKORLAT NEVE nem külön mozgásforma az osztásnál sem: a „kondi:
+        // guggolás 5x5 90 kg, fekvenyomás 5x5 70 kg, evezés 5x5 60 kg.
+        // Összesen 55 perc." evezése egy sorozat a teremben – a hetvenöt
+        // percet mégis kettéosztotta, és a fele egy kitalált evezőgépezésre
+        // ment. Az erő-felismerő pont ezt tudja megmondani.
+        List<StrengthParse.Item> liftNames = StrengthParse.parse(rawText);
+        boolean[] liftOnly = new boolean[keep.size()];
+        for (int i = 0; i < keep.size(); i++) {
+            int[] h = keep.get(i);
+            // Csak a SAJÁT, közelről kapott idő védi meg a mozgásformát: az
+            // „evezőgép 20 perc" húsz perce a gépé, a „…evezés 5x5 60 kg.
+            // Összesen 55 perc." ötvenöt perce viszont az egész edzésé.
+            liftOnly[i] = !liftNames.isEmpty() && namedByLift(liftNames, ALL[h[2]])
+                    && !"kondi".equals(ALL[h[2]].id)
+                    && kmOf[i] == 0 && (minsOf[i] == 0 || minsD[i] > 8);
+            if (liftOnly[i] || seenKind[h[2]]) continue;
+            seenKind[h[2]] = true;
+            kindsKept++;
+        }
         if (mins.size() == 1 && kindsKept > 1
                 && (s.contains("osszesen") || s.contains("osszessegeben"))) {
             java.util.Arrays.fill(minsOf, 0);
@@ -2844,12 +2861,22 @@ public final class Activities {
             // („…és 2 úszás, 40 perc”). A közvetlenül a mozgás mögé írt idő az
             // ÖVÉ, nem mindenkié – a „csütörtökön kondi 1 óra" órája a kondié.
             boolean sep = false;
+            // A MONDATVÉG is határ: a „kondi: guggolás 5x5 90 kg, … evezés
+            // 5x5 60 kg. Összesen 55 perc." ötvenöt perce külön mondatban
+            // áll, mégsem jutott el a kondiig – a bejegyzés az alapértelmezett
+            // hatvan perccel ment tovább.
             for (int k = lastEnd; k >= 0 && k < m0 && k < s.length(); k++)
-                if (s.charAt(k) == ',' || s.charAt(k) == ';') sep = true;
+                if (s.charAt(k) == ',' || s.charAt(k) == ';'
+                        || s.charAt(k) == '.') sep = true;
             if (m0 >= lastEnd && sep) loneAfterAll = mins.get(0)[1];
         }
         for (int i = 0; i < keep.size(); i++) {
             int[] h = keep.get(i);
+            // A gyakorlat NEVE nem külön kardió-edzés: a „kondi: guggolás
+            // 5x5 90 kg, fekvenyomás 5x5 70 kg, evezés 5x5 60 kg. Összesen
+            // 55 perc." evezése egy sorozat a teremben – eddig egy kitalált
+            // evezőgépezés is bekerült mellé, és elvitte az idő felét.
+            if (liftOnly[i]) continue;
             if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i], minsOf[i]))
                 continue;                           // egy mozgásforma egyszer szerepel
             used[h[2]] = true;
@@ -3585,7 +3612,8 @@ public final class Activities {
                     if (days == p.count) days = 1;
                     any = true;
                 } else if (!generic && p.km <= 0 && p.steps <= 0
-                        && p.minutes == p.kind.defaultMin && namedByLift(lifts, p.kind)
+                        && (p.minutes == p.kind.defaultMin || sharedMinutes(out, p))
+                        && namedByLift(lifts, p.kind)
                         && (p.count == 1 || repsMatch(lifts, p.count))) {
                     // A GYAKORLAT NEVE nem külön kardió-edzés: a „súlyzós:
                     // guggolás 3×8 80, evezés 3×10 50" evezése egy sorozat a
@@ -4892,6 +4920,7 @@ public final class Activities {
             if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
             int e = p + y[0].length();
             if (e < s.length() && Character.isLetter(s.charAt(e))) continue;
+            if (emptyClauseAfter(s, e)) continue;
             return new int[]{p, e, Integer.parseInt(y[1])};
         }
         // Az „idén" az év elejétől máig tartó időszak.
@@ -5038,6 +5067,31 @@ public final class Activities {
         catch (NumberFormatException e) { return 0; }
     }
 
+
+    /**
+     * A hossz mögött ÜRES tagmondat áll-e?
+     *
+     * A „fél évig nem sportoltam, ma kezdtem újra: 15 perc laza kerékpár"
+     * tizenöt perce száznyolcvanhárom napra terült szét, és a mai újrakezdés
+     * a szériából is kimaradt. A tagadás kitakarása után a hossz mögött nem
+     * marad más, csak szóköz a tagmondat végéig – épp az mondja ki, hogy
+     * abban az időszakban semmi nem történt, tehát nincs mit szétosztani.
+     */
+    private static boolean emptyClauseAfter(String s, int from) {
+        int blanks = 0;
+        for (int i = Math.max(0, from); i < s.length(); i++) {
+            char c = s.charAt(i);
+            // A KITAKART szöveg helyén szóközök állnak: néhány szóköznyi rés
+            // már egy letakart szó. A tagmondatát természetesen záró
+            // időszak-szó („az elmúlt hónapban, hetente kétszer úszás")
+            // közvetlenül a vessző előtt áll, ott nincs rés.
+            if (c == ',' || c == ';' || c == '.') return blanks >= 3;
+            if (c != ' ' && c != '\t') return false;
+            blanks++;
+        }
+        return blanks >= 3;
+    }
+
     private static int[] spanAt(String s, String unit, int mult) {
         int from = 0;
         while (true) {
@@ -5083,6 +5137,7 @@ public final class Activities {
             if (s.substring(end).matches(
                     "^\\s*(\\p{L}+\\s+)?(utan|mulva|kihagyas\\w*|szunet\\w*).*"))
                 continue;
+            if (emptyClauseAfter(s, end)) continue;
             int[] n = numberBefore(s, p, NUM_REACH);
             if (n == null) {
                 // Szám nélkül csak a RAGOZOTT hét és hónap időszak („a héten",
@@ -5349,7 +5404,22 @@ public final class Activities {
         return Math.max(1, Math.min(20, n));
     }
 
+    /**
+     * Ugyanaz a hossz áll-e egy MÁSIK mozgásforma mellett is?
+     *
+     * Az „összesen 55 perc" szétosztásakor minden tervnek ugyanaz a fele jut.
+     * Ha egy gyakorlatnévről elnevezett terv hossza megegyezik egy másikéval,
+     * az nem kimondott idő, hanem az osztás eredménye – tehát a terv
+     * nyugodtan elhagyható a gyakorlat javára.
+     */
+    private static boolean sharedMinutes(List<Plan> out, Plan p) {
+        for (Plan o : out)
+            if (o != p && o.kind != p.kind && o.minutes == p.minutes) return true;
+        return false;
+    }
+
     /** A felismert gyakorlatok egyike adta-e ennek a mozgásformának a nevét? */
+
     private static boolean namedByLift(List<StrengthParse.Item> lifts, Kind k) {
         for (StrengthParse.Item it : lifts) {
             String n = Foods.norm(it.name);

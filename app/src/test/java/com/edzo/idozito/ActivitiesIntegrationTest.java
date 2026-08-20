@@ -93,7 +93,10 @@ public class ActivitiesIntegrationTest {
         // Ahol a gyakorlat neve egyben mozgásforma is, ott ma már a kardió-sor
         // sem marad: az „evezés 4x10 50" egy sorozat a teremben, nem
         // félórányi evezőgépezés.
-        assertEquals("1d+0 h12: ",
+        // A terem-bejegyzés viszont MEGMARAD: a mondat egy súlyzós edzés,
+        // ugyanúgy, mint a fenti sor – csak éppen olyan gyakorlattal,
+        // aminek a neve egy kardió-gépé is.
+        assertEquals("1d+0 h12: 1×kondi/60",
                 summary("mellnyomás 4x10 50, evezés 4x10 50, bicepsz 3x12 15"));
         // Vessző nélkül a szám továbbra is darabszám.
         assertEquals("1d+0 h12: 3×uszas/45", summary("3 úszás"));
