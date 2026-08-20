@@ -1191,6 +1191,26 @@ public final class Activities {
     }
 
     /**
+     * Számjegy vagy KIÍRT számnév értéke, 0 ha egyik sem.
+     *
+     * A számnév-fordítás a rövidítés-feloldás UTÁN fut, ezért az itteni
+     * szabályoknak maguknak kell ismerniük a „két", „három" alakot is.
+     */
+    private static int numWordValue(String w) {
+        if (w == null || w.isEmpty()) return 0;
+        if (Character.isDigit(w.charAt(0))) {
+            try { return Integer.parseInt(w); }
+            catch (NumberFormatException e) { return 0; }
+        }
+        for (String[] n : NUM_WORDS)
+            if (n[0].equals(w)) {
+                try { return Integer.parseInt(n[1]); }
+                catch (NumberFormatException e) { return 0; }
+            }
+        return 0;
+    }
+
+    /**
      * Rövidítések feloldása: „10k lépés", „10 000 lépés", „10k futás".
      *
      * A „k" ezerre rövidít, de nem mindig ugyanazt jelenti: lépésnél tízezer
@@ -1638,7 +1658,12 @@ public final class Activities {
         // és félből – a másik két kör nyomtalanul eltűnt. A körszámot ki is
         // takarjuk, nehogy a kész össztávot még egyszer megszorozza valaki.
         java.util.regex.Matcher lapN = java.util.regex.Pattern
-                .compile("(?<![\\d,.])(\\d{1,2})\\s?kor(?:t|ok|okat|oket)?(?![a-z])")
+                // A KIÍRT számnév ugyanaz a körszám: a „két kör a tó körül,
+                // egy kör 3,2 km" hat és fél kilométere helyett három és
+                // kettő tized került a naplóba. A számnév-fordítás csak
+                // KÉSŐBB fut, ezért itt a szó alakját is ismerni kell.
+                .compile("(?<![\\d,.a-z])(\\d{1,2}|\\p{L}{3,10})"
+                        + "\\s?kor(?:t|ok|okat|oket)?(?![a-z])")
                 .matcher(s);
         if (lapN.find()) {
             java.util.regex.Matcher lapL = java.util.regex.Pattern
@@ -1646,7 +1671,7 @@ public final class Activities {
                             + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
                             + "(km|kilometer\\w*|meter\\w*|m)(?![a-z])")
                     .matcher(s);
-            int n = Integer.parseInt(lapN.group(1));
+            int n = numWordValue(lapN.group(1));
             if (n >= 2 && n <= 30 && lapL.find(lapN.end())) {
                 double v = Double.parseDouble(lapL.group(1).replace(',', '.'));
                 double tot = n * v;
@@ -2882,6 +2907,11 @@ public final class Activities {
             // 55 perc." evezése egy sorozat a teremben – eddig egy kitalált
             // evezőgépezés is bekerült mellé, és elvitte az idő felét.
             if (liftOnly[i]) continue;
+            // A KÖZBEN tagmondata ugyanannak az edzésnek a része: az „este
+            // 40 perc jóga, közben 10 perc légzőgyakorlat" tíz perce egy
+            // MÁSODIK jóga-bejegyzés lett – ötven perc abból a negyvenből,
+            // ami megvolt.
+            if (used[h[2]] && duringClause(s, h[0])) continue;
             if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i], minsOf[i]))
                 continue;                           // egy mozgásforma egyszer szerepel
             used[h[2]] = true;
@@ -3574,6 +3604,20 @@ public final class Activities {
                 }
                 out = rest;
             }
+        }
+        // A LEHETETLEN TEMPÓ nem hossz: a „két kör a tó körül, egy kör 3,2
+        // km, közben 2 perc séta" hat és fél kilométeres sétájához a MELLÉKES
+        // tagmondat két perce tapadt oda – száznyolcvan km/h-s gyaloglás. Ha
+        // a kimondott idő ennyire nem illik a távhoz, a tempóból becsült
+        // hossz a hihetőbb.
+        for (int i = 0; i < out.size(); i++) {
+            Plan p = out.get(i);
+            if (p.km <= 0 || p.minutes <= 0) continue;
+            double kmh = p.km / (p.minutes / 60.0);
+            double max = "kerekpar".equals(p.kind.id) || "si".equals(p.kind.id) ? 60 : 30;
+            if (kmh <= max) continue;
+            int est = Math.max(1, (int) Math.round(p.km * pace(beforeBlank, p.kind)));
+            out.set(i, new Plan(p.kind, p.count, Math.min(24 * 60, est), p.km, p.steps));
         }
         // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót
         // sem mond ki: a „ma 14 000 lépés, 9,8 km" a tíz és fél kilométeres
@@ -6709,6 +6753,26 @@ public final class Activities {
                 "delutan", "este", "ejjel"})
             if (s.contains(w)) n++;
         return n;
+    }
+
+    /**
+     * A megadott helyet tartalmazó tagmondat a KÖZBEN szavával kezdődik-e?
+     *
+     * Az „este 40 perc jóga, közben 10 perc légzőgyakorlat" második
+     * mozgás-szava ugyanazé az óráé, nem külön edzés – a „közben" épp ezt
+     * mondja ki.
+     */
+    private static boolean duringClause(String s, int pos) {
+        int b = Math.max(0, Math.min(pos, s.length()));
+        while (b > 0 && s.charAt(b - 1) != ',' && s.charAt(b - 1) != ';'
+                && s.charAt(b - 1) != '.') b--;
+        String cl = s.substring(b, Math.min(pos, s.length()));
+        // Az óra ELEJE és VÉGE is ugyanaz az óra: a „jógaóra 75 percig
+        // tartott, a végén 10 perc meditációval" tíz perce külön
+        // bejegyzésként nyolcvanöt percre hizlalta a hetvenötöt.
+        return cl.matches("(?s).*(?<![a-z])(kozben|kozte|koztuk|mikozben|"
+                + "ekozben|azon belul|ebbol|a vegen|a vegere|a vege fele|"
+                + "kezdesnek|bemelegitesnek|levezetesnek|zarasnak)(?![a-z]).*");
     }
 
     /**

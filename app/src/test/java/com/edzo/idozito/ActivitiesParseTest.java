@@ -6645,4 +6645,43 @@ public class ActivitiesParseTest {
         assertEquals(2, Activities.parse("2x45 perc foci").plans.get(0).count);
     }
 
+
+    /**
+     * A KIÍRT számnév ugyanaz a körszám, és a MELLÉKES tagmondat perce nem
+     * a főmozgásé: a „két kör a tó körül, egy kör 3,2 km, közben 2 perc
+     * séta" hat és fél kilométere helyett három és kettő tized került a
+     * naplóba – majd a két perc mellé száznyolcvan km/h-s gyaloglásként.
+     */
+    @Test
+    public void aSpelledOutLapCountAndASanePace() {
+        Activities.Parsed p = Activities.parse("Két kör a tó körül, "
+                + "egy kör 3,2 km, közben 2 perc séta.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.4, p.plans.get(0).km, 0.01);
+        assertTrue("életszerűtlen tempó", p.plans.get(0).minutes > 30);
+        // A hihető tempó marad, ahogy kimondták.
+        assertEquals(20, Activities.parse("Ma futottam 5 km-t 20 perc alatt.")
+                .plans.get(0).minutes);
+        assertEquals(80, Activities.parse("Bringa 40 km 80 perc.")
+                .plans.get(0).minutes);
+    }
+
+    /**
+     * A KÖZBEN tagmondata ugyanannak az edzésnek a része: az „este 40 perc
+     * jóga, közben 10 perc légzőgyakorlat" tíz perce egy MÁSODIK
+     * jóga-bejegyzés lett – ötven perc abból a negyvenből, ami megvolt.
+     */
+    @Test
+    public void aDuringClauseIsPartOfTheSameSession() {
+        Activities.Parsed p = Activities.parse("Este 40 perc jóga, "
+                + "közben 10 perc légzőgyakorlat.");
+        assertEquals(1, p.plans.size());
+        assertEquals(40, p.plans.get(0).minutes);
+        assertEquals(1, Activities.parse("A jógaóra 75 percig tartott, "
+                + "a végén 10 perc meditációval.").plans.size());
+        // A KÜLÖN alkalom marad külön.
+        assertEquals(2, Activities.parse("Reggeli túra 12 km 3 óra, "
+                + "este könnyű 20 perc séta.").plans.size());
+    }
+
 }
