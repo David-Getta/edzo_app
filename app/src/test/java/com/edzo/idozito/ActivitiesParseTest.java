@@ -7350,4 +7350,21 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.2);
     }
 
+    /**
+     * A „kell mozognom" tanács, nem edzés.
+     *
+     * Az „az orvos szerint többet kell mozognom, ma elkezdtem: 20 perc
+     * séta" bejegyzésbe a húszperces séta MELLÉ egy negyvenöt perces
+     * „egyéb mozgás" is bekerült – abból a tagmondatból, ami épp csak
+     * javasol.
+     */
+    @Test
+    public void adviceWithAnInfinitiveIsNotASession() {
+        Activities.Parsed p = Activities.parse("Az orvos szerint többet kell "
+                + "mozognom, ma elkezdtem: 20 perc séta.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(20, p.plans.get(0).minutes);
+    }
+
 }

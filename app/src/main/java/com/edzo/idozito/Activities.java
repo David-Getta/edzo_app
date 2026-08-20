@@ -4061,6 +4061,13 @@ public final class Activities {
         return cl.matches("(?s).*(?<![a-z])(holnap\\w*|holnaputan\\w*|jovo het\\w*"
                 + "|jovo hon\\w*|fogok|fogunk|tervezek|tervezem|tervezunk"
                 + "|lesz|leszek|leszunk|lenne)(?![a-z]).*")
+                // A KELL + FŐNÉVI IGENÉV tanács, nem napló: az „az orvos
+                // szerint többet kell mozognom, ma elkezdtem: 20 perc séta"
+                // mondatba a húszperces séta MELLÉ egy negyvenöt perces
+                // „egyéb mozgás" is bekerült – abból a tagmondatból, ami épp
+                // csak javasol.
+                || cl.matches("(?s).*(?<![a-z])(?:kell|kene|kellene|szabad)"
+                        + "\\s+\\p{L}+(?:nom|nem|nunk|nunk|ni)(?![a-z]).*")
                 || cl.matches("(?s).*(?<![a-z])(?:\\d{1,2}|egy|ket|harom|negy"
                         + "|ot|hat|het|nyolc|kilenc|tiz)\\s?"
                         + "(?:nap|het|honap|ev)\\s+mulva(?![a-z]).*");

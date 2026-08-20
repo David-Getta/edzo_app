@@ -2030,4 +2030,19 @@ public class FoodsParseTest {
         // A valódi felsorolás két tétel marad.
         assertEquals(2, Foods.parse(all, "vacsora: lazac és hal").size());
     }
+
+    /**
+     * A pótlás felmenti a felejtést.
+     *
+     * A „reggel elfelejtettem enni, délben pótoltam: 2 szendvics" ebédje
+     * megevett ebéd – eddig az egész bejegyzés elveszett a felejtés
+     * szavától, a szendvicsekkel együtt.
+     */
+    @Test public void makingUpForItCancelsTheForgetting() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertFalse(Foods.parse(all, "reggel elfelejtettem enni, délben "
+                + "pótoltam: 2 szendvics").isEmpty());
+        // A pótlás nélküli felejtés marad kihagyás.
+        assertTrue(Foods.looksUneaten("elfelejtettem bevenni a vitaminokat"));
+    }
 }

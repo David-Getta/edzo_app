@@ -4116,6 +4116,12 @@ public final class Foods {
         s = s.replaceAll("(?:ebedig|delig|estig|esteig|vacsoraig|reggelig"
                 + "|uzsonnaig|holnapig|masnapig|hazaig)\\s+(?:csak\\s+|meg\\s+)?"
                 + "(?:kibirtam|birtam ki)", " ");
+        // A PÓTLÁS felmenti a felejtést: a „reggel elfelejtettem enni, délben
+        // pótoltam: 2 szendvics" ebédje MEGEVETT ebéd – eddig az egész
+        // bejegyzés elveszett a felejtés szavától, a szendvicsekkel együtt.
+        if (s.matches("(?s).*(?<![a-z])(potoltam|potoltuk|behoztam|behoztuk)"
+                + "(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])elfelejtett(?:em|uk)(?![a-z])", " ");
         boolean intent = false;
         for (String w : new String[]{
                 // Jövő és szándék.
