@@ -525,4 +525,22 @@ public class KcalTest {
         assertEquals(-1.0, Kcal.protein("150 g protein turmix"), 0.01);
     }
 
+    /**
+     * Az edzés tagmondatának kalóriája az elégetett – a többié nem.
+     *
+     * A „deficitben vagyok, ma 1450 kcal, edzés 500 kcal" mondatban az
+     * ezernégyszázötven a BEVITEL, mégis az égetéshez adódott hozzá:
+     * ezerkilencszázötven elégetett kalória egy ötszázas edzésből.
+     */
+    @Test
+    public void onlyTheExerciseClauseCountsAsBurned() {
+        assertEquals(500, Kcal.burned("Deficitben vagyok, ma 1450 kcal, "
+                + "edzés 500 kcal."));
+        // Az egyetlen mozgás-tagmondat kalóriája marad égetés.
+        assertEquals(520, Kcal.burned("Futás 45 perc, 520 kcal."));
+        assertEquals(610, Kcal.burned("Polar: 55 perc, 610 kcal, átlag hr 138."));
+        // Az étkezés-felsorolás nem lesz égetés.
+        assertEquals(-1, Kcal.burned("Reggeli 350 kcal, ebéd 700, vacsora 600."));
+    }
+
 }

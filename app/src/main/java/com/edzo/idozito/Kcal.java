@@ -195,7 +195,34 @@ public final class Kcal {
      * kcal", annak a számát nem illik a saját becslésünkre cserélni.
      */
     public static int burned(String q) {
-        return amount(q, EATEN_P, NOT_EATEN_P);
+        return amount(exerciseClausesOnly(q), EATEN_P, NOT_EATEN_P);
+    }
+
+    /**
+     * Az EDZÉS tagmondatának kalóriája az elégetett – a többié nem.
+     *
+     * A „deficitben vagyok, ma 1450 kcal, edzés 500 kcal" mondatban az
+     * ezernégyszázötven a BEVITEL, mégis az égetéshez adódott hozzá:
+     * ezerkilencszázötven elégetett kalória egy ötszázas edzésből. Csak
+     * akkor szűkítünk, ha marad kalória a mozgás tagmondatában, és van
+     * olyan tagmondat is, amelyik számot mond, de mozgást nem.
+     */
+    private static String exerciseClausesOnly(String q) {
+        if (q == null) return null;
+        String s = Hu.digits(Foods.norm(q));
+        if (countNums(s) < 2) return q;
+        StringBuilder only = new StringBuilder();
+        boolean plain = false;
+        for (String cl : s.split("\\s*[,;.]\\s*")) {
+            if (cl.matches("(?s).*(?<![a-z])(edzes\\w*|edzettem|futas\\w*"
+                    + "|futottam|kondi\\w*|uszas\\w*|usztam|bicikli\\w*"
+                    + "|kerekpar\\w*|seta\\w*|setaltam|tura\\w*|aktiv"
+                    + "|mozgas\\w*|sport\\w*|garmin|polar)(?![a-z]).*"))
+                only.append(only.length() > 0 ? ", " : "").append(cl);
+            else if (countNums(cl) > 0) plain = true;
+        }
+        if (!plain || countNums(only.toString()) < 1) return q;
+        return only.toString();
     }
 
     /**
@@ -240,6 +267,14 @@ public final class Kcal {
             out.append(out.length() > 0 ? ", " : "").append(cl);
         }
         return out.toString();
+    }
+
+    /** Hány kiírt kalória-érték van a szövegben. */
+    private static int countNums(String s) {
+        int n = 0;
+        Matcher m = NUM.matcher(s);
+        while (m.find()) n++;
+        return n;
     }
 
     private static int amount(String q, Pattern[] block, Pattern[] want) {

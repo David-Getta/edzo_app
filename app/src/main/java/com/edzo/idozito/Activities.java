@@ -4052,9 +4052,18 @@ public final class Activities {
      * tagmondatában marad – azokat a teljes mondatra futó vizsgálat kezeli.
      */
     private static boolean plannedClause(String cl) {
+        // A „N HÉT MÚLVA" a jövő legpontosabb magyar alakja: a „két hét
+        // múlva félmaraton, ma 16 km-t futottam felkészülésként" mondatból
+        // a mai tizenhat MELLÉ egy huszonegy kilométeres félmaraton is
+        // bekerült – harminchét kilométer abból a tizenhatból, ami
+        // megvolt. A verseny neve önmagában távot is jelent, ezért a
+        // terv-tagmondatnak el kell tűnnie.
         return cl.matches("(?s).*(?<![a-z])(holnap\\w*|holnaputan\\w*|jovo het\\w*"
                 + "|jovo hon\\w*|fogok|fogunk|tervezek|tervezem|tervezunk"
-                + "|lesz|leszek|leszunk|lenne)(?![a-z]).*");
+                + "|lesz|leszek|leszunk|lenne)(?![a-z]).*")
+                || cl.matches("(?s).*(?<![a-z])(?:\\d{1,2}|egy|ket|harom|negy"
+                        + "|ot|hat|het|nyolc|kilenc|tiz)\\s?"
+                        + "(?:nap|het|honap|ev)\\s+mulva(?![a-z]).*");
     }
 
     /**

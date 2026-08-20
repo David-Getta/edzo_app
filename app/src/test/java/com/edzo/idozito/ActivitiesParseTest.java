@@ -7331,4 +7331,23 @@ public class ActivitiesParseTest {
                 + "8-at.").plans.isEmpty());
     }
 
+    /**
+     * A „N hét múlva" tagmondata terv, nem napló.
+     *
+     * A „két hét múlva félmaraton, ma 16 km-t futottam felkészülésként"
+     * mondatból a mai tizenhat MELLÉ egy huszonegy kilométeres félmaraton
+     * is bekerült – harminchét kilométer abból a tizenhatból, ami megvolt.
+     * A verseny neve önmagában távot is jelent.
+     */
+    @Test
+    public void aRaceInTwoWeeksIsNotTodaysRun() {
+        Activities.Parsed p = Activities.parse("Két hét múlva félmaraton, "
+                + "ma 16 km-t futottam felkészülésként.");
+        assertEquals(1, p.plans.size());
+        assertEquals(16.0, p.plans.get(0).km, 0.01);
+        // A lefutott félmaraton marad félmaraton.
+        assertEquals(21.1, Activities.parse("Ma lefutottam a félmaratont.")
+                .plans.get(0).km, 0.2);
+    }
+
 }
