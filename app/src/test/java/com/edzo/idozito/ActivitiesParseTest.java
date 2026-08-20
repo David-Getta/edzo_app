@@ -7450,4 +7450,25 @@ public class ActivitiesParseTest {
                 + "játszottam.").plans.get(0).kind.id);
     }
 
+    /**
+     * A szorzójeles intervall a napszak mellett is szorzat.
+     *
+     * Az „este 4x400 métert futottam" NÉGY KÜLÖN futásra esett szét, négy
+     * napra osztva – csak mert napszak állt előtte. A napszak-kivétel a
+     * „reggel 7 kor 5 km" órájának szólt, ahol a „kör" és a „-kor"
+     * egybeesik; a szorzójel viszont félreérthetetlen.
+     */
+    @Test
+    public void aTimesSignIsAMultiplierEvenAfterADayPart() {
+        Activities.Parsed p = Activities.parse("Este 4x400 métert futottam.");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1.6, p.plans.get(0).km, 0.01);
+        Activities.Parsed q = Activities.parse("Este 4 x 500 m úsztam, "
+                + "köztük 1 perc pihenő.");
+        assertEquals(2.0, q.plans.get(0).km, 0.01);
+        // A napszak melletti óra marad óra.
+        assertEquals(7, Activities.parse("Reggel 7 kor 5 km futás.").hour);
+    }
+
 }

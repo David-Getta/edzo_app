@@ -5199,7 +5199,7 @@ public final class Activities {
                 // kettőspontos alak („5 kör: 500 m evezés, 15 swing")
                 // szándékosan NEM: az egy többtételes kör, ahol a szorzás
                 // csak a távot vinné, a többi tétel ismétléseit nem.
-                .compile("(\\d{1,2})(?:\\s?[x×]\\s?|\\s+kor\\w*\\s+)"
+                .compile("(\\d{1,2})(\\s?[x×]\\s?|\\s+kor\\w*\\s+)"
                         + "(\\d{1,4}(?:[.,]\\d+)?)\\s?(km|meter[a-z]*|m)(?![a-z])")
                 .matcher(s);
         while (m.find()) {
@@ -5207,27 +5207,31 @@ public final class Activities {
             double d;
             try {
                 n = Integer.parseInt(m.group(1));
-                d = Double.parseDouble(m.group(2).replace(',', '.'));
+                d = Double.parseDouble(m.group(3).replace(',', '.'));
             } catch (NumberFormatException e) { continue; }
             if (n < 2 || d <= 0) continue;
             // A NAPSZAK szava ÓRÁT jelöl, nem kört: a „reggel 7 kor 5 km
             // futás" hetese időpont – körnek olvasva HARMINCÖT kilométeres
-            // futás lett belőle, és a becsült idő három és fél óra.
+            // futás lett belőle, és a becsült idő három és fél óra. A
+            // SZORZÓJELES alak viszont félreérthetetlen: az „este 4x400
+            // métert futottam" NÉGY KÜLÖN futásra esett szét, négy napra
+            // osztva, csak mert napszak állt előtte.
             String pre = s.substring(Math.max(0, m.start() - 14), m.start());
-            if (pre.matches("(?s).*(?<![a-z])(reggel|este|delben|delelott"
-                    + "|delutan|ejjel|hajnalban|ejszaka)\\w*\\s*$")) continue;
+            if (!m.group(2).matches("\\s?[x×]\\s?")
+                    && pre.matches("(?s).*(?<![a-z])(reggel|este|delben|delelott"
+                        + "|delutan|ejjel|hajnalban|ejszaka)\\w*\\s*$")) continue;
             // Az intervall-ismétlés RÖVID: kétszáz métertől néhány
             // kilométerig. A „8x 60 km" nem intervallum – összeszorozva
             // négyszáznyolcvan kilométeres futás lett belőle, huszonnégy
             // órás becsült idővel. Egymillió véletlen mondatból ez a
             // két eset maradt.
-            if (m.group(3).equals("km") && d > 10) continue;
+            if (m.group(4).equals("km") && d > 10) continue;
             double total = n * d;
             // A szorzat sem lehet életszerűtlen: egy edzés távja a
             // kerékpáros felső határig hihető, azon túl nem.
-            if (total > 400 && m.group(3).equals("km")) continue;
+            if (total > 400 && m.group(4).equals("km")) continue;
             String rep;
-            if (m.group(3).equals("km")) {
+            if (m.group(4).equals("km")) {
                 rep = (total == Math.rint(total) ? String.valueOf((long) total)
                         : String.valueOf(total).replace('.', ',')) + " km";
             } else {
