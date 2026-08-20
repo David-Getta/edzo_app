@@ -434,6 +434,20 @@ public final class StrengthParse {
         // amivel a felhasználó a fájdalmát mondja meg. A tíz nevező
         // egyértelmű: súlyt és ismétlést senki nem ír le így.
         text = text.replaceAll("(?<![\\d,.])(?:10|[0-9])\\s?/\\s?10(?![\\d])(?![,.]\\d)", " ");
+        // A GYAKORLATSZÁM nem ismétlésszám: az „edzőterem: mellkas és
+        // tricepsz nap, összesen 8 gyakorlat, 24 sorozat, 75 perc" nyolcasa
+        // azt mondja meg, HÁNY gyakorlat volt – a naplóba mégis nyolc
+        // tricepsz-ismétlés került, egyetlen kitalált sorozatként. A
+        // gyakorlatonkénti bontás nélkül nincs mit felvenni.
+        // A gyakorlatszám mellé írt SOROZATSZÁM is a napé, nem egy tételé: a
+        // huszonnégyből huszonnégy tricepsz-ismétlés lett.
+        text = text.replaceAll("(?iu)(?<![\\d,.])\\d{1,2}\\s?"
+                + "(?:gyakorlat|gyakorlatot|gyakorlatb[oó]l)(?![\\p{L}])"
+                + "\\s*,?\\s*(?:[eé]s\\s+)?\\d{1,3}\\s?"
+                + "(?:sorozat|szett|set)\\w*", " ");
+        text = text.replaceAll("(?iu)(?<![\\d,.])\\d{1,2}\\s?"
+                + "(?:gyakorlat|gyakorlatot|gyakorlatb[oó]l|f[eé]le gyakorlat)"
+                + "(?![\\p{L}])", " ");
         // Ugyanez a perjel körszó nélkül is idő: a „8x20/10 fekvőtámasz"
         // tízese ott sem súly. A tétel megmarad (nyolcszor húsz), csak a
         // pihenő másodperce nem lesz belőle kiló.

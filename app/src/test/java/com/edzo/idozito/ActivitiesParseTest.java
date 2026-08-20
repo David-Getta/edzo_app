@@ -6374,4 +6374,18 @@ public class ActivitiesParseTest {
         assertEquals(20, p.plans.get(1).minutes);
     }
 
+
+    /**
+     * Az ID\u0150PONT ut\u00e1n nem \u00e1ll \u00fajabb sz\u00e1m: a \u201e4 k\u00f6r 10 burpee, 15 guggol\u00e1s"
+     * hajnali n\u00e9gyre ker\u00fclt a napl\u00f3ban \u2013 \u00e9kezet n\u00e9lk\u00fcl a \u201ek\u00f6r" \u00e9s a \u201e-kor"
+     * egybeesik.
+     */
+    @Test
+    public void aRoundCountBeforeARepCountIsNotAClock() {
+        assertEquals(12, Activities.parse("4 k\u00f6r 10 burpee, 15 guggol\u00e1s.").hour);
+        // A napszak melletti \u00f3ra marad \u00f3ra.
+        assertEquals(7, Activities.parse("reggel 7 kor 5 km fut\u00e1s").hour);
+        assertEquals(18, Activities.parse("este 6 kor 3 km fut\u00e1s").hour);
+    }
+
 }

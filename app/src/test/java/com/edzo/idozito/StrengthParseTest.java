@@ -1687,4 +1687,24 @@ public class StrengthParseTest {
                 "50 guggol\u00e1s 40 fekv\u0151t\u00e1masz 30 hasizom").size());
     }
 
+
+    /**
+     * A GYAKORLATSZ\u00c1M nem ism\u00e9tl\u00e9ssz\u00e1m: az \u201eedz\u0151terem: mellkas \u00e9s tricepsz
+     * nap, \u00f6sszesen 8 gyakorlat, 24 sorozat, 75 perc" nyolcasa azt mondja
+     * meg, H\u00c1NY gyakorlat volt \u2013 a napl\u00f3ba m\u00e9gis nyolc tricepsz-ism\u00e9tl\u00e9s
+     * ker\u00fclt, egyetlen kital\u00e1lt sorozatk\u00e9nt.
+     */
+    @Test
+    public void anExerciseCountIsNotARepCount() {
+        assertTrue(StrengthParse.parse("Edz\u0151terem: mellkas \u00e9s tricepsz nap, "
+                + "\u00f6sszesen 8 gyakorlat, 24 sorozat, 75 perc.").isEmpty());
+        assertTrue(StrengthParse.parse("Edz\u0151terem: h\u00e1t \u00e9s bicepsz nap, "
+                + "\u00f6sszesen 6 gyakorlat, 75 perc.").isEmpty());
+        // A gyakorlatonk\u00e9nti bont\u00e1s marad.
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "guggol\u00e1s 3 sorozat 10 ism\u00e9tl\u00e9s 60 kg");
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(10, it.get(0).sets.get(0).reps);
+    }
+
 }

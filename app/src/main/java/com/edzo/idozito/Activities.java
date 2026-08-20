@@ -4671,6 +4671,14 @@ public final class Activities {
             // egybeesik.
             if (spaced && s.matches("(?s).*(?<![a-z])(koronkent|korben|"
                     + "korokben|koronkenti)\\w*.*")) continue;
+            // Az IDŐPONT után nem áll újabb szám: a „4 kör 10 burpee, 15
+            // guggolás" hajnali négyre került a naplóban. A napszak melletti
+            // óra viszont maradjon óra – a „reggel 7 kor 5 km futás" hetese
+            // időpont, és a napszak mondja ki.
+            if (spaced && s.substring(m.end()).matches("(?s)\\s*\\d.*")
+                    && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                        + "(reggel|delelott|delben|delutan|este|ejjel|"
+                        + "hajnalban|ejszaka)\\w*\\s*$")) continue;
             int h = Integer.parseInt(m.group(1));
             if (h >= 0 && h <= 23) {
                 if (h < 12) {
