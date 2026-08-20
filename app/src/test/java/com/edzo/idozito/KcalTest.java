@@ -476,4 +476,21 @@ public class KcalTest {
         assertEquals(700, Kcal.stated("reggel 12000 lépés, ebéd 700 kcal"));
     }
 
+
+    /**
+     * A KÜLÖNÍRT igekötő ugyanaz a bevitel, és a mértékegység a MÁSIK
+     * tagmondatban is állhat: az „összesen 2100 kcal-t vittem be, és 2600-at
+     * égettem el" kétezer-száza ELÉGETETT kalóriaként ment a naplóba, a
+     * valódi kétezer-hatszáz meg elveszett mellőle.
+     */
+    @Test
+    public void bothDirectionsSurviveInOneSentence() {
+        String q = "Összesen 2100 kcal-t vittem be, és 2600-at égettem el.";
+        assertEquals(2100, Kcal.stated(q));
+        assertEquals(2600, Kcal.burned(q));
+        assertEquals(2100, Kcal.stated("2100 kcal-t vittem be."));
+        assertEquals(-1, Kcal.burned("2100 kcal-t vittem be."));
+        assertEquals(600, Kcal.burned("Ma 2100 kcal-t ettem, elégettem 600-at."));
+    }
+
 }

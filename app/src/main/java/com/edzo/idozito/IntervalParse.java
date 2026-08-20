@@ -264,6 +264,12 @@ public final class IntervalParse {
                 // edzés, pihenő nélkül pedig nincs is mit ütemezni. A
                 // kimondott terv-szó (kör, munka, pihenő) felülír.
                 if (rest <= 0 && w >= 600 && !saysPlan(s)) return null;
+                // EGYETLEN kimondott idő nem munka/pihenő pár: a „ma 3-szor
+                // 15 perc sétát iktattam be a munka között" tizenöt perce
+                // munkaként ÉS pihenőként is bekerült, a negyvenöt perc séta
+                // meg nyomtalanul eltűnt a napló mellől.
+                if (rest > 0 && rest == w && timeCount(s) < 2 && !saysPlan(s))
+                    return null;
                 Plan p = build(r, w, rest, warmIn(s), coolIn(s));
                 if (p != null) return p;
             } catch (NumberFormatException ignored) {
@@ -430,6 +436,11 @@ public final class IntervalParse {
         // pihenővel – negyvenperces időzítő egy félórás estére. Egyenlő
         // munka és pihenő egyetlen körben sosem valódi terv.
         if (rounds <= 1 && rest > 0 && work == rest && !saysPlan(s)) return null;
+        // EGYETLEN kimondott idő nem munka/pihenő pár: a „ma 3-szor 15 perc
+        // sétát iktattam be a munka között" háromszor tizenöt perc munkából
+        // ÉS tizenöt perc pihenőből álló, másfél órás tervvé állt össze – a
+        // negyvenöt perc séta meg nyomtalanul eltűnt a napló mellől.
+        if (rest > 0 && work == rest && timeCount(s) < 2 && !saysPlan(s)) return null;
         // EGY kör, pihenő nélkül nem ritmus: az „5 perc szauna, 30 perc
         // úszás" ötperces „tervet" ajánlott – két kimondott időből, amelyek
         // közül az egyik nem is mozgás. A kimondott terv (amrap, tabata,
@@ -856,8 +867,12 @@ public final class IntervalParse {
         // ébredés-ige előtti szorzószám nem válhat körré, mert a
         // szintetikus „kör" szó a terv-őröket is kicselezte, és az
         // éjszakából kétkörös időzítő lett.
+        // A SZINTETIKUS kör külön jelet kap („korr"): a körszámot ugyanúgy
+        // adja, de a mondatot nem teszi kimondott tervvé. A „ma 3-szor 15
+        // perc sétát iktattam be" tizenöt perce enélkül munkaként ÉS
+        // pihenőként is bekerült, a negyvenöt perc séta meg eltűnt.
         return Hu.digits(s).replaceAll("(\\d+)\\s?-?\\s?(szor|szer)\\b"
-                + "(?!\\s*(?:ebred|felebred|felkel|keltem|megszakad))", "$1 kor");
+                + "(?!\\s*(?:ebred|felebred|felkel|keltem|megszakad))", "$1 korr");
     }
 
     /** Az első szám a szó után: „emom 12” → 12. */
@@ -936,7 +951,11 @@ public final class IntervalParse {
                                 && Character.isDigit(s.charAt(p - 2))));
                 // A KORTY, a KORSÓ és a KÓRHÁZ sem kör: a „3 korty bor"
                 // miatt a mondat kimondott tervnek számított.
-                boolean notRound = clockSuffix
+                // A SZORZÓSZÁMBÓL képzett kör nem kimondott terv: a „3-szor
+                // 15 perc séta" nem munka/pihenő pár, csak három séta.
+                boolean synthetic = w.equals("kor") && s.startsWith("r", p + 3)
+                        && (p + 4 >= s.length() || !Character.isLetter(s.charAt(p + 4)));
+                boolean notRound = clockSuffix || synthetic
                         || (w.equals("kor") && !roundWord(s, p))
                         || w.equals("kor")
                         && (s.startsWith("an", p + 3) || s.startsWith("ai", p + 3)
@@ -956,6 +975,14 @@ public final class IntervalParse {
                             || s.startsWith("bol", p + 5)
                             || s.startsWith("hoz", p + 5)
                             || s.startsWith("hely", p + 5)
+                            // A „munka KÖZÖTT" beiktatott mozgás sem
+                            // munkaszakasz: a „ma 3-szor 15 perc sétát
+                            // iktattam be a munka között" negyvenöt perce
+                            // eltűnt a napló mellől, mert a mondat kimondott
+                            // tervnek látszott.
+                            || s.startsWith(" kozott", p + 5)
+                            || s.startsWith(" soran", p + 5)
+                            || s.startsWith("ido", p + 5)
                             || s.startsWith("nap", p + 5))) notRound = true;
                 if (!dayOff && !notRound
                         && (p == 0 || !Character.isLetter(s.charAt(p - 1))))
@@ -1042,7 +1069,8 @@ public final class IntervalParse {
         StringBuilder suf = new StringBuilder();
         while (e < s.length() && Character.isLetter(s.charAt(e))) suf.append(s.charAt(e++));
         String t = suf.toString();
-        return t.isEmpty() || t.equals("t") || t.equals("e") || t.equals("ok")
+        // Az „r" a szorzószámból képzett SZINTETIKUS kör jele: körszámnak jó.
+        return t.isEmpty() || t.equals("r") || t.equals("t") || t.equals("e") || t.equals("ok")
                 || t.equals("oket") || t.equals("ben") || t.equals("re")
                 || t.equals("rel") || t.equals("onkent") || t.equals("os")
                 || t.equals("nkent") || t.equals("ig");

@@ -2,6 +2,7 @@ package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -6795,6 +6796,25 @@ public class ActivitiesParseTest {
         // Egyetlen mozgásformánál változatlan a szétosztás.
         assertEquals(12, Activities.parse("Ez a hónap: 12 edzés, 145 km futás.")
                 .plans.get(0).count);
+    }
+
+
+    /**
+     * A SZORZÓSZÁMBÓL képzett kör nem kimondott terv: a „ma 3-szor 15 perc
+     * sétát iktattam be a munka között" tizenöt perce munkaként ÉS
+     * pihenőként is bekerült egy időzítő-tervbe, a negyvenöt perc séta meg
+     * nyomtalanul eltűnt a napló mellől.
+     */
+    @Test
+    public void aMultiplierIsNotATimerPlan() {
+        Activities.Parsed p = Activities.parse("Ma 3-szor 15 perc sétát "
+                + "iktattam be a munka között.");
+        assertEquals(1, p.plans.size());
+        assertEquals(3, p.plans.get(0).count);
+        assertEquals(15, p.plans.get(0).minutes);
+        assertNull(IntervalParse.parse("ma 3-szor 15 perc sétát iktattam be"));
+        // A kimondott körszám és pihenő továbbra is terv.
+        assertNotNull(IntervalParse.parse("4x4 perc kemény futás, közte 3 perc pihi"));
     }
 
 }

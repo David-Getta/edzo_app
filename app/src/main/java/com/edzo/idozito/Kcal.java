@@ -104,6 +104,11 @@ public final class Kcal {
      */
     private static final String[] EATEN = {
             "ettem", "megettem", "eszem", "eszunk", "bevittem", "bevitel",
+            // A KÜLÖNÍRT igekötő ugyanaz a bevitel: az „összesen 2100 kcal-t
+            // vittem be, és 2600-at égettem el" kétezer-száza ELÉGETETT
+            // kalóriaként ment a naplóba, a valódi kétezer-hatszáz meg
+            // elveszett mellőle.
+            "vittem be", "vittunk be", "vittem bele",
             "elfogyasztottam", "megittam", "ittam",
             // Az ebéd és a vacsora főnévként is étkezés – a „reggeli"
             // szándékosan kimarad, mert jelzőként a napszakot mondja
@@ -268,7 +273,12 @@ public final class Kcal {
         // meg már nem: a „napi cél 1800 kcal, ma 1750 lett" ezerhétszázötvene
         // eddig elveszett, mert a kcal a kidobott tagmondattal ment el. A
         // magyar egyszer mondja ki az egységet – a második szám ugyanaz.
-        boolean unitSeen = anyGoal && NUM.matcher(s).find();
+        // A mértékegység a MÁSIK tagmondatban is állhat: az „összesen 2100
+        // kcal-t vittem be, és 2600-at égettem el" kétezer-hatszáza némán
+        // elveszett – a kcal a bevitel tagmondatában maradt, a magyar meg
+        // egyszer mondja ki az egységet. (Az „egyetlen jelöletlen szám"
+        // feltétel alább úgyis szűkre szabja.)
+        boolean unitSeen = NUM.matcher(s).find();
         if (anyGoal) {
             StringBuilder keep = new StringBuilder();
             for (String cl : s.split("\\s*[,;]\\s*")) {
