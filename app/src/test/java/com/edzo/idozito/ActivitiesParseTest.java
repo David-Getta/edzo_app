@@ -6739,4 +6739,21 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("Ők edzettek, én pihentem.").plans.size());
     }
 
+
+    /**
+     * Az ODA és a VISSZA külön kimondott távja is összeadódik: a
+     * „kirándulás: 8 km oda, 8 km vissza" nyolc kilométert írt a naplóba a
+     * tizenhatból – a visszaút nyomtalanul eltűnt.
+     */
+    @Test
+    public void bothLegsOfTheTripCount() {
+        assertEquals(16.0, Activities.parse("Kirándulás: 8 km oda, 8 km vissza, "
+                + "közben megálltunk ebédelni.").plans.get(0).km, 0.01);
+        assertEquals(22.0, Activities.parse("10 km oda, 12 km vissza.")
+                .plans.get(0).km, 0.01);
+        // Az egyirányú táv marad.
+        assertEquals(8.0, Activities.parse("Ma futottam 8 km-t.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

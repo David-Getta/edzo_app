@@ -2255,6 +2255,25 @@ public final class Activities {
                         + s.substring(ovk.end());
             }
         }
+        // Az ODA és a VISSZA külön kimondott távja is összeadódik: a
+        // „kirándulás: 8 km oda, 8 km vissza" nyolc kilométert írt a naplóba
+        // a tizenhatból – a visszaút nyomtalanul eltűnt. Itt a mértékegység
+        // áll elöl, a szó mögötte; a fenti szabály a fordított sorrendet
+        // fedi.
+        java.util.regex.Matcher ovk2 = java.util.regex.Pattern
+                .compile("(\\d{1,3}(?:[.,]\\d)?)\\s?km\\s+oda\\s*[,;]\\s*"
+                        + "(\\d{1,3}(?:[.,]\\d)?)\\s?km\\s+"
+                        + "(?:vissza|hazafele|visszafele)").matcher(s);
+        if (ovk2.find()) {
+            double sum = Double.parseDouble(ovk2.group(1).replace(',', '.'))
+                    + Double.parseDouble(ovk2.group(2).replace(',', '.'));
+            if (sum > 0 && sum <= 400) {
+                String num = sum == Math.rint(sum) ? String.valueOf((long) sum)
+                        : String.valueOf(sum).replace('.', ',');
+                s = s.substring(0, ovk2.start()) + num + " km"
+                        + s.substring(ovk2.end());
+            }
+        }
         // Szóközzel tagolt ezres: „10 000" → „10000". A KETTŐSPONT megvédi az
         // óraállást: a „túra 14,8 km 3:45:00 620 m emelkedés" mondatban a
         // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem
