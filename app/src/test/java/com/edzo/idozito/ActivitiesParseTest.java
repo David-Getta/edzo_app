@@ -7152,4 +7152,26 @@ public class ActivitiesParseTest {
                 + "ismerős, így 10 percet álltam.").plans.size());
     }
 
+    /**
+     * A másik napszak súlyzós edzése is külön alkalom.
+     *
+     * A „reggel 60 kg-mal guggoltam 5x5-öt, este 8 km-t futottam" reggeli
+     * terme nyomtalanul eltűnt a naptárból: a sorozat bekerült az
+     * erőnaplóba, edzés viszont nem lett belőle, mert az esti futás elvitte
+     * a helyét.
+     */
+    @Test
+    public void aMorningLiftIsNotErasedByTheEveningRun() {
+        Activities.Parsed p = Activities.parse("Reggel 60 kg-mal guggoltam "
+                + "5x5-öt, este 8 km-t futottam.");
+        assertEquals(2, p.plans.size());
+        boolean gym = false;
+        for (Activities.Plan pl : p.plans)
+            if (pl.kind.id.equals("kondi")) gym = true;
+        assertTrue(gym);
+        // Egy napszakon belül a sorozat továbbra sem külön edzés.
+        assertEquals(1, Activities.parse("Kondi: guggolás 5x5 100 kg, "
+                + "fekvenyomás 3x8 70 kg.").plans.size());
+    }
+
 }

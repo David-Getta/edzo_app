@@ -3178,7 +3178,17 @@ public final class Activities {
         // levegőben. A főnévi alak („5x5 guggolás") régóta jó, az igei nem:
         // a napló attól függött, melyiket írja a felhasználó. Ha van
         // sorozat, de nincs mozgás, akkor a sorozat MAGA a mozgás.
-        if (out.isEmpty()) {
+        // A MÁSIK NAPSZAK súlyzós edzése is külön alkalom: a „reggel 60 kg-mal
+        // guggoltam 5x5-öt, este 8 km-t futottam" reggeli terme nyomtalanul
+        // eltűnt a naptárból – a sorozat bekerült az erőnaplóba, edzés
+        // viszont nem lett belőle, mert az esti futás elvitte a helyét.
+        boolean liftApart = false;
+        if (!out.isEmpty() && partsDiffer(s)) {
+            boolean hasGym = false;
+            for (Plan p : out) if ("kondi".equals(p.kind.id)) hasGym = true;
+            liftApart = !hasGym && !StrengthParse.parse(rawText).isEmpty();
+        }
+        if (out.isEmpty() || liftApart) {
             List<StrengthParse.Item> lifted = StrengthParse.parse(rawText);
             if (!lifted.isEmpty()) {
                 int reps = 0;
@@ -7130,6 +7140,23 @@ public final class Activities {
                 "este", "ejjel", "hajnalban", "ejszaka"})
             if (c.matches("(?s).*(?<![a-z])" + w + "\\w*.*")) return w;
         return null;
+    }
+
+    /**
+     * Két KÜLÖNBÖZŐ napszak, külön tagmondatban.
+     *
+     * A „reggel 60 kg-mal guggoltam 5x5-öt, este 8 km-t futottam" két
+     * mozgása két külön alkalom – ezt épp a két napszak mondja ki.
+     */
+    private static boolean partsDiffer(String s) {
+        String first = null;
+        for (String cl : s.split("[,;.]")) {
+            String d = dayPartOf(cl, 0);
+            if (d == null) continue;
+            if (first == null) first = d;
+            else if (!first.equals(d)) return true;
+        }
+        return false;
     }
 
     /**
