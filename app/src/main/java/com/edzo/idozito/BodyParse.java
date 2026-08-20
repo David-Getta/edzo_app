@@ -293,6 +293,12 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // Az ESZKÖZHATÁROZÓS kiló a VÁLTOZÁS mértéke, nem mérés: a „ma reggel
+        // 79,2 kg, ez 0,4 kg-mal kevesebb, mint tegnap" hetvenkilenc egész
+        // két tizede némán elveszett – a különbség száma mellett a mondat
+        // egésze kiesett. A mérleg számát senki nem írja „kg-mal" alakban.
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:kg|kil[oó])\\w*-?(?:mal|vel|lal|el)(?![\\p{L}])", " ");
         // A TÖMÖR napló-sor rövidítései nem kilók: a „futás 10k 52p; kondi
         // 40p; alvás 7h; súly 79,3" sorból NEGYVEN kilós mérés lett – a
         // kondi perceiből –, a valódi hetvenkilenc egész három tized meg

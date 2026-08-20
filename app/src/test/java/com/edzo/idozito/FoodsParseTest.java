@@ -1960,4 +1960,20 @@ public class FoodsParseTest {
                 .get(0).grams, 0.01);
     }
 
+
+    /**
+     * A COMBFILÉ is csirke: a „sült csirke combfilé 200 g" háromszázötven
+     * gramm húst írt a naplóba – a kétszázas combfilét ÉS egy százötven
+     * grammos csirkemellet.
+     */
+    @Test
+    public void theChickenIsCountedOnce() {
+        java.util.List<Foods.Hit> h = hits("sült csirke combfilé 200 g");
+        assertEquals(1, h.size());
+        assertEquals("Csirkecomb", h.get(0).food.name);
+        assertEquals(200.0, h.get(0).grams, 0.01);
+        // Felsorolva viszont két külön tétel.
+        assertEquals(2, hits("csirkemell 150 g és csirkecomb 200 g").size());
+    }
+
 }

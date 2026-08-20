@@ -3933,6 +3933,12 @@ public final class Foods {
             // A burrito és a taco töltve érkezik: a „burrito marhahússal"
             // egy burrito, nem burrito PLUSZ egy szelet marha.
             {"Marhahús", "Burrito", "Taco", "Quesadilla"},
+            // A COMBFILÉ is csirke: a „sült csirke combfilé 200 g"
+            // háromszázötven gramm húst írt a naplóba – a kétszázas
+            // combfilét ÉS egy százötven grammos csirkemellet. Vesszővel
+            // felsorolva („csirkemell és csirkecomb") viszont két külön tétel.
+            {"Csirkemell (sült/grill)", "Csirkecomb", "Csirkeszárny",
+                    "Rántott csirke"},
             // A csusza tejfölös: ez a neve, nem egy külön kanál tejföl.
             {"Tejföl", "Túrós csusza"},
             // A hortobágyi palacsintában benne a palacsinta: a „hortobágyi

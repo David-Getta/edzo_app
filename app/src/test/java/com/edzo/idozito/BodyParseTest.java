@@ -1082,4 +1082,21 @@ public class BodyParseTest {
         assertEquals(22.0, BodyParse.parse("78,5 kg reggel, 22% zsír.").fatPct, 0.01);
     }
 
+
+    /**
+     * Az ESZKÖZHATÁROZÓS kiló a VÁLTOZÁS mértéke, nem mérés: a „ma reggel
+     * 79,2 kg, ez 0,4 kg-mal kevesebb, mint tegnap" hetvenkilenc egész két
+     * tizede némán elveszett – a különbség száma mellett a mondat egésze
+     * kiesett.
+     */
+    @Test
+    public void aDeltaInKilosIsNotAMeasurement() {
+        assertEquals(79.2, BodyParse.parse("Ma reggel 79,2 kg, ez 0,4 kg-mal "
+                + "kevesebb, mint tegnap.").kg, 0.01);
+        assertEquals(79.2, BodyParse.parse("Ma reggel 79,2 kg, 0,4 kg-mal "
+                + "kevesebb.").kg, 0.01);
+        // A valódi mérés marad.
+        assertEquals(80.0, BodyParse.parse("Ma 80 kg vagyok.").kg, 0.01);
+    }
+
 }
