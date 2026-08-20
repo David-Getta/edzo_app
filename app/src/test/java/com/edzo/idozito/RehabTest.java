@@ -941,4 +941,23 @@ public class RehabTest {
         assertNotNull(Rehab.forComplaint("fesz\u00fcl a v\u00e1dlim"));
     }
 
+    /**
+     * A megf\u00e1jdult \u00e9s az \u201eelment a derekam" is panasz.
+     *
+     * A \u201emegf\u00e1jdult a t\u00e9rdem fut\u00e1s k\u00f6zben" a legtiszt\u00e1bb panasz-mondat,
+     * m\u00e9gsem j\u00f6tt r\u00e1 semmi. Az \u201eelment a h\u00e1tam, alig b\u00edrok mozogni" a
+     * hexensussz k\u00f6znyelvi neve \u2013 arra sem.
+     */
+    @Test
+    public void everydayPainWordsAreUnderstood() {
+        assertEquals("terd", Rehab.forComplaint("Megf\u00e1jdult a t\u00e9rdem fut\u00e1s "
+                + "k\u00f6zben.").id);
+        assertEquals("terd", Rehab.forComplaint("Ma edz\u00e9s k\u00f6zben elment a "
+                + "t\u00e9rdem, holnap orvoshoz megyek.").id);
+        assertEquals("derek", Rehab.forComplaint("Elment a h\u00e1tam, alig b\u00edrok "
+                + "mozogni.").id);
+        // Az \u201eelment a kedvem" nem panasz.
+        assertNull(Rehab.forComplaint("Elment a kedvem az edz\u00e9st\u0151l."));
+    }
+
 }

@@ -481,7 +481,11 @@ public final class Rehab {
                 // zászlója szól.
                 "kopas", "meniszkusz", "keresztszalag", "szalagszakadas",
                 "diasztazis", "diastasis", "duzzad", "bedagadt", "megdagadt",
-                "vizesedik", "befolyosodott"}) {
+                "vizesedik", "befolyosodott",
+                // A MEGFÁJDULT a leghétköznapibb panasz-ige, mégis kimaradt:
+                // a „megfájdult a térdem futás közben" mondatra semmi nem
+                // jött, pedig ennél tisztább panasz nincs.
+                "megfajdul", "fajdul", "belefajdul"}) {
             int i = s.indexOf(w);
             while (i >= 0) {
                 boolean l = i == 0 || !Character.isLetter(s.charAt(i - 1));
@@ -490,6 +494,13 @@ public final class Rehab {
             }
             if (pain) break;
         }
+        // A magyar „ELMENT A DEREKAM" a hexensussz köznyelvi neve: az
+        // „elment a hátam, alig bírok mozogni" és a „ma edzés közben elment
+        // a térdem" eddig válasz nélkül maradt. Csak TESTRÉSZ előtt él, hogy
+        // az „elment a kedvem" és az „elment a busz" ne essen ide.
+        if (!pain && s.matches("(?s).*(?<![a-z])elment\\s+a[z]?\\s+"
+                + "(?:terd|derek|hat|nyak|vall|boka|csipo|comb|konyok"
+                + "|csuklo|sarok|gerinc|labam|kezem)\\w*.*")) pain = true;
         // Összetett panasz-főnév: a „derékfájás", a „csípőfájdalom" és a
         // „sarokfájdalom" egyetlen szó, tehát a fájdalom-szó a szó BELSEJÉBE
         // esik – a szókezdet-vizsgálat így mindet elutasította. Pedig a
