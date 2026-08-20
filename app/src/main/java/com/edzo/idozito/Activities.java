@@ -2679,6 +2679,7 @@ public final class Activities {
         List<int[]> mins = findMinutes(q, beforeBlank); // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
         mergeTimeRanges(beforeBlank, mins, q);
+        dropTimedMoveTimes(beforeBlank, mins);
         dropWarmupTimes(beforeBlank, mins);
         dropSleepTimes(beforeBlank, mins);
         dropTotalTime(beforeBlank, mins);
@@ -5106,6 +5107,16 @@ public final class Activities {
             // egybeesik.
             if (spaced && s.matches("(?s).*(?<![a-z])(koronkent|korben|"
                     + "korokben|koronkenti)\\w*.*")) continue;
+            // A KÖR után GYAKORLAT áll, nem óraállás: az „otthon nyomtam egy
+            // saját testsúlyos kört: 3 kör fekvőtámasz, guggolás, plank"
+            // hajnali háromra tette a bejegyzést, mert ékezet nélkül a „kör"
+            // és a „-kor" egybeesik. Időpont után gyakorlatnév nem áll
+            // közvetlenül – a napszakkal kimondott óra viszont óra marad.
+            if (spaced && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                    + "(reggel|delelott|delben|delutan|este|ejjel|"
+                    + "hajnalban|ejszaka)\\w*\\s*$")
+                    && StrengthParse.nameIn(s.substring(m.end(),
+                        Math.min(s.length(), m.end() + 20))) != null) continue;
             // Az IDŐPONT után nem áll újabb szám: a „4 kör 10 burpee, 15
             // guggolás" hajnali négyre került a naplóban. A napszak melletti
             // óra viszont maradjon óra – a „reggel 7 kor 5 km futás" hetese
@@ -5698,6 +5709,33 @@ public final class Activities {
             mins.remove(i);
             return;
         }
+    }
+
+    /**
+     * Az IDŐRE menő gyakorlat saját ideje nem az edzés hossza.
+     *
+     * A „saját testsúlyos edzés, 4 kör: 15 fekvőtámasz, 20 guggolás, 1 perc
+     * plank" EGYPERCES kondiedzést írt a naplóba: a plank ideje lett az
+     * egész edzés hossza. A plank, a fal ülés és a holtakasztás percét a
+     * súlyzós olvasó gyűjti be – a mozgásnak nem az a hossza.
+     */
+    private static void dropTimedMoveTimes(String s, List<int[]> mins) {
+        List<int[]> keep = new ArrayList<>();
+        for (int[] m : mins) {
+            int e = Math.max(0, Math.min(s.length(), m[2]));
+            // Csak a SAJÁT tagmondatáig nézünk előre: a „kondi 45 perc,
+            // plank 3x45 mp" negyvenöt perce az edzésé, a plank a
+            // következő tagmondatban áll.
+            int stop = Math.min(s.length(), e + 20);
+            for (int k = e; k < stop; k++) {
+                char c = s.charAt(k);
+                if (c == ',' || c == ';' || c == '.' || c == ':') { stop = k; break; }
+            }
+            String name = StrengthParse.nameIn(s.substring(e, stop));
+            if (name != null && StrengthParse.isTimed(name)) continue;
+            keep.add(m);
+        }
+        if (keep.size() < mins.size()) { mins.clear(); mins.addAll(keep); }
     }
 
     /**

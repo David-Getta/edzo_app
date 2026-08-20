@@ -7004,4 +7004,28 @@ public class ActivitiesParseTest {
         assertEquals(9.0, q.plans.get(0).km, 0.2);
     }
 
+    /**
+     * A kör nem óraállás, a plank ideje nem az edzés hossza.
+     *
+     * Ékezet nélkül a „kör" és a „-kor" egybeesik: az „otthon nyomtam egy
+     * saját testsúlyos kört: 3 kör fekvőtámasz, guggolás, plank" hajnali
+     * háromra tette a bejegyzést. A „saját testsúlyos edzés, 4 kör: 15
+     * fekvőtámasz, 20 guggolás, 1 perc plank" pedig EGYPERCES kondiedzés
+     * lett – a plank ideje vitte el az egész edzés hosszát.
+     */
+    @Test
+    public void aRoundIsNotAnHourAndAPlankIsNotTheSession() {
+        assertEquals(12, Activities.parse("Otthon nyomtam egy saját "
+                + "testsúlyos kört: 3 kör fekvőtámasz, guggolás, plank.").hour);
+        Activities.Parsed p = Activities.parse("Saját testsúlyos edzés, "
+                + "4 kör: 15 fekvőtámasz, 20 guggolás, 1 perc plank.");
+        assertEquals(60, p.plans.get(0).minutes);
+        // A napszakkal kimondott óra marad óra.
+        assertEquals(7, Activities.parse("Reggel 7 kor fekvőtámasz "
+                + "sorozat.").hour);
+        // A saját tagmondatában álló edzéshossz sem vész el.
+        Activities.Parsed q = Activities.parse("Kondi 45 perc, plank 3x45 mp.");
+        assertEquals(45, q.plans.get(0).minutes);
+    }
+
 }
