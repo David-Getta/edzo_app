@@ -3378,10 +3378,36 @@ public final class Activities {
             }
         }
 
+        // A MÁSIK NAPSZAK edzése külön alkalom: a „ma reggel edzettem, este
+        // még egy kis sétát tettem a kutyával" reggeli edzése nyomtalanul
+        // eltűnt – a sportnév nélküli „edzés" csak tartalékként kap
+        // bejegyzést, és a séta elvitte a helyét. Ha a két mozgás KÜLÖN
+        // tagmondatban, KÜLÖN napszakkal áll, két külön alkalom. A napszak
+        // nélküli „ma edzettem, futottam 5 km-t" marad egy edzés: ott az
+        // „edzés" csak a futás gyűjtőneve.
+        boolean genericApart = false;
+        if (!out.isEmpty() && !keep.isEmpty())
+            for (String w : new String[]{"edzettem", "edzettunk", "edzeni voltam"}) {
+                int p = s.indexOf(w);
+                if (p < 0 || timePhraseAfter(s, p + w.length())) continue;
+                String mine = dayPartOf(s, p);
+                if (mine == null) continue;
+                boolean together = false, apart = false;
+                for (int[] h : keep) {
+                    if (!crossesClause(s, p, p + w.length(), h[0], h[0] + h[1])) {
+                        together = true;
+                        break;
+                    }
+                    String his = dayPartOf(s, h[0]);
+                    if (his != null && !his.equals(mine)) apart = true;
+                }
+                if (!together && apart) { genericApart = true; break; }
+            }
+
         // Ha semmilyen mozgásformát nem ismertünk fel, a puszta „N edzés" még
         // menthető: egyéb mozgásként. Csak tartalékként, mert a „3 futó edzés"
         // szóban is benne van az „edzés" – ott a futás a helyes válasz.
-        if (out.isEmpty()) {
+        if (out.isEmpty() || genericApart) {
             // A „HIIT" és az „intervall" itt, a tartalék ágon van, nem
             // szótőként: időzítős programok nevében is gyakori szó („Zsírégető
             // HIIT"), és ott a program neve a helyes válasz, nem egy sportág.
@@ -7044,6 +7070,26 @@ public final class Activities {
             if (c == ',' || c == ';' || c == '.') return true;
         }
         return false;
+    }
+
+    /**
+     * A megadott helyet tartalmazó tagmondat napszak-szava, vagy null.
+     *
+     * A „ma reggel edzettem, este még egy kis sétát tettem" két mozgása két
+     * külön alkalom – ezt épp a két napszak mondja ki.
+     */
+    private static String dayPartOf(String s, int pos) {
+        int b = Math.max(0, Math.min(pos, s.length()));
+        while (b > 0 && s.charAt(b - 1) != ',' && s.charAt(b - 1) != ';'
+                && s.charAt(b - 1) != '.') b--;
+        int e = Math.max(0, Math.min(pos, s.length()));
+        while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != ';'
+                && s.charAt(e) != '.') e++;
+        String c = s.substring(b, e);
+        for (String w : new String[]{"reggel", "delelott", "delben", "delutan",
+                "este", "ejjel", "hajnalban", "ejszaka"})
+            if (c.matches("(?s).*(?<![a-z])" + w + "\\w*.*")) return w;
+        return null;
     }
 
     /**

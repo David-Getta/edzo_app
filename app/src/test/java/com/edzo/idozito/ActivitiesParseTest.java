@@ -7089,4 +7089,29 @@ public class ActivitiesParseTest {
         assertEquals(1, q.plans.get(0).count);
     }
 
+    /**
+     * A másik napszak edzése külön alkalom.
+     *
+     * A „ma reggel edzettem, aztán egész nap ültem, este még egy kis sétát
+     * tettem a kutyával" reggeli edzése nyomtalanul eltűnt: a sportnév
+     * nélküli „edzés" csak tartalékként kap bejegyzést, és a séta elvitte a
+     * helyét. A napszak nélküli „ma edzettem, futottam 5 km-t" viszont
+     * marad EGY edzés – ott az „edzés" csak a futás gyűjtőneve.
+     */
+    @Test
+    public void aWorkoutInAnotherDayPartIsItsOwnSession() {
+        Activities.Parsed p = Activities.parse("Ma reggel edzettem, aztán "
+                + "egész nap ültem, este még egy kis sétát tettem a kutyával.");
+        assertEquals(2, p.plans.size());
+        boolean generic = false;
+        for (Activities.Plan pl : p.plans)
+            if (pl.kind.id.equals("egyeb")) generic = true;
+        assertTrue(generic);
+        // A gyűjtőnév nem lesz külön edzés.
+        assertEquals(1, Activities.parse("Ma edzettem, futottam "
+                + "5 km-t.").plans.size());
+        assertEquals(1, Activities.parse("Ma reggel edzettem, "
+                + "5 km futás.").plans.size());
+    }
+
 }
