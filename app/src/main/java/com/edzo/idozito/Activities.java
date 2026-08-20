@@ -2955,6 +2955,27 @@ public final class Activities {
             if (!jelzo) heads.add(h);
         }
         keep = heads;
+        // Az EDZŐTEREM a HELYSZÍN, nem külön edzés: az „edzőteremben 20 perc
+        // futópad, aztán 40 perc súlyzó" bejegyzésbe HÁROM mozgás került –
+        // egy húszperces kondi (a teremből), egy negyvenöt perces futás és
+        // egy negyvenperces kondi. A ragos alak helyhatározó; ha más mozgás
+        // is van a mondatban, a terem csak a helye.
+        List<int[]> placed = new ArrayList<>();
+        for (int[] h : keep) {
+            boolean venue = "kondi".equals(ALL[h[2]].id)
+                    && s.substring(h[0], Math.min(s.length(),
+                            wordEnd(s, h[0] + h[1] - 1) + 1))
+                        .matches("(?s)\\w*terem(ben|be|bol|nel|hez|ig)\\b.*");
+            // Csak a SAJÁT tagmondatában álló másik mozgás szorítja ki: az
+            // „este konditeremben voltam egy órát" terme ott az edzés maga,
+            // hiába futott az ember reggel.
+            boolean other = false;
+            for (int[] o : keep)
+                if (o[2] != h[2] && !crossesClause(s, h[0], h[0] + h[1],
+                        o[0], o[0] + o[1])) other = true;
+            if (!venue || !other) placed.add(h);
+        }
+        if (!placed.isEmpty()) keep = placed;
 
         // 4) Távok hozzárendelése: a legközelebbi táv-alapú mozgáshoz. A magyar
         //    mindkét szórendet használja („10 km futás”, „futottam 10 km-t”),
@@ -5335,7 +5356,7 @@ public final class Activities {
             // tette a bejegyzést, mert ékezet nélkül a „kör" és a „-kor"
             // egybeesik.
             if (spaced && s.matches("(?s).*(?<![a-z])(koronkent|korben|"
-                    + "korokben|koronkenti)\\w*.*")) continue;
+                    + "korokben|koronkenti|korenkent|koronkent)\\w*.*")) continue;
             // A KÖR után GYAKORLAT áll, nem óraállás: az „otthon nyomtam egy
             // saját testsúlyos kört: 3 kör fekvőtámasz, guggolás, plank"
             // hajnali háromra tette a bejegyzést, mert ékezet nélkül a „kör"

@@ -7471,4 +7471,28 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("Reggel 7 kor 5 km futás.").hour);
     }
 
+    /**
+     * Az edzőterem a helyszín, nem külön edzés.
+     *
+     * A „ma reggel az edzőteremben 20 perc futópad, aztán 40 perc súlyzó"
+     * bejegyzésbe HÁROM mozgás került: egy húszperces kondi (a teremből),
+     * egy negyvenöt perces futás (alapértelmezett hosszal, mert a húsz
+     * percét elvitte a terem) és egy negyvenperces kondi.
+     */
+    @Test
+    public void theGymIsAPlaceNotAThirdSession() {
+        Activities.Parsed p = Activities.parse("Ma reggel az edzőteremben "
+                + "20 perc futópad, aztán 40 perc súlyzó.");
+        assertEquals(2, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        assertEquals(20, p.plans.get(0).minutes);
+        assertEquals("kondi", p.plans.get(1).kind.id);
+        assertEquals(40, p.plans.get(1).minutes);
+        // A saját tagmondatában álló terem maga az edzés.
+        Activities.Parsed q = Activities.parse("reggel futottam 5 km-t, "
+                + "este konditeremben voltam egy órát");
+        assertEquals(2, q.plans.size());
+        assertEquals(60, q.plans.get(1).minutes);
+    }
+
 }
