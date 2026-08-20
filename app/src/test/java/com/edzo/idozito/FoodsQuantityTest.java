@@ -543,4 +543,19 @@ public class FoodsQuantityTest {
         // A ráadás MÁSIK étele nem a mennyiség: ott két tétel van.
         assertEquals(2, Foods.parse(all, "ma 2 tojást ettem, meg 1 kávé").size());
     }
+
+    /**
+     * A vitamin nevében a szám nem darabszám.
+     *
+     * A „reggel D3 vitamin és egy kávé" HÁROM adag étrend-kiegészítőt írt a
+     * naplóba: a hármas a betűhöz tapadva is számnak látszott.
+     */
+    @Test public void aVitaminNumberIsNotACount() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        double supp = -1;
+        for (Foods.Hit h : Foods.parse(all, "reggel D3 vitamin és egy kávé"))
+            if (h.food.name.contains("kieg"))
+                supp = h.grams > 0 ? h.grams : h.food.portion;
+        assertEquals(5.0, supp, 0.01);
+    }
 }

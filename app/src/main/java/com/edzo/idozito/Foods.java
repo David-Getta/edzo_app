@@ -3142,6 +3142,11 @@ public final class Foods {
             query = dbb.toString();
         }
         query = withoutOthersPlates(query);
+        // A VITAMIN NEVÉBEN a szám nem darabszám: a „reggel D3 vitamin és
+        // egy kávé" HÁROM adag étrend-kiegészítőt írt a naplóba, mert a
+        // hármas a betűhöz tapadva is számnak látszott.
+        query = query.replaceAll("(?iu)(?<![\\p{L}\\d])([a-zA-Z])\\d{1,2}"
+                + "(?=\\s*vitamin)", "$1");
         query = maskMacroWords(query);
         query = addSecondHelping(list, query);
         query = amountFromTheOtherClause(list, query);
