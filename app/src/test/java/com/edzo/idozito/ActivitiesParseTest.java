@@ -7197,4 +7197,24 @@ public class ActivitiesParseTest {
                 + "futás.").plans.isEmpty());
     }
 
+    /**
+     * Külön napszakban álló mozgásoknak nincs közös hosszuk.
+     *
+     * A „reggel 7-kor úszás, 1500 m, délután 5-kor kondi, 1 óra" egy órája
+     * a délutáni teremé – az úszás mégis megkapta, és EGYÓRÁS, másfél
+     * kilométeres úszás lett belőle. Két külön alkalmat nem összegez senki
+     * egyetlen számmal.
+     */
+    @Test
+    public void twoDayPartsDoNotShareOneDuration() {
+        Activities.Parsed p = Activities.parse("Reggel 7-kor úszás, 1500 m, "
+                + "délután 5-kor kondi, 1 óra.");
+        assertEquals(2, p.plans.size());
+        assertTrue(p.plans.get(0).minutes < 50);
+        assertEquals(60, p.plans.get(1).minutes);
+        // Az összefoglaló hossz egy napszakon belül marad közös.
+        Activities.Parsed q = Activities.parse("Ma futás és 2 úszás, 40 perc.");
+        for (Activities.Plan pl : q.plans) assertEquals(40, pl.minutes);
+    }
+
 }

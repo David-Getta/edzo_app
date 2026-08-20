@@ -3068,7 +3068,13 @@ public final class Activities {
             for (int k = lastEnd; k >= 0 && k < m0 && k < s.length(); k++)
                 if (s.charAt(k) == ',' || s.charAt(k) == ';'
                         || s.charAt(k) == '.') sep = true;
-            if (m0 >= lastEnd && sep) loneAfterAll = mins.get(0)[1];
+            // KÜLÖN NAPSZAKBAN álló mozgásoknak nincs közös hosszuk: a
+            // „reggel 7-kor úszás, 1500 m, délután 5-kor kondi, 1 óra" egy
+            // órája a délutáni teremé – az úszás mégis megkapta, és
+            // egyórás, másfél kilométeres úszás lett belőle. Két külön
+            // alkalmat nem összegez senki egyetlen számmal.
+            if (m0 >= lastEnd && sep && !partsDiffer(s))
+                loneAfterAll = mins.get(0)[1];
         }
         for (int i = 0; i < keep.size(); i++) {
             int[] h = keep.get(i);
