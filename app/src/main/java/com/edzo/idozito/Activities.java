@@ -2664,6 +2664,26 @@ public final class Activities {
                     + "turaztunk|kondiztam|kocogtam|eveztem|tancoltam)"
                     + "(?![a-z]).*"))
             return new Parsed(out, 1, 0, 12);
+        // A ZÁRVA TARTÓ terem nem edzés: a „ma elmentem az edzőterembe, de
+        // zárva volt, így hazamentem" HATVANPERCES kondiedzést írt a
+        // naplóba – egy napra, amikor épp NEM edzett az ember. Az elmaradt
+        // és a lemondott edzés ugyanez. Saját mozgás-ige mellett viszont
+        // marad: az „edzőterem zárva volt, így otthon nyomtam egy kört"
+        // otthoni edzése megtörtént.
+        // A CSERE és a kimondott szám felment: az „úszodába mentem de zárva
+        // volt, helyette 5 km futás" futása megtörtént mozgás.
+        if (!sm.matches("(?s).*\\d.*") && !sm.contains("helyet")
+                && !sm.contains("csereb") && !sm.contains("atultem")
+                && sm.matches("(?s).*(?<![a-z])(zarva volt|zarva voltak|zarva van"
+                    + "|be volt zarva|nem engedtek be|elmaradt|elmaradtak"
+                    + "|lemondtak|lemondtuk)(?![a-z]).*")
+                && !sm.matches("(?s).*(?<![a-z])(futottam|futottunk|edzettem|"
+                    + "edzettunk|usztam|usztunk|jatszottam|jatszottunk|"
+                    + "bicikliztem|bringaztam|setaltam|setaltunk|turaztam|"
+                    + "turaztunk|kondiztam|kocogtam|eveztem|tancoltam|"
+                    + "nyomtam|guggoltam|jogaztam|nyujtottam|gyalogoltam)"
+                    + "(?![a-z]).*"))
+            return new Parsed(out, 1, 0, 12);
         // A HETI és a HAVI összesítő nem esik ide: azt az app KEZELI – hét,
         // illetve harminc napra osztva. A „heti összesítőm: 42 km futás,
         // 3 kondi, 1 úszás" bejegyzésből eddig SEMMI nem lett, pedig a

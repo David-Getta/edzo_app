@@ -7390,4 +7390,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.3);
     }
 
+    /**
+     * A zárva tartó terem nem edzés.
+     *
+     * A „ma elmentem az edzőterembe, de zárva volt, így hazamentem"
+     * HATVANPERCES kondiedzést írt a naplóba – egy napra, amikor épp NEM
+     * edzett az ember. Az elmaradt és a lemondott edzés ugyanez.
+     */
+    @Test
+    public void aClosedGymIsNotASession() {
+        assertTrue(Activities.parse("Ma elmentem az edzőterembe, de zárva "
+                + "volt, így hazamentem.").plans.isEmpty());
+        assertTrue(Activities.parse("A mai foci elmaradt.").plans.isEmpty());
+        // A csere és a kimondott szám felment.
+        assertEquals("futas", Activities.parse("úszodába mentem de zárva "
+                + "volt, helyette 5 km futás").plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("Az edzőterem zárva volt, így "
+                + "otthon nyomtam egy kört: 3 kör fekvőtámasz.").plans.size());
+    }
+
 }
