@@ -2831,6 +2831,7 @@ public final class Activities {
         boolean timeSaid = !mins.isEmpty();
         dropTimedMoveTimes(beforeBlank, mins);
         dropPauseTimes(beforeBlank, mins);
+        dropPartOfTimes(beforeBlank, mins);
         dropWarmupTimes(beforeBlank, mins);
         dropSleepTimes(beforeBlank, mins);
         dropTotalTime(beforeBlank, mins);
@@ -5740,7 +5741,17 @@ public final class Activities {
             // futottam, ma újra: 4 km, 26 perc" mai futása hatvan nappal
             // ezelőttre került – a mai nap üresen maradt, a széria megszakadt.
             // A tagadás kitakarása után a hossz mögött üres tagmondat marad.
-            if (back >= 1 && back <= 365 && !emptyClauseAfter(s, ago.end()))
+            // A MAI nap kimondása erősebb a visszatekintésnél: a „ma végre
+            // elmentem futni, 4 km, első alkalom 2 hónapja" mai futása
+            // HATVAN NAPPAL EZELŐTTRE került – a mai nap üresen maradt, a
+            // két hónappal ezelőtti pedig kapott egy soha meg nem történt
+            // edzést. Az „első alkalom / utoljára / óta" épp azt mondja ki,
+            // hogy a szám a KORÁBBI alkalomé.
+            boolean today = s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")
+                    && s.matches("(?s).*(?<![a-z])(elso alkalom|utoljara"
+                        + "|utolso|eloszor|ujra|vegre|ota)\\w*.*");
+            if (back >= 1 && back <= 365 && !today
+                    && !emptyClauseAfter(s, ago.end()))
                 return new int[]{ago.start(), ago.end(), back};
         }
         String[][] words = {{"tegnapelott", "2"}, {"tegnapi", "1"}, {"tegnap", "1"}};
@@ -5938,6 +5949,25 @@ public final class Activities {
     }
 
     /**
+     * A BONTÁS ideje nem az edzés hossza.
+     *
+     * A „ma 90 percet edzettem, ebből 30 perc kardió" HARMINC PERCES
+     * bejegyzést írt a naplóba a kilencvenből: a bontás tagmondatának
+     * perce a teljes edzésen BELÜL van. Csak akkor dobjuk el, ha marad
+     * másik kimondott idő – egy közelítő hossz jobb, mint semmi.
+     */
+    private static void dropPartOfTimes(String s, List<int[]> mins) {
+        if (mins.size() < 2) return;
+        List<int[]> keep = new ArrayList<>();
+        for (int[] m : mins) if (!partOfClause(s, m[0])) keep.add(m);
+        if (!keep.isEmpty() && keep.size() < mins.size()) {
+            mins.clear();
+            mins.addAll(keep);
+        }
+    }
+
+    /**
+     * A MEGÁLLÁS ideje nem az edzés ideje.    /**
      * A MEGÁLLÁS ideje nem az edzés ideje.
      *
      * A „futottam 5 km-t, közben 10 percet álltam" tízperces futást írt a

@@ -7409,4 +7409,24 @@ public class ActivitiesParseTest {
                 + "otthon nyomtam egy kört: 3 kör fekvőtámasz.").plans.size());
     }
 
+    /**
+     * A mai nap kimondása erősebb a visszatekintésnél, a bontás nem hossz.
+     *
+     * A „ma végre elmentem futni, 4 km, első alkalom 2 hónapja" mai futása
+     * HATVAN NAPPAL EZELŐTTRE került: a mai nap üresen maradt, a két
+     * hónappal ezelőtti pedig kapott egy soha meg nem történt edzést. A
+     * „ma 90 percet edzettem, ebből 30 perc kardió" pedig HARMINC PERCES
+     * bejegyzés lett a kilencvenből.
+     */
+    @Test
+    public void todayBeatsTheLookBackAndTheBreakdown() {
+        assertEquals(0, Activities.parse("Ma végre elmentem futni, 4 km, "
+                + "első alkalom 2 hónapja.").offset);
+        assertEquals(90, Activities.parse("Ma 90 percet edzettem, ebből "
+                + "30 perc kardió.").plans.get(0).minutes);
+        // A valódi visszatekintés marad.
+        assertEquals(5, Activities.parse("5 napja futottam 10 km-t.").offset);
+        assertEquals(14, Activities.parse("Két hete kondi 45 perc.").offset);
+    }
+
 }
