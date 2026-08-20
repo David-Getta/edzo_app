@@ -6940,4 +6940,30 @@ public class ActivitiesParseTest {
         assertEquals(14, Activities.parse("Két hete kondi 45 perc.").offset);
     }
 
+    /**
+     * A „N km után" a váltás pontja, nem a következő mozgás távja.
+     *
+     * A „futottam, de fájt a térdem, a 6. km után sétáltam haza" hat
+     * kilométerét a hazasétálás vitte el – hatkilométeres túra lett belőle,
+     * a megfutott táv pedig nyomtalanul eltűnt. A váltópontig megtett út
+     * azé a mozgásé, amelyik ELŐTTE van kimondva.
+     */
+    @Test
+    public void theDistanceBeforeTheSwitchBelongsToWhatCameFirst() {
+        Activities.Parsed p = Activities.parse("Futottam, de fájt a térdem, "
+                + "a 6. km után sétáltam haza.");
+        double run = 0, walk = 0;
+        for (Activities.Plan pl : p.plans) {
+            if (pl.kind.id.equals("futas")) run = pl.km;
+            if (pl.kind.id.equals("tura")) walk = pl.km;
+        }
+        assertEquals(6.0, run, 0.01);
+        assertEquals(0.0, walk, 0.01);
+        // Az „utána" csak sorrendet jelöl: ott marad a szomszédság joga.
+        Activities.Parsed q = Activities.parse("Futottam 6 km-t, utána "
+                + "sétáltam haza.");
+        for (Activities.Plan pl : q.plans)
+            if (pl.kind.id.equals("futas")) assertEquals(6.0, pl.km, 0.01);
+    }
+
 }

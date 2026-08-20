@@ -2801,7 +2801,15 @@ public final class Activities {
             // a naplóba a kétezer-négyszázból – a levezető kocogás elvitte a
             // teljes futás helyét, mert közelebb állt a mozgás szavához.
             boolean during = duringClause(s, (int) t[0]);
+            // A „N km UTÁN" a VÁLTÁS pontja, nem a következő mozgás távja: a
+            // „fájt a térdem futás közben, a 6. km után sétáltam haza" hat
+            // kilométerét a hazasétálás vitte el, a megfutott hat kilométer
+            // meg nyomtalanul eltűnt. Ami a váltópontig megvan, azt a
+            // KORÁBBAN említett mozgás tette meg. (Az „utána" nem váltópont:
+            // az csak sorrendet jelöl, ezért a szóvég is számít.)
+            boolean mark = markPoint(beforeBlank, (int) t[2]);
             int best = -1, bestD = Integer.MAX_VALUE, bestPre = 2;
+            int bestAny = -1, bestAnyD = Integer.MAX_VALUE, bestAnyPre = 2;
             for (int i = 0; i < keep.size(); i++) {
                 if (!ALL[keep.get(i)[2]].distance) continue;
                 // Amelyik mozgás már kapott KÖZELEBBI távot, az kiesik a
@@ -2838,10 +2846,18 @@ public final class Activities {
                 // km-t"), és egy karakternyi különbségen nem múlhat, hogy
                 // melyik edzés kapja a másik távját.
                 int pre = ae <= ts ? 0 : 1;
+                if (d < bestAnyD || (d == bestAnyD && pre < bestAnyPre)) {
+                    bestAnyD = d; bestAnyPre = pre; bestAny = i;
+                }
+                // Váltópontnál csak az ELŐTTE álló mozgás jöhet szóba.
+                if (mark && pre != 0) continue;
                 if (d < bestD || (d == bestD && pre < bestPre)) {
                     bestD = d; bestPre = pre; best = i;
                 }
             }
+            // Ha a váltópont előtt egy mozgás sincs, marad a szomszédság: a
+            // távot eldobni rosszabb, mint a következő mozgáshoz kötni.
+            if (best < 0) { best = bestAny; bestD = bestAnyD; }
             if (best >= 0) {
                 kmOf[best] = t[1];
                 kmD[best] = bestD;
@@ -6925,6 +6941,24 @@ public final class Activities {
             if (c == ',' || c == ';' || c == '.') return true;
         }
         return false;
+    }
+
+    /**
+     * VÁLTÓPONT-e a táv: „N km után", „N km-t követően"?
+     *
+     * Ez a szerkezet azt mondja meg, MEDDIG tartott az addigi mozgás – a
+     * mögötte álló sport már a váltás utáni. A „fájt a térdem futás közben,
+     * a 6. km után sétáltam haza" hat kilométere a FUTÁSÉ; eddig a
+     * hazasétálás vitte el, a megfutott táv pedig eltűnt.
+     *
+     * Az „utána" szándékosan nem váltópont: az csak sorrendet jelöl
+     * („futottam 5 km-t, utána zuhany"), ezért a szó végét is nézzük.
+     */
+    private static boolean markPoint(String s, int end) {
+        if (end < 0 || end >= s.length()) return false;
+        String after = s.substring(end, Math.min(s.length(), end + 24));
+        return after.matches("(?s)[-\\p{L}]{0,6}\\s+(?:utan|utani|kovetoen)"
+                + "(?![\\p{L}0-9]).*");
     }
 
     /**
