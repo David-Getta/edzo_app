@@ -1763,4 +1763,24 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("Súlyom 78,5 kg.").isEmpty());
     }
 
+
+    /**
+     * Az IDŐPONT száma nem ismétlésszám: az „egy hete húzódik a
+     * combhajlítóm, ma próbáltam óvatosan futni" egyese azt mondja meg,
+     * MIKOR kezdődött a panasz – a naplóba mégis egy ismétléses
+     * combhajlítás került, és onnantól a rekordok közé is.
+     */
+    @Test
+    public void aTimeAgoIsNotARepCount() {
+        assertTrue(StrengthParse.parse("Egy hete húzódik a combhajlítóm, "
+                + "ma próbáltam óvatosan futni.").isEmpty());
+        // A valódi sorozat marad, akkor is, ha időpont áll előtte.
+        assertEquals(3, StrengthParse.parse("Két hete kezdtem el edzeni, "
+                + "ma guggolás 3x10 60 kg.").get(0).sets.size());
+        assertEquals(5, StrengthParse.parse("3 napja fekvenyomás 5x5 80 kg.")
+                .get(0).sets.size());
+        assertEquals(3, StrengthParse.parse("Combhajlítás 3x12 40 kg.")
+                .get(0).sets.size());
+    }
+
 }

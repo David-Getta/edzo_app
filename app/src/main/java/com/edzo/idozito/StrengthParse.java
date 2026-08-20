@@ -434,6 +434,15 @@ public final class StrengthParse {
         // amivel a felhasználó a fájdalmát mondja meg. A tíz nevező
         // egyértelmű: súlyt és ismétlést senki nem ír le így.
         text = text.replaceAll("(?<![\\d,.])(?:10|[0-9])\\s?/\\s?10(?![\\d])(?![,.]\\d)", " ");
+        // Az IDŐPONT száma nem ismétlésszám: az „egy hete húzódik a
+        // combhajlítóm, ma próbáltam óvatosan futni" egyese azt mondja meg,
+        // MIKOR kezdődött a panasz – a naplóba mégis egy ismétléses
+        // combhajlítás került, és onnantól a rekordok közé is. A testtáj
+        // neve és a gyakorlaté ugyanaz a szó.
+        text = text.replaceAll("(?iu)(?<![\\d,.\\p{L}])(?:\\d{1,3}|egy|k[eé]t|kett[oő]|"
+                + "h[aá]rom|n[eé]gy|[oö]t|hat|h[eé]t|nyolc|kilenc|t[ií]z)\\s?"
+                + "(?:hete|hetje|napja|h[oó]napja|[eé]ve|perce|[oó]r[aá]ja)"
+                + "(?![\\p{L}])", " ");
         // A GYAKORLATSZÁM nem ismétlésszám: az „edzőterem: mellkas és
         // tricepsz nap, összesen 8 gyakorlat, 24 sorozat, 75 perc" nyolcasa
         // azt mondja meg, HÁNY gyakorlat volt – a naplóba mégis nyolc
