@@ -1066,4 +1066,20 @@ public class BodyParseTest {
         assertEquals(78.0, BodyParse.parse("Ma 78 kg vagyok.").kg, 0.01);
     }
 
+
+    /**
+     * A TÖMÖR napló-sor rövidítései nem kilók: a „futás 10k 52p; kondi 40p;
+     * alvás 7h; súly 79,3" sorból NEGYVEN kilós mérés lett – a kondi
+     * perceiből –, a valódi hetvenkilenc egész három tized meg elveszett.
+     */
+    @Test
+    public void shorthandUnitsAreNotKilos() {
+        assertEquals(79.3, BodyParse.parse("futás 10k 52p; kondi 40p; "
+                + "alvás 7h; súly 79,3").kg, 0.01);
+        assertEquals(79.3, BodyParse.parse("kondi 40p; súly 79,3").kg, 0.01);
+        // A valódi mérés marad.
+        assertEquals(78.5, BodyParse.parse("78,5 kg reggel, 22% zsír.").kg, 0.01);
+        assertEquals(22.0, BodyParse.parse("78,5 kg reggel, 22% zsír.").fatPct, 0.01);
+    }
+
 }

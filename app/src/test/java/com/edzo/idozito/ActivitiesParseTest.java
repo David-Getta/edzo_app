@@ -6704,4 +6704,39 @@ public class ActivitiesParseTest {
         assertEquals(5.0, b.plans.get(1).km, 0.01);
     }
 
+
+    /**
+     * A TAGMONDAT erősebb a puszta közelségnél: a „futás 10 km 52 perc;
+     * kondi 40 perc" ötvenkét perce a KONDIHOZ állt közelebb – két karakter
+     * a pontosvessző és a szóköz –, így a futás kimondott ideje elveszett,
+     * és a tempóból becsült hatvan perc ment a naplóba.
+     */
+    @Test
+    public void theClauseBeatsMereProximity() {
+        Activities.Parsed p = Activities.parse("futás 10 km 52 perc; kondi 40 perc");
+        assertEquals(2, p.plans.size());
+        assertEquals(52, p.plans.get(0).minutes);
+        assertEquals(40, p.plans.get(1).minutes);
+        // Tagmondaton BELÜL a közelség dönt, ahogy eddig.
+        Activities.Parsed q = Activities.parse("futás és 30 perc kondi");
+        assertEquals(45, q.plans.get(0).minutes);
+        assertEquals(30, q.plans.get(1).minutes);
+        // A gazdátlan idő továbbra is átmehet a másik tagmondatba.
+        assertEquals(80, Activities.parse("szauna 15 perc. Este 1 óra 20 perc "
+                + "tenisz.").plans.get(0).minutes);
+    }
+
+    /**
+     * Az „OK" az angol RENDBEN szava is: az „edzés ok, 45 perc" bejegyzése
+     * némán elveszett, mert a mondat harmadik személyű alanynak látszott.
+     */
+    @Test
+    public void theEnglishOkIsNotTheHungarianThey() {
+        assertEquals(45, Activities.parse("edzés ok, 45perc, jól ment")
+                .plans.get(0).minutes);
+        // Az „ők" igével továbbra is más naplója.
+        assertEquals(0, Activities.parse("ők futottak 10 km-t.").plans.size());
+        assertEquals(0, Activities.parse("Ők edzettek, én pihentem.").plans.size());
+    }
+
 }

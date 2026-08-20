@@ -2839,6 +2839,13 @@ public final class Activities {
                 int ae = wordEnd(s, keep.get(i)[0] + keep.get(i)[1] - 1);
                 int d = m[2] <= a ? a - m[2] : m[0] >= ae ? m[0] - ae : 0;
                 int pre = ae <= m[0] ? 0 : 1;
+                // A TAGMONDAT ERŐSEBB a puszta közelségnél: a „futás 10 km
+                // 52 perc; kondi 40 perc" ötvenkét perce a KONDIHOZ állt
+                // közelebb (két karakter a pontosvessző és a szóköz), így a
+                // futás kimondott ideje elveszett, és a tempóból becsült
+                // hatvan perc ment a naplóba. Írásjelen átnyúlva csak akkor
+                // veszünk időt, ha a saját tagmondatban nincs mozgás.
+                if (crossesClause(s, m[0], m[2], a, ae)) d += 1000;
                 // A foglalt helyre csak SZIGORÚAN közelebbi idő léphet.
                 if (minsOf[i] != 0 && d >= minsD[i]) continue;
                 if (d < bestD || (d == bestD && pre < bestPre)) {
@@ -6654,7 +6661,15 @@ public final class Activities {
     /** Harmadik személyű alany egész szóként. */
     private static boolean otherSubject(String cl) {
         String t = " " + cl.replaceAll("[^a-z0-9]", " ") + " ";
-        for (String w : OTHER_SUBJECT) if (t.contains(" " + w + " ")) return true;
+        for (String w : OTHER_SUBJECT) {
+            if (!t.contains(" " + w + " ")) continue;
+            // Az „OK" az angol RENDBEN szava is: az „edzés ok, 45 perc"
+            // bejegyzése némán elveszett, mert a mondat harmadik személyű
+            // alanynak látszott. Az „ők" mellett magyarul ott az ige is –
+            // ige nélkül a két betű nem alany.
+            if (w.equals("ok") && !hasOtherVerb(t)) continue;
+            return true;
+        }
         // A TÖBBES SZÁM HARMADIK SZEMÉLY magától is elárulja magát: az „ők
         // futottak 10 km-t" és a „csináltak 50 fekvőtámaszt" nem az én
         // naplóm – a magyar az alanyt úgyis elhagyja, tehát az ige a jel.
@@ -6663,6 +6678,11 @@ public final class Activities {
         // is többes szám harmadik személyt használ: az „elfáradtak a lábaim"
         // és a „jól sikerültek a sorozatok" ugyanígy néz ki, és egy általános
         // -tak/-tek szabály elvitte volna a mellettük álló valódi edzést is.
+        return hasOtherVerb(t);
+    }
+
+    /** Többes szám harmadik személyű cselekvés-ige a szóközökkel keretezett szövegben. */
+    private static boolean hasOtherVerb(String t) {
         for (String v : OTHER_VERB) if (t.contains(" " + v + " ")) return true;
         return false;
     }
@@ -6764,6 +6784,24 @@ public final class Activities {
                 "delutan", "este", "ejjel"})
             if (s.contains(w)) n++;
         return n;
+    }
+
+    /**
+     * Írásjel választja-e el az időtartamot a mozgás szavától?
+     *
+     * A „futás 10 km 52 perc; kondi 40 perc" ötvenkét perce a KONDIHOZ állt
+     * közelebb – két karakter a pontosvessző és a szóköz –, így a futás
+     * kimondott ideje elveszett. A tagmondat-határ erősebb jel a néhány
+     * karakternyi közelségnél.
+     */
+    private static boolean crossesClause(String s, int ms, int me, int a, int ae) {
+        int lo = Math.max(0, Math.min(ms, a));
+        int hi = Math.min(s.length(), Math.max(me, ae));
+        for (int k = lo; k < hi; k++) {
+            char c = s.charAt(k);
+            if (c == ',' || c == ';' || c == '.') return true;
+        }
+        return false;
     }
 
     /**

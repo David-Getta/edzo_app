@@ -293,6 +293,13 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // A TÖMÖR napló-sor rövidítései nem kilók: a „futás 10k 52p; kondi
+        // 40p; alvás 7h; súly 79,3" sorból NEGYVEN kilós mérés lett – a
+        // kondi perceiből –, a valódi hetvenkilenc egész három tized meg
+        // elveszett mellőle. A p perc, a h óra, a k kilométer; egyik sem a
+        // mérleg száma. (A „kg" nem esik ide: ott betű követi a k-t.)
+        q = q.replaceAll("(?iu)(?<![\\d,.\\p{L}])\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                + "[pkh](?![\\p{L}0-9])", " ");
         // A SZÜLETÉSNAP számai ÉVEK: a „ma volt a születésnapom, 42 lettem,
         // és 42 fekvőtámaszt csináltam" negyvenkét KILÓS mérést írt a
         // trendbe – az életkorból. A „42 éves lettem" alakot az éves szó
