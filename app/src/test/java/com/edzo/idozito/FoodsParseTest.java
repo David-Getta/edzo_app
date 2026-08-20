@@ -355,6 +355,25 @@ public class FoodsParseTest {
     }
 
     /**
+     * A következő étkezésig kibírni nem lemondás.
+     *
+     * A „reggel egy bögre kávé tejjel, semmi más, ebédig kibírtam" reggelije
+     * megevett reggeli: a kitartás csak UTÁNA kezdődik. Eddig ez a fél
+     * mondat az egész bejegyzést törölte – a kávé sem került a naplóba.
+     */
+    @Test public void holdingOutUntilLunchIsNotGivingUp() {
+        assertFalse(Foods.looksUneaten("reggel egy bögre kávé tejjel, "
+                + "semmi más, ebédig kibírtam"));
+        assertFalse(Foods.looksUneaten("reggeli zabkása, délig kibírtam"));
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertFalse(Foods.parse(all, "reggel egy bögre kávé tejjel, "
+                + "semmi más, ebédig kibírtam").isEmpty());
+        // A határ nélküli kitartás marad lemondás.
+        assertTrue(Foods.looksUneaten("eddig 3 hetet bírtam ki cukor nélkül"));
+        assertTrue(Foods.looksUneaten("egy hónapja kibírtam csoki nélkül"));
+    }
+
+    /**
      * A helyesbítés második száma az igazi – az étrendben is.
      *
      * A „nem ittam 3 kávét, csak 1-et" mondatból eddig három kávé került a

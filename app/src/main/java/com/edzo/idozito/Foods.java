@@ -4038,6 +4038,14 @@ public final class Foods {
         // bevásárlás.
         s = s.replaceAll("vettem egy\\s+(?=(?:fagyi|fagylalt|langos|kurtos"
                 + "|perec|palacsinta|hot ?dog|kave|jegkave|kurtoskalacs))", "");
+        // A KÖVETKEZŐ ÉTKEZÉSIG kibírni nem lemondás: a „reggel egy bögre
+        // kávé tejjel, semmi más, ebédig kibírtam" reggelije MEGEVETT
+        // reggeli – a kitartás csak utána kezdődik, és eddig ez a fél
+        // mondat törölte az egész bejegyzést. A „3 hetet bírtam ki cukor
+        // nélkül" marad lemondás: ott nem étkezés a határ.
+        s = s.replaceAll("(?:ebedig|delig|estig|esteig|vacsoraig|reggelig"
+                + "|uzsonnaig|holnapig|masnapig|hazaig)\\s+(?:csak\\s+|meg\\s+)?"
+                + "(?:kibirtam|birtam ki)", " ");
         boolean intent = false;
         for (String w : new String[]{
                 // Jövő és szándék.
