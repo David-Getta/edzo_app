@@ -455,4 +455,23 @@ public class SleepTest {
         assertEquals(7.0, Sleep.parse("alv\u00e1s 7 \u00f3ra volt"), 0.01);
     }
 
+    /**
+     * Aki k\u00fcl\u00f6n kimondja, mikor aludt el, annak ott kezd\u0151dik az alv\u00e1sa.
+     *
+     * Az \u201eeste 10-kor lefek\u00fcdtem, de csak f\u00e9l 12-kor aludtam el, 6-kor
+     * cs\u00f6rg\u00f6tt az \u00f3ra" tizenh\u00e1rom \u00e9s f\u00e9l \u00f3r\u00e1s alv\u00e1s lett: a beolvas\u00f3 az
+     * els\u0151 k\u00e9t id\u0151pontot vette \u2013 a lefekv\u00e9st \u00e9s az elalv\u00e1st \u2013, a
+     * felkel\u00e9st pedig eldobta.
+     */
+    @Test
+    public void theThirdTimeIsNotIgnored() {
+        assertEquals(6.5, Sleep.parse("Este 10-kor lefek\u00fcdtem, de csak f\u00e9l 12-kor aludtam el, "
+                + "6-kor cs\u00f6rg\u00f6tt az \u00f3ra."), 0.01);
+        assertEquals(7.0, Sleep.parse("Este 11-kor fek\u00fcdtem le, de csak \u00e9jf\u00e9lkor aludtam el, "
+                + "reggel 7-kor keltem."), 0.01);
+        // A k\u00e9t id\u0151pontos alak v\u00e1ltozatlan.
+        assertEquals(8.0, Sleep.parse("Este 10-kor lefek\u00fcdtem, 6-kor cs\u00f6rg\u00f6tt az \u00f3ra."), 0.01);
+        assertEquals(6.5, Sleep.parse("F\u00e9l 12-kor aludtam el, 6-kor keltem."), 0.01);
+    }
+
 }

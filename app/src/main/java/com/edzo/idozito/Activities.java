@@ -1612,6 +1612,15 @@ public final class Activities {
                 || s.contains("meccs") || s.contains("felido")
                 // A KISPÁLYÁS két húszperces félideje is összeadódik.
                 || s.contains("jatszottam") || s.contains("kispalyas")
+                // A LABDAJÁTÉK IGÉJE ugyanezt mondja: az „este a haverokkal
+                // fociztunk a pályán, 2x30 perc" egy óra játék – eddig
+                // harminc perc lett belőle, a másik félidő eltűnt. A puszta
+                // „2x45 perc foci" (ige nélkül) szándékosan marad két
+                // alkalom: az sorozatot is jelenthet.
+                || s.contains("jatszottunk") || s.contains("perc jatek")
+                || s.contains("focizt") || s.contains("kosarazt")
+                || s.contains("roplabdazt") || s.contains("kezilabdazt")
+                || s.contains("vizilabdazt") || s.contains("futsaloz")
                 // A kimondott SZÜNET két félidőt jelent: a „ma 2 x 45 perc
                 // foci volt, közte 15 perc szünet" mérkőzése némán elveszett
                 // – a mondatból időzítő-terv lett, bejegyzés nélkül. A szünet

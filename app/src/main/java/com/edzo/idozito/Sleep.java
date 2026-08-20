@@ -303,6 +303,16 @@ public final class Sleep {
         return best;
     }
 
+    /** A megadott helyhez legközelebb álló időpont sorszáma, vagy -1. */
+    private static int nearestTime(java.util.List<Integer> at, int pos) {
+        int best = -1, bestD = Integer.MAX_VALUE;
+        for (int i = 0; i < at.size(); i++) {
+            int d = Math.abs(at.get(i) - pos);
+            if (d < bestD) { bestD = d; best = i; }
+        }
+        return best;
+    }
+
     /**
      * Két időpont közti alvás, vagy -1: „este 11-kor feküdtem, 7-kor keltem".
      *
@@ -380,7 +390,11 @@ public final class Sleep {
                 // csak rag jelöli őket – eddig egyikből sem lett hossz.
                 + "|(?<![\\d,:])(\\d{1,2})\\s?-?\\s?(?:tol|ig)(?![a-z])")
                 .matcher(s);
-        while (m.find() && mins.size() < 2) {
+        // Az időpontok HELYÉT is megjegyezzük: ha háromnál is több van, a
+        // szavakhoz igazítva kell kiválasztani a kettőt, amelyik az alvást
+        // határolja.
+        java.util.List<Integer> at = new java.util.ArrayList<>();
+        while (m.find() && mins.size() < 4) {
             int h, mi = 0;
             if (m.group(1) != null) { h = Integer.parseInt(m.group(1)); mi = Integer.parseInt(m.group(2)); }
             else if (m.group(3) != null) h = Integer.parseInt(m.group(3));
@@ -393,8 +407,32 @@ public final class Sleep {
             if (b >= 4 && s.startsWith("0,5 ", b - 4)) { h = (h + 23) % 24; mi = 30; }
             mins.add((h % 24) * 60 + mi);
             exact.add(m.group(1) != null);
+            at.add(b);
         }
         if (mins.size() < 2) return -1;
+        // HÁROM időpont: a lefekvés, az ELALVÁS és az ébredés. Aki külön
+        // kimondja, mikor aludt el, annak az alvása ott kezdődik – az „este
+        // 10-kor lefeküdtem, de csak fél 12-kor aludtam el, 6-kor csörgött
+        // az óra" tizenhárom és fél órás alvás lett, mert a beolvasó az
+        // első két időpontot vette: a lefekvést és az elalvást. Az
+        // időpontokat a hozzájuk legközelebbi ige választja ki.
+        boolean picked = false;
+        if (mins.size() > 2) {
+            int fell = firstOf(s, new String[]{"elalud"});
+            int wake = firstOf(s, new String[]{"keltem", "ebredtem",
+                    "ebredes", "keles"});
+            int si = fell >= 0 ? nearestTime(at, fell) : 0;
+            int ei = wake >= 0 ? nearestTime(at, wake) : -1;
+            if (si >= 0 && ei > si) {
+                picked = true;
+                int m0 = mins.get(si), m1 = mins.get(ei);
+                boolean e0 = exact.get(si), e1 = exact.get(ei);
+                mins.clear(); exact.clear();
+                mins.add(m0); mins.add(m1);
+                exact.add(e0); exact.add(e1);
+            }
+        }
+        while (mins.size() > 2) { mins.remove(2); exact.remove(2); }
         // Az ébredés is állhat elöl: a „reggel 6:30-kor keltem, 22:45-kor
         // feküdtem le" ugyanaz az éjszaka, csak fordított sorrendben mondva.
         // Enélkül a különbség tizenhat óra lett, és a tizenkét órás igazítás
@@ -404,7 +442,7 @@ public final class Sleep {
                 "kerultem agyba"});
         int upAt = firstOf(s, new String[]{"keltem", "ebredtem", "ebredes",
                 "keles"});
-        if (bedAt >= 0 && upAt >= 0 && upAt < bedAt) {
+        if (!picked && bedAt >= 0 && upAt >= 0 && upAt < bedAt) {
             java.util.Collections.reverse(mins);
             java.util.Collections.reverse(exact);
         }

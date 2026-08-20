@@ -6966,4 +6966,24 @@ public class ActivitiesParseTest {
             if (pl.kind.id.equals("futas")) assertEquals(6.0, pl.km, 0.01);
     }
 
+    /**
+     * A labdajáték igéje mellett a „2x30 perc" két félidő.
+     *
+     * Az „este a haverokkal fociztunk a pályán, 2x30 perc" harminc percet
+     * írt a naplóba a hatvanból – a másik félidő nyomtalanul eltűnt. A
+     * meccs szava eddig is összeadta a félidőket, a játék igéje viszont
+     * nem. A puszta „2x45 perc foci" (ige nélkül) szándékosan marad két
+     * alkalom: az sorozatot is jelenthet.
+     */
+    @Test
+    public void theSecondHalfCountsToo() {
+        Activities.Parsed p = Activities.parse("Este a haverokkal fociztunk "
+                + "a pályán, 2x30 perc.");
+        assertEquals(1, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("Kosárlabda edzés, "
+                + "2x25 perc játék.");
+        assertEquals(50, q.plans.get(0).minutes);
+    }
+
 }
