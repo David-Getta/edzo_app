@@ -2206,6 +2206,25 @@ public final class Activities {
                 s = s.substring(0, ov2.start()) + sum + " perc" + ov2.group(2)
                         + s.substring(ov2.end());
         }
+        // A VISSZAÚT TÁVJA is összeadódik: a „reggeli súlyzózás 40 perc,
+        // aztán bicajjal munkába 8 km, este vissza 8 km" nyolc kilométert írt
+        // a naplóba a tizenhatból – a két egyforma táv egyetlen tekerésnek
+        // látszott. A percnél ez a szabály már megvolt, a kilométernél nem.
+        java.util.regex.Matcher ovk = java.util.regex.Pattern
+                .compile("(\\d{1,3}(?:[.,]\\d)?)\\s?km([^.;\\d]{0,20}?)[,;]\\s?"
+                        + "(?:\\p{L}+\\s){0,2}?"
+                        + "(?:vissza|hazafele|visszaut\\w*)\\s?(\\d{1,3}(?:[.,]\\d)?)\\s?km"
+                        + "(?![^.;,]*\\p{L})").matcher(s);
+        if (ovk.find()) {
+            double sum = Double.parseDouble(ovk.group(1).replace(',', '.'))
+                    + Double.parseDouble(ovk.group(3).replace(',', '.'));
+            if (sum > 0 && sum <= 400) {
+                String num = sum == Math.rint(sum) ? String.valueOf((long) sum)
+                        : String.valueOf(sum).replace('.', ',');
+                s = s.substring(0, ovk.start()) + num + " km" + ovk.group(2)
+                        + s.substring(ovk.end());
+            }
+        }
         // Szóközzel tagolt ezres: „10 000" → „10000". A KETTŐSPONT megvédi az
         // óraállást: a „túra 14,8 km 3:45:00 620 m emelkedés" mondatban a
         // „00 620" ezres tagolásnak látszott, és a „3:45:00620"-ból már nem
@@ -3260,6 +3279,20 @@ public final class Activities {
             }
             out = merged;
         }
+        // A KIMONDOTT ÖSSZTÁV a teljes edzésé: az „úszóedzés: 400 m
+        // bemelegítés, 8x100 m gyors, 200 m levezetés. Összesen 1400 m,
+        // 45 perc." négyszáz métert írt a naplóba – a bemelegítést az
+        // egész edzés helyett. Ha egyetlen táv-alapú terv áll, és a
+        // kimondott összeg nagyobb nála, az összeg az igazi.
+        if (totKm > 0 && out.size() == 1 && out.get(0).count == 1
+                && out.get(0).kind.distance && out.get(0).km > 0
+                && totKm > out.get(0).km) {
+            Plan p0 = out.get(0);
+            int est = Math.max(1, (int) Math.round(totKm * pace(beforeBlank, p0.kind)));
+            out.set(0, new Plan(p0.kind, 1,
+                    mins.isEmpty() ? Math.min(24 * 60, est) : p0.minutes,
+                    totKm, p0.steps));
+        }
         // Az ÖSSZESEN a teljes mennyiség, alkalmanként az N-ed rész jár:
         // a „háromszor sétáltam, összesen 90 perc" három KILENCVENPERCES
         // sétát írt be – négy és fél óra mozgást másfél órából. A táv
@@ -3975,6 +4008,13 @@ public final class Activities {
         // hogy a leírtak MEGVALÓSULTAK – a jövő idő többi jele (holnap,
         // fogok) az alábbi listán úgyis megmarad.
         s = s.replaceAll("(?<![a-z])terv\\w*\\s+szerint(?![a-z])", " ");
+        // A LEGYŐZÖTT lustaság is edzés: a „ma nem volt kedvem semmihez, de
+        // azért leguggoltam 50-et" ötven guggolása némán elveszett. A
+        // mozgás-oldal a saját előkészítésében leveszi a kedv hiányát, az
+        // erő-felismerő viszont ezt a vizsgálatot még ELŐTTE hívja – ezért
+        // itt is le kell venni. A mondatvég ugyanolyan határ, mint a vessző.
+        s = s.replaceAll("(?<![a-z])nem (?:volt kedvem|akartam|akarodzott)"
+                + "\\w*[^.;]{0,12}?[,.;]\\s*", "");
         // A magyar jelen idő gyakran jövőt jelent: az „este megyek edzeni" és a
         // „ha lesz időm, futok" SZÁNDÉK, nem megtörtént edzés – eddig mindkettő
         // bekerült a naplóba, a szériába és az XP-be. A múlt idő ragja más

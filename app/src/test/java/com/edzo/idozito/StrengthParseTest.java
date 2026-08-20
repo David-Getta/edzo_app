@@ -1725,4 +1725,23 @@ public class StrengthParseTest {
                 .get(0).sets.get(0).reps);
     }
 
+
+    /**
+     * A LEGY\u0150Z\u00d6TT lustas\u00e1g is edz\u00e9s: a \u201ema nem volt kedvem semmihez, de
+     * az\u00e9rt leguggoltam 50-et \u00e9s megcsin\u00e1ltam 30 fekv\u0151t\u00e1maszt" \u00f6tven
+     * guggol\u00e1sa \u00e9s harminc fekv\u0151t\u00e1masza n\u00e9m\u00e1n elveszett.
+     */
+    @Test
+    public void theOvercomeLazinessStillCounts() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "Ma nem volt kedvem semmihez, de az\u00e9rt leguggoltam 50-et "
+                + "\u00e9s megcsin\u00e1ltam 30 fekv\u0151t\u00e1maszt.");
+        assertEquals(2, it.size());
+        assertEquals(50, it.get(0).sets.get(0).reps);
+        assertEquals(30, it.get(1).sets.get(0).reps);
+        assertEquals(1, StrengthParse.parse("Nem volt kedvem. Leguggoltam 50-et.").size());
+        // A puszta kedvetlens\u00e9g tov\u00e1bbra sem edz\u00e9s.
+        assertTrue(StrengthParse.parse("Nem volt kedvem edzeni ma.").isEmpty());
+    }
+
 }

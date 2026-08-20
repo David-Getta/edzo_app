@@ -6535,4 +6535,39 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.001);
     }
 
+
+    /**
+     * A KIMONDOTT \u00d6SSZT\u00c1V a teljes edz\u00e9s\u00e9: az \u201e\u00fasz\u00f3edz\u00e9s: 400 m bemeleg\u00edt\u00e9s,
+     * 8x100 m gyors, 200 m levezet\u00e9s. \u00d6sszesen 1400 m, 45 perc." n\u00e9gysz\u00e1z
+     * m\u00e9tert \u00edrt a napl\u00f3ba \u2013 a bemeleg\u00edt\u00e9st az eg\u00e9sz edz\u00e9s helyett.
+     */
+    @Test
+    public void theStatedTotalIsTheWholeSession() {
+        Activities.Parsed p = Activities.parse("\u00dasz\u00f3edz\u00e9s: 400 m bemeleg\u00edt\u00e9s, "
+                + "8x100 m gyors, 200 m levezet\u00e9s. \u00d6sszesen 1400 m, 45 perc.");
+        assertEquals(1, p.plans.size());
+        assertEquals(1.4, p.plans.get(0).km, 0.01);
+        assertEquals(45, p.plans.get(0).minutes);
+        // A r\u00e9szt\u00e1vot kimond\u00f3, \u00f6sszeg n\u00e9lk\u00fcli mondat marad.
+        assertEquals(5.0, Activities.parse("Fut\u00e1s: 8x400 m\u00e9ter, \u00f6sszesen 5 km.")
+                .plans.get(0).km, 0.01);
+    }
+
+    /**
+     * A VISSZA\u00daT T\u00c1VJA is \u00f6sszead\u00f3dik: a \u201ereggeli s\u00falyz\u00f3z\u00e1s 40 perc, azt\u00e1n
+     * bicajjal munk\u00e1ba 8 km, este vissza 8 km" nyolc kilom\u00e9tert \u00edrt a
+     * napl\u00f3ba a tizenhatb\u00f3l \u2013 a k\u00e9t egyforma t\u00e1v egyetlen teker\u00e9snek
+     * l\u00e1tszott.
+     */
+    @Test
+    public void theWayBackAddsItsDistance() {
+        Activities.Parsed p = Activities.parse("Reggeli s\u00falyz\u00f3z\u00e1s 40 perc, "
+                + "azt\u00e1n bicajjal munk\u00e1ba 8 km, este vissza 8 km.");
+        assertEquals(2, p.plans.size());
+        assertEquals(16.0, p.plans.get(1).km, 0.01);
+        // A percek \u00f6sszead\u00e1sa v\u00e1ltozatlan.
+        assertEquals(33, Activities.parse("Munk\u00e1ba menet 15 perc bicikli, "
+                + "vissza 18 perc.").plans.get(0).minutes);
+    }
+
 }
