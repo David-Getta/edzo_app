@@ -3851,7 +3851,7 @@ public final class Activities {
     private static boolean plannedClause(String cl) {
         return cl.matches("(?s).*(?<![a-z])(holnap\\w*|holnaputan\\w*|jovo het\\w*"
                 + "|jovo hon\\w*|fogok|fogunk|tervezek|tervezem|tervezunk"
-                + "|lesz|leszek|leszunk)(?![a-z]).*");
+                + "|lesz|leszek|leszunk|lenne)(?![a-z]).*");
     }
 
     /**
@@ -4241,6 +4241,11 @@ public final class Activities {
                 // perces alapértelmezett hosszal.
                 "szeretek", "szeretem", "imadok", "utalok", "utalom",
                 "kellene", "jo lenne", "jol esne", "kedvem",
+                // A FELTÉTELES „lenne" mindig javaslat: az „edző szerint túl
+                // sokat futok, heti 60 km elég lenne" hatvan kilométeres
+                // futást írt a naplóba – egy tanácsból.
+                "eleg lenne", "sok lenne", "ideal lenne", "lenne az ideal",
+                "jobb lenne", "hasznos lenne", "erdemes lenne",
                 // A „kéne" a „kellene" beszélt alakja, a „kell csinálnom" és
                 // a „meg kell" pedig a teendő – ezek is tervek, nem naplók.
                 // A feltételes „ha lesz" ugyanígy: a „ha lesz idő, futok
@@ -5447,7 +5452,13 @@ public final class Activities {
                         // a mai tízezer lépés eddig három hete ezelőttre
                         // került tőle.
                         + "nyolc|kilenc|tiz)\\s?(?:(nap|het|honap)(?:ja|je|e)"
-                        + "(?!\\s*(?:folyamatosan|egymas|zsinorban|sorban))"
+                        // A JELEN idejű ige tartamot mond, nem időpontot: a
+                        // „két hónapja edzek, azóta 12 kg-ot emelkedett a
+                        // fekvenyomásom" bejegyzése hatvan nappal ezelőttre
+                        // került – a mai nap üresen maradt.
+                        + "(?!\\s*(?:folyamatosan|egymas|zsinorban|sorban"
+                        + "|edzek|edzunk|futok|futunk|jarok|jarunk|uszom|"
+                        + "biciklizek|sportolok|mozgok|csinalom|szedem|tart))"
                         // A „3 nappal ezelőtt" ugyanaz a visszatekintés,
                         // eszközhatározóval – eddig a mai napra került.
                         + "|(nap|het|honap)(?:pal|tel|al)\\s+ezelott)\\b").matcher(s);

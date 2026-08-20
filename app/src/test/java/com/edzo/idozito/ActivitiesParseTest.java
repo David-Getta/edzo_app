@@ -6921,4 +6921,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+
+    /**
+     * A FELTÉTELES „lenne" javaslat, a JELEN idejű ige pedig tartamot mond:
+     * az „edző szerint túl sokat futok, heti 60 km elég lenne" hatvan
+     * kilométeres futást írt a naplóba, a „két hónapja edzek, azóta 12 kg-ot
+     * emelkedett a fekvenyomásom" bejegyzése meg hatvan nappal ezelőttre
+     * került.
+     */
+    @Test
+    public void adviceAndDurationsAreNotEntries() {
+        Activities.Parsed p = Activities.parse("Az edző szerint túl sokat "
+                + "futok, heti 60 km elég lenne.");
+        for (Activities.Plan pl : p.plans) assertEquals(0.0, pl.km, 0.01);
+        assertEquals(0, Activities.parse("Két hónapja edzek, azóta 12 kg-ot "
+                + "emelkedett a fekvenyomásom.").offset);
+        // A valódi visszatekintés marad.
+        assertEquals(14, Activities.parse("Két hete kondi 45 perc.").offset);
+    }
+
 }

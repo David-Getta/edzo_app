@@ -1798,4 +1798,29 @@ public class StrengthParseTest {
                 .get(0).sets.size());
     }
 
+
+    /**
+     * A FEJLŐDÉS beszámolója nem sorozat, és az ÉS kötőszó zárhatja a
+     * felsorolást: a „két hónapja edzek, azóta 12 kg-ot emelkedett a
+     * fekvenyomásom" tizenkét kilós fekvenyomást írt a rekordok közé, a
+     * „3 sorozat plank: 60, 45 és 30 másodperc" harmadik tagja meg kimaradt.
+     */
+    @Test
+    public void progressNotesAndAndListsAreRead() {
+        assertTrue(StrengthParse.parse("Két hónapja edzek, azóta 12 kg-ot "
+                + "emelkedett a fekvenyomásom.").isEmpty());
+        assertEquals(3, StrengthParse.parse("Ma 3 sorozat plank: 60, 45 és "
+                + "30 másodperc.").get(0).sets.size());
+        assertEquals(3, StrengthParse.parse("Húzódzkodás 12, 10 és 8.")
+                .get(0).sets.size());
+        // A kimondott sorozat mellett a fejlődés-ige nem takar el semmit.
+        assertEquals(3, StrengthParse.parse("Guggolás 3x8 80 kg, sokat javult.")
+                .get(0).sets.size());
+        // Két szám továbbra sem felsorolás.
+        java.util.List<StrengthParse.Item> two =
+                StrengthParse.parse("80 kg bicepsz 3x8, 40 kg evezés 3x10");
+        assertEquals(2, two.size());
+        assertEquals(40.0, two.get(1).sets.get(0).weight, 0.01);
+    }
+
 }

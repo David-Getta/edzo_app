@@ -395,6 +395,17 @@ public final class StrengthParse {
         // progresszió-javaslat is arra épült.
         if (Activities.someoneElsesDoing(text)) return out;
         if (looksLikeMeasurement(Foods.norm(text))) return out;
+        // A FEJLŐDÉS beszámolója nem sorozat: a „két hónapja edzek, azóta 12
+        // kg-ot emelkedett a fekvenyomásom" tizenkét kilós fekvenyomást írt
+        // a rekordok közé – abból a számból, amennyit JAVULT. Kimondott
+        // sorozat mellett viszont valódi napló: „guggolás 3x8 80 kg, sokat
+        // javult".
+        String prog = Foods.norm(text);
+        if (prog.matches("(?s).*(?<![a-z])(emelkedett|emelkedik|nott|"
+                + "novekedett|javult|javul|fejlodott|romlott|csokkent)(?![a-z]).*")
+                && !prog.matches("(?s).*\\d{1,3}\\s?[x×]\\s?\\d{1,3}.*")
+                && !prog.matches("(?s).*(?<![a-z])(sorozat|szett|ismetles)\\w*.*"))
+            return out;
         // A VISSZAEMLÉKEZÉS nem mai sorozat: a „régebben 100 kg-ot nyomtam
         // fekve" évekkel ezelőtti erőről szól – bekerülve mai rekord lenne,
         // és a progresszió-javaslat is rá épülne. A kimondott mai fél
@@ -1209,12 +1220,20 @@ public final class StrengthParse {
                 // 4." felsorolása a záró pont miatt nem húzódott össze, és a
                 // hatos, ötös, négyes sorozat némán elveszett – a volumen
                 // harmada maradt a naplóban.
-                .compile("(?<![\\d.,])\\d{1,3}(?:,\\s+\\d{1,3}){2,}"
+                // Az ÉS kötőszó zárja a felsorolást: a „3 sorozat plank: 60,
+                // 45 és 30 másodperc" harmadik tagja kimaradt, és egyetlen
+                // negyvenöt másodperces plank maradt a naplóban.
+                // Legalább HÁROM szám: két szám még lehet tizedes vagy két
+                // külön dolog („3x8, 40 kg").
+                .compile("(?<![\\d.,])(?:\\d{1,3}(?:,\\s+\\d{1,3}){2,}"
+                        + "(?:,?\\s+es\\s+\\d{1,3})?"
+                        + "|\\d{1,3},\\s+\\d{1,3},?\\s+es\\s+\\d{1,3})"
                         + "(?![\\d])(?![.,]\\d)").matcher(s);
         StringBuffer sb = new StringBuffer();
         while (m.find())
             m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(
-                    m.group().replaceAll(",\\s+", ",")));
+                    m.group().replaceAll(",?\\s+es\\s+", ",")
+                            .replaceAll(",\\s+", ",")));
         m.appendTail(sb);
         return sb.toString();
     }
