@@ -957,4 +957,21 @@ public class IntervalParseTest {
         assertEquals(180, p.rest);
     }
 
+
+    /**
+     * A HOSSZ\u00da szakasz pihen\u0151 n\u00e9lk\u00fcl nem id\u0151z\u00edt\u0151-terv: a \u201ema csak s\u00e9t\u00e1ltam a
+     * kuty\u00e1val 3x20 percet" mell\u00e9 egy egy\u00f3r\u00e1s id\u0151z\u00edt\u0151 aj\u00e1nlata ker\u00fclt.
+     */
+    @Test
+    public void aLongBlockWithoutRestIsNotATimerPlan() {
+        assertNull(IntervalParse.parse("ma csak s\u00e9t\u00e1ltam a kuty\u00e1val 3x20 percet"));
+        assertNull(IntervalParse.parse("biciklivel mentem dolgozni, 2x25 perc"));
+        // A kimondott terv-sz\u00f3 \u00e9s a pihen\u0151 fel\u00fcl\u00edr.
+        assertNotNull(IntervalParse.parse("4x15 perc k\u00f6r"));
+        IntervalParse.Plan p = IntervalParse.parse("6 x 3 perc kem\u00e9ny fut\u00e1s, k\u00f6zte 2 perc pihi");
+        assertNotNull(p);
+        assertEquals(180, p.work);
+        assertEquals(120, p.rest);
+    }
+
 }

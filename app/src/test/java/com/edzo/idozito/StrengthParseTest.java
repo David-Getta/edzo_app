@@ -1707,4 +1707,22 @@ public class StrengthParseTest {
         assertEquals(10, it.get(0).sets.get(0).reps);
     }
 
+
+    /**
+     * Az ID\u0150RE tartott gyakorlat sorozatsz\u00e1ma is sz\u00e1m\u00edt: a \u201ecsin\u00e1ltam 3
+     * sorozat plankot, egyenk\u00e9nt 60 m\u00e1sodpercig" egyetlen hatvan
+     * m\u00e1sodperces plankot \u00edrt a napl\u00f3ba h\u00e1rom helyett.
+     */
+    @Test
+    public void aTimedHoldKeepsItsSetCount() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "Csin\u00e1ltam 3 sorozat plankot, egyenk\u00e9nt 60 m\u00e1sodpercig.");
+        assertEquals(3, it.get(0).sets.size());
+        // Az \u201eegyenk\u00e9nt" n\u00e9lk\u00fcl a pihen\u0151 nem lesz tart\u00e1s.
+        assertEquals(3, StrengthParse.parse("guggol\u00e1s 3x10, 30 mp pihen\u0151")
+                .get(0).sets.size());
+        assertEquals(10, StrengthParse.parse("guggol\u00e1s 3x10, 30 mp pihen\u0151")
+                .get(0).sets.get(0).reps);
+    }
+
 }

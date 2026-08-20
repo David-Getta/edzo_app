@@ -249,6 +249,13 @@ public final class IntervalParse {
                 // „5x(3 perc / 1 perc)”: a perjel utáni idő a pihenő. Enélkül
                 // a pihenő némán elveszett, és a kör fele lett az edzésnek.
                 if (rest <= 0) rest = secondsAfterSlash(s, mm.end());
+                // A HOSSZÚ szakasz pihenő nélkül nem időzítő-terv: a „ma csak
+                // sétáltam a kutyával 3x20 percet" hatvan perc séta, nem
+                // három húszperces munkakör – a napló mellé mégis egy egyórás
+                // időzítő ajánlata került. Tíz percen túl a szakasz maga az
+                // edzés, pihenő nélkül pedig nincs is mit ütemezni. A
+                // kimondott terv-szó (kör, munka, pihenő) felülír.
+                if (rest <= 0 && w >= 600 && !saysPlan(s)) return null;
                 Plan p = build(r, w, rest, warmIn(s), coolIn(s));
                 if (p != null) return p;
             } catch (NumberFormatException ignored) {
@@ -403,6 +410,13 @@ public final class IntervalParse {
         // épp ezt kéri – ott a mondatban semmi más nincs.
         if (rounds <= 1 && timeCount(s) < 2 && !saysPlan(s) && !onlyTime(s))
             return null;
+        // A HOSSZÚ szakasz pihenő nélkül nem időzítő-terv: a „ma csak
+        // sétáltam a kutyával 3x20 percet" hatvan perc séta, nem három
+        // húszperces munkakör – a napló mellé mégis egy egyórás időzítő
+        // ajánlata került. Tíz percen túl a szakasz már maga az edzés, és
+        // pihenő nélkül nincs is mit ütemezni. A kimondott terv-szó (kör,
+        // munka, pihenő) viszont felülír: az ott valóban ütemezett blokk.
+        if (rest <= 0 && work >= 600 && !saysPlan(s)) return null;
         // Két KÜLÖNBÖZŐ tevékenység nem munka/pihenő pár: a „20 perc jóga és
         // 10 perc meditáció" húsz percéből húszperces munka lett húszperces
         // pihenővel – negyvenperces időzítő egy félórás estére. Egyenlő

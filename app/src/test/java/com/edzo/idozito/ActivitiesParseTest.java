@@ -6388,4 +6388,20 @@ public class ActivitiesParseTest {
         assertEquals(18, Activities.parse("este 6 kor 3 km fut\u00e1s").hour);
     }
 
+
+    /**
+     * A S\u00c9TA napi t\u00f6bb k\u00f6re is \u00f6sszead\u00f3dik: a \u201ema csak s\u00e9t\u00e1ltam a kuty\u00e1val
+     * 3x20 percet" h\u00fasz percet \u00edrt a napl\u00f3ba a hatvanb\u00f3l \u2013 a m\u00e1sik k\u00e9t k\u00f6r
+     * nyomtalanul elt\u0171nt.
+     */
+    @Test
+    public void severalWalkingLapsAddUp() {
+        assertEquals(60, Activities.parse("Ma csak s\u00e9t\u00e1ltam a kuty\u00e1val "
+                + "3x20 percet.").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("Kutyas\u00e9t\u00e1ltat\u00e1s 2x30 perc.")
+                .plans.get(0).minutes);
+        assertEquals(50, Activities.parse("Biciklivel mentem dolgozni, "
+                + "2x25 perc.").plans.get(0).minutes);
+    }
+
 }

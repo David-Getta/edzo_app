@@ -1594,11 +1594,17 @@ public final class Activities {
                 || s.contains("jatszottam") || s.contains("kispalyas")
                 // A KUTYASÉTÁLTATÁS napi két köre ugyanígy: a
                 // „kutyasétáltatás 2x30 perc" egy óra séta.
-                || s.contains("setaltatas") || s.contains("kutyaset")) {
+                || s.contains("setaltatas") || s.contains("kutyaset")
+                // A SÉTA napi több köre ugyanígy: a „ma csak sétáltam a
+                // kutyával 3x20 percet" húsz percet írt a naplóba a hatvanból
+                // – a másik két kör nyomtalanul eltűnt.
+                || s.contains("setaltam") || s.contains("setaltunk")
+                || s.contains("gyalogoltam") || s.contains("kutyaval")) {
+            // A szorzó nem csak kettő lehet: a három kör séta is összeadódik.
             java.util.regex.Matcher ing = java.util.regex.Pattern
-                    .compile("(?<![\\dx.,])2\\s?x\\s?(\\d{1,3})\\s?perc").matcher(s);
+                    .compile("(?<![\\dx.,])([2-6])\\s?x\\s?(\\d{1,3})\\s?perc").matcher(s);
             if (ing.find()) {
-                int t = 2 * Integer.parseInt(ing.group(1));
+                int t = Integer.parseInt(ing.group(1)) * Integer.parseInt(ing.group(2));
                 if (t <= 300)
                     s = s.substring(0, ing.start()) + t + " perc"
                             + s.substring(ing.end());

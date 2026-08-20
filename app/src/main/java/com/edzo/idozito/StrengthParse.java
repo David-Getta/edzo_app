@@ -679,10 +679,18 @@ public final class StrengthParse {
             // Egy adagoló szó állhat a szám előtt: „3 sorozat, egyenként 8
             // ismétlés, 90 kg". Az „egyenként" nélkül a hármas sorozatszám
             // elveszett, és egyetlen nyolcas sorozat maradt a naplóban.
-            if (!out.isEmpty() && moveIn(p) == null && p.matches(
+            // Az IDŐRE tartott gyakorlat hossza ugyanígy folytatás, de ott az
+            // adagoló szó KÖTELEZŐ: a „3 sorozat plank, egyenként 60
+            // másodpercig" egyetlen hatvan másodperces plankot írt a naplóba
+            // három helyett. Az „egyenként" nélkül a „guggolás 3x10, 30 mp
+            // pihenő" harminca a tartás hosszává válna.
+            if (!out.isEmpty() && moveIn(p) == null && (p.matches(
                     "^(?:egyenkent|mindegyik|mindegyikben|darabonkent|soronkent|"
                     + "sorozatonkent|szettenkent|azaz|plusz)?\\s*"
-                    + "\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")) {
+                    + "\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")
+                    || p.matches("^(?:egyenkent|mindegyik|mindegyikben|darabonkent|"
+                    + "soronkent|sorozatonkent|szettenkent)\\s*"
+                    + "\\d{1,3}\\s?(mp|masodperc|mperc|perc)\\w*\\b.*"))) {
                 out.set(out.size() - 1, out.get(out.size() - 1) + " " + p);
                 continue;
             }
