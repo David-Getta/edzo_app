@@ -2728,7 +2728,13 @@ public final class Activities {
         List<int[]> mins = findMinutes(q, beforeBlank); // {pos, perc}
         for (int[] m : mins) blank(q, m[0], m[2]);
         mergeTimeRanges(beforeBlank, mins, q);
+        // A KIMONDOTT idő attól még kimondott, hogy nem az edzés hossza: a
+        // „futásom közben megállított egy ismerős, így 10 percet álltam"
+        // futása valódi futás, csak a tíz perc a megállásé. A szűrők alatt
+        // kiürülő listától az egész bejegyzés elveszne.
+        boolean timeSaid = !mins.isEmpty();
         dropTimedMoveTimes(beforeBlank, mins);
+        dropPauseTimes(beforeBlank, mins);
         dropWarmupTimes(beforeBlank, mins);
         dropSleepTimes(beforeBlank, mins);
         dropTotalTime(beforeBlank, mins);
@@ -2779,7 +2785,7 @@ public final class Activities {
                     // Csak akkor élhet, ha a mondatban SEMMILYEN időtartam,
                     // táv vagy lépésszám nincs: a „60 perc futás után ittam"
                     // futása valódi, azt a kimondott szám hitelesíti.
-                    if (mins.isEmpty() && kms.isEmpty() && steps <= 0
+                    if (!timeSaid && kms.isEmpty() && steps <= 0
                             && timePhraseAfter(s, p + w.length())) continue;
                     hits.add(new int[]{p, w.length(), ki});
                 }
@@ -5791,6 +5797,33 @@ public final class Activities {
             mins.remove(i);
             return;
         }
+    }
+
+    /**
+     * A MEGÁLLÁS ideje nem az edzés ideje.
+     *
+     * A „futottam 5 km-t, közben 10 percet álltam" tízperces futást írt a
+     * naplóba – öt kilométer tíz perc alatt harminc km/h. A „futásom közben
+     * megállított egy ismerős, így 10 percet álltam" ugyanígy tízperces
+     * futás lett. A megállás és a várakozás perce épp az az idő, amikor
+     * NEM ment az edzés.
+     */
+    private static void dropPauseTimes(String s, List<int[]> mins) {
+        List<int[]> keep = new ArrayList<>();
+        for (int[] m : mins) {
+            int e = Math.max(0, Math.min(s.length(), m[2]));
+            // Csak a saját tagmondatáig nézünk előre.
+            int stop = Math.min(s.length(), e + 22);
+            for (int k = e; k < stop; k++) {
+                char c = s.charAt(k);
+                if (c == ',' || c == ';' || c == '.') { stop = k; break; }
+            }
+            if (s.substring(e, stop).matches("(?s).*(?<![a-z])(?:megallt\\w*"
+                    + "|allt\\w*|allas\\w*|varakoz\\w*|vartam|vartunk)"
+                    + "(?![a-z]).*")) continue;
+            keep.add(m);
+        }
+        if (keep.size() < mins.size()) { mins.clear(); mins.addAll(keep); }
     }
 
     /**

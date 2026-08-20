@@ -7129,4 +7129,27 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("Heti terhelés: 60 km.").days);
     }
 
+    /**
+     * A megállás ideje nem az edzés ideje.
+     *
+     * A „futottam 5 km-t, közben 10 percet álltam" TÍZPERCES futást írt a
+     * naplóba – öt kilométer tíz perc alatt harminc km/h. A megállás és a
+     * várakozás perce épp az az idő, amikor nem ment az edzés.
+     */
+    @Test
+    public void theMinutesSpentStandingAreNotTheSession() {
+        Activities.Parsed p = Activities.parse("Futottam 5 km-t, közben "
+                + "10 percet álltam.");
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        assertTrue(p.plans.get(0).minutes > 20);
+        // A buszra várt perc sem edzés.
+        Activities.Parsed q = Activities.parse("Vártam 10 percet a buszra, "
+                + "aztán 30 perc futás.");
+        assertEquals(30, q.plans.get(0).minutes);
+        // A kimondott idő attól még hitelesíti az edzést: a mondat nem
+        // eshet ki azzal együtt, hogy a perc nem a futásé.
+        assertEquals(1, Activities.parse("A futásom közben megállított egy "
+                + "ismerős, így 10 percet álltam.").plans.size());
+    }
+
 }
