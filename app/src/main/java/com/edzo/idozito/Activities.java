@@ -1267,6 +1267,17 @@ public final class Activities {
                 }
             }
         }
+        // A MÁSODIK alkalom SZÁMA a mértékegységét az elsőtől kapja: a „ma
+        // délelőtt bicikliztem 25 km-t, délután még 10-et" tíz kilométere
+        // NYOMTALANUL eltűnt – a nap fele kimaradt a naplóból. A magyar így
+        // rövidít: a mértékegység egyszer van kimondva. Sorozatjelölés
+        // mellett nem élünk vele, ott a puszta szám ismétlést is jelenthet.
+        if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?km"
+                + "(?![a-z]).*")
+                && !s.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*"))
+            s = s.replaceAll("(?<![a-z])(meg|majd|aztan|utana)\\s+"
+                    + "(\\d{1,3}(?:[.,]\\d{1,2})?)[- ]?(?:et|at|ot)(?![a-z])",
+                    "$1 $2 km");
         // A NAPONTA ugyanaz, mint a NAPI: az „a hétvégén 2 napig túráztunk a
         // Bükkben, naponta kb 20 km" húsz kilométere NYOMTALANUL eltűnt, a
         // „napi 20 km" viszont rendben napi húszat írt be – ugyanarra a

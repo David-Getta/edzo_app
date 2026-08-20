@@ -2509,8 +2509,12 @@ public final class Foods {
                         // „csak vizet ittam, kb 1,5 litert" másfél litere
                         // eddig negyed literes pohárra zsugorodott.
                         + "(\\d{1,2}(?:[.,]\\d{1,2})?|[a-z]{2,10})\\s+"
+                        // A KÖTŐJELES rag is rag: az „utána palacsintát,
+                        // 3 db-ot" hármasa eddig egyetlen adagra
+                        // zsugorodott, mert a kötőjel megtörte a szót.
                         + "(adag|tanyer|szelet|pohar|bogre|"
-                        + "kanal|marek|falat|gomboc|db|darab|liter|dl|deci|ml)\\w*"
+                        + "kanal|marek|falat|gomboc|db|darab|liter|dl|deci|ml)"
+                        + "-?\\w*"
                         // Az EVÉS IGÉJE mögötte is állhat: az „a süti, amit
                         // vittek a munkahelyre, kb 3 szeletet ettem belőle"
                         // három szelete eddig egyetlen adagra zsugorodott,
@@ -2563,13 +2567,23 @@ public final class Foods {
         int cut = Math.max(head.lastIndexOf('.'), head.lastIndexOf(';'));
         String tail = cut >= 0 ? head.substring(cut + 1) : head;
         List<Match> hm = matches(list, tail);
-        if (hm.size() != 1) return query;
+        if (hm.isEmpty()) return query;
+        // TÖBB étel közül a LEGKÖZELEBBI kapja a mennyiséget, és csak akkor,
+        // ha a saját tagmondata ér a mennyiségig: az „ebédre levest ettem,
+        // utána palacsintát, 3 db-ot" három palacsintája eddig egyetlen
+        // adagra zsugorodott, mert a leves miatt a mondat „többértelműnek"
+        // számított. A távolabbi étel továbbra sem viheti el a számot.
+        Match pick = hm.get(0);
+        for (Match mm : hm) if (mm.pos > pick.pos) pick = mm;
+        if (hm.size() > 1
+                && tail.substring(pick.pos + pick.len).matches("(?s).*[,;].*"))
+            return query;
         int off = cut >= 0 ? cut + 1 : 0;
         // A tiltó szám az étel SAJÁT TAGMONDATÁBAN számít: az „este 8 után
         // már nem ettem semmit, csak vizet ittam, kb 1,5 litert" nyolcasa a
         // másik tagmondatban áll, mégis letiltotta a másfél litert – negyed
         // liter víz ment be másfél helyett.
-        int cb = off + hm.get(0).pos;
+        int cb = off + pick.pos;
         while (cb > off && head.charAt(cb - 1) != ',' && head.charAt(cb - 1) != ';'
                 && head.charAt(cb - 1) != '.') cb--;
         if (head.substring(cb).matches("(?s).*\\d.*")) return query;
@@ -2577,7 +2591,7 @@ public final class Foods {
         // határozatlan névelőjét („egy adag palacsintát", „egy fagyit")
         // elhagyjuk – az „egy" különben a szomszédság jogán legyőzné a
         // kimondott számot, és megint egy adag menne be hat helyett.
-        int pos = off + hm.get(0).pos;
+        int pos = off + pick.pos;
         String before = head.substring(0, pos)
                 .replaceAll("(?:^|\\s)egy(?:\\s+(?:adag|nagy|kis))?\\s*$", " ");
         return before + amount + " " + head.substring(pos) + rest;

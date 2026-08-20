@@ -7312,4 +7312,23 @@ public class ActivitiesParseTest {
         assertEquals(17, Activities.parse("Délután 5 kor 8 km futás.").hour);
     }
 
+    /**
+     * A második alkalom száma a mértékegységét az elsőtől kapja.
+     *
+     * A „ma délelőtt bicikliztem 25 km-t, délután még 10-et" tíz kilométere
+     * NYOMTALANUL eltűnt – a nap fele kimaradt a naplóból. A magyar így
+     * rövidít: a mértékegység egyszer van kimondva.
+     */
+    @Test
+    public void theSecondNumberInheritsTheUnit() {
+        Activities.Parsed p = Activities.parse("Ma délelőtt bicikliztem "
+                + "25 km-t, délután még 10-et.");
+        assertEquals(2, p.plans.size());
+        assertEquals(25.0, p.plans.get(0).km, 0.01);
+        assertEquals(10.0, p.plans.get(1).km, 0.01);
+        // Sorozatjelölés mellett a puszta szám marad ismétlés.
+        assertTrue(Activities.parse("Nyomtam 3x10-et, aztán még "
+                + "8-at.").plans.isEmpty());
+    }
+
 }

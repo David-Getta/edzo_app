@@ -509,4 +509,21 @@ public class FoodsQuantityTest {
         assertEquals(1500.0, Foods.parse(all, "csak vizet ittam, kb 1,5 "
                 + "litert").get(0).grams, 0.01);
     }
+
+    /**
+     * Több étel közül a legközelebbi kapja a mennyiséget.
+     *
+     * Az „ebédre levest ettem, utána palacsintát, 3 db-ot" három
+     * palacsintája egyetlen adagra zsugorodott: a leves miatt a mondat
+     * „többértelműnek" számított, és a szám sehova nem kapcsolódott.
+     */
+    @Test public void theNearestFoodTakesTheAmount() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "ebédre levest ettem, "
+                + "utána palacsintát, 3 db-ot");
+        double palacsinta = 0;
+        for (Foods.Hit h : hits)
+            if (h.food.name.startsWith("Palacsinta")) palacsinta = h.grams;
+        assertEquals(180.0, palacsinta, 0.01);
+    }
 }
