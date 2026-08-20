@@ -3789,7 +3789,7 @@ public final class Activities {
             if (!cl.trim().isEmpty()) {
                 if (!plannedClause(cl)) {
                     anyKept = true;
-                } else if (anyKept) {
+                } else if (anyKept || pastTense(s)) {
                     // Csak a megtörtént UTÁN álló terv takarható ki: a „ha
                     // lesz időm, futok" feltétele a MÖGÖTTE álló tagmondatra
                     // vonatkozik – ott a futás is szándék, nem edzés.
@@ -3801,6 +3801,19 @@ public final class Activities {
         for (int[] f : future) blank(q, f[0], f[1]);
     }
 
+
+    /**
+     * Van-e a mondatban MÚLT idejű, első személyű ige?
+     *
+     * A „két hét múlva verseny lesz, ma 12 km-t futottam rá készülve"
+     * tizenkét kilométere elveszett, mert a terv-tagmondat ELÖL állt, és a
+     * jövő-felismerő az egész bejegyzést elnémította. A múlt idejű ige
+     * kimondja, hogy a mondat egy megtörtént edzésről is beszél.
+     */
+    private static boolean pastTense(String s) {
+        return s.matches("(?s).*(?<![a-z])\\w{3,}(?:ttam|ttem|tam|tem|tunk|tuk)"
+                + "(?![a-z]).*");
+    }
 
     /**
      * KIMONDOTT terv-tagmondat: „holnap kondi lesz", „majd bepótolom".
@@ -5418,7 +5431,11 @@ public final class Activities {
             String unit2 = ago.group(2) != null ? ago.group(2) : ago.group(3);
             int mul = unit2.equals("nap") ? 1 : unit2.equals("het") ? 7 : 30;
             int back = n * mul;
-            if (back >= 1 && back <= 365)
+            // A KIHAGYÁS ideje nem a bejegyzés napja: a „két hónapja nem
+            // futottam, ma újra: 4 km, 26 perc" mai futása hatvan nappal
+            // ezelőttre került – a mai nap üresen maradt, a széria megszakadt.
+            // A tagadás kitakarása után a hossz mögött üres tagmondat marad.
+            if (back >= 1 && back <= 365 && !emptyClauseAfter(s, ago.end()))
                 return new int[]{ago.start(), ago.end(), back};
         }
         String[][] words = {{"tegnapelott", "2"}, {"tegnapi", "1"}, {"tegnap", "1"}};

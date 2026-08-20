@@ -1783,4 +1783,19 @@ public class StrengthParseTest {
                 .get(0).sets.size());
     }
 
+
+    /**
+     * A GÉPEK száma sem ismétlés: az „edzőteremben ma 3 gépet használtam:
+     * lábtolás, mellnyomás, húzódás" hármasából három lábtolás-ismétlés lett
+     * a rekordok között.
+     */
+    @Test
+    public void aMachineCountIsNotARepCount() {
+        assertTrue(StrengthParse.parse("Az edzőteremben ma 3 gépet "
+                + "használtam: lábtolás, mellnyomás, húzódás.").isEmpty());
+        // A valódi sorozat marad.
+        assertEquals(3, StrengthParse.parse("Lábtolás 3x12 100 kg.")
+                .get(0).sets.size());
+    }
+
 }

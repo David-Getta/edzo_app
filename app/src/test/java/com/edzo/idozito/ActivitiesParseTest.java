@@ -6854,4 +6854,29 @@ public class ActivitiesParseTest {
         assertEquals(5.0, p.plans.get(0).km, 0.01);
     }
 
+
+    /**
+     * A KIHAGYÁS ideje nem a bejegyzés napja, és az ELÖL álló terv sem törli
+     * a megtörténtet: a „két hónapja nem futottam, ma újra: 4 km, 26 perc"
+     * mai futása hatvan nappal ezelőttre került, a „két hét múlva verseny
+     * lesz, ma 12 km-t futottam rá készülve" tizenkét kilométere pedig
+     * teljesen elveszett.
+     */
+    @Test
+    public void theBreakAndThePlanDoNotMoveTheEntry() {
+        Activities.Parsed p = Activities.parse("Két hónapja nem futottam, "
+                + "ma újra: 4 km, 26 perc, kicsit nehéz volt.");
+        assertEquals(0, p.offset);
+        assertEquals(4.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed r = Activities.parse("Két hét múlva verseny lesz, "
+                + "ma 12 km-t futottam rá készülve.");
+        assertEquals(1, r.plans.size());
+        assertEquals(12.0, r.plans.get(0).km, 0.01);
+        // A valódi visszatekintés marad.
+        assertEquals(5, Activities.parse("5 napja futottam 10 km-t.").offset);
+        assertEquals(14, Activities.parse("Két hete kondi 45 perc.").offset);
+        // A tisztán jövő idejű mondat továbbra sem napló.
+        assertEquals(0, Activities.parse("Holnap futok 5 km-t.").plans.size());
+    }
+
 }

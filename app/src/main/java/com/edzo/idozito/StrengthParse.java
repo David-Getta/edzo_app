@@ -455,7 +455,11 @@ public final class StrengthParse {
                 + "\\s*,?\\s*(?:[eé]s\\s+)?\\d{1,3}\\s?"
                 + "(?:sorozat|szett|set)\\w*", " ");
         text = text.replaceAll("(?iu)(?<![\\d,.])\\d{1,2}\\s?"
-                + "(?:gyakorlat|gyakorlatot|gyakorlatb[oó]l|f[eé]le gyakorlat)"
+                + "(?:gyakorlat|gyakorlatot|gyakorlatb[oó]l|f[eé]le gyakorlat"
+                // A GÉPEK száma sem ismétlés: az „edzőteremben ma 3 gépet
+                // használtam: lábtolás, mellnyomás, húzódás" hármasából
+                // három lábtolás-ismétlés lett a rekordok között.
+                + "|g[eé]p|g[eé]pet|g[eé]pen|[aá]llom[aá]s|[aá]llom[aá]st)"
                 + "(?![\\p{L}])", " ");
         // Ugyanez a perjel körszó nélkül is idő: a „8x20/10 fekvőtámasz"
         // tízese ott sem súly. A tétel megmarad (nyolcszor húsz), csak a
