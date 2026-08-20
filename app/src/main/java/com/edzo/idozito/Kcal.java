@@ -46,9 +46,15 @@ public final class Kcal {
      * nem esik ide.
      */
     private static final Pattern MEAL_NUM = Pattern.compile(
-            "(?<![a-z])(?:reggeli|tizorai|ebed|uzsonna|vacsora|nassolas|snack)"
+            // A BESZÉLT alakok ugyanazt az étkezést nevezik meg: a „reggeli
+            // 400 kcal, ebéd 700, vacsi 600, snack 200" vacsorája kimaradt az
+            // összegzésből – ezerháromszáz ment be az ezerkilencszázból. A
+            // ragozott alak („vacsorára 600") ugyanígy.
+            "(?<![a-z])(?:reggeli|tizorai|ebed|ebi|uzsonna|uzsi|vacsora|vacsi|"
+                    + "nassolas|nasi|snack|desszert)\\w*"
                     + "\\s*:?\\s*(\\d{2,4})(?!\\d)(?![.,]\\d)"
-                    + "(?!\\s?(?:kcal|kkal|k cal|kalori|cal|g|gr|gramm|%|perc|km|kg))");
+                    + "(?!\\s?(?:kcal|kkal|k cal|kalori|cal|g|gr|gramm|%|perc|km|kg"
+                    + "|lepes|ml|dl|db|darab|szelet))");
 
     /**
      * Kilojoule: az EU-s címke ezt írja ELSŐ helyen, és van doboz, amin csak

@@ -460,4 +460,20 @@ public class KcalTest {
         assertEquals(450, Kcal.stated("reggeli 450 kcal"));
     }
 
+
+    /**
+     * A BESZÉLT alakok ugyanazt az étkezést nevezik meg: a „reggeli 400
+     * kcal, ebéd 700, vacsi 600, snack 200" vacsorája kimaradt az
+     * összegzésből – ezerháromszáz ment be az ezerkilencszázból.
+     */
+    @Test
+    public void colloquialMealNamesCountToo() {
+        assertEquals(1900, Kcal.stated("reggeli 400kcal, ebéd 700, "
+                + "vacsi 600, snack 200"));
+        assertEquals(1700, Kcal.stated("reggelire 400 kcal, ebédre 700, "
+                + "vacsorára 600"));
+        // A lépésszám nem kalória.
+        assertEquals(700, Kcal.stated("reggel 12000 lépés, ebéd 700 kcal"));
+    }
+
 }
