@@ -6896,4 +6896,29 @@ public class ActivitiesParseTest {
                 + "vissza 18 perc.").plans.get(0).minutes);
     }
 
+
+    /**
+     * A KIMONDOTT TÁV erősebb az emeletből számolt percnél, és az ÖSSZESEN
+     * a saját tagmondatában oszt: a „12 emelet lépcső, utána 2 km gyaloglás"
+     * két kilométeres sétája hat percesre zsugorodott, a „kb 3-4 km-t
+     * sétálhattam ma összesen, plusz 20 perc bringa" húsz perce meg
+     * tíz-tízre feleződött a két mozgás között.
+     */
+    @Test
+    public void theStatedDistanceAndTheSumStayInTheirPlace() {
+        Activities.Parsed p = Activities.parse("12 emelet lépcső, utána 2 km gyaloglás.");
+        assertEquals(1, p.plans.size());
+        assertEquals(2.0, p.plans.get(0).km, 0.01);
+        assertEquals(24, p.plans.get(0).minutes);
+        Activities.Parsed q = Activities.parse("kb 3-4 km-t sétálhattam ma "
+                + "összesen, plusz 20 perc bringa");
+        assertEquals(2, q.plans.size());
+        assertEquals(20, q.plans.get(1).minutes);
+        // Az emeletből számolt perc táv nélkül marad, és az ÖSSZESEN a saját
+        // tagmondatában továbbra is oszt.
+        assertEquals(6, Activities.parse("12 emelet lépcső.").plans.get(0).minutes);
+        assertEquals(35, Activities.parse("Futás és kondi, összesen 70 perc.")
+                .plans.get(0).minutes);
+    }
+
 }

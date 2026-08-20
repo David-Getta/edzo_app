@@ -2940,8 +2940,15 @@ public final class Activities {
             seenKind[h[2]] = true;
             kindsKept++;
         }
-        if (mins.size() == 1 && kindsKept > 1
-                && (s.contains("osszesen") || s.contains("osszessegeben"))) {
+        // Az ÖSSZESEN a SAJÁT tagmondatában osztja szét az időt: a „kb 3-4
+        // km-t sétálhattam ma összesen, plusz 20 perc bringa" húsz perce a
+        // bringáé – az összesen a séta TÁVJÁRA vonatkozik –, mégis tíz-tíz
+        // percre feleződött a két mozgás között.
+        int oszAt = s.indexOf("osszesen");
+        if (oszAt < 0) oszAt = s.indexOf("osszessegeben");
+        boolean sumHere = oszAt >= 0 && !mins.isEmpty()
+                && !crossesClause(s, mins.get(0)[0], mins.get(0)[2], oszAt, oszAt + 8);
+        if (mins.size() == 1 && kindsKept > 1 && sumHere) {
             java.util.Arrays.fill(minsOf, 0);
             loneAfterAll = Math.max(1, mins.get(0)[1] / kindsKept);
         } else if (mins.size() == 1 && keep.size() > 1) {
@@ -6620,11 +6627,18 @@ public final class Activities {
         boolean saidMinutes =
                 s.matches("(?s).*(?<!\\p{L})\\d{1,3}\\s?perc[^.;,]{0,20}?" + walk + ".*")
                 || s.matches("(?s).*" + walk + "[^.;,]{0,20}?\\d{1,3}\\s?perc.*");
+        // A KIMONDOTT TÁV ugyanígy erősebb: a „12 emelet lépcső, utána 2 km
+        // gyaloglás" két kilométeres sétája hat percesre zsugorodott – az
+        // emeletből számolt perc lett a séta hossza, pedig a táv pontosabb.
+        boolean saidKm =
+                s.matches("(?s).*(?<!\\p{L})\\d{1,3}(?:[.,]\\d)?\\s?km[^.;,]{0,20}?"
+                        + walk + ".*")
+                || s.matches("(?s).*" + walk + "[^.;,]{0,20}?\\d{1,3}(?:[.,]\\d)?\\s?km.*");
         while (m.find()) {
             int floors;
             try { floors = Integer.parseInt(m.group(1)); } catch (NumberFormatException e) { continue; }
             if (floors < 1 || floors > 300) continue;
-            if (saidMinutes) { blank(q, m.start(), m.end()); continue; }
+            if (saidMinutes || saidKm) { blank(q, m.start(), m.end()); continue; }
             String rep = Math.max(2, Math.round(floors * 0.5f)) + " perc";
             if (rep.length() > m.end() - m.start()) continue;
             blank(q, m.start(), m.end());
