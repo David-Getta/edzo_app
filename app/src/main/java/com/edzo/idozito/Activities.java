@@ -1913,8 +1913,14 @@ public final class Activities {
         // percet voltam, ebből kb 30 perc úszás volt" negyvenöt perc
         // úszásként ment be – pedig a felhasználó maga mondta meg, hogy
         // csak harminc. A minősített (kisebb) érték a valódi mozgás.
+        // …de csak az OTT-LÉT idejéből: a „karate edzés 90 perc, ebből 20
+        // perc formagyakorlat" kilencven perce maga az edzés, a húsz csak a
+        // bontása – eddig húszperces karate került a naplóba. A jelenlét
+        // igéje („voltam", „töltöttem") választja el a kettőt.
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:perc|ora)\\w*"
-                + "([^,;.0-9]{0,20})(?=,?\\s*(?:ebbol|amibol|ebben)(?![a-z]))",
+                + "([^,;.0-9]{0,20}?(?:voltam|voltunk|toltottem|toltottunk|"
+                + "bent voltam|kint voltam)\\w*)"
+                + "(?=,?\\s*(?:ebbol|amibol|ebben)(?![a-z]))",
                 "$1");
         // Az ALVÁS órája nem edzéshossz: a „keveset aludtam (5 óra), de
         // azért lementem 30 percre a terembe" ÖTÓRÁS kondi-edzést írt be –
@@ -2948,6 +2954,11 @@ public final class Activities {
             // 40 perc jóga, közben 10 perc légzőgyakorlat" tíz perce egy
             // MÁSODIK jóga-bejegyzés lett – ötven perc abból a negyvenből,
             // ami megvolt.
+            // A BONTÁS tagmondata nem külön edzés: a „karate edzés 90 perc,
+            // ebből 20 perc nyújtás" húsz perce a kilencvenen BELÜL van –
+            // külön jóga-bejegyzésként száztíz perc mozgás lett a
+            // kilencvenből. Az első mozgás mindig megmarad.
+            if (!out.isEmpty() && partOfClause(s, h[0])) continue;
             if (used[h[2]] && duringClause(s, h[0])) continue;
             if (used[h[2]] && !separateSession(out, ALL[h[2]], kmOf[i], minsOf[i]))
                 continue;                           // egy mozgásforma egyszer szerepel
@@ -3458,13 +3469,27 @@ public final class Activities {
         // futásként. A kimondott alkalomszám mondja meg, hány edzés összege a
         // táv; a percet is annyifelé osztjuk. Csak akkor, ha az alkalomszám
         // máshova nem került be (egyetlen terv, egy alkalommal).
-        if (days > 1 && out.size() == 1 && out.get(0).count == 1
-                && out.get(0).km > 0 && out.get(0).steps <= 0) {
+        // TÖBB mozgásforma mellett az alkalmak megoszlanak: az „elmúlt 30
+        // napban 22 edzés, 180 km futás, 6 óra kondi" egyetlen
+        // száznyolcvan kilométeres futást és egy hatórás kondit írt a
+        // naplóba – egyetlen napra. A huszonkét alkalom a két mozgásforma
+        // között oszlik el.
+        if (days > 1 && !out.isEmpty()) {
             int n = sessionsSaid(s);
-            if (n >= 2 && n <= days) {
-                Plan p0 = out.get(0);
-                out.set(0, new Plan(p0.kind, n, Math.max(1, Math.round(p0.minutes / (float) n)),
-                        p0.km / n, 0));
+            int per = n / Math.max(1, out.size());
+            if (n >= 2 && per >= 2 && per <= days) {
+                List<Plan> spread = new ArrayList<>();
+                for (Plan p : out) {
+                    boolean said = p.km > 0 || p.minutes > p.kind.defaultMin;
+                    if (p.count != 1 || p.steps > 0 || !said) {
+                        spread.add(p);
+                        continue;
+                    }
+                    spread.add(new Plan(p.kind, per,
+                            Math.max(1, Math.round(p.minutes / (float) per)),
+                            p.km / per, 0));
+                }
+                out = spread;
             }
         }
         // Az INTERVALL-terv szakaszai nem külön edzések. A „20 mp sprint 40 mp
@@ -6841,6 +6866,24 @@ public final class Activities {
         return cl.matches("(?s).*(?<![a-z])(kozben|kozte|koztuk|mikozben|"
                 + "ekozben|azon belul|ebbol|a vegen|a vegere|a vege fele|"
                 + "kezdesnek|bemelegitesnek|levezetesnek|zarasnak)(?![a-z]).*");
+    }
+
+    /**
+     * A tagmondat a teljes időből VÁG KI egy részt: „ebből 20 perc nyújtás".
+     *
+     * A „karate edzés 90 perc, ebből 20 perc nyújtás" húsz perce a
+     * kilencvenen BELÜL van – külön jóga-bejegyzésként száztíz perc mozgás
+     * lett a kilencvenből. A „köztük 20 perc séta" viszont a szakaszok KÖZTI
+     * mozgás: azt a kimondott hosszával külön bejegyzésként őrizzük.
+     */
+    private static boolean partOfClause(String s, int pos) {
+        int b = Math.max(0, Math.min(pos, s.length()));
+        while (b > 0 && s.charAt(b - 1) != ',' && s.charAt(b - 1) != ';'
+                && s.charAt(b - 1) != '.') b--;
+        String cl = s.substring(b, Math.min(pos, s.length()));
+        return cl.matches("(?s).*(?<![a-z])(ebbol|amibol|ebben|azon belul|"
+                + "a vegen|a vegere|a vege fele|kezdesnek|bemelegitesnek|"
+                + "levezetesnek|zarasnak)(?![a-z]).*");
     }
 
     /**

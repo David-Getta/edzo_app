@@ -6756,4 +6756,45 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+
+    /**
+     * Az EBBŐL a teljes időből vág ki egy részt, de csak az OTT-LÉT
+     * idejéből: a „karate edzés 90 perc, ebből 20 perc formagyakorlat"
+     * kilencven perce maga az edzés – eddig húszperces karate került a
+     * naplóba, a nyújtásos változatból meg száztíz perc.
+     */
+    @Test
+    public void aBreakdownDoesNotShrinkTheSession() {
+        assertEquals(90, Activities.parse("Karate edzés 90 perc, ebből "
+                + "20 perc formagyakorlat.").plans.get(0).minutes);
+        Activities.Parsed n = Activities.parse("Karate edzés 90 perc, ebből "
+                + "20 perc nyújtás.");
+        assertEquals(1, n.plans.size());
+        assertEquals(90, n.plans.get(0).minutes);
+        assertEquals(45, Activities.parse("Úszás 45 perc, ebből 10 perc "
+                + "bemelegítés.").plans.get(0).minutes);
+        // Az OTT-LÉT idejéből viszont továbbra is kivágjuk a mozgást.
+        assertEquals(30, Activities.parse("Uszodában 45 percet voltam, ebből "
+                + "kb 30 perc úszás volt.").plans.get(0).minutes);
+    }
+
+    /**
+     * TÖBB mozgásforma mellett az alkalmak megoszlanak: az „elmúlt 30 napban
+     * 22 edzés, 180 km futás, 6 óra kondi" egyetlen száznyolcvan
+     * kilométeres futást és egy hatórás kondit írt a naplóba – egy napra.
+     */
+    @Test
+    public void theSessionCountSpreadsOverEveryKind() {
+        Activities.Parsed p = Activities.parse("Az elmúlt 30 napban 22 edzés, "
+                + "180 km futás, 6 óra kondi.");
+        assertEquals(30, p.days);
+        assertEquals(2, p.plans.size());
+        assertEquals(11, p.plans.get(0).count);
+        assertEquals(11, p.plans.get(1).count);
+        assertEquals(180.0 / 11, p.plans.get(0).km, 0.01);
+        // Egyetlen mozgásformánál változatlan a szétosztás.
+        assertEquals(12, Activities.parse("Ez a hónap: 12 edzés, 145 km futás.")
+                .plans.get(0).count);
+    }
+
 }
