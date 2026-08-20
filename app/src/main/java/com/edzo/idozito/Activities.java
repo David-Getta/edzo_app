@@ -1970,8 +1970,15 @@ public final class Activities {
         // lépésszám 9842" – ahogy az órák és a telefonok kiírják – kettőspont
         // nélkül üresen jött vissza, vagyis egy egész nap gyaloglása tűnt el.
         // A LÉPÉSCÉL kimarad: az még nem megtett lépés.
-        s = s.replaceAll("lepes(?!cel)\\w*\\s*(?:volt)?\\s*[,:]?\\s*"
-                + "(\\d{3,6})(?![\\d.,])", "$1 lepes");
+        // A SAJÁT SZÁMÁVAL álló lépés-szó nem keresi a következő tagmondatét:
+        // a „12000 lépés, 620 aktív kalória, 72 átlagpulzus" órakivonatában a
+        // hatszázhúsz lett a lépésszám, és a tizenkétezer lépésből
+        // félkilométeres séta maradt. A mögötte álló szám akkor sem lépés,
+        // ha a saját mértékegységét viseli.
+        s = s.replaceAll("(?<!\\d)(?<!\\d )lepes(?!cel)\\w*\\s*(?:volt)?\\s*[,:]?\\s*"
+                + "(\\d{3,6})(?![\\d.,])(?!\\s*(?:kaloria|kalori|kcal|kal(?![a-z])"
+                + "|pulzus|atlagpulzus|bpm|perc|ora|km|kg|ft|forint|fok|mp))",
+                "$1 lepes");
         // A NEVEZETES körök távja kimondatlan is ismert: a margitszigeti
         // futókör 5,3 km, a Balaton-kör 210 – eddig csak az alapidő ment
         // be. Csak kimondott KÖR mellett él, és csak ha nincs saját táv.

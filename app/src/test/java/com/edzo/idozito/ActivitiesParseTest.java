@@ -6986,4 +6986,22 @@ public class ActivitiesParseTest {
         assertEquals(50, q.plans.get(0).minutes);
     }
 
+    /**
+     * A saját számával álló lépés-szó nem keresi a következő tagmondatét.
+     *
+     * A „12 000 lépés, 620 aktív kalória, 72 átlagpulzus, 6 óra 40 perc
+     * alvás" órakivonatában a hatszázhúsz lett a lépésszám, és a
+     * tizenkétezer lépésből félkilométeres séta maradt.
+     */
+    @Test
+    public void theStepCountIsNotStolenByTheNextClause() {
+        Activities.Parsed p = Activities.parse("12 000 lépés, 620 aktív "
+                + "kalória, 72 átlagpulzus, 6 óra 40 perc alvás – Garmin.");
+        assertEquals(1, p.plans.size());
+        assertEquals(9.0, p.plans.get(0).km, 0.2);
+        // A szám nélküli lépés-szó után álló szám marad lépésszám.
+        Activities.Parsed q = Activities.parse("12000 lépés ma.");
+        assertEquals(9.0, q.plans.get(0).km, 0.2);
+    }
+
 }
