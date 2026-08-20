@@ -6879,4 +6879,21 @@ public class ActivitiesParseTest {
         assertEquals(0, Activities.parse("Holnap futok 5 km-t.").plans.size());
     }
 
+
+    /**
+     * Az ODA és a VISSZA ÓRÁBAN mondott ideje is összeadódik: a „ma a hegyre
+     * másztunk fel, 3 óra oda, 2 óra vissza" három órát írt a naplóba az
+     * ötből – a lefelé út nyomtalanul eltűnt.
+     */
+    @Test
+    public void bothLegsCountInHoursToo() {
+        assertEquals(300, Activities.parse("Ma a hegyre másztunk fel, "
+                + "3 óra oda, 2 óra vissza.").plans.get(0).minutes);
+        assertEquals(170, Activities.parse("Túra: 90 perc oda, 80 perc vissza.")
+                .plans.get(0).minutes);
+        // A fordított sorrend változatlan.
+        assertEquals(33, Activities.parse("Munkába menet 15 perc bicikli, "
+                + "vissza 18 perc.").plans.get(0).minutes);
+    }
+
 }

@@ -2261,6 +2261,24 @@ public final class Activities {
                         + s.substring(ovk.end());
             }
         }
+        // Az ODA és a VISSZA ÓRÁBAN mondott ideje is összeadódik: a „ma a
+        // hegyre másztunk fel, 3 óra oda, 2 óra vissza" három órát írt a
+        // naplóba az ötből – a lefelé út nyomtalanul eltűnt. A mértékegység
+        // itt elöl áll, az irány mögötte.
+        java.util.regex.Matcher ovh = java.util.regex.Pattern
+                .compile("(\\d{1,2}(?:[.,]\\d)?)\\s?(ora|perc)\\w*\\s+oda\\s*[,;]\\s*"
+                        + "(\\d{1,2}(?:[.,]\\d)?)\\s?(ora|perc)\\w*\\s+"
+                        + "(?:vissza|hazafele|visszafele)").matcher(s);
+        if (ovh.find()) {
+            double a = Double.parseDouble(ovh.group(1).replace(',', '.'))
+                    * (ovh.group(2).startsWith("ora") ? 60 : 1);
+            double b = Double.parseDouble(ovh.group(3).replace(',', '.'))
+                    * (ovh.group(4).startsWith("ora") ? 60 : 1);
+            int sum = (int) Math.round(a + b);
+            if (sum >= 2 && sum <= 24 * 60)
+                s = s.substring(0, ovh.start()) + sum + " perc"
+                        + s.substring(ovh.end());
+        }
         // Az ODA és a VISSZA külön kimondott távja is összeadódik: a
         // „kirándulás: 8 km oda, 8 km vissza" nyolc kilométert írt a naplóba
         // a tizenhatból – a visszaút nyomtalanul eltűnt. Itt a mértékegység
