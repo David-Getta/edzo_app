@@ -434,7 +434,12 @@ public final class Activities {
                     // üresen jött vissza.
                     "utat masz", "falon masz"),
             new Kind("munka", "🌳", "Kerti / fizikai munka", 4.0, false, 60,
-                    "kerti munka", "fizikai munka", "kertesz", "favag", "fat vag", "lapatolas",
+                    // Az EGYBEÍRT alak ugyanaz a munka: a „délelőtt
+                    // bevásárlás, délután 1,5 óra kertimunka" másfél órája
+                    // NYOMTALANUL eltűnt, míg a „kerti munka" külön írva
+                    // rendben bement. Ugyanígy a házimunka egybeírva.
+                    "kerti munka", "kertimunka", "fizikai munka", "kertesz",
+                    "favag", "fat vag", "lapatolas",
                     "takarit", "funyir", "fuvet nyir", "sovenyt vag", "sovenyvag",
                     "koltoz", "asas", "kapalas", "kapal", "gereblyez",
                     "lapatol", "kertben dolgoz", "kertben melo", "astam", "asni",

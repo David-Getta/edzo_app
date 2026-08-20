@@ -7495,4 +7495,20 @@ public class ActivitiesParseTest {
         assertEquals(60, q.plans.get(1).minutes);
     }
 
+    /**
+     * Az egybeírt kertimunka is kerti munka.
+     *
+     * A „délelőtt bevásárlás, délután 1,5 óra kertimunka" másfél órája
+     * NYOMTALANUL eltűnt, míg a „kerti munka" külön írva rendben bement –
+     * ugyanaz a nap, két helyesírás, két gyökeresen más eredmény.
+     */
+    @Test
+    public void gardenWorkWrittenAsOneWordCountsToo() {
+        Activities.Parsed p = Activities.parse("Délelőtt bevásárlás, "
+                + "délután 1,5 óra kertimunka.");
+        assertEquals(1, p.plans.size());
+        assertEquals(90, p.plans.get(0).minutes);
+        assertEquals("munka", p.plans.get(0).kind.id);
+    }
+
 }
