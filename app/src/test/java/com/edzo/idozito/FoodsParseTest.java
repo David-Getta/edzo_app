@@ -1995,4 +1995,22 @@ public class FoodsParseTest {
         assertEquals(2, hits("csirkemell 150 g és csirkecomb 200 g").size());
     }
 
+    /**
+     * A magyarázat vize nem megivott víz.
+     *
+     * A „ma reggel még 82 kg voltam, este már csak 81,5 – biztos a víz"
+     * mondatában a víz a mérleg ingadozásának OKA, nem egy pohár ital –
+     * mégis negyed liter víz került tőle a naplóba.
+     */
+    @Test public void theWaterOfAnExplanationIsNotADrink() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "ma reggel még 82 kg voltam, este már "
+                + "csak 81,5 – biztos a víz").isEmpty());
+        assertTrue(Foods.parse(all, "egy hét alatt 3 kilót fogytam, de "
+                + "szerintem ez a víz").isEmpty());
+        // Az ivás igéje és a kimondott mennyiség felment.
+        assertFalse(Foods.parse(all, "sok vizet ittam ma").isEmpty());
+        assertEquals(2000.0, Foods.parse(all, "ittam 2 liter vizet")
+                .get(0).grams, 0.01);
+    }
 }

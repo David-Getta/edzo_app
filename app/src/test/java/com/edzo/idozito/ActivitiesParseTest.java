@@ -7067,4 +7067,26 @@ public class ActivitiesParseTest {
                 + "kondiban.").days);
     }
 
+    /**
+     * A kiírt körszám kör, a napszak melletti kiírt óra pedig óra.
+     *
+     * Az „öt kör a pályán, egyenként 400 m" kétezer métere helyett
+     * négyszáz került a naplóba, öt külön futásként, öt napra osztva. A
+     * „délután öt kor edzés" ötöse ugyanígy darabszám lett. Ékezet nélkül a
+     * „kör" és a „-kor" egybeesik, a számnév pedig csak később válik
+     * számmá.
+     */
+    @Test
+    public void aSpelledOutLapCountIsNotAnHour() {
+        Activities.Parsed p = Activities.parse("Öt kör a pályán, "
+                + "egyenként 400 m.");
+        assertEquals(1, p.plans.size());
+        assertEquals(2.0, p.plans.get(0).km, 0.01);
+        assertEquals(1, p.days);
+        // A napszak melletti óra időpont marad.
+        Activities.Parsed q = Activities.parse("Délután öt kor edzés.");
+        assertEquals(17, q.hour);
+        assertEquals(1, q.plans.get(0).count);
+    }
+
 }

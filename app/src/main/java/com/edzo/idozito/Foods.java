@@ -3077,6 +3077,7 @@ public final class Foods {
         ms = dropSmoothieDouble(ms, norm(query));
         ms = dropFakeMeat(ms, norm(query));
         ms = dropWrapDouble(ms);
+        ms = dropExplainedWater(ms, norm(query));
         ms = dropOilyAdjective(ms, norm(query));
         List<Hit> out = new ArrayList<>();
         if (ms.isEmpty()) {
@@ -3679,6 +3680,27 @@ public final class Foods {
         List<Match> out = new ArrayList<>();
         for (Match m : ms)
             if (!m.food.name.startsWith("Tortilla")) out.add(m);
+        return out;
+    }
+
+    /**
+     * A MAGYARÁZAT vize nem megivott víz.
+     *
+     * A „ma reggel még 82 kg voltam, este már csak 81,5 – biztos a víz" és
+     * az „egy hét alatt 3 kilót fogytam, de szerintem ez a víz" mondatában a
+     * víz a mérleg ingadozásának OKA, nem egy pohár ital – mégis negyed
+     * liter víz került tőle a naplóba. A találgatás szava („biztos",
+     * „szerintem", „gondolom") és a rámutatás („ez a víz") együtt
+     * félreérthetetlen; az ivás igéje vagy a kimondott mennyiség felment.
+     */
+    private static List<Match> dropExplainedWater(List<Match> ms, String s) {
+        if (!s.matches("(?s).*(?<![a-z])(?:biztos|szerintem|valoszinuleg"
+                + "|gondolom|lehet, hogy|nyilvan|talan)\\s+(?:hogy\\s+)?"
+                + "(?:csak\\s+)?(?:ez\\s+|az\\s+)?a viz(?![a-z]).*")) return ms;
+        if (s.matches("(?s).*(?:ittam|ivas|iszom|megittam|fogyasztottam"
+                + "|\\d\\s?(?:dl|liter|l|ml)(?![a-z])).*")) return ms;
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) if (!m.food.name.startsWith("Víz")) out.add(m);
         return out;
     }
 

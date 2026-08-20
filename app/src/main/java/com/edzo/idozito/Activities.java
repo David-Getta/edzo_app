@@ -1228,6 +1228,29 @@ public final class Activities {
                 && s.matches("(?s).*(?<![a-z])hat nap(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])hat nap(?![a-z])"
                     + "(?!\\s+(?:alatt|mulva|utan|ota|kihagyas))", " ");
+        // A KIÍRT KÖRSZÁM: az „öt kör a pályán, egyenként 400 m" öt köre öt
+        // KÜLÖN futásnak látszott, öt napra osztva – a kétezer méterből
+        // négyszáz maradt. A számjegyes „5 kör" régóta helyesen összeadódik;
+        // a számnév viszont a „kör" előtt nem vált számmá. Csak köredzés
+        // környezetében írjuk át, hogy az „ötkor" időpont ne sérüljön.
+        if (s.contains("palya") || s.contains("tavon") || s.contains("medence")
+                || s.contains("salak") || s.contains("tartan")
+                || s.contains("futokor") || s.contains("egyenkent")
+                || s.contains("koronkent"))
+            for (String[] w : new String[][]{{"ket", "2"}, {"ketto", "2"},
+                    {"harom", "3"}, {"negy", "4"}, {"ot", "5"}, {"hat", "6"},
+                    {"het", "7"}, {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"}})
+                s = s.replaceAll("(?<![a-z])" + w[0] + "\\s+kor(t|ok|oket)?(?![a-z])",
+                        w[1] + " kor$1");
+        // A NAPSZAK melletti kiírt óra időpont: a „délután öt kor edzés"
+        // ötöse eddig darabszám lett – öt edzés, öt napra osztva. A napszak
+        // szava egyértelművé teszi, hogy óráról van szó.
+        for (String[] w : new String[][]{{"ket", "2"}, {"harom", "3"},
+                {"negy", "4"}, {"ot", "5"}, {"hat", "6"}, {"het", "7"},
+                {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"}})
+            s = s.replaceAll("(?<![a-z])(reggel|delelott|delben|delutan|este"
+                    + "|ejjel|hajnalban|ejszaka)\\s+" + w[0] + "\\s+kor(?![a-z])",
+                    "$1 " + w[1] + " kor");
         // A KETTŐSPONTOS IDŐPONT nem darabszám: a „20:15-kor edzés" húsz
         // edzéssé vált húsz napra osztva, mert az alábbi szórend-csere a
         // PERCRE illeszkedett („15-kor"), és a húszas gazdátlan számként
@@ -1686,7 +1709,12 @@ public final class Activities {
                 .matcher(s);
         if (lapN.find()) {
             java.util.regex.Matcher lapL = java.util.regex.Pattern
-                    .compile("(?<![a-z])(?:egy kor|koronkent|korenkent)\\w*\\s*"
+                    // Az EGYENKÉNT ugyanezt mondja: az „öt kör a pályán,
+                    // egyenként 400 m" kétezer métere helyett négyszáz
+                    // került a naplóba. (Táv nélkül nem harap, így a „3
+                    // sorozat, egyenként 12 ismétlés" nem érinti.)
+                    .compile("(?<![a-z])(?:egy kor|koronkent|korenkent"
+                            + "|egyenkent)\\w*\\s*"
                             + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
                             + "(km|kilometer\\w*|meter\\w*|m)(?![a-z])")
                     .matcher(s);
