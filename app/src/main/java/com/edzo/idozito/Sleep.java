@@ -124,6 +124,14 @@ public final class Sleep {
         // A „TUDTAM ALUDNI" is alvás: a „két műszak között csak 4 órát
         // tudtam aludni" eddig elveszett, mert az ige főnévi igenév volt.
         s = s.replaceAll("(?:tudtam|sikerult|birtam)\s+aludni", "aludtam");
+        // A PIHENTEM alvás-környezetben alvás: a „ma megint elaludtam az
+        // ébresztő előtt, csak 5 órát pihentem" öt órája némán elveszett –
+        // az éjszaka semmi nem került a naplóba. A kanapén töltött „5 órát
+        // pihentem" viszont nem éjszaka: alvás-szó kell mellé.
+        if (s.matches("(?s).*(?<![a-z])(elalud\\w*|elaludtam|ebreszt\\w*"
+                + "|lefekud\\w*|fekudtem|ejszaka\\w*|ejjel|keltem)"
+                + "(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])pihentem(?![a-z])", "aludtam");
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");

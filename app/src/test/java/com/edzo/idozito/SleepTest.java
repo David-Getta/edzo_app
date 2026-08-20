@@ -474,4 +474,18 @@ public class SleepTest {
         assertEquals(6.5, Sleep.parse("F\u00e9l 12-kor aludtam el, 6-kor keltem."), 0.01);
     }
 
+    /**
+     * A \u201epihentem" alv\u00e1s-k\u00f6rnyezetben alv\u00e1s.
+     *
+     * A \u201ema megint elaludtam az \u00e9breszt\u0151 el\u0151tt, csak 5 \u00f3r\u00e1t pihentem" \u00f6t
+     * \u00f3r\u00e1ja n\u00e9m\u00e1n elveszett \u2013 az \u00e9jszak\u00e1r\u00f3l semmi nem ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void restingCountsAsSleepAtNight() {
+        assertEquals(5.0, Sleep.parse("Ma megint elaludtam az \u00e9breszt\u0151 "
+                + "el\u0151tt, csak 5 \u00f3r\u00e1t pihentem."), 0.01);
+        // A kanap\u00e9n t\u00f6lt\u00f6tt pihen\u00e9s nem \u00e9jszaka.
+        assertEquals(-1.0, Sleep.parse("Ma 5 \u00f3r\u00e1t pihentem a kanap\u00e9n."), 0.01);
+    }
+
 }
