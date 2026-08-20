@@ -1192,7 +1192,12 @@ public final class StrengthParse {
      */
     private static String joinRepList(String s) {
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\d.,])\\d{1,3}(?:,\\s+\\d{1,3}){2,}(?![\\d.,])").matcher(s);
+                // A MONDATVÉGI pont nem tizedesjel: a „húzódzkodás 8, 6, 5,
+                // 4." felsorolása a záró pont miatt nem húzódott össze, és a
+                // hatos, ötös, négyes sorozat némán elveszett – a volumen
+                // harmada maradt a naplóban.
+                .compile("(?<![\\d.,])\\d{1,3}(?:,\\s+\\d{1,3}){2,}"
+                        + "(?![\\d])(?![.,]\\d)").matcher(s);
         StringBuffer sb = new StringBuffer();
         while (m.find())
             m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(

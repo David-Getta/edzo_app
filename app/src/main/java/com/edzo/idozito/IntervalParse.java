@@ -235,6 +235,14 @@ public final class IntervalParse {
                         warmIn(s), coolIn(s));
             }
 
+        // A MÉRKŐZÉS nem időzítő-terv: a „ma 2 x 45 perc foci volt, közte 15
+        // perc szünet" két félidő, nem két munkakör – a napló mellé egy két
+        // órás időzítő ajánlata került. A kimondott terv-szó (intervall, kör,
+        // munka) itt is felülír: a „foci edzés: 4x4 perc intervall" terv.
+        if (s.matches("(?s).*(?<![a-z])(meccs\\w*|merkozes\\w*|felido\\w*|foci\\w*"
+                + "|futsal|kezilabda\\w*|kosarlabda\\w*|roplabda\\w*"
+                + "|vizilabda\\w*)(?![a-z]).*") && !saysPlan(s)) return null;
+
         // 2) „6 x 3 perc”: körszám × egy szakasz hossza, mértékegységgel.
         java.util.regex.Matcher mm = java.util.regex.Pattern
                 .compile("(\\d{1,2})\\s?[x×]\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"

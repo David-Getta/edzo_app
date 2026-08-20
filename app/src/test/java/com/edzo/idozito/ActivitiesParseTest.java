@@ -6611,4 +6611,38 @@ public class ActivitiesParseTest {
         assertEquals(20, q.plans.get(0).minutes);
     }
 
+
+    /**
+     * Az óra AKTÍV IDEJE ugyanannak a napnak a mozgása, nem külön edzés: a
+     * „ma 12 000 lépés, 8,5 km, 320 kcal, 45 perc aktív idő az óra szerint"
+     * HÁROM bejegyzést írt a naplóba – ugyanazt a napot háromszor.
+     */
+    @Test
+    public void theWatchesActiveTimeIsNotAThirdWorkout() {
+        Activities.Parsed p = Activities.parse("Ma 12 000 lépés, 8,5 km, "
+                + "320 kcal, 45 perc aktív idő az óra szerint.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(8.5, p.plans.get(0).km, 0.01);
+        assertEquals(45, p.plans.get(0).minutes);
+        // Aktív idő nélkül a lépés és a táv eddig is egy séta volt.
+        assertEquals(1, Activities.parse("Ma 12 000 lépés, 8,5 km.").plans.size());
+    }
+
+    /**
+     * A kimondott SZÜNET két félidőt jelent: a „ma 2 x 45 perc foci volt,
+     * közte 15 perc szünet" mérkőzése némán elveszett – a mondatból
+     * időzítő-terv lett, bejegyzés nélkül.
+     */
+    @Test
+    public void aMatchWithHalvesIsOneSession() {
+        Activities.Parsed p = Activities.parse("Ma 2 x 45 perc foci volt, "
+                + "közte 15 perc szünet.");
+        assertEquals(1, p.plans.size());
+        assertEquals("foci", p.plans.get(0).kind.id);
+        assertEquals(90, p.plans.get(0).minutes);
+        // Szünet nélkül a „2x45 perc foci" két alkalom marad.
+        assertEquals(2, Activities.parse("2x45 perc foci").plans.get(0).count);
+    }
+
 }

@@ -1592,6 +1592,11 @@ public final class Activities {
                 || s.contains("meccs") || s.contains("felido")
                 // A KISPÁLYÁS két húszperces félideje is összeadódik.
                 || s.contains("jatszottam") || s.contains("kispalyas")
+                // A kimondott SZÜNET két félidőt jelent: a „ma 2 x 45 perc
+                // foci volt, közte 15 perc szünet" mérkőzése némán elveszett
+                // – a mondatból időzítő-terv lett, bejegyzés nélkül. A szünet
+                // nélküli „2x45 perc foci" viszont két alkalom marad.
+                || s.contains("szunet")
                 // A KUTYASÉTÁLTATÁS napi két köre ugyanígy: a
                 // „kutyasétáltatás 2x30 perc" egy óra séta.
                 || s.contains("setaltatas") || s.contains("kutyaset")
@@ -3544,6 +3549,30 @@ public final class Activities {
                 out = new ArrayList<>();
                 out.add(new Plan(stated.kind, stated.count, stated.minutes,
                         stated.km, walk.steps));
+            }
+        }
+        // Az óra AKTÍV IDEJE ugyanannak a napnak a mozgása, nem külön edzés:
+        // a „ma 12 000 lépés, 8,5 km, 320 kcal, 45 perc aktív idő az óra
+        // szerint" HÁROM bejegyzést írt a naplóba – egy negyvenöt perces
+        // egyéb mozgást, egy nyolc és fél kilométeres FUTÁST és egy kilenc
+        // kilométeres sétát. Ugyanaz a nap háromszor. Az aktív idő a lépések
+        // mozgásának a hossza, nem egy másik edzés.
+        if (out.size() > 1
+                && rawText.matches("(?s).*(?<![a-z])aktiv (?:ido|perc)\\w*.*")) {
+            Plan generic = null, stepP = null;
+            for (Plan p : out) {
+                if ("egyeb".equals(p.kind.id) && p.km <= 0 && p.steps <= 0) generic = p;
+                else if (p.steps > 0) stepP = p;
+            }
+            if (generic != null && stepP != null) {
+                List<Plan> rest = new ArrayList<>();
+                for (Plan p : out) {
+                    if (p == generic) continue;
+                    rest.add(p == stepP
+                            ? new Plan(p.kind, p.count, generic.minutes, p.km, p.steps)
+                            : p);
+                }
+                out = rest;
             }
         }
         // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót

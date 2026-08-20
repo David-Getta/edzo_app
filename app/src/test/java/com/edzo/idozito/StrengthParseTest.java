@@ -1744,4 +1744,23 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("Nem volt kedvem edzeni ma.").isEmpty());
     }
 
+
+    /**
+     * A MONDATVÉGI pont nem tizedesjel: a „húzódzkodás 8, 6, 5, 4."
+     * felsorolása a záró pont miatt nem húzódott össze, és a hatos, ötös,
+     * négyes sorozat némán elveszett – a volumen harmada maradt a naplóban.
+     */
+    @Test
+    public void aRepListSurvivesTheClosingPeriod() {
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("Húzódzkodás 8, 6, 5, 4.");
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(8, it.get(0).sets.get(0).reps);
+        assertEquals(4, it.get(0).sets.get(3).reps);
+        assertEquals(3, StrengthParse.parse("Húzódzkodás 12, 10, 8.")
+                .get(0).sets.size());
+        // A tizedes szám továbbra sem felsorolás.
+        assertTrue(StrengthParse.parse("Súlyom 78,5 kg.").isEmpty());
+    }
+
 }
