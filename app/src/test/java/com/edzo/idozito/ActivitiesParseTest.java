@@ -7762,4 +7762,19 @@ public class ActivitiesParseTest {
                 + "kettlebellt, ki is próbáltam: 3x15 swing.").plans.size());
     }
 
+    /**
+     * A gorgonzola sajt, nem görgőn tekerés.
+     *
+     * Az „ebédre gnocchi gorgonzolával" hatvanperces kerékpározást írt a
+     * naplóba – a „görgőn" (edzőpad) töve a sajt nevébe esett.
+     */
+    @Test
+    public void gorgonzolaIsNotABikeTrainer() {
+        assertTrue(Activities.parse("Ebédre gnocchi gorgonzolával, nehéz "
+                + "volt, de isteni.").plans.isEmpty());
+        // A valódi görgőn tekerés marad.
+        assertEquals("kerekpar", Activities.parse("90 perc a görgőn, "
+                + "175 watt.").plans.get(0).kind.id);
+    }
+
 }

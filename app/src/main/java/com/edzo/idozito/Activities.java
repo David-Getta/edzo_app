@@ -965,6 +965,9 @@ public final class Activities {
             // Az angol óra-export DISTANCE szavában ott a TÁNC – az
             // „activity: running, distance 10 km" sorból tánc-tétel lett.
             "distance",
+            // A GORGONZOLA sajt, nem görgőn tekerés: az „ebédre gnocchi
+            // gorgonzolával" hatvanperces kerékpározás lett.
+            "gorgonzol",
             // A PRÓBATEREM a zenekaré, nem a konditerem: a „doboltam a
             // próbateremben két órát" kétórás kondiedzés lett.
             "probaterem", "probaterm",
