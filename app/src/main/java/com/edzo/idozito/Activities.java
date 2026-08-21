@@ -1250,6 +1250,12 @@ public final class Activities {
         if (s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
             s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*"
                     + "(?<![a-z])(?:be)?nevezt\\w*[^,;.]*[,;.]\\s*", "");
+        // A „-TÓL" napnév kezdőpont, nem a bejegyzés napja: a „hétfőtől új
+        // életmód: napi séta. Ma el is kezdtem, 40 perc" sétája HÉTFŐRE
+        // került, pedig a mondat kimondja, hogy MA volt.
+        if (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:hetfo|kedd|szerda|csutortok"
+                    + "|pentek|szombat|vasarnap)\\w{0,4}tol(?![a-z])", " ");
         // A HÁT NAP nem hat nap: ékezet nélkül a testrész és a számnév
         // egybeesik, és a „kondiedzés: hát nap, húzódzkodás 4x6, evezés
         // gépen 4x10" egyetlen edzése HAT NAPRA terült szét a naptárban. Az
@@ -4367,6 +4373,11 @@ public final class Activities {
         // terv-tagmondatnak el kell tűnnie.
         return cl.matches("(?s).*(?<![a-z])(holnap\\w*|holnaputan\\w*|jovo het\\w*"
                 + "|jovo hon\\w*|fogok|fogunk|tervezek|tervezem|tervezunk"
+                // A JELEN idejű „megyünk" a jövő terve: a „szombaton
+                // sítúrára megyünk, ma bepakoltam és 30 perc nyújtás"
+                // sí-tagmondata terv – enélkül az egész mondat elnémult,
+                // a valódi nyújtással együtt.
+                + "|megyek|megyunk"
                 + "|lesz|leszek|leszunk|lenne)(?![a-z]).*")
                 // A KELL + FŐNÉVI IGENÉV tanács, nem napló: az „az orvos
                 // szerint többet kell mozognom, ma elkezdtem: 20 perc séta"
@@ -4764,7 +4775,15 @@ public final class Activities {
                 // Igealakban: a „TERVEZETT 10 helyett 6 lett" megtörtént
                 // edzésről szól, és a puszta „tervez" tő elvitte az egészet.
                 "tervezek", "tervezem", "tervezunk", "tervezi", "tervezni",
-                "szeretne", "megyek", "lesz idom", "majd lesz",
+                // A TÖBBES szám ugyanaz a szándék: a „szombaton sítúrára
+                // megyünk" kétórás síelést írt a MAI naplóba – egy jövő
+                // heti tervből.
+                "szeretne", "megyek", "megyunk", "lesz idom", "majd lesz",
+                // A MEGÍRT edzésterv nem megtörtént edzés: a „futóedzőm új
+                // tervet írt: heti 3 futás" három egyéb mozgást írt a
+                // naplóba – egy papírra írt tervből.
+                "tervet irt", "tervet kaptam", "tervet keszitett",
+                "tervet allitott",
                 // A FELTÉTELES vágy sem megtörtént: a „bár tudnék 100
                 // kg-ot nyomni fekve" mai fekvenyomás-rekord lett.
                 "tudnek", "tudnank", "barcsak",

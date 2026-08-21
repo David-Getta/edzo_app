@@ -7979,4 +7979,37 @@ public class ActivitiesParseTest {
                 + "futás").plans.size());
     }
 
+    /**
+     * A jövő heti sítúra és a megírt terv nem mai edzés, a mai nyújtás az.
+     *
+     * A „szombaton sítúrára megyünk, ma bepakoltam és 30 perc nyújtást
+     * csináltam" kétórás MAI síelést írt be, a „futóedzőm új tervet írt:
+     * heti 3 futás" pedig három egyéb mozgást – papírra írt tervekből. A
+     * „hétfőtől új életmód… ma el is kezdtem, 40 perc" sétája pedig
+     * hétfőre csúszott, pedig ma volt.
+     */
+    @Test
+    public void plansOnPaperAreNotTodaysWorkouts() {
+        Activities.Parsed p = Activities.parse("Szombaton sítúrára megyünk, "
+                + "ma bepakoltam és 30 perc nyújtást csináltam.");
+        boolean si = false;
+        for (Activities.Plan x : p.plans) if (x.kind.id.equals("si")) si = true;
+        assertFalse(si);
+        boolean nyujtas = false;
+        for (Activities.Plan x : p.plans)
+            if (x.kind.id.equals("joga") && x.minutes == 30) nyujtas = true;
+        assertTrue(nyujtas);
+        assertTrue(Activities.parse("A futóedzőm új tervet írt: heti 3 "
+                + "futás, kedd intervall, csütörtök tempó, vasárnap hosszú.")
+                .plans.isEmpty());
+        Activities.Parsed e = Activities.parse("Hétfőtől új életmód: "
+                + "kevesebb cukor, több zöldség, napi séta. Ma el is "
+                + "kezdtem, 40 perc.");
+        assertEquals(0, e.offset);
+        assertEquals(40, e.plans.get(0).minutes);
+        // A megtörtént sítúra marad.
+        assertEquals(240, Activities.parse("Sítúrára mentünk szombaton, "
+                + "4 óra síelés volt.").plans.get(0).minutes);
+    }
+
 }

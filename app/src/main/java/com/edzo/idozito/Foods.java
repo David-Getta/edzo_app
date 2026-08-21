@@ -4347,6 +4347,10 @@ public final class Foods {
                 // lett. („Elfogyott a tej" hatvan kaló volt a naplóban.)
                 "bevasarlolista", "bevasarlo lista", "bevasarlas", "kifogyott",
                 "elfogyott a", "nincs itthon", "nincs otthon",
+                // Az ÉLETMÓDVÁLTÁS listája fogadalom, nem étkezés: a
+                // „hétfőtől új életmód: kevesebb cukor, több zöldség" tíz
+                // gramm cukrot ÉS egy adag zöldséget írt a MAI naplóba.
+                "eletmod",
                 // Ami eltéve vagy lefagyasztva vár: „el kell tennem",
                 // „lefagyasztottam a maradékot".
                 "el kell tennem", "eltennem", "lefagyaszt", "befottnek",
