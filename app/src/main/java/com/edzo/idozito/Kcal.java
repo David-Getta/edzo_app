@@ -178,6 +178,11 @@ public final class Kcal {
         // tréner, 430 kcal" négyszázharminca ELÉGETETT kalória, mégis a napi
         // BEVITELHEZ adódott – egy edzésből lett négyszázharminc megevett
         // kalória, vagyis a mérleg mindkét oldala rossz irányba mozdult.
+        return sportWordIn(s);
+    }
+
+    /** Mozgás-szó a mondatban – az égetés iránya e nélkül nem hihető. */
+    private static boolean sportWordIn(String s) {
         return s.matches("(?s).*(?<![a-z])(edzes\\w*|edzettem|futas\\w*|futottam"
                 + "|lepes\\w*|lepest|setal\\w*|bringa\\w*|kerekpar\\w*|uszas\\w*"
                 + "|usztam|kondi\\w*|jogaztam|turaztam|spinning|kardio\\w*"
@@ -195,6 +200,21 @@ public final class Kcal {
      * kcal", annak a számát nem illik a saját becslésünkre cserélni.
      */
     public static int burned(String q) {
+        // IRÁNY nélkül a kalória bevitel: a „reggeli 7:30-kor: 250 kcal
+        // körül" kétszázötvene eddig az égetéshez IS hozzáadódott – a napi
+        // mérleg mindkét oldala elmozdult egyetlen reggelitől. Égetés csak
+        // akkor, ha a mondat mozgást, órát vagy égetés-szót mond.
+        if (q != null) {
+            String s = Hu.digits(Foods.norm(q));
+            boolean cue = sportWordIn(s);
+            if (!cue) for (Pattern w : NOT_EATEN_P)
+                if (w.matcher(s).find()) { cue = true; break; }
+            if (!cue) for (String w : new String[]{"polar", "garmin",
+                    "suunto", "fitbit", "strava", "apple watch", "coros",
+                    "aktiv kalori", "atlag hr", "atlagpulzus", "kal ment el"})
+                if (s.contains(w)) { cue = true; break; }
+            if (!cue) return -1;
+        }
         return amount(exerciseClausesOnly(q), EATEN_P, NOT_EATEN_P);
     }
 

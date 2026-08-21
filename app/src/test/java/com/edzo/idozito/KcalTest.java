@@ -543,4 +543,24 @@ public class KcalTest {
         assertEquals(-1, Kcal.burned("Reggeli 350 kcal, ebéd 700, vacsora 600."));
     }
 
+    /**
+     * Irány nélkül a kalória bevitel, nem égetés is.
+     *
+     * A „reggeli 7:30-kor: 2 szelet bacon, 250 kcal körül" kétszázötvene a
+     * bevitel MELLETT az égetéshez is hozzáadódott – a napi mérleg mindkét
+     * oldala elmozdult egyetlen reggelitől. Égetés csak mozgás-, óra- vagy
+     * égetés-szó mellett hihető.
+     */
+    @Test public void aPlainMealCalorieIsNotAlsoBurned() {
+        assertEquals(250, Kcal.stated("Reggeli 7:30-kor: 2 szelet bacon, "
+                + "250 kcal körül."));
+        assertEquals(-1, Kcal.burned("Reggeli 7:30-kor: 2 szelet bacon, "
+                + "250 kcal körül."));
+        assertEquals(-1, Kcal.burned("Tízóraira egy proteinjoghurt volt, "
+                + "120 kcal."));
+        // A valódi égetés marad.
+        assertEquals(520, Kcal.burned("futás 45 perc 520 kcal"));
+        assertEquals(500, Kcal.burned("bevitel 2000, égetés 500, nettó 1500"));
+    }
+
 }
