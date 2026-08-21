@@ -379,6 +379,12 @@ public final class StrengthParse {
         // Az utolsó gyakorlat eltűnése a leglátványosabb adatvesztés, mert
         // a felhasználó pont azt írta le utoljára.
         text = text.replaceAll("[\\r\\n]+", ", ");
+        // A KÖR SORSZÁMA nem ismétlésszám: a „kör 1 – guggolás, kör 2 –
+        // fekvőtámasz, kör 3 – plank" címkéiből egy-, két- és háromismétléses
+        // sorok lettek – kitalált számok a valódi edzés helyett. A címkét
+        // kitakarjuk; a szám ELŐTT álló „3 kör" szorzó marad.
+        text = text.replaceAll("(?iu)(?<!\\d)(?<!\\d )k[oö]r\\s?\\d{1,2}"
+                + "\\s?[-–:.]\\s*", " ");
         // A KÜSZÖB nem a megemelt súly: a „ma végre 100 kg fölé mentem
         // fekvenyomásban, 102,5 kg lett" száza a HATÁR, amit átlépett – a
         // rekordba mégis az került, a valódi száz-kettő és fél helyett. Aki

@@ -1863,4 +1863,23 @@ public class StrengthParseTest {
                 .isEmpty());
     }
 
+    /**
+     * A kör sorszáma nem ismétlésszám.
+     *
+     * A „kör 1 – guggolás, kör 2 – fekvőtámasz, kör 3 – plank" címkéiből
+     * egy-, két- és háromismétléses sorok lettek – kitalált számok a
+     * valódi edzés helyett. A szám ELŐTT álló „3 kör" szorzó marad.
+     */
+    @Test public void aRoundLabelIsNotARepCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("45 perc erősítő "
+                + "otthon: kör 1 - guggolás, kör 2 - fekvőtámasz, "
+                + "kör 3 - plank.");
+        for (StrengthParse.Item x : it)
+            assertTrue(x.label(), x.totalReps() <= 1);
+        // A valódi kör-szorzó marad.
+        List<StrengthParse.Item> ok = StrengthParse.parse("3 kör: "
+                + "20 guggolás, 15 fekvőtámasz.");
+        assertEquals(3, ok.get(0).sets.size());
+    }
+
 }
