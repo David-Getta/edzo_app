@@ -3690,8 +3690,13 @@ public final class Foods {
                 int e = m.pos + m.len;
                 while (e < q.length() && Character.isLetter(q.charAt(e))) e++;
                 while (e < q.length() && q.charAt(e) == ' ') e++;
+                // A következő étel töve a szó BELSEJÉBEN is ülhet: a
+                // „proteines zabkása" kásája a szó közepén illeszkedik,
+                // és a jelző-turmix eddig ott maradt mellette.
+                int we2 = e;
+                while (we2 < q.length() && Character.isLetter(q.charAt(we2))) we2++;
                 for (Match x : ms)
-                    if (x != m && x.pos == e) { drop = true; break; }
+                    if (x != m && x.pos >= e && x.pos < we2) { drop = true; break; }
             }
             if (!drop) out.add(m);
         }

@@ -2145,4 +2145,20 @@ public class FoodsParseTest {
         assertEquals("Wok (zöldséges-húsos)", Foods.parse(all,
                 "wok zöldségekkel").get(0).food.name);
     }
+
+    /**
+     * A proteines zabkása sem zabkása plusz turmix.
+     *
+     * A „proteines zabkása áfonyával" mellé is bement a háromszáz grammos
+     * turmix – a következő étel töve a szó belsejében ült (kása), így a
+     * jelző-szűrő nem látta.
+     */
+    @Test public void aProteinAdjectiveBeforeACompoundIsNotAShake() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "Reggeli: proteines "
+                + "zabkása áfonyával.");
+        for (Foods.Hit h : hits)
+            assertFalse(h.food.name.startsWith("Protein turmix"));
+        assertEquals(2, hits.size());
+    }
 }
