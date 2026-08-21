@@ -480,6 +480,11 @@ public final class BodyParse {
         // is kiesett vele.
         s = s.replaceAll("(?<=[a-z0-9]) (?=(?:szeretnek|szeretnem|akarok|"
                 + "celom|celsuly)(?![a-z])|cel[ :])", ", ");
+        // A KÜSZÖB-tagmondat elé is: a „reggeli súly: 90,05 kg, első
+        // alkalommal 90 fölött" mérése eddig elveszett – a mondathatár a
+        // feldolgozásban szóközzé olvadt, és a „fölött" az egészre szólt.
+        s = s.replaceAll("(?<=[a-z0-9]) (?=\\d{2,3}\\s?"
+                + "(?:ala|alatt|folott|felett)(?![a-z]))", ", ");
         boolean anyBlocked = adjectiveKg(s) || liftStem(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {

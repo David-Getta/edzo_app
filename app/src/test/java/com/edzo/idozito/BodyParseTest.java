@@ -1190,4 +1190,19 @@ public class BodyParseTest {
         assertEquals(84.3, BodyParse.parse("84 kil\u00f3 300 gramm vagyok.")
                 .kg, 0.01);
     }
+
+    /**
+     * A k\u00fcsz\u00f6b-tagmondat nem viszi el a m\u00e9r\u00e9st.
+     *
+     * A \u201ema reggeli s\u00faly: 90,05 kg, els\u0151 alkalommal 90 f\u00f6l\u00f6tt :(" m\u00e9r\u00e9se
+     * elveszett: a mondathat\u00e1r a feldolgoz\u00e1sban sz\u00f3k\u00f6zz\u00e9 olvadt, \u00e9s a
+     * \u201ef\u00f6l\u00f6tt" tilt\u00f3szava az eg\u00e9sz sz\u00f6vegre sz\u00f3lt.
+     */
+    @Test public void aThresholdRemarkKeepsTheWeighIn() {
+        assertEquals(90.05, BodyParse.parse("Ma reggeli s\u00faly: 90,05 kg, "
+                + "els\u0151 alkalommal 90 f\u00f6l\u00f6tt. :(").kg, 0.01);
+        // A v\u00e1gy-k\u00fcsz\u00f6b tov\u00e1bbra sem m\u00e9r\u00e9s.
+        assertEquals(0.0, BodyParse.parse("70 kg alatt szeretn\u00e9k lenni.")
+                .kg, 0.01);
+    }
 }

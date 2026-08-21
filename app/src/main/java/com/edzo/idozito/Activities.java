@@ -1378,8 +1378,8 @@ public final class Activities {
                 + "|gondolom|talan|nyilvan)\\s+a\\s+tegnapi\\s+"
                 + "(?:edzes|futas|kondi|meccs|tura|uszas)\\w*", " ");
         s = s.replaceAll("(?<![a-z])a\\s+tegnapi\\s+"
-                + "(?:edzes|futas|kondi|meccs|tura|uszas)\\w*\\s+"
-                + "(?:utan|miatt|ota)(?![a-z])", " ");
+                + "(?:edzes|futas|kondi|meccs|tura|uszas|intervall"
+                + "|verseny)\\w*\\s+(?:utan|miatt|ota)(?![a-z])", " ");
         // A JÖVŐ HETI VERSENYRE készülés célhatározó, nem mai verseny: az
         // „a jövő heti maratonra ma már csak 5 km lazítás volt" öt
         // kilométere nyomtalanul eltűnt – a „jövő het(i)" az egy-tagmondatos
