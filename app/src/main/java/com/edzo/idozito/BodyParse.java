@@ -92,6 +92,9 @@ public final class BodyParse {
     /** Szavak, amelyek kimondják, hogy a saját testsúlyáról van szó. */
     private static final String[] BODY_WORDS = {
             "testsuly", "testsulyom", "sulyom", "suly", "merleg", "merlegen", "merlegre",
+            // A MÉRLEGELÉS is mérés: a „reggeli mérlegelés: 88,8 kg"
+            // bejegyzésből semmi nem lett – a „mérleg" tő szóhatárt várt.
+            "merlegeles", "merlegeltem",
             "vagyok", "lettem", "nyomok", "fogytam", "hiztam", "leadtam", "testzsir",
             // Birtokos és összetett alakok: a szóhatáros keresés miatt a
             // „testzsírom" nem ugyanaz, mint a „testzsír" – a „22% a

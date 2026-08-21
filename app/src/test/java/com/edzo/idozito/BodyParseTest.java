@@ -1151,4 +1151,17 @@ public class BodyParseTest {
         // A puszta c\u00e9l tov\u00e1bbra sem m\u00e9r\u00e9s.
         assertEquals(0.0, BodyParse.parse("A c\u00e9l 75 kg.").kg, 0.01);
     }
+
+    /**
+     * A m\u00e9rlegel\u00e9s is m\u00e9r\u00e9s.
+     *
+     * A \u201ereggeli m\u00e9rlegel\u00e9s: 88,8 kg. J\u00f3l \u00e1llok a heti tervhez k\u00e9pest"
+     * bejegyz\u00e9sb\u0151l semmi nem lett \u2013 a \u201em\u00e9rleg" t\u0151 sz\u00f3hat\u00e1rt v\u00e1rt, a
+     * ragozott alak \u00e1tcs\u00faszott rajta.
+     */
+    @Test public void weighingInIsAMeasurement() {
+        assertEquals(88.8, BodyParse.parse("Reggeli m\u00e9rlegel\u00e9s: 88,8 kg. "
+                + "J\u00f3l \u00e1llok a heti tervhez k\u00e9pest.").kg, 0.01);
+        assertEquals(78.2, BodyParse.parse("M\u00e9rlegeltem: 78,2 kg.").kg, 0.01);
+    }
 }
