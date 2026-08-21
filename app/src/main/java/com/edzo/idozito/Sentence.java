@@ -51,7 +51,14 @@ public final class Sentence {
         // naplózott volna, a „mit egyek edzés előtt?" pedig edzést. Aki
         // kérdez, az nem most evett és nem most edzett – a kérdőjel a
         // legmegbízhatóbb jel, amit egy magyar mondat adhat erről.
-        if (q.trim().endsWith("?")) {
+        // A VISSZAKÉRDEZÉS viszont állítás: a „bowlingoztunk 2 órát, az is
+        // mozgás, nem?" költői kérdéssel zárul, a bejegyzés maga megtörtént
+        // dolgot mond – mégis „ezt még nem ismerem" lett belőle. A vessző
+        // utáni rövid kérdő-szócska nem valódi kérdés.
+        boolean tagQ = q.trim().toLowerCase(java.util.Locale.ROOT)
+                .matches("(?s).*[,;]\\s*(?:nem|ugye|igaz|j[oó]|ok[eé]?)"
+                        + "\\s*\\?$");
+        if (q.trim().endsWith("?") && !tagQ) {
             // Egy kivétellel: a rehab-lap nem NAPLÓZ, hanem mutat. A „mit
             // csináljak a fájó vállammal?" és a „van valami gyakorlat a
             // derékfájásra?" pont az a kérdés, amire jó válaszunk van –

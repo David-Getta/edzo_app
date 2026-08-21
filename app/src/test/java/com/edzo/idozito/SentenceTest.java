@@ -386,4 +386,20 @@ public class SentenceTest {
                 .isEmpty());
     }
 
+    /**
+     * A visszak\u00e9rdez\u00e9s \u00e1ll\u00edt\u00e1s, nem k\u00e9rd\u00e9s.
+     *
+     * A \u201ebowlingoztunk 2 \u00f3r\u00e1t, az is mozg\u00e1s, nem?" bejegyz\u00e9sre \u201eezt m\u00e9g
+     * nem ismerem" j\u00f6tt vissza: a k\u00e9rd\u0151jel az eg\u00e9szet k\u00e9rd\u00e9snek
+     * min\u0151s\u00edtette, pedig a mondat megt\u00f6rt\u00e9nt est\u00e9t mes\u00e9l, csak k\u00f6lt\u0151i
+     * k\u00e9rd\u00e9ssel z\u00e1rul.
+     */
+    @Test public void aTagQuestionIsAStatement() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(Sentence.Kind.WORKOUT, Sentence.of("Este a koll\u00e9g\u00e1kkal "
+                + "bowlingoztunk 2 \u00f3r\u00e1t, az is mozg\u00e1s, nem?", all, 0));
+        // A val\u00f3di k\u00e9rd\u00e9s marad k\u00e9rd\u00e9s.
+        assertEquals(Sentence.Kind.NONE, Sentence.of("Mennyi kal\u00f3ria van "
+                + "a ban\u00e1nban?", all, 0));
+    }
 }

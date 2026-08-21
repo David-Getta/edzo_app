@@ -1770,9 +1770,16 @@ public final class Activities {
         // csak, edzés nem" negyvenöt perces egyéb mozgást írt a naplóba –
         // pont abból a szóból, amit a felhasználó épp tagad. A tagadás-kereső
         // a szó ELŐTT álló „nem"-et látja, ezért a sorrendet megfordítjuk.
+        // A VISSZAKÉRDEZÉS viszont nem tagadás: a „bowlingoztunk 2 órát,
+        // az is mozgás, nem?" utolsó szava költői kérdés – mégis „nem
+        // mozgás" lett belőle, és a két óra eltűnt. A vessző utáni vagy
+        // kérdőjeles „nem" marad kérdés.
         s = s.replaceAll("(?<![a-z])(edzes|mozgas|sport|futas|kondi|uszas|"
-                + "bringazas|kerekpar|seta|tura|joga)(\\w*)\\s+nem(?![a-z])",
-                "nem $1$2");
+                + "bringazas|kerekpar|seta|tura|joga)(\\w*),\\s+nem\\s*\\??"
+                + "\\s*$", "$1$2");
+        s = s.replaceAll("(?<![a-z])(edzes|mozgas|sport|futas|kondi|uszas|"
+                + "bringazas|kerekpar|seta|tura|joga)(\\w*)\\s+nem(?![a-z])"
+                + "(?!\\s*\\?)", "nem $1$2");
         // A „HÚSZ PERCE" időpont, nem hossz: a „húsz perce jöttem meg a
         // futásból, nagyon fájt a bal térdem" húszperces futást írt a naplóba
         // – abból a számból, ami azt mondja meg, mikor ért haza. A birtokos

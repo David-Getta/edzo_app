@@ -68,8 +68,11 @@ public final class Sleep {
             // ott álló szám az ébredések száma lenne), de ha az ÓRA-szó ki
             // van mondva, nincs mit félreérteni. Ez a minta a legvégén áll,
             // hogy a szigorúbb alakok elébe vághassanak.
+            // A KÖZBEVETÉS hosszabb is lehet: az „éjjel rosszul aludtam a
+            // hőség miatt, talán 5 órát" öt órája huszonkét karakternyi
+            // magyarázat mögött áll – az óra-szó kimondva félreérthetetlen.
             java.util.regex.Pattern.compile(
-                    "aludtam[^0-9]{0,16}?(\\d{1,2}([.,]\\d)?)"
+                    "aludtam[^0-9]{0,26}?(\\d{1,2}([.,]\\d)?)"
                             + "\\s?ora(?:t)?(?![a-z])(?!\\s*mulva)"),
     };
 

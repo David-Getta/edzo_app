@@ -506,4 +506,17 @@ public class SleepTest {
                 + "keltem."), 0.01);
     }
 
+    /**
+     * A hosszabb k\u00f6zbevet\u00e9s sem rejti el az alv\u00e1s\u00f3r\u00e1t.
+     *
+     * Az \u201e\u00e9jjel rosszul aludtam a h\u0151s\u00e9g miatt, tal\u00e1n 5 \u00f3r\u00e1t" \u00f6t \u00f3r\u00e1ja
+     * huszonk\u00e9t karakternyi magyar\u00e1zat m\u00f6g\u00f6tt \u00e1ll \u2013 az ablak tizenhatn\u00e1l
+     * elv\u00e1gta, \u00e9s a bejegyz\u00e9sb\u0151l semmi nem lett.
+     */
+    @Test
+    public void aLongerParentheticalStillYieldsTheHours() {
+        assertEquals(5.0, Sleep.parse("\u00c9jjel rosszul aludtam a h\u0151s\u00e9g "
+                + "miatt, tal\u00e1n 5 \u00f3r\u00e1t, ha \u00f6sszej\u00f6tt."), 0.01);
+    }
+
 }
