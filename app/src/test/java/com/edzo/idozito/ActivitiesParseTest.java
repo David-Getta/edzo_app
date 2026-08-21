@@ -7592,4 +7592,29 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.05);
     }
 
+    /**
+     * A rag nélküli óraállás időpont, a sorszámos alkalom egy nap.
+     *
+     * A „reggel 6:30: 20 perc mobilitás" fejlécéből HARMINC edzés lett
+     * harminc napra osztva: a kettőspont utáni perc levált, és a 30
+     * darabszámmá vált. Az „az első 5 km a héten" pedig hét napra terült
+     * szét, pedig egyetlen mai futásról szól.
+     */
+    @Test
+    public void aBareClockIsATimeAndAnOrdinalIsOneDay() {
+        Activities.Parsed p = Activities.parse("Reggel 6:30: 20 perc "
+                + "mobilitás és 10 perc légzőgyakorlat.");
+        assertEquals(1, p.days);
+        assertEquals(6, p.hour);
+        for (Activities.Plan pl : p.plans) assertEquals(1, pl.count);
+        Activities.Parsed q = Activities.parse("Két kávé után végre "
+                + "lement az első 5 km a héten.");
+        assertEquals(1, q.days);
+        // A versenyidő és a heti összeg marad.
+        assertEquals(53, Activities.parse("A 10 km-es futásom ideje 52:30 "
+                + "volt, új rekord!").plans.get(0).minutes);
+        assertEquals(7, Activities.parse("A héten összesen 20 km-t "
+                + "futottam.").days);
+    }
+
 }

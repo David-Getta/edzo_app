@@ -1347,6 +1347,17 @@ public final class Activities {
         // többi szabályig. (A „25:30 alatt" versenyidő nem ragos: marad.)
         s = s.replaceAll("(?<![\\d,.:])([01]?\\d|2[0-3]):[0-5]\\d\\s?-?"
                 + "(?:kor|orakor)(?![a-z])", "$1-kor");
+        // A RAG NÉLKÜLI óraállás is időpont: a „reggel 6:30: 20 perc
+        // mobilitás" fejlécéből HARMINC edzés lett harminc napra osztva – a
+        // kettőspont utáni perc levált, és a 30 darabszámmá vált. A napszak
+        // szava vagy a felsorolás kettőspontja mondja ki, hogy óraállásról
+        // van szó; a versenyidő („ideje 52:30 volt") egyiket sem viseli.
+        s = s.replaceAll("(?<![a-z])(reggel|delelott|delben|delutan|este"
+                + "|ejjel|hajnalban)\\s+([01]?\\d|2[0-3]):[0-5]\\d"
+                + "(?![\\d:])(?!\\s?-?\\s?(?:kor|orakor))\\s*:?",
+                "$1 $2-kor ");
+        s = s.replaceAll("(?<![\\d,.:a-z])([01]?\\d|2[0-3]):[0-5]\\d"
+                + "\\s*:\\s+(?=\\d)", "$1-kor ");
         // Az ÓRAKOR nem köredzés: a „reggel 6-kor edzés" hat órája beleírta
         // a „kor edzes" betűsort a szövegbe, és hatszoros köredzés lett
         // belőle. A szórend cseréje mindent helyretesz: az „edzés 6-kor"
@@ -5657,6 +5668,12 @@ public final class Activities {
             String word = wordAt(s, p);
             if (word.equals(unit + "ja") || word.equals(unit + "je")
                     || word.equals(unit + "e")) continue;
+            // A SORSZÁMOS esemény egyetlen nap: az „az első 5 km a héten"
+            // hét napra terült szét, pedig a mondat egy MAI futásról szól –
+            // a „héten" csak azt mondja meg, hányadik ez az alkalom.
+            if (s.substring(0, p).matches("(?s).*(?<![a-z])(?:elso|masodik"
+                    + "|harmadik|negyedik|otodik|utolso)(?![a-z])"
+                    + "[^,;.]{0,30}$")) continue;
             // Az „N napos" JELZŐ, nem időszak: a „30 napos kihívás" a
             // kihívás hosszát mondja, a bejegyzés a mai napé – eddig harminc
             // napra terült szét az aznapi ötven guggolás.
