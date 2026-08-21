@@ -7511,4 +7511,29 @@ public class ActivitiesParseTest {
         assertEquals("munka", p.plans.get(0).kind.id);
     }
 
+    /**
+     * A defekt helye a megtett táv, a biciklitolás pedig séta.
+     *
+     * A „biciklim defektet kapott 20 km-nél, onnan toltam hazáig 3 km-t"
+     * bejegyzésből HÁROM kilométeres tekerés lett: a húszas
+     * helymegjelölésként kiesett, a hazatolás három kilométere pedig a
+     * bringához tapadt. Pedig a tekerés húsz kilométer volt, a hazatolás
+     * meg gyaloglás.
+     */
+    @Test
+    public void aFlatTireMarksTheRiddenDistance() {
+        Activities.Parsed p = Activities.parse("A biciklim defektet kapott "
+                + "20 km-nél, onnan toltam hazáig 3 km-t.");
+        double bike = 0, walk = 0;
+        for (Activities.Plan pl : p.plans) {
+            if (pl.kind.id.equals("kerekpar")) bike = pl.km;
+            if (pl.kind.id.equals("tura")) walk = pl.km;
+        }
+        assertEquals(20.0, bike, 0.01);
+        assertEquals(3.0, walk, 0.01);
+        // A helymegjelölés kimondott össztáv mellett marad pont.
+        assertEquals(15.0, Activities.parse("Futás: 10 km-nél megálltam "
+                + "inni, összesen 15 km lett.").plans.get(0).km, 0.01);
+    }
+
 }

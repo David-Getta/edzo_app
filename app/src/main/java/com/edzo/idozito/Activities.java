@@ -1913,6 +1913,19 @@ public final class Activities {
         // egészet elvitte.
         s = s.replaceAll("(?<![a-z])felad\\w*[^.;\\d]{0,20}?"
                 + "(\\d{1,3})\\.?\\s?km[- ]?n[ae]l", "$1 km");
+        // A DEFEKT (és a görcs) helye is megtett táv: a „biciklim defektet
+        // kapott 20 km-nél, onnan toltam hazáig 3 km-t" tekerése húsz
+        // kilométer volt – a húszas helymegjelölésként kiesett, és a
+        // hazatolás három kilométere lett a bejegyzés távja.
+        s = s.replaceAll("(?<![a-z])(defekt|gorcs)(\\w*[^.;\\d]{0,20}?)"
+                + "(\\d{1,3})\\.?\\s?km[- ]?n[ae]l", "$3 km $1$2");
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,3})\\.?\\s?km[- ]?n[ae]l"
+                + "(\\s+[^.;\\d]{0,12}?)(defekt|gorcs)", "$1 km$2$3");
+        // A BICIKLITOLÁS gyaloglás: aki hazáig tolta a defektes bringát,
+        // az sétált – eddig egy második, tekert kilométernek látszott.
+        s = s.replaceAll("(?<![a-z])tolta([mk])\\s+a\\s+"
+                + "(?:biciklit|bringat|kerekpart)\\w*", "setalta$1");
+        s = s.replaceAll("(?<![a-z])tolta([mk])\\s+(?=haza)", "setalta$1 ");
         // Az EMOJI is sportnév: a „ma: 🏊 1500m + 🚴 20km" úszása és
         // bringája elveszett, csak egy húsz kilométeres futás maradt.
         // Ha a sport szava már ott van a szövegben, az emoji csak dísz –
