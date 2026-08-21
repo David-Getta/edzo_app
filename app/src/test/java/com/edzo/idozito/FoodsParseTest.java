@@ -2161,4 +2161,19 @@ public class FoodsParseTest {
             assertFalse(h.food.name.startsWith("Protein turmix"));
         assertEquals(2, hits.size());
     }
+
+    /**
+     * A lezárt böjt utáni első étkezés valódi étkezés.
+     *
+     * A „ma böjtöltem 16 órát, az első étkezés délben volt: rántotta"
+     * rántottája elveszett – a böjt szava az egész bejegyzést
+     * elnémította, pedig a mondat pont az evésről szól.
+     */
+    @Test public void theMealAfterAFinishedFastCounts() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals("Rántotta", Foods.parse(all, "Ma böjtöltem 16 órát, "
+                + "az első étkezés délben volt: rántotta.").get(0).food.name);
+        // A puszta böjt marad üres.
+        assertTrue(Foods.parse(all, "Ma böjtöltem egész nap.").isEmpty());
+    }
 }

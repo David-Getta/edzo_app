@@ -4251,6 +4251,12 @@ public final class Foods {
         s = s.replaceAll("(?:ebedig|delig|estig|esteig|vacsoraig|reggelig"
                 + "|uzsonnaig|holnapig|masnapig|hazaig)\\s+(?:csak\\s+|meg\\s+)?"
                 + "(?:kibirtam|birtam ki)", " ");
+        // A LEZÁRT böjt utáni első étkezés valódi étkezés: a „ma böjtöltem
+        // 16 órát, az első étkezés délben volt: rántotta" rántottája eddig
+        // elveszett – a böjt szava az egész bejegyzést elnémította.
+        s = s.replaceAll("(?<![a-z])bojtolt\\w*\\s+\\d{1,2}\\s?or\\w*"
+                + "\\s*,?\\s*(?=[^;.]{0,40}(?:etkezes|ettem|megettem"
+                + "|reggeli|ebed|vacsora))", " ");
         // A PÓTLÁS felmenti a felejtést: a „reggel elfelejtettem enni, délben
         // pótoltam: 2 szendvics" ebédje MEGEVETT ebéd – eddig az egész
         // bejegyzés elveszett a felejtés szavától, a szendvicsekkel együtt.

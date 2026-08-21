@@ -1321,6 +1321,12 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // Az ÚSZÓ SPRINT nem futás: a „20x50 m-es sprinteket úsztam"
+        // egy kilométer úszás MELLÉ egy negyvenöt perces futást is írt – a
+        // sprint a futás szótöve is. Úszó-környezetben a sprint az úszásé.
+        if (s.matches("(?s).*(?<![a-z])(uszoda\\w*|uszt[au]\\w*|uszas\\w*"
+                + "|medence\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])sprint\\w*", " ");
         // Az ÓRA ALVÁS-EXPORTJA nem méter: az „alvás: 6h 45m" negyvenöt
         // méteres futást írt a naplóba az alvás mellé. Alvás-környezetben a
         // h/m páros időt jelöl, nem távot.

@@ -7840,4 +7840,22 @@ public class ActivitiesParseTest {
                 + "napi 20 km.").days);
     }
 
+    /**
+     * Az úszó sprint nem futás.
+     *
+     * A „ma reggel az uszodában 20x50 m-es sprinteket úsztam" egy
+     * kilométer úszás MELLÉ egy negyvenöt perces futást is írt – a
+     * sprint a futás szótöve is.
+     */
+    @Test
+    public void aSwimSprintIsNotARun() {
+        Activities.Parsed p = Activities.parse("Ma reggel az uszodában "
+                + "20x50 m-es sprinteket úsztam, 15 mp pihenővel.");
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        // A pályás sprint marad futás.
+        assertEquals("futas", Activities.parse("6x100 m sprint a pályán.")
+                .plans.get(0).kind.id);
+    }
+
 }
