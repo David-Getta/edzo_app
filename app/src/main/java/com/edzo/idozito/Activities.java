@@ -1293,6 +1293,15 @@ public final class Activities {
                 + "|edzesterv\\w*)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:fel|negyed)?maraton(?:ra|re)"
                     + "(?![a-z])", " ");
+        // A MEGÁLLÁSOK száma nem alkalomszám: az „összesen 6 km-t futottam
+        // ma, de kétszer álltam meg közben" KÉT darab három kilométeres
+        // futás lett – a megállások száma elvitte az alkalomszámot, az
+        // „összesen" pedig elosztotta köztük a távot. Aki megáll pihenni,
+        // attól még egyszer futott.
+        s = s.replaceAll("(?<![a-z])(?:\\d{1,2}\\s?-?\\s?(?:szor|szer)"
+                + "|egyszer|ketszer|haromszor|negyszer|otszor|hatszor"
+                + "|tobbszor|parszor|sokszor)\\s+(?:is\\s+)?(?:kellett\\s+)?"
+                + "(?=(?:meg)?all[tn]|megall)", " ");
         // A NAPONTA ugyanaz, mint a NAPI: az „a hétvégén 2 napig túráztunk a
         // Bükkben, naponta kb 20 km" húsz kilométere NYOMTALANUL eltűnt, a
         // „napi 20 km" viszont rendben napi húszat írt be – ugyanarra a

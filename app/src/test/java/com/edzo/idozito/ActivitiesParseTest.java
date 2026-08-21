@@ -7536,4 +7536,24 @@ public class ActivitiesParseTest {
                 + "inni, összesen 15 km lett.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A megállások száma nem alkalomszám.
+     *
+     * Az „összesen 6 km-t futottam ma, de kétszer álltam meg közben" KÉT
+     * darab három kilométeres futás lett: a megállások száma elvitte az
+     * alkalomszámot, az „összesen" pedig elosztotta köztük a távot. Aki
+     * megáll pihenni, attól még egyszer futott.
+     */
+    @Test
+    public void theNumberOfStopsIsNotTheSessionCount() {
+        Activities.Parsed p = Activities.parse("Összesen 6 km-t futottam "
+                + "ma, de kétszer álltam meg közben.");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        // A valódi alkalomszám marad.
+        assertEquals(2, Activities.parse("Kétszer futottam ma.")
+                .plans.get(0).count);
+    }
+
 }
