@@ -2252,4 +2252,22 @@ public class FoodsParseTest {
         assertEquals("Bor (vörös/fehér)", Foods.parse(all, "Bort ittam "
                 + "este, két pohár vöröset.").get(0).food.name);
     }
+
+    /**
+     * A csoki tej ital, nem fél kiló csokoládé.
+     *
+     * A „vízilabda edzés 90 perc, utána fél liter csoki tej" itala fél
+     * KILÓ csokoládéként ment be – kétezer-hétszáz kalória egy kakaóból.
+     */
+    @Test public void chocolateMilkIsADrinkNotABar() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "Vízilabda edzés 90 perc, "
+                + "utána fél liter csoki tej.");
+        assertEquals(1, hits.size());
+        assertEquals("Kakaó (tejes)", hits.get(0).food.name);
+        assertEquals(500.0, hits.get(0).grams, 0.01);
+        // A tábla csoki marad csokoládé.
+        assertEquals("Csokoládé", Foods.parse(all, "Ettem egy tábla "
+                + "csokit.").get(0).food.name);
+    }
 }

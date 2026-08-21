@@ -453,8 +453,11 @@ public final class Foods {
                 "loncshus"),
         new Food("Tejföl", 200, 3, 30, "tejfol"),
         new Food("Kefir", 55, 3.5, 200, "kefir"),
+        // A CSOKI TEJ ital, nem tábla csoki: a „fél liter csoki tej" fél
+        // KILÓ csokoládéként ment be – kétezer-hétszáz kalória egy italból.
         new Food("Kakaó (tejes)", 85, 3.5, 250, "kakao", "forro csoki", "forrocsoki",
-                "nesquik", "melegcsoki", "meleg csoki"),
+                "nesquik", "melegcsoki", "meleg csoki", "csoki tej", "csokis tej",
+                "csokitej", "kakaos tej"),
         new Food("Tükörponty / halrudak", 220, 12, 150, "tukorponty", "halrud", "halrudak"),
         new Food("Körte", 57, 0.4, 150, "korte"),
         new Food("Őszibarack", 39, 0.9, 150, "oszibarack", "barack", "nektarin"),
