@@ -7659,4 +7659,23 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    /**
+     * A heti sorszámos vagy birtokos alkalom egyetlen nap.
+     *
+     * Az „a heti 4. edzésem: válogatott gyakorlatok, 55 perc" hét napra
+     * terült szét, pedig a hét NEGYEDIK edzéséről szól. A „letudtam a
+     * heti 3. futást" ugyanígy: a sorszámot maszk veszi ki, de a birtokos
+     * és a tárgyrag kimondja, hogy egy konkrét alkalomról van szó.
+     */
+    @Test
+    public void theWeeksNthSessionIsOneDay() {
+        assertEquals(1, Activities.parse("A heti 4. edzésem: válogatott "
+                + "gyakorlatok, 55 perc, jó tempóban.").days);
+        assertEquals(1, Activities.parse("Letudtam a heti 3. futást, "
+                + "8 km.").days);
+        assertEquals(1, Activities.parse("Heti futásom: 8 km.").days);
+        // A heti összeg marad heti.
+        assertEquals(7, Activities.parse("Heti terhelés: 60 km.").days);
+    }
+
 }

@@ -4235,7 +4235,11 @@ public final class Activities {
         // naplóba tizenhárom helyett. Szám nélkül viszont csak jelző marad
         // („a heti tervem szerint"), ott nincs mit szétosztani.
         java.util.regex.Matcher hw = java.util.regex.Pattern
-                .compile("(?<![a-z])(heti|havi)\\s+(?=\\d)").matcher(s);
+                // A SORSZÁM nem gyakoriság: az „a heti 4. edzésem: 55 perc"
+                // hét napra terült szét, pedig a hét NEGYEDIK edzéséről
+                // szól – a pont a szám után sorszámot jelöl.
+                .compile("(?<![a-z])(heti|havi)\\s+(?=\\d)"
+                        + "(?!\\d{1,2}\\.(?!\\d))").matcher(s);
         if (hw.find()) {
             blank(q, hw.start(), hw.start() + hw.group(1).length());
             return hw.group(1).equals("heti") ? 7 : 30;
@@ -5751,7 +5755,28 @@ public final class Activities {
                         && (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")
                             || s.matches("(?s).*(?<![a-z])(elmentem|elmentunk"
                                 + "|elugrottam|ott voltam|reszt vettem"
-                                + "|beneveztem)(?![a-z]).*"))) continue;
+                                + "|beneveztem)(?![a-z]).*")
+                            // A SORSZÁMOS alkalom egyetlen nap: az „a heti
+                            // 4. edzésem: 55 perc" hét napra terült szét,
+                            // pedig a hét NEGYEDIK edzéséről szól – a heti
+                            // csak számolja az alkalmakat.
+                            // A BIRTOKOS alak egyetlen alkalom: az „a heti
+                            // 4. edzésem: 55 perc" hét napra terült szét,
+                            // pedig a hét negyedik edzéséről szól – a
+                            // sorszámot addigra maszk takarja, a birtokos
+                            // rag viszont ugyanezt mondja ki.
+                            || s.matches("(?s).*(?<![a-z])heti\\s{1,6}"
+                                + "[^,;.]{0,12}?(?:edzese?m|futasom|uszasom"
+                                + "|kondim|alkalmam|jogam|turam|oram)"
+                                + "(?![a-z]).*")
+                            // A TÁRGYRAGOS alkalom is egyetlen: a
+                            // „letudtam a heti 3. futást" a hét harmadik
+                            // futása – a sorszámot addigra maszk vette ki,
+                            // a tárgyrag viszont kimondja, hogy EGY konkrét
+                            // alkalomról van szó.
+                            || s.matches("(?s).*(?<![a-z])heti\\s+"
+                                + "(?:edzest|futast|uszast|kondit|alkalmat"
+                                + "|orat|jogat|turat)(?![a-z]).*"))) continue;
                 if ((mult == 7 || mult == 30) && word.length() > unit.length())
                     return new int[]{p, end, mult};
                 // A MUTATÓ NÉVMÁS a ragtalan alakot is időszakká teszi: az
