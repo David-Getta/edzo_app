@@ -7798,4 +7798,27 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.05);
     }
 
+    /**
+     * A salsa a quesadilla mellett szósz, a szakaszok pedig egy futás.
+     *
+     * A „vacsora: csirkés quesadilla házi salsával" hatvanperces TÁNCKÉNT
+     * került a naplóba. A „tempófutás: 2 km bemelegítés, 5x1 km tempó,
+     * 1 km levezetés" pedig három külön futás lett – a szakaszok távja
+     * mostantól a fő edzéshez adódik.
+     */
+    @Test
+    public void salsaSauceAndRunSegments() {
+        assertTrue(Activities.parse("Vacsora: csirkés quesadilla házi "
+                + "salsával.").plans.isEmpty());
+        assertEquals("tanc", Activities.parse("Ma salsa óra volt, "
+                + "60 perc.").plans.get(0).kind.id);
+        Activities.Parsed p = Activities.parse("A futócsoporttal ma "
+                + "tempófutás: 2 km bemelegítés, 5x1 km tempó, "
+                + "1 km levezetés.");
+        double sum = 0;
+        for (Activities.Plan pl : p.plans) sum += pl.km;
+        assertEquals(8.0, sum, 0.01);
+        assertTrue(p.plans.size() <= 2);
+    }
+
 }

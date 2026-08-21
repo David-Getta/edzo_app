@@ -1321,6 +1321,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // A SALSA a mexikói étel mellett szósz, nem tánc: a „csirkés
+        // quesadilla házi salsával" hatvanperces táncként került a
+        // naplóba. Csak étel-környezetben takarjuk ki; a „salsa óra" és a
+        // „salsáztunk" marad tánc.
+        if (s.matches("(?s).*(?<![a-z])(quesadilla|taco|tortilla|burrito"
+                + "|nacho|guacamole)\\w*.*")
+                || s.matches("(?s).*(?<![a-z])(hazi|friss)\\s+salsa\\w*.*"))
+            s = s.replaceAll("(?<![a-z])salsa\\w*", " ");
         // A NEVEZÉS távja nem mai futás: az „a 10k-s versenyre neveztem,
         // október 12-én lesz, ma 6 km alapozás" tíz kilométere külön mai
         // futásként került be a hat mellé. A nevezett táv kiesik.
@@ -3592,6 +3600,7 @@ public final class Activities {
                 // Marad a régi viselkedés: a kimondott alkalomszám erősebb.
                 free = -1;
             }
+            double warmKm = 0;
             if (free >= 0)
             for (double[] t : kms) {
                 double km2 = t[1];
@@ -3624,11 +3633,29 @@ public final class Activities {
                     meterDist = tail.matches("(?s).*\\d\\s?(?:m|meter\\w*)"
                             + "(?![\\p{L}]).*");
                 if (!tail.contains("km") && !meterDist) continue;
+                // A BEMELEGÍTÉS és a LEVEZETÉS szakasza ugyanannak az
+                // edzésnek a része: a „tempófutás: 2 km bemelegítés, 5x1 km
+                // tempó, 1 km levezetés" HÁROM külön futás lett a naplóban.
+                // A szakasz távja a fő edzéshez adódik.
+                if (beforeBlank.substring(Math.min(beforeBlank.length(), (int) t[0]),
+                        Math.min(beforeBlank.length(), te + 16))
+                        .matches("(?s).*(bemelegit|levezet|melegites"
+                        + "|cooldown|warm.?up|lazitas).*")) {
+                    warmKm += km2;
+                    continue;
+                }
                 int said2 = minutesFor(mins, (int) t[0], (int) t[2],
                         -1, Integer.MAX_VALUE, 0);
                 for (Plan p : out) if (p.minutes == said2) said2 = 0;
                 int est2 = Math.max(1, (int) Math.round(km2 * pace(beforeBlank, p0.kind)));
                 out.add(new Plan(p0.kind, 1, Math.min(24 * 60, said2 > 0 ? said2 : est2), km2));
+            }
+            if (warmKm > 0) {
+                Plan q0 = out.get(0);
+                int extra = (int) Math.round(warmKm * pace(beforeBlank, q0.kind));
+                out.set(0, new Plan(q0.kind, q0.count,
+                        Math.min(24 * 60, q0.minutes + extra),
+                        q0.km + warmKm, q0.steps));
             }
             // A napok is szétnyílnak: a „tegnapelőtt 5 km, tegnap 8 km, ma
             // 3 km" három napról szól, nem háromszor tegnapelőttről. Csak
