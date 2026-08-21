@@ -1299,6 +1299,25 @@ public final class Activities {
         s = s.replaceAll("(\\d[\\d ]{0,6}\\d|\\d)\\s?lepes\\w*\\s*[,!]?\\s*"
                 + "sot\\s+(\\d[\\d ]{0,6}\\d)(?:\\s?lepes\\w*)?\\s+lett",
                 "$2 lepes");
+        // A KÉPESSÉG főnévi igeneve nem edzés: a „csak este tudok mozogni,
+        // ma 21:30-kor futottam 6 km-t" mondatban a „mozogni" egy külön
+        // negyvenöt perces bejegyzést szült a valódi futás mellé. Az ige
+        // marad, a sport-tövet hordozó igenév kiesik.
+        // Csak megtörtént edzés (múlt idejű ige) mellett: a puszta
+        // képesség-mondat („futni tudok") a jövő-felismerőé marad.
+        if (s.matches("(?s).*(?<![a-z])\\w{3,}(?:ttam|ttem|tam|tem|tunk|tuk)"
+                + "(?![a-z]).*")) {
+            s = s.replaceAll("(?<![a-z])(tudok|tudunk|tudnek|tudnank)\\s+"
+                    + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+            s = s.replaceAll("(?<![a-z])(\\p{L}{3,}ni)\\s+"
+                    + "(tudok|tudunk|tudnek|tudnank)(?![a-z])", "$2");
+        }
+        // A VÉLEMÉNY igeneve sem edzés: az „az új cipőm sokkal
+        // kényelmesebb, jó futni benne" mondatból negyvenöt perces futás
+        // lett – egy cipő-véleményből. A minősítő szó utáni igenév kiesik.
+        s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
+                + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
+                + "(\\p{L}{3,}ni)(?![a-z])", "$1");
         // A MEGÁLLÁSOK száma nem alkalomszám: az „összesen 6 km-t futottam
         // ma, de kétszer álltam meg közben" KÉT darab három kilométeres
         // futás lett – a megállások száma elvitte az alkalomszámot, az
@@ -4686,9 +4705,15 @@ public final class Activities {
         // pont egy sérült térd mellé.
         // A MÚLT idejű „tudtam" nem képesség, hanem siker: az „el tudtam menni
         // futni, 5 km" megtörtént. Csak a jelen és a feltételes alak marad.
-        if (s.matches(".*(?<![a-z])(?:tudok|tudunk|tudnek|tudnank)\\s+\\w{3,}ni(?![a-z]).*")
+        // …de a MEGTÖRTÉNT edzés mellett a képesség csak körülmény: a
+        // „nyári melegben csak este tudok mozogni, ma 21:30-kor futottam
+        // 6 km-t" hat kilométere nyomtalanul eltűnt – az első tagmondat
+        // képesség-alakja az egész bejegyzést elnémította.
+        if ((s.matches(".*(?<![a-z])(?:tudok|tudunk|tudnek|tudnank)\\s+\\w{3,}ni(?![a-z]).*")
                 || s.matches(".*(?<![a-z])\\w{3,}ni\\s+(?:tudok|tudunk|tudnek|tudnank)"
                         + "(?![a-z]).*"))
+                && !s.matches("(?s).*(?<![a-z])\\w{3,}(?:ttam|ttem|tam|tem"
+                        + "|tunk|tuk)(?![a-z]).*"))
             return true;
         // A HALADÁS leírása nem edzés: az „5 km-ről 10 km-re növeltem a
         // távot" a tervről szól, nem egy megtörtént futásról – eddig ötven

@@ -7635,4 +7635,28 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A képesség körülmény a megtörtént edzés mellett, a vélemény meg cipő.
+     *
+     * A „nyári melegben csak este tudok mozogni, ma 21:30-kor futottam
+     * 6 km-t" hat kilométere nyomtalanul eltűnt: az első tagmondat
+     * képesség-alakja az egész bejegyzést elnémította. Az „az új cipőm…
+     * sokkal kényelmesebb futni benne" pedig negyvenöt perces futást írt
+     * be – egy cipő-véleményből.
+     */
+    @Test
+    public void anAbilityClauseDoesNotSilenceThePastRun() {
+        Activities.Parsed p = Activities.parse("Nyári melegben csak este "
+                + "tudok mozogni, ma 21:30-kor futottam 6 km-t.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertEquals(21, p.hour);
+        assertTrue(Activities.parse("Az új cipőm 42,5-es, fél mérettel "
+                + "nagyobb, sokkal kényelmesebb futni benne.")
+                .plans.isEmpty());
+        // A puszta képesség marad a jövő-felismerőé.
+        assertTrue(Activities.parse("fáj a térdem 2 hete, de futni tudok")
+                .plans.isEmpty());
+    }
+
 }
