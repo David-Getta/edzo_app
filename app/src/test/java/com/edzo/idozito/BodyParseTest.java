@@ -1176,4 +1176,18 @@ public class BodyParseTest {
                 + "v\u00e9rcukrot m\u00e9rtem, edz\u00e9s el\u0151tt.").kg, 0.01);
         assertEquals(0.0, BodyParse.parse("V\u00e9rcukor: 98, rendben.").kg, 0.01);
     }
+
+    /**
+     * A kil\u00f3 \u00e9s a gramm egy\u00fctt egyetlen m\u00e9r\u00e9s.
+     *
+     * A \u201em\u00e9rleg ma reggel 84 kil\u00f3t \u00e9s 300 grammot mutatott" nyolcvann\u00e9gy
+     * eg\u00e9szk\u00e9nt ment be \u2013 a h\u00e1romsz\u00e1z gramm elveszett, pedig aki \u00edgy
+     * mondja, annak pont az sz\u00e1m\u00edt.
+     */
+    @Test public void kilosAndGramsAddUp() {
+        assertEquals(84.3, BodyParse.parse("A m\u00e9rleg ma reggel 84 kil\u00f3t "
+                + "\u00e9s 300 grammot mutatott.").kg, 0.01);
+        assertEquals(84.3, BodyParse.parse("84 kil\u00f3 300 gramm vagyok.")
+                .kg, 0.01);
+    }
 }

@@ -7821,4 +7821,23 @@ public class ActivitiesParseTest {
         assertTrue(p.plans.size() <= 2);
     }
 
+    /**
+     * Az egyetlen hétvégi esemény egy nap.
+     *
+     * A „hétvégi meccsen 2 gólt lőttem, 60 percet játszottam" és a
+     * „hétvégi túrán 22 km-t mentünk" KÉT napra terült szét, pedig egy
+     * alkalomról szól – a jelzős alak utáni ragos főnév konkrét eseményt
+     * nevez meg.
+     */
+    @Test
+    public void aSingleWeekendEventIsOneDay() {
+        assertEquals(1, Activities.parse("A hétvégi meccsen 2 gólt "
+                + "lőttem, 60 percet játszottam.").days);
+        assertEquals(1, Activities.parse("A hétvégi túrán 22 km-t "
+                + "mentünk 1100 m szintemelkedéssel.").days);
+        // A többnapos hétvégi túra marad kétnapos.
+        assertEquals(2, Activities.parse("Hétvégén 2 napig túráztunk, "
+                + "napi 20 km.").days);
+    }
+
 }

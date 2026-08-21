@@ -326,6 +326,21 @@ public final class BodyParse {
                 + "betoltottem|betoltotte)\\w*.*")
                 && !Foods.norm(q).matches("(?s).*(?<![a-z])(?:kg|kilo)\\w*.*"))
             return new Body(0, 0);
+        // A KILÓ ÉS GRAMM együtt egyetlen mérés: a „84 kilót és 300
+        // grammot mutatott" nyolcvannégy egészként ment be – a háromszáz
+        // gramm elveszett, pedig aki így mondja, annak pont az számít.
+        java.util.regex.Matcher kgm = java.util.regex.Pattern.compile(
+                "(?iu)(\\d{2,3})\\s?kil[oó]t?\\p{L}*\\s+([eé]s\\s+)?"
+                + "(\\d{2,3})\\s?grammo?t?(?![\\p{L}])").matcher(q);
+        if (kgm.find()) {
+            int whole = Integer.parseInt(kgm.group(1));
+            int gr = Integer.parseInt(kgm.group(3));
+            if (gr < 1000)
+                q = q.substring(0, kgm.start()) + whole + ","
+                        + String.format(java.util.Locale.ROOT, "%02d",
+                            (int) Math.round(gr / 10.0)) + " kg"
+                        + q.substring(kgm.end());
+        }
         // A GRAMMBAN mondott szám sosem testsúly: az „elértem a fehérjecélt,
         // 140 g" száznegyvene fehérje, mégis száznegyven KILÓS mérés lett
         // belőle – egy nap alatt hatvan kilós ugrás a trendben. Testsúlyt

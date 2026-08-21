@@ -5947,6 +5947,13 @@ public final class Activities {
         if (dow == java.util.Calendar.SATURDAY) { offset = 0; days = 1; }
         else if (dow == java.util.Calendar.SUNDAY) { offset = 0; days = 2; }
         else { offset = dow - 1; days = 2; }                 // hétfő→1 … péntek→5
+        // Az EGYETLEN hétvégi esemény egy nap: a „hétvégi meccsen 60 percet
+        // játszottam" és a „hétvégi túrán 22 km-t mentünk" két napra terült
+        // szét, pedig egy alkalomról szól – a jelzős alak után álló ragos
+        // főnév egy konkrét eseményt nevez meg.
+        if (days == 2 && s.substring(p, Math.min(s.length(), end + 24))
+                .matches("(?s)hetvegi\\s+\\p{L}+[oeaö]?n(?![\\p{L}]).*"))
+            days = 1;
         return new int[]{p, end, offset, days};
     }
 
