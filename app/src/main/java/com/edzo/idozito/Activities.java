@@ -1242,6 +1242,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(marad[eo]k?\\w*[^,;.]{0,24}?)"
                 + "tegnaprol(?![a-z])", "$1");
         s = s.replaceAll("(?<![a-z])tegnaprol\\s+(?=marad)", "");
+        // A NEVEZÉS mellett a MAI edzés valóság: a „beneveztünk egy 10
+        // km-es jótékonysági futásra októberben, elkezdtünk készülni: ma
+        // 4 km" bejegyzéséből SEMMI nem lett – a nevezés szava az egészet
+        // jövőnek minősítette. A nevezés tagmondata törlődik, a „ma"
+        // kezdetű valóság marad; nevezés mai szám nélkül továbbra is jövő.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
+            s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*"
+                    + "(?<![a-z])(?:be)?nevezt\\w*[^,;.]*[,;.]\\s*", "");
         // A HÁT NAP nem hat nap: ékezet nélkül a testrész és a számnév
         // egybeesik, és a „kondiedzés: hát nap, húzódzkodás 4x6, evezés
         // gépen 4x10" egyetlen edzése HAT NAPRA terült szét a naptárban. Az
@@ -3631,6 +3639,12 @@ public final class Activities {
             for (double[] t : kms) {
                 boolean taken = false;
                 for (Plan p : out) if (Math.abs(p.km - t[1]) < 0.001) taken = true;
+                // Az AZONOS táv MÁSIK napszakban külön alkalom: a „reggel
+                // 6-kor 5 km, este 6-kor megint 5 km" estéje eddig a reggeli
+                // ismétlésének látszott, és némán elveszett – a dupla nap
+                // fele. Csak a kimondottan különböző napszak nyit új alkalmat.
+                if (taken && t != kms.get(0)
+                        && sameKmOtherPart(beforeBlank, kms, t)) taken = false;
                 if (!taken && t[1] > 0) free++;
             }
             if (p0.count > 1 && p0.count == free + 1) {
@@ -3648,6 +3662,10 @@ public final class Activities {
                 if (km2 <= 0) continue;
                 boolean taken = false;
                 for (Plan p : out) if (Math.abs(p.km - km2) < 0.001) taken = true;
+                // Ugyanaz a napszak-kivétel, mint fent: az esti ötös nem a
+                // reggeli ötös megismétlése.
+                if (taken && t != kms.get(0)
+                        && sameKmOtherPart(beforeBlank, kms, t)) taken = false;
                 if (taken) continue;
                 // A SZINTEMELKEDÉS méterben áll, és nem táv: a „túra 14,8 km
                 // 3:45:00 620 m emelkedés" hatszázhúsz métere nem egy második
@@ -4324,7 +4342,12 @@ public final class Activities {
         // állva maradt.
         return s.matches("(?s).*(?<![a-z])\\w{3,}(?:ttam|ttem|tam|tem|tunk|tuk)"
                 + "(?![a-z]).*")
-                || s.matches("(?s).*(?<![a-z])(?:meg)?(?:volt|lett)(?![a-z]).*");
+                || s.matches("(?s).*(?<![a-z])(?:meg)?(?:volt|lett)(?![a-z]).*")
+                // A „MA + szám" ige nélkül is beszámoló: az „október 12-én
+                // lesz, ma 6 km alapozás" hatosa valódi mai futás – ige
+                // híján a vezető terv-tagmondat eddig állva maradt, és a
+                // jövő-felismerő az egészet elnémította.
+                || s.matches("(?s).*(?<![a-z])ma\\s+\\d.*");
     }
 
     /**
@@ -7628,6 +7651,33 @@ public final class Activities {
                 "este", "ejjel", "hajnalban", "ejszaka"})
             if (c.matches("(?s).*(?<![a-z])" + w + "\\w*.*")) return w;
         return null;
+    }
+
+    /**
+     * Az AZONOS táv másik napszakban külön alkalom.
+     *
+     * A „reggel 6-kor 5 km, este 6-kor megint 5 km" második ötöse eddig az
+     * első megismétlésének látszott (a visszamondott táv ellen véd az
+     * egyezés-szűrő), és némán elveszett – a dupla nap fele. Akkor NEM
+     * ismétlés, ha az első táv és ez a táv tagmondata két KÜLÖNBÖZŐ,
+     * kimondott napszakot visel.
+     */
+    private static boolean sameKmOtherPart(String s, List<double[]> kms,
+            double[] t) {
+        String d0 = dayPartOf(s, (int) kms.get(0)[0]);
+        String dt = dayPartOf(s, (int) t[0]);
+        if (d0 == null || dt == null || d0.equals(dt)) return false;
+        // Óvatosak maradunk: a puszta „reggel 5 km futás, este 5 km futás"
+        // lehet ugyanannak a körnek a kétszeri leírása is – az ISMÉTLÉS
+        // kimondott szava („még", „megint", „újra", „dupla") kell hozzá,
+        // hogy a második ötös biztosan második alkalom legyen.
+        int b = Math.max(0, Math.min((int) t[0], s.length()));
+        while (b > 0 && s.charAt(b - 1) != ',' && s.charAt(b - 1) != ';'
+                && s.charAt(b - 1) != '.') b--;
+        int e = Math.min(s.length(), (int) t[2] + 24);
+        return s.substring(b, e).matches("(?s).*(?<![a-z])(?:meg|megint"
+                + "|ujra|ismet|masodszor)(?![a-z]).*")
+                || s.matches("(?s).*(?<![a-z])dupla(?![a-z]).*");
     }
 
     /**

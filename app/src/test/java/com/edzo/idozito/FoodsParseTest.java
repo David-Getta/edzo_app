@@ -2233,4 +2233,23 @@ public class FoodsParseTest {
         assertEquals("Kávé (fekete)", Foods.parse(all, "Ittam egy kávét "
                 + "a kávézóban a barátnőmmel.").get(0).food.name);
     }
+
+    /**
+     * Az özönvíz eső, a bőrig ázás nem bor, a zsírmérő nem olaj.
+     *
+     * Az „özönvízszerű esőben tekertem haza, bőrig áztam" mellé egy pohár
+     * víz ÉS egy pohár bor került, az „a zsírmérő szerint 24,8 százalék"
+     * mellé pedig egy kanál olaj – csupa ital és étel, amit senki nem
+     * mondott ki.
+     */
+    @Test public void rainAndAFatMeterAreNotDrinks() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Özönvízszerű esőben tekertem haza "
+                + "12 km-t, bőrig áztam.").isEmpty());
+        assertTrue(Foods.parse(all, "A mérlegen 91,2, a zsírmérő szerint "
+                + "24,8 százalék.").isEmpty());
+        // A kimondott bor marad bor.
+        assertEquals("Bor (vörös/fehér)", Foods.parse(all, "Bort ittam "
+                + "este, két pohár vöröset.").get(0).food.name);
+    }
 }

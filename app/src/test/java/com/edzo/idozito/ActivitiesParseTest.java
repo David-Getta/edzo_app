@@ -7952,4 +7952,31 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.parse("Tegnap futottam 10 km-t.").offset);
     }
 
+    /**
+     * A nevezés melletti mai kilométer valóság, a dupla nap pedig két futás.
+     *
+     * A „beneveztünk egy 10 km-es jótékonysági futásra októberben,
+     * elkezdtünk készülni: ma 4 km" bejegyzéséből SEMMI nem lett. A
+     * „reggel 6-kor 5 km, este 6-kor még 5 km, dupla nap volt" estéje
+     * pedig a reggeli ismétlésének látszott, és némán elveszett.
+     */
+    @Test
+    public void aRegistrationBesideTodaysRunAndADoubleDay() {
+        Activities.Parsed p = Activities.parse("Beneveztünk a párommal egy "
+                + "10 km-es jótékonysági futásra októberben, elkezdtünk "
+                + "készülni: ma 4 km.");
+        assertEquals(1, p.plans.size());
+        assertEquals(4.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed d = Activities.parse("Reggel 6-kor 5 km, este "
+                + "6-kor még 5 km, dupla nap volt.");
+        assertEquals(2, d.plans.size());
+        assertEquals(5.0, d.plans.get(1).km, 0.01);
+        // A puszta nevezés terv marad, az ismétlés-szó nélküli azonos táv
+        // pedig óvatosságból egy alkalom.
+        assertTrue(Activities.parse("Beneveztem egy félmaratonra.")
+                .plans.isEmpty());
+        assertEquals(1, Activities.parse("reggel 5 km futás, este 5 km "
+                + "futás").plans.size());
+    }
+
 }

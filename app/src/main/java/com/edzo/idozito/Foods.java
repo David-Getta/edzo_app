@@ -894,6 +894,13 @@ public final class Foods {
             // A VÍZHÓLYAG seb, nem ásványvíz: a „felszakadt a vízhólyag a
             // sarkamon" mellé eddig két és fél deci víz került a naplóba.
             "vizholyag",
+            // A ZSÍRMÉRŐ műszer, nem konyhai zsír: az „a zsírmérő szerint
+            // 24,8 százalék" mellé eddig egy kanál olaj került a naplóba.
+            "zsirmer",
+            // Az ÖZÖNVÍZ eső, a BŐRIG ázás pedig ékezet nélkül bornak
+            // látszik: az „özönvízszerű esőben tekertem haza, bőrig áztam"
+            // mellé eddig egy pohár víz ÉS egy pohár bor került.
+            "ozonviz", "borig",
             // A CUKORTESZT laborvizsgálat, nem elszopogatott kockacukor: a
             // „terhességi cukorteszt után ettem" mellé tíz gramm cukor
             // került a naplóba.

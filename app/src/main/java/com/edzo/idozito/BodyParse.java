@@ -360,6 +360,16 @@ public final class BodyParse {
         if (q.matches("(?s).*\\d\\s?kg.*"))
             q = q.replaceAll("(?iu),\\s*nem\\s+\\d{1,3}(?:[.,]\\d+)?"
                     + "\\s?(?:kg|kil\u00f3\\p{L}*|kilo\\p{L}*)?[\\s.!]*$", " ");
+        // A „zsír NN%" átírása MÉG a tagmondat-szűrés előtt: a más-napló
+        // szűrő a „zsír" tövét étel-szónak nézte, és a „súlyom 80, zsír
+        // 18%" zsír-tagmondatát eldobta – mire az alábbi testzsír-szabály
+        // sorra került, már nem volt mit átírnia.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])zs[ií]r\\s?:?\\s?"
+                + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?(?:%|sz[aá]zal[eé]k\\w*)",
+                "testzsir $1 %");
+        q = q.replaceAll("(?iu)(?<![\\p{L}])zs[ií]rm[eé]r\\w*\\s+"
+                + "(?:szerint\\s+)?(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?"
+                + "(?:%|sz[aá]zal[eé]k\\w*)", "testzsir $1 %");
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(
                         dropOthersWeight(Foods.norm(q)))))));
@@ -376,6 +386,12 @@ public final class BodyParse {
         // hogy nem sertészsírról van szó.
         s = s.replaceAll("(?<![a-z])zsir\\s?:?\\s?"
                 + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?(?:%|szazalek)",
+                "testzsir $1 %");
+        // A ZSÍRMÉRŐ mutatta százalék is testzsír: az „a zsírmérő szerint
+        // 24,8 százalék" eddig elveszett – a zsír töve a műszer nevében ült,
+        // a szám pedig kiírt „százalék" szóval állt.
+        s = s.replaceAll("(?<![a-z])zsirmer\\w*\\s+(?:szerint\\s+)?"
+                + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?(?:%|szazalek\\w*)",
                 "testzsir $1 %");
         // Az ANGOL rövidítés is testzsír: a „bf 18%" és a „body fat
         // 18,5%" az óra-app sora, és eddig üresen jött vissza. A
