@@ -7696,4 +7696,31 @@ public class ActivitiesParseTest {
                 + "edzés.").plans.size());
     }
 
+    /**
+     * A jövő heti versenyRE készülés nem mai verseny, és a két úszás kettő.
+     *
+     * Az „a jövő heti maratonra ma már csak 5 km lazítás volt" öt
+     * kilométere eltűnt: az egy-tagmondatos mondat egésze tervnek látszott,
+     * pedig a -ra rag kimondja, hogy a verseny csak a cél. A „ma 2 úszás
+     * volt: reggel 1000 m, este 1500 m" második úszása pedig elveszett – a
+     * puszta méteres táv csak tárgyraggal számított.
+     */
+    @Test
+    public void aRaceAsPurposeAndTwoSwimsInMeters() {
+        Activities.Parsed p = Activities.parse("A jövő heti maratonra ma "
+                + "már csak 5 km lazítás volt.");
+        assertEquals(1, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed q = Activities.parse("Ma 2 úszás volt: reggel "
+                + "1000 m, este 1500 m.");
+        assertEquals(2, q.plans.size());
+        assertEquals(1.5, q.plans.get(1).km, 0.01);
+        // A tiszta terv marad terv, a szakaszos úszás egy edzés.
+        assertTrue(Activities.parse("Jövő héten maraton lesz.")
+                .plans.isEmpty());
+        assertEquals(1, Activities.parse("Úszóedzés: 400 m bemelegítés, "
+                + "8x100 m gyors, 200 m levezetés. Összesen 1400 m, "
+                + "45 perc.").plans.size());
+    }
+
 }

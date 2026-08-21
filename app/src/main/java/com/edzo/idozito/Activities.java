@@ -1318,6 +1318,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // A JÖVŐ HETI VERSENYRE készülés célhatározó, nem mai verseny: az
+        // „a jövő heti maratonra ma már csak 5 km lazítás volt" öt
+        // kilométere nyomtalanul eltűnt – a „jövő het(i)" az egy-tagmondatos
+        // mondat egészét tervnek minősítette, pedig a -ra rag kimondja,
+        // hogy a verseny csak a CÉL, a bejegyzés a mai edzésé.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:jovo\\s+het\\w*|jovo"
+                + "\\s+havi|holnapi|vasarnapi|szombati|holnaputani)\\s+"
+                + "\\p{L}+(?:ra|re|ert)(?![a-z])\\s*", " ");
         // AZ „AZ IS KARDIÓ" záró kommentár nem külön edzés: a „gyors
         // tempóban toltam a babakocsit 40 percig, az is kardio" negyven
         // perce mellé egy második, negyvenöt perces „egyéb mozgás" is
@@ -3565,6 +3573,15 @@ public final class Activities {
                 boolean meterDist = tail.matches("(?s).*\\d\\s?"
                         + "(?:m-t|m-et|metert|m-en|meteren)\\b.*")
                         && !tail.matches("(?s).*(emelked|szint|palya).*");
+                // ÚSZÁSNÁL és evezésnél a puszta méter is táv: a „ma 2 úszás
+                // volt: reggel 1000 m, este 1500 m" másfél kilométere eddig
+                // elveszett – az alkalomszámot vissza is vettük egyre, tehát
+                // a nap fele tűnt el. A vízben senki nem mond emelkedést.
+                if (!meterDist && ("uszas".equals(p0.kind.id)
+                        || "evezes".equals(p0.kind.id))
+                        && dayPartOf(beforeBlank, (int) t[0]) != null)
+                    meterDist = tail.matches("(?s).*\\d\\s?(?:m|meter\\w*)"
+                            + "(?![\\p{L}]).*");
                 if (!tail.contains("km") && !meterDist) continue;
                 int said2 = minutesFor(mins, (int) t[0], (int) t[2],
                         -1, Integer.MAX_VALUE, 0);
