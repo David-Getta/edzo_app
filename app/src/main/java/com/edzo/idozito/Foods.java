@@ -4427,7 +4427,18 @@ public final class Foods {
                     }
                     if (own && (best == null || m.pos > best.pos)) best = m;
                 }
-                if (best != null) dead.add(best);
+                // Az ÚJRA kimondott étel felment: a „kávé nélkül indult a
+                // nap, de délután bepótoltam, 3 kávé lett" kávéja megvan –
+                // a felismerő viszont ugyanahhoz az ételhez egyetlen (az
+                // első) helyet jegyez, és a tagadás azt ölte meg. Ha a tő a
+                // tagadás UTÁN újra szerepel, a találat oda költözik.
+                if (best != null) {
+                    String stem = q.substring(best.pos, best.pos + best.len);
+                    int again = q.indexOf(stem, p + w.length());
+                    if (again >= 0) in.set(in.indexOf(best),
+                            new Match(best.food, again, best.len));
+                    else dead.add(best);
+                }
                 p = q.indexOf(w, p + 1);
             }
         }

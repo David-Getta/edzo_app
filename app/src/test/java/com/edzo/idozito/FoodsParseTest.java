@@ -2077,4 +2077,20 @@ public class FoodsParseTest {
         // A valódi bor marad bor.
         assertFalse(Foods.parse(all, "ittam egy pohár bort").isEmpty());
     }
+
+    /**
+     * A bepótolt kávé nem marad tagadva.
+     *
+     * A „kávé nélkül indult a nap, de dél után bepótoltam, 3 kávé lett"
+     * bejegyzésből SEMMI nem lett: a felismerő ugyanahhoz az ételhez
+     * egyetlen (az első) helyet jegyez, és a „nélkül" azt ölte meg – hiába
+     * mondja ki a mondat vége, hogy három kávé lett.
+     */
+    @Test public void aFoodRepeatedAfterTheNegationSurvives() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(600.0, Foods.parse(all, "kávé nélkül indult a nap, de "
+                + "dél után bepótoltam, 3 kávé lett").get(0).grams, 0.01);
+        // Az egyszer, tagadva említett étel marad kihagyva.
+        assertTrue(Foods.parse(all, "kávé nélkül indult a nap").isEmpty());
+    }
 }
