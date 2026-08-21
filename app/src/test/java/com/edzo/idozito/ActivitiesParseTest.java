@@ -7570,4 +7570,26 @@ public class ActivitiesParseTest {
         assertEquals(12300, p.plans.get(0).steps);
     }
 
+    /**
+     * A két hét múlva esedékes félmaraton nem mai futás.
+     *
+     * A „két hét múlva félmaraton, ma megvolt az utolsó hosszú futás:
+     * 18 km" tizennyolc kilométere MELLÉ egy huszonegy kilométeres
+     * félmaraton is bekerült – a „megvolt" nem számított múlt időnek, a
+     * vezető terv-tagmondat állva maradt, a verseny neve pedig önmagában
+     * távot jelent. A magában álló terv ugyanígy nem napló.
+     */
+    @Test
+    public void aRaceTwoWeeksAwayIsNotTodaysRun() {
+        Activities.Parsed p = Activities.parse("Két hét múlva félmaraton, "
+                + "ma megvolt az utolsó hosszú futás: 18 km.");
+        assertEquals(1, p.plans.size());
+        assertEquals(18.0, p.plans.get(0).km, 0.01);
+        assertTrue(Activities.parse("Két hét múlva félmaraton.")
+                .plans.isEmpty());
+        // A lefutott félmaraton marad.
+        assertEquals(21.1, Activities.parse("Ma lefutottam a félmaratont.")
+                .plans.get(0).km, 0.05);
+    }
+
 }

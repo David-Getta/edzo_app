@@ -307,6 +307,13 @@ public final class Kcal {
         // álló nagy szám csak kalória lehet.
         // A „ma/tegnap" beékelődhet: a „kalóriabevitel ma 1900" eddig
         // elveszett.
+        // A KÜSZÖB fölött evés is bevitel: a „töltőnapot tartottam, 3000
+        // kcal fölött ettem szándékosan" háromezrese eddig elveszett – a
+        // „fölött" tiltószó az egész tagmondatot elvitte, pedig az evés
+        // igéje ott áll mellette. A hasonlító szó az evés igéje előtt nem
+        // tempó-adat.
+        s = s.replaceAll("(kcal\\w*\\s+)(?:folott|felett|alatt)\\s+"
+                + "(?=ettem|eszem|ettunk|ittam|volt a bevitel|lett)", "$1");
         s = s.replaceAll("kaloriabevitel\\w*\\s?:?\\s?"
                 + "(?:(?:ma|tegnap|most|eddig)\\s)?(\\d{3,4})(?!\\d)(?![.,]\\d)",
                 "bevitel $1 kcal");

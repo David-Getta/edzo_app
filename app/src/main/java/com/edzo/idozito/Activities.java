@@ -4098,6 +4098,7 @@ public final class Activities {
     private static void stripFutureClause(char[] q) {
         String s = new String(q);
         java.util.List<int[]> future = new ArrayList<>();
+        java.util.List<int[]> lead = new ArrayList<>();
         boolean anyKept = false;
         int start = 0;
         for (int i = 0; i <= s.length(); i++) {
@@ -4112,10 +4113,15 @@ public final class Activities {
                     // lesz időm, futok" feltétele a MÖGÖTTE álló tagmondatra
                     // vonatkozik – ott a futás is szándék, nem edzés.
                     future.add(new int[]{start, i});
-                }
+                } else lead.add(new int[]{start, i});
             }
             start = i + 1;
         }
+        // Ha MINDEN tagmondat terv, az egész bejegyzés terv: a „két hét
+        // múlva félmaraton" mondatból eddig egy MAI, huszonegy kilométeres
+        // futás lett – a verseny neve önmagában távot jelent, és a vezető
+        // terv-tagmondatot csak megtörtént esemény mellett takartuk ki.
+        if (!anyKept) future.addAll(lead);
         for (int[] f : future) blank(q, f[0], f[1]);
     }
 
@@ -4129,8 +4135,14 @@ public final class Activities {
      * kimondja, hogy a mondat egy megtörtént edzésről is beszél.
      */
     private static boolean pastTense(String s) {
+        // A „VOLT" és a „LETT" is múlt: a „két hét múlva félmaraton, ma
+        // megvolt az utolsó hosszú futás: 18 km" tizennyolc kilométere
+        // mellé egy huszonegy kilométeres félmaraton is bekerült – a
+        // „megvolt" nem számított múlt időnek, így a vezető terv-tagmondat
+        // állva maradt.
         return s.matches("(?s).*(?<![a-z])\\w{3,}(?:ttam|ttem|tam|tem|tunk|tuk)"
-                + "(?![a-z]).*");
+                + "(?![a-z]).*")
+                || s.matches("(?s).*(?<![a-z])(?:meg)?(?:volt|lett)(?![a-z]).*");
     }
 
     /**

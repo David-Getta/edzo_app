@@ -563,4 +563,19 @@ public class KcalTest {
         assertEquals(500, Kcal.burned("bevitel 2000, égetés 500, nettó 1500"));
     }
 
+    /**
+     * A küszöb fölött evés is bevitel.
+     *
+     * A „töltőnapot tartottam, 3000 kcal fölött ettem szándékosan"
+     * háromezrese elveszett: a „fölött" tiltószó az egész tagmondatot
+     * elvitte, pedig az evés igéje ott áll mellette.
+     */
+    @Test public void eatingAboveAThresholdIsIntake() {
+        assertEquals(3000, Kcal.stated("Ma töltőnapot tartottam, 3000 kcal "
+                + "fölött ettem szándékosan."));
+        assertEquals(2000, Kcal.stated("2000 kcal alatt ettem ma."));
+        // A tempó-adat marad égetés.
+        assertEquals(700, Kcal.burned("10 km futás 50 perc alatt 700 kcal"));
+    }
+
 }
