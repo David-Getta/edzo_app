@@ -7777,4 +7777,25 @@ public class ActivitiesParseTest {
                 + "175 watt.").plans.get(0).kind.id);
     }
 
+    /**
+     * A nevezett táv és az égetés eszköze nem mai edzés.
+     *
+     * Az „a 10k-s versenyre neveztem, október 12-én lesz, ma 6 km
+     * alapozás" TÍZ kilométeres futást is beírt a hat mellé. A „napi
+     * mérleg: 1750 kcal evve, 320 elégetve futással" pedig negyvenöt
+     * perces futást szült a kalóriasorból.
+     */
+    @Test
+    public void aRegisteredRaceAndABurnInstrumentAreNotRuns() {
+        Activities.Parsed p = Activities.parse("A 10k-s versenyre "
+                + "neveztem, október 12-én lesz, ma 6 km alapozás.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertTrue(Activities.parse("Napi mérleg: 1750 kcal evve, 320 "
+                + "elégetve futással.").plans.isEmpty());
+        // A lefutott 10k marad futás.
+        assertEquals(10.0, Activities.parse("Lefutottam a 10k-t.")
+                .plans.get(0).km, 0.05);
+    }
+
 }

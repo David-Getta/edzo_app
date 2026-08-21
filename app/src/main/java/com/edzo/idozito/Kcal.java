@@ -113,6 +113,9 @@ public final class Kcal {
             // Edzés: 45 perc kondi. Kaja: 1900 kcal." ezerkilencszáza
             // ELÉGETETT kalóriaként ment a naplóba – az edzés szava miatt.
             "kaja", "etkezes", "etel", "bevive",
+            // A HATÁROZÓI alak is evés: a „napi mérleg: 1750 kcal evve,
+            // 320 elégetve futással" mindkét száma elveszett.
+            "evve", "megevve",
             "elfogyasztottam", "megittam", "ittam",
             // Az ebéd és a vacsora főnévként is étkezés – a „reggeli"
             // szándékosan kimarad, mert jelzőként a napszakot mondja
@@ -131,7 +134,7 @@ public final class Kcal {
             "egettem", "egetem", "elegettem", "elegetem", "elhasznaltam",
             // A FŐNÉVI alak is égetés: a „napi mérleg: 1900 kcal bevitel,
             // 2400 kcal égetés" második fele eddig a BEVITELHEZ adódott.
-            "egetes", "elegetes", "egetett", "elegetett",
+            "egetes", "elegetes", "egetett", "elegetett", "elegetve", "egetve",
             // A „320 kcal ment el" is égetés: az óra kijelzőjének magyar
             // olvasata, mégis bevitelként számolt.
             "ment el", "elhasznalt",
@@ -364,7 +367,7 @@ public final class Kcal {
             // beszámoltuk. A „ma 1750 lett" viszont beszámoló.
             boolean done = achieved(s) || s.matches(".*(?<![a-z])(lett|volt|ossze\\w*|ma|tegnap"
                     + "|bevitel|bevittem|megettem|ettem|ittam|elegettem|egettem"
-                    + "|egetes|reggeli|ebed|vacsora)(?![a-z]).*");
+                    + "|egetes|reggeli|ebed|vacsora|evve|megevve|elegetve)(?![a-z]).*");
             if (!done) return -1;
         }
         // A tiltó szó csak a SAJÁT tagmondatát viszi el. A „ma 2100 kcal-t

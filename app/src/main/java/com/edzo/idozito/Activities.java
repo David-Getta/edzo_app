@@ -1321,6 +1321,19 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // A NEVEZÉS távja nem mai futás: az „a 10k-s versenyre neveztem,
+        // október 12-én lesz, ma 6 km alapozás" tíz kilométere külön mai
+        // futásként került be a hat mellé. A nevezett táv kiesik.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}(?:[.,]\\d)?\\s?k(?:m)?"
+                + "\\s?-?\\p{L}{0,2}\\s+(versenyre|futamra|tavra"
+                + "|megmerettetesre)\\s+((?:be)?nevez\\w*|jelentkez\\w*)",
+                "$1 $2");
+        // Az ÉGETÉS eszköze nem külön edzés: a „napi mérleg: 1750 kcal
+        // evve, 320 elégetve futással" negyvenöt perces futást írt be – a
+        // kalóriasor mellé. A valódi futás-bejegyzés percet vagy távot mond.
+        s = s.replaceAll("(?<![a-z])(eleget\\w*|eget(?:ve|tem|es)\\w*)\\s+"
+                + "(?:futas|seta|kondi|uszas|bicikli|kerekpar|edzes)"
+                + "\\w*", "$1");
         // A MEGÉRKEZETT felszerelés nem edzés: a „ma reggel jött a futár az
         // új súlyzókkal, 2x22,5 kg-osak" hatvanperces kondi-bejegyzést írt
         // be – egy csomagátvételből. A vásárlás/érkezés igéje mellett a

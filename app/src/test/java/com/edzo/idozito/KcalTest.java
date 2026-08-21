@@ -578,4 +578,18 @@ public class KcalTest {
         assertEquals(700, Kcal.burned("10 km futás 50 perc alatt 700 kcal"));
     }
 
+    /**
+     * Az „evve/elégetve" határozói alak is irány.
+     *
+     * A „napi mérleg: 1750 kcal evve, 320 elégetve futással" MINDKÉT
+     * száma elveszett, ráadásul egy negyvenöt perces futás került be
+     * helyettük – az égetés eszközéből.
+     */
+    @Test public void adverbialEatenAndBurnedCount() {
+        assertEquals(1750, Kcal.stated("Napi mérleg: 1750 kcal evve, "
+                + "320 elégetve futással."));
+        assertEquals(320, Kcal.burned("Napi mérleg: 1750 kcal evve, "
+                + "320 elégetve futással."));
+    }
+
 }
