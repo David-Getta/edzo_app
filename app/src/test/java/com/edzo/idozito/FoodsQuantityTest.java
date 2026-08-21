@@ -558,4 +558,21 @@ public class FoodsQuantityTest {
                 supp = h.grams > 0 ? h.grams : h.food.portion;
         assertEquals(5.0, supp, 0.01);
     }
+
+    /**
+     * A „gr" rövidítés mögött nem állhat betű.
+     *
+     * A „reggel csak egy fél grapefruitot ettem" fél GRAMM grapefruit lett:
+     * a rövidítés a gyümölcs nevének elejét kapta el, és a darabszám
+     * grammként ment be. A „2 granola" ugyanígy két gramm müzli volt.
+     */
+    @Test public void theGrAbbreviationNeedsAWordBoundary() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(125.0, Foods.parse(all, "reggel csak egy fél "
+                + "grapefruitot ettem").get(0).grams, 0.01);
+        assertEquals(500.0, Foods.parse(all, "2 grapefruit").get(0).grams, 0.01);
+        // A valódi gramm-rövidítés marad.
+        assertEquals(25.0, Foods.parse(all, "25 gr fehérjepor")
+                .get(0).grams, 0.01);
+    }
 }

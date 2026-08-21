@@ -1843,6 +1843,9 @@ public final class Foods {
             {"Rántotta", "55"},
             {"Banán", "120"}, {"Alma", "150"}, {"Narancs", "150"}, {"Körte", "150"},
             {"Kivi", "80"}, {"Mandarin", "100"}, {"Őszibarack", "150"},
+            // A „fél grapefruit" darab nélkül fél GRAMM lett – a fogyókúrás
+            // reggeli klasszikusából semmi.
+            {"Grapefruit", "250"},
             {"Mangó", "200"}, {"Datolyaszilva", "150"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
             {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
@@ -3249,7 +3252,13 @@ public final class Foods {
             else if (q.startsWith("ml", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
             // Kiírva is: a puszta „l" ág megköveteli, hogy ne betű kövesse.
             else if (q.startsWith("liter", j)) { numPos.add(start); numVal.add(val * 1000); i = j + 5; }
-            else if (q.startsWith("gr", j)) { numPos.add(start); numVal.add(val); i = j + 2; }
+            // A „GR" mögött nem állhat betű: a „2 grapefruit" és a „2
+            // granola" kettese GRAMM lett – két gramm gyümölcs a két darab
+            // helyett –, mert a rövidítés a szó elejét is elkapta.
+            else if (q.startsWith("gr", j)
+                    && (j + 2 >= q.length() || !Character.isLetter(q.charAt(j + 2)))) {
+                numPos.add(start); numVal.add(val); i = j + 2;
+            }
             else if (q.startsWith("g", j)
                     && (j + 1 >= q.length() || !Character.isLetter(q.charAt(j + 1)))) {
                 numPos.add(start); numVal.add(val); i = j + 1;
