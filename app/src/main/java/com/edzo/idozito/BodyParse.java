@@ -467,6 +467,15 @@ public final class BodyParse {
         }
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
         boolean said = hasBodyWord(s);
+        // A KILÓBAN mondott KÜLÖNBSÉG is testsúly-kontextus: a „reggel
+        // 76,8 kg, ez már 5 kiló mínusz az induláshoz képest" méréséből
+        // semmi nem lett – testsúly-szó nincs a mondatban, a „csak számok
+        // maradtak" vizsgálat pedig a mínusz szavain bukott meg. Aki
+        // kilóban mond különbséget, az a súlyáról beszél. A különbség
+        // száma (5) a súly-sáv alatt van, így nem lehet belőle mérés.
+        if (!said && s.matches("(?s).*(?<![a-z0-9])(?:kg|kilo)\\w*\\s+"
+                + "(?:minusz|plusz|kevesebb|tobb|konnyebb|nehezebb)"
+                + "(?![a-z]).*")) said = true;
 
         double[] cm = circumferences(s);
         // A tejtermék-szót a NYERS mondatban keressük: a feldolgozás a

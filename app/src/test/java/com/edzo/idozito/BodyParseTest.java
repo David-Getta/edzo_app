@@ -1116,4 +1116,23 @@ public class BodyParseTest {
         assertEquals(78.0, BodyParse.parse("aludtam 8 \u00f3r\u00e1t, 78 kg").kg, 0.01);
         assertEquals(40.0, BodyParse.parse("bicepszem 40 cm").cm[4], 0.01);
     }
+
+    /**
+     * A kil\u00f3ban mondott k\u00fcl\u00f6nbs\u00e9g tests\u00faly-kontextus.
+     *
+     * A \u201ereggel 76,8 kg, ez m\u00e1r 5 kil\u00f3 m\u00ednusz az indul\u00e1shoz k\u00e9pest"
+     * m\u00e9r\u00e9s\u00e9b\u0151l semmi nem lett: tests\u00faly-sz\u00f3 nincs a mondatban, a \u201ecsak
+     * sz\u00e1mok maradtak" vizsg\u00e1lat pedig a m\u00ednusz szavain bukott meg. Aki
+     * kil\u00f3ban mond k\u00fcl\u00f6nbs\u00e9get, az a s\u00faly\u00e1r\u00f3l besz\u00e9l.
+     */
+    @Test public void aDifferenceInKilosIsBodyContext() {
+        assertEquals(76.8, BodyParse.parse("Reggel 76,8 kg, ez m\u00e1r 5 kil\u00f3 "
+                + "m\u00ednusz az indul\u00e1shoz k\u00e9pest.").kg, 0.01);
+        assertEquals(76.8, BodyParse.parse("Reggel 76,8 kg, ez 5 kil\u00f3val "
+                + "kevesebb az indul\u00e1sn\u00e1l.").kg, 0.01);
+        // A k\u00fcl\u00f6nbs\u00e9g sz\u00e1ma \u00f6nmag\u00e1ban nem m\u00e9r\u00e9s, \u00e9s a m\u00e1s\u00e9 sem az.
+        assertEquals(0.0, BodyParse.parse("5 kil\u00f3 m\u00ednusz!").kg, 0.01);
+        assertEquals(0.0, BodyParse.parse("A tes\u00f3m 10 kil\u00f3val nehezebb "
+                + "n\u00e1lam.").kg, 0.01);
+    }
 }
