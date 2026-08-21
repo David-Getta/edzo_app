@@ -1135,4 +1135,20 @@ public class BodyParseTest {
         assertEquals(0.0, BodyParse.parse("A tes\u00f3m 10 kil\u00f3val nehezebb "
                 + "n\u00e1lam.").kg, 0.01);
     }
+
+    /**
+     * A c\u00e9l tagmondata nem viszi el a reggeli m\u00e9r\u00e9st.
+     *
+     * A \u201ereggel 79,1 kg. C\u00e9l: 75 al\u00e1 szeptember v\u00e9g\u00e9ig" m\u00e9r\u00e9s\u00e9b\u0151l semmi
+     * nem lett: a mondathat\u00e1r a feldolgoz\u00e1sban sz\u00f3k\u00f6zz\u00e9 olvadt, \u00e9s a c\u00e9l
+     * tilt\u00f3szava az eg\u00e9sz sz\u00f6vegre sz\u00f3lt.
+     */
+    @Test public void aGoalClauseDoesNotEraseTheWeighIn() {
+        assertEquals(79.1, BodyParse.parse("Reggel 79,1 kg. C\u00e9l: 75 al\u00e1 "
+                + "szeptember v\u00e9g\u00e9ig.").kg, 0.01);
+        assertEquals(79.1, BodyParse.parse("Reggel 79,1 kg, c\u00e9l a 75.")
+                .kg, 0.01);
+        // A puszta c\u00e9l tov\u00e1bbra sem m\u00e9r\u00e9s.
+        assertEquals(0.0, BodyParse.parse("A c\u00e9l 75 kg.").kg, 0.01);
+    }
 }

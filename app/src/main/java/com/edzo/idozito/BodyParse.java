@@ -449,8 +449,12 @@ public final class BodyParse {
         // mondatra kiterjedő tiltás elnémította, és a MAI mérés is elveszett
         // a vággyal együtt. A tiltó szó elé határt teszünk, így a mérés
         // tagmondata megmarad.
+        // A CÉL szava elé is határ kerül: a „reggel 79,1 kg. Cél: 75 alá
+        // szeptember végéig" mondathatára a feldolgozásban szóközzé olvadt,
+        // a cél tiltószava így az egész szövegre szólt – és a valódi mérés
+        // is kiesett vele.
         s = s.replaceAll("(?<=[a-z0-9]) (?=(?:szeretnek|szeretnem|akarok|"
-                + "celom)(?![a-z]))", ", ");
+                + "celom|celsuly)(?![a-z])|cel[ :])", ", ");
         boolean anyBlocked = adjectiveKg(s) || liftStem(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {
