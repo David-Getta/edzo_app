@@ -488,4 +488,22 @@ public class SleepTest {
         assertEquals(-1.0, Sleep.parse("Ma 5 \u00f3r\u00e1t pihentem a kanap\u00e9n."), 0.01);
     }
 
+    /**
+     * A negyed \u00e9s a h\u00e1romnegyed is id\u0151pont.
+     *
+     * A \u201ef\u00e9l 7-kor keltem, negyed 12-kor fek\u00fcdtem" \u00e9jszak\u00e1ja hat \u00e9s f\u00e9l
+     * \u00f3r\u00e1ra r\u00f6vid\u00fclt a h\u00e9t \u00e9s negyed helyett: a \u201enegyed 12" \u00e9jf\u00e9lnek
+     * sz\u00e1m\u00edtott, mert csak a \u201ef\u00e9l" t\u00f6rtj\u00e9t ismerte az olvas\u00f3.
+     */
+    @Test
+    public void quarterHoursAreClockTimes() {
+        assertEquals(7.3, Sleep.parse("F\u00e9l 7-kor keltem, negyed 12-kor "
+                + "fek\u00fcdtem, f\u00e1radt nap volt."), 0.01);
+        assertEquals(7.3, Sleep.parse("H\u00e1romnegyed 11-kor fek\u00fcdtem, "
+                + "6-kor keltem."), 0.01);
+        // A f\u00e9l v\u00e1ltozatlanul m\u0171k\u00f6dik.
+        assertEquals(8.0, Sleep.parse("F\u00e9l 11-kor fek\u00fcdtem le, f\u00e9l 7-kor "
+                + "keltem."), 0.01);
+    }
+
 }

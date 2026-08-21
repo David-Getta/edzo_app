@@ -413,6 +413,16 @@ public final class Sleep {
             // után a „0,5" külön számként áll az óra ELŐTT.
             int b = m.start();
             if (b >= 4 && s.startsWith("0,5 ", b - 4)) { h = (h + 23) % 24; mi = 30; }
+            // A NEGYED és a HÁROMNEGYED ugyanígy: a „negyed 12-kor feküdtem"
+            // este negyed tizenkettő (23:15) – eddig éjfélnek számított, és
+            // a „fél 7-kor keltem, negyed 12-kor feküdtem" éjszakája hat és
+            // fél órára rövidült a hét és negyed helyett.
+            else if (b >= 7 && s.startsWith("negyed ", b - 7)
+                    && !(b >= 12 && s.startsWith("haromnegyed ", b - 12))) {
+                h = (h + 23) % 24; mi = 15;
+            } else if (b >= 12 && s.startsWith("haromnegyed ", b - 12)) {
+                h = (h + 23) % 24; mi = 45;
+            }
             mins.add((h % 24) * 60 + mi);
             exact.add(m.group(1) != null);
             at.add(b);
