@@ -94,7 +94,9 @@ public final class StrengthParse {
             // A „holt emelés" külön írva is ugyanaz a gyakorlat – és sokan
             // így írják. Nélküle a „holt emelés 1x5 140 kg" mondatból SEMMI
             // nem lett: se sorozat, se edzés.
-            {"Felhúzás", "felhuzas", "holtemel", "holt emel",
+            // A KIHÚZÁS a terem szava ugyanerre: a „3x10 kihúzást 60-nal"
+            // eddig nyomtalanul eltűnt az erőnaplóból.
+            {"Felhúzás", "felhuzas", "holtemel", "holt emel", "kihuzas",
                     "deadlift", "dead lift"},
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk", "chin up", "chinup",
                     "allhuzodzkodas", "all fole huzas"},
@@ -417,6 +419,34 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}([.,]\\d{1,2})?\\s?"
                 + "(?:kg|kil[oó]\\p{L}*)\\s+(?:f[oö]l[eé]|f[oö]l[oö]tt|felett|"
                 + "al[aá]|alatt)(?![\\p{L}])", " ");
+        // MÁS ember súlya nem a napló rekordja: a „Petivel találkoztam, ő
+        // már 120-at nyom fekve, én még csak 90-et" Peti százhúszasát írta
+        // az erőnaplóba a felhasználó kilencvene helyett. A harmadik
+        // személyű névmás száma törölve – a saját szám a helyére léphet.
+        String tp = text.replaceAll("(?iu)(?<![\\p{L}])[oő]k?\\s+(?:m[aá]r\\s+)?"
+                + "(?:\\d{1,3})(?:[.,]\\d{1,2})?\\s?-?[ae]t\\s+"
+                + "(?=nyom|emel|h[uú]z|tol|guggol)", "ő ");
+        if (!tp.equals(text)) {
+            // Az összevetés MÁSIK fele a saját súly: az „én még csak 90-et"
+            // kilencvene kilogramm, nem kilencven ismétlés.
+            text = tp.replaceAll("(?iu)(?<![\\p{L}])[eé]n\\s+(?:m[eé]g\\s+)?"
+                    + "(?:csak\\s+)?(\\d{1,3})(?:[.,]\\d{1,2})?\\s?-?[ae]t"
+                    + "(?![\\p{L}])", "$1 kg-ot");
+        }
+        // A JÖVŐBELI cél melletti MAI eredmény nem veszhet el: az „az edzőm
+        // szerint jövő hónapra meglesz a 100 kg-os guggolás, ma 92,5 ment"
+        // bejegyzésből SEMMI nem lett – a jövő szava az egészet elnémította,
+        // pedig a mai 92,5 valódi sorozat. A cél-tagmondat és a mai szám egy
+        // mondattá olvad: a gyakorlat neve a célból, a súly a mából.
+        // A vélemény gazdája („az edzőm szerint") is a cserébe esik,
+        // különben a mondat harmadik személyűnek látszana, és a más-ember
+        // szűrő az egészet eldobná – pedig a 92,5 az enyém.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:az?\\s+)?"
+                + "(?:\\p{L}+\\s+szerint\\s+)?j[oö]v[oő]\\s+\\p{L}+\\s+"
+                + "meglesz\\s+az?\\s+\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:kg-?os|kil[oó]s)\\s+(\\p{L}+)\\s*,\\s*ma\\s+"
+                + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s+ment(?![\\p{L}])",
+                "ma $1 1x1 $2 kg");
         // A TERV nem napló. A „holnap guggolás 5x5 100 kg" és a „kellene 5x5
         // 80 kg-ot guggolnom" ugyanazokból a számokból áll, mint a megtörtént
         // sorozat – csak épp még nem történt meg. A mozgás-oldalon ez a
@@ -607,6 +637,11 @@ public final class StrengthParse {
             // ért – a munka négyötöde eltűnt.
             if (rounds <= 0) rounds = numberBefore(whole, "korben");
             if (rounds <= 0) rounds = numberBefore(raw, "korben");
+            // A VESSZŐS kör is kör: a „3 kör, körönként 12 guggolás, 10
+            // evezés" hármasa eddig elveszett – a „kor" után vessző állt,
+            // nem szóköz, és minden gyakorlat egyetlen sorozat maradt.
+            if (rounds <= 0) rounds = numberBefore(whole, "kor,");
+            if (rounds <= 0) rounds = numberBefore(raw, "kor,");
             // Az első gyakorlat gyakran MÁR megkapta a kör-számot (vele egy
             // tagmondatban áll), a többi nem. Akkor bővítünk, ha minden tétel
             // vagy egy sorozatos, vagy pont ennyi sorozatos – így a saját

@@ -2192,4 +2192,27 @@ public class FoodsParseTest {
             assertFalse(h.food.name.contains("turmix"));
         assertEquals(3, hits.size());
     }
+
+    /**
+     * A mérleg magyarázata nem ital, a tegnapi ok nem mai falat.
+     *
+     * Az „a mérleg 82,4-et mutatott, de tegnap este sokat ittam, szóval
+     * lehet csak víz" mondatból negyed liter víz került a naplóba – pedig
+     * a víz ott a súlytöbblet oka. A „fáradtan keltem, lehet a sok tegnapi
+     * kávé miatt" pedig kétdecis MAI feketét írt be a tegnapi kávéból.
+     */
+    @Test public void anExplanationIsNeitherADrinkNorAMeal() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A mérleg 82,4-et mutatott, de tegnap "
+                + "este sokat ittam, szóval lehet csak víz.").isEmpty());
+        assertTrue(Foods.parse(all, "Fáradtan keltem, lehet a sok tegnapi "
+                + "kávé miatt.").isEmpty());
+        // A tegnapi maradék MEGEVÉSE viszont mai étkezés.
+        assertEquals("Rakott krumpli", Foods.parse(all, "Megettem a tegnapi "
+                + "maradék rakott krumplit ebédre.").get(0).food.name);
+        // A kimondott mennyiségű víz ivása is marad.
+        assertEquals(2000.0, Foods.parse(all, "Biztos a víz miatt vagyok "
+                + "nehezebb, ittam 2 liter vizet edzés után.")
+                .get(0).grams, 0.01);
+    }
 }

@@ -7876,4 +7876,23 @@ public class ActivitiesParseTest {
         // (Foods-oldali pár: aVenueNameIsNotADish mellett.)
     }
 
+    /**
+     * A „hétkor" óra, nem hét.
+     *
+     * A „háromnegyed hétkor keltem és lementem úszni 1000 métert" úszása
+     * HÉT NAPRA terült szét, mert a „hétkor" ragozott hétnek látszott –
+     * pedig csak azt mondja, hánykor kelt az ember.
+     */
+    @Test
+    public void theClockSevenIsNotAWeek() {
+        Activities.Parsed p = Activities.parse("Háromnegyed hétkor keltem "
+                + "és lementem úszni 1000 métert.");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        // A valódi heti összegzés marad hét nap.
+        assertEquals(7, Activities.parse("A héten háromszor futottam, "
+                + "összesen 25 km.").days);
+    }
+
 }

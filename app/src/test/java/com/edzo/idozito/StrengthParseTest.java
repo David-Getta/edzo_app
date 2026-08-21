@@ -1911,4 +1911,48 @@ public class StrengthParseTest {
                 .get(0).sets.get(0).reps);
     }
 
+    /**
+     * A kihúzás felhúzás, a haver súlya pedig nem a naplóé.
+     *
+     * A „3x10 kihúzást 60-nal" eddig nyomtalanul eltűnt, mert a „kihúzás"
+     * tő hiányzott. A „ő már 120-at nyom fekve, én még csak 90-et" pedig
+     * Peti százhúszasát írta az erőnaplóba a saját kilencven helyett.
+     */
+    @Test public void aGymPullAndAFriendsBenchAreSortedOut() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Nyomtam egy 5x5 guggolást 80 kilón, utána 3x10 kihúzást 60-nal.");
+        assertEquals(2, it.size());
+        assertEquals("Felhúzás", it.get(1).name);
+        assertEquals(60.0, it.get(1).topWeight(), 0.01);
+        List<StrengthParse.Item> tp = StrengthParse.parse("Találkoztam "
+                + "Petivel a konditeremben, ő már 120-at nyom fekve, "
+                + "én még csak 90-et.");
+        assertEquals(1, tp.size());
+        assertEquals(90.0, tp.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A vesszős kör is kör, és a jövőbeli cél melletti mai súly az enyém.
+     *
+     * A „3 kör, körönként 12 guggolás…" hármasa elveszett (vessző állt a
+     * „kör" után), az „az edzőm szerint jövő hónapra meglesz a 100 kg-os
+     * guggolás, ma 92,5 ment" mondatból pedig SEMMI nem lett – a jövő
+     * szava az egészet elnémította, pedig a 92,5 ma megtörtént.
+     */
+    @Test public void commaRoundsAndTodaysLiftBesideAGoal() {
+        List<StrengthParse.Item> kr = StrengthParse.parse("Súlyzós "
+                + "köredzés: 3 kör, körönként 12 guggolás 20 kg-mal, "
+                + "10 evezés, 15 felülés.");
+        assertEquals(3, kr.get(0).sets.size());
+        assertEquals(3, kr.get(2).sets.size());
+        List<StrengthParse.Item> gl = StrengthParse.parse("Az edzőm "
+                + "szerint jövő hónapra meglesz a 100 kg-os guggolás, "
+                + "ma 92,5 ment.");
+        assertEquals(1, gl.size());
+        assertEquals(92.5, gl.get(0).topWeight(), 0.01);
+        // A puszta cél mai szám nélkül marad üres.
+        assertTrue(StrengthParse.parse("Az edzőm szerint jövő hónapra "
+                + "meglesz a 100 kg-os guggolás.").isEmpty());
+    }
+
 }

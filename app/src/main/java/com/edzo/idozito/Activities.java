@@ -5825,6 +5825,11 @@ public final class Activities {
             String word = wordAt(s, p);
             if (word.equals(unit + "ja") || word.equals(unit + "je")
                     || word.equals(unit + "e")) continue;
+            // A „-kor" rag ÓRÁT mond, nem időszakot: a „háromnegyed hétkor
+            // keltem" hét napra terítette az aznapi úszást, mert a „hétkor"
+            // ragozott hétnek látszott. Óra-jelentése csak a hétnek van, de a
+            // minta a többi egységnél sem jelent semmit, kizárni mind biztos.
+            if (word.equals(unit + "kor")) continue;
             // A SORSZÁMOS esemény egyetlen nap: az „az első 5 km a héten"
             // hét napra terült szét, pedig a mondat egy MAI futásról szól –
             // a „héten" csak azt mondja meg, hányadik ez az alkalom.

@@ -1401,6 +1401,16 @@ public final class Foods {
     /** Az étel-felismerés elől elrejtett szavak kimaszkolása. */
     static String mask(String q) {
         StringBuilder sb = new StringBuilder(q);
+        // A TEGNAPI ok nem mai falat: a „fáradtan keltem, lehet a sok
+        // tegnapi kávé miatt" kávéja a fáradtság magyarázata, mégis kétdecis
+        // fekete került tőle a MAI naplóba. A „miatt" névutó okot mond, nem
+        // evést – ami a tegnapi jelző és a „miatt" közé esik, kitakarható.
+        // (A „megettem a tegnapi maradékot" marad: ott nincs „miatt".)
+        java.util.regex.Matcher yc = java.util.regex.Pattern.compile(
+                "(?<![a-z])tegnap(?:i| esti)\\s+(?:\\p{L}+\\s+){0,2}?miatt(?![\\p{L}])")
+                .matcher(q);
+        while (yc.find())
+            for (int k = yc.start(); k < yc.end(); k++) sb.setCharAt(k, ' ');
         int i = 0;
         String prev = "";
         while (i < sb.length()) {
@@ -3851,11 +3861,20 @@ public final class Foods {
      * félreérthetetlen; az ivás igéje vagy a kimondott mennyiség felment.
      */
     private static List<Match> dropExplainedWater(List<Match> ms, String s) {
+        // A névelő el is maradhat: a „lehet csak víz" ugyanaz a találgatás,
+        // mint a „lehet, hogy csak a víz" – eddig csak az utóbbit fogtuk meg.
         if (!s.matches("(?s).*(?<![a-z])(?:biztos|szerintem|valoszinuleg"
-                + "|gondolom|lehet, hogy|nyilvan|talan)\\s+(?:hogy\\s+)?"
-                + "(?:csak\\s+)?(?:ez\\s+|az\\s+)?a viz(?![a-z]).*")) return ms;
-        if (s.matches("(?s).*(?:ittam|ivas|iszom|megittam|fogyasztottam"
-                + "|\\d\\s?(?:dl|liter|l|ml)(?![a-z])).*")) return ms;
+                + "|gondolom|lehet|nyilvan|talan)(?:,? hogy)?\\s+"
+                + "(?:csak\\s+)?(?:ez\\s+|az\\s+)?a?\\s?viz(?![a-z]).*")) return ms;
+        // Az ivás igéje csak akkor ment fel, ha UGYANARRA a vízre mutat: a
+        // „tegnap este sokat ittam, szóval lehet csak víz" ivása az esti
+        // italozásról szól, a víz ott is a mérleg magyarázata – mégis
+        // negyed liter víz került tőle a naplóba.
+        if (s.matches("(?s).*\\d\\s?(?:dl|liter|l|ml)(?![a-z]).*")) return ms;
+        if (s.matches("(?s).*(?<![a-z])(?:viz\\p{L}{0,4}[^,;.]{0,24}"
+                + "(?:ittam|iszom|megittam|ivas\\p{L}*|fogyasztottam)"
+                + "|(?:ittam|iszom|megittam|ivas\\p{L}*|fogyasztottam)"
+                + "[^,;.]{0,24}viz).*")) return ms;
         List<Match> out = new ArrayList<>();
         for (Match m : ms) if (!m.food.name.startsWith("Víz")) out.add(m);
         return out;
