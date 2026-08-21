@@ -3162,6 +3162,7 @@ public final class Foods {
         List<Match> ms = dropVenueMenu(matches(list, query), norm(query));
         ms = dropSmoothieDouble(ms, norm(query));
         ms = dropProteinAdjective(ms, norm(query));
+        ms = dropVenueSuffix(ms, norm(query));
         ms = dropFakeMeat(ms, norm(query));
         ms = dropWrapDouble(ms);
         ms = dropExplainedWater(ms, norm(query));
@@ -3648,6 +3649,29 @@ public final class Foods {
             out.add(m);
         }
         return out.isEmpty() ? ms : out;
+    }
+
+    /**
+     * A VENDÉGLÁTÓHELY neve nem fogás.
+     *
+     * Az „ebéd a Wokbar-ból: pad thai" wokja a hely nevében ül – mégis egy
+     * 350 grammos wok-tál került a pad thai MELLÉ. Ha az étel-tő után a
+     * szó a hely szavával folytatódik, az a hely neve.
+     */
+    private static List<Match> dropVenueSuffix(List<Match> ms, String q) {
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) {
+            int e = m.pos + m.len;
+            int we = e;
+            while (we < q.length() && Character.isLetter(q.charAt(we))) we++;
+            String rest = q.substring(e, we);
+            if (rest.startsWith("bar") || rest.startsWith("bisztro")
+                    || rest.startsWith("bufe") || rest.startsWith("etterem")
+                    || rest.startsWith("haz") || rest.startsWith("kiraly"))
+                continue;
+            out.add(m);
+        }
+        return out;
     }
 
     /**

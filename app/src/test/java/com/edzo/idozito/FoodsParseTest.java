@@ -2127,4 +2127,22 @@ public class FoodsParseTest {
         // Az angol half maraton marad kitakarva.
         assertTrue(Foods.parse(all, "lefutottam a half maratont").isEmpty());
     }
+
+    /**
+     * A vendéglátóhely neve nem fogás.
+     *
+     * Az „ebéd a Wokbar-ból: pad thai csirkével" wokja a hely nevében ül –
+     * mégis egy 350 grammos wok-tál került a pad thai MELLÉ, közel dupla
+     * kalóriával.
+     */
+    @Test public void aVenueNameIsNotADish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "ebéd a Padthai Wokbar-ból: "
+                + "pad thai csirkével");
+        assertEquals(1, hits.size());
+        assertEquals("Pad thai", hits.get(0).food.name);
+        // A valódi wok-tál marad.
+        assertEquals("Wok (zöldséges-húsos)", Foods.parse(all,
+                "wok zöldségekkel").get(0).food.name);
+    }
 }
