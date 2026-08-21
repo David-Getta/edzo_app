@@ -132,7 +132,9 @@ public final class StrengthParse {
             {"Lábtolás", "labtolas", "labtolo", "labtologep", "leg press",
                     "legpress"},
             {"Vádliemelés", "vadliemel", "vadli"},
-            {"Fekvőtámasz", "fekvotamasz", "push up", "pushup"},
+            // A puszta „fekvő" a terem szlengje ugyanerre: a „húsz burpee,
+            // húsz fekvő, húsz guggolás" fekvőtámasza eddig elveszett.
+            {"Fekvőtámasz", "fekvotamasz", "fekvo", "push up", "pushup"},
             {"Tolódzkodás", "tolodzkod", "dipp", "dips", "dip"},
             // A „kábelhúzás" a magyar termek gyűjtőneve a csigás húzásra – a
             // leggyakoribb változata a hátnak szóló lehúzás.
@@ -570,6 +572,11 @@ public final class StrengthParse {
             if (rounds <= 0) rounds = numberBefore(whole, "kor:");
             if (rounds <= 0) rounds = numberBefore(raw, "kor ");
             if (rounds <= 0) rounds = numberBefore(raw, "kor:");
+            // A kör-szám a lista VÉGÉN is állhat: a „húsz burpee, húsz
+            // fekvő, húsz guggolás, öt körben" listája eddig egyetlen kört
+            // ért – a munka négyötöde eltűnt.
+            if (rounds <= 0) rounds = numberBefore(whole, "korben");
+            if (rounds <= 0) rounds = numberBefore(raw, "korben");
             // Az első gyakorlat gyakran MÁR megkapta a kör-számot (vele egy
             // tagmondatban áll), a többi nem. Akkor bővítünk, ha minden tétel
             // vagy egy sorozatos, vagy pont ennyi sorozatos – így a saját

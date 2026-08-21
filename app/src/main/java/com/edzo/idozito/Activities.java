@@ -1293,6 +1293,12 @@ public final class Activities {
                 + "|edzesterv\\w*)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:fel|negyed)?maraton(?:ra|re)"
                     + "(?![a-z])", " ");
+        // A SŐT utáni szám az igazi lépésszám: a „ma végre elértem a napi
+        // 10 000 lépést, sőt 12 300 lett" tízezrese a CÉL volt, a valódi
+        // tizenkétezer-háromszáz mégis elveszett – a naplóba a cél került.
+        s = s.replaceAll("(\\d[\\d ]{0,6}\\d|\\d)\\s?lepes\\w*\\s*[,!]?\\s*"
+                + "sot\\s+(\\d[\\d ]{0,6}\\d)(?:\\s?lepes\\w*)?\\s+lett",
+                "$2 lepes");
         // A MEGÁLLÁSOK száma nem alkalomszám: az „összesen 6 km-t futottam
         // ma, de kétszer álltam meg közben" KÉT darab három kilométeres
         // futás lett – a megállások száma elvitte az alkalomszámot, az

@@ -1841,4 +1841,26 @@ public class StrengthParseTest {
         assertEquals(60.0, ok.get(0).topWeight(), 0.01);
     }
 
+    /**
+     * A lista végén álló körszám és a „fekvő" szleng.
+     *
+     * A „húsz burpee, húsz fekvő, húsz guggolás, öt körben" listájából
+     * egyetlen húszas guggolás lett: a „fekvő" rövidítést nem ismerte a
+     * szótár, a lista VÉGÉN álló kör-szám pedig nem szorzott – a munka
+     * négyötöde eltűnt.
+     */
+    @Test public void aTrailingRoundCountMultipliesTheList() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma a parkban "
+                + "edzettünk: húsz burpee, húsz fekvő, húsz guggolás, "
+                + "öt körben.");
+        assertEquals(2, it.size());
+        for (StrengthParse.Item x : it) {
+            assertEquals(5, x.sets.size());
+            assertEquals(100, x.totalReps());
+        }
+        // A puszta „fekvő helyzet" nem gyakorlat.
+        assertTrue(StrengthParse.parse("Fekvő helyzetben emeltem lábat.")
+                .isEmpty());
+    }
+
 }

@@ -7556,4 +7556,18 @@ public class ActivitiesParseTest {
                 .plans.get(0).count);
     }
 
+    /**
+     * A sőt utáni szám az igazi lépésszám.
+     *
+     * A „ma végre elértem a napi 10 000 lépést, sőt 12 300 lett!" hét és
+     * fél kilométeres sétát írt be a kilenc-kettő helyett: a CÉL tízezrese
+     * ment be, a valódi tizenkétezer-háromszáz elveszett.
+     */
+    @Test
+    public void theNumberAfterSotWins() {
+        Activities.Parsed p = Activities.parse("Ma végre elértem a napi "
+                + "10 000 lépést, sőt 12 300 lett!");
+        assertEquals(12300, p.plans.get(0).steps);
+    }
+
 }
