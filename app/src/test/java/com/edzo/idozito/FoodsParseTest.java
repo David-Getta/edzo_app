@@ -2093,4 +2093,20 @@ public class FoodsParseTest {
         // Az egyszer, tagadva említett étel marad kihagyva.
         assertTrue(Foods.parse(all, "kávé nélkül indult a nap").isEmpty());
     }
+
+    /**
+     * A „proteines" jelző nem külön turmix.
+     *
+     * A „proteines palacsinta" palacsintája mellé egy háromszáz grammos
+     * protein turmix is bement – háromszáz kalória egy jelzőből.
+     */
+    @Test public void aProteinAdjectiveIsNotAShake() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "proteines palacsinta");
+        assertEquals(1, hits.size());
+        assertEquals("Palacsinta", hits.get(0).food.name);
+        // A valódi turmix marad.
+        assertEquals("Protein turmix", Foods.parse(all, "protein turmix "
+                + "banánnal").get(0).food.name);
+    }
 }

@@ -3152,6 +3152,7 @@ public final class Foods {
         query = amountFromTheOtherClause(list, query);
         List<Match> ms = dropVenueMenu(matches(list, query), norm(query));
         ms = dropSmoothieDouble(ms, norm(query));
+        ms = dropProteinAdjective(ms, norm(query));
         ms = dropFakeMeat(ms, norm(query));
         ms = dropWrapDouble(ms);
         ms = dropExplainedWater(ms, norm(query));
@@ -3632,6 +3633,30 @@ public final class Foods {
             out.add(m);
         }
         return out.isEmpty() ? ms : out;
+    }
+
+    /**
+     * A „PROTEINES" jelző nem külön turmix.
+     *
+     * A „proteines palacsinta" palacsintája mellé egy háromszáz grammos
+     * protein turmix is bement – háromszáz kalória egy jelzőből. Ha a
+     * protein-tő közvetlenül egy MÁSIK étel neve előtt áll, csak jelző.
+     */
+    private static List<Match> dropProteinAdjective(List<Match> ms, String q) {
+        List<Match> out = new ArrayList<>();
+        for (Match m : ms) {
+            boolean drop = false;
+            if (m.food.name.startsWith("Protein turmix")
+                    && !q.substring(m.pos, m.pos + m.len).contains(" ")) {
+                int e = m.pos + m.len;
+                while (e < q.length() && Character.isLetter(q.charAt(e))) e++;
+                while (e < q.length() && q.charAt(e) == ' ') e++;
+                for (Match x : ms)
+                    if (x != m && x.pos == e) { drop = true; break; }
+            }
+            if (!drop) out.add(m);
+        }
+        return out;
     }
 
     /**
