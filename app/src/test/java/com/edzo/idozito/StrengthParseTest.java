@@ -1955,4 +1955,17 @@ public class StrengthParseTest {
                 + "meglesz a 100 kg-os guggolás.").isEmpty());
     }
 
+    /**
+     * A „között" számnévje nem ismétlésszám.
+     *
+     * A „két kávé között lenyomtam 50 fekvőtámaszt az irodában" kettője
+     * lett a sorozat az ötven helyett – a „között" névutó a számnevet a
+     * kávéhoz köti, nem a gyakorlathoz.
+     */
+    @Test public void aNumberBoundToBetweenIsNotARepCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Két kávé között "
+                + "lenyomtam 50 fekvőtámaszt az irodában, részletekben.");
+        assertEquals(50, it.get(0).sets.get(0).reps);
+    }
+
 }

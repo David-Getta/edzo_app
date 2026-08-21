@@ -7895,4 +7895,61 @@ public class ActivitiesParseTest {
                 + "összesen 25 km.").days);
     }
 
+    /**
+     * Az angol ugrálókötél is sport, a nagymamám tornája viszont nem az enyém.
+     *
+     * A „rossz idő volt, a futás helyett 45 perc jump rope a garázsban"
+     * bejegyzésből SEMMI nem lett, a „nagymamám 85 évesen is mindennap
+     * tornázik 20 percet" viszont húsz perc jógát írt a MI naplónkba –
+     * a naGYMama közepén ülő gym miatt az alany a maszkon eltűnt.
+     */
+    @Test
+    public void jumpRopeCountsAndGrandmasWorkoutDoesNot() {
+        Activities.Parsed p = Activities.parse("Rossz idő volt, a futás "
+                + "helyett 45 perc jump rope a garázsban.");
+        assertEquals(1, p.plans.size());
+        assertEquals(45, p.plans.get(0).minutes);
+        assertTrue(Activities.parse("Nagymamám 85 évesen is mindennap "
+                + "tornázik 20 percet, tőle tanulok.").plans.isEmpty());
+        // A közös séta az enyém is.
+        assertEquals(1, Activities.parse("Nagymamámmal sétáltam egy órát "
+                + "a parkban.").plans.size());
+    }
+
+    /**
+     * A „sőt" utáni szám szóközös ezressel és beékelt cél-szóval is nyer.
+     *
+     * A „végre elértem a napi 10 000 lépéses célt, sőt 12 431 lett!"
+     * naplójába a tízezres CÉL került a valódi tizenkétezer helyett –
+     * a „célt" szava megtörte a sőt-mintát.
+     */
+    @Test
+    public void theRealStepCountBeatsTheGoalEvenWithAWordBetween() {
+        Activities.Parsed p = Activities.parse("Végre elértem a napi "
+                + "10 000 lépéses célt, sőt 12 431 lett!");
+        assertEquals(1, p.plans.size());
+        assertEquals(12431, p.plans.get(0).steps);
+    }
+
+    /**
+     * A maradék tegnapról való, az evés mai; a plank perce nem az edzésé.
+     *
+     * Az „az ebédem maradék lasagne volt tegnapról" bejegyzése TEGNAPRA
+     * került, az „otthoni edzés: … plank 3x1 perc" pedig EGYPERCES
+     * kondiedzést írt be – a szám előtt álló plank ideje lett az egészé.
+     */
+    @Test
+    public void leftoversDateTodayAndAPlankMinuteIsNotTheSession() {
+        assertEquals(0, Activities.parse("Az ebédem maradék lasagne volt "
+                + "tegnapról, kb 400 gramm.").offset);
+        Activities.Parsed p = Activities.parse("Otthoni edzés: 4x15 kitörés, "
+                + "3x20 vállemelés 2x5 kg-os kézisúlyzóval, plank 3x1 perc.");
+        assertEquals(1, p.plans.size());
+        assertTrue(p.plans.get(0).minutes >= 30);
+        // A kimondott edzés-idő marad, a tegnapi futás is tegnapi marad.
+        assertEquals(45, Activities.parse("Kondi 45 perc, plank 3x45 mp "
+                + "a végén.").plans.get(0).minutes);
+        assertEquals(1, Activities.parse("Tegnap futottam 10 km-t.").offset);
+    }
+
 }

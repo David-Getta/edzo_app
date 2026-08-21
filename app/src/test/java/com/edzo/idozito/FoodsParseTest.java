@@ -2215,4 +2215,22 @@ public class FoodsParseTest {
                 + "nehezebb, ittam 2 liter vizet edzés után.")
                 .get(0).grams, 0.01);
     }
+
+    /**
+     * A kávézó hely, nem ital.
+     *
+     * Az „a kávézóban dolgoztam egész nap" mellé egy kétdecis fekete
+     * került, a „borozóban ünnepeltünk" mellé egy pohár bor – italok,
+     * amiket senki nem mondott ki. A -zó képző helyet csinál a tőből.
+     */
+    @Test public void aCoffeeHouseIsAPlaceNotADrink() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A kávézóban dolgoztam egész nap, "
+                + "alig mozogtam.").isEmpty());
+        assertTrue(Foods.parse(all, "A borozóban ünnepeltük a "
+                + "születésnapot.").isEmpty());
+        // A kávézóban MEGIVOTT kávé marad.
+        assertEquals("Kávé (fekete)", Foods.parse(all, "Ittam egy kávét "
+                + "a kávézóban a barátnőmmel.").get(0).food.name);
+    }
 }

@@ -530,7 +530,10 @@ public final class Activities {
 
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
-                    "ugralo kotel", "hulahopp", "kotelugras",
+                    // Az angol neve is bevett: a „45 perc jump rope a
+                    // garázsban" eddig semmi nem volt.
+                    "ugralo kotel", "hulahopp", "kotelugras", "jump rope",
+                    "jumprope", "skipping rope",
                     "buvarkod", "buvark", "szankoz", "parkour", "szanko",
                     // Hetvennégy mindennapi sportnévvel végigpróbálva az
                     // íjászat hiányzott. (A darts szándékosan marad kimaradva:
@@ -1226,6 +1229,19 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A naGYMama közepén a „gym" ül, ezért a szó a sport-maszkra került
+        // – csakhogy a maszk az ALANYT is eltünteti, és a „nagymamám
+        // mindennap tornázik 20 percet" húsz perc jóga lett a MI naplónkban.
+        // A becézett alak tiszta: nincs benne gym, és a más-ember szűrő
+        // alanyként ismeri. Csak a birtokos alakot írjuk át: a ragtalan
+        // „nagymama" hétköznapi szóként bárhol állhat (őrszem-teszt).
+        s = s.replaceAll("(?<![a-z])nagymamam\\w*", "nagyi");
+        // A MARADÉK tegnapról való, az EVÉS mai: az „az ebédem maradék
+        // lasagne volt tegnapról" bejegyzése TEGNAPRA került – pedig a
+        // -ról rag az étel eredetét mondja, nem az étkezés napját.
+        s = s.replaceAll("(?<![a-z])(marad[eo]k?\\w*[^,;.]{0,24}?)"
+                + "tegnaprol(?![a-z])", "$1");
+        s = s.replaceAll("(?<![a-z])tegnaprol\\s+(?=marad)", "");
         // A HÁT NAP nem hat nap: ékezet nélkül a testrész és a számnév
         // egybeesik, és a „kondiedzés: hát nap, húzódzkodás 4x6, evezés
         // gépen 4x10" egyetlen edzése HAT NAPRA terült szét a naptárban. Az
@@ -1299,7 +1315,11 @@ public final class Activities {
         // A SŐT utáni szám az igazi lépésszám: a „ma végre elértem a napi
         // 10 000 lépést, sőt 12 300 lett" tízezrese a CÉL volt, a valódi
         // tizenkétezer-háromszáz mégis elveszett – a naplóba a cél került.
-        s = s.replaceAll("(\\d[\\d ]{0,6}\\d|\\d)\\s?lepes\\w*\\s*[,!]?\\s*"
+        // A cél neve be is ékelődhet: az „elértem a napi 10 000 lépéses
+        // célt, sőt 12 431 lett" cél-szava eddig megtörte a mintát, és
+        // megint a tízezres cél került a naplóba.
+        s = s.replaceAll("(\\d[\\d ]{0,6}\\d|\\d)\\s?lepes\\w*\\s*"
+                + "(?:\\p{L}{1,12}\\s*)?[,!]?\\s*"
                 + "sot\\s+(\\d[\\d ]{0,6}\\d)(?:\\s?lepes\\w*)?\\s+lett",
                 "$2 lepes");
         // A KÉPESSÉG főnévi igeneve nem edzés: a „csak este tudok mozogni,
@@ -6305,6 +6325,23 @@ public final class Activities {
             }
             String name = StrengthParse.nameIn(s.substring(e, stop));
             if (name != null && StrengthParse.isTimed(name)) continue;
+            // A gyakorlat neve a szám ELŐTT is állhat: a „plank 3x1 perc"
+            // egy perce lett az egész otthoni edzés hossza. Visszafelé a
+            // közvetlenül a szám előtt álló szót nézzük (a sorozat-jelölés
+            // átugorható) – a távolabbi név („plank után 30 perc futás")
+            // nem viheti el a valódi időt.
+            int bs = Math.max(0, m[0] - 24);
+            for (int k = m[0] - 1; k >= bs; k--) {
+                char c = s.charAt(k);
+                if (c == ',' || c == ';' || c == '.' || c == ':') { bs = k + 1; break; }
+            }
+            java.util.regex.Matcher bm = java.util.regex.Pattern.compile(
+                    "(\\p{L}{3,})\\s*[:\\-]?\\s*(?:\\d{1,2}\\s?[x×]\\s?)?$")
+                    .matcher(s.substring(bs, Math.min(s.length(), m[0])));
+            if (bm.find()) {
+                String bn = StrengthParse.nameIn(bm.group(1));
+                if (bn != null && StrengthParse.isTimed(bn)) continue;
+            }
             keep.add(m);
         }
         if (keep.size() < mins.size()) { mins.clear(); mins.addAll(keep); }
@@ -7356,6 +7393,10 @@ public final class Activities {
             "batyam", "hugom", "novverem", "anyam", "apam", "anyukam", "apukam",
             "kollegam", "fonokom", "szomszedom", "kutyam", "csapat", "csapatom",
             "gyerekek", "gyerekem", "unokam", "baratom", "baratnom", "edzom",
+            // A birtokos nagyszülő is alany: a „nagymamám 85 évesen is
+            // mindennap tornázik 20 percet" húsz perc jógát írt a MI
+            // naplónkba. (A ragtalan „nagymama" hétköznapi szóként marad.)
+            "nagymamam", "nagypapam",
             // A becézett szülő-nevek is alanyok: az „apu 10 km-t
             // biciklizett" az apa túrája volt, mégis a naplómba került.
             // A teljes alak (anya, apa, nagypapa) szándékosan nincs itt:

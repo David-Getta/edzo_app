@@ -609,4 +609,26 @@ public class KcalTest {
                 + "megpróbálok 2000 alatt maradni."));
     }
 
+    /**
+     * A napló-lista elöl álló kalóriája bevitel, az óra-export hátulja égetés.
+     *
+     * A „fogyókúrás napló, 3. nap: 1450 kcal, 11 000 lépés, 1,5 l víz"
+     * ezernégyszázötvene ELÉGETETT kalóriának minősült a lépés szava miatt
+     * – pedig tizenegyezer lépés a fele ennyit sem éget, és a felsorolás
+     * a napi BEVITELT összegzi. A mozgás mögé írt kalória viszont marad
+     * óra-adat: „3200 lépés, 140 kcal".
+     */
+    @Test public void aDietDiaryListsIntakeFirst() {
+        String diary = "Fogyókúrás napló, 3. nap: 1450 kcal, "
+                + "11 000 lépés, 1,5 l víz.";
+        assertEquals(1450, Kcal.stated(diary));
+        assertTrue(Kcal.burned(diary) <= 0);
+        // Az óra-export iránya nem fordul meg.
+        assertEquals(140, Kcal.burned("3200 lépés, 140 kcal."));
+        assertEquals(380, Kcal.burned("Edzés 45 perc, 380 kcal."));
+        // A kimondott égetés-ige elöl állva is égetés.
+        assertEquals(650, Kcal.burned("Ma 650 kcal-t égettem el a "
+                + "futással, 1900 kcal-t ettem."));
+    }
+
 }

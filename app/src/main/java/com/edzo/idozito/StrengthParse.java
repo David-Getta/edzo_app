@@ -405,6 +405,13 @@ public final class StrengthParse {
         // kardió-adag mellé. A mozgás-oldal régóta összevonja; itt is kell.
         text = text.replaceAll("(?<![\\d.,:])(\\d{1,3})\\s(\\d{3})"
                 + "(?=\\s?(?:m|meter\\p{L}*|km)(?![\\p{L}]))", "$1$2");
+        // A KÖZÖTT számnévje nem ismétlésszám: a „két kávé között lenyomtam
+        // 50 fekvőtámaszt" kettője lett a sorozat az ötven helyett – pedig a
+        // „között" névutó a számnevet a szomszéd főnévhez köti, nem a
+        // gyakorlathoz.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:k[eé]t|h[aá]rom|n[eé]gy"
+                + "|[oö]t|hat|h[eé]t|nyolc|kilenc|t[ií]z)\\s+"
+                + "(\\p{L}+\\s+k[oö]z[oö]tt)(?![\\p{L}])", "$1");
         // A KÖR SORSZÁMA nem ismétlésszám: a „kör 1 – guggolás, kör 2 –
         // fekvőtámasz, kör 3 – plank" címkéiből egy-, két- és háromismétléses
         // sorok lettek – kitalált számok a valódi edzés helyett. A címkét

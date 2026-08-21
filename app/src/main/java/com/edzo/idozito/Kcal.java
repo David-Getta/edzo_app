@@ -185,7 +185,29 @@ public final class Kcal {
         // tréner, 430 kcal" négyszázharminca ELÉGETETT kalória, mégis a napi
         // BEVITELHEZ adódott – egy edzésből lett négyszázharminc megevett
         // kalória, vagyis a mérleg mindkét oldala rossz irányba mozdult.
+        if (dietListFirst(s)) return false;
         return sportWordIn(s);
+    }
+
+    /**
+     * A NAPLÓ-LISTA kalóriája bevitel: az „1450 kcal, 11 000 lépés, 1,5 l
+     * víz" felsorolás a napot összegzi, és a kalória a SAJÁT tagmondatában
+     * áll, mozgás-szó nélkül, a mozgás tétele ELŐTT. Az óra-export fordítva
+     * írja („futás 45 perc, 520 kcal" – a mozgás nyit), a lépése mellé írt
+     * kalória pedig a lépés MÖGÖTT áll („3200 lépés, 140 kcal"). Csak akkor
+     * bevitel, ha égetést egyetlen tagmondat sem mond ki mozgással együtt.
+     */
+    private static boolean dietListFirst(String s) {
+        boolean sportSeen = false, alonePre = false;
+        for (String cl : s.split("\\s*[,;.]\\s*")) {
+            boolean sport = sportWordIn(cl);
+            boolean kc = cl.matches("(?s).*\\d\\s?(?:kcal|kalor\\w*|cal)"
+                    + "(?![a-z]).*");
+            if (sport && kc) return false;
+            if (kc && !sportSeen && !sport) alonePre = true;
+            if (sport) sportSeen = true;
+        }
+        return alonePre;
     }
 
     /** Mozgás-szó a mondatban – az égetés iránya e nélkül nem hihető. */
@@ -213,14 +235,18 @@ public final class Kcal {
         // akkor, ha a mondat mozgást, órát vagy égetés-szót mond.
         if (q != null) {
             String s = Hu.digits(Foods.norm(q));
-            boolean cue = sportWordIn(s);
-            if (!cue) for (Pattern w : NOT_EATEN_P)
-                if (w.matcher(s).find()) { cue = true; break; }
-            if (!cue) for (String w : new String[]{"polar", "garmin",
+            boolean sportCue = sportWordIn(s), strongCue = false;
+            for (Pattern w : NOT_EATEN_P)
+                if (w.matcher(s).find()) { strongCue = true; break; }
+            if (!strongCue) for (String w : new String[]{"polar", "garmin",
                     "suunto", "fitbit", "strava", "apple watch", "coros",
                     "aktiv kalori", "atlag hr", "atlagpulzus", "kal ment el"})
-                if (s.contains(w)) { cue = true; break; }
-            if (!cue) return -1;
+                if (s.contains(w)) { strongCue = true; break; }
+            if (!sportCue && !strongCue) return -1;
+            // A NAPLÓ-LISTA elöl álló kalóriája bevitel (lásd
+            // dietListFirst) – a puszta mozgás-szó nem fordítja meg. A
+            // kimondott égetés-ige vagy az óra márkaneve viszont igen.
+            if (!strongCue && dietListFirst(s)) return -1;
         }
         return amount(exerciseClausesOnly(q), EATEN_P, NOT_EATEN_P);
     }

@@ -3680,7 +3680,12 @@ public final class Foods {
             String rest = q.substring(e, we);
             if (rest.startsWith("bar") || rest.startsWith("bisztro")
                     || rest.startsWith("bufe") || rest.startsWith("etterem")
-                    || rest.startsWith("haz") || rest.startsWith("kiraly"))
+                    || rest.startsWith("haz") || rest.startsWith("kiraly")
+                    // A -ZÓ képzős hely is hely: a „kávézóban dolgoztam
+                    // egész nap" mellé egy fekete került, a „borozóban
+                    // ünnepeltünk" mellé egy pohár bor – italok, amiket
+                    // senki nem mondott ki.
+                    || rest.startsWith("zo") || rest.startsWith("ozo"))
                 continue;
             out.add(m);
         }
