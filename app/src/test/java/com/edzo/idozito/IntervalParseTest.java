@@ -974,4 +974,18 @@ public class IntervalParseTest {
         assertEquals(120, p.rest);
     }
 
+    /**
+     * Az ismétlés-tartomány nem munka/pihenő pár.
+     *
+     * A „súlyzós edzés 60 perc: mell, hát, váll, minden 3x10-12 között"
+     * súlyzós napja tíz másodperc munka / tizenkét pihenő tervvé vált –
+     * naplózás helyett egy időzítő indult volna el.
+     */
+    @Test public void aRepRangeIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Súlyzós edzés 60 perc: mell, hát, "
+                + "váll, minden 3x10-12 között."));
+        // A kimondott intervall marad terv.
+        assertNotNull(IntervalParse.parse("Tabata 8x20-10."));
+    }
+
 }

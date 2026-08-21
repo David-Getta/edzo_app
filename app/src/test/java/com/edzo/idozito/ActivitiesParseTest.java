@@ -7617,4 +7617,22 @@ public class ActivitiesParseTest {
                 + "futottam.").days);
     }
 
+    /**
+     * A délutáni óraszám óraállás, nem tizenhét órányi futás.
+     *
+     * A „17 óra körül futottam egy könnyed 7 km-t" bejegyzésbe EZERHÚSZ
+     * perces futás került: a tizenhét óra időtartammá vált. A 13-23
+     * közötti óraszám a „körül" mellett csak óraállás lehet.
+     */
+    @Test
+    public void anAfternoonClockIsNotSeventeenHours() {
+        Activities.Parsed p = Activities.parse("17 óra körül futottam egy "
+                + "könnyed 7 km-t a folyóparton.");
+        assertEquals(17, p.hour);
+        assertEquals(42, p.plans.get(0).minutes);
+        // A valódi óra-hossz marad.
+        assertEquals(120, Activities.parse("Kb 2 órát bicikliztem.")
+                .plans.get(0).minutes);
+    }
+
 }

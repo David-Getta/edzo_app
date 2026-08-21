@@ -1347,6 +1347,17 @@ public final class Activities {
         // többi szabályig. (A „25:30 alatt" versenyidő nem ragos: marad.)
         s = s.replaceAll("(?<![\\d,.:])([01]?\\d|2[0-3]):[0-5]\\d\\s?-?"
                 + "(?:kor|orakor)(?![a-z])", "$1-kor");
+        // Az „N ÓRA KÖRÜL" időpont, nem hossz: a „17 óra körül futottam egy
+        // könnyed 7 km-t" bejegyzésbe EZERHÚSZ perces futás került – a
+        // tizenhét óra időtartammá vált. A délutáni-esti óraszám (13-23)
+        // önmagában is óraállás; a kisebb szám napszak-szóval az.
+        s = s.replaceAll("(?<![\\d,.:])(1[3-9]|2[0-3])\\s?ora(?:kor)?\\s+"
+                + "(?:korul|tajban|tajt|fele|magassagaban)(?![a-z])",
+                "$1-kor");
+        s = s.replaceAll("(?<![a-z])(reggel|delelott|delben|delutan|este"
+                + "|ejjel|hajnalban)\\s+(\\d{1,2})\\s?ora(?:kor)?\\s+"
+                + "(?:korul|tajban|tajt|fele|magassagaban)(?![a-z])",
+                "$1 $2-kor");
         // A RAG NÉLKÜLI óraállás is időpont: a „reggel 6:30: 20 perc
         // mobilitás" fejlécéből HARMINC edzés lett harminc napra osztva – a
         // kettőspont utáni perc levált, és a 30 darabszámmá vált. A napszak

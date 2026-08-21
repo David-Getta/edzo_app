@@ -148,6 +148,18 @@ public final class IntervalParse {
         if ((s.contains("meccs") || s.contains("felido")
                 || s.contains("jatszottam") || s.contains("kispalyas"))
                 && !s.contains("intervall") && !s.contains("hiit")) return null;
+        // Az ISMÉTLÉS-TARTOMÁNY sem ritmus: a „súlyzós edzés 60 perc: mell,
+        // hát, váll, minden 3x10-12 között" súlyzós napja tíz másodperc
+        // munka / tizenkét másodperc pihenő tervvé vált – a naplózás helyett
+        // egy időzítő indult volna el. Idő-egység nélkül az „NxA-B" a
+        // sorozat×ismétlés sávja; a kimondott intervall-szó felment.
+        if (s.matches("(?s).*\\d\\s?[x×]\\s?\\d{1,2}\\s?-\\s?\\d{1,2}"
+                + "(?![\\d:])(?!\\s?(?:perc|mp|masodperc|sec|s(?![a-z]))).*")
+                && s.matches("(?s).*(?<![a-z])(sulyzo\\w*|szett\\w*"
+                    + "|sorozat\\w*|ismetles\\w*|mell|hat|vall|bicepsz"
+                    + "|tricepsz|fekvenyomas|guggolas|kondi\\w*)(?![a-z]).*")
+                && !s.contains("intervall") && !s.contains("tabata")
+                && !s.contains("hiit")) return null;
         // A PULZUS sem ritmus: az „50-55 között van a nyugalmi pulzusom"
         // tartománya munka/pihenő párnak látszott, és ötven másodperc munka,
         // ötvenöt pihenő terv lett belőle. Ha viszont a mondat ki is mondja
