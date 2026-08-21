@@ -7678,4 +7678,22 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("Heti terhelés: 60 km.").days);
     }
 
+    /**
+     * Az „az is kardió" záró kommentár nem külön edzés.
+     *
+     * A „gyors tempóban toltam a babakocsit 40 percig, az is kardio"
+     * negyven perce mellé egy második, negyvenöt perces „egyéb mozgás" is
+     * bekerült – ugyanarról a sétáról, a rámutató kommentárból.
+     */
+    @Test
+    public void aClosingRemarkIsNotASecondSession() {
+        Activities.Parsed p = Activities.parse("Reggel gyors tempóban "
+                + "toltam a babakocsit 40 percig, az is kardio.");
+        assertEquals(1, p.plans.size());
+        assertEquals(40, p.plans.get(0).minutes);
+        // A minősítő zárszó sem szül újat.
+        assertEquals(1, Activities.parse("Ma 40 perc futás, kemény "
+                + "edzés.").plans.size());
+    }
+
 }

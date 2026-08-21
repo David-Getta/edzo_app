@@ -1318,6 +1318,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // AZ „AZ IS KARDIÓ" záró kommentár nem külön edzés: a „gyors
+        // tempóban toltam a babakocsit 40 percig, az is kardio" negyven
+        // perce mellé egy második, negyvenöt perces „egyéb mozgás" is
+        // bekerült – ugyanarról a sétáról. A rámutató kommentár kiesik.
+        s = s.replaceAll(",\\s*(?:az\\s+is|ez\\s+is|az\\s+mar|megis"
+                + "\\s+csak)?\\s*(?:az\\s+is\\s+|ez\\s+is\\s+)?"
+                + "(?:kardio|mozgas|edzes|sport|testmozgas|munka|valami)"
+                + "\\w{0,4}\\s*[.!]?\\s*$", " ");
         // A MEGÁLLÁSOK száma nem alkalomszám: az „összesen 6 km-t futottam
         // ma, de kétszer álltam meg közben" KÉT darab három kilométeres
         // futás lett – a megállások száma elvitte az alkalomszámot, az
