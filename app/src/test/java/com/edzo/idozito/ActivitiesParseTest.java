@@ -7744,4 +7744,22 @@ public class ActivitiesParseTest {
                 + "kondi.").offset);
     }
 
+    /**
+     * A megérkezett felszerelés nem edzés.
+     *
+     * A „ma reggel jött a futár az új súlyzókkal, 2x22,5 kg-osak"
+     * hatvanperces kondi-bejegyzést írt be – egy csomagátvételből. A
+     * kipróbálás viszont valódi edzés.
+     */
+    @Test
+    public void deliveredEquipmentIsNotAWorkout() {
+        assertTrue(Activities.parse("Ma reggel jött a futár az új "
+                + "súlyzókkal, 2x22,5 kg-osak.").plans.isEmpty());
+        assertTrue(Activities.parse("Megjött az új kettlebell, "
+                + "16 kg-os.").plans.isEmpty());
+        // A kipróbált eszköz edzés.
+        assertEquals(1, Activities.parse("A Decathlonban vettem új "
+                + "kettlebellt, ki is próbáltam: 3x15 swing.").plans.size());
+    }
+
 }

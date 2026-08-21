@@ -85,7 +85,9 @@ public final class Foods {
         new Food("Sonka", 120, 18, 50, "sonka"),
         new Food("Szalámi", 400, 22, 30, "szalami"),
         new Food("Bacon", 500, 13, 30, "bacon", "szalonna"),
-        new Food("Hal (fehér)", 120, 22, 150, "hal", "pisztrang", "ponty", "harcsa",
+        // Az EGYBEÍRT „halfilé" is hal: a „hal" tő szóhatárt vár (a
+        // „haladtam" nem vacsora), az összetett alak ezért kimaradt.
+        new Food("Hal (fehér)", 120, 22, 150, "hal", "halfile", "pisztrang", "ponty", "harcsa",
                 // A boltok pultjának többi gyakori fehér hala is.
                 // Az „amur" szándékosan hiányzik: a szaMURáj-szerű szavak
                 // belsejébe esne. Aki amurt eszik, írja körül („fehér hal").
@@ -1376,6 +1378,10 @@ public final class Foods {
     private static boolean startsWithBad(String tok) {
         // A HALLOUMI grillsajt étel – hiába kezdődik a „hall" tiltóval.
         if (tok.startsWith("halloumi")) return false;
+        // A HALFILÉ vacsora – hiába kezdődik az angol „half" tiltóval: a
+        // „vacsira halfilé párolt zöldséggel" hala eddig nyomtalanul
+        // eltűnt, csak a köret ment be.
+        if (tok.startsWith("halfile")) return false;
         for (String bad : ALOM) if (tok.startsWith(bad)) return true;
         for (String bad : NOT_FOOD) if (tok.startsWith(bad)) return true;
         for (String bad : START_BAD_EXTRA) if (tok.startsWith(bad)) return true;

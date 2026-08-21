@@ -1318,6 +1318,19 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // A MEGÉRKEZETT felszerelés nem edzés: a „ma reggel jött a futár az
+        // új súlyzókkal, 2x22,5 kg-osak" hatvanperces kondi-bejegyzést írt
+        // be – egy csomagátvételből. A vásárlás/érkezés igéje mellett a
+        // felszerelés neve kiesik; a kipróbálás („ki is próbáltam") megvédi.
+        if (s.matches("(?s).*(?<![a-z])(megjott|megerkezett|futar\\w*"
+                + "|csomag\\w*|rendeltem|kiszallit\\w*|szallitas\\w*)"
+                + "(?![a-z]).*")
+                && !s.matches("(?s).*(?<![a-z])(kiprobal\\w*|ki is probal"
+                    + "\\w*|edzettem|nyomtam|emeltem|csinaltam|hasznaltam"
+                    + "|lenditettem|gyakorol\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(sulyzo\\w*|kettlebell\\w*"
+                    + "|kezisulyzo\\w*|bordasfal\\w*|szobabicikli\\w*"
+                    + "|futopad\\w*)", " ");
         // A TEGNAPI EDZÉS mint magyarázat vagy időpont nem új bejegyzés: a
         // „reggel 72-es pulzussal keltem, biztos a tegnapi edzés" egy
         // tegnapi, negyvenöt perces „egyéb mozgást" írt be – egy

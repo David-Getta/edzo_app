@@ -2109,4 +2109,22 @@ public class FoodsParseTest {
         assertEquals("Protein turmix", Foods.parse(all, "protein turmix "
                 + "banánnal").get(0).food.name);
     }
+
+    /**
+     * A halfilé hal, a megérkezett súlyzó nem edzés.
+     *
+     * A „vacsira halfilé párolt zöldséggel" hala nyomtalanul eltűnt – az
+     * angol „half" (maraton) tiltója kapta el a szó elejét, és csak a
+     * köret ment be.
+     */
+    @Test public void aFishFilletIsAFish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "vacsira halfilé párolt "
+                + "zöldséggel");
+        boolean fish = false;
+        for (Foods.Hit h : hits) if (h.food.name.startsWith("Hal")) fish = true;
+        assertTrue(fish);
+        // Az angol half maraton marad kitakarva.
+        assertTrue(Foods.parse(all, "lefutottam a half maratont").isEmpty());
+    }
 }
