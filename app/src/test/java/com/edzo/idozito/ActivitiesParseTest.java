@@ -7723,4 +7723,25 @@ public class ActivitiesParseTest {
                 + "45 perc.").plans.size());
     }
 
+    /**
+     * A tegnapi edzésre hivatkozás nem új bejegyzés.
+     *
+     * A „reggel 72-es pulzussal keltem, biztos a tegnapi edzés" egy
+     * tegnapi, negyvenöt perces „egyéb mozgást" írt be – egy
+     * pulzus-jegyzetből. Az „a tegnapi edzés után ma könnyű nap: 20 perc
+     * séta" húsz perce pedig két napra terült szét.
+     */
+    @Test
+    public void aReferenceToYesterdaysWorkoutIsNotAnEntry() {
+        assertTrue(Activities.parse("Reggel 72-es pulzussal keltem, kicsit "
+                + "magas, biztos a tegnapi edzés.").plans.isEmpty());
+        Activities.Parsed p = Activities.parse("A tegnapi edzés után ma "
+                + "könnyű nap: 20 perc séta.");
+        assertEquals(1, p.days);
+        assertEquals(0, p.offset);
+        // A valódi tegnapi edzés marad tegnapi.
+        assertEquals(1, Activities.parse("Tegnap edzettem, 45 perc "
+                + "kondi.").offset);
+    }
+
 }

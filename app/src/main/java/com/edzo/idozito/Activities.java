@@ -1318,6 +1318,18 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // A TEGNAPI EDZÉS mint magyarázat vagy időpont nem új bejegyzés: a
+        // „reggel 72-es pulzussal keltem, biztos a tegnapi edzés" egy
+        // tegnapi, negyvenöt perces „egyéb mozgást" írt be – egy
+        // pulzus-jegyzetből. Az „a tegnapi edzés után ma könnyű nap" húsz
+        // perce pedig KÉT napra terült szét. A hivatkozás kiesik, a valódi
+        // „tegnap edzettem" marad.
+        s = s.replaceAll("(?<![a-z])(?:biztos(?:an)?|szerintem|valoszinuleg"
+                + "|gondolom|talan|nyilvan)\\s+a\\s+tegnapi\\s+"
+                + "(?:edzes|futas|kondi|meccs|tura|uszas)\\w*", " ");
+        s = s.replaceAll("(?<![a-z])a\\s+tegnapi\\s+"
+                + "(?:edzes|futas|kondi|meccs|tura|uszas)\\w*\\s+"
+                + "(?:utan|miatt|ota)(?![a-z])", " ");
         // A JÖVŐ HETI VERSENYRE készülés célhatározó, nem mai verseny: az
         // „a jövő heti maratonra ma már csak 5 km lazítás volt" öt
         // kilométere nyomtalanul eltűnt – a „jövő het(i)" az egy-tagmondatos
