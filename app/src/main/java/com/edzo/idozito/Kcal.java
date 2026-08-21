@@ -80,6 +80,10 @@ public final class Kcal {
             // látta meg.
             "belefer", "beleferek", "belefert", "beleferne", "beleferek meg",
             "szeretnek", "akarok", "legyen", "napi",
+            // A MARADNI SZÁNDÉKA is cél: a „ma megpróbálok 2000 alatt
+            // maradni" kétezrese ELÉGETETT kalóriaként ment a naplóba.
+            "maradni", "maradok", "maradjak", "megprobalok", "probalok",
+            "tartani", "tartsam",
             // A DEFICIT és a többlet a cél nyelve, nem a bevitelé: az „500
             // kalóriás deficitben vagyok" ötszáz elfogyasztott kalóriaként
             // került a naplóba – a napi keret negyedeként.
@@ -257,6 +261,16 @@ public final class Kcal {
     private static final Pattern[] GOAL_P = words(GOAL), NOT_EATEN_P = words(NOT_EATEN),
             EATEN_P = words(EATEN);
 
+    /**
+     * A cél-tagmondatot csak az ERŐS irány-szó menti fel: az „alatt" és a
+     * „felett" hasonlító, nem irány – a „ma megpróbálok 2000 alatt maradni"
+     * kétezrese miattuk lett elégetett kalória.
+     */
+    private static final Pattern[] NOT_EATEN_STRONG_P = words(new String[]{
+            "egettem", "egetem", "elegettem", "elegetem", "elhasznaltam",
+            "egetes", "elegetes", "egetett", "elegetett", "elegetve",
+            "egetve", "ment el", "elhasznalt"});
+
     private static Pattern[] words(String[] ws) {
         Pattern[] out = new Pattern[ws.length];
         for (int i = 0; i < ws.length; i++)
@@ -347,7 +361,8 @@ public final class Kcal {
         // elveszett – a kcal a bevitel tagmondatában maradt, a magyar meg
         // egyszer mondja ki az egységet. (Az „egyetlen jelöletlen szám"
         // feltétel alább úgyis szűkre szabja.)
-        boolean unitSeen = NUM.matcher(s).find();
+        boolean unitSeen = NUM.matcher(s).find()
+                || s.matches("(?s).*(?<![a-z])kalori\\w*.*");
         if (anyGoal) {
             StringBuilder keep = new StringBuilder();
             for (String cl : s.split("\\s*[,;]\\s*")) {
@@ -356,7 +371,8 @@ public final class Kcal {
                 // A kimondott IRÁNY erősebb a cél szavánál: a „napi mérleg:
                 // 1900 kcal bevitel" tagmondatában ott a „bevitel" – ez nem
                 // terv, hanem beszámoló, hiába kezdődik „napi"-val.
-                if (bad) for (Pattern w : want) if (w.matcher(cl).find()) bad = false;
+                Pattern[] strong = want == EATEN_P ? EATEN_P : NOT_EATEN_STRONG_P;
+                if (bad) for (Pattern w : strong) if (w.matcher(cl).find()) bad = false;
                 if (!bad) keep.append(keep.length() > 0 ? ", " : "").append(cl);
             }
             s = keep.toString();
@@ -377,6 +393,7 @@ public final class Kcal {
         s = withoutBlockedClauses(s, block, want);
         if (s.isEmpty()) return -1;
         double sum = 0;
+        boolean mealsUsed = false;
         Matcher m = NUM.matcher(s);
         while (m.find()) {
             double v;
@@ -391,6 +408,21 @@ public final class Kcal {
         // után álló, mértékegység nélküli szám adódik hozzá.
         // Egyetlen jelöletlen szám a cél-tagmondat után: az a valódi érték.
         if (sum == 0 && unitSeen) {
+            // A CÍMKÉS felsorolás egység nélkül is világos: a „kalóriák ma:
+            // reggeli 420, ebéd 780, uzsonna 180, vacsora 650" napi
+            // összege eddig nyomtalanul elveszett.
+            Matcher meals = MEAL_NUM.matcher(s);
+            double msum = 0;
+            int mn = 0;
+            while (meals.find()) {
+                double v;
+                try { v = Double.parseDouble(meals.group(1)); }
+                catch (NumberFormatException e) { continue; }
+                if (v >= MIN && v <= MAX) { msum += v; mn++; }
+            }
+            if (mn >= 2) { sum = msum; mealsUsed = true; }
+        }
+        if (sum == 0 && unitSeen) {
             java.util.regex.Matcher bare = Pattern
                     .compile("(?<![\\d.,])(\\d{2,4})(?![\\d.,])").matcher(s);
             double only = 0;
@@ -402,7 +434,7 @@ public final class Kcal {
             }
             if (n == 1) sum = only;
         }
-        if (sum > 0) {
+        if (sum > 0 && !mealsUsed) {
             m = MEAL_NUM.matcher(s);
             while (m.find()) {
                 double v;

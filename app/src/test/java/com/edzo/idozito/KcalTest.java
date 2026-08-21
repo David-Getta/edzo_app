@@ -592,4 +592,21 @@ public class KcalTest {
                 + "320 elégetve futással."));
     }
 
+    /**
+     * A címkés kalória-felsorolás egység nélkül is összeadódik, a cél nem.
+     *
+     * A „kalóriák ma: reggeli 420, ebéd 780, uzsonna 180, vacsora 650"
+     * napi összege nyomtalanul elveszett – egyetlen szám mellett sem állt
+     * kcal. A „ma megpróbálok 2000 alatt maradni" kétezrese pedig
+     * ELÉGETETT kalóriaként ment be.
+     */
+    @Test public void labelledMealsSumAndGoalsStayOut() {
+        assertEquals(2030, Kcal.stated("Kalóriák ma: reggeli 420, "
+                + "ebéd 780, uzsonna 180, vacsora 650."));
+        assertEquals(2340, Kcal.stated("Tegnap 2340 kcal-t ettem, ma "
+                + "megpróbálok 2000 alatt maradni."));
+        assertEquals(-1, Kcal.burned("Tegnap 2340 kcal-t ettem, ma "
+                + "megpróbálok 2000 alatt maradni."));
+    }
+
 }

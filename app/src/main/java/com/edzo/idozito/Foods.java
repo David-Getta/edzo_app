@@ -873,6 +873,9 @@ public final class Foods {
      * ne csússzanak el.
      */
     private static final String[] NOT_FOOD = {
+            // A VÉRCUKOR mérési adat, nem kanál cukor: a „132-es vércukrot
+            // mértem" tíz gramm cukrot írt a naplóba.
+            "vercukr", "vercukor",
             // IZOM- és GYAKORLATNEVEK, amikben étel-szótő lakik: a faRIZOMban
             // a rizs, az állCSÚSZÁSban a csusza. A rehab-lap ezeket a neveket
             // mutatja, tehát pont ezeket másolja be az ember.

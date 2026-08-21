@@ -1321,6 +1321,13 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(kenyelmes\\w*|kellemes\\w*|konnyebb"
                 + "|nehezebb|jobb|rosszabb|jo|elveszet\\w*|elmeny)\\s+"
                 + "(\\p{L}{3,}ni)(?![a-z])", "$1");
+        // Az ÓRA ALVÁS-EXPORTJA nem méter: az „alvás: 6h 45m" negyvenöt
+        // méteres futást írt a naplóba az alvás mellé. Alvás-környezetben a
+        // h/m páros időt jelöl, nem távot.
+        if (s.matches("(?s).*(?<![a-z])(alvas\\w*|alud\\w*|sleep)"
+                + "(?![a-z]).*"))
+            s = s.replaceAll("(?<![\\d,.])\\d{1,2}h\\s?\\d{1,2}m"
+                    + "(?![a-z0-9])", " ");
         // A SALSA a mexikói étel mellett szósz, nem tánc: a „csirkés
         // quesadilla házi salsával" hatvanperces táncként került a
         // naplóba. Csak étel-környezetben takarjuk ki; a „salsa óra" és a

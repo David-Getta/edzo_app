@@ -296,6 +296,13 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // A VÉRCUKOR nem testsúly: a „14:20-kor 132-es vércukrot mértem"
+        // százharminckét KILÓS mérésként került a trendbe. A vérnyomás
+        // perjeles párját a maszk régóta ismeri; az egyszámos vércukor nem.
+        q = q.replaceAll("(?iu)\\d{2,3}\\s?-?[eo]?s?\\s?"
+                + "v[eé]rcuko?r\\p{L}*", " ");
+        q = q.replaceAll("(?iu)v[eé]rcuko?r\\p{L}*\\s?:?\\s?"
+                + "\\d{2,3}(?![\\d,.])", " ");
         // Az ESZKÖZHATÁROZÓS kiló a VÁLTOZÁS mértéke, nem mérés: a „ma reggel
         // 79,2 kg, ez 0,4 kg-mal kevesebb, mint tegnap" hetvenkilenc egész
         // két tizede némán elveszett – a különbség száma mellett a mondat
