@@ -379,6 +379,25 @@ public final class StrengthParse {
         // Az utolsó gyakorlat eltűnése a leglátványosabb adatvesztés, mert
         // a felhasználó pont azt írta le utoljára.
         text = text.replaceAll("[\\r\\n]+", ", ");
+        // A PERC ÉS MÁSODPERC együtt egyetlen idő: a „plank kihívás 12.
+        // napja: ma 2 perc 15 másodperc" tartása 120 másodpercként ment be
+        // a 135 helyett – az emelkedő kihívás épp attól kihívás, hogy a
+        // másodpercek számítanak.
+        java.util.regex.Matcher pm = java.util.regex.Pattern.compile(
+                "(?iu)(\\d{1,2})\\s?perc\\s+(?:es\\s+)?(\\d{1,2})\\s?"
+                + "(?:m[a\u00e1]sodperc|mp)(?![\\p{L}])").matcher(text);
+        StringBuilder pmb = new StringBuilder();
+        int pmLast = 0;
+        while (pm.find()) {
+            pmb.append(text, pmLast, pm.start());
+            pmb.append(Integer.parseInt(pm.group(1)) * 60
+                    + Integer.parseInt(pm.group(2))).append(" masodperc");
+            pmLast = pm.end();
+        }
+        if (pmLast > 0) {
+            pmb.append(text.substring(pmLast));
+            text = pmb.toString();
+        }
         // A SZÓKÖZÖS EZRES egy szám: a „10 000 m evezés a gépen" tízese
         // levált, és tíz ismétléses evezés-sor került az erőnaplóba – egy
         // kardió-adag mellé. A mozgás-oldal régóta összevonja; itt is kell.

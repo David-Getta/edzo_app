@@ -1896,4 +1896,19 @@ public class StrengthParseTest {
                 .get(0).topWeight(), 0.01);
     }
 
+    /**
+     * A perc és a másodperc együtt egyetlen tartásidő.
+     *
+     * A „plank kihívás 12. napja: ma 2 perc 15 másodperc lett" tartása 120
+     * másodpercként ment be a 135 helyett – az emelkedő kihívásban épp a
+     * másodpercek számítanak.
+     */
+    @Test public void minutesAndSecondsAddUpForHolds() {
+        List<StrengthParse.Item> it = StrengthParse.parse("A plank kihívás "
+                + "12. napja: ma 2 perc 15 másodperc lett.");
+        assertEquals(135, it.get(0).sets.get(0).reps);
+        assertEquals(90, StrengthParse.parse("Plank: 1 perc 30 másodperc.")
+                .get(0).sets.get(0).reps);
+    }
+
 }
