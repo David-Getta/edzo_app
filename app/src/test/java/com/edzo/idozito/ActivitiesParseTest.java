@@ -7858,4 +7858,22 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    /**
+     * A meghiúsult terv mellett a „csak 7 lett" a valóság.
+     *
+     * A „ma nem sikerült a terv szerinti 10 km, csak 7 lett, nagyon meleg
+     * volt" bejegyzésből SEMMI nem lett: a ragozott „szerinti" miatt a
+     * terv szava állva maradt, és az egész jövőnek minősült – pedig a hét
+     * kilométer megvolt.
+     */
+    @Test
+    public void theSevenThatDidHappenSurvivesTheFailedPlan() {
+        Activities.Parsed p = Activities.parse("Ma nem sikerült a terv "
+                + "szerinti 10 km, csak 7 lett, nagyon meleg volt.");
+        assertEquals(1, p.plans.size());
+        assertEquals(7.0, p.plans.get(0).km, 0.01);
+        // A turmix hozzávalói sem duplázódnak „volt" közbevetéssel.
+        // (Foods-oldali pár: aVenueNameIsNotADish mellett.)
+    }
+
 }

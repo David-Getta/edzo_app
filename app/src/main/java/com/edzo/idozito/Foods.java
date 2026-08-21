@@ -3724,6 +3724,14 @@ public final class Foods {
             if (shake) {
                 int e = m.pos + m.len;
                 while (e < q.length() && q.charAt(e) == ' ') e++;
+                // Egy rövid közbevetés is beleférhet: az „a vacsorám csak
+                // egy turmix volt: mangó, joghurt, zabpehely" turmixa a
+                // hozzávalók MELLÉ került – dupla vacsora – mert a „volt"
+                // elállta a kettőspont útját.
+                int skip = 0;
+                while (e < q.length() && Character.isLetter(q.charAt(e))
+                        && skip < 6) { e++; skip++; }
+                while (e < q.length() && q.charAt(e) == ' ') e++;
                 int after = 0;
                 for (Match x : ms) if (x.pos > m.pos) after++;
                 if (e < q.length() && q.charAt(e) == ':' && after >= 2) continue;

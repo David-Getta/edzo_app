@@ -2176,4 +2176,20 @@ public class FoodsParseTest {
         // A puszta böjt marad üres.
         assertTrue(Foods.parse(all, "Ma böjtöltem egész nap.").isEmpty());
     }
+
+    /**
+     * A turmix rövid közbevetéssel is a hozzávalóiból áll.
+     *
+     * Az „a vacsorám csak egy turmix volt: mangó, joghurt, zabpehely"
+     * turmixa a hozzávalók MELLÉ került – dupla vacsora –, mert a „volt"
+     * elállta a kettőspont útját.
+     */
+    @Test public void aSmoothieWithAnInterjectionIsStillItsIngredients() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "A vacsorám csak egy "
+                + "turmix volt: mangó, joghurt, zabpehely.");
+        for (Foods.Hit h : hits)
+            assertFalse(h.food.name.contains("turmix"));
+        assertEquals(3, hits.size());
+    }
 }

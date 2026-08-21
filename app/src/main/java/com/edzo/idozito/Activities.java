@@ -1342,6 +1342,14 @@ public final class Activities {
                 + "|nacho|guacamole)\\w*.*")
                 || s.matches("(?s).*(?<![a-z])(hazi|friss)\\s+salsa\\w*.*"))
             s = s.replaceAll("(?<![a-z])salsa\\w*", " ");
+        // A NEM SIKERÜLT terv mellett a „csak N lett" a valóság: a „ma nem
+        // sikerült a terv szerinti 10 km, csak 7 lett" bejegyzésből SEMMI
+        // nem lett – a tagadás az egészet elvitte, pedig a hét kilométer
+        // megvolt.
+        s = s.replaceAll("(?<![a-z])nem sikerult\\s+az?\\s+"
+                + "(?:terv szerinti\\s+|tervezett\\s+)?\\d{1,3}\\s?km"
+                + "\\w*\\s*,?\\s*csak\\s+(\\d{1,3}(?:[.,]\\d)?)"
+                + "\\s*(?:km)?\\s+lett", "$1 km lett");
         // A NEVEZÉS távja nem mai futás: az „a 10k-s versenyre neveztem,
         // október 12-én lesz, ma 6 km alapozás" tíz kilométere külön mai
         // futásként került be a hat mellé. A nevezett táv kiesik.
@@ -4694,7 +4702,10 @@ public final class Activities {
         // Az ÖSSZETETT szó is terv: az „edzéstervem szerint ma pihenőnap
         // van, de csináltam 20 perc mobilitást" húsz perce elveszett, mert
         // a szóhatár az „edzéstervem" belsejébe esett.
-        s = s.replaceAll("\\p{L}*terv\\w*\\s+szerint(?![a-z])", " ");
+        // A RAGOZOTT „szerinti" is felmentés: a „nem sikerült a terv
+        // szerinti 10 km, csak 7 lett" hét kilométere eddig elveszett – a
+        // rag miatt a terv szava állva maradt, és jövőnek minősült.
+        s = s.replaceAll("\\p{L}*terv\\w*\\s+szerint\\w*(?![a-z])", " ");
         // A LEGYŐZÖTT lustaság is edzés: a „ma nem volt kedvem semmihez, de
         // azért leguggoltam 50-et" ötven guggolása némán elveszett. A
         // mozgás-oldal a saját előkészítésében leveszi a kedv hiányát, az
