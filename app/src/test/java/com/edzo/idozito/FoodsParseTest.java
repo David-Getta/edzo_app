@@ -2270,4 +2270,21 @@ public class FoodsParseTest {
         assertEquals("Csokoládé", Foods.parse(all, "Ettem egy tábla "
                 + "csokit.").get(0).food.name);
     }
+
+    /**
+     * A töltött káposzta darabja egy töltelék, nem egy teljes tányér.
+     *
+     * A „vacsora: három töltött káposzta tejföllel" bő egy KILÓ töltött
+     * káposzta lett – a darabszám a 350 grammos tányér-adagot sokszorozta.
+     */
+    @Test public void aStuffedCabbageRollIsARollNotAPlate() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(600.0, Foods.parse(all, "Vacsora: három töltött "
+                + "káposzta tejföllel.").get(0).grams, 0.01);
+        // Darabszám nélkül marad a tányér-adag (a gramm 0 = tipikus adag).
+        Foods.Hit plain = Foods.parse(all, "Töltött káposztát ettem "
+                + "ebédre.").get(0);
+        assertEquals(0.0, plain.grams, 0.01);
+        assertEquals(350, plain.food.portion);
+    }
 }

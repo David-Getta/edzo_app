@@ -1885,6 +1885,10 @@ public final class Foods {
             {"Pogácsa", "30"}, {"Túrós batyu", "100"}, {"Bundás kenyér", "60"},
             {"Datolya", "8"}, {"Szilva", "50"}, {"Sárgarépa", "80"},
             {"Hurka", "120"},
+            // A TÖLTÖTT KÁPOSZTA darabja egy töltelék, nem egy teljes
+            // tányér: a „három töltött káposzta" bő egy KILÓ lett a
+            // háromszor kétszáz gramm helyett.
+            {"Töltött káposzta", "200"}, {"Töltött paprika", "200"},
             // Amit a próbafuttatás szerint természetes darabra mondani, de eddig
             // a tipikus adaggal számolt („3 keksz", „2 tortilla", „2 paradicsom").
             {"Keksz", "12"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
