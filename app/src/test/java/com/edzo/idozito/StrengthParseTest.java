@@ -1882,4 +1882,18 @@ public class StrengthParseTest {
         assertEquals(3, ok.get(0).sets.size());
     }
 
+    /**
+     * A szóközös ezres méter nem ismétlésszám.
+     *
+     * A „10 000 m evezés a gépen, 42 perc alatt" tízese levált, és tíz
+     * ismétléses evezés-sor került az erőnaplóba – egy kardió-adag mellé.
+     */
+    @Test public void aSpacedThousandMeterIsNotAReps() {
+        assertTrue(StrengthParse.parse("Ma 10 000 m evezés a gépen, "
+                + "42 perc alatt, új rekord.").isEmpty());
+        // A valódi evezés-sorozat marad.
+        assertEquals(50.0, StrengthParse.parse("Evezés 3x10 50 kg.")
+                .get(0).topWeight(), 0.01);
+    }
+
 }
