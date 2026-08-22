@@ -41,6 +41,14 @@ public final class Foods {
     public static final Food[] ALL = {
         new Food("Rántott hús (sertés)", 320, 22, 180, "rantott hus", "rantotthus", "becsi",
                 "rantott szelet", "rantottszelet"),
+        // A GRILLEZETT hús eddig nem volt étel: a „grillpartin háromféle
+        // húst ettem" bejegyzésből csak a köret került a naplóba. A puszta
+        // „hús" tő szándékosan nincs itt (húsleves, combhús) – csak az
+        // egyértelmű alakok.
+        // (A „sült hús" a Sertéskaraj tője marad – ez a vegyes grill.)
+        new Food("Grillhús", 250, 26, 150, "grillhus",
+                "grillezett hus", "hust ettem", "hust ettunk",
+                "grill hus"),
         new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke",
                 // A gyorséttermi csíkok is bundásak – nem grillmell. (A
                 // „csirkefalat" a nuggeté.)
@@ -1427,6 +1435,13 @@ public final class Foods {
                 .matcher(q);
         while (yc.find())
             for (int k = yc.start(); k < yc.end(); k++) sb.setCharAt(k, ' ');
+        // A ZSÍRÉGETÉS edzés, nem kanál olaj: a „ma zsírt égettem: 40 perc
+        // kardió éhgyomorra" mellé tíz gramm olaj került a naplóba. Az
+        // egybeírt zsírégető ugyanígy.
+        java.util.regex.Matcher zs = java.util.regex.Pattern.compile(
+                "(?<![a-z])zsirt?\\s?eget\\p{L}*").matcher(q);
+        while (zs.find())
+            for (int k = zs.start(); k < zs.end(); k++) sb.setCharAt(k, ' ');
         int i = 0;
         String prev = "";
         while (i < sb.length()) {

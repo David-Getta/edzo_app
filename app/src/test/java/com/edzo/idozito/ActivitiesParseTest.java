@@ -8137,4 +8137,27 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A munkahelyi lépés nem külön edzés, a matrac-avatás flow-ja jóga.
+     *
+     * A „ma nem edzettem, de a fizikai munkám miatt így is 15 000 lépésem
+     * lett" mellé egy órás fizikai-munka bejegyzés került a lépések MELLÉ.
+     * A „kipróbáltam az új jógamatracot: 30 perc flow" pedig üres maradt,
+     * a „talpaltam a városban, kb 7 km" meg futás lett.
+     */
+    @Test
+    public void workStepsFlowAndCityWalking() {
+        Activities.Parsed p = Activities.parse("Ma nem edzettem, de a "
+                + "fizikai munkám miatt így is 15 000 lépésem lett.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals("joga", Activities.parse("Kipróbáltam az új "
+                + "jógamatracot: 30 perc flow.").plans.get(0).kind.id);
+        assertEquals("tura", Activities.parse("Talpaltam a városban "
+                + "egész délelőtt, kb 7 km.").plans.get(0).kind.id);
+        // A matrac-vásárlás önmagában nem jóga.
+        assertTrue(Activities.parse("Vettem egy új jógamatracot.")
+                .plans.isEmpty());
+    }
+
 }

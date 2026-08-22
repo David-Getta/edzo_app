@@ -2301,4 +2301,33 @@ public class FoodsParseTest {
         assertEquals("Bagett", h.food.name);
         assertEquals(125.0, h.grams, 0.01);
     }
+
+    /**
+     * A grillpartin evett hús is étel.
+     *
+     * A „háromféle húst ettem a grillpartin és két kukoricát" húsából
+     * eddig csak a köret került a naplóba – a vegyes grillhúsnak nem
+     * volt neve. A húsleves marad leves.
+     */
+    @Test public void grilledMeatIsAFood() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals("Grillhús", Foods.parse(all, "Háromféle húst ettem "
+                + "a grillpartin.").get(0).food.name);
+        assertEquals("Húsleves", Foods.parse(all, "Húsleves volt "
+                + "ebédre.").get(0).food.name);
+    }
+
+    /**
+     * A zsírégetés edzés, nem kanál olaj.
+     *
+     * A „ma zsírt égettem: 40 perc kardió éhgyomorra" mellé tíz gramm
+     * olaj került a naplóba. A sütéshez használt zsír marad étel.
+     */
+    @Test public void burningFatIsNotEatingFat() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Ma zsírt égettem: 40 perc kardió "
+                + "éhgyomorra.").isEmpty());
+        assertEquals("Olaj", Foods.parse(all, "Zsírral sütöttem a "
+                + "tojást.").get(0).food.name);
+    }
 }

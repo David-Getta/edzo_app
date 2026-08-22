@@ -162,7 +162,10 @@ public final class Activities {
                     // „mtb", „mountain bike", és újabban a „gravel".
                     "mountain bike", "mountainbike", "mtb", "gravel"),
             new Kind("tura", "🥾", "Túra / gyaloglás", 5.3, true, 90,
+                    // A TALPALÁS a városi gyaloglás szava: a „talpaltam a
+                    // városban egész délelőtt, kb 7 km" futás lett belőle.
                     "tura", "gyaloglas", "seta", "setalas", "kirandul", "nordic",
+                    "talpal",
                     // A „jártam egyet" séta-szleng – csak múlt időben: a
                     // „járok egyet" még szándék. A geocaching órákig tartó
                     // gyaloglás.
@@ -1305,6 +1308,15 @@ public final class Activities {
         // voltam 25 percet, állítólag felér egy órás edzéssel" HATVAN
         // perces bejegyzés lett a huszonöt helyett.
         s = s.replaceAll("(?<![a-z])feler\\s+(?:egy\\s+)?[^,;.]*", "");
+        // A MUNKA MIATT gyűjtött lépés nem külön edzés: a „ma nem
+        // edzettem, de a fizikai munkám miatt így is 15 000 lépésem lett"
+        // mellé egy órás fizikai-munka bejegyzés is került – a lépések
+        // MELLÉ, ugyanabból a napból. A „miatt" névutó okot mond.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:fizikai\\s+)?"
+                + "munk\\p{L}*\\s+miatt(?![a-z])", " ");
+        // A „30 perc flow" a jógások szava az órára: a matrac-avatásból
+        // eddig semmi nem lett, mert a flow nem volt szótő.
+        s = s.replaceAll("(?<=perc )flow(?![a-z])", "joga");
         // A TRÉNING ugyanaz a szó, mint az edzés – eddig nem volt tő, és a
         // „tréningen voltam 25 percet" csak akkor lett bejegyzés, ha a
         // hasonlítás edzés-szava véletlenül megmentette. A NÉVBEN álló
