@@ -2369,4 +2369,18 @@ public class FoodsParseTest {
         assertEquals("Túró", Foods.parse(all, "Túrót ettem magában, "
                 + "mézzel.").get(0).food.name);
     }
+
+    /**
+     * A szaunában leadott kiló „tudom, hogy csak víz"-e nem ital, az
+     * egybeírt töltöttkáposzta pedig a fogás, két adaggal.
+     */
+    @Test public void saunaWaterAndAOneWordCabbage() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A szaunában leadtam egy kilót, de "
+                + "tudom, hogy csak víz.").isEmpty());
+        Foods.Hit h = Foods.parse(all, "Töltöttkáposztát ettem két "
+                + "adaggal.").get(0);
+        assertEquals("Töltött káposzta", h.food.name);
+        assertEquals(700.0, h.grams, 0.01);
+    }
 }

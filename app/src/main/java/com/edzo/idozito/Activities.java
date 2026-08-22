@@ -405,7 +405,10 @@ public final class Activities {
                     // eddig üresen jött vissza.
                     "koriz", "jegkorong", "hoki", "curling"),
             // A sífutás táv-alapú: a „20 km sífutás" távja is számít.
+            // A VÍZISÍ nyáron ugyanez a mozgás: a „vízisí tábor, ma 3
+            // futam" eddig üresen jött vissza.
             new Kind("si", "🎿", "Sí / snowboard", 6.0, true, 120,
+                    "vizisi", "vizi si",
                     // A „sízem/síztem/sízni" alakok is: a puszta „si" nem
                     // lehet szótő (a HASIZOMban is benne van).
                     "siel", "sizes", "siztem", "sizni", "sizunk", "sizik", "sizel",
@@ -1258,7 +1261,11 @@ public final class Activities {
         // 4 km" bejegyzéséből SEMMI nem lett – a nevezés szava az egészet
         // jövőnek minősítette. A nevezés tagmondata törlődik, a „ma"
         // kezdetű valóság marad; nevezés mai szám nélkül továbbra is jövő.
-        if (s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
+        // A „ma megvolt" ugyanaz a valóság, mint a „ma + szám": a
+        // „beneveztem a szeptemberi 10 km-re. Ma megvolt az első edzés:
+        // 5 km könnyű" öt kilométere is elveszett.
+        if (s.matches("(?s).*(?<![a-z])(?:ma\\s+\\d|megvolt|meglett)"
+                + "(?![a-z]).*"))
             s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*"
                     + "(?<![a-z])(?:be)?nevezt\\w*[^,;.]*[,;.]\\s*", "");
         // A „-TÓL" napnév kezdőpont, nem a bejegyzés napja: a „hétfőtől új
@@ -1331,6 +1338,21 @@ public final class Activities {
         // A „30 perc flow" a jógások szava az órára: a matrac-avatásból
         // eddig semmi nem lett, mert a flow nem volt szótő.
         s = s.replaceAll("(?<=perc )flow(?![a-z])", "joga");
+        // A MONDAT ELEJÉN álló óra időpont: a „18:30 CrossFit WOD" a
+        // naptárból másolt sor, mégis HARMINC alkalmas, harminc napos
+        // kondi lett belőle – a perc fele levált óraszámnak. A -kor rag
+        // kimondja, mi ez a szám.
+        s = s.replaceAll("^(\\d{1,2}):([0-5]\\d)\\s+(?=\\p{L})", "$1:$2-kor ");
+        // A 3x10 PERC séta három alkalom: a „rövid séták voltak: 3x10
+        // perc" egyetlen tízperces sétává olvadt – a nap kétharmada
+        // eltűnt. Csak sétás-kocogós mondatban, súlyzós gyakorlat nélkül:
+        // a „plank 3x1 perc" sorozatát a súlyzós olvasó érti.
+        if (s.matches("(?s).*(?<![a-z])(?:seta\\w*|setal\\w*|kocog\\w*"
+                + "|tura\\w*)(?![a-z]).*")
+                && !s.matches("(?s).*(?:plank|fekvotamasz|guggol|felules"
+                    + "|kitores|nyomas|huzodzkod).*"))
+            s = s.replaceAll("(?<![\\dx,.])(\\d{1,2})\\s?x\\s?"
+                    + "(\\d{1,3})\\s?perc(?![a-z])", "$1szor $2 perc");
         // A MARATON-TERV papír, nem táv: a „végigcsináltam a 12 hetes
         // félmaraton-tervet, vasárnap lesz a verseny!" MAI, huszonegy
         // kilométeres futást írt be – a verseny neve a terv nevében ült.
@@ -1537,9 +1559,12 @@ public final class Activities {
         // kilométere nyomtalanul eltűnt – a „jövő het(i)" az egy-tagmondatos
         // mondat egészét tervnek minősítette, pedig a -ra rag kimondja,
         // hogy a verseny csak a CÉL, a bejegyzés a mai edzésé.
+        // A -RA végű SPORTNÉV nem célhatározó: a „vasárnapi bringatúra a
+        // családdal: 35 km" túrája eltűnt, mert a szó -ra végződése
+        // ragnak látszott.
         s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:jovo\\s+het\\w*|jovo"
                 + "\\s+havi|holnapi|vasarnapi|szombati|holnaputani)\\s+"
-                + "\\p{L}+(?:ra|re|ert)(?![a-z])\\s*", " ");
+                + "\\p{L}+(?<!tu)(?:ra|re|ert)(?![a-z])\\s*", " ");
         // AZ „AZ IS KARDIÓ" záró kommentár nem külön edzés: a „gyors
         // tempóban toltam a babakocsit 40 percig, az is kardio" negyven
         // perce mellé egy második, negyvenöt perces „egyéb mozgás" is
@@ -2808,6 +2833,9 @@ public final class Activities {
      */
     private static final String[] NOT_SPAN = {
             "napi", "naplo", "naploban", "naplot", "naptar", "napozas", "napsutes",
+            // A NAPÜDVÖZLET jógagyakorlat: a „108 napüdvözlet" száznyolc
+            // NAPOS bejegyzéssé terült szét.
+            "napudvozlet",
             "hetfo", "hetfon", "hetfoi", "hetvege", "hetvegen", "hetkoznap", "hetkoznapon",
             // A „hétvégi" JELZŐ, nem egyhetes időszak: a „hétvégi hosszú
             // futás 18 km" tizennyolc kilométere hét napra terült szét, és a
@@ -5357,7 +5385,9 @@ public final class Activities {
                 // pont az ellenkezője annak, amit leírt. A mozgás-szó
                 // kötelező mellé: a „nincs kedvem, de azért futottam" él.
                 "nincs edzes", "nincsen edzes", "nincs mozgas", "nincs futas",
-                "kihagytam", "kimaradt", "elmarad",
+                // A JELEN idejű kihagyás is kihagyás: a „lázas vagyok,
+                // kihagyom a mai úszást" negyvenöt perc úszást írt be.
+                "kihagytam", "kihagyom", "kihagyjuk", "kimaradt", "elmarad",
                 // A SZERELÉS nem edzés: a „kifogyott a bringám gumija" és a
                 // „megjavíttattam a kerékpáromat" egy órás kerékpározásként
                 // ment be – a járműről szól, nem az útról.

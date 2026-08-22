@@ -1223,4 +1223,15 @@ public class BodyParseTest {
         assertEquals(80.0, c.kg, 0.01);
         assertEquals(18.0, c.fatPct, 0.01);
     }
+
+    /**
+     * A kett\u0151spontos sz\u00e1m \u00f3ra, sosem tests\u00faly.
+     *
+     * A \u201e6:30-ra m\u00e1r az emelked\u0151n\u00e9l voltunk" HARMINC kil\u00f3s
+     * m\u00e9r\u00e9sk\u00e9nt ker\u00fclt a trendbe \u2013 a perc fele lev\u00e1lt.
+     */
+    @Test public void aClockIsNeverAWeight() {
+        assertEquals(0.0, BodyParse.parse("6:30-ra m\u00e1r az els\u0151 "
+                + "emelked\u0151n\u00e9l voltunk a bring\u00e1val.").kg, 0.01);
+    }
 }

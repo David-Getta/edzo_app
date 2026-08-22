@@ -8227,4 +8227,52 @@ public class ActivitiesParseTest {
                 + "meccset játszottam 60 percet.").plans.size());
     }
 
+    /**
+     * A mondat eleji óra időpont, a 3x10 perc séta három alkalom.
+     *
+     * A „18:30 CrossFit WOD: 21-15-9 thruster, 12:40 alatt" HARMINC
+     * alkalmas, harminc napos kondi lett – a perc fele levált óraszámnak.
+     * A „rövid séták voltak: 3x10 perc" pedig egyetlen tízperces sétává
+     * olvadt. A nevezés melletti „ma megvolt" is valóság.
+     */
+    @Test
+    public void aLeadingClockAndWalkRepeats() {
+        Activities.Parsed p = Activities.parse("18:30 CrossFit WOD: "
+                + "21-15-9 thruster és húzódzkodás, 12:40 alatt.");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(18, p.hour);
+        assertEquals(3, Activities.parse("A kutyánk megbetegedett, ezért "
+                + "ma csak rövid séták voltak: 3x10 perc.")
+                .plans.get(0).count);
+        assertEquals(5.0, Activities.parse("Beneveztem a szeptemberi 10 "
+                + "km-re. Ma megvolt az első edzés: 5 km könnyű.")
+                .plans.get(0).km, 0.01);
+    }
+
+    /**
+     * A bringatúra -ra vége nem rag, a napüdvözlet nem napok, a jelen
+     * idejű kihagyás is kihagyás, a vízisí pedig sí.
+     *
+     * A „vasárnapi bringatúra: 35 km" túrája eltűnt (a szó vége
+     * célhatározónak látszott), a „108 napüdvözlet" száznyolc NAPOS
+     * bejegyzés lett, a „kihagyom a mai úszást" negyvenöt perc úszást írt
+     * be, a „vízisí tábor, 45 perc vízen" pedig üres volt.
+     */
+    @Test
+    public void bikeTourSunSalutationsSkipAndWaterSki() {
+        assertEquals("kerekpar", Activities.parse("Vasárnapi bringatúra a "
+                + "családdal: 35 km.").plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("Reggel meditáció 10 perc, "
+                + "utána 108 napüdvözlet.").days);
+        assertTrue(Activities.parse("Fáj a torkom, lázas is vagyok, "
+                + "kihagyom a mai úszást.").plans.isEmpty());
+        assertEquals("si", Activities.parse("Vízisí tábor 5. napja: ma "
+                + "3 futam, összesen 45 perc vízen.").plans.get(0).kind.id);
+        // A jövő heti versenyre készülés lazítása marad mai futás.
+        assertEquals(5.0, Activities.parse("A jövő heti maratonra ma már "
+                + "csak 5 km lazítás volt.").plans.get(0).km, 0.01);
+    }
+
 }

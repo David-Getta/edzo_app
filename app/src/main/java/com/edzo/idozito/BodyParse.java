@@ -299,6 +299,11 @@ public final class BodyParse {
         // A VÉRCUKOR nem testsúly: a „14:20-kor 132-es vércukrot mértem"
         // százharminckét KILÓS mérésként került a trendbe. A vérnyomás
         // perjeles párját a maszk régóta ismeri; az egyszámos vércukor nem.
+        // A KETTŐSPONTOS szám óra vagy versenyidő, sosem testsúly: a
+        // „6:30-ra már az emelkedőnél voltunk" HARMINC kilós mérésként
+        // került a trendbe – a perc fele levált.
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,2}:[0-5]\\d"
+                + "(?:\\s?-?r[ae])?(?![\\d])", " ");
         q = q.replaceAll("(?iu)\\d{2,3}\\s?-?[eo]?s?\\s?"
                 + "v[eé]rcuko?r\\p{L}*", " ");
         q = q.replaceAll("(?iu)v[eé]rcuko?r\\p{L}*\\s?:?\\s?"
@@ -324,6 +329,12 @@ public final class BodyParse {
         // ugyanúgy mérleg).
         if (Foods.norm(q).matches("(?s).*(?<![a-z])(?:szuletesnap|szulinap|"
                 + "betoltottem|betoltotte)\\w*.*")
+                && !Foods.norm(q).matches("(?s).*(?<![a-z])(?:kg|kilo)\\w*.*"))
+            return new Body(0, 0);
+        // A TESTKOR életkor, nem testsúly: az „a teszt szerint a testkorom
+        // 42 év, pedig csak 35 vagyok" harmincöt KILÓS mérésként került a
+        // trendbe. Kimondott kg mellett marad a mérés.
+        if (Foods.norm(q).contains("testkor")
                 && !Foods.norm(q).matches("(?s).*(?<![a-z])(?:kg|kilo)\\w*.*"))
             return new Body(0, 0);
         // A KILÓ ÉS GRAMM együtt egyetlen mérés: a „84 kilót és 300

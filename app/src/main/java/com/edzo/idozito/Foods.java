@@ -206,8 +206,10 @@ public final class Foods {
         new Food("Rakott zöldbab", 110, 5, 350, "rakott zoldbab", "rakott zoldseg"),
         // A toroskáposzta a disznóvágás húsos káposztája – kalóriában a
         // töltött káposzta rokona, nem a párolt köreté.
+        // Az EGYBEÍRT alak is ugyanaz a fogás: a „töltöttkáposztát ettem"
+        // eddig sima káposztaként ment be.
         new Food("Töltött káposzta", 150, 8, 350, "toltott kaposzta",
-                "toroskaposzta", "toros kaposzta"),
+                "toltottkaposzta", "toroskaposzta", "toros kaposzta"),
         // A sólet a zsidó konyha babétele – füstölt hússal kérik.
         new Food("Sólet", 160, 9, 400, "solet"),
         new Food("Bab (főtt)", 120, 8, 200, "bab"),
@@ -910,7 +912,9 @@ public final class Foods {
             // sarkamon" mellé eddig két és fél deci víz került a naplóba.
             // A VÍZPART pedig helyszín: az „egész nap a vízparton ültem"
             // horgász-mondata negyed liter vizet írt a naplóba.
-            "vizholyag", "vizpart",
+            // A VÍZEN töltött idő helyhatározó: a „45 perc vízen" a
+            // vízisízés ideje, nem negyed liter ital.
+            "vizholyag", "vizpart", "vizen",
             // A ZSÍRMÉRŐ műszer, nem konyhai zsír: az „a zsírmérő szerint
             // 24,8 százalék" mellé eddig egy kanál olaj került a naplóba.
             "zsirmer",
@@ -3912,7 +3916,9 @@ public final class Foods {
         // A névelő el is maradhat: a „lehet csak víz" ugyanaz a találgatás,
         // mint a „lehet, hogy csak a víz" – eddig csak az utóbbit fogtuk meg.
         if (!s.matches("(?s).*(?<![a-z])(?:biztos|szerintem|valoszinuleg"
-                + "|gondolom|lehet|nyilvan|talan)(?:,? hogy)?\\s+"
+                // A „tudom, hogy csak víz" ugyanaz a magyarázat: a
+                // szaunában leadott kiló vize negyed liter ital lett.
+                + "|gondolom|lehet|nyilvan|talan|tudom)(?:,? hogy)?\\s+"
                 + "(?:csak\\s+)?(?:ez\\s+|az\\s+)?a?\\s?viz(?![a-z]).*")) return ms;
         // Az ivás igéje csak akkor ment fel, ha UGYANARRA a vízre mutat: a
         // „tegnap este sokat ittam, szóval lehet csak víz" ivása az esti
