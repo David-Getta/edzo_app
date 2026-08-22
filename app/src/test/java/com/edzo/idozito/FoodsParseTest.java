@@ -2351,4 +2351,22 @@ public class FoodsParseTest {
         assertEquals("Sütemény", Foods.parse(all, "Sütit sütöttem a "
                 + "hétvégére, és ettem is belőle kettőt.").get(0).food.name);
     }
+
+    /**
+     * A recept hozzávalója nem falat, a túrós palacsinta egy tétel.
+     *
+     * Az „a recept szerint 200 g liszt kell" lisztje a MAI naplóba került,
+     * a „túrós palacsinta" mellé pedig egy külön adag túró is bement.
+     */
+    @Test public void aRecipeAndACurdPancake() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A recept szerint 200 g liszt kell, "
+                + "én teljes kiőrlésűt használtam.").isEmpty());
+        List<Foods.Hit> tp = Foods.parse(all, "Vacsora: túrós palacsinta "
+                + "lekvárral.");
+        for (Foods.Hit h : tp) assertFalse(h.food.name.equals("Túró"));
+        // A magában evett túró marad túró.
+        assertEquals("Túró", Foods.parse(all, "Túrót ettem magában, "
+                + "mézzel.").get(0).food.name);
+    }
 }

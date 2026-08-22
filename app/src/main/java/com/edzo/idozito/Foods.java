@@ -4221,6 +4221,9 @@ public final class Foods {
             // A hortobágyi palacsintában benne a palacsinta: a „hortobágyi
             // húsos palacsinta" mellé eddig egy sima palacsinta is került.
             {"Palacsinta", "Hortobágyi palacsinta"},
+            // A TÚRÓS palacsinta tölteléke túró: a „túrós palacsinta" mellé
+            // eddig egy külön adag túró is bekerült.
+            {"Túró", "Palacsinta", "Túrós batyu", "Túrós csusza"},
     };
 
     private static List<Match> dropRedundantBase(String q, List<Match> in) {
@@ -4332,6 +4335,11 @@ public final class Foods {
         s = s.replaceAll("(?<![a-z])bojtolt\\w*\\s+\\d{1,2}\\s?or\\w*"
                 + "\\s*,?\\s*(?=[^;.]{0,40}(?:etkezes|ettem|megettem"
                 + "|reggeli|ebed|vacsora))", " ");
+        // A „KELL" a recept és a terv szava: az „a recept szerint 200 g
+        // liszt kell" lisztje a MAI naplóba került – abból a hozzávalóból,
+        // ami még a zacskóban van. A szóhatáros csere a „kellemes vacsorát"
+        // nem bántja; az evés igéje úgyis felment.
+        s = s.replaceAll("(?<![a-z])kell(?![a-z])", "kellene");
         // A TAGADOTT evés nem evés: a „sütit sütöttem a hétvégére, de nem
         // ettem belőle egyet sem" sütije a MAI naplóba került – az „ettem"
         // szava a tagadással együtt is evésnek számított.

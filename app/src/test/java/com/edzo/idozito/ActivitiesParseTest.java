@@ -8187,4 +8187,44 @@ public class ActivitiesParseTest {
                 + "1:58 lett.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A kimondott medencehossz, a wattbike és a mondatvégi „kész".
+     *
+     * A „45 hossz a 33-as medencében" 1125 méter lett a valódi 1485
+     * helyett, a „wattbike-on 20 perc FTP teszt" üresen jött vissza, a
+     * „ma nem fog: 8 km futás kész" nyolc kilométere pedig elveszett.
+     */
+    @Test
+    public void poolSizeWattbikeAndADoneMarker() {
+        assertEquals(1.485, Activities.parse("45 hossz a 33-as "
+                + "medencében.").plans.get(0).km, 0.001);
+        assertEquals("kerekpar", Activities.parse("A wattbike-on 20 perc "
+                + "FTP teszt, 265 watt lett.").plans.get(0).kind.id);
+        Activities.Parsed p = Activities.parse("A párom szerint horkolok, "
+                + "ha kimarad az edzés. Ma nem fog: 8 km futás kész.");
+        assertEquals(1, p.plans.size());
+        assertEquals(8.0, p.plans.get(0).km, 0.01);
+        // A kimerültség „kész vagyok"-ja nem siker-jel.
+        assertTrue(Activities.parse("Nem fog menni a futás, kész vagyok "
+                + "teljesen.").plans.isEmpty());
+    }
+
+    /**
+     * A lejátszott meccs igéje nem külön mozgás a sportág mellett.
+     *
+     * Az „a jégkorong meccsen 3 harmadot végigjátszottam, kb 25 perc
+     * jégidő" korcsolyája mellé egy egyéb mozgás is került – ugyanarról
+     * az egy meccsről, dupla idővel.
+     */
+    @Test
+    public void aPlayedMatchIsNotASecondWorkout() {
+        Activities.Parsed p = Activities.parse("A jégkorong meccsen 3 "
+                + "harmadot végigjátszottam, kb 25 perc jégidő.");
+        assertEquals(1, p.plans.size());
+        assertEquals("korcsolya", p.plans.get(0).kind.id);
+        // A másik tagmondat meccse külön alkalom marad.
+        assertEquals(2, Activities.parse("Reggel futás 5 km, este "
+                + "meccset játszottam 60 percet.").plans.size());
+    }
+
 }

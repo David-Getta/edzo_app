@@ -128,7 +128,10 @@ public final class Activities {
                     "peloton",
                     // A crossfit-termek levegős biciklije is bicikli: az
                     // „assault bike 10 kalória sprintek" futásnak számított.
-                    "assault bike", "airbike", "air bike",
+                    // A WATTBIKE az FTP-tesztek gépe: a „wattbike-on 20
+                    // perc FTP teszt" eddig üresen jött vissza.
+                    "assault bike", "airbike", "air bike", "wattbike",
+                    "watt bike",
                     // A spinracing a spinning márkanév-változata.
                     "spinracing", "spin racing",
                     // A GÖRGŐN (edzőpadon) tekerés kerékpár: a „175 wattos
@@ -1274,6 +1277,17 @@ public final class Activities {
         // abból, amitől az orvos eltiltott. A tiltás tagmondata törlődik.
         s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*"
                 + "(?<![a-z])(?:el)?tiltott\\w*[^,;.]*[,;.]?", " ");
+        // A MONDATVÉGI „kész" is siker: a „ma nem fog kimaradni az edzés:
+        // 8 km futás kész" nyolc kilométere elveszett – a „nem fog" az
+        // egészet jövőnek minősítette. (A „kész vagyok" kimerültség, azt
+        // a mondatvégi horgony kizárja.)
+        if (s.matches("(?s).*(?<![a-z])kesz(?:en)?\\s*[.!]*\\s*$")) {
+            s = s.replaceAll("(?<![a-z])nem\\s+fog(?:\\s+kimaradni)?"
+                    + "(?![a-z])\\s*:?\\s*", "");
+            // A FELTÉTELES „ha kimarad" tagmondata is hipotézis, nem
+            // kihagyott edzés.
+            s = s.replaceAll("(?<![a-z])ha\\s+kimarad\\w*[^,;.]*[,;.]?", " ");
+        }
         if (s.matches("(?s).*(?<![a-z])(?:(?:megtortent|sikerult|osszejott"
                 + "|megcsinaltam|megvolt|meglett)(?![a-z])"
                 // A „tényleg" magában még nem siker – a „6 km lett" az.
@@ -3223,6 +3237,25 @@ public final class Activities {
             if (!dup) uniq.add(h);
         }
         keep = uniq;
+        // A LEJÁTSZOTT meccs igéje nem külön mozgás a sportág mellett: az
+        // „a jégkorong meccsen 3 harmadot végigjátszottam" korcsolyája
+        // mellé egy egyéb mozgás is került – ugyanarról az egy meccsről.
+        // Másik tagmondat meccse marad: az esti meccs a reggeli futás
+        // mellett külön alkalom.
+        List<int[]> noDupMatch = new ArrayList<>();
+        for (int[] h : keep) {
+            boolean drop = false;
+            if (ALL[h[2]].id.equals("egyeb")) {
+                String hw = s.substring(h[0], Math.min(s.length(), h[0] + h[1]));
+                if (hw.startsWith("meccs") || hw.contains("jatszottam"))
+                    for (int[] o : keep)
+                        if (!ALL[o[2]].id.equals("egyeb")
+                                && !crossesClause(s, h[0], h[0] + h[1],
+                                    o[0], o[0] + o[1])) { drop = true; break; }
+            }
+            if (!drop) noDupMatch.add(h);
+        }
+        keep = noDupMatch;
         // A JELZŐS osztálynév EGY edzés: az „alakformáló torna 50 perc"
         // elejéből tánc, a végéből jóga lett – két bejegyzés egyetlen
         // óráról. Magyarul a fej-szó áll hátul („alakformáló TORNA"),
@@ -5675,6 +5708,17 @@ public final class Activities {
     private static void mergePoolLengths(char[] q) {
         String s = new String(q);
         if (!s.contains("usz") && !s.contains("medence")) return;
+        // A KIMONDOTT medencehossz felülírja az alapértelmezett 25-öt: a
+        // „45 hossz a 33-as medencében" eddig 1125 méter volt a valódi
+        // 1485 helyett.
+        int pool = POOL_M;
+        java.util.regex.Matcher ps = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{2})\\s?-?(?:[oa]s|m-?es|meteres)\\s?"
+                + "medence").matcher(s);
+        if (ps.find()) {
+            int v = Integer.parseInt(ps.group(1));
+            if (v >= 20 && v <= 50) pool = v;
+        }
         boolean done = false;
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(?<![\\d,.])(\\d{1,3})\\s?hossz[a-z]*(?![a-z])").matcher(s);
@@ -5683,7 +5727,7 @@ public final class Activities {
             try { n = Integer.parseInt(m.group(1)); }
             catch (NumberFormatException e) { continue; }
             if (n < 1 || n > 400) continue;
-            String rep = (n * POOL_M) + " m";
+            String rep = (n * pool) + " m";
             if (rep.length() > m.end() - m.start()) continue;
             blank(q, m.start(), m.end());
             for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
@@ -5694,7 +5738,9 @@ public final class Activities {
         // sosem az edzés távja, ezért kivesszük.
         if (!done) return;
         java.util.regex.Matcher pm = java.util.regex.Pattern
-                .compile("(?<![\\d,.])\\d{1,3}\\s?meteres(?![a-z])").matcher(new String(q));
+                .compile("(?<![\\d,.])\\d{1,3}\\s?meteres(?![a-z])"
+                        + "|(?<![\\d,.])\\d{2}\\s?-?[oa]s(?=\\s?medence)")
+                .matcher(new String(q));
         while (pm.find()) blank(q, pm.start(), pm.end());
         // A PUSZTA „medence" szándékosan nem úszás-tő (a medence testrész
         // is), de ha hosszban mért táv áll mellette, az uszodáé: a
