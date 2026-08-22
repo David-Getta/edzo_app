@@ -8012,4 +8012,36 @@ public class ActivitiesParseTest {
                 + "4 óra síelés volt.").plans.get(0).minutes);
     }
 
+    /**
+     * A hitetlenkedés kerete nem terv, az „ebből" futás a lépések része.
+     *
+     * A „sose gondoltam volna, hogy 10 km-t tudok futni, ma megtörtént!"
+     * bejegyzéséből SEMMI nem lett, a „ma 12 500 lépés, ebből 5 km futás"
+     * túrája pedig a TELJES lépésszámot kapta a futás mellé – a nap fele
+     * kétszer számolt.
+     */
+    @Test
+    public void disbeliefAndPartOfStepsAreSortedOut() {
+        Activities.Parsed p = Activities.parse("Sose gondoltam volna, hogy "
+                + "10 km-t tudok futni, ma megtörtént!");
+        assertEquals(1, p.plans.size());
+        assertEquals(10.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed st = Activities.parse("Ma 12 500 lépés, ebből "
+                + "5 km futás volt reggel.");
+        assertEquals(2, st.plans.size());
+        double walkKm = 0;
+        for (Activities.Plan x : st.plans)
+            if (x.kind.id.equals("tura")) walkKm = x.km;
+        assertEquals(4.4, walkKm, 0.05);
+        // A puszta vágy marad terv, az „és" melletti lépés teljes marad.
+        assertTrue(Activities.parse("Sose gondoltam volna, hogy 10 km-t "
+                + "tudok futni.").plans.isEmpty());
+        Activities.Parsed both = Activities.parse("Ma 11 000 lépés és "
+                + "5 km futás.");
+        double walk2 = 0;
+        for (Activities.Plan x : both.plans)
+            if (x.kind.id.equals("tura")) walk2 = x.km;
+        assertEquals(8.3, walk2, 0.05);
+    }
+
 }

@@ -1256,6 +1256,19 @@ public final class Activities {
         if (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:hetfo|kedd|szerda|csutortok"
                     + "|pentek|szombat|vasarnap)\\w{0,4}tol(?![a-z])", " ");
+        // A HITETLENKEDÉS kerete nem terv: a „sose gondoltam volna, hogy 10
+        // km-t tudok futni, ma megtörtént!" bejegyzéséből SEMMI nem lett –
+        // a „volna" és a „tudok futni" együtt jövőnek minősítette, pedig a
+        // mondat vége kimondja, hogy megtörtént. A keret törlődik, a
+        // képesség igéje megtörtént igévé válik.
+        if (s.matches("(?s).*(?<![a-z])(?:megtortent|sikerult|osszejott"
+                + "|megcsinaltam|megvolt|meglett)(?![a-z]).*")) {
+            s = s.replaceAll("(?<![a-z])(?:sose\\s+|soha\\s+)?(?:nem\\s+)?"
+                    + "(?:gondoltam|hittem|kepzeltem)\\s+volna\\s*,?\\s*"
+                    + "(?:hogy\\s+)?", "");
+            s = s.replaceAll("(?<![a-z])tud(?:ok|unk)\\s+(\\p{L}{3,})ni"
+                    + "(?![a-z])", "$1ottam");
+        }
         // A HÁT NAP nem hat nap: ékezet nélkül a testrész és a számnév
         // egybeesik, és a „kondiedzés: hát nap, húzódzkodás 4x6, evezés
         // gépen 4x10" egyetlen edzése HAT NAPRA terült szét a naptárban. Az
@@ -3848,6 +3861,15 @@ public final class Activities {
             }
         }
 
+        // Az „EBBŐL" futás a lépések RÉSZE: a „ma 12 500 lépés, ebből 5 km
+        // futás volt" túrája eddig a TELJES lépésszámot kapta a futás mellé
+        // – a nap fele kétszer számolt. A futott táv lépés-egyenértéke
+        // (~1333 lépés/km) a sétából levonódik.
+        if (steps > 0 && beforeBlank.matches("(?s).*(?<![a-z])(?:ebbol"
+                + "|amibol|ebben|beleertve)(?![a-z]).*"))
+            for (Plan p : out)
+                if (p.km > 0 && !p.kind.id.equals("tura"))
+                    steps = Math.max(0, steps - p.km / 0.00075);
         // A lépésszám túra/gyaloglás: időt (~130 lépés/perc) és távot
         // (~75 cm/lépés) is jelent. Ha séta/túra már szerepel a mondatban,
         // azt egészíti ki – nem lesz belőle második bejegyzés.
