@@ -1387,6 +1387,22 @@ public final class Activities {
             fhAny = true;
         }
         if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
+        // A SZOKÁS napjai nem a bejegyzés napjai: az „úszni járok már egy
+        // hónapja, hétfőn és csütörtökön, ma 1800 m ment" ötnapos, két
+        // alkalmas bejegyzés lett – pedig a mondat a MAI úszásról szól. A
+        // csak napneveket sorolo tagmondat a rend leírása; a „hétfőn
+        // úsztam" igés tagmondata marad.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
+            s = s.replaceAll("(?:^|(?<=[,;.]))\\s*(?:hetfon|kedden|szerdan"
+                    + "|csutortokon|penteken|szombaton|vasarnap)"
+                    + "(?:\\s+es\\s+(?:hetfon|kedden|szerdan|csutortokon"
+                    + "|penteken|szombaton|vasarnap))*\\s*(?=[,;.])", " ");
+        // A JÖVŐBELI esemény ELŐTTI nap sem az eseményé: az „a szombati
+        // hosszú túra előtt ma csak lazítás: 20 perc görgőzés" mellé egy
+        // szombatra keltezett, kilencvenperces túra került – a tervből.
+        s = s.replaceAll("(?<![a-z])a?\\s?(?:szombati|vasarnapi|holnapi"
+                + "|hetvegi|jovo heti)\\s+[^,;.\\d]{0,24}?elott(?![a-z])",
+                " ");
         // A PÁLYA HOSSZA nem a lefutott táv: a „400 m-es futópályán
         // 5x1000 m" négyszáz méteres futás lett – az ötezer méter helyett.
         // Csak akkor esik ki, ha a mondat MÁSHOL kimondja a távot: a „10

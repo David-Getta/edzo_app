@@ -8412,4 +8412,28 @@ public class ActivitiesParseTest {
                 .get(0).grams, 0.01);
     }
 
+    /**
+     * A szokás napjai és a jövő heti esemény nem a bejegyzés napjai.
+     *
+     * Az „úszni járok már egy hónapja, hétfőn és csütörtökön, ma 1800 m
+     * ment" ötnapos, két alkalmas bejegyzés lett, az „a szombati hosszú
+     * túra előtt ma csak lazítás" mellé pedig egy szombatra keltezett
+     * túra került – a tervből.
+     */
+    @Test
+    public void habitDaysAndAFutureEventStayOut() {
+        Activities.Parsed p = Activities.parse("Úszni járok már egy "
+                + "hónapja, hétfőn és csütörtökön, ma 1800 m ment.");
+        assertEquals(1, p.days);
+        assertEquals(1, p.plans.size());
+        assertEquals(1.8, p.plans.get(0).km, 0.01);
+        Activities.Parsed l = Activities.parse("A szombati hosszú túra "
+                + "előtt ma csak lazítás: 20 perc görgőzés.");
+        assertEquals(1, l.plans.size());
+        assertEquals(20, l.plans.get(0).minutes);
+        // A hétfői igés tagmondat valódi úszása marad.
+        assertEquals(2, Activities.parse("Hétfőn úsztam, ma 5 km futás.")
+                .plans.size());
+    }
+
 }
