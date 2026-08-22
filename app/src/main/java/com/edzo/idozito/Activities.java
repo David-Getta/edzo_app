@@ -1339,6 +1339,11 @@ public final class Activities {
         // edzettem, de a fizikai munkám miatt így is 15 000 lépésem lett"
         // mellé egy órás fizikai-munka bejegyzés is került – a lépések
         // MELLÉ, ugyanabból a napból. A „miatt" névutó okot mond.
+        // A HÉTVÉGI ok jelzője sem dátum: az „a hétvégi túlórás munka
+        // miatt csak ma jutottam el futni" futása a hétvégére került –
+        // a „hetvegi" előbb esik ki, mint ahogy a „munka miatt" elfogyna.
+        s = s.replaceAll("(?<![a-z])hetvegi\\s+"
+                + "(?=\\p{L}+\\s+(?:\\p{L}+\\s+)?miatt(?![a-z]))", "");
         s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:fizikai\\s+)?"
                 + "munk\\p{L}*\\s+miatt(?![a-z])", " ");
         // A „30 perc flow" a jógások szava az órára: a matrac-avatásból
@@ -1378,6 +1383,37 @@ public final class Activities {
             fhAny = true;
         }
         if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
+        // A KÖZTÜK séta a pihenő, nem külön túra: a „90 másodperces
+        // sprintek, 6 ismétlés, köztük séta lefelé" mellé egy kilencven
+        // perces gyaloglás került – a sprint másodperceiből.
+        s = s.replaceAll("(?<![a-z])(?:koztuk|kozben|kozte)\\s+"
+                + "(?:laza\\s+)?seta\\w*[^,;.]*", " ");
+        // A FITNESZ KIHÍVÁS neve nem külön edzés: a „fitnesz kihívás 3.
+        // napja: 30 burpee…" burpee-i mellé egy 45 perces egyéb mozgás is
+        // került – a kihívás NEVÉBŐL.
+        s = s.replaceAll("(?<![a-z])fitne(?:sz|ss)\\s+"
+                + "(?=kihivas|teszt|felmeres|program)", "");
+        // A VERSENYT FUTÁS egy futás: a „hazafelé versenyt futottunk" a
+        // futás mellé egy 45 perces egyéb mozgást is írt – a verseny
+        // szavából.
+        s = s.replaceAll("(?<![a-z])versenyt\\s+(?=futott|futunk|fussunk"
+                + "|uszt|tekert)", "");
+        // A JÁTSZÓTÉRRŐL hazaindulás nem játszótéri edzés: a „-ról" rag a
+        // kiindulópontot mondja, a játszótér-tő mégis egyéb mozgást írt be
+        // a hazafelé futás MELLÉ. Csak megnevezett sport mellett esik ki –
+        // magában a ragozott alak is játszótéri játék marad.
+        if (s.matches("(?s).*(?<![a-z])(?:futott\\w*|usz\\w*|tekert\\w*"
+                + "|kocog\\w*|setal\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])jatszoter\\w*rol(?![a-z])", " ");
+        // A HÉTVÉGI ok nem hétvégi bejegyzés: az „a hétvégi túlórás munka
+        // miatt csak ma jutottam el futni" futása a hétvégére került két
+        // napra szétosztva – pedig a mondat kimondja, hogy MA volt.
+        s = s.replaceAll("(?<![a-z])a?\\s?hetvegi\\s+\\p{L}+\\s+"
+                + "(?:\\p{L}+\\s+)?miatt(?![a-z])", " ");
+        // A KÖNNYEBB MOZGÁS közérzet, nem edzés: a „csontkovácsnál voltam,
+        // utána könnyebb lett a mozgás" negyvenöt perc egyéb mozgást írt be.
+        s = s.replaceAll("(?<![a-z])(?:konnyebb|jobb|szabadabb|konnyed\\w*)"
+                + "\\s+(?:lett|ment|volt)\\s+a\\s+mozgas\\w*", " ");
         // A „TERHESSÉG ALATT IS" a jelenről szól: a „terhesség alatt is
         // mozogtam: ma 30 perc kismama torna" tornája eltűnt – a
         // visszaemlékezés-szabály a mai edzést is elvitte. Az „is"
@@ -4067,6 +4103,25 @@ public final class Activities {
                 out.set(ti, new Plan(t.kind, t.count, m,
                         t.km > 0 ? t.km : skm, (int) steps));
             }
+        }
+
+        // A HUSZONEGY kilométeres úszás nem hihető: a „heti mérleg: 3
+        // edzés, 21 km, 2x úszás" huszonegy kilométere az úszásra tapadt
+        // (tíz és fél kilométer alkalmanként). A nyílt vízi átúszást
+        // leszámítva ekkora távot senki nem úszik – a táv a futásé, az
+        // úszás a maga idejével marad.
+        for (int i = 0; i < out.size(); i++) {
+            Plan p = out.get(i);
+            if (!"uszas".equals(p.kind.id)) continue;
+            // A kimondottan hosszú (de létező) edzőtávot békén hagyjuk: a
+            // határ tizenkét kilométer, alkalmanként nyolc.
+            if (p.km <= 12.0 || p.km <= 8.0 * Math.max(1, p.count)) continue;
+            if (rawText.matches("(?s).*(?:nyilt ?viz|atusz|balaton|tisza"
+                    + "|duna|folyo|tengeri).*")) continue;
+            Kind run = byId("futas");
+            out.set(i, new Plan(p.kind, p.count, p.kind.defaultMin, 0));
+            out.add(new Plan(run, 1, Math.min(24 * 60,
+                    (int) Math.round(p.km * pace(beforeBlank, run))), p.km));
         }
 
         // A naponkénti alakok kibontása: EGY mozgásnál a darabszám naponta

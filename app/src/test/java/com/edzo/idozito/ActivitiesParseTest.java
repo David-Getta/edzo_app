@@ -8334,6 +8334,63 @@ public class ActivitiesParseTest {
         // A visszaemlékezés „is" nélkül marad üres.
         assertTrue(Activities.parse("Terhesség alatt jógáztam sokat.")
                 .plans.isEmpty());
+        // A KÖNNYEBB MOZGÁS közérzet, nem edzés; a valódi mozgás marad.
+        assertTrue(Activities.parse("A csontkovácsnál voltam, utána "
+                + "könnyebb lett a mozgás.").plans.isEmpty());
+        assertEquals(30, Activities.parse("30 perc mozgás volt ma.")
+                .plans.get(0).minutes);
+    }
+
+    /**
+     * A kihívás neve, a verseny szava és a kiindulópont nem külön edzés.
+     *
+     * A „fitnesz kihívás 3. napja: 30 burpee…" és a „a játszótérről
+     * hazafelé versenyt futottunk" egy-egy plusz egyéb mozgást kapott, a
+     * „hétvégi túlórás munka miatt csak ma jutottam el futni" futása
+     * pedig a hétvégére került.
+     */
+    @Test
+    public void aChallengeNameARaceWordAndAStartingPoint() {
+        assertEquals(1, Activities.parse("A fitnesz kihívás 3. napja: 30 "
+                + "burpee, 30 mountain climber, 30 jumping jack.")
+                .plans.size());
+        assertEquals(1, Activities.parse("A két gyerekkel a játszótérről "
+                + "hazafelé versenyt futottunk, én nyertem!").plans.size());
+        Activities.Parsed p = Activities.parse("A hétvégi túlórás munka "
+                + "miatt csak ma jutottam el futni: 6,5 km.");
+        assertEquals(0, p.offset);
+        assertEquals(1, p.days);
+        // A valódi hétvégi futás marad hétvégi (rögzített szerdai nappal,
+        // hogy a teszt ne függjön a futtatás napjától).
+        assertTrue(Activities.parse("Hétvégén futottam 10 km-t.",
+                1_753_869_600_000L).offset > 0);
+    }
+
+    /**
+     * A húszkilométeres úszás nem hihető, a köztes séta nem külön túra.
+     *
+     * A „heti mérleg: 3 edzés, 21 km, 2x úszás" huszonegy kilométere az
+     * úszásra tapadt, a „sprintek, köztük séta lefelé" mellé pedig egy
+     * kilencven perces gyaloglás került.
+     */
+    @Test
+    public void anImplausibleSwimAndARecoveryWalk() {
+        Activities.Parsed p = Activities.parse("Heti mérleg: 3 edzés, "
+                + "21 km, 2x úszás, 1 pihenőnap.");
+        for (Activities.Plan x : p.plans)
+            if (x.kind.id.equals("uszas")) assertEquals(0.0, x.km, 0.01);
+        boolean run21 = false;
+        for (Activities.Plan x : p.plans)
+            if (x.kind.id.equals("futas") && Math.abs(x.km - 21) < 0.01)
+                run21 = true;
+        assertTrue(run21);
+        assertEquals(1, Activities.parse("90 másodperces sprintek a "
+                + "dombon, 6 ismétlés, köztük séta lefelé.").plans.size());
+        // A Balaton-átúszás és a kimondott hosszú edzőtáv marad úszás.
+        assertEquals(5.2, Activities.parse("Átúsztam a Balatont, 5,2 km "
+                + "2:40 alatt.").plans.get(0).km, 0.01);
+        assertEquals(10.0, Activities.parse("Nyílt vízi úszás 10 km, "
+                + "3 óra.").plans.get(0).km, 0.01);
     }
 
 }
