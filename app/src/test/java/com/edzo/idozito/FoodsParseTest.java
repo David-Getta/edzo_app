@@ -2383,4 +2383,20 @@ public class FoodsParseTest {
         assertEquals("Töltött káposzta", h.food.name);
         assertEquals(700.0, h.grams, 0.01);
     }
+
+    /**
+     * A főzés alapanyagának grammja nem a megevett adag.
+     *
+     * A „800 g marhalábszárból főztem pörköltet, én egy adagot ettem"
+     * nyolcszáz gramm pörköltet írt a naplóba – a fazéknyi a családé.
+     */
+    @Test public void aPotOfStewIsNotOnePlate() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(300.0, Foods.parse(all, "800 g marhalábszárból "
+                + "főztem pörköltet, én egy adagot ettem.")
+                .get(0).grams, 0.01);
+        // A kimondottan megevett gramm marad.
+        assertEquals(200.0, Foods.parse(all, "Ettem 200 g pörköltet.")
+                .get(0).grams, 0.01);
+    }
 }

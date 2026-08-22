@@ -1449,6 +1449,14 @@ public final class Foods {
                 "(?<![a-z])zsirt?\\s?eget\\p{L}*").matcher(q);
         while (zs.find())
             for (int k = zs.start(); k < zs.end(); k++) sb.setCharAt(k, ' ');
+        // A FŐZÉS ALAPANYAGA nem a megevett adag: a „800 g marhalábszárból
+        // főztem pörköltet, én egy adagot ettem" NYOLCSZÁZ gramm pörköltet
+        // írt a naplóba – a fazéknyi hús a család vacsorája.
+        java.util.regex.Matcher fz = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])\\d{2,4}\\s?(?:g|gramm\\p{L}*|dkg|kg)\\s+"
+                + "(?=\\p{L}{3,}b[oó]l\\s+f[oő]z)").matcher(q);
+        while (fz.find())
+            for (int k = fz.start(); k < fz.end(); k++) sb.setCharAt(k, ' ');
         // A „-NAK SZÓLÓ" szólója nem szőlő: a „kezdő futóknak szóló tervet
         // követek" mellé száz gramm szőlő került a naplóba.
         java.util.regex.Matcher so = java.util.regex.Pattern.compile(
@@ -2894,6 +2902,12 @@ public final class Foods {
                 + "m[aá]rt[aá]s|ketchup|mogyor[oó]kr[eé]m|szelet)\\p{L}*)", " ");
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
+        // A FŐZÉS ALAPANYAGÁNAK grammja nem a megevett adag: a „800 g
+        // marhalábszárból főztem pörköltet, én egy adagot ettem" nyolcszáz
+        // gramm pörköltet írt a naplóba – a fazéknyi a család vacsorája.
+        query = query.replaceAll("(?iu)(?<![\\d,.])\\d{2,4}\\s?"
+                + "(?:g|gramm\\p{L}*|dkg|kg)\\s+"
+                + "(?=\\p{L}{3,}b[oó\\u00f3]l\\s+f[oő\\u0151]z)", "");
         query = query.replaceAll("(?iu)(?<!\\p{L})gyerekadag", "fél adag");
         // A JELZŐS adag is méret: a „nagy adag tészta" ugyanannyi volt,
         // mint a sima, a „kis adag rizs" szintén. Másfél, illetve fél

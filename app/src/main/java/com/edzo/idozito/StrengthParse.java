@@ -412,6 +412,10 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\p{L}])(?:k[eé]t|h[aá]rom|n[eé]gy"
                 + "|[oö]t|hat|h[eé]t|nyolc|kilenc|t[ií]z)\\s+"
                 + "(\\p{L}+\\s+k[oö]z[oö]tt)(?![\\p{L}])", "$1");
+        // A VÁLLGYAKORLAT vállemelés: a „3 szett vállgyakorlat 8 kilós
+        // kézisúlyzókkal" sorozata eddig nyomtalanul eltűnt.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])v[aá]llgyakorlat",
+                "vállemelés");
         // A KETTŐSPONTOS idő a tartás ideje: a „fitness teszt: …, 2:40
         // plank" tartása nyomtalanul elveszett – a 2:40 nem volt
         // másodperc. Csak az időre menő gyakorlat neve mellett él.

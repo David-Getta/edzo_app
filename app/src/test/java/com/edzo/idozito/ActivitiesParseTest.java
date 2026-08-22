@@ -8482,4 +8482,53 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * Az éjjeli óra hajnali, a gépen nézett film alatt is teker az ember.
+     *
+     * Az „éjjel 2-kor keltem fel" kettője délután kettőre tolódott, az
+     * „úszogatás a gyerekkel: ő a gumimatracon, én 20 hosszt" úszása
+     * eltűnt, a „szobabiciklin néztem egy sorozatot, 50 perc lett" ötven
+     * perce pedig a nézés szaván bukott el.
+     */
+    @Test
+    public void nightHoursSharedPoolsAndCyclingWhileWatching() {
+        assertEquals(2, Activities.parse("Éjjel 2-kor keltem fel, "
+                + "hajnalban futottam 5 km-t.").hour);
+        assertEquals(0.5, Activities.parse("Úszogatás a gyerekkel: ő a "
+                + "gumimatracon, én 20 hosszt tempóban.")
+                .plans.get(0).km, 0.01);
+        assertEquals(50, Activities.parse("A szobabiciklin néztem egy "
+                + "sorozatot, észre sem vettem, hogy 50 perc lett.")
+                .plans.get(0).minutes);
+        // Az este nyolc marad húsz óra, a tévézett meccs marad semmi.
+        assertEquals(20, Activities.parse("Este 8-kor futottam.").hour);
+        assertTrue(Activities.parse("Néztem a meccset a tv-ben.")
+                .plans.isEmpty());
+    }
+
+    /**
+     * A messzebb álló lépcső, a beálló játékideje és a labdázós séta.
+     *
+     * Az „a lift helyett mindig lépcső: ma 14 emelet összesen" üresen
+     * jött vissza, a „90 perces meccs, …, kb 45 perc játék" kilencven
+     * percet írt be, a „dobáltam a labdát, közben sétálgattam" sétáját
+     * pedig a pihenő-maszk vitte el.
+     */
+    @Test
+    public void distantStairsASubstituteAndABallWalk() {
+        assertEquals(1, Activities.parse("A lift helyett mindig lépcső: "
+                + "ma 14 emelet összesen.").plans.size());
+        assertEquals(45, Activities.parse("90 perces meccs, én a második "
+                + "félidőben álltam be, kb 45 perc játék.")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("Dobáltam a labdát fél óráig, "
+                + "közben sétálgattam.").plans.get(0).minutes);
+        // A végigjátszott meccs teljes hossza marad.
+        assertEquals(90, Activities.parse("90 perces meccset játszottunk "
+                + "végig.").plans.get(0).minutes);
+        // Az edzés kihagyva nem edzés.
+        assertTrue(Activities.parse("Tea és méz, fáj a torkom, edzés "
+                + "kihagyva.").plans.isEmpty());
+    }
+
 }

@@ -1974,6 +1974,15 @@ public class StrengthParseTest {
      * A „fitness teszt: 12 húzódzkodás, 45 fekvőtámasz, 2:40 plank"
      * tartása nyomtalanul elveszett – a 2:40 nem volt másodperc.
      */
+    @Test public void aShoulderExerciseIsALateralRaise() {
+        // A „vállgyakorlat" a rehab-lap szava volt, és a „vállgyakorlat
+        // 3x12 8 kg-mal" sorozata nyomtalanul eltűnt az erőnaplóból.
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Vállgyakorlat 3x12 8 kg-mal.");
+        assertEquals("Oldalemelés", it.get(0).name);
+        assertEquals(8.0, it.get(0).topWeight(), 0.01);
+    }
+
     @Test public void aColonTimeBesidePlankIsAHold() {
         List<StrengthParse.Item> it = StrengthParse.parse("Fitness teszt: "
                 + "12 húzódzkodás, 45 fekvőtámasz, 2:40 plank.");

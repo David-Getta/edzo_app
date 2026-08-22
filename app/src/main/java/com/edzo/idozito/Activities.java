@@ -1409,6 +1409,24 @@ public final class Activities {
                     + "|csutortokon|penteken|szombaton|vasarnap)"
                     + "(?:\\s+es\\s+(?:hetfon|kedden|szerdan|csutortokon"
                     + "|penteken|szombaton|vasarnap))*\\s*(?=[,;.])", " ");
+        // A BEÁLLÓ játékideje a sajátja: a „90 perces meccs, én a második
+        // félidőben álltam be, kb 45 perc játék" kilencven percet írt be a
+        // valódi negyvenöt helyett. A meccs teljes hossza kiesik, ha a
+        // mondat kimondja a saját játékidőt.
+        if (s.matches("(?s).*(?<![a-z])(?:perc\\w*\\s+jatek|percet"
+                + "\\s+jatszottam|alltam be)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])\\d{1,3}\\s?perces\\s+"
+                    + "(?=meccs|merkozes)", "");
+        // A VÁLLGYAKORLAT vállemelés: a „3 szett vállgyakorlat 8 kilós
+        // kézisúlyzókkal" bejegyzéséből SEMMI nem lett – a szó a rehab-
+        // lapé volt, a súlyzós edzés meg elveszett.
+        s = s.replaceAll("(?<![a-z])vallgyakorlat", "vallemeles");
+        // A GÉPEN nézett film alatt is teker az ember: a „a szobabiciklin
+        // néztem egy sorozatot, észre sem vettem, hogy 50 perc lett" ötven
+        // perce elveszett – a nézés szava tagadásnak számított.
+        s = s.replaceAll("(?<![a-z])(szobabiciklin|futopadon|gorgon"
+                + "|ellipszisen|evezogepen)\\s+nez(?:tem|tuk)\\s+"
+                + "(?:egy\\s+)?\\p{L}+", "$1");
         // A NEM-SPORT program hossza nem az edzésé: a „fél órás webinar
         // után átmozgattam magam" harminc perc jógát írt be – a webinar
         // idejéből. A jelzős időtartam a programjával együtt esik ki.
@@ -1448,9 +1466,13 @@ public final class Activities {
                     + "(?=futopalya|palya\\w*|kor(?![a-z]))", "");
         // A KÖZTÜK séta a pihenő, nem külön túra: a „90 másodperces
         // sprintek, 6 ismétlés, köztük séta lefelé" mellé egy kilencven
-        // perces gyaloglás került – a sprint másodperceiből.
-        s = s.replaceAll("(?<![a-z])(?:koztuk|kozben|kozte)\\s+"
-                + "(?:laza\\s+)?seta\\w*[^,;.]*", " ");
+        // perces gyaloglás került – a sprint másodperceiből. Csak
+        // intervallos mondatban él: a „labdát dobáltam, közben
+        // sétálgattam" sétája valódi séta.
+        if (s.matches("(?s).*(?<![a-z])(?:sprint\\w*|intervall\\w*"
+                + "|ismetles\\w*|szakasz\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:koztuk|kozben|kozte)\\s+"
+                    + "(?:laza\\s+)?seta\\w*[^,;.]*", " ");
         // A FITNESZ KIHÍVÁS neve nem külön edzés: a „fitnesz kihívás 3.
         // napja: 30 burpee…" burpee-i mellé egy 45 perces egyéb mozgás is
         // került – a kihívás NEVÉBŐL.
@@ -1840,6 +1862,14 @@ public final class Activities {
                 "lepcsozes $1 emelet");
         s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emelet(?:et)?\\s+lepcso(?!z)\\w*",
                 "lepcsozes $1 emelet");
+        // A LÉPCSŐ szava messzebb is állhat: az „a lift helyett mindig
+        // lépcső: ma 14 emelet összesen" tizennégy emelete üresen jött
+        // vissza – a „ma" és az „összesen" beékelődött a minta két fele
+        // közé.
+        if (s.matches("(?s).*(?<![a-z])lepcso\\w*.*"))
+            s = s.replaceAll("(?<![a-z])(?:ma\\s+)?(\\d{1,3})\\s?"
+                    + "emelet(?:et)?(?![a-z])(?!\\s+lepcso)",
+                    "lepcsozes $1 emelet");
         // A LIFT HELYETT használt lépcső napi szokás, nem kilencven perc
         // túra: a „ma csak a lépcsőt használtam a lift helyett" mondatból
         // másfél órás gyaloglás lett – a mozgásforma alapidejéből. Ha az
@@ -5533,7 +5563,10 @@ public final class Activities {
                 "nincs edzes", "nincsen edzes", "nincs mozgas", "nincs futas",
                 // A JELEN idejű kihagyás is kihagyás: a „lázas vagyok,
                 // kihagyom a mai úszást" negyvenöt perc úszást írt be.
-                "kihagytam", "kihagyom", "kihagyjuk", "kimaradt", "elmarad",
+                // A HATÁROZÓI kihagyás is kihagyás: az „edzés kihagyva"
+                // negyvenöt perc egyéb mozgást írt be.
+                "kihagytam", "kihagyom", "kihagyjuk", "kihagyva",
+                "kimaradt", "elmarad",
                 // A SZÜNETELTETETT sport nem megtörtént sport: a
                 // „csípőfájdalom miatt a futást szüneteltetem" negyvenöt
                 // perc futást írt be – pont abból, ami épp szünetel.
@@ -6004,7 +6037,10 @@ public final class Activities {
             if (h >= 0 && h <= 23) {
                 if (h < 12) {
                     int before = findHour(s.substring(0, m.start()));
-                    if (before >= 15) h += 12;
+                    // Az ÉJJEL kis órái hajnaliak: az „éjjel 2-kor keltem
+                    // fel" kettője délután kettőre tolódott, mert az éjjel
+                    // (22) is délutáninak számított.
+                    if (before >= 15 && before < 22) h += 12;
                 }
                 return h;
             }
@@ -7824,8 +7860,12 @@ public final class Activities {
         int a = 0;
         while (a < s.length()) {
             int e = a;
+            // A KETTŐSPONT is határ: az „úszogatás a gyerekkel: ő a
+            // gumimatracon, én 20 hosszt" első fele az „ő" miatt egyben
+            // tűnt el – az úszás szavával együtt, így a 20 hossz gazdátlan
+            // maradt.
             while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != '.'
-                    && s.charAt(e) != ';') e++;
+                    && s.charAt(e) != ';' && s.charAt(e) != ':') e++;
             String cl = s.substring(a, e);
             if (!firstPerson(cl) && otherSubject(cl)) blank(q, a, e);
             a = e + 1;
