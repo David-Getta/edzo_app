@@ -915,6 +915,9 @@ public final class Foods {
             // A VÍZEN töltött idő helyhatározó: a „45 perc vízen" a
             // vízisízés ideje, nem negyed liter ital.
             "vizholyag", "vizpart", "vizen",
+            // A LÁNCOLÁS közepén a cola ül: a „bicajom láncolása után
+            // próbakör" mellé egy doboz üdítő került a naplóba.
+            "lancol",
             // A ZSÍRMÉRŐ műszer, nem konyhai zsír: az „a zsírmérő szerint
             // 24,8 százalék" mellé eddig egy kanál olaj került a naplóba.
             "zsirmer",
@@ -3118,6 +3121,11 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"
                 + "(?:egy\\s+|az?\\s+)?", "fél ");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
+        // A FELESBEN ivott turmix fejenként fél: az „ittunk egy protein
+        // shake-et felesben a párommal" egész adagként ment be. A szó a
+        // kettéosztás bevett alakja – a „ketten" szabálya érti.
+        query = query.replaceAll("(?iu)(?<!\\p{L})felesben(?!\\p{L})",
+                "ketten");
         // A MEGOSZTOTT fogás fejenként a töredéke: a „megosztottunk egy
         // pizzát ketten" és a „ketten ettük meg a pizzát" egész pizzaként
         // ment be – kétszer annyi kalóriával, mint amennyi megvolt.
@@ -3128,7 +3136,10 @@ public final class Foods {
                 if (!query.matches("(?iu).*(?<!\\p{L})" + sh[0] + "(?!\\p{L}).*"))
                     continue;
                 if (!query.matches("(?iu).*(?:megosztott|osztoztunk|ettük meg"
-                        + "|ettuk meg|osztottuk).*")) continue;
+                        // A KÖZÖSEN ivott turmix is osztozás: az „ittunk egy
+                        // protein shake-et felesben" egész adag volt.
+                        + "|ettuk meg|osztottuk|itt[uü]nk|itt[uü]k meg).*"))
+                    continue;
                 query = query.replaceAll("(?iu)(?<!\\p{L})" + sh[0]
                         + "(?!\\p{L})", "");
                 query = query.replaceAll("(?iu)(?<!\\p{L})(?:megosztottunk|"
@@ -3136,6 +3147,8 @@ public final class Foods {
                         + "(?:egy\\s+|az?\\s+)?", sh[1]);
                 query = query.replaceAll("(?iu)(?<!\\p{L})ett[uü]k\\s+meg\\s+"
                         + "(?:egy\\s+|az?\\s+)?", sh[1]);
+                query = query.replaceAll("(?iu)(?<!\\p{L})itt[uü](?:nk|k meg)"
+                        + "\\s+(?:egy\\s+|az?\\s+)?", "ittunk " + sh[1]);
                 break;
             }
         }

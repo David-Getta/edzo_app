@@ -391,6 +391,10 @@ public final class Activities {
                     // levezetés helyett. (A „görget" scrollozás, az nem tő.)
                     "habhenger", "hengerez", "foam roll", "foamroll", "sms henger",
                     "gorgozes", "gorgoztem", "gorgozok", "gorgozni",
+                    // Az igekötős görgetés is SMR: az „átgörgettem a
+                    // combom, 10 perc" eddig üresen jött vissza. (A puszta
+                    // „görgettem" nem tő: a hírfolyamot is görgetik.)
+                    "atgorgettem", "kigorgettem",
                     // Ugyanez a mozdulat a másik nevén: aki SMR-hengerrel
                     // dolgozik, „hengerelni" szokott. A „hengereltem a hátamat
                     // 10 percet" eddig válasz nélkül maradt.
@@ -1383,6 +1387,14 @@ public final class Activities {
             fhAny = true;
         }
         if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
+        // A PÁLYA HOSSZA nem a lefutott táv: a „400 m-es futópályán
+        // 5x1000 m" négyszáz méteres futás lett – az ötezer méter helyett.
+        // Csak akkor esik ki, ha a mondat MÁSHOL kimondja a távot: a „10
+        // kör a 400 m-es pályán" szorzásához a pályahossz kell.
+        if (s.matches("(?s).*(?:\\dx\\d{3,4}\\s?m(?![a-z])"
+                + "|\\d+(?:[.,]\\d+)?\\s?km(?![a-z])).*"))
+            s = s.replaceAll("(?<![\\d,.])\\d{2,4}\\s?m-?es\\s+"
+                    + "(?=futopalya|palya\\w*|kor(?![a-z]))", "");
         // A KÖZTÜK séta a pihenő, nem külön túra: a „90 másodperces
         // sprintek, 6 ismétlés, köztük séta lefelé" mellé egy kilencven
         // perces gyaloglás került – a sprint másodperceiből.

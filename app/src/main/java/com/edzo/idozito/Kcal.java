@@ -152,6 +152,20 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
+        // A NAPZÁRÓ szám a bevitel: az „a dietetikus 1600 kcal-t írt elő,
+        // ma 1550-nél zártam" ezerötszázötvene eddig elveszett – az egység
+        // csak az előíráson volt, az pedig cél, nem étel.
+        if (q != null) {
+            String zs = Hu.digits(Foods.norm(q));
+            if (zs.matches("(?s).*(?:kcal|kalori).*")) {
+                Matcher zm = Pattern.compile("(?<![\\d,.])(\\d{3,4})"
+                        + "\\s?-?[nv][ae]l\\s+zartam(?![a-z])").matcher(zs);
+                if (zm.find()) {
+                    int v = Integer.parseInt(zm.group(1));
+                    if (v >= MIN && v <= MAX) return v;
+                }
+            }
+        }
         // Az ÓRA-EXPORT kalóriája ELÉGETETT, nem megevett: a „polar: 55 perc,
         // 610 kcal, átlag hr 138" hatszáztízét eddig a napi BEVITELHEZ adtuk –
         // pont az ellenkező előjellel, mint ahogy a mondat érti. Ha viszont

@@ -631,4 +631,18 @@ public class KcalTest {
                 + "futással, 1900 kcal-t ettem."));
     }
 
+    /**
+     * A napzáró szám a bevitel, az előírás a cél.
+     *
+     * Az „a dietetikus 1600 kcal-t írt elő, ma 1550-nél zártam"
+     * ezerötszázötvene eddig elveszett – az egység csak az előíráson volt.
+     */
+    @Test public void closingTheDayAtANumberIsIntake() {
+        assertEquals(1550, Kcal.stated("A dietetikus 1600 kcal-t írt "
+                + "elő, ma 1550-nél zártam."));
+        assertEquals(1800, Kcal.stated("1800 kcal-nál zártam a napot."));
+        // A cél önmagában marad cél.
+        assertEquals(-1, Kcal.stated("A cél 2000 kcal."));
+    }
+
 }

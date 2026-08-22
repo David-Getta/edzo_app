@@ -8393,4 +8393,23 @@ public class ActivitiesParseTest {
                 + "3 óra.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A pálya hossza nem a lefutott táv, a felesben ivott turmix fél.
+     *
+     * A „400 m-es futópályán 10 kör bemelegítés után 5x1000 m" négyszáz
+     * méteres futás lett az ötezer helyett; az „ittunk egy protein
+     * shake-et felesben" egész adagként ment be.
+     */
+    @Test
+    public void aTrackLengthAndASharedShake() {
+        assertEquals(5.0, Activities.parse("400 m-es futópályán 10 kör "
+                + "bemelegítés után 5x1000 m.").plans.get(0).km, 0.01);
+        // A kör-szorzás pályahossza marad.
+        assertEquals(4.0, Activities.parse("10 kör a 400 m-es pályán")
+                .plans.get(0).km, 0.01);
+        assertEquals(150.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Ittunk egy protein shake-et felesben a párommal.")
+                .get(0).grams, 0.01);
+    }
+
 }
