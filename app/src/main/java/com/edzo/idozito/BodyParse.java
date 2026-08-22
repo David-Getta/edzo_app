@@ -117,6 +117,10 @@ public final class BodyParse {
             // ma" hetvennégy kilója valódi mérés – eddig kiesett, mert a
             // „fogyok" se kimondásnak, se kísérőnek nem számított.
             "fogyok", "hizok",
+            // A KÚRA neve is mérés-kontextus: az „a fogyókúra első hete
+            // lezárult: -1,8 kg, most 92,7" mai értéke elveszett – a kúra
+            // szava mellett a mértékegység nélküli szám nem volt mérés.
+            "fogyokura", "fogyokuram", "kura", "dieta", "dietam",
             // A MUTATOTT szám a mérleg száma: a „vízvisszatartás miatt
             // 84 kg-ot mutatott" nyolcvannégye valódi reggeli mérés.
             "mutatott", "mutat",
@@ -381,6 +385,16 @@ public final class BodyParse {
         q = q.replaceAll("(?iu)(?<![\\p{L}])zs[ií]rm[eé]r\\w*\\s+"
                 + "(?:szerint\\s+)?(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?"
                 + "(?:%|sz[aá]zal[eé]k\\w*)", "testzsir $1 %");
+        // A „MOST N" kg nélkül is a mai súly, ha a mondat kilóban beszél:
+        // az „a fogyókúra első hete lezárult: -1,8 kg, most 92,7"
+        // kilencvenkét és héttizede eddig elveszett – a kúra tiltószava a
+        // mértékegység nélküli számot is elvitte.
+        if (Foods.norm(q).matches("(?s).*(?<![a-z])(?:kg|kilo)\\w*.*"))
+            q = q.replaceAll("(?iu)(?<![\\p{L}])most\\s+"
+                    + "(\\d{2,3}(?:[.,]\\d{1,2})?)(?!\\d)(?![.,]\\d)"
+                    + "(?!\\s?(?:kg|kil[oó]|%|sz[aá]zal|perc|km|[oó]ra"
+                    + "|l[eé]p[eé]s|kcal|kalori|cm|m(?![\\p{L}])))",
+                    "most $1 kg");
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(
                         dropOthersWeight(Foods.norm(q)))))));
@@ -512,6 +526,9 @@ public final class BodyParse {
         // feldolgozásban szóközzé olvadt, és a „fölött" az egészre szólt.
         s = s.replaceAll("(?<=[a-z0-9]) (?=\\d{2,3}\\s?"
                 + "(?:ala|alatt|folott|felett)(?![a-z]))", ", ");
+        // A „MOST N" elé is határ kerül: a „fogyókúra: most 92,7 kg" mai
+        // értéke a kúra tiltószavával egy tagmondatban ült, és elveszett.
+        s = s.replaceAll("(?<=[a-z0-9]) (?=most\\s+\\d)", ", ");
         boolean anyBlocked = adjectiveKg(s) || liftStem(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {

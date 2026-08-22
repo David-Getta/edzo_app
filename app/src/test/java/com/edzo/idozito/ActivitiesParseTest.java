@@ -8436,4 +8436,50 @@ public class ActivitiesParseTest {
                 .plans.size());
     }
 
+    /**
+     * A tagadás elé vetett igenév, a lépésszám és a tegnapi maradék.
+     *
+     * Az „úszni nem úsztam" negyvenöt perc úszást írt be a fürdőzésből,
+     * az „a lépésszám 13 450" sétája elveszett, az „a tegnapi lecsó
+     * maradékát melegítettem meg" ebédje pedig tegnapra került.
+     */
+    @Test
+    public void aFrontedNegationStepCountAndLeftovers() {
+        assertTrue(Activities.parse("A széchenyi fürdőben áztattuk "
+                + "magunkat 2 órát, úszni nem úsztam.").plans.isEmpty());
+        Activities.Parsed st = Activities.parse("Az okosóra szerint a mai "
+                + "aktív kalóriám 612, a lépésszám 13 450.");
+        assertEquals(1, st.plans.size());
+        assertEquals(13450, st.plans.get(0).steps);
+        assertEquals(0, Activities.parse("Reggelire rántotta, ebédre a "
+                + "tegnapi lecsó maradékát melegítettem meg.").offset);
+        // A fizioterápia gyógytorna-bejegyzés.
+        assertEquals("joga", Activities.parse("A fizioterápiás "
+                + "gyakorlatokat naponta 2x15 percben írták elő, ma "
+                + "mindkettőt megcsináltam.").plans.get(0).kind.id);
+    }
+
+    /**
+     * A webinar órája, a szállodai gym és az átmozgatás bevezetője.
+     *
+     * A „fél órás webinar után átmozgattam magam: 15 guggolás, 15
+     * fekvőtámasz" harminc perc jógát írt be a webinar idejéből, a
+     * „szállodában gym is volt, 40 perc futópad" futása mellé pedig egy
+     * órás kondi került a megjegyzésből.
+     */
+    @Test
+    public void aWebinarHourAndAHotelGymNote() {
+        Activities.Parsed p = Activities.parse("Fél órás webinar után "
+                + "átmozgattam magam: 15 guggolás, 15 fekvőtámasz.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        Activities.Parsed g = Activities.parse("A luxus szállodában gym "
+                + "is volt, 40 perc futópad reggeli előtt.");
+        assertEquals(1, g.plans.size());
+        assertEquals(40, g.plans.get(0).minutes);
+        // A fél órás futás marad harminc perc.
+        assertEquals(30, Activities.parse("Fél órás futás volt ma.")
+                .plans.get(0).minutes);
+    }
+
 }

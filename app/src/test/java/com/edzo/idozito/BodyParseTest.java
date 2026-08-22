@@ -1234,4 +1234,16 @@ public class BodyParseTest {
         assertEquals(0.0, BodyParse.parse("6:30-ra m\u00e1r az els\u0151 "
                 + "emelked\u0151n\u00e9l voltunk a bring\u00e1val.").kg, 0.01);
     }
+
+    /**
+     * A k\u00fara mellett a \u201emost N" is m\u00e9r\u00e9s.
+     *
+     * Az \u201ea fogy\u00f3k\u00fara els\u0151 hete lez\u00e1rult: -1,8 kg, most 92,7"
+     * kilencvenkett\u0151 eg\u00e9sz h\u00e9ttizede elveszett \u2013 a k\u00fara szava mellett
+     * a m\u00e9rt\u00e9kegys\u00e9g n\u00e9lk\u00fcli sz\u00e1m nem volt m\u00e9r\u00e9s.
+     */
+    @Test public void aDietWeekCloseKeepsTheCurrentWeight() {
+        assertEquals(92.7, BodyParse.parse("A fogy\u00f3k\u00fara els\u0151 hete "
+                + "lez\u00e1rult: -1,8 kg, most 92,7.").kg, 0.01);
+    }
 }

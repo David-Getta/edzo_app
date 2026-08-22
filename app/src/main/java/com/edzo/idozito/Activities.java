@@ -369,6 +369,10 @@ public final class Activities {
                     // vissza. A fascia-lazítás a henger rokona.
                     "vinyasa", "napudvozlet", "fascia", "mobility",
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
+                    // A FIZIOTERÁPIA a gyógytorna hivatalos neve: a
+                    // „fizioterápiás gyakorlatok, ma mindkettőt
+                    // megcsináltam" eddig üresen jött vissza.
+                    "fizioterap", "fizioter",
                     // A „megmozgattam magam" ugyanaz a laza átmozgatás.
                     "meditac", "atmozgat", "megmozgat",
                     "mobiliz", "mobilitas", "legzogyakorlat",
@@ -1266,6 +1270,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(marad[eo]k?\\w*[^,;.]{0,24}?)"
                 + "tegnaprol(?![a-z])", "$1");
         s = s.replaceAll("(?<![a-z])tegnaprol\\s+(?=marad)", "");
+        // A TEGNAPI maradék jelzős alakban is: az „ebédre a tegnapi lecsó
+        // maradékát melegítettem meg" bejegyzése tegnapra került.
+        s = s.replaceAll("(?<![a-z])tegnapi\\s+"
+                + "(?=[^,;.]{0,24}marad)", "");
+        // A LÉPÉSSZÁM utáni szám lépés: az „a lépésszám 13 450" sétája
+        // eddig elveszett – a szám mögül hiányzott a lépés szava.
+        s = s.replaceAll("(?<![a-z])lepesszam\\w*\\s*:?\\s*"
+                + "(\\d[\\d ]{0,6}\\d)(?!\\d)(?![.,]\\d)", "$1 lepes");
         // A NEVEZÉS mellett a MAI edzés valóság: a „beneveztünk egy 10
         // km-es jótékonysági futásra októberben, elkezdtünk készülni: ma
         // 4 km" bejegyzéséből SEMMI nem lett – a nevezés szava az egészet
@@ -1397,6 +1409,29 @@ public final class Activities {
                     + "|csutortokon|penteken|szombaton|vasarnap)"
                     + "(?:\\s+es\\s+(?:hetfon|kedden|szerdan|csutortokon"
                     + "|penteken|szombaton|vasarnap))*\\s*(?=[,;.])", " ");
+        // A NEM-SPORT program hossza nem az edzésé: a „fél órás webinar
+        // után átmozgattam magam" harminc perc jógát írt be – a webinar
+        // idejéből. A jelzős időtartam a programjával együtt esik ki.
+        s = s.replaceAll("(?<![a-z])(?:fel|masfel|\\d+(?:\\s?es\\s?fel)?)"
+                + "\\s?or[a]s\\s+(?=webinar|meeting|ertekezlet|megbeszeles"
+                + "|film|sorozat|eloadas|koncert|utazas|autout|vonatut"
+                + "|repulout|varakozas)", "");
+        // Az ÁTMOZGATÁS a gyakorlatlista bevezetője, nem külön jóga: az
+        // „átmozgattam magam: 15 guggolás, 15 fekvőtámasz" mellé egy
+        // negyvenöt perces jóga is került – ugyanarról a pár percről.
+        s = s.replaceAll("(?<![a-z])atmozgattam\\s+magam\\w*\\s*:?\\s*"
+                + "(?=\\d{1,3}\\s+(?:guggolas|fekvotamasz|felules|kitores"
+                + "|burpee|hasprés|haspres|plank))", "");
+        // A „GYM IS VOLT" helyszín-megjegyzés, nem külön kondi: a „a
+        // szállodában gym is volt, 40 perc futópad" futása mellé egy órás
+        // kondi is került – a megjegyzésből.
+        s = s.replaceAll("(?<![a-z])(?:gym|konditerem|edzoterem)\\s+is\\s+"
+                + "(?:volt|van)(?![a-z])", " ");
+        // A TAGADÁS ELÉ vetett igenév is tagadott: az „úszni nem úsztam"
+        // negyvenöt perc úszást írt be – a fürdőzős mondatból, ami épp azt
+        // mondja ki, hogy NEM úszott. Az igenév kiesik, a tagadó tagmondat
+        // szabálya onnan érti.
+        s = s.replaceAll("(?<![a-z])\\p{L}{3,}ni\\s+(?=nem\\s)", "");
         // A JÖVŐBELI esemény ELŐTTI nap sem az eseményé: az „a szombati
         // hosszú túra előtt ma csak lazítás: 20 perc görgőzés" mellé egy
         // szombatra keltezett, kilencvenperces túra került – a tervből.
