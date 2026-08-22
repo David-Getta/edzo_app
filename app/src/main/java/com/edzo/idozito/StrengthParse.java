@@ -412,6 +412,23 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\p{L}])(?:k[eé]t|h[aá]rom|n[eé]gy"
                 + "|[oö]t|hat|h[eé]t|nyolc|kilenc|t[ií]z)\\s+"
                 + "(\\p{L}+\\s+k[oö]z[oö]tt)(?![\\p{L}])", "$1");
+        // A KETTŐSPONTOS idő a tartás ideje: a „fitness teszt: …, 2:40
+        // plank" tartása nyomtalanul elveszett – a 2:40 nem volt
+        // másodperc. Csak az időre menő gyakorlat neve mellett él.
+        java.util.regex.Matcher ct = java.util.regex.Pattern.compile(
+                "(?iu)(\\d{1,2}):([0-5]\\d)(?=\\s+plank)|"
+                + "(?<=plank[\\s:])\\s?(\\d{1,2}):([0-5]\\d)(?![\\d:])")
+                .matcher(text);
+        StringBuffer ctb = new StringBuffer();
+        boolean ctAny = false;
+        while (ct.find()) {
+            String mm = ct.group(1) != null ? ct.group(1) : ct.group(3);
+            String ss = ct.group(1) != null ? ct.group(2) : ct.group(4);
+            ct.appendReplacement(ctb, (Integer.parseInt(mm) * 60
+                    + Integer.parseInt(ss)) + " masodperc");
+            ctAny = true;
+        }
+        if (ctAny) { ct.appendTail(ctb); text = ctb.toString(); }
         // A KÖR SORSZÁMA nem ismétlésszám: a „kör 1 – guggolás, kör 2 –
         // fekvőtámasz, kör 3 – plank" címkéiből egy-, két- és háromismétléses
         // sorok lettek – kitalált számok a valódi edzés helyett. A címkét

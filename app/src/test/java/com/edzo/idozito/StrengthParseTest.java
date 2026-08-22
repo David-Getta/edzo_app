@@ -1968,4 +1968,19 @@ public class StrengthParseTest {
         assertEquals(50, it.get(0).sets.get(0).reps);
     }
 
+    /**
+     * A kettőspontos plank-idő is tartásidő.
+     *
+     * A „fitness teszt: 12 húzódzkodás, 45 fekvőtámasz, 2:40 plank"
+     * tartása nyomtalanul elveszett – a 2:40 nem volt másodperc.
+     */
+    @Test public void aColonTimeBesidePlankIsAHold() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fitness teszt: "
+                + "12 húzódzkodás, 45 fekvőtámasz, 2:40 plank.");
+        assertEquals(3, it.size());
+        assertEquals(160, it.get(2).sets.get(0).reps);
+        assertEquals(160, StrengthParse.parse("Plank: 2:40, új rekord.")
+                .get(0).sets.get(0).reps);
+    }
+
 }

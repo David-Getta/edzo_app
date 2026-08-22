@@ -1442,6 +1442,13 @@ public final class Foods {
                 "(?<![a-z])zsirt?\\s?eget\\p{L}*").matcher(q);
         while (zs.find())
             for (int k = zs.start(); k < zs.end(); k++) sb.setCharAt(k, ' ');
+        // A „-NAK SZÓLÓ" szólója nem szőlő: a „kezdő futóknak szóló tervet
+        // követek" mellé száz gramm szőlő került a naplóba.
+        java.util.regex.Matcher so = java.util.regex.Pattern.compile(
+                "(?<![a-z])\\p{L}+(?:nak|nek|rol|rol)\\s+(szolo)(?![a-z])")
+                .matcher(q);
+        while (so.find())
+            for (int k = so.start(1); k < so.end(1); k++) sb.setCharAt(k, ' ');
         int i = 0;
         String prev = "";
         while (i < sb.length()) {
@@ -4325,6 +4332,10 @@ public final class Foods {
         s = s.replaceAll("(?<![a-z])bojtolt\\w*\\s+\\d{1,2}\\s?or\\w*"
                 + "\\s*,?\\s*(?=[^;.]{0,40}(?:etkezes|ettem|megettem"
                 + "|reggeli|ebed|vacsora))", " ");
+        // A TAGADOTT evés nem evés: a „sütit sütöttem a hétvégére, de nem
+        // ettem belőle egyet sem" sütije a MAI naplóba került – az „ettem"
+        // szava a tagadással együtt is evésnek számított.
+        s = s.replaceAll("(?<![a-z])nem\\s+(?:is\\s+)?ettem[^,;.]*", " ");
         // A PÓTLÁS felmenti a felejtést: a „reggel elfelejtettem enni, délben
         // pótoltam: 2 szendvics" ebédje MEGEVETT ebéd – eddig az egész
         // bejegyzés elveszett a felejtés szavától, a szendvicsekkel együtt.
@@ -4417,6 +4428,9 @@ public final class Foods {
                 // nagy fazék gulyást a hétre" nem mai adag. A SÜTŐBEN sülő
                 // étel ugyanígy – a „megsült a kenyerem" még nem falat.
                 "a hetre", "egesz hetre", "tobb napra", "napokra",
+                // A HÉTVÉGÉRE sütött süti is előkészület – ha meg is
+                // kóstolja az ember, azt evés-igével mondja ki.
+                "a hetvegere", "hetvegere sutottem",
                 // A HETI EBÉDEK megfőzése is előkészület: a „ma este
                 // megfőztem a heti ebédeket, 5 adag csirkés rizs"
                 // HÉTSZÁZÖTVEN GRAMM csirkét írt a MAI naplóba – abból az

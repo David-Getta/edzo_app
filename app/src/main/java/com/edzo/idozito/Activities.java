@@ -1317,6 +1317,34 @@ public final class Activities {
         // A „30 perc flow" a jógások szava az órára: a matrac-avatásból
         // eddig semmi nem lett, mert a flow nem volt szótő.
         s = s.replaceAll("(?<=perc )flow(?![a-z])", "joga");
+        // A MARATON-TERV papír, nem táv: a „végigcsináltam a 12 hetes
+        // félmaraton-tervet, vasárnap lesz a verseny!" MAI, huszonegy
+        // kilométeres futást írt be – a verseny neve a terv nevében ült.
+        s = s.replaceAll("(?<![a-z])(?:fel|negyed)?maraton-?\\s?terv",
+                "edzesterv");
+        // A FÉL ÓRA számmal írva is óra: a „fél 7-től fél 8-ig úszás"
+        // hatvan perce negyvenöt lett – a „fél 7" nem számított időpontnak.
+        // 6:30-ra fordítjuk, onnan a tartomány-szabály érti.
+        java.util.regex.Matcher fh = java.util.regex.Pattern.compile(
+                "(?<![a-z])fel\\s+(\\d{1,2})"
+                + "(?=\\s?-?(?:tol|ig|kor|re)(?![a-z]))").matcher(s);
+        StringBuffer fb = new StringBuffer();
+        boolean fhAny = false;
+        while (fh.find()) {
+            int h = Integer.parseInt(fh.group(1));
+            fh.appendReplacement(fb, (h == 1 ? 12 : h - 1) + ":30");
+            fhAny = true;
+        }
+        if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
+        // A MECCS UTÁNI izomláz panasza nem viheti el a meccset: az „a
+        // meccs után izomlázam lett a combomban, pedig csak 60 percet
+        // játszottam" hatvan perce nyomtalanul eltűnt – a meccs szava a
+        // kitakart panasz-tagmondatban ült. Csak kimondott perc mellett
+        // él, és a tegnapi meccsre nem: azt már beírta az ember.
+        if (s.matches("(?s).*\\d+\\s?perc\\w*.*"))
+            s = s.replaceAll("(?<![a-z])(?<!tegnapi )(?<!a tegnapi )"
+                    + "(meccs|merkozes|edzes)\\w*\\s+utan\\s+"
+                    + "izomlaz[^,;.]*", "$1 volt");
         // A TRÉNING ugyanaz a szó, mint az edzés – eddig nem volt tő, és a
         // „tréningen voltam 25 percet" csak akkor lett bejegyzés, ha a
         // hasonlítás edzés-szava véletlenül megmentette. A NÉVBEN álló

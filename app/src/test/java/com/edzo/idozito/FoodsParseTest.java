@@ -2330,4 +2330,25 @@ public class FoodsParseTest {
         assertEquals("Olaj", Foods.parse(all, "Zsírral sütöttem a "
                 + "tojást.").get(0).food.name);
     }
+
+    /**
+     * A „-nak szóló" nem szőlő, a tagadott kóstolás nem falat.
+     *
+     * A „kezdő futóknak szóló tervet követek" mellé száz gramm szőlő
+     * került, a „sütit sütöttem a hétvégére, de nem ettem belőle egyet
+     * sem" sütije pedig a MAI naplóba – az „ettem" a tagadással együtt is
+     * evésnek számított.
+     */
+    @Test public void aPlanForRunnersAndAnUntouchedCake() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Kezdő futóknak szóló tervet "
+                + "követek.").isEmpty());
+        assertTrue(Foods.parse(all, "Sütit sütöttem a hétvégére, de nem "
+                + "ettem belőle egyet sem, esküszöm!").isEmpty());
+        // A valódi szőlő és a megevett süti marad.
+        assertEquals("Szőlő", Foods.parse(all, "Szőlőt ettem "
+                + "uzsonnára.").get(0).food.name);
+        assertEquals("Sütemény", Foods.parse(all, "Sütit sütöttem a "
+                + "hétvégére, és ettem is belőle kettőt.").get(0).food.name);
+    }
 }

@@ -8160,4 +8160,31 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    /**
+     * Az izomláz panasza nem viheti el a meccset, a fél óra is óra.
+     *
+     * Az „a meccs után izomlázam lett a combomban, pedig csak 60 percet
+     * játszottam" hatvan perce nyomtalanul eltűnt – a meccs a kitakart
+     * panasz-tagmondatban ült. A „fél 7-től fél 8-ig úszás" pedig
+     * negyvenöt perc lett a hatvan helyett.
+     */
+    @Test
+    public void soreMusclesAndHalfPastHours() {
+        Activities.Parsed p = Activities.parse("A meccs után izomlázam "
+                + "lett a combomban, pedig csak 60 percet játszottam.");
+        assertEquals(1, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes);
+        assertEquals(60, Activities.parse("Fél 7-től fél 8-ig úszás, "
+                + "utána munka.").plans.get(0).minutes);
+        // A tegnapi edzés izomláza továbbra sem új bejegyzés.
+        assertTrue(Activities.parse("Izomláz van rendesen a tegnapi "
+                + "lábnaptól.").plans.isEmpty());
+        // A maraton-terv papír, nem mai táv; a lefutott félmaraton marad.
+        assertTrue(Activities.parse("Végigcsináltam a 12 hetes "
+                + "félmaraton-tervet, vasárnap lesz a verseny!")
+                .plans.isEmpty());
+        assertEquals(21.1, Activities.parse("Lefutottam a félmaratont, "
+                + "1:58 lett.").plans.get(0).km, 0.01);
+    }
+
 }
