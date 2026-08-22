@@ -212,7 +212,7 @@ public class FoodsFitnessTest {
     @Test public void toastAndPancakeDishesKeepTheirParts() {
         // Az „avokádós pirítós" fele eltűnt: a pirítós nem volt szótő.
         assertEquals("Avokádó + Kenyér", names("avokádós pirítós"));
-        assertEquals("Kenyér", names("bagett"));
+        assertEquals("Bagett", names("bagett"));
         // A hortobágyi palacsinta húsos főfogás, nem édes palacsinta – és
         // nem is kettő (Hortobágyi + Palacsinta).
         assertEquals("Hortobágyi palacsinta", names("hortobágyi palacsinta"));

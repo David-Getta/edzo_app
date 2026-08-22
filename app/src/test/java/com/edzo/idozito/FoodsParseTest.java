@@ -2287,4 +2287,18 @@ public class FoodsParseTest {
         assertEquals(0.0, plain.grams, 0.01);
         assertEquals(350, plain.food.portion);
     }
+
+    /**
+     * A bagett darabja negyed kiló, nem egy szelet kenyér.
+     *
+     * A „fél bagett sajttal" tizenhét és fél GRAMM kenyér lett – egy
+     * falatnyi a valódi százhuszonöt helyett.
+     */
+    @Test public void halfABaguetteIsHalfABaguette() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        Foods.Hit h = Foods.parse(all, "Fél bagett sajttal a vacsora.")
+                .get(0);
+        assertEquals("Bagett", h.food.name);
+        assertEquals(125.0, h.grams, 0.01);
+    }
 }

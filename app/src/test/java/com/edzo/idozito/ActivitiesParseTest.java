@@ -8044,4 +8044,97 @@ public class ActivitiesParseTest {
         assertEquals(8.3, walk2, 0.05);
     }
 
+    /**
+     * Az eltiltás nem edzés, a bontás perce nem az edzés hossza.
+     *
+     * Az „az orvos eltiltott a futástól 2 hétre, addig csak úszhatok"
+     * TIZENNÉGY napos futást írt a naplóba – pont abból, amitől az orvos
+     * eltiltott. A „3 percet plankoltam összesen, 3x1 perc bontásban"
+     * pedig egyperces kondiedzés lett.
+     */
+    @Test
+    public void aDoctorsBanAndABreakdownMinuteAreNotTheSession() {
+        assertTrue(Activities.parse("Az orvos eltiltott a futástól 2 "
+                + "hétre, addig csak úszhatok.").plans.isEmpty());
+        // A tiltás melletti valódi úszás marad.
+        assertEquals("uszas", Activities.parse("Az orvos eltiltott a "
+                + "futástól, ezért ma úsztam 1500 métert.")
+                .plans.get(0).kind.id);
+        assertTrue(Activities.parse("3 percet plankoltam összesen, "
+                + "3x1 perc bontásban.").plans.get(0).minutes >= 30);
+        // A kimondott fő idő marad a bontás mellett.
+        assertEquals(40, Activities.parse("Futottam 40 percet, 2x20 perc "
+                + "bontásban.").plans.get(0).minutes);
+    }
+
+    /**
+     * A reggeli elhatározás estére valóra vált, a hasonlítás órája nem idő.
+     *
+     * A „reggel eldöntöttem, hogy este futni fogok, és tényleg: 6 km
+     * lett!" bejegyzéséből SEMMI nem lett. A „vibrációs tréningen voltam
+     * 25 percet, állítólag felér egy órás edzéssel" pedig HATVAN perces
+     * lett a huszonöt helyett.
+     */
+    @Test
+    public void aResolutionComeTrueAndAComparisonHour() {
+        Activities.Parsed p = Activities.parse("Reggel eldöntöttem, hogy "
+                + "este futni fogok, és tényleg: 6 km lett!");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertEquals(25, Activities.parse("A vibrációs tréningen voltam "
+                + "25 percet, állítólag felér egy órás edzéssel.")
+                .plans.get(0).minutes);
+        // A beteljesületlen terv terv marad.
+        assertTrue(Activities.parse("Eldöntöttem, hogy holnap úszni "
+                + "fogok.").plans.isEmpty());
+        assertTrue(Activities.parse("Úszni fogok este, és tényleg jó "
+                + "lesz.").plans.isEmpty());
+        // Az autogén tréning marad a jóga-lapon.
+        assertEquals("joga", Activities.parse("Autogén tréning 20 perc.")
+                .plans.get(0).kind.id);
+    }
+
+    /**
+     * A csak-úszós mondat gazdátlan métere úszás, nem futás.
+     *
+     * A „a nyári táborban a gyerekek napi 3x úsznak, én is beszálltam ma
+     * délután 1000 méterre" ezer métere FUTÁS lett hat perccel – a
+     * gyerekek tagmondatát a más-ember szűrő kitakarta, és a táv sport
+     * nélkül maradt.
+     */
+    @Test
+    public void anOrphanDistanceInASwimOnlySentenceIsASwim() {
+        Activities.Parsed p = Activities.parse("A nyári táborban a "
+                + "gyerekek napi 3x úsznak, én is beszálltam ma délután "
+                + "1000 méterre.");
+        assertEquals(1, p.plans.size());
+        assertEquals("uszas", p.plans.get(0).kind.id);
+        assertEquals(1.0, p.plans.get(0).km, 0.01);
+        // A futós mondat gazdátlan távja marad futás.
+        assertEquals("futas", Activities.parse("Nyomtam egy 5 km-t.")
+                .plans.get(0).kind.id);
+    }
+
+    /**
+     * A perc-lista egysége öröklődik, a wing chun harcművészet.
+     *
+     * A „kutyát sétáltattam háromszor: reggel 20, délben 10, este 30 perc"
+     * mindhárom alkalma HARMINC percet kapott – kilencven perc a valódi
+     * hatvan helyett. A „wing chun edzés 90 perc" pedig egyéb mozgás volt.
+     */
+    @Test
+    public void aMinuteListSharesItsUnit() {
+        Activities.Parsed p = Activities.parse("A kutyát sétáltattam "
+                + "háromszor: reggel 20, délben 10, este 30 perc.");
+        assertEquals(3, p.plans.size());
+        int total = 0;
+        for (Activities.Plan x : p.plans) total += x.minutes;
+        assertEquals(60, total);
+        assertEquals("harcmuveszet", Activities.parse("Wing chun edzés "
+                + "90 perc, páros gyakorlatok.").plans.get(0).kind.id);
+        // Az igés lista is örököl.
+        assertEquals(20, Activities.parse("Futottam 20, úsztam 30 percet.")
+                .plans.get(0).minutes);
+    }
+
 }

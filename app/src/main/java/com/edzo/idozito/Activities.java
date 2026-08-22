@@ -315,6 +315,11 @@ public final class Activities {
                     // A ZSÁKOLÁS a bokszzsák püfölése.
                     "zsakol",
                     "harcmuvesz", "kickbox", "box", "boksz", "karate", "judo", "birkozas",
+                    // A kínai stílusok neve is harcművészet: a „wing chun
+                    // edzés 90 perc" eddig egyéb mozgás volt.
+                    // (A tai chi már máshol tő – ott lassú, jóga-szerű
+                    // mozgásként számol.)
+                    "wing chun", "wingchun", "kung fu", "kungfu", "wing tsun",
                     "birkoz", "mma", "jiu-jitsu", "jiujitsu", "jiu jitsu", "bjj", "grappling",
                     "aikido", "onvedelm", "vivas", "taekwondo", "tekvondo",
                     "capoeira", "muay thai", "muaythai", "krav maga", "kravmaga",
@@ -1261,14 +1266,52 @@ public final class Activities {
         // a „volna" és a „tudok futni" együtt jövőnek minősítette, pedig a
         // mondat vége kimondja, hogy megtörtént. A keret törlődik, a
         // képesség igéje megtörtént igévé válik.
-        if (s.matches("(?s).*(?<![a-z])(?:megtortent|sikerult|osszejott"
-                + "|megcsinaltam|megvolt|meglett)(?![a-z]).*")) {
+        // Az ELTILTÁS nem edzés: az „az orvos eltiltott a futástól 2 hétre,
+        // addig csak úszhatok" TIZENNÉGY napos futást írt a naplóba – pont
+        // abból, amitől az orvos eltiltott. A tiltás tagmondata törlődik.
+        s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*"
+                + "(?<![a-z])(?:el)?tiltott\\w*[^,;.]*[,;.]?", " ");
+        if (s.matches("(?s).*(?<![a-z])(?:(?:megtortent|sikerult|osszejott"
+                + "|megcsinaltam|megvolt|meglett)(?![a-z])"
+                // A „tényleg" magában még nem siker – a „6 km lett" az.
+                + "|\\d\\s?(?:km\\w*|perc\\w*|meter\\w*|m)\\s+lett(?![a-z])).*")) {
             s = s.replaceAll("(?<![a-z])(?:sose\\s+|soha\\s+)?(?:nem\\s+)?"
                     + "(?:gondoltam|hittem|kepzeltem)\\s+volna\\s*,?\\s*"
                     + "(?:hogy\\s+)?", "");
+            // A REGGELI ELHATÁROZÁS estére valóra vált: a „reggel
+            // eldöntöttem, hogy este futni fogok, és tényleg: 6 km lett!"
+            // bejegyzéséből SEMMI nem lett – a „fogok" az egészet tervnek
+            // minősítette, pedig a mondat vége kimondja, hogy meglett.
+            s = s.replaceAll("(?<![a-z])(?:eldontottem|elhataroztam"
+                    + "|megfogadtam)\\s*,?\\s*(?:hogy\\s+)?", "");
+            s = s.replaceAll("(?<![a-z])(\\p{L}{3,})ni\\s+fog(?:ok|unk)"
+                    + "(?![a-z])", "$1as");
             s = s.replaceAll("(?<![a-z])tud(?:ok|unk)\\s+(\\p{L}{3,})ni"
                     + "(?![a-z])", "$1ottam");
         }
+        // A PERC-LISTA egysége csak egyszer áll ott: a „kutyát sétáltattam
+        // háromszor: reggel 20, délben 10, este 30 perc" első két száma
+        // eddig nem volt idő, és mindhárom alkalom harminc percet kapott –
+        // kilencven perc a valódi hatvan helyett. A lista jobbról balra
+        // öröklődik, ezért a csere addig fut, amíg van mit írni.
+        for (int gi = 0; gi < 4; gi++) {
+            String g = s.replaceAll("(?<![\\d,.])(\\d{1,3})\\s*"
+                    + "(?=,\\s*(?:\\p{L}{2,12}\\s+){0,2}?"
+                    + "\\d{1,3}\\s?perc(?:et|re|ig)?(?![a-z]))", "$1 perc");
+            if (g.equals(s)) break;
+            s = g;
+        }
+        // A HASONLÍTÁS órája nem a mozgás ideje: a „vibrációs tréningen
+        // voltam 25 percet, állítólag felér egy órás edzéssel" HATVAN
+        // perces bejegyzés lett a huszonöt helyett.
+        s = s.replaceAll("(?<![a-z])feler\\s+(?:egy\\s+)?[^,;.]*", "");
+        // A TRÉNING ugyanaz a szó, mint az edzés – eddig nem volt tő, és a
+        // „tréningen voltam 25 percet" csak akkor lett bejegyzés, ha a
+        // hasonlítás edzés-szava véletlenül megmentette. A NÉVBEN álló
+        // tréning marad: az autogén tréning, a gerinctréning, a core- és a
+        // funkcionális tréning saját szótő, azokat nem szabad átírni.
+        s = s.replaceAll("(?<![a-z])(?<!autogen )(?<!gerinc )(?<!core)"
+                + "(?<!funkcionalis )trening", "edzes");
         // A HÁT NAP nem hat nap: ékezet nélkül a testrész és a számnév
         // egybeesik, és a „kondiedzés: hát nap, húzódzkodás 4x6, evezés
         // gépen 4x10" egyetlen edzése HAT NAPRA terült szét a naptárban. Az
@@ -3613,6 +3656,18 @@ public final class Activities {
         // 5 km-t" magyarul futást jelent.
         if (out.isEmpty() && !kms.isEmpty()) {
             Kind run = byId("futas");
+            // Ha a mondat CSAK úszásról beszél – akár egy kitakart, másik
+            // emberről szóló tagmondatban –, a gazdátlan táv is úszás: a
+            // „a táborban a gyerekek napi 3x úsznak, én is beszálltam ma
+            // délután 1000 méterre" ezer métere FUTÁS lett, hatperces
+            // idővel, a valódi úszás helyett.
+            // Az USZODA MELLETTI park viszont szárazföld: ott az „uszoda"
+            // csak helyszín, az 5 km nem úszás.
+            boolean swimWord = rawText.matches("(?s).*(?<![a-z])usz(?!od)\\w*.*")
+                    || (rawText.matches("(?s).*(?<![a-z])uszoda\\w*.*")
+                        && !rawText.matches("(?s).*uszoda\\w*\\s+mellett\\w*.*"));
+            if (swimWord && !rawText.matches("(?s).*(?<![a-z])fut\\w*.*"))
+                run = byId("uszas");
             double km0 = kms.get(0)[1];
             // A kimondott idő itt is erősebb a tempó-becslésnél: az „5 km
             // 22:30" fél percre pontos, a hat perc/km csak közelítés.
@@ -6389,6 +6444,18 @@ public final class Activities {
             }
             String name = StrengthParse.nameIn(s.substring(e, stop));
             if (name != null && StrengthParse.isTimed(name)) continue;
+            // A BONTÁS és a plankolás igéje is a gyakorlat ideje: a „3
+            // percet plankoltam összesen, 3x1 perc bontásban" EGYPERCES
+            // kondiedzést írt be. A tagmondat, amelyben a perc áll,
+            // elárulja, kié az idő.
+            int cb = Math.max(0, m[0]);
+            while (cb > 0 && s.charAt(cb - 1) != ',' && s.charAt(cb - 1) != ';'
+                    && s.charAt(cb - 1) != '.') cb--;
+            int ce = Math.min(s.length(), e);
+            while (ce < s.length() && s.charAt(ce) != ',' && s.charAt(ce) != ';'
+                    && s.charAt(ce) != '.') ce++;
+            if (s.substring(cb, ce).matches("(?s).*(?<![a-z])"
+                    + "(?:bontas\\w*|plankol\\w*)(?![a-z]).*")) continue;
             // A gyakorlat neve a szám ELŐTT is állhat: a „plank 3x1 perc"
             // egy perce lett az egész otthoni edzés hossza. Visszafelé a
             // közvetlenül a szám előtt álló szót nézzük (a sorozat-jelölés

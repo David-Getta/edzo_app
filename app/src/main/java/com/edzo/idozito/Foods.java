@@ -122,7 +122,11 @@ public final class Foods {
         new Food("Bulgur (főtt)", 120, 4, 200, "bulgur", "arpagyongy"),
         new Food("Polenta / puliszka", 85, 2, 250, "polenta", "puliszka"),
         new Food("Quinoa (főtt)", 120, 4.4, 200, "quinoa"),
-        new Food("Kenyér", 250, 8, 70, "kenyer", "piritos", "bagett",
+        // A BAGETT darabja negyed kiló, nem egy szelet kenyér: a „fél
+        // bagett" tizenhét és fél GRAMM lett – egy falatnyi a valódi
+        // százhuszonöt helyett.
+        new Food("Bagett", 260, 8.5, 125, "bagett", "baguette"),
+        new Food("Kenyér", 250, 8, 70, "kenyer", "piritos",
                 "ciabatta", "focaccia", "bruschetta", "toast", "tosztkenyer"),
         new Food("Zsemle", 280, 9, 55, "zsemle", "zsemi"),
         new Food("Kifli", 290, 8, 55, "kifli"),
@@ -896,7 +900,9 @@ public final class Foods {
             "koriz", "gorkoriz",
             // A VÍZHÓLYAG seb, nem ásványvíz: a „felszakadt a vízhólyag a
             // sarkamon" mellé eddig két és fél deci víz került a naplóba.
-            "vizholyag",
+            // A VÍZPART pedig helyszín: az „egész nap a vízparton ültem"
+            // horgász-mondata negyed liter vizet írt a naplóba.
+            "vizholyag", "vizpart",
             // A ZSÍRMÉRŐ műszer, nem konyhai zsír: az „a zsírmérő szerint
             // 24,8 százalék" mellé eddig egy kanál olaj került a naplóba.
             "zsirmer",
@@ -1877,6 +1883,7 @@ public final class Foods {
             {"Grapefruit", "250"},
             {"Mangó", "200"}, {"Datolyaszilva", "150"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
+            {"Bagett", "250"},
             {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
             {"Virsli", "50"}, {"Kakaós csiga", "90"}, {"Fasírt", "60"},
             {"Szendvics", "150"}, {"Hot-dog", "150"},
