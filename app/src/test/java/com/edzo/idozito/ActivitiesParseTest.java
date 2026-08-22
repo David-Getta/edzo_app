@@ -8275,4 +8275,65 @@ public class ActivitiesParseTest {
                 + "csak 5 km lazítás volt.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A próbálkozás szorzója nem alkalomszám, a softball is sport.
+     *
+     * A „wakeboardoztunk, én kétszer tudtam felállni" KÉT edzést írt be,
+     * a „softballoztunk a csapatépítésen másfél órát" pedig üres volt.
+     */
+    @Test
+    public void standUpAttemptsAndSoftball() {
+        assertEquals(1, Activities.parse("A tesómékkel wakeboardoztunk a "
+                + "tavon, én kétszer tudtam felállni.").plans.get(0).count);
+        assertEquals(90, Activities.parse("Softballoztunk a "
+                + "csapatépítésen vagy másfél órát.").plans.get(0).minutes);
+        // A valódi két úszás marad kettő.
+        assertEquals(2, Activities.parse("Kétszer úsztam ma, reggel és "
+                + "este.").plans.get(0).count);
+    }
+
+    /**
+     * A heti rend leírása nem a bejegyzés időszaka.
+     *
+     * Az „úszásoktatásra iratkoztam be, heti 1x60 perc, ma volt az első"
+     * és az „a heti bevásárlás is 5000 lépés volt" hét napra terült szét;
+     * a szüneteltetett futás pedig bejegyzés lett, az orbitrek meg semmi.
+     */
+    @Test
+    public void aWeeklyScheduleIsNotTheEntrySpan() {
+        assertEquals(1, Activities.parse("Úszásoktatásra irattam be "
+                + "magam, heti 1x60 perc, ma volt az első.").days);
+        assertEquals(1, Activities.parse("A heti bevásárlás is 5000 "
+                + "lépés volt a plázában.").days);
+        Activities.Parsed p = Activities.parse("Csípőfájdalom miatt a "
+                + "futást szüneteltetem, helyette túrázom hétvégén.");
+        for (Activities.Plan x : p.plans)
+            assertFalse(x.kind.id.equals("futas"));
+        assertEquals(45, Activities.parse("440 kcal-t égetett a 45 "
+                + "perces orbitrek az óra szerint.").plans.get(0).minutes);
+        // A valódi heti gyakoriság marad kibontva.
+        assertEquals(30, Activities.parse("Heti 3 futás volt a múlt "
+                + "hónapban.").days);
+    }
+
+    /**
+     * A „terhesség alatt is" jelen, a szteppad sport.
+     *
+     * A „terhesség alatt is mozogtam: ma 30 perc kismama torna" tornája
+     * eltűnt (a visszaemlékezés-szabály a mai edzést is elvitte), a
+     * „szteppadon 30 perc" pedig üres volt – az sz-es írásmód hiányzott.
+     */
+    @Test
+    public void pregnancyPresentAndStepBoard() {
+        Activities.Parsed p = Activities.parse("Terhesség alatt is "
+                + "mozogtam: ma 30 perc kismama torna.");
+        assertEquals(1, p.plans.size());
+        assertEquals(30, p.plans.get(0).minutes);
+        assertEquals(30, Activities.parse("A szteppadon 30 perc, "
+                + "föllépésekkel és oldallépésekkel.").plans.get(0).minutes);
+        // A visszaemlékezés „is" nélkül marad üres.
+        assertTrue(Activities.parse("Terhesség alatt jógáztam sokat.")
+                .plans.isEmpty());
+    }
+
 }

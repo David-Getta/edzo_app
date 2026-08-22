@@ -498,6 +498,9 @@ public final class Activities {
                     // 20 percet" az ugrálóvárban is edzés. Csak a saját,
                     // múlt idejű alak – a „gyerek ugrált" nem az enyém.
                     "ugraltam", "ugraltunk",
+                    // Az amerikai labdajátékok: a „softballoztunk a
+                    // csapatépítésen másfél órát" eddig üresen jött vissza.
+                    "softball", "baseball", "kickball",
                     // A LEJÁTSZOTT meccs is edzés: az „a meccset megnyertük
                     // 3-1-re, végig játszottam" eddig üresen jött vissza. A
                     // puszta „meccs" nem lehet tő – a tévén NÉZETT meccs nem
@@ -530,7 +533,7 @@ public final class Activities {
                     "frizbi", "ultimate frizbi", "slackline", "szlekklajn",
                     "medicinlabda", "bosu", "battle rope", "kotelezes",
                     "szankotolas", "szanko tolas", "traktorgumi", "step pad",
-                    "steppad", "step ora",
+                    "steppad", "szteppad", "sztep pad", "step ora",
                     "tekezunk", "tekezik",
                     "egyeb mozgas", "egyeb edzes", "egyeb", "sportol", "mozog",
                     "lovagl", "lovagol",
@@ -542,7 +545,10 @@ public final class Activities {
                     // szörfölnek.
                     "surfing", "hullamlovaglas", "szorfdeszka",
 
+                    // Az ORBITREK az elliptikus tréner beszélt neve: a „45
+                    // perces orbitrek" eddig csak kalóriát adott, edzést nem.
                     "ellipszis", "elliptikus", "crosstrainer", "cross trainer",
+                    "orbitrek",
                     "jatszoter", "lepcsozo", "trambulin", "ugrokotel", "ugralokotel",
                     // Az angol neve is bevett: a „45 perc jump rope a
                     // garázsban" eddig semmi nem volt.
@@ -1372,6 +1378,24 @@ public final class Activities {
             fhAny = true;
         }
         if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
+        // A „TERHESSÉG ALATT IS" a jelenről szól: a „terhesség alatt is
+        // mozogtam: ma 30 perc kismama torna" tornája eltűnt – a
+        // visszaemlékezés-szabály a mai edzést is elvitte. Az „is"
+        // kimondja, hogy a szokás MOST is él; a sima „terhesség alatt
+        // jógáztam" marad visszaemlékezés.
+        s = s.replaceAll("(?<![a-z])terhesseg\\w*\\s+alatt\\s+is\\s+"
+                + "(?:(?:mozogtam|mozgok|edzettem|edzek|sportoltam"
+                + "|sportolok)\\s*:?\\s*)?", "");
+        // A HETI BEVÁSÁRLÁS egyszeri út: az „a heti bevásárlás is 5000
+        // lépés volt a plázában" sétája hét napra terült szét – a „heti"
+        // ott a bevásárlás jelzője, nem a bejegyzés időszaka.
+        s = s.replaceAll("(?<![a-z])heti\\s+(?=(?:nagy)?bevasarlas)", "");
+        // A PRÓBÁLKOZÁS szorzója nem alkalomszám: a „wakeboardoztunk, én
+        // kétszer tudtam felállni" KÉT wakeboard-edzést írt be – a kétszer
+        // a felállásé.
+        s = s.replaceAll("(?<![a-z])(?:ketszer|haromszor|negyszer|otszor"
+                + "|hatszor|tizszer)\\s+(?=tud\\w*\\s+\\p{L}{3,}ni(?![a-z]))",
+                "");
         // A MECCS UTÁNI izomláz panasza nem viheti el a meccset: az „a
         // meccs után izomlázam lett a combomban, pedig csak 60 percet
         // játszottam" hatvan perce nyomtalanul eltűnt – a meccs szava a
@@ -4586,7 +4610,11 @@ public final class Activities {
                 // szól – a pont a szám után sorszámot jelöl.
                 .compile("(?<![a-z])(heti|havi)\\s+(?=\\d)"
                         + "(?!\\d{1,2}\\.(?!\\d))").matcher(s);
-        if (hw.find()) {
+        // A „MA VOLT AZ ELSŐ" egyetlen mai alkalom: az „úszásoktatásra
+        // iratkoztam be, heti 1x60 perc, ma volt az első" hét napra terült
+        // szét – a heti rend leírása nem a bejegyzés időszaka.
+        if (s.matches("(?s).*(?<![a-z])ma volt(?![a-z]).*")) hw = null;
+        if (hw != null && hw.find()) {
             blank(q, hw.start(), hw.start() + hw.group(1).length());
             return hw.group(1).equals("heti") ? 7 : 30;
         }
@@ -5388,6 +5416,10 @@ public final class Activities {
                 // A JELEN idejű kihagyás is kihagyás: a „lázas vagyok,
                 // kihagyom a mai úszást" negyvenöt perc úszást írt be.
                 "kihagytam", "kihagyom", "kihagyjuk", "kimaradt", "elmarad",
+                // A SZÜNETELTETETT sport nem megtörtént sport: a
+                // „csípőfájdalom miatt a futást szüneteltetem" negyvenöt
+                // perc futást írt be – pont abból, ami épp szünetel.
+                "szuneteltet", "szunetel",
                 // A SZERELÉS nem edzés: a „kifogyott a bringám gumija" és a
                 // „megjavíttattam a kerékpáromat" egy órás kerékpározásként
                 // ment be – a járműről szól, nem az útról.
