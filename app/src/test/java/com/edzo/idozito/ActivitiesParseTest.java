@@ -9248,4 +9248,43 @@ public class ActivitiesParseTest {
                 + "a terv.").plans.isEmpty());
     }
 
+    /**
+     * Az előírás, a lépés-cél és a tagadott saját mozgás.
+     *
+     * Az „orvos heti három úszást javasolt, ma volt az első, 800 m"
+     * HÁROM úszást írt a naplóba, a „napi 10 ezer lépésből ma csak
+     * 6 ezer jött össze" a CÉL tízezrét vette, az „uszodában a
+     * gyerekekre vigyáztam, magam nem úsztam semmit" pedig negyvenöt
+     * perc úszást.
+     */
+    @Test
+    public void adviceAStepGoalAndADeniedSwim() {
+        Activities.Parsed j = Activities.parse("Az orvos heti három "
+                + "úszást javasolt, ma volt az első, 800 m.");
+        assertEquals(1, j.plans.size());
+        assertEquals(1, j.plans.get(0).count);
+        assertEquals("uszas", j.plans.get(0).kind.id);
+        assertEquals(6000, Activities.parse("A napi 10 ezer lépésből ma "
+                + "csak 6 ezer jött össze.").plans.get(0).steps);
+        assertTrue(Activities.parse("Az uszodában a gyerekekre "
+                + "vigyáztam, magam nem úsztam semmit.").plans.isEmpty());
+    }
+
+    /**
+     * A főnévi igenév + kell előírás, nem megtörtént edzés.
+     *
+     * A „túl feszes a combizmom, nyújtani kell" negyvenöt perces jógát
+     * írt a naplóba – abból, amit a felhasználónak MAJD kellene tennie.
+     */
+    @Test
+    public void anInfinitiveWithKellIsAPrescription() {
+        assertTrue(Activities.parse("Túl feszes a combizmom, nyújtani "
+                + "kell.").plans.isEmpty());
+        assertTrue(Activities.parse("Az orvos szerint úszni kell a "
+                + "hátamra.").plans.isEmpty());
+        // A megtörtént nyújtás marad edzés.
+        assertEquals(20, Activities.parse("Ma nyújtottam 20 percet.")
+                .plans.get(0).minutes);
+    }
+
 }

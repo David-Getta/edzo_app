@@ -1704,6 +1704,47 @@ public final class Activities {
                         + (2 * Integer.parseInt(mk.group(1))) + " perc"
                         + s.substring(mk.end());
         }
+        // A FŐNÉVI IGENÉV + KELL előírás, nem megtörtént edzés: a „túl
+        // feszes a combizmom, nyújtani kell" és az „orvos szerint úszni
+        // kell" negyvenöt perces bejegyzést írt a naplóba – abból, amit
+        // a felhasználónak MAJD kellene csinálnia. A feltételes „kellene"
+        // eddig is tiltó volt; a kijelentő alak hiányzott mellőle.
+        // A kimondott szám felment: a „ma 20 percet kell még nyújtani,
+        // meg is lett" mérhető edzésről szól.
+        if (!s.matches("(?s).*\\d.*"))
+            s = s.replaceAll("(?<![a-z])\\p{L}{3,}ni\\s+kell(?![a-z])", " ");
+        // A JAVASLAT gyakorisága nem a mai alkalomszám: az „orvos heti
+        // három úszást javasolt, ma volt az első, 800 m" HÁROM úszást
+        // írt a naplóba – egy javaslatból. A „ma" tagmondata marad.
+        // Csak a GYAKORISÁG esik ki, a sport neve marad: enélkül a
+        // gazdátlan táv futássá vált volna.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+.*")
+                && s.matches("(?s).*(?<![a-z])(?:javasol\\w*|ajanlott\\w*"
+                    + "|eloirt\\w*|felirt\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:heti|havi|napi)\\s+"
+                    + "(?:\\d{1,2}|egy|ket|harom|negy|ot|hat)\\s+"
+                    + "(?=\\p{L})", " ");
+        // A CÉLBÓL lett valóság a MÁSODIK szám: az „a napi 10 ezer
+        // lépésből ma csak 6 ezer jött össze" tízezer lépést írt a
+        // naplóba – a célt, a valódi hatezer helyett.
+        // A mértékegység a MÁSODIK szám mellé kerül, különben a valódi
+        // hatezer lépés is elveszne a céllal együtt.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?napi\\s+\\d[\\d ]{0,6}"
+                + "(?:ezer\\s+)?lepes\\w*b[oó]l\\s+ma\\s+csak\\s+"
+                + "(\\d[\\d ]{0,6}\\d|\\d)(\\s?ezer)?",
+                "ma $1$2 lepes");
+        // A TAGADOTT saját mozgás az egész sportot törli: az „uszodában a
+        // gyerekekre vigyáztam, magam nem úsztam semmit" negyvenöt perc
+        // úszást írt a naplóba – a medence szavából.
+        java.util.regex.Matcher ns = java.util.regex.Pattern.compile(
+                "(?<![a-z])nem\\s+(usztam|futottam|tekertem|edzettem|"
+                + "kondiztam|jogaztam|setaltam|bicikliztem|eveztem)"
+                + "\\s+(?:semmit|egyaltalan)(?![a-z])").matcher(s);
+        if (ns.find()) {
+            String stem = ns.group(1).substring(0,
+                    Math.max(3, ns.group(1).length() - 4));
+            s = s.replaceAll("(?<![a-z])" + stem + "\\w*", " ");
+        }
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
