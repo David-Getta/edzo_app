@@ -9442,4 +9442,22 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    /**
+     * A tervezett sorozatból a megcsinált szám az igazi.
+     *
+     * Az „edzésterv szerint ma 8x400 m lett volna, de csak 5-öt
+     * csináltam meg" bejegyzéséből semmi nem lett – pedig az öt
+     * szakasz kétezer métert jelent.
+     */
+    @Test
+    public void theCompletedRepsWinOverThePlannedOnes() {
+        Activities.Parsed p = Activities.parse("Az edzésterv szerint ma "
+                + "8x400 m lett volna, de csak 5-öt csináltam meg.");
+        assertEquals(1, p.plans.size());
+        assertEquals(2.0, p.plans.get(0).km, 0.01);
+        // A teljesített sorozat marad annyi, amennyi.
+        assertEquals(3.2, Activities.parse("8x400 m intervall.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

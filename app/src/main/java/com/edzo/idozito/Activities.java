@@ -1819,6 +1819,22 @@ public final class Activities {
         s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*(?<![a-z])"
                 + "(?:heti|havi|napi)\\s+\\d{1,2}(?:[.,]\\d)?\\s*"
                 + "atlag\\w*[^,;.]*", " ");
+        // A TERVEZETT sorozatból a MEGCSINÁLT szám az igazi: az
+        // „edzésterv szerint ma 8x400 m lett volna, de csak 5-öt
+        // csináltam meg" bejegyzéséből SEMMI nem lett – pedig az öt
+        // szakasz kétezer métert jelent. A csere a feltételes tagmondat
+        // kitakarása előtt fut, amíg a szakaszhossz még ott áll.
+        {
+            java.util.regex.Matcher pv = java.util.regex.Pattern.compile(
+                    "(?<![\\dx,.])\\d{1,2}\\s?[x\u00d7]\\s?(\\d{2,4})"
+                    + "\\s?(m|km)(?![a-z])[^,;.]*volna[^,;.]*[,;]?\\s*"
+                    + "(?:de\\s+)?csak\\s+(\\d{1,2})\\s?-?[oöea]?t"
+                    + "(?![a-z])").matcher(s);
+            if (pv.find())
+                s = s.substring(0, pv.start()) + pv.group(3) + "x"
+                        + pv.group(1) + " " + pv.group(2)
+                        + s.substring(pv.end());
+        }
         // A FELTÉTELES „VOLNA" tagmondata nem törli a megtörténtet: a
         // „reggel még futottam volna, de esett, így csak otthon
         // nyújtottam 15 percet" tizenöt perce elveszett – pedig a
