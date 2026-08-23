@@ -2654,6 +2654,26 @@ public class FoodsParseTest {
     }
 
     /**
+     * A számjegyes ráadás is hozzáadódik.
+     *
+     * A „reggel ettem 2 szelet kenyeret, aztán még 3-at" háromja elveszett:
+     * a ráadás-szabály csak a kiírt számnév tárgyragját ismerte („még
+     * egyet"), a számjegyest nem. A záró időhatározó („még 3-at
+     * napközben") ugyanígy elszakította a ráadást.
+     */
+    @Test public void aDigitSecondHelpingCountsToo() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(5 * 35, Foods.parse(all, "Reggel ettem 2 szelet "
+                + "kenyeret, aztán még 3-at.").get(0).grams, 0.5);
+        assertEquals(5 * 250, Foods.parse(all, "Ma 2 nagy pohár vizet "
+                + "ittam reggel, aztán még 3-at napközben.")
+                .get(0).grams, 0.5);
+        // A kiírt számnév ugyanúgy működik, mint eddig.
+        assertEquals(3 * 35, Foods.parse(all, "Reggel ettem 2 szelet "
+                + "kenyeret, este még egyet.").get(0).grams, 0.5);
+    }
+
+    /**
      * A kísérő nem viszi el a fogás mennyiségét, és a „kb." nem határ.
      *
      * A „vacsorára sült krumpli majonézzel, 300 g" háromszáz grammja a

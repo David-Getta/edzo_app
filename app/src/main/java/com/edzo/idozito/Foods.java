@@ -2842,9 +2842,18 @@ public final class Foods {
     private static String addSecondHelping(List<Food> list, String query) {
         String s = norm(query);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                // A SZÁMJEGYES ráadás ugyanaz: a „reggel ettem 2 szelet
+                // kenyeret, aztán még 3-at" háromja eddig elveszett – a
+                // minta csak a kiírt számnév tárgyragját ismerte, a
+                // számjegyest nem. A záró IDŐHATÁROZÓ sem szakítja el a
+                // ráadást: a „még 3-at napközben" ugyanaz a három pohár.
                 "[,;]\\s*(?:[^,;]{0,20}?\\s)?(?<![a-z])meg\\s+"
-                        + "(\\d{1,2}|egyet|kettot|harmat|negyet|otot)"
-                        + "(?![a-z])[\\s.!?]*$").matcher(s);
+                        + "(\\d{1,2}(?:-?[oöeaá]?t)?|egyet|kettot|harmat"
+                        + "|negyet|otot)(?![a-z])"
+                        + "(?:\\s+(?:napkozben|kesobb|otthon|munkaban|utana"
+                        + "|este|reggel|delutan|delelott|delben|ejjel"
+                        + "|vacsorara|ebedre|uzsonnara|edzes utan))?"
+                        + "[\\s.!?]*$").matcher(s);
         if (!m.find()) return query;
         int addN = plainValue(m.group(1));
         if (addN <= 0) return query;
