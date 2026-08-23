@@ -9090,4 +9090,29 @@ public class ActivitiesParseTest {
                 + "futás volt.").plans.size());
     }
 
+    /**
+     * A km-lista egysége csak egyszer áll ott, és a gyerek órája alatti
+     * saját úszás is megvan.
+     *
+     * A „hosszú hétvégén összesen 3 túra volt: 12, 18 és 9 km" mindhárom
+     * túrája HAT kilométert kapott – az összeget elosztva. A „gyerek
+     * úszásoktatása alatt én 20 hosszt úsztam" pedig üresen jött vissza.
+     */
+    @Test
+    public void aSharedKilometerUnitAndMyOwnSwim() {
+        Activities.Parsed t = Activities.parse("A hosszú hétvégén "
+                + "összesen 3 túra volt: 12, 18 és 9 km.");
+        assertEquals(3, t.plans.size());
+        assertEquals(12.0, t.plans.get(0).km, 0.01);
+        assertEquals(18.0, t.plans.get(1).km, 0.01);
+        assertEquals(9.0, t.plans.get(2).km, 0.01);
+        Activities.Parsed u = Activities.parse("A gyerek úszásoktatása "
+                + "alatt én 20 hosszt úsztam a másik medencében.");
+        assertEquals(1, u.plans.size());
+        assertEquals(0.5, u.plans.get(0).km, 0.01);
+        // A tizedes vessző nem listahatár.
+        assertEquals(2.5, Activities.parse("Ma 2,5 km-t sétáltam.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

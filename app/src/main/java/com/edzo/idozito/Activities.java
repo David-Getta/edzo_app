@@ -1362,6 +1362,17 @@ public final class Activities {
             if (g.equals(s)) break;
             s = g;
         }
+        // A KM-LISTA egysége is csak egyszer áll ott: a „hosszú hétvégén
+        // összesen 3 túra volt: 12, 18 és 9 km" mindhárom túrája HAT
+        // kilométert kapott – az összeget elosztva. A lista ugyanúgy
+        // jobbról balra örökli a mértékegységet, mint a perceknél.
+        for (int gi = 0; gi < 4; gi++) {
+            String g = s.replaceAll("(?<![\\d,.:])(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                    + "(?=(?:,\\s+|\\s+es\\s+)(?:\\p{L}{2,12}\\s+){0,2}?"
+                    + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?km(?![a-z]))", "$1 km");
+            if (g.equals(s)) break;
+            s = g;
+        }
         // A HASONLÍTÁS órája nem a mozgás ideje: a „vibrációs tréningen
         // voltam 25 percet, állítólag felér egy órás edzéssel" HATVAN
         // perces bejegyzés lett a huszonöt helyett.
@@ -6211,6 +6222,12 @@ public final class Activities {
                             || w.startsWith("elkisertem") || w.startsWith("vittem"))
                         && s.matches("(?s).*(?<![a-z])(gyalog|gyalogolt\\w*"
                             + "|setalt\\w*|biciklivel|bringaval|kerekparral"
+                            // A SAJÁT, első személyű mozgás-ige ugyanígy
+                            // felment: a „gyerek úszásoktatása alatt ÉN
+                            // 20 hosszt úsztam" bejegyzéséből semmi nem
+                            // lett – a gyerek szava az egészet elvitte.
+                            + "|usztam|usztunk|futottam|futottunk|tekertem"
+                            + "|kondiztam|jogaztam|eveztem|nyujtottam"
                             + "|futva)(?![a-z]).*")
                         // Az ÖSSZETETT szó is a gyerek eseménye: az „a gyerek
                         // FOCImeccsére vittem el, én közben 40 percet
