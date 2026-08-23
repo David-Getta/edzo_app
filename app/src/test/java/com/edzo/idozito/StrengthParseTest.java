@@ -2012,6 +2012,25 @@ public class StrengthParseTest {
     }
 
     /**
+     * A vessző nélküli felsorolásban a név előtti szám a gyakorlaté.
+     *
+     * A „15 burpee 20 guggolás 10 fekvőtámasz" guggolása a TIZENÖTÖT
+     * kapta – a burpee számát –, mert a kereső az első számnál megállt.
+     */
+    @Test public void theNumberNearestTheNameWins() {
+        List<StrengthParse.Item> it = StrengthParse.parse("15 burpee "
+                + "20 guggolás 10 fekvőtámasz");
+        assertEquals(2, it.size());
+        assertEquals(20, it.get(0).sets.get(0).reps);
+        assertEquals(10, it.get(1).sets.get(0).reps);
+        // A körökkel együtt is a helyes szám szorzódik.
+        List<StrengthParse.Item> k = StrengthParse.parse("3 kör: "
+                + "20 guggolás 10 fekvőtámasz");
+        assertEquals(3, k.get(0).sets.size());
+        assertEquals(20, k.get(0).sets.get(0).reps);
+    }
+
+    /**
      * A híd a gyógytorna csípőemelése.
      *
      * A „fizioterápiás gyakorlatokat ma is megcsináltam, 3x15 hidat"

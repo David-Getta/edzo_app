@@ -1274,6 +1274,21 @@ public final class StrengthParse {
         if (sets.isEmpty()) {
             java.util.regex.Matcher bare = java.util.regex.Pattern
                     .compile("(?<![\\d,.])(\\d{1,3})(?![\\d,.])").matcher(s);
+            // A VESSZŐ NÉLKÜLI felsorolásban a KÖZVETLENÜL a név előtt álló
+            // szám a gyakorlaté: a „15 burpee 20 guggolás 10 fekvőtámasz"
+            // guggolása a TIZENÖTÖT kapta – a burpee számát –, mert a
+            // kereső az első számnál megállt. A név helye dönt.
+            int nameAt = moveAt(s, name);
+            if (nameAt > 0) {
+                int best = -1;
+                java.util.regex.Matcher pre = java.util.regex.Pattern
+                        .compile("(?<![\\d,.])(\\d{1,3})(?![\\d,.])")
+                        .matcher(s);
+                while (pre.find())
+                    if (pre.end() <= nameAt && nameAt - pre.end() <= 3)
+                        best = pre.start();
+                if (best >= 0) bare.region(best, s.length());
+            }
             while (bare.find()) {
                 // A súly számát ne vegyük ismétlésnek.
                 int e = bare.end();
