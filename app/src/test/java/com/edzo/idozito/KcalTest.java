@@ -658,4 +658,24 @@ public class KcalTest {
         assertEquals(30, Kcal.protein("30 g fehérje volt a turmixban."));
     }
 
+    /**
+     * A „napi" magában nem terv.
+     *
+     * Az „a napi kalóriám 2100 volt, ebből 140 g fehérje" NYOMTALANUL
+     * eltűnt: a „napi" ott van a cél-szavak közt, és elvitte az egész
+     * mondatot, pedig múlt időben a megtörtént napról szól. A mértékegység
+     * pótlásakor ráadásul a „kalóriám" szó is kiesett – épp az, ami
+     * kimondja, hogy beszámoló.
+     */
+    @Test public void aDailyReportIsNotAGoal() {
+        assertEquals(2100, Kcal.stated("A napi kalóriám 2100 volt, "
+                + "ebből 140 g fehérje."));
+        assertEquals(140, Kcal.protein("A napi kalóriám 2100 volt, "
+                + "ebből 140 g fehérje."));
+        assertEquals(2100, Kcal.stated("A napi bevitelem 2100 kcal volt."));
+        // A kimondott cél-főnév mellett marad a tiltás.
+        assertEquals(-1, Kcal.stated("A napi kalória célom 2000 kcal."));
+        assertEquals(-1, Kcal.protein("A napi fehérjecélom 140 g."));
+    }
+
 }

@@ -117,6 +117,13 @@ public final class Kcal {
             // Edzés: 45 perc kondi. Kaja: 1900 kcal." ezerkilencszáza
             // ELÉGETETT kalóriaként ment a naplóba – az edzés szava miatt.
             "kaja", "etkezes", "etel", "bevive",
+            // A BIRTOKOS alak beszámoló, nem terv: az „a napi kalóriám 2100
+            // volt, ebből 140 g fehérje" NYOMTALANUL eltűnt – a „napi" a
+            // cél-szavak közt van, és elvitte az egész tagmondatot, pedig a
+            // mondat múlt időben a MEGTÖRTÉNT napról szól. (A „napi kalória
+            // célom" birtokos alakja a célé marad.)
+            "kaloriam", "kaloriamat", "kaloriabevitel", "bevitelem",
+            "bevitelunk",
             // A HATÁROZÓI alak is evés: a „napi mérleg: 1750 kcal evve,
             // 320 elégetve futással" mindkét száma elveszett.
             "evve", "megevve",
@@ -378,8 +385,13 @@ public final class Kcal {
                 + "(?![.,]\\d)(?!\\s?kcal)", "$1 $2 kcal");
         // A puszta „kalória" szó utáni szám is bevitel: a „fehérjebevitel
         // rendben, kalória 2200" kétezer-kétszáza eddig némán elveszett.
-        s = s.replaceAll("(?<![a-z])kaloria\\w*\\s?:?\\s?(\\d{3,4})(?!\\d)"
-                + "(?![.,]\\d)(?!\\s?kcal)", "$1 kcal");
+        // A KALÓRIA SZAVA maradjon meg a szám mellett: az „a napi kalóriám
+        // 2100 volt, ebből 140 g fehérje" NYOMTALANUL eltűnt, mert a
+        // mértékegység pótlásakor a „kalóriám" szó is kiesett – és épp az
+        // mondta ki, hogy a mondat BESZÁMOLÓ, nem terv. Nélküle a „napi"
+        // cél-szó vitte el az egész tagmondatot.
+        s = s.replaceAll("(?<![a-z])(kaloria\\w*)\\s?:?\\s?(\\d{3,4})(?!\\d)"
+                + "(?![.,]\\d)(?!\\s?kcal)", "$1 $2 kcal");
         // A KÉT IRÁNY egy tagmondatban, elválasztó jel nélkül: a „napi
         // összegzés: 2100 kcal bevitel 2600 kcal égetés" MINDKÉT száma
         // elveszett, mert a mondat egyetlen tagmondat volt, és abban a két
@@ -537,7 +549,19 @@ public final class Kcal {
         // eddig üresen jött vissza – a cél szava elnémította, pedig épp
         // arról szól, hogy megvan.
         if (!achieved(s)) {
-            for (Pattern w : GOAL_P) if (w.matcher(s).find()) return -1;
+            // A „NAPI" magában nem terv: az „a napi kalóriám 2100 volt,
+            // ebből 140 g fehérje" száznegyvene NYOMTALANUL eltűnt – a szó
+            // ott van a cél-listán, a mondat viszont múlt időben a
+            // MEGTÖRTÉNT napról szól. Kimondott cél-főnév („napi cél",
+            // „keret", „limit") mellett marad a tiltás.
+            boolean report = s.matches("(?s).*(?<![a-z])(?:volt|lett|ettem"
+                    + "|megettem|ittam|megittam|bevittem|bevitel\\w*"
+                    + "|osszesen|sikerult)(?![a-z]).*");
+            for (Pattern w : GOAL_P) {
+                if (!w.matcher(s).find()) continue;
+                if (report && w.pattern().contains("napi")) continue;
+                return -1;
+            }
             // Az ÖSSZETETT cél-szó ugyanígy tilt: a „fehérjecélom 140 g"
             // kívánság, nem bevitel – a szóhatáros lista nem látja meg
             // benne a célt.
