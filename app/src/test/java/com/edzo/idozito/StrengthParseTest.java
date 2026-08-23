@@ -2012,6 +2012,25 @@ public class StrengthParseTest {
     }
 
     /**
+     * A lista végén álló sorozat mindegyik gyakorlaté.
+     *
+     * A „mellgép, hátgép, lábgép, 3x12" második és harmadik gépe
+     * nyomtalanul elveszett – a sorozat csak az elsőhöz tapadt.
+     */
+    @Test public void aTrailingSetSpreadsAcrossTheList() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az "
+                + "edzőteremben 3 gépen mentem körbe: mellgép, hátgép, "
+                + "lábgép, 3x12.");
+        assertEquals(3, it.size());
+        for (StrengthParse.Item i : it) assertEquals(3, i.sets.size());
+        // A saját számmal írt tételek a magukét viszik.
+        List<StrengthParse.Item> own = StrengthParse.parse("Mellgép "
+                + "3x12, hátgép 3x10.");
+        assertEquals(2, own.size());
+        assertEquals(10, own.get(1).sets.get(0).reps);
+    }
+
+    /**
      * A zárójel mögött álló gyakorlat is megvan.
      *
      * A „3 kör (10 guggolás + 10 fekvő + 10 hasizom)" guggolása

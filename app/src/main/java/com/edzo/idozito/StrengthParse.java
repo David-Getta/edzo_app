@@ -421,6 +421,32 @@ public final class StrengthParse {
         // kézisúlyzókkal" sorozata eddig nyomtalanul eltűnt.
         text = text.replaceAll("(?iu)(?<![\\p{L}])v[aá]llgyakorlat",
                 "vállemelés");
+        // A LISTA VÉGÉN álló sorozat MINDEGYIK gyakorlaté: a „mellgép,
+        // hátgép, lábgép, 3x12" második és harmadik gépe nyomtalanul
+        // elveszett – a sorozat csak az elsőhöz tapadt. Csak akkor
+        // osztjuk szét, ha a felsorolt nevek mellett SEMMILYEN szám nem
+        // áll: a saját számmal írt tételek a magukét viszik.
+        java.util.regex.Matcher tl = java.util.regex.Pattern.compile(
+                "(?iu),\\s*(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s*[.!]?\\s*$")
+                .matcher(text);
+        if (tl.find()) {
+            String sets = tl.group(1);
+            String head = text.substring(0, tl.start());
+            // A KETTŐSPONT is tagmondat-határ: a „3 gépen mentem körbe:
+            // mellgép, hátgép…" első gépe a fejlécben álló szám miatt
+            // esett ki a szétosztásból.
+            String[] cl = head.split("[,:]");
+            StringBuilder nb = new StringBuilder();
+            int named = 0;
+            for (String c : cl) {
+                if (nb.length() > 0) nb.append(", ");
+                if (!c.matches("(?s).*\\d.*") && nameIn(c) != null) {
+                    nb.append(c.trim()).append(' ').append(sets);
+                    named++;
+                } else nb.append(c.trim());
+            }
+            if (named >= 2) text = nb.toString() + ".";
+        }
         // A „HÁROMSZOR HÚZTAM MEG" három ismétlés: a „holtemelésem új
         // csúcsa 180 kg, háromszor húztam meg" egy ismétléses sor lett,
         // a mozgás-oldalon meg három külön edzés.

@@ -8981,4 +8981,21 @@ public class ActivitiesParseTest {
                 + "1:58 alatt.").plans.get(0).km, 0.05);
     }
 
+    /**
+     * A tolt bicikli nem tekerés.
+     *
+     * A „gyerek biciklijét toltam fel a dombra, közben én is gyalogoltam
+     * 2 km-t" mellé egy órás kerékpározás került.
+     */
+    @Test
+    public void aPushedBikeIsNotARide() {
+        Activities.Parsed p = Activities.parse("A gyerek biciklijét "
+                + "toltam fel a dombra, közben én is gyalogoltam 2 km-t.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        // A tekert bicikli marad tekerés.
+        assertEquals("kerekpar", Activities.parse("Bicikliztem 20 km-t.")
+                .plans.get(0).kind.id);
+    }
+
 }

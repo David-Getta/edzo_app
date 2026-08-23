@@ -1546,6 +1546,12 @@ public final class Activities {
                     + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:km|kilometer\\w*"
                     + "|perc\\w*|lepes\\w*)(?![a-z])[^,;.]{0,12}?"
                     + "(?=\\s*(?:,|utan|ota))", " ");
+        // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
+        // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
+        // kerékpározás került – abból, hogy valaki TOLTA a bringát.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:bicikli\\w*|bringa\\w*"
+                + "|bicaj\\w*|kerekpar\\w*)\\s+(?=(?:fel\\s+|le\\s+"
+                + "|haza\\s+)?tolt(?:am|uk|unk|a|ak)(?![a-z]))", "");
         // A RAGTALAN GÖRGŐ az izomlazító henger: a „20 perc görgő" üresen
         // jött vissza. A KERÉKPÁROS görgő ragot kap („görgőn tekertem"),
         // és a bringa szava is ott áll mellette – ott marad tekerés.
