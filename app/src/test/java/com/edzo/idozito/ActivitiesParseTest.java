@@ -3896,6 +3896,27 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az utolsó szakasz nem külön edzés, a futónyelv száma kilométer.
+     *
+     * A „ma reggel 6 km-t futottam, de az utolsó kilométert sétáltam"
+     * mellé egy MÁSFÉL ÓRÁS gyaloglás is bekerült – abból az egy
+     * kilométerből, ami a hatnak a része. Az „elmentem futni 5-öt" öt
+     * kilométere fordítva: táv nélküli, becsült háromnegyed órás futás
+     * lett belőle.
+     */
+    @Test public void theLastKilometreAndTheBareNumber() {
+        Activities.Parsed p = Activities.parse("Ma reggel 6 km-t futottam, "
+                + "de az utolsó kilométert sétáltam.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertEquals(5.0, Activities.parse("Ma a konyhában sütöttem egész "
+                + "délelőtt, aztán elmentem futni 5-öt.").plans.get(0).km, 0.01);
+        // A kimondott perc marad perc.
+        assertEquals(30, Activities.parse("Futottam 30 percet ma.")
+                .plans.get(0).minutes);
+    }
+
+    /**
      * Az agytorna nem torna, a habszivacs viszont hengerezés.
      *
      * A „délelőtt 1 órát sakkoztam, az is agytorna" egy ÓRA jógát írt a

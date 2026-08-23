@@ -3424,6 +3424,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])kezi\\s+(?=(?:kezel|terap|masszazs|massz"
                 + "|munka|mosogat|szerszam|fek(?![a-z])|valto|kocsi|kotes"
                 + "|iras|vezerl|erovel))", " ");
+        // A FUTÓNYELV ELLIPSZISE: az „elmentem futni 5-öt" és a „futottam
+        // ma tízet" mértékegység nélkül is kilométert mond – a futók között
+        // ez egyértelmű, a naplóba viszont táv nélküli, becsült
+        // háromnegyed órás futás került. Csak a félmaratonig hihető
+        // számoknál, és csak akkor, ha nem áll mértékegység a szám mellett.
+        s = s.replaceAll("(?<![a-z])(fut\\w*|kocog\\w*|szalad\\w*)\\s+"
+                + "(?<![\\d,.])((?:[1-9]|1\\d|2[01]))\\s?-?[oöea]?t(?![a-z])"
+                + "(?!\\s?(?:perc|ora|km|kilo|meter|m(?![a-z])))", "$1 $2 km");
         // A KILÓ a futónyelvben KILOMÉTER: a „ma 3 kilót szaladtam, semmi
         // extra" NYOMTALANUL eltűnt (a hármas súlynak látszott), a „ma 3
         // kilót futottam" pedig táv nélküli, becsült háromnegyed órás
@@ -5532,6 +5540,19 @@ public final class Activities {
                 if (!drop) kept.add(p);
             }
             if (!kept.isEmpty()) out = kept;
+        }
+        // AZ UTOLSÓ SZAKASZ nem külön edzés: a „ma reggel 6 km-t futottam,
+        // de az utolsó kilométert sétáltam" mellé egy MÁSFÉL ÓRÁS gyaloglás
+        // is bekerült – abból az egy kilométerből, ami a hatnak a része. A
+        // rész-szó a szakaszt jelöli, nem egy másik alkalmat; saját idővel
+        // vagy távval kimondva viszont valódi bejegyzés.
+        if (out.size() > 1 && beforeBlank.matches("(?s).*(?<![a-z])"
+                + "(?:utolso|masodik fele|vege fele)(?![a-z]).*")) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out)
+                if (p.km > 0 || p.steps > 0 || p.minutes != p.kind.defaultMin)
+                    kept.add(p);
+            if (!kept.isEmpty() && kept.size() < out.size()) out = kept;
         }
         // A „CSAK ennyi lett" a terem-edzés HELYETT áll: a „délután
         // elmentem a kondiba, de tele volt, csak 20 percet kerékpároztam"
