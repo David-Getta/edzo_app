@@ -8644,4 +8644,28 @@ public class ActivitiesParseTest {
         assertEquals(15, f.plans.get(1).minutes);
     }
 
+    /**
+     * A fel-és-le dupla út, a kétszer dupla kör – és a kézenállás.
+     *
+     * A „6 emelet fel és le, kétszer" hat emeletnyi (három perc) lépcső
+     * lett huszonnégy helyett, a „kézenállást gyakoroltam 20 percet"
+     * pedig üresen jött vissza.
+     */
+    @Test
+    public void stairsUpAndDownTwiceAndAHandstand() {
+        // 24 emelet ≈ 12 perc.
+        assertEquals(12, Activities.parse("Az irodában lépcsőztem "
+                + "ebédszünetben, 6 emelet fel és le, kétszer.")
+                .plans.get(0).minutes);
+        Activities.Parsed k = Activities.parse("Kézenállást gyakoroltam "
+                + "20 percet.");
+        assertEquals(1, k.plans.size());
+        assertEquals("joga", k.plans.get(0).kind.id);
+        assertEquals(20, k.plans.get(0).minutes);
+        // A megállások kétszere nem szorzó.
+        assertEquals(3, Activities.parse("Ma 6 emeletet másztam meg "
+                + "lépcsőn, kétszer kellett megállnom.")
+                .plans.get(0).minutes);
+    }
+
 }

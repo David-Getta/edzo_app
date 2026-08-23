@@ -369,6 +369,10 @@ public final class Activities {
                     // vissza. A fascia-lazítás a henger rokona.
                     "vinyasa", "napudvozlet", "fascia", "mobility",
                     "joga", "yoga", "pilates", "nyujt", "stretch", "torna", "medital",
+                    // A KÉZENÁLLÁS gyakorlása saját testsúlyos ügyesség-munka,
+                    // a torna családja – a „kézenállást gyakoroltam 20 percet"
+                    // eddig üresen jött vissza.
+                    "kezenall",
                     // A FIZIOTERÁPIA a gyógytorna hivatalos neve: a
                     // „fizioterápiás gyakorlatok, ma mindkettőt
                     // megcsináltam" eddig üresen jött vissza.
@@ -1934,6 +1938,31 @@ public final class Activities {
                 // kilométer – eddig a negyven perc elveszett, és a
                 // mozgásforma átlagából lett kilencven perc.
                 + "(?=tempo(?:val|ban|ra|t|m|ja|nk|hoz)?(?![a-z]))", "$1:00-as ");
+        // A FEL ÉS LE dupla út, a mögé írt „kétszer" dupla kör: a „6
+        // emelet fel és le, kétszer" huszonnégy emeletnyi lépcső – eddig
+        // hat emeletnyi (három perc) lett belőle. Csak lépcsős mondatban,
+        // és csak a tagmondat végén álló szorzóval – a „kétszer kellett
+        // megállnom" kétszere nem szorzó.
+        if (s.contains("lepcso") || s.contains("lift")) {
+            java.util.regex.Matcher fl = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,3})\\s?emelet(\\w*)\\s+fel\\s+es\\s+le"
+                    + "(?![a-z])").matcher(s);
+            if (fl.find())
+                s = s.substring(0, fl.start())
+                        + (2 * Integer.parseInt(fl.group(1))) + " emelet"
+                        + fl.group(2) + s.substring(fl.end());
+            java.util.regex.Matcher ks = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,3})\\s?emelet(\\w*)\\s*,?\\s*"
+                    + "(ketszer|haromszor|negyszer)(?=\\s*(?:[,;.!]|$))")
+                    .matcher(s);
+            if (ks.find()) {
+                int mul = ks.group(3).startsWith("ketszer") ? 2
+                        : ks.group(3).startsWith("haromszor") ? 3 : 4;
+                s = s.substring(0, ks.start())
+                        + (mul * Integer.parseInt(ks.group(1))) + " emelet"
+                        + ks.group(2) + s.substring(ks.end());
+            }
+        }
         // A puszta „lépcső" az EMELETEK mellett maga a mozgás: a „lépcső,
         // 12 emelet" és a „12 emelet lépcső" eddig üresen jött vissza, mert
         // szótő csak a „lépcsőzés" volt – a „lépcsőház" és a „lépcsőn ültem"
