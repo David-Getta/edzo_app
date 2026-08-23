@@ -1284,6 +1284,16 @@ public class BodyParseTest {
         assertEquals(17.9, b.fatPct, 0.01);
     }
 
+    @Test public void anInflectedMeasurementWordStillCounts() {
+        // Az „a reggeli MÉRÉSKOR 76,2 kg, az izomtömegem 34,1 kg"
+        // mérése elveszett: a lista csak a ragtalan „mérés" alakot
+        // ismerte, a ragozott alak nem számított test-szónak.
+        assertEquals(76.2, BodyParse.parse("A reggeli méréskor 76,2 kg, "
+                + "az izomtömegem 34,1 kg.").kg, 0.01);
+        assertEquals(76.2, BodyParse.parse("A reggeli mérésnél 76,2 kg.")
+                .kg, 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

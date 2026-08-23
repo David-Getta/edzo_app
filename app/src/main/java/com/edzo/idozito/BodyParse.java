@@ -940,7 +940,13 @@ public final class BodyParse {
     /** Kimondott testsúly-szó a mondatban (egész szóként). */
     private static boolean hasBodyWord(String s) {
         for (String w : BODY_WORDS) if (word(s, w)) return true;
-        return false;
+        // A RAGOZOTT mérés-szó ugyanaz a szó: az „a reggeli MÉRÉSKOR
+        // 76,2 kg" bejegyzéséből semmi nem lett, mert a lista csak a
+        // ragtalan „mérés" alakot ismerte. A mérés töve elég hosszú
+        // ahhoz, hogy a rag ne tegye kétértelművé.
+        return s.matches("(?s).*(?<![a-z])(?:meres|merés|merlegel|merkozes)"
+                + "\\w*.*")
+                && !s.matches("(?s).*(?<![a-z])merkozes\\w*.*");
     }
 
     /**

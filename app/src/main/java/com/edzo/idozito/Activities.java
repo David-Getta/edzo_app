@@ -1802,6 +1802,14 @@ public final class Activities {
                 && !s.matches("(?s).*(?<![a-z])emelet\\w*.*"))
             s = s.replaceAll("(?<![a-z\\d])(?:\\d{1,2}\\s?-?sz[oöe]r|ketszer"
                     + "|haromszor|negyszer|otszor|hatszor)(?![a-z])", " ");
+        // A CSÚCSRA ÉRÉS túra: a „reggel 6-kor indultam és 8-ra értem fel
+        // a csúcsra, 900 m szint" kétórás hegymenete üresen jött vissza –
+        // a mondatban egyetlen sportnév sem állt, pedig a csúcs és a
+        // szintemelkedés kimondja, mi történt.
+        s = s.replaceAll("(?<![a-z])(?:fel)?ert(?:em|unk)\\s+(?:fel\\s+)?"
+                + "(?:a\\s+)?(?:hegy\\s+)?"
+                + "(?=csucsra|tetejere|hegytetore|nyeregbe)",
+                "turaztam ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.

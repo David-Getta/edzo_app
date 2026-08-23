@@ -9371,4 +9371,21 @@ public class ActivitiesParseTest {
                 + "mellett").plans.get(0).kind.id);
     }
 
+    /**
+     * A csúcsra érés túra.
+     *
+     * A „reggel 6-kor indultam és 8-ra értem fel a csúcsra, 900 m
+     * szint" kétórás hegymenete üresen jött vissza – a mondatban
+     * egyetlen sportnév sem állt.
+     */
+    @Test
+    public void reachingTheSummitIsAHike() {
+        Activities.Parsed p = Activities.parse("Reggel 6-kor indultam "
+                + "és 8-ra értem fel a csúcsra, 900 m szint.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(120, Activities.parse("Felértem a csúcsra 2 óra "
+                + "alatt.").plans.get(0).minutes);
+    }
+
 }
