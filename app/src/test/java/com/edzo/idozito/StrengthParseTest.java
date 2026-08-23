@@ -916,6 +916,23 @@ public class StrengthParseTest {
     }
 
     /**
+     * A hát nem a hat számnév.
+     *
+     * A „reggel 30 perc szobabicikli, aztán 3 sorozat hasizom és hát" HAT
+     * hasprés-ismétlést írt az erőnaplóba – a testtájék nevéből lett
+     * ismétlésszám.
+     */
+    @Test public void theBackIsNotTheNumberSix() {
+        for (StrengthParse.Item it : StrengthParse.parse("Reggel 30 perc "
+                + "szobabicikli, aztán 3 sorozat hasizom és hát."))
+            for (StrengthParse.Set s : it.sets)
+                assertTrue("kitalált ismétlés: " + it.name, s.reps != 6);
+        // Az ékezet nélküli számnév marad számnév.
+        assertEquals(6, StrengthParse.parse("Fekvenyomás hat ismétlés "
+                + "60 kg.").get(0).sets.get(0).reps);
+    }
+
+    /**
      * A sorozatszám a súly mellett valódi napló.
      *
      * A „4 sorozat lehúzást csináltam 55 kg-mal" NYOMTALANUL eltűnt az

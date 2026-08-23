@@ -740,6 +740,12 @@ public final class StrengthParse {
         // pihenő másodperce nem lesz belőle kiló.
         text = text.replaceAll("(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s?/\\s?"
                 + "\\d{1,3}(?![\\d,.])", "$1");
+        // A HÁT ékezet nélkül a HAT számnév: a „reggel 30 perc szobabicikli,
+        // aztán 3 sorozat hasizom és hát" HAT hasprés-ismétlést írt az
+        // erőnaplóba – a testtájék nevéből lett ismétlésszám. Az ékezetes
+        // alak félreérthetetlen: az izomcsoport neve önmagában úgysem hoz
+        // sorozatot, a számnév pedig ékezet nélkül áll.
+        text = text.replaceAll("(?u)(?<![\\p{L}])[Hh]át(?![\\p{L}])", " ");
         // A SOROZATSZÁM a súly mellett valódi napló: a „4 sorozat lehúzást
         // csináltam 55 kg-mal" NYOMTALANUL eltűnt az erőnaplóból, mert
         // ismétlésszám nélkül nem talált sorozatot – pedig a súly és a
