@@ -1385,6 +1385,16 @@ public final class Activities {
         // kilométeres futást írt be – a verseny neve a terv nevében ült.
         s = s.replaceAll("(?<![a-z])(?:fel|negyed)?maraton-?\\s?terv",
                 "edzesterv");
+        // A TERV HETE fejléc, nem edzés: „a tavaszi félmaraton edzéstervem
+        // 2. hete: ma könnyű 6 km" bejegyzéséből eddig SEMMI nem lett – a
+        // fejléc terv-szava az egészet jövőnek mutatta, pedig a hat
+        // kilométer ma lefutott táv. A fejléccel együtt a verseny neve is
+        // kiesik, így huszonegy kilométer sem kerül a naplóba.
+        // (A hét sorszámát a lista-maszkoló már kifehérítette, ezért a szám
+        // itt csak lehetőség, nem feltétel.)
+        s = s.replaceAll("(?<![a-z])(?:az?\\s+)?(?:\\p{L}+\\s+){0,3}?"
+                + "edzesterv\\w*\\s+(?:\\d{1,2}\\s?\\.?\\s+)?"
+                + "het(?:e|en|eben)?(?![a-z])\\s*:?\\s*", " ");
         // A FÉL ÓRA számmal írva is óra: a „fél 7-től fél 8-ig úszás"
         // hatvan perce negyvenöt lett – a „fél 7" nem számított időpontnak.
         // 6:30-ra fordítjuk, onnan a tartomány-szabály érti.
@@ -1409,6 +1419,21 @@ public final class Activities {
                     + "|csutortokon|penteken|szombaton|vasarnap)"
                     + "(?:\\s+es\\s+(?:hetfon|kedden|szerdan|csutortokon"
                     + "|penteken|szombaton|vasarnap))*\\s*(?=[,;.])", " ");
+        // A „-BÓL Y LETT" átalakulásban az eredeti terv nem történt meg: a
+        // „a viharos szél miatt a bringázásból séta lett" sétája mellé egy
+        // órás kerékpározás is került – abból, amiből épp nem lett semmi.
+        s = s.replaceAll("(?<![a-z])\\p{L}{4,}b[oó]l\\s+"
+                + "(?=\\p{L}{3,}\\s+lett(?![a-z]))", "");
+        // A BÉRLET vásárlása mellett a MAI első alkalom valóság: a
+        // „bérlest vettem a jógába, heti 2 óra, ma volt az első alkalom"
+        // üresen jött vissza – a vásárlás-őr a jóga szavát is elvitte.
+        if (s.matches("(?s).*(?<![a-z])ma volt(?![a-z]).*")) {
+            s = s.replaceAll("(?<![a-z])berle[st]\\w*\\s+vettem\\s+"
+                    + "(?:az?\\s+)?", "");
+            // A „heti 2 óra" a rend, nem a mai alkalom hossza.
+            s = s.replaceAll("(?<![a-z])heti\\s+\\d+\\s?or\\w*\\s*,?\\s*",
+                    "");
+        }
         // A BEÁLLÓ játékideje a sajátja: a „90 perces meccs, én a második
         // félidőben álltam be, kb 45 perc játék" kilencven percet írt be a
         // valódi negyvenöt helyett. A meccs teljes hossza kiesik, ha a
@@ -1473,6 +1498,13 @@ public final class Activities {
                 + "|ismetles\\w*|szakasz\\w*)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:koztuk|kozben|kozte)\\s+"
                     + "(?:laza\\s+)?seta\\w*[^,;.]*", " ");
+        // A PIHENŐ-KOCOGÁS táva a szakaszok köze, nem a futás: a „8x200 m
+        // intervall, 200 m kocogással köztük" kétszáz méteres futás lett –
+        // a nyolcszor kétszáz helyett. A sorozat-jelölés melletti, kocogó
+        // vagy sétáló szó előtti táv a regeneráló szakasz hossza.
+        if (s.matches("(?s).*\\dx\\d{2,4}\\s?m(?![a-z]).*"))
+            s = s.replaceAll("(?<![\\dx.,])\\d{2,4}\\s?m(?:-es)?\\s+"
+                    + "(?=kocog|seta|setal|pihen|gyalog|lazit)", "");
         // A FITNESZ KIHÍVÁS neve nem külön edzés: a „fitnesz kihívás 3.
         // napja: 30 burpee…" burpee-i mellé egy 45 perces egyéb mozgás is
         // került – a kihívás NEVÉBŐL.
@@ -3154,8 +3186,25 @@ public final class Activities {
                     + "edzettunk|usztam|usztunk|jatszottam|jatszottunk|"
                     + "bicikliztem|bringaztam|setaltam|setaltunk|turaztam|"
                     + "turaztunk|kondiztam|kocogtam|eveztem|tancoltam)"
-                    + "(?![a-z]).*"))
-            return new Parsed(out, 1, 0, 12);
+                    + "(?![a-z]).*")) {
+            // A NÉZŐ lépései viszont megvannak: a „focimeccsen voltunk, csak
+            // néztük, de 8000 lépés lett a járkálásból" járkálása megtörtént
+            // mozgás – eddig a néző-szabály a lépésekkel együtt az egészet
+            // elnyelte. A meccs tagmondatai így is kiesnek, csak a
+            // lépésszámos tagmondat marad állva.
+            if (sm.matches("(?s).*\\d[\\d ]{0,6}\\s?lepes\\w*.*")) {
+                int a = 0;
+                while (a < sm.length()) {
+                    int e = a;
+                    while (e < sm.length() && ",.;".indexOf(sm.charAt(e)) < 0) e++;
+                    if (!sm.substring(a, e)
+                            .matches("(?s).*\\d[\\d ]{0,6}\\s?lepes\\w*.*"))
+                        blank(q, a, e);
+                    a = e + 1;
+                }
+                sm = new String(q);
+            } else return new Parsed(out, 1, 0, 12);
+        }
         // A ZÁRVA TARTÓ terem nem edzés: a „ma elmentem az edzőterembe, de
         // zárva volt, így hazamentem" HATVANPERCES kondiedzést írt a
         // naplóba – egy napra, amikor épp NEM edzett az ember. Az elmaradt
@@ -7830,6 +7879,10 @@ public final class Activities {
             // mindennap tornázik 20 percet" húsz perc jógát írt a MI
             // naplónkba. (A ragtalan „nagymama" hétköznapi szóként marad.)
             "nagymamam", "nagypapam",
+            // A SZOMSZÉDASSZONY futása sem az enyém: az „a szomszédasszony
+            // 5 km-t futott ma, én csak 2 km-t sétáltam" öt kilométere is a
+            // naplóba került. (A „szomszédom" már itt volt, a női alak nem.)
+            "szomszedasszony", "szomszedasszonyom",
             // A becézett szülő-nevek is alanyok: az „apu 10 km-t
             // biciklizett" az apa túrája volt, mégis a naplómba került.
             // A teljes alak (anya, apa, nagypapa) szándékosan nincs itt:

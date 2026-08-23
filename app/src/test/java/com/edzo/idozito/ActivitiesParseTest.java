@@ -8531,4 +8531,69 @@ public class ActivitiesParseTest {
                 + "kihagyva.").plans.isEmpty());
     }
 
+    /**
+     * A „-ból lett" átalakulás és a bérlet melletti első alkalom.
+     *
+     * A „a viharos szél miatt a bringázásból séta lett" sétája mellé egy
+     * órás kerékpározás került, a „bérlest vettem a jógába, heti 2 óra,
+     * ma volt az első alkalom" pedig üresen jött vissza.
+     */
+    @Test
+    public void aTransformationAndAFirstYogaClass() {
+        Activities.Parsed p = Activities.parse("A viharos szél miatt a "
+                + "bringázásból séta lett, 5 km a gáton.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        Activities.Parsed j = Activities.parse("Bérlest vettem a jógába, "
+                + "heti 2 óra, ma volt az első alkalom.");
+        assertEquals(1, j.plans.size());
+        assertEquals("joga", j.plans.get(0).kind.id);
+        // A puszta bérletvásárlás marad üres.
+        assertTrue(Activities.parse("Bérletet vettem a konditerembe.")
+                .plans.isEmpty());
+    }
+
+    /**
+     * A szomszédasszony futása, a terv hete és a néző lépései.
+     *
+     * A „szomszédasszony 5 km-t futott, én 2 km-t sétáltam" öt
+     * kilométere is bekerült, az „edzéstervem 2. hete: ma könnyű 6 km"
+     * üresen jött vissza, a „csak néztük, de 8000 lépés lett" lépéseit
+     * pedig a néző-szabály nyelte el a meccsel együtt.
+     */
+    @Test
+    public void aNeighborsRunAPlanWeekAndASpectatorsSteps() {
+        Activities.Parsed n = Activities.parse("A szomszédasszony 5 km-t "
+                + "futott ma, én csak 2 km-t sétáltam.");
+        assertEquals(1, n.plans.size());
+        assertEquals("tura", n.plans.get(0).kind.id);
+        assertEquals(2.0, n.plans.get(0).km, 0.01);
+        Activities.Parsed t = Activities.parse("A tavaszi félmaraton "
+                + "edzéstervem 2. hete: ma könnyű 6 km, holnap pihenő.");
+        assertEquals(1, t.plans.size());
+        assertEquals(6.0, t.plans.get(0).km, 0.01);
+        Activities.Parsed s = Activities.parse("Focimeccsen voltunk, csak "
+                + "néztük, de 8000 lépés lett a járkálásból.");
+        assertEquals(1, s.plans.size());
+        assertEquals(8000, s.plans.get(0).steps);
+        // A lépés nélküli néző marad néző.
+        assertTrue(Activities.parse("Focimeccsen voltunk, csak néztük.")
+                .plans.isEmpty());
+    }
+
+    /**
+     * A szakaszok közti kocogás táva a pihenő, nem a futás.
+     *
+     * A „8x200 m intervall, 200 m kocogással köztük" kétszáz méteres
+     * futást írt be – az ezerhatszáz helyett.
+     */
+    @Test
+    public void recoveryJogDistanceIsNotTheRun() {
+        assertEquals(1.6, Activities.parse("8x200 m intervall 200 m "
+                + "kocogással köztük.").plans.get(0).km, 0.01);
+        // A sorozat nélküli kocogás táva marad az övé.
+        assertEquals(2.0, Activities.parse("2 km kocogás a parkban.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

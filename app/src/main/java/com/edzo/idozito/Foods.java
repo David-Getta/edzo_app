@@ -914,7 +914,9 @@ public final class Foods {
             // horgász-mondata negyed liter vizet írt a naplóba.
             // A VÍZEN töltött idő helyhatározó: a „45 perc vízen" a
             // vízisízés ideje, nem negyed liter ital.
-            "vizholyag", "vizpart", "vizen",
+            // A VÍZÁLLÁS a folyóé, a VÍZBEN töltött idő a strandé – egyik
+            // sem megivott pohár víz.
+            "vizholyag", "vizpart", "vizen", "vizallas", "vizben",
             // A LÁNCOLÁS közepén a cola ül: a „bicajom láncolása után
             // próbakör" mellé egy doboz üdítő került a naplóba.
             "lancol",
@@ -1457,6 +1459,17 @@ public final class Foods {
                 + "(?=\\p{L}{3,}b[oó]l\\s+f[oő]z)").matcher(q);
         while (fz.find())
             for (int k = fz.start(); k < fz.end(); k++) sb.setCharAt(k, ' ');
+        // Az ELFELEJTETT FŐZÉS alapanyaga nem falat: „a rizst elfelejtettem
+        // időben feltenni, így csak tükörtojás lett vacsorára" rizse a
+        // fazékig sem jutott – a felejtés-tagmondat a nyersanyag nevével
+        // együtt kitakarható. Csak a konyhai igék („feltenni",
+        // „kiolvasztani") esnek ide: az „elfelejtettem enni" marad lemondás.
+        java.util.regex.Matcher ef = java.util.regex.Pattern.compile(
+                "[^,;.:]*elfelejtett(?:em|uk)[^,;.]*?"
+                + "(?:tenni|olvasztani|kapcsolni|ind[ií]tani)[^,;.]*")
+                .matcher(q);
+        while (ef.find())
+            for (int k = ef.start(); k < ef.end(); k++) sb.setCharAt(k, ' ');
         // A „-NAK SZÓLÓ" szólója nem szőlő: a „kezdő futóknak szóló tervet
         // követek" mellé száz gramm szőlő került a naplóba.
         java.util.regex.Matcher so = java.util.regex.Pattern.compile(
@@ -4383,6 +4396,12 @@ public final class Foods {
         if (s.matches("(?s).*(?<![a-z])(potoltam|potoltuk|behoztam|behoztuk)"
                 + "(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])elfelejtett(?:em|uk)(?![a-z])", " ");
+        // Az ELFELEJTETT FŐZÉS nem elfelejtett evés: „a rizst elfelejtettem
+        // időben feltenni, így csak tükörtojás lett vacsorára" tükörtojása
+        // MEGEVETT vacsora – a konyhai felejtés szava eddig az egész
+        // bejegyzést elnémította.
+        s = s.replaceAll("[^,;.:]*elfelejtett(?:em|uk)[^,;.]*?"
+                + "(?:tenni|olvasztani|kapcsolni|inditani)[^,;.]*", " ");
         boolean intent = false;
         for (String w : new String[]{
                 // Jövő és szándék.

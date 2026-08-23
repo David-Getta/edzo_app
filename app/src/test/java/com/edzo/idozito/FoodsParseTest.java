@@ -2399,4 +2399,23 @@ public class FoodsParseTest {
         assertEquals(200.0, Foods.parse(all, "Ettem 200 g pörköltet.")
                 .get(0).grams, 0.01);
     }
+
+    /**
+     * Az elfelejtett főzés nem elfelejtett evés.
+     *
+     * A „rizst elfelejtettem időben feltenni, így csak tükörtojás lett
+     * vacsorára" bejegyzése üresen jött vissza – a felejtés szava az
+     * egészet elnémította, pedig a tükörtojás megevett vacsora. A rizs
+     * viszont a fazékig sem jutott.
+     */
+    @Test public void forgottenCookingIsNotForgottenEating() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "A rizst elfelejtettem "
+                + "időben feltenni, így csak tükörtojás lett vacsorára, 3 db.");
+        assertEquals(1, h.size());
+        assertEquals("Tükörtojás", h.get(0).food.name);
+        // Az elfelejtett evés marad lemondás.
+        assertTrue(Foods.parse(all, "Elfelejtettem enni a zabkásámat "
+                + "reggel.").isEmpty());
+    }
 }
