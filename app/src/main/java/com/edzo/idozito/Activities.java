@@ -1648,6 +1648,32 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])(meg|majd|aztan|utana)\\s+"
                     + "(\\d{1,3}(?:[.,]\\d{1,2})?)[- ]?(?:et|at|ot)(?![a-z])",
                     "$1 $2 km");
+        // Ugyanez PERCBEN: a „jógáztam 20 percet, este még 20-at" második
+        // húszasa nyomtalanul eltűnt – az esti alkalom kimaradt a naplóból.
+        // Csak km nélküli mondatban: távos mondatban a fenti szabály él.
+        else if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?perc\\w*.*")
+                && !s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*"))
+            s = s.replaceAll("(?<![a-z])(meg|majd|aztan|utana)\\s+"
+                    + "(\\d{1,3})[- ]?(?:et|at|ot)(?![a-z])", "$1 $2 perc");
+        // Az AZONOS mozgás MÁSODIK ideje hozzáadódik: a „jógáztam 20
+        // percet, este még 20-at" estéje eddig némán elveszett – a nap
+        // fele. A távos mondat a saját (két alkalmas) szabályát követi, a
+        // súlyzós sorozat percei pedig a súlyzós olvasóra tartoznak.
+        if (!s.matches("(?s).*\\d\\s?km.*")
+                && !s.matches("(?s).*(?:plank|fekvotamasz|guggol|felules"
+                    + "|kitores|nyomas|huzodzkod|szett|sorozat).*")) {
+            java.util.regex.Matcher mp = java.util.regex.Pattern.compile(
+                    "(?<![\\dx,.])(\\d{1,3})\\s?perc(?:et|ig|re|ot)?(?![a-z])"
+                    + "[^;.]{0,24}?(?<![a-z])(?:meg|megint|ujra)\\s+"
+                    + "(?:\\p{L}{3,}\\s+){0,2}?(\\d{1,3})"
+                    + "\\s?perc(?:et|ot|re|ig)?(?=\\s*(?:[,;.!]|$))").matcher(s);
+            if (mp.find()) {
+                int total = Integer.parseInt(mp.group(1))
+                        + Integer.parseInt(mp.group(2));
+                s = s.substring(0, mp.start()) + total + " perc"
+                        + s.substring(mp.end());
+            }
+        }
         // A MARATONRA készülni nem maratont futni: a „ma kezdődött a
         // felkészülésem a maratonra" mondatból egy NEGYVENKÉT KILOMÉTERES
         // futás lett a mai napra – a verseny neve önmagában távot is

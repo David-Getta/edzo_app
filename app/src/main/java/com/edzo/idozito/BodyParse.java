@@ -486,6 +486,15 @@ public final class BodyParse {
         // mértékegység híján eddig elveszett.
         s = s.replaceAll("(?<![\\d,.])(\\d{2,3})\\s?-?[ae]?t\\s+mertem",
                 "$1 kg-ot mertem");
+        // A HÁTRALÉVŐ kiló a cél távolsága, nem a mérleg száma: a „90 kg-ról
+        // indultam, most 84,5, már csak 4,5 kiló a cél" négy és felese az
+        // egyetlen kilóval írt szám volt, és a felismerő rajta akadt el –
+        // a valódi 84,5-ös mérés is elveszett vele.
+        s = s.replaceAll("(?<![a-z])(?:mar\\s+)?(?:csak\\s+|meg\\s+)?"
+                + "\\d[\\d,.]{0,5}\\s?kil[oó]\\w*\\s+(?:van\\s+)?"
+                + "(?:meg\\s+|hatra\\s+)?(?:a\\s+)?cel\\w*[^,;.]*", " ");
+        s = s.replaceAll("(?<![a-z])\\d[\\d,.]{0,5}\\s?kil[oó]\\w*\\s+"
+                + "hianyzik[^,;.]*", " ");
         // A VÁLTOZÁS mondatában a MÁSODIK szám a mai érték: a „derékbőség
         // lement 90-ről 86-ra" a régi számot hagyta meg (vagy semmit).
         s = s.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?-?r[o]l"
@@ -588,8 +597,10 @@ public final class BodyParse {
         if (s.indexOf(',') < 0 && s.indexOf(';') < 0 && s.indexOf('.') < 0) return s;
         StringBuilder keep = new StringBuilder();
         boolean dropped = false, prevOther = false;   // súlyzós tagmondat volt-e
+        int parts = 0;
         // A vessző magyarul tizedesjel is: a „78,4" NEM két tagmondat.
         for (String part : s.split("[,;.](?!\\d)")) {
+            if (!part.trim().isEmpty()) parts++;
             boolean other = false;
             for (String w : new String[]{"alud", "alvas", "pulzus", "rhr", "nyugalmi",
                     "ebredtem", "keltem", "fekudtem",
@@ -663,7 +674,14 @@ public final class BodyParse {
             keep.append(part.trim());
         }
         String out = keep.toString().trim();
-        if (out.isEmpty()) return s;
+        // Ha MINDEN tagmondat másik naplóé volt, az egész bejegyzés az: a
+        // „a spinning órát leadtam 55 percben, a pulzusátlag 148 volt"
+        // mondatból – miután a perc és a pulzus tagmondata is kiesett – a
+        // teljes szöveg jött vissza, és a pulzusátlagból 148 kilós mérés
+        // lett a súlytrendben. Az EGYETLEN tagmondatos sor viszont marad:
+        // a „78,2 kg / 54 rhr / 7,5h alvás" perjeles sora egyben egy
+        // tagmondat, és a szám-szűrők enélkül is elbírnak vele.
+        if (out.isEmpty()) return dropped && parts > 1 ? "" : s;
         // A MÁSIK napló folytatása nem mérés. A „nyugalmi pulzus reggel 47,
         // este 62" hatvankettője az esti PULZUS – eddig hatvankét kilós
         // méréssé vált a súlytrendben. Ha a mondatból eldobtunk egy másik

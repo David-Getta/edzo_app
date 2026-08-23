@@ -645,4 +645,17 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("A cél 2000 kcal."));
     }
 
+    /**
+     * Az egyenkénti adag szorzódik.
+     *
+     * A „két adag proteinturmix, egyenként 30 g fehérje" hatvan gramm –
+     * eddig harminc került a makró-naplóba, a második adag elveszett.
+     */
+    @Test public void perServingProteinMultiplies() {
+        assertEquals(60, Kcal.protein("Két adag proteinturmix edzés "
+                + "után, egyenként 30 g fehérje."));
+        // Az egy adag marad annyi, amennyi.
+        assertEquals(30, Kcal.protein("30 g fehérje volt a turmixban."));
+    }
+
 }

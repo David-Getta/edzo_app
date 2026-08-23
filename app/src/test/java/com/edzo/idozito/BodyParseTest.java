@@ -1254,6 +1254,27 @@ public class BodyParseTest {
      * hosszak sz\u00e1ma \u2013 a \u201elementem" ige m\u00e9gis harminc kil\u00f3s
      * m\u00e9r\u00e9st \u00edrt a s\u00falytrendbe.
      */
+    @Test public void aPulseAverageAfterAWorkoutIsNotAWeight() {
+        // A „spinning órát leadtam 55 percben, a pulzusátlag 148 volt"
+        // pulzusátlagából 148 kilós mérés lett – miután a perc és a
+        // pulzus tagmondata is kiesett, a teljes szöveg jött vissza.
+        BodyParse.Body b = BodyParse.parse("A spinning órát leadtam "
+                + "55 percben, a pulzusátlag 148 volt.");
+        assertTrue(b == null || b.kg == 0);
+    }
+
+    /**
+     * A hátralévő kiló a cél távolsága, nem a mérleg száma.
+     *
+     * A „90 kg-ról indultam, most 84,5, már csak 4,5 kiló a cél"
+     * bejegyzéséből semmi nem lett – a felismerő a négy és felesen
+     * akadt el, és a valódi mérés is elveszett.
+     */
+    @Test public void remainingKilosToGoalDoNotHideTheWeight() {
+        assertEquals(84.5, BodyParse.parse("90 kg-ról indultam, most "
+                + "84,5, már csak 4,5 kiló a cél.").kg, 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

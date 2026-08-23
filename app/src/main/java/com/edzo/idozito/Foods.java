@@ -452,7 +452,9 @@ public final class Foods {
                 // gramm ital egy hatvangrammos szelet helyett.
                 "protein bar", "proteinbar"),
         // A Pöttyös a túró rudi márkaneve – a „Pöttyös óriás guru" is az.
-        new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi", "pottyos"),
+        new Food("Túró rudi", 380, 8, 51, "turo rudi", "rudi", "pottyos",
+                // Az egybeírt alak is a rudi – eddig egy külön adag túró is jött vele.
+                "turorudi"),
         new Food("Szendvics", 250, 10, 150, "szendviccs", "szendvics", "szendo", "croque",
                 // Az angolul írt alak is szendvics: „subway ham sandwich".
                 "sandwich", "szendvicset"),
@@ -4274,7 +4276,9 @@ public final class Foods {
             {"Palacsinta", "Hortobágyi palacsinta"},
             // A TÚRÓS palacsinta tölteléke túró: a „túrós palacsinta" mellé
             // eddig egy külön adag túró is bekerült.
-            {"Túró", "Palacsinta", "Túrós batyu", "Túrós csusza"},
+            {"Túró", "Palacsinta", "Túrós batyu", "Túrós csusza",
+                    // Az egybeírt túrórudi tövében is ott a túró szó.
+                    "Túró rudi"},
     };
 
     private static List<Match> dropRedundantBase(String q, List<Match> in) {

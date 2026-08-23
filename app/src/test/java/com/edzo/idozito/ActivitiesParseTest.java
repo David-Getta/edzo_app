@@ -8624,4 +8624,24 @@ public class ActivitiesParseTest {
                 + "a kutyával, 5 km lett.").plans.get(0).kind.id);
     }
 
+    /**
+     * Az azonos mozgás második ideje hozzáadódik.
+     *
+     * A „reggel 6-kor jógáztam 20 percet, este még 20-at" estéje némán
+     * elveszett – a nap fele kimaradt a naplóból.
+     */
+    @Test
+    public void aSecondRoundOfTheSameSportAddsItsMinutes() {
+        Activities.Parsed j = Activities.parse("Reggel 6-kor jógáztam "
+                + "20 percet, este még 20-at.");
+        assertEquals(1, j.plans.size());
+        assertEquals(40, j.plans.get(0).minutes);
+        // A másik sport perce a másik sporté marad.
+        Activities.Parsed f = Activities.parse("Futottam 30 percet, "
+                + "utána még 15 perc nyújtás.");
+        assertEquals(2, f.plans.size());
+        assertEquals(30, f.plans.get(0).minutes);
+        assertEquals(15, f.plans.get(1).minutes);
+    }
+
 }

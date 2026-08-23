@@ -553,6 +553,19 @@ public final class Kcal {
         // szorzója, nem két gramm fehérje – és a kettő volt belőle.
         if (s.matches("(?s).*\\d\\s?g\\s?/\\s?(?:ttkg|kg|kilo|testsuly|testtomeg).*"))
             return -1;
+        // Az EGYENKÉNT adagja szorzódik: a „két adag proteinturmix,
+        // egyenként 30 g fehérje" hatvan gramm – eddig harminc került a
+        // makró-naplóba, a második adag elveszett.
+        java.util.regex.Matcher ea = Pattern.compile(
+                "(?<![\\d,.])(\\d{1,2})\\s+(?:adag|db|darab|pohar|shake"
+                + "|turmix)[^;.]{0,40}?egyenkent\\s+(\\d{1,3})").matcher(s);
+        if (ea.find()) {
+            int n = Integer.parseInt(ea.group(1));
+            if (n >= 2 && n <= 6)
+                s = s.substring(0, ea.start(2))
+                        + (n * Integer.parseInt(ea.group(2)))
+                        + s.substring(ea.end(2));
+        }
         double sum = 0;
         // Mértékegység NÉLKÜL csak életszerű makró-szám lehet fehérje: az
         // „ittam egy proteint" egyese az italok DARABSZÁMA, nem egy gramm

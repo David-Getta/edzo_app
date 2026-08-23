@@ -2433,4 +2433,22 @@ public class FoodsParseTest {
         assertEquals(75.0, Foods.parse(all, "Nem ettem meg az egész "
                 + "steaket, csak a felét.").get(0).grams, 0.01);
     }
+
+    /**
+     * Az egybeírt túrórudi egy rudi, nem rudi plusz túró.
+     *
+     * Az „uzsonnára túrórudi volt, kettőt is ettem" mellé egy külön
+     * adag túró is került – a rudi tövében ülő túró szóból.
+     */
+    @Test public void aOneWordTuroRudiIsJustTheRudi() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Uzsonnára túrórudi volt, "
+                + "kettőt is ettem.");
+        assertEquals(1, h.size());
+        assertEquals("Túró rudi", h.get(0).food.name);
+        assertEquals(102.0, h.get(0).grams, 0.01);
+        // A magában evett túró marad túró.
+        assertEquals("Túró", Foods.parse(all, "Egy kis túrót ettem "
+                + "mézzel.").get(0).food.name);
+    }
 }
