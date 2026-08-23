@@ -2505,6 +2505,21 @@ public class FoodsParseTest {
     }
 
     /**
+     * A többes számú vétel bevásárlás, a többes evés viszont evés.
+     *
+     * A „piacon vettünk kacsamellet vasárnapra" kacsája a kamráé,
+     * mégis a mai naplóba került; a „vettünk egy fagyit, meg is ettük"
+     * fagyija viszont a szánkban landolt.
+     */
+    @Test public void aPluralPurchaseAndAPluralBite() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A piacon vettünk kacsamellet "
+                + "vasárnapra, meg friss zöldséget.").isEmpty());
+        assertEquals("Fagylalt", Foods.parse(all, "Vettünk egy fagyit "
+                + "a sétány végén, meg is ettük.").get(0).food.name);
+    }
+
+    /**
      * A neszkávé is kávé.
      */
     @Test public void nescafeIsCoffee() {

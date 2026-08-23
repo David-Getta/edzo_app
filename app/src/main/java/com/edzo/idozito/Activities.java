@@ -1468,6 +1468,10 @@ public final class Activities {
         // perces mai futás került tőle a naplóba.
         s = s.replaceAll("(?<![a-z])(?:a\\s+)?sok\\s+\\p{L}{3,}st[oó]l"
                 + "(?![a-z])", " ");
+        // Az „EGY JÓ ÓRA" is egy óra: a „trambulinoztunk egy jó órát"
+        // negyvenöt perces alapértelmezést kapott a hatvan helyett.
+        s = s.replaceAll("(?<![a-z])egy\\s+(?:jo|bo|kerek)\\s+(?=ora)",
+                "egy ");
         // A KUTYÁS körök rovása séta: az „a kutyával a szokásos köröket
         // róttuk, majdnem 4 km lett" négy kilométere futásként került be –
         // a csupasz táv alapmozgása a futás, pedig a kört róni gyalog

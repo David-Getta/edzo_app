@@ -8816,4 +8816,14 @@ public class ActivitiesParseTest {
                 + "sorban ültünk, óriási hangulat volt.").plans.isEmpty());
     }
 
+    /**
+     * Az „egy jó óra" is egy óra.
+     */
+    @Test
+    public void aGoodHourIsAnHour() {
+        assertEquals(60, Activities.parse("A gyerekekkel "
+                + "trambulinoztunk a kertben egy jó órát.")
+                .plans.get(0).minutes);
+    }
+
 }

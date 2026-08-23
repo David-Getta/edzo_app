@@ -4450,6 +4450,9 @@ public final class Foods {
                 // szelet tortát", az rendszerint meg is ette – a naplózó
                 // mezőben a kapott étel elfogyasztott étel.
                 "vettem", "veszek", "vasarol", "hoztam", "hozok",
+                // A többes számú vétel is bevásárlás: a „a piacon vettünk
+                // kacsamellet vasárnapra" kacsája a kamráé, nem a mai napé.
+                "vettunk",
                 // Főzés jelen időben: a „főzök egy levest" még nem vacsora.
                 "fozok", "sutok", "keszitek", "keszitem", "fozni fogok",
                 // A KAMRA és a HŰTŐ tartalma sem elfogyasztott étel: az „a
@@ -4588,6 +4591,10 @@ public final class Foods {
                 "ittal", "ivott", "iszom", "megettem", "megittam", "elfogyasztottam",
                 "bekaptam", "haraptam", "reggeliztem", "ebedeltem", "vacsoraztam",
                 "uzsonnaztam", "nassoltam", "faltam", "kertem", "rendeltem",
+                // A TÖBBES szám is evés: a „vettünk egy fagyit, meg is
+                // ettük" fagyija a szánkban landolt, mégis bevásárlásnak
+                // látszott.
+                "ettuk", "megettuk", "ettunk", "ittunk", "megittuk",
                 // A „bevettem" a VÁSÁRLÁS igéjét tartalmazza, pedig pont az
                 // ellenkezőjét jelenti: az „edzés előtt bevettem egy
                 // kreatint" elfogyasztott étrend-kiegészítő, és eddig
