@@ -556,6 +556,13 @@ public final class BodyParse {
             if (s.isEmpty()) return new Body(0, 0);
         }
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
+        // A MEG NEM TÖRTÉNT mérés nem mai adat: a „ma nem mértem meg
+        // magam, de tegnap 79 volt" hetvenkilencet a MAI napra írta a
+        // súlytrendbe – pedig a mondat épp azt mondja, hogy ma nem állt
+        // mérlegre. A tegnapi szám a tegnapi naplóé, azt nem írjuk át.
+        if (s.matches("(?s).*(?<![a-z])nem\\s+(?:mertem|merlegeltem|"
+                + "alltam)\\s?(?:meg|ra)?\\s*(?:magam|merlegre)?"
+                + "(?![a-z]).*")) return new Body(0, 0);
         boolean said = hasBodyWord(s);
         // A KILÓBAN mondott KÜLÖNBSÉG is testsúly-kontextus: a „reggel
         // 76,8 kg, ez már 5 kiló mínusz az induláshoz képest" méréséből

@@ -9424,4 +9424,22 @@ public class ActivitiesParseTest {
                 .offset);
     }
 
+    /**
+     * A feltételes „volna" tagmondata nem törli a megtörténtet.
+     *
+     * A „reggel még futottam volna, de esett, így csak otthon
+     * nyújtottam 15 percet" tizenöt perce elveszett.
+     */
+    @Test
+    public void aConditionalClauseSparesWhatHappened() {
+        Activities.Parsed p = Activities.parse("Reggel még futottam "
+                + "volna, de esett, így csak otthon nyújtottam 15 percet.");
+        assertEquals(1, p.plans.size());
+        assertEquals("joga", p.plans.get(0).kind.id);
+        assertEquals(15, p.plans.get(0).minutes);
+        // A csupa feltételes mondat marad üres.
+        assertTrue(Activities.parse("Ha lett volna időm, futottam volna.")
+                .plans.isEmpty());
+    }
+
 }

@@ -1819,6 +1819,14 @@ public final class Activities {
         s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*(?<![a-z])"
                 + "(?:heti|havi|napi)\\s+\\d{1,2}(?:[.,]\\d)?\\s*"
                 + "atlag\\w*[^,;.]*", " ");
+        // A FELTÉTELES „VOLNA" tagmondata nem törli a megtörténtet: a
+        // „reggel még futottam volna, de esett, így csak otthon
+        // nyújtottam 15 percet" tizenöt perce elveszett – pedig a
+        // mondat vége kimondja, mi történt helyette.
+        if (s.matches("(?s).*(?<![a-z])(?:csak|helyette|igy)\\s+[^,;.]*"
+                + "\\p{L}{3,}(?:tam|tem|tunk|tuk)(?![a-z]).*"))
+            s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*(?<![a-z])volna"
+                    + "(?![a-z])[^,;.]*", " ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.

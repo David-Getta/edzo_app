@@ -1284,6 +1284,18 @@ public class BodyParseTest {
         assertEquals(17.9, b.fatPct, 0.01);
     }
 
+    @Test public void anUnmeasuredDayLogsNothing() {
+        // A „ma nem mértem meg magam, de tegnap 79 volt" hetvenkilencet
+        // a MAI napra írta a súlytrendbe – pedig a mondat épp azt
+        // mondja, hogy ma nem állt mérlegre.
+        BodyParse.Body b = BodyParse.parse("Ma nem mértem meg magam, de "
+                + "tegnap 79 volt.");
+        assertTrue(b == null || b.kg == 0);
+        // A megtörtént mérés marad.
+        assertEquals(79.0, BodyParse.parse("Ma reggel 79 kg voltam.").kg,
+                0.01);
+    }
+
     @Test public void anInflectedMeasurementWordStillCounts() {
         // Az „a reggeli MÉRÉSKOR 76,2 kg, az izomtömegem 34,1 kg"
         // mérése elveszett: a lista csak a ragtalan „mérés" alakot
