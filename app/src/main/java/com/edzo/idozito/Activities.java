@@ -404,7 +404,11 @@ public final class Activities {
                     // „10 perc görgőzés edzés után" időzítő-TERVNEK látszott,
                     // és tíz perces ablakot ajánlott rá az app egy megtörtént
                     // levezetés helyett. (A „görget" scrollozás, az nem tő.)
-                    "habhenger", "hengerez", "foam roll", "foamroll", "sms henger",
+                    // A HABSZIVACS a henger anyaga, és a naplóban a
+                    // hengerezés neve: a „20 perc habszivacs és 10 perc jóga"
+                    // húsz perce eddig nyomtalanul elveszett.
+                    "habhenger", "habszivacs", "hab szivacs",
+                    "hengerez", "foam roll", "foamroll", "sms henger",
                     "gorgozes", "gorgoztem", "gorgozok", "gorgozni",
                     // Az igekötős görgetés is SMR: az „átgörgettem a
                     // combom, 10 perc" eddig üresen jött vissza. (A puszta
@@ -1061,7 +1065,9 @@ public final class Activities {
             // A NYÚJTÓZKODÁS az íróasztalnál nem nyújtás-edzés, a
             // SZEMTORNA pedig nem torna: mindkettő negyvenöt perces jógát
             // írt a naplóba egy-egy irodai mikroszünetből.
-            "nyujtoz", "szemtorna",
+            // Az AGYTORNA sem torna: a „délelőtt 1 órát sakkoztam, az is
+            // agytorna" egy ÓRA jógát írt a naplóba egy tábla sakkból.
+            "nyujtoz", "szemtorna", "agytorna", "agy torna",
             // Az immunERŐSÍTÉS közepén a kondi erősít-töve ült: a vitaminos
             // mondat mellé egy órás súlyzós edzés került.
             "immuneros",

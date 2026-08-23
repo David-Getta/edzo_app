@@ -3896,6 +3896,26 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az agytorna nem torna, a habszivacs viszont hengerezés.
+     *
+     * A „délelőtt 1 órát sakkoztam, az is agytorna" egy ÓRA jógát írt a
+     * naplóba egy tábla sakkból. A „20 perc habszivacs" húsz perce
+     * fordítva: nyomtalanul elveszett, pedig az a hengerezés neve.
+     */
+    @Test public void brainGymIsNotGymAndFoamIsRolling() {
+        assertTrue(Activities.parse("Délelőtt 1 órát sakkoztam, az is "
+                + "agytorna.").plans.isEmpty());
+        int sum = 0;
+        for (Activities.Plan p : Activities.parse("Ma este 20 perc "
+                + "habszivacs és 10 perc jóga a fájó hátamra.").plans)
+            sum += p.minutes;
+        assertEquals(30, sum);
+        // A valódi torna marad torna.
+        assertEquals(30, Activities.parse("Ma 30 perc torna volt az "
+                + "edzőteremben.").plans.get(0).minutes);
+    }
+
+    /**
      * A játszótér mint célpont nem játszótéri délután.
      *
      * A „délután a gyerekkel bicikliztünk 8 km-t a játszótérig és vissza"
