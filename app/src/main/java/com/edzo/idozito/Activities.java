@@ -2390,6 +2390,31 @@ public final class Activities {
                 "lepcsozes $1 emelet");
         s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emelet(?:et)?\\s+lepcso(?!z)\\w*",
                 "lepcsozes $1 emelet");
+        // A GYALOG megtett emelet is lépcsőzés: a „ma három emelet
+        // gyalog" KILENCVEN perces gyaloglás lett – a lépcső szava
+        // nélkül az emeletek nem váltak perccé. A kiírt számnév is jó,
+        // mert a számjegyre fordítás csak ezután fut.
+        {
+            java.util.regex.Matcher eg = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(\\d{1,3}|egy|ket|ketto|harom|negy|ot|hat"
+                    + "|het|nyolc|kilenc|tiz)\\s?emelet(?:et)?\\s+"
+                    + "(?=gyalog(?![a-z]))").matcher(s);
+            StringBuffer egb = new StringBuffer();
+            boolean egAny = false;
+            while (eg.find()) {
+                String n = eg.group(1);
+                // A kiírt számnév számjeggyé válik, mert az emelet-perc
+                // átváltó csak számjegyet lát.
+                String[][] w = {{"egy", "1"}, {"ketto", "2"}, {"ket", "2"},
+                        {"harom", "3"}, {"negy", "4"}, {"ot", "5"},
+                        {"hat", "6"}, {"het", "7"}, {"nyolc", "8"},
+                        {"kilenc", "9"}, {"tiz", "10"}};
+                for (String[] pr : w) if (pr[0].equals(n)) { n = pr[1]; break; }
+                eg.appendReplacement(egb, "lepcsozes " + n + " emelet ");
+                egAny = true;
+            }
+            if (egAny) { eg.appendTail(egb); s = egb.toString(); }
+        }
         // A LÉPCSŐ szava messzebb is állhat: az „a lift helyett mindig
         // lépcső: ma 14 emelet összesen" tizennégy emelete üresen jött
         // vissza – a „ma" és az „összesen" beékelődött a minta két fele

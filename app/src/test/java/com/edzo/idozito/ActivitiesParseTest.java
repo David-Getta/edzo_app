@@ -9287,4 +9287,22 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A gyalog megtett emelet is lépcsőzés.
+     *
+     * A „ma három emelet gyalog" KILENCVEN perces gyaloglás lett – a
+     * lépcső szava nélkül az emeletek nem váltak perccé.
+     */
+    @Test
+    public void floorsOnFootAreStairs() {
+        assertEquals(2, Activities.parse("Ma három emelet gyalog, plusz "
+                + "a boltból cipeltem 10 kilót haza.")
+                .plans.get(0).minutes);
+        assertEquals(4, Activities.parse("Ma 8 emelet gyalog.")
+                .plans.get(0).minutes);
+        // A sima gyaloglás ideje marad a sajátja.
+        assertEquals(20, Activities.parse("Gyalog mentem a boltba, "
+                + "20 perc.").plans.get(0).minutes);
+    }
+
 }
