@@ -8826,4 +8826,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A ragos tempó tempó, az egy hete tartó szokás mellett a ma számít.
+     *
+     * Az „5:20-szal mentem 8 km-t" öt óra húsz perces futás lett, az
+     * „a lift szerviz miatt egy hete lépcsőzöm, ma is 9 emelet kétszer"
+     * pedig egy hete keltezett dupla bejegyzést kapott.
+     */
+    @Test
+    public void aSuffixedPaceAndAWeekOldStairHabit() {
+        Activities.Parsed p = Activities.parse("A kollégám szerint túl "
+                + "gyorsan futok, de ma is 5:20-szal mentem 8 km-t.");
+        assertEquals(43, p.plans.get(0).minutes);
+        Activities.Parsed l = Activities.parse("A lift szerviz miatt "
+                + "egy hete lépcsőzöm, ma is 9 emelet kétszer.");
+        assertEquals(1, l.plans.size());
+        assertEquals(0, l.offset);
+        assertEquals(9, l.plans.get(0).minutes);
+    }
+
 }

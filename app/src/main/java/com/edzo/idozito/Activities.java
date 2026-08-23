@@ -1472,6 +1472,23 @@ public final class Activities {
         // negyvenöt perces alapértelmezést kapott a hatvan helyett.
         s = s.replaceAll("(?<![a-z])egy\\s+(?:jo|bo|kerek)\\s+(?=ora)",
                 "egy ");
+        // A RAGOS tempó is tempó: az „5:20-szal mentem 8 km-t" öt óra
+        // húsz perces futás lett – a kettőspontos szám időtartamnak
+        // látszott, pedig a -szal rag a percenkénti tempót mondja.
+        s = s.replaceAll("(?<![\\d,.:])(\\d{1,2}):([0-5]\\d)\\s?-?"
+                + "(?:szal|sal|cal|val|el|al)\\s+"
+                + "(?=ment|futott|kocog|tekert)", "$1:$2-es tempoval ");
+        // Az „EGY HETE csinálom" tagmondata a szokásé, nem a mai napé: a
+        // „a lift szerviz miatt egy hete lépcsőzöm, ma is 9 emelet
+        // kétszer" bejegyzése egy héttel ezelőttre került, és a szokás
+        // igéje egy külön 45 perces mozgást is írt a mai emeletek mellé.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+is\\s+\\d.*")) {
+            s = s.replaceAll("(?<![a-z])(?:mar\\s+)?"
+                    + "(?:egy|ket|harom|tobb)\\s+(?:hete|honapja|eve)\\s+"
+                    + "(?=\\p{L})", " ");
+            // A jelen idejű szokás-ige külön bejegyzést is szült volna.
+            s = s.replaceAll("(?<![a-z])lepcsozom(?![a-z])", "lepcsoztem");
+        }
         // A KUTYÁS körök rovása séta: az „a kutyával a szokásos köröket
         // róttuk, majdnem 4 km lett" négy kilométere futásként került be –
         // a csupasz táv alapmozgása a futás, pedig a kört róni gyalog
