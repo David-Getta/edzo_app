@@ -5520,6 +5520,19 @@ public final class Activities {
             }
             if (!kept.isEmpty()) out = kept;
         }
+        // A „CSAK ennyi lett" a terem-edzés HELYETT áll: a „délután
+        // elmentem a kondiba, de tele volt, csak 20 percet kerékpároztam"
+        // mellé egy ÓRÁS kondi is bekerült – ugyanarról a húsz percről,
+        // háromszoros napi mozgással. A „csak" épp azt mondja ki, hogy
+        // ennyi lett az egész; a terem szava ott a helyszín, nem egy
+        // külön edzés. A saját idejével kimondott kondi marad.
+        if (out.size() > 1 && beforeBlank.matches("(?s).*(?<![a-z])csak\\s+\\d.*")) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out)
+                if (!("kondi".equals(p.kind.id) && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin)) kept.add(p);
+            if (!kept.isEmpty() && kept.size() < out.size()) out = kept;
+        }
         // A CROSSFIT KÖR gyakorlata sem külön kardió: az „a crossfit
         // edzésen 21-15-9 burpee és evezés volt időre" evezése a kör egyik
         // állomása, mégis egy KÜLÖN félórás evezőgépezés került a kondi

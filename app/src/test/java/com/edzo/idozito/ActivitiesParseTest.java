@@ -3896,6 +3896,27 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „csak ennyi lett" a terem-edzés helyett áll.
+     *
+     * A „délután elmentem a kondiba, de tele volt, csak 20 percet
+     * kerékpároztam" mellé egy ÓRÁS kondi is bekerült – ugyanarról a húsz
+     * percről, háromszoros napi mozgással. A terem szava ott a helyszín,
+     * nem egy külön edzés.
+     */
+    @Test public void anOnlyClauseReplacesTheGymSession() {
+        Activities.Parsed p = Activities.parse("Délután elmentem a kondiba, "
+                + "de tele volt, csak 20 percet kerékpároztam.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(20, p.plans.get(0).minutes);
+        // A saját idejével kimondott kondi marad.
+        Activities.Parsed g = Activities.parse("Elmentem a kondiba, de "
+                + "tele volt, csak 20 percet edzettem.");
+        assertEquals(1, g.plans.size());
+        assertEquals(20, g.plans.get(0).minutes);
+    }
+
+    /**
      * A crossfit kör állomása nem külön kardió.
      *
      * Az „a crossfit edzésen 21-15-9 burpee és evezés volt időre" evezése a
