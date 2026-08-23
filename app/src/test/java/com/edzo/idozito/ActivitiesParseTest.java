@@ -8952,4 +8952,33 @@ public class ActivitiesParseTest {
                 .offset);
     }
 
+    /**
+     * A készülés igeneve, a medence fordított hossza és a játék perce.
+     *
+     * A „félmaratonra készülve ma 16 km-t futottam" mellé egy huszonegy
+     * kilométeres futás is bekerült, az „a medence 33 méteres, 30 hosszt
+     * úsztam" a huszonötös alapértékkel számolt, a „30 perc úszás és
+     * 45 perc játék" negyvenöt perce pedig nyomtalanul eltűnt.
+     */
+    @Test
+    public void aGerundPoolLengthAndPlayMinutes() {
+        Activities.Parsed m = Activities.parse("A félmaratonra készülve "
+                + "ma 16 km-t futottam hosszú futásként.");
+        assertEquals(1, m.plans.size());
+        assertEquals(16.0, m.plans.get(0).km, 0.01);
+        assertEquals(0.99, Activities.parse("A medence 33 méteres, "
+                + "30 hosszt úsztam benne.").plans.get(0).km, 0.01);
+        Activities.Parsed v = Activities.parse("A vízilabda edzésen "
+                + "30 perc úszás és 45 perc játék volt.");
+        assertEquals(1, v.plans.size());
+        assertEquals(75, v.plans.get(0).minutes);
+        // A beálló játékideje marad a bejegyzés hossza.
+        assertEquals(45, Activities.parse("90 perces meccs, én a második "
+                + "félidőben álltam be, kb 45 perc játék.")
+                .plans.get(0).minutes);
+        // A lefutott félmaraton marad huszonegy kilométer.
+        assertEquals(21.1, Activities.parse("Lefutottam a félmaratont "
+                + "1:58 alatt.").plans.get(0).km, 0.05);
+    }
+
 }

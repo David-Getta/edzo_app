@@ -1882,6 +1882,10 @@ public final class Activities {
         // jelent. A -ra/-re rag magyarul mindig célt jelöl; a lefutott
         // maraton tárgyesetben áll („lefutottam a maratont").
         if (s.matches("(?s).*(?<![a-z])(felkeszul\\w*|keszulok|keszulunk"
+                // A HATÁROZÓI igenév ugyanaz a készülés: a „félmaratonra
+                // készülve ma 16 km-t futottam" mellé egy huszonegy
+                // kilométeres futás is bekerült – a verseny nevéből.
+                + "|keszulve|keszulodve|keszulodom"
                 + "|keszules\\w*|nevezt\\w*|nevezek|jelentkezt\\w*"
                 + "|edzesterv\\w*)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:fel|negyed)?maraton(?:ra|re)"
@@ -4997,6 +5001,27 @@ public final class Activities {
                 out.remove(said2 ? k1 : k2);
             }
         }
+        // A JÁTÉK perce ugyanannak az edzésnek a másik fele: a „vízilabda
+        // edzésen 30 perc úszás és 45 perc játék volt" negyvenöt perce
+        // nyomtalanul eltűnt – a játék szava mellett nem állt sportnév,
+        // így gazdátlan maradt. Egyetlen megnevezett sport mellett a két
+        // szakasz ugyanaz az alkalom, tehát az időtartamok összeadódnak.
+        // (A beálló játékideje nem esik ide: ott a játék perce MAGA a
+        // bejegyzés hossza, nem egy másik szakaszé.)
+        if (out.size() == 1 && out.get(0).count == 1 && out.get(0).km <= 0
+                && out.get(0).steps <= 0
+                && !"egyeb".equals(out.get(0).kind.id)) {
+            java.util.regex.Matcher jm = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,3})\\s?perc(?:es|et|ig|nyi)?\\s+"
+                    + "jatek(?![a-z])").matcher(beforeBlank);
+            if (jm.find()) {
+                int play = Integer.parseInt(jm.group(1));
+                Plan p0 = out.get(0);
+                if (play != p0.minutes && p0.minutes + play <= 24 * 60)
+                    out.set(0, new Plan(p0.kind, 1, p0.minutes + play,
+                            p0.km, p0.steps));
+            }
+        }
         // Bejegyzés nélkül nincs mit szétosztani: a „3x12 evezés 50 kg"
         // sorozat-száma tizenkét naposra tágította az időszakot, pedig egy
         // mozgás sem került bele. Az üres eredmény mindig egyetlen nap.
@@ -6301,9 +6326,16 @@ public final class Activities {
         int pool = POOL_M;
         java.util.regex.Matcher ps = java.util.regex.Pattern.compile(
                 "(?<![\\d,.])(\\d{2})\\s?-?(?:[oa]s|m-?es|meteres)\\s?"
-                + "medence").matcher(s);
+                + "medence"
+                // A FORDÍTOTT szórend ugyanaz a hossz: az „a medence 33
+                // méteres, 30 hosszt úsztam" a huszonötös alapértékkel
+                // számolt, és negyed kilométerrel kevesebb került a
+                // naplóba.
+                + "|medence\\w*\\s+(?:hossza\\s+)?(\\d{2})\\s?"
+                + "(?:m(?![a-z])|meter\\w*)").matcher(s);
         if (ps.find()) {
-            int v = Integer.parseInt(ps.group(1));
+            String g = ps.group(1) != null ? ps.group(1) : ps.group(2);
+            int v = Integer.parseInt(g);
             if (v >= 20 && v <= 50) pool = v;
         }
         boolean done = false;
