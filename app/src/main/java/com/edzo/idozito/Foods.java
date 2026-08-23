@@ -321,6 +321,9 @@ public final class Foods {
         // A „mentos" tő szándékosan hiányzik: a „mentős"-be esne bele.
         new Food("Gumicukor / cukorka", 340, 0, 30, "gumicukor", "cukorka",
                 "haribo", "skittles", "tic tac", "nyaloka", "savanyu cukor"),
+        // A kétszersült a kamra ropogósa – eddig csak a mellé evett sajt
+        // került a naplóba, maga a szelet nem.
+        new Food("Kétszersült", 390, 9, 20, "ketszersult", "ketszer sult"),
         new Food("Keksz", 450, 6, 40, "kekssz", "keksz", "oreo", "linzer", "zabkeksz",
                 // A „csokis keksz" EGY süti: enélkül a csoki és a keksz külön
                 // tételként, kétszeres kalóriával került a naplóba.
@@ -919,6 +922,9 @@ public final class Foods {
             // A VÍZÁLLÁS a folyóé, a VÍZBEN töltött idő a strandé – egyik
             // sem megivott pohár víz.
             "vizholyag", "vizpart", "vizen", "vizallas", "vizben",
+            // A DEHIDRATÁLTSÁG panasz, nem vízivás: a „kicsit dehidratáltan"
+            // negyed liter ásványvizet írt a naplóba – a hidratálás tövéből.
+            "dehidrat",
             // A LÁNCOLÁS közepén a cola ül: a „bicajom láncolása után
             // próbakör" mellé egy doboz üdítő került a naplóba.
             "lancol",
@@ -1472,6 +1478,15 @@ public final class Foods {
                 .matcher(q);
         while (ef.find())
             for (int k = ef.start(); k < ef.end(); k++) sb.setCharAt(k, ' ');
+        // Az ÖNÁLLÓ „cukor nélkül" tagmondat körülmény, nem ital: a „fél
+        // kiló eper volt a délutáni nass, cukor nélkül" mellé egy
+        // cukormentes tétel került. A „kávé cukor nélkül" marad: ott az
+        // ital a tagmondat elején áll.
+        java.util.regex.Matcher cn = java.util.regex.Pattern.compile(
+                "(?<=[,;])\\s*cukor\\s+nelkul(?![a-z])\\s*(?=[,;.!]|$)")
+                .matcher(q);
+        while (cn.find())
+            for (int k = cn.start(); k < cn.end(); k++) sb.setCharAt(k, ' ');
         // A „-NAK SZÓLÓ" szólója nem szőlő: a „kezdő futóknak szóló tervet
         // követek" mellé száz gramm szőlő került a naplóba.
         java.util.regex.Matcher so = java.util.regex.Pattern.compile(
@@ -1950,7 +1965,7 @@ public final class Foods {
             {"Töltött káposzta", "200"}, {"Töltött paprika", "200"},
             // Amit a próbafuttatás szerint természetes darabra mondani, de eddig
             // a tipikus adaggal számolt („3 keksz", „2 tortilla", „2 paradicsom").
-            {"Keksz", "12"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
+            {"Keksz", "12"}, {"Kétszersült", "10"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
             {"Koktélparadicsom", "20"},
             {"Paprika", "120"}, {"Fagylalt", "50"}, {"Proteinszelet", "60"},
             {"Péksütemény", "60"}, {"Tojásfehérje", "33"},
@@ -4390,6 +4405,12 @@ public final class Foods {
         s = s.replaceAll("(?<![a-z])bojtolt\\w*\\s+\\d{1,2}\\s?or\\w*"
                 + "\\s*,?\\s*(?=[^;.]{0,40}(?:etkezes|ettem|megettem"
                 + "|reggeli|ebed|vacsora))", " ");
+        // A 16:8 az időszakos böjt kettőspontos neve: a „ma 16:8
+        // böjtöltem, az első étkezés délben: csirkés rizs" rizse eddig
+        // elveszett – a böjt szava az egészet elnémította.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}:\\d{1,2}(?:-[ae]s)?\\s+"
+                + "bojtol\\w*\\s*,?\\s*(?=[^;.]{0,40}(?:etkezes|ettem"
+                + "|megettem|reggeli|ebed|vacsora))", " ");
         // A „KELL" a recept és a terv szava: az „a recept szerint 200 g
         // liszt kell" lisztje a MAI naplóba került – abból a hozzávalóból,
         // ami még a zacskóban van. A szóhatáros csere a „kellemes vacsorát"

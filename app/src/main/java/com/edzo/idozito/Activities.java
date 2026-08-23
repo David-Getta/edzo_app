@@ -4252,8 +4252,11 @@ public final class Activities {
                 // ittam egy fehérjeturmixot" mondatból eddig negyvenöt perc
                 // egyéb mozgás lett – és mivel az edzés-felismerő az étkezés
                 // elé áll, a turmix el is veszett mellőle. Ugyanez az „edzés
-                // előtt" és az „edzés közben".
-                if (timePhraseAfter(s, p + w.length())) continue;
+                // előtt" és az „edzés közben". A KIFEHÉRÍTETLEN szövegen
+                // nézzük: a „35 perces edzés alatt" percesét a gyűjtő már
+                // kifehérítette, és a kimondott hosszú edzés is időpontnak
+                // látszott – az egész eltűnt.
+                if (timePhraseAfter(beforeBlank, p + w.length())) continue;
                 Kind other = byId("egyeb");
                 int n = countBefore(s, p, null);
                 // A szorzószám itt is állhat hátul: „a héten edzettem négyszer".
@@ -5111,6 +5114,15 @@ public final class Activities {
         // negyvenöt perces bejegyzés lett – az italból, amit MAJD az edzéshez
         // iszik az ember.
         if (s.startsWith("hez", from) || s.startsWith("hoz", from)) return true;
+        // A KIMONDOTT hosszúságú edzés maga a bejegyzés: a „132-es
+        // átlagpulzust mért a 35 perces edzés alatt" edzése megtörtént, az
+        // „alatt" csak a mérés idejét mondja – eddig az egész eltűnt. A
+        // hossz nélküli „edzés alatt ittam" horgonya marad horgony.
+        int b = from;
+        while (b > 0 && Character.isLetter(s.charAt(b - 1))) b--;
+        while (b > 0 && s.charAt(b - 1) == ' ') b--;
+        if (b >= 6 && s.substring(Math.max(0, b - 12), b)
+                .matches(".*\\d\\s?(?:perces|oras)")) return false;
         int i = from;
         while (i < s.length() && Character.isLetter(s.charAt(i))) i++;
         while (i < s.length() && s.charAt(i) == ' ') i++;

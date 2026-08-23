@@ -8668,4 +8668,22 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A kimondott hosszúságú edzés az „alatt" mellett is edzés.
+     *
+     * A „smartwatch 132-es átlagpulzust mért a 35 perces edzés alatt"
+     * bejegyzéséből semmi nem lett – az „alatt" időpontnak mutatta a
+     * megtörtént edzést.
+     */
+    @Test
+    public void aTimedWorkoutUnderneathAnAlattStillCounts() {
+        Activities.Parsed p = Activities.parse("A smartwatch 132-es "
+                + "átlagpulzust mért a 35 perces edzés alatt.");
+        assertEquals(1, p.plans.size());
+        assertEquals(35, p.plans.get(0).minutes);
+        // A hossz nélküli „edzés alatt ittam" horgonya marad horgony.
+        assertTrue(Activities.parse("Edzés alatt ittam egy izotóniást.")
+                .plans.isEmpty());
+    }
+
 }

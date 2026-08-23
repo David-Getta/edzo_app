@@ -2451,4 +2451,28 @@ public class FoodsParseTest {
         assertEquals("Túró", Foods.parse(all, "Egy kis túrót ettem "
                 + "mézzel.").get(0).food.name);
     }
+
+    /**
+     * A 16:8 böjt, a kétszersült, a cukor nélkül és a dehidratáltság.
+     *
+     * A „ma 16:8 böjtöltem, az első étkezés délben: csirkés rizs" rizse
+     * elveszett, a kétszersült nem volt étel, az önálló „cukor nélkül"
+     * tagmondat cukormentes tételt szült, a „kicsit dehidratáltan" pedig
+     * negyed liter vizet írt a naplóba.
+     */
+    @Test public void fastingWindowRusksAndSugarlessness() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(2, Foods.parse(all, "Ma 16:8 böjtöltem, az első "
+                + "étkezés délben: csirkés rizs.").size());
+        assertEquals("Kétszersült", Foods.parse(all, "Egy kétszersültet "
+                + "ettem sajttal.").get(0).food.name);
+        List<Foods.Hit> e = Foods.parse(all, "Fél kiló eper volt a "
+                + "délutáni nass, cukor nélkül.");
+        assertEquals(1, e.size());
+        assertEquals("Eper", e.get(0).food.name);
+        assertTrue(Foods.parse(all, "A szauna után kicsit dehidratáltan "
+                + "keltem.").isEmpty());
+        // A kávé cukor nélkül marad a cukormentes jelöléssel.
+        assertEquals(2, Foods.parse(all, "Kávé cukor nélkül.").size());
+    }
 }
