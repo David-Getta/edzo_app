@@ -9115,4 +9115,25 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /**
+     * Az úszásnemek szakaszai egy edzés részei.
+     *
+     * Az „úszásom 1000 m volt gyorson, 400 m mellen, 200 m háton"
+     * ezerhatszáz métere KÉT bejegyzésre esett szét, és a kétszáz méter
+     * el is veszett.
+     */
+    @Test
+    public void swimStrokeSegmentsAddUp() {
+        Activities.Parsed u = Activities.parse("Az úszásom 1000 m volt "
+                + "gyorson, 400 m mellen, 200 m háton.");
+        assertEquals(1, u.plans.size());
+        assertEquals(1.6, u.plans.get(0).km, 0.01);
+        // Az egyetlen úszásnem táva marad annyi, amennyi.
+        assertEquals(1.5, Activities.parse("1500 m gyorson úsztam.")
+                .plans.get(0).km, 0.01);
+        // A sorozatos úszás szorzata sem sérül.
+        assertEquals(0.8, Activities.parse("8x100 m gyorson, köztük "
+                + "30 mp pihi.").plans.get(0).km, 0.01);
+    }
+
 }

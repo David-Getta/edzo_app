@@ -1574,6 +1574,27 @@ public final class Activities {
                     + "|szombaton|vasarnap|hetfon|kedden|szerdan"
                     + "|csutortokon|penteken)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])megy(?:ek|unk)(?![a-z])", "mentem");
+        // Az ÚSZÁSNEMEK szakaszai egy edzés részei: az „úszásom 1000 m
+        // volt gyorson, 400 m mellen, 200 m háton" ezerhatszáz métere
+        // KÉT bejegyzésre esett szét, és a kétszáz méter el is veszett.
+        if (s.matches("(?s).*(?<![a-z])usz\\w*.*")) {
+            java.util.regex.Matcher uw = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.:])(\\d{2,4})\\s?m(?![a-z])\\s*"
+                    + "(?:volt\\s+)?(?=gyorson|mellen|haton|pillangon"
+                    + "|vegyesen|gyorsban|hatuszas|melluszas)").matcher(s);
+            int usum = 0, ucount = 0, ufirst = -1;
+            StringBuffer ub = new StringBuffer();
+            while (uw.find()) {
+                if (ufirst < 0) ufirst = uw.start();
+                usum += Integer.parseInt(uw.group(1));
+                ucount++;
+                uw.appendReplacement(ub, "");
+            }
+            if (ucount >= 2) {
+                uw.appendTail(ub);
+                s = ub.insert(ufirst, usum + " m ").toString();
+            }
+        }
         // A PIRAMIS szakaszai összeadódnak: az „intervall edzés:
         // 400-800-1200-800-400 m, köztük 2 perc pihenés" NÉGYSZÁZ méteres
         // futás lett – a három nyolcszáz és az ezerkétszáz elveszett. A
