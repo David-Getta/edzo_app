@@ -153,6 +153,11 @@ public final class StrengthParse {
             {"Combhajlítás", "labhajlit", "combhajlit", "leg curl", "legcurl"},
             {"Lábnyújtás", "labnyujt", "combfeszit", "labgep", "leg extension"},
             {"Csípőemelés", "csipoemel", "hipthrust", "hip thrust", "medencelok",
+                    // A HÍD a gyógytorna neve ugyanerre: a „3x15 hidat"
+                    // sorozata eddig nyomtalanul elveszett. A ragozott
+                    // alakok szótövek, a ragtalan „híd" nem – az a
+                    // folyón is átvezet.
+                    "hidat", "hidak", "hidgyakorlat",
                     // A CSÍPŐTOLÁS ugyanez magyarul.
                     "csipotolas", "csipo tolas",
                     "medenceemel", "medence emel", "farizom"},

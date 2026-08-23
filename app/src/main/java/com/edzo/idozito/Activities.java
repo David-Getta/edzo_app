@@ -1529,6 +1529,18 @@ public final class Activities {
         // „a lift szerviz miatt egy hete lépcsőzöm, ma is 9 emelet
         // kétszer" bejegyzése egy héttel ezelőttre került, és a szokás
         // igéje egy külön 45 perces mozgást is írt a mai emeletek mellé.
+        // A „MA VOLT a nyolcadik alkalom" ugyanígy mai beszámoló: a
+        // sorszám nem darabszám, a szokás-tagmondat viszont elvitte az
+        // egész bejegyzést.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+volt\\s+a\\s+\\p{L}+"
+                + "(?:dik|adik|edik|odik)(?![a-z]).*"))
+            {
+            s = s.replaceAll("(?<![a-z])(?:mar\\s+)?(?:egy|ket|harom|tobb)"
+                    + "\\s+(?:hete|honapja|eve)\\s+(?=\\p{L})", " ");
+            // A jelen idejű szokás-ige múlt idejűvé válik: a mai alkalom
+            // megtörtént, csak a mondat a rendszerességgel kezdődik.
+            s = s.replaceAll("(?<![a-z])jar(?:ok|unk)(?![a-z])", "jartam");
+            }
         if (s.matches("(?s).*(?<![a-z])ma\\s+is\\s+\\d.*")) {
             s = s.replaceAll("(?<![a-z])(?:mar\\s+)?"
                     + "(?:egy|ket|harom|tobb)\\s+(?:hete|honapja|eve)\\s+"

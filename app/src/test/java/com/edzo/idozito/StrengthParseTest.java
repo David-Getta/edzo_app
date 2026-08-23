@@ -2012,6 +2012,22 @@ public class StrengthParseTest {
     }
 
     /**
+     * A híd a gyógytorna csípőemelése.
+     *
+     * A „fizioterápiás gyakorlatokat ma is megcsináltam, 3x15 hidat"
+     * sorozata nyomtalanul elveszett az erőnaplóból.
+     */
+    @Test public void aBridgeIsAHipThrust() {
+        List<StrengthParse.Item> it = StrengthParse.parse("A "
+                + "fizioterápiás gyakorlatokat ma is megcsináltam, "
+                + "3x15 hidat.");
+        assertEquals(1, it.size());
+        assertEquals("Csípőemelés", it.get(0).name);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(15, it.get(0).sets.get(0).reps);
+    }
+
+    /**
      * A mértékegység ragja nem számnév.
      *
      * A „100 kg-ot fekvenyomásban" ékezet nélküli „-ot" ragjából ÖT

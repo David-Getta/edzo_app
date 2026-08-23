@@ -9460,4 +9460,20 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /**
+     * A „ma volt a nyolcadik alkalom" mai beszámoló.
+     *
+     * Az „egy hónapja járok gyógytornára, ma volt a nyolcadik alkalom"
+     * bejegyzéséből semmi nem lett – a szokás-tagmondat és a jelen
+     * idejű ige az egészet elvitte.
+     */
+    @Test
+    public void anOrdinalSessionTodayIsLogged() {
+        Activities.Parsed p = Activities.parse("Egy hónapja járok "
+                + "gyógytornára, ma volt a nyolcadik alkalom.");
+        assertEquals(1, p.plans.size());
+        assertEquals("joga", p.plans.get(0).kind.id);
+        assertEquals(1, p.days);
+    }
+
 }
