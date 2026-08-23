@@ -2477,6 +2477,18 @@ public class FoodsParseTest {
     }
 
     /**
+     * A ragozott zsír-makró sem olaj.
+     *
+     * A „ma 2300 kalóriát ettem, 160 g fehérjét, 70 g zsírt" hetven
+     * grammja hetven gramm olajként került a naplóba – a makró-sor mellé.
+     */
+    @Test public void aSuffixedFatMacroIsNotOil() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Ma 2300 kalóriát ettem, 160 g "
+                + "fehérjét, 70 g zsírt.").isEmpty());
+    }
+
+    /**
      * A neszkávé is kávé.
      */
     @Test public void nescafeIsCoffee() {

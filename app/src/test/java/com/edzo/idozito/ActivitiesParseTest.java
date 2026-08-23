@@ -8740,4 +8740,25 @@ public class ActivitiesParseTest {
                 + "emelkedőtől elfáradtam.").plans.size());
     }
 
+    /**
+     * A szóközös sorozat és az edzőterem mérlege.
+     *
+     * A „20 x 50 m mellen" húsz külön úszás-alkalom lett húsz napra
+     * szétosztva, az „edzőterem mérlegén 84,2 voltam" mérése mellé
+     * pedig egy órás kondi került.
+     */
+    @Test
+    public void aSpacedSeriesAndTheGymScale() {
+        Activities.Parsed u = Activities.parse("Könnyű regeneráló "
+                + "úszás, 20 x 50 m mellen.");
+        assertEquals(1, u.plans.size());
+        assertEquals(1, u.plans.get(0).count);
+        assertEquals(1.0, u.plans.get(0).km, 0.01);
+        assertTrue(Activities.parse("Az edzőterem mérlegén 84,2 voltam "
+                + "cipőben.").plans.isEmpty());
+        // A kondi a terem szavával marad edzés.
+        assertEquals(1, Activities.parse("Kondiban voltam, az edzőterem "
+                + "új gépei jók.").plans.size());
+    }
+
 }

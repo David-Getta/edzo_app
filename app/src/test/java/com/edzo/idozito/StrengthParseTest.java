@@ -1992,4 +1992,23 @@ public class StrengthParseTest {
                 .get(0).sets.get(0).reps);
     }
 
+    /**
+     * A ragos szám a súly, a program sorai pedig sorozatok.
+     *
+     * A „vállból nyomás 2x10 ment 30-cal" saját testsúlyos sor lett, az
+     * „5x5 program: guggolás 92,5, fekve 72,5, evezés 67,5" két utolsó
+     * tétele pedig elveszett – az evezésből fél óra gépes kardió lett.
+     */
+    @Test public void aSuffixedWeightAndAProgramLine() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Vállból "
+                + "nyomás ma csak 2x10 ment 30-cal, fáradt voltam.");
+        assertEquals(30.0, it.get(0).topWeight(), 0.01);
+        List<StrengthParse.Item> pr = StrengthParse.parse("Az 5x5 "
+                + "program második napja: guggolás 92,5, fekve 72,5, "
+                + "evezés 67,5.");
+        assertEquals(3, pr.size());
+        assertEquals(67.5, pr.get(2).topWeight(), 0.01);
+        assertEquals(5, pr.get(2).sets.size());
+    }
+
 }

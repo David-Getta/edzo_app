@@ -2587,7 +2587,7 @@ public final class Foods {
                 "(\\d{1,3})\\s?(?:g|gr|gramm)\\s?feherjevel(?![a-z])", "#");
         if (!withMask.equals(s)) { s = withMask; query = withMask; }
         String macro = !macroLine ? s : s.replaceAll("(\\d{1,3})\\s?(g|gr|gramm)\\s?"
-                + "(zsir|szenhidrat|ch|rost|telitett)(?![a-z])", "$1 $2 #");
+                + "(zsirt?|szenhidratot?|ch|rostot?|telitett)(?![a-z])", "$1 $2 #");
         if (!macro.equals(s)) { s = macro; query = macro; }
         // Fordított szórenddel is tápérték-sor: a „fehérje 120 g,
         // szénhidrát 180 g, zsír 60 g" hatvan grammja is hatvan gramm

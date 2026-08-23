@@ -416,6 +416,31 @@ public final class StrengthParse {
         // kézisúlyzókkal" sorozata eddig nyomtalanul eltűnt.
         text = text.replaceAll("(?iu)(?<![\\p{L}])v[aá]llgyakorlat",
                 "vállemelés");
+        // A RAGOS szám a súly: a „vállból nyomás ma csak 2x10 ment
+        // 30-cal" harmincasa a rúdon volt, mégis saját testsúlyos sor
+        // lett belőle.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(ment|nyomtam|toltam"
+                + "|h[uú]ztam|emeltem|guggoltam|siker[uü]lt)\\s+"
+                + "(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?-?"
+                + "(?:cal|kal|zal|val|nal|nel|al|el)(?![\\p{L}])", "$1 $2 kg");
+        text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?(?:cal|kal|zal|val|nal|nel)\\s+"
+                + "(?=ment|siker[uü]lt)", "$1 kg ");
+        // Az „5x5 PROGRAM" sorai öt sorozat öt ismétlés: a „guggolás 92,5,
+        // fekve 72,5, evezés 67,5" két utolsó tétele eddig elveszett –
+        // a szám önmagában nem sorozat, az evezésből meg fél óra gépes
+        // kardió lett.
+        java.util.regex.Matcher pg = java.util.regex.Pattern.compile(
+                "(?iu)(?<![\\dx,.])(\\d{1,2})\\s?x\\s?(\\d{1,2})\\s+program")
+                .matcher(text);
+        if (pg.find()) {
+            String sets = pg.group(1) + "x" + pg.group(2);
+            text = text.replaceAll("(?iu)(?<![\\p{L}])(guggol\\p{L}*|fekve"
+                    + "|fekvenyom\\p{L}*|evez[eé]s|felh[uú]z[aá]s"
+                    + "|v[aá]llb[oó]l nyom[aá]s)\\s+"
+                    + "(\\d{2,3}(?:[.,]\\d{1,2})?)(?=\\s*(?:[,;.!]|$))",
+                    "$1 " + sets + " $2 kg");
+        }
         // A KETTŐSPONTOS idő a tartás ideje: a „fitness teszt: …, 2:40
         // plank" tartása nyomtalanul elveszett – a 2:40 nem volt
         // másodperc. Csak az időre menő gyakorlat neve mellett él.

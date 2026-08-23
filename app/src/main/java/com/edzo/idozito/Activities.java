@@ -1447,6 +1447,16 @@ public final class Activities {
             s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*edzes\\w*\\s+"
                     + "(?:a\\s+)?(?:gyerek\\w*|ovis\\w*|kezdo\\w*|halad\\w*)"
                     + "n[ae]k[^,;.]*", " ");
+        // A SZÓKÖZÖS sorozat is sorozat: a „20 x 50 m mellen" húszasa
+        // húsz külön úszás-alkalom lett, húsz napra szétosztva – a
+        // szóközös x-et a sorozat-szabályok nem látták meg.
+        s = s.replaceAll("(?<![\\d,.x])(\\d{1,2})\\s+x\\s+(\\d{1,3})(?!\\d)",
+                "$1x$2");
+        // Az EDZŐTEREM MÉRLEGE csak mérleg: az „az edzőterem mérlegén
+        // 84,2 voltam" mérése mellé egy órás kondi került – a terem
+        // szavából.
+        s = s.replaceAll("(?<![a-z])(?:edzoterem\\w*|konditerem\\w*)\\s+"
+                + "(?=merleg)", "");
         // A „SOK X-TÓL" ok, nem mai edzés: a „nyugalmi pulzusom lement
         // 52-re a sok futástól" futása a magyarázat, mégis negyvenöt
         // perces mai futás került tőle a naplóba.
