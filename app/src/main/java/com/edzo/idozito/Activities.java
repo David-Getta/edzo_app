@@ -1559,6 +1559,46 @@ public final class Activities {
                     + "|szombaton|vasarnap|hetfon|kedden|szerdan"
                     + "|csutortokon|penteken)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])megy(?:ek|unk)(?![a-z])", "mentem");
+        // A PIRAMIS szakaszai összeadódnak: az „intervall edzés:
+        // 400-800-1200-800-400 m, köztük 2 perc pihenés" NÉGYSZÁZ méteres
+        // futás lett – a három nyolcszáz és az ezerkétszáz elveszett. A
+        // kötőjeles lista legalább HÁROM tagú, így a „10-15 perc"
+        // tartomány nem esik ide.
+        java.util.regex.Matcher py = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{2,4}(?:\\s?-\\s?\\d{2,4}){2,})\\s?"
+                + "(m(?![a-z])|meter\\w*)").matcher(s);
+        StringBuffer pb = new StringBuffer();
+        boolean pyAny = false;
+        while (py.find()) {
+            int sum = 0;
+            for (String part : py.group(1).split("\\s?-\\s?"))
+                sum += Integer.parseInt(part.trim());
+            py.appendReplacement(pb, sum + " m");
+            pyAny = true;
+        }
+        if (pyAny) { py.appendTail(pb); s = pb.toString(); }
+        // A LÉPCSŐZÉS szorzója az emeleteké, nem az alkalmaké: a „ma a
+        // lépcsőházban futottam fel-le 10-szer a 4. emeletig" TÍZ külön
+        // futást írt a naplóba, tíz napra szétosztva.
+        // A LÉPCSŐN futás lépcsőzés: a „lépcsőházban futottam fel-le
+        // 10-szer a 4. emeletig" mellé egy negyvenöt perces FUTÁS is
+        // bekerült az emeletek mellé – ugyanarról a negyedóráról.
+        if (s.matches("(?s).*(?<![a-z])emelet\\w*.*")
+                && s.matches("(?s).*(?<![a-z])lepcso\\w*.*"))
+            s = s.replaceAll("(?<![a-z])(?:(?:fel|le)?fut(?:ottam|ottunk"
+                    + "|ok|unk))\\s*(?:fel-?\\s?le|le-?\\s?fel|fel|le)?"
+                    + "(?![a-z])", "lepcsoztem");
+        java.util.regex.Matcher emx = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,2})\\s?-?szer\\s+(?:az?\\s+)?"
+                + "(\\d{1,3})\\.?\\s?emelet\\w*").matcher(s);
+        StringBuffer ebx = new StringBuffer();
+        boolean emAny = false;
+        while (emx.find()) {
+            int n = Integer.parseInt(emx.group(1)) * Integer.parseInt(emx.group(2));
+            emx.appendReplacement(ebx, Math.min(300, n) + " emelet");
+            emAny = true;
+        }
+        if (emAny) { emx.appendTail(ebx); s = ebx.toString(); }
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.

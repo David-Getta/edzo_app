@@ -9044,4 +9044,29 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    /**
+     * A piramis szakaszai összeadódnak, a lépcsőn futás pedig lépcsőzés.
+     *
+     * Az „intervall edzés: 400-800-1200-800-400 m" négyszáz méteres
+     * futás lett, a „lépcsőházban futottam fel-le 10-szer a 4. emeletig"
+     * pedig TÍZ külön futást írt a naplóba, tíz napra szétosztva.
+     */
+    @Test
+    public void aPyramidAddsUpAndStairRunsAreStairs() {
+        assertEquals(3.6, Activities.parse("Az intervall edzés: "
+                + "400-800-1200-800-400 m, köztük 2 perc pihenés.")
+                .plans.get(0).km, 0.01);
+        Activities.Parsed l = Activities.parse("Ma a lépcsőházban "
+                + "futottam fel-le 10-szer a 4. emeletig.");
+        assertEquals(1, l.plans.size());
+        assertEquals(1, l.days);
+        assertEquals(20, l.plans.get(0).minutes);
+        // A tartomány két száma marad tartomány.
+        assertEquals(1, Activities.parse("10-15 perc kondi volt csak.")
+                .plans.size());
+        // A lépcső nélküli futás marad futás.
+        assertEquals("futas", Activities.parse("Futottam 10 km-t a "
+                + "parkban.").plans.get(0).kind.id);
+    }
+
 }
