@@ -2549,6 +2549,23 @@ public class FoodsParseTest {
     }
 
     /**
+     * A vizelés nem ivás, a „soron" pedig nem sör.
+     *
+     * A „82,3 kg éhgyomorra, vizelés után" mellé negyed liter víz, az
+     * „a hátam volt soron: húzódzkodás" mellé fél liter sör került.
+     */
+    @Test public void everydayWordsOnDrinkStems() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A reggeli mérése: 82,3 kg "
+                + "éhgyomorra, vizelés után.").isEmpty());
+        assertTrue(Foods.parse(all, "Az edzőteremben ma a hátam volt "
+                + "soron: húzódzkodás, evezés, lehúzás.").isEmpty());
+        // A megivott sör marad sör.
+        assertEquals("Sör", Foods.parse(all, "Ittam egy sört a meccs "
+                + "után.").get(0).food.name);
+    }
+
+    /**
      * A saját comb testrész, nem csirkecomb.
      *
      * A „15 perc görgőzés a comboknak" mellé százötven gramm csirkecomb

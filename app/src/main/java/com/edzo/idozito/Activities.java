@@ -1663,6 +1663,20 @@ public final class Activities {
             emAny = true;
         }
         if (emAny) { emx.appendTail(ebx); s = ebx.toString(); }
+        // A SZOKÁS igéje mellett a MAI szám a mai edzés: az „este a
+        // lányommal biciklizni szoktunk, ma 12 km lett" tizenkét
+        // kilométere FUTÁSKÉNT került be – a szokás-tagmondat a bringa
+        // szavát is elvitte, és a gazdátlan táv futássá vált. A „ma" és
+        // a szám kimondja, hogy a mondat egy megtörtént edzésről szól.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
+            s = s.replaceAll("(?<![a-z])szokt(?:am|unk|ak|a)(?![a-z])", " ");
+        // A HÉTVÉGI VERSENY a cél, nem a bejegyzés napja: a „hétvégi
+        // versenyre ma regeneráló futás volt csak, 4 km" négy kilométere
+        // SZOMBATRA került – pedig a „ma" kimondja a napot.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+.*"))
+            s = s.replaceAll("(?<![a-z])(?:a\\s+)?hetvegi\\s+"
+                    + "(?:verseny\\w*|futoverseny\\w*|maraton\\w*|meccs\\w*)"
+                    + "(?=\\s)", " ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
@@ -5151,6 +5165,37 @@ public final class Activities {
                             && o.steps <= 0 && p.steps <= 0
                             && o.minutes > p.minutes) covered = true;
                 if (!covered) kept.add(p);
+            }
+            if (!kept.isEmpty()) out = kept;
+        }
+        // A GYAKORLAT-FELSOROLÁS tagja nem külön kardió: az „edzőteremben
+        // ma a hátam volt soron: húzódzkodás, evezés, lehúzás" evezése a
+        // gépsor egyik gyakorlata, mégis egy külön félórás evezőgépezés
+        // került a kondi MELLÉ. Szám nélküli felsorolásban a súlyzós
+        // gyakorlatnevek döntenek: ha a mozgás neve mellett MÁSIK
+        // gyakorlatnév is áll ugyanabban a tagmondatban, az a teremben
+        // végzett gyakorlat.
+        if (out.size() > 1 && !beforeBlank.matches("(?s).*\\d.*")) {
+            List<Plan> kept = new ArrayList<>();
+            boolean gym = false;
+            for (Plan p : out) if ("kondi".equals(p.kind.id)) gym = true;
+            for (Plan p : out) {
+                boolean drop = false;
+                if (gym && !"kondi".equals(p.kind.id)
+                        && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin) {
+                    for (String w : p.kind.words) {
+                        if (beforeBlank.indexOf(w) < 0) continue;
+                        // A saját nevét kivéve keresünk MÁSIK gyakorlatot:
+                        // a felsorolás tagjai vesszővel állnak egymás
+                        // mellett, tehát a tagmondat önmagában egyetlen
+                        // szó – az egész mondat dönt.
+                        String rest = beforeBlank.replace(w, " ");
+                        if (StrengthParse.nameIn(rest) != null) drop = true;
+                        break;
+                    }
+                }
+                if (!drop) kept.add(p);
             }
             if (!kept.isEmpty()) out = kept;
         }

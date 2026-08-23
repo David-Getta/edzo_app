@@ -927,9 +927,16 @@ public final class Foods {
             // A VÍZÁLLÁS a folyóé, a VÍZBEN töltött idő a strandé – egyik
             // sem megivott pohár víz.
             "vizholyag", "vizpart", "vizen", "vizallas", "vizben",
+            // A VIZELÉS testi funkció, nem ivás: az „82,3 kg éhgyomorra,
+            // vizelés után" mellé negyed liter víz került a naplóba.
+            "vizeles", "vizelet",
             // A PEZSGŐFÜRDŐ a medence sarka, nem ital: az „úszás után
             // 15 perc pezsgőfürdő" másfél deci pezsgőt írt a naplóba.
             "pezsgofurdo", "pezsgo furdo", "pezsgomedence",
+            // A SORON, a SORBAN és a SOROZAT a sör tövén ül: az „a hátam
+            // volt SORON: húzódzkodás, evezés" mellé fél liter sör került
+            // a naplóba.
+            "soron", "sorban", "sorra", "sorrend", "sorozat", "sorsol",
             // A DEHIDRATÁLTSÁG panasz, nem vízivás: a „kicsit dehidratáltan"
             // negyed liter ásványvizet írt a naplóba – a hidratálás tövéből.
             "dehidrat",

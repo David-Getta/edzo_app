@@ -9178,4 +9178,34 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A szokás igéje mellett a mai szám a mai edzés, a hétvégi verseny
+     * pedig cél, nem dátum – és a gyakorlat-felsorolás tagja nem kardió.
+     *
+     * A „biciklizni szoktunk, ma 12 km lett" tizenkét kilométere
+     * FUTÁSKÉNT került be, a „hétvégi versenyre ma regeneráló futás"
+     * szombatra csúszott, az „edzőteremben a hátam volt soron:
+     * húzódzkodás, evezés, lehúzás" mellé pedig egy félórás evezőgépezés
+     * is bekerült.
+     */
+    @Test
+    public void aHabitsSportAWeekendRaceAndAGymList() {
+        Activities.Parsed b = Activities.parse("Este a lányommal "
+                + "biciklizni szoktunk, ma 12 km lett.");
+        assertEquals(1, b.plans.size());
+        assertEquals("kerekpar", b.plans.get(0).kind.id);
+        assertEquals(12.0, b.plans.get(0).km, 0.01);
+        Activities.Parsed v = Activities.parse("A hétvégi versenyre ma "
+                + "regeneráló futás volt csak, 4 km lassan.");
+        assertEquals(0, v.offset);
+        assertEquals(1, v.days);
+        Activities.Parsed g = Activities.parse("Az edzőteremben ma a "
+                + "hátam volt soron: húzódzkodás, evezés, lehúzás.");
+        assertEquals(1, g.plans.size());
+        assertEquals("kondi", g.plans.get(0).kind.id);
+        // A kimondott idejű evezés marad külön tétel.
+        assertEquals(2, Activities.parse("Kondi és utána evezés a gépen "
+                + "20 perc.").plans.size());
+    }
+
 }
