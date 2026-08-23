@@ -3540,14 +3540,33 @@ public final class Activities {
         // aztán bicajjal munkába 8 km, este vissza 8 km" nyolc kilométert írt
         // a naplóba a tizenhatból – a két egyforma táv egyetlen tekerésnek
         // látszott. A percnél ez a szabály már megvolt, a kilométernél nem.
+        // A VISSZAÚT az „is" szócskával és „annyi"-val is kimondható: a
+        // „bringával mentem munkába oda 8 km, vissza is 8 km" tizenhat
+        // kilométeréből NYOLC lett, a „gyalog a boltba oda 1,5 km, vissza
+        // is annyi" háromjából másfél – mindkettőnél a hazaút veszett el.
+        // Az „és" ugyanúgy tagol, mint a vessző.
         java.util.regex.Matcher ovk = java.util.regex.Pattern
-                .compile("(\\d{1,3}(?:[.,]\\d)?)\\s?km([^.;\\d]{0,20}?)[,;]\\s?"
+                .compile("(\\d{1,3}(?:[.,]\\d)?)\\s?km(?:-t|-en|-re)?"
+                        + "([^.;\\d]{0,20}?)(?:[,;]\\s?|\\s+(?:es|meg)\\s+)"
                         + "(?:\\p{L}+\\s){0,2}?"
-                        + "(?:vissza|hazafele|visszaut\\w*)\\s?(\\d{1,3}(?:[.,]\\d)?)\\s?km"
-                        + "(?![^.;,]*\\p{L})").matcher(s);
+                        + "(?:vissza|hazafele|visszaut\\w*|visszafele)"
+                        + "\\s*(?:is\\s+|szinten\\s+)?"
+                        + "(?:(\\d{1,3}(?:[.,]\\d)?)\\s?km(?:-t)?"
+                        + "|(?:ugyan)?annyi|(?:ugyan)?ennyi)"
+                        // A záró tagmondatban a „vissza" után csak a táv
+                        // állhat: a „kondi 45 perc, vissza 3 km futás"
+                        // hármasa a futásé, nem a kondi visszaútja. A
+                        // KÖZLEKEDÉSI eszköz neve viszont az EGÉSZ útra
+                        // vonatkozik – az „odafelé 8 km, visszafelé 8 km
+                        // bringával" tizenhat kilométeréből nyolc lett.
+                        + "(?:(?![^.;,]*\\p{L})|(?=\\s+(?:bringaval|biciklivel"
+                        + "|bicajjal|kerekparral|gyalog\\w*|futva|kocogva"
+                        + "|rollerrel|korcsolyaval|korival)(?![\\p{L}])))")
+                .matcher(s);
         if (ovk.find()) {
             double sum = Double.parseDouble(ovk.group(1).replace(',', '.'))
-                    + Double.parseDouble(ovk.group(3).replace(',', '.'));
+                    + Double.parseDouble((ovk.group(3) == null
+                            ? ovk.group(1) : ovk.group(3)).replace(',', '.'));
             if (sum > 0 && sum <= 400) {
                 String num = sum == Math.rint(sum) ? String.valueOf((long) sum)
                         : String.valueOf(sum).replace('.', ',');
@@ -3579,8 +3598,9 @@ public final class Activities {
         // áll elöl, a szó mögötte; a fenti szabály a fordított sorrendet
         // fedi.
         java.util.regex.Matcher ovk2 = java.util.regex.Pattern
-                .compile("(\\d{1,3}(?:[.,]\\d)?)\\s?km\\s+oda\\s*[,;]\\s*"
-                        + "(\\d{1,3}(?:[.,]\\d)?)\\s?km\\s+"
+                .compile("(\\d{1,3}(?:[.,]\\d)?)\\s?km(?:-t|-en|-re)?"
+                        + "\\s+oda(?:fele)?\\s*(?:[,;]\\s*|(?:es|meg)\\s+)"
+                        + "(\\d{1,3}(?:[.,]\\d)?)\\s?km(?:-t|-en|-re)?\\s+"
                         + "(?:vissza|hazafele|visszafele)").matcher(s);
         if (ovk2.find()) {
             double sum = Double.parseDouble(ovk2.group(1).replace(',', '.'))

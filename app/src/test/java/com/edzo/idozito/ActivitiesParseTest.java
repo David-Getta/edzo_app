@@ -2874,6 +2874,30 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A hazaút távja az „is" és az „annyi" mellől is összeadódik.
+     *
+     * A „bringával mentem munkába oda 8 km, vissza is 8 km" tizenhat
+     * kilométeréből NYOLC lett – a napi ingázás fele nyomtalanul elveszett.
+     * Ugyanígy tűnt el a hazaút az „és"-sel tagolt, a hátravetett irányú
+     * és a közlekedési eszközzel záruló mondatból is.
+     */
+    @Test public void theWayHomeCountsToo() {
+        assertEquals(16, Activities.parse("Bringával mentem munkába oda "
+                + "8 km, vissza is 8 km.").plans.get(0).km, 0.01);
+        assertEquals(16, Activities.parse("Bringával mentem munkába oda "
+                + "8 km és vissza 8 km.").plans.get(0).km, 0.01);
+        assertEquals(16, Activities.parse("Odafelé 8 km, visszafelé 8 km "
+                + "bringával.").plans.get(0).km, 0.01);
+        assertEquals(10, Activities.parse("Futottam 5 km-t oda és 5 km-t "
+                + "vissza.").plans.get(0).km, 0.01);
+        assertEquals(3, Activities.parse("Gyalog mentem a boltba oda "
+                + "1,5 km, vissza is annyi.").plans.get(0).km, 0.01);
+        // A kimondott teljes táv marad annyi, amennyi.
+        assertEquals(16, Activities.parse("Bringával mentem munkába, "
+                + "oda-vissza 16 km.").plans.get(0).km, 0.01);
+    }
+
+    /**
      * A percben írt szakasz sem külön edzés.
      *
      * A „bemelegítés, aztán 3x(5 perc futás + 1 perc séta)" öt- és egyperces
