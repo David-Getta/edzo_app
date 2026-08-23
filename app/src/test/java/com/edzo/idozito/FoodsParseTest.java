@@ -2475,4 +2475,15 @@ public class FoodsParseTest {
         // A kávé cukor nélkül marad a cukormentes jelöléssel.
         assertEquals(2, Foods.parse(all, "Kávé cukor nélkül.").size());
     }
+
+    /**
+     * A neszkávé is kávé.
+     */
+    @Test public void nescafeIsCoffee() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "A neszkávé mellé két keksz "
+                + "csúszott le.");
+        assertEquals(2, h.size());
+        assertEquals("Kávé (fekete)", h.get(0).food.name);
+    }
 }

@@ -120,6 +120,21 @@ public final class Sleep {
     public static double parse(String q) {
         if (q == null) return -1;
         String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
+        // A „FÉL 1-TŐL FÉL 7-IG" számmal írt fél óra: 0:30-tól 6:30-ig
+        // fordítjuk, onnan a tartomány-szabály érti. Eddig az egész
+        // éjszaka elveszett – a „fél" leválasztotta az órákat.
+        java.util.regex.Matcher fh = java.util.regex.Pattern.compile(
+                "(?<![a-z])fel\\s+(\\d{1,2})(?=\\s?-?(?:tol|ig|kor|re)(?![a-z]))")
+                .matcher(s);
+        StringBuffer fb = new StringBuffer();
+        boolean fhAny = false;
+        while (fh.find()) {
+            int h = Integer.parseInt(fh.group(1));
+            fh.appendReplacement(fb,
+                    (h == 1 ? "0" : String.valueOf(h - 1)) + ":30");
+            fhAny = true;
+        }
+        if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
         // Az „aluttam" gyakori fonetikus elütés.
         s = s.replace("aluttam", "aludtam");
         // Az „aludtma" a betűcserés elütés ugyanerre a szóra.
@@ -377,6 +392,11 @@ public final class Sleep {
         // az éjfél csak körülírás – kettőt csinált volna egy időpontból,
         // és a 0:00→1:00 egyórás „éjszaka" kiejtette az egészet.
         s = s.replaceAll("(?<![a-z])ejfel utan(?=\\s*\\d)", "");
+        // Ha a mondat KÉSŐBB kimondja a -tól/-ig tartományt („éjfél után
+        // értem haza, 0:30-tól 6:30-ig aludtam"), az éjfél csak körülírás –
+        // a belőle csinált 0:00 harmadik időpontként kiejtette az egészet.
+        s = s.replaceAll("(?<![a-z])ejfel utan"
+                + "(?=[^;.]{0,40}\\d{1,2}[.:]?\\d{0,2}\\s?-?tol)", "");
         s = s.replaceAll("(?<![a-z])ejfel(?:kor| utan| korul| tajban)?(?![a-z])",
                 "0:00-kor");
         // A FŐNÉVI alak is ugyanaz a pillanat: a „22:15 lefekvés, 5:45

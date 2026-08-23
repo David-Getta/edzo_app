@@ -519,4 +519,20 @@ public class SleepTest {
                 + "miatt, tal\u00e1n 5 \u00f3r\u00e1t, ha \u00f6sszej\u00f6tt."), 0.01);
     }
 
+    /**
+     * A sz\u00e1mmal \u00edrt f\u00e9l \u00f3ra \u00e9s a k\u00f6r\u00fcl\u00edr\u00f3 \u00e9jf\u00e9l a -t\u00f3l/-ig el\u0151tt.
+     *
+     * Az \u201e\u00e9jf\u00e9l ut\u00e1n \u00e9rtem haza, f\u00e9l 1-t\u0151l f\u00e9l 7-ig aludtam" \u00e9jszak\u00e1ja
+     * teljesen elveszett \u2013 a \u201ef\u00e9l" lev\u00e1lasztotta az \u00f3r\u00e1kat, az \u00e9jf\u00e9lb\u0151l
+     * lett 0:00 pedig harmadik id\u0151pontk\u00e9nt kiejtette a tartom\u00e1nyt.
+     */
+    @Test
+    public void halfPastMidnightRangesWork() {
+        assertEquals(6.0, Sleep.parse("\u00c9jf\u00e9l ut\u00e1n \u00e9rtem haza, f\u00e9l 1-t\u0151l "
+                + "f\u00e9l 7-ig aludtam."), 0.01);
+        // A puszta \u00e9jf\u00e9l marad id\u0151pont.
+        assertEquals(6.0, Sleep.parse("\u00c9jf\u00e9l ut\u00e1n fek\u00fcdtem le, 6-kor "
+                + "keltem."), 0.01);
+    }
+
 }

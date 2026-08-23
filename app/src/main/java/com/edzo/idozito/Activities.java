@@ -1447,6 +1447,11 @@ public final class Activities {
             s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*edzes\\w*\\s+"
                     + "(?:a\\s+)?(?:gyerek\\w*|ovis\\w*|kezdo\\w*|halad\\w*)"
                     + "n[ae]k[^,;.]*", " ");
+        // A „SOK X-TÓL" ok, nem mai edzés: a „nyugalmi pulzusom lement
+        // 52-re a sok futástól" futása a magyarázat, mégis negyvenöt
+        // perces mai futás került tőle a naplóba.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?sok\\s+\\p{L}{3,}st[oó]l"
+                + "(?![a-z])", " ");
         // A KUTYÁS körök rovása séta: az „a kutyával a szokásos köröket
         // róttuk, majdnem 4 km lett" négy kilométere futásként került be –
         // a csupasz táv alapmozgása a futás, pedig a kört róni gyalog

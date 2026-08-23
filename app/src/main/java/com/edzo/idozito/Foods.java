@@ -821,6 +821,8 @@ public final class Foods {
         new Food("Sajtkrém", 250, 8, 40, "sajtkrem"),
         // --- Italok ---
         new Food("Kávé (fekete)", 2, 0.2, 200, "kave", "feketekave", "eszpresszo",
+                // A neszkávé az instant kávé beceneve – eddig nem volt tő.
+                "neszkave", "nescafe", "instant kave",
                 "espresszo", "espresso", "ristretto", "americano"),
         // A „macchiato" ide tartozik, és nem csak azért, mert kávé: a „chia" tő
         // a szó KÖZEPÉN illeszkedett rá, így a kávéból chiamag lett. A

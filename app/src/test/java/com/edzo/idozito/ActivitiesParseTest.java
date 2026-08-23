@@ -8725,4 +8725,19 @@ public class ActivitiesParseTest {
                 + "kezdődött, végig ott voltam.").plans.size());
     }
 
+    /**
+     * A „sok X-tól" ok, nem mai edzés.
+     *
+     * A „nyugalmi pulzusom lement 52-re a sok futástól" futása a
+     * magyarázat, mégis negyvenöt perces mai futás került tőle a naplóba.
+     */
+    @Test
+    public void aCauseFromMuchRunningIsNotTodaysRun() {
+        assertTrue(Activities.parse("Nyugalmi pulzusom lement 52-re a "
+                + "sok futástól.").plans.isEmpty());
+        // A valódi futás a sok emelkedővel marad.
+        assertEquals(1, Activities.parse("10 km futás, a sok "
+                + "emelkedőtől elfáradtam.").plans.size());
+    }
+
 }
