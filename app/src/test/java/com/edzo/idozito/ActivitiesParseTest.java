@@ -9326,4 +9326,28 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /**
+     * A „de csak N-öt" a mai táv, a terv tagmondata pedig csak a
+     * sajátját viszi.
+     *
+     * Az „a tegnapi 10 km után ma is futottam, de csak 5-öt" TEGNAPRA
+     * írt tíz kilométert, az „úszásnál 1500 m volt a terv, de csak
+     * 1000 m-t úsztam" bejegyzéséből pedig semmi nem lett.
+     */
+    @Test
+    public void todaysShorterDistanceAndAPlanClause() {
+        Activities.Parsed f = Activities.parse("A tegnapi 10 km után ma "
+                + "is futottam, de csak 5-öt.");
+        assertEquals(1, f.plans.size());
+        assertEquals(0, f.offset);
+        assertEquals(5.0, f.plans.get(0).km, 0.01);
+        Activities.Parsed u = Activities.parse("Az úszásnál 1500 m volt "
+                + "a terv, de csak 1000 m-t úsztam.");
+        assertEquals(1, u.plans.size());
+        assertEquals(1.0, u.plans.get(0).km, 0.01);
+        // A puszta terv marad terv.
+        assertTrue(Activities.parse("Ma 12 km volt a terv.")
+                .plans.isEmpty());
+    }
+
 }

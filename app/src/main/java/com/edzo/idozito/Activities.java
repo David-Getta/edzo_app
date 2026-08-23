@@ -1578,12 +1578,22 @@ public final class Activities {
         // MELLÉ.
         s = s.replaceAll("(?<![a-z])(?:a\\s+)?sulyzok\\w*\\s+"
                 + "(?=atrendez|atpakol|elpakol|rendezget)", "");
+        // A „DE CSAK N-ÖT" a mai táv, a mértékegység az előző számé: az
+        // „a tegnapi 10 km után ma is futottam, de csak 5-öt" öt
+        // kilométere eddig nem került be. A csere a tegnapi tagmondat
+        // kitakarása ELŐTT fut, amíg a km még ott áll a mondatban.
+        if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?km"
+                + "(?![a-z]).*")
+                && !s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*"))
+            s = s.replaceAll("(?<![a-z])(?:de\\s+)?csak\\s+"
+                    + "(\\d{1,3}(?:[.,]\\d{1,2})?)[- ]?(?:et|at|ot)(?![a-z])",
+                    "csak $1 km");
         // A TEGNAPI táv a tegnapi naplóé: a „tegnapi 12 km után ma csak
         // lazítottam, 20 perc görgő" TEGNAPRA írt egy tizenkét
         // kilométeres futást, a mai húsz perc lazítás meg elveszett
         // mellőle. A „ma" szava kimondja, melyik nap a bejegyzésé.
-        if (s.matches("(?s).*(?<![a-z])ma\\s+(?:csak\\s+|meg\\s+)?\\p{L}*"
-                + "(?:tam|tem|unk|ünk)(?![a-z]).*")
+        if (s.matches("(?s).*(?<![a-z])ma\\s+(?:is\\s+|csak\\s+|meg\\s+)*"
+                + "\\p{L}*(?:tam|tem|unk|ünk)(?![a-z]).*")
                 || s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
             s = s.replaceAll("(?<![a-z])(?:a\\s+)?tegnapi\\s+"
                     + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:km|kilometer\\w*"
@@ -1767,6 +1777,14 @@ public final class Activities {
                 }
             }
         }
+        // A TERV tagmondata csak a sajátját viszi: az „úszásnál 1500 m
+        // volt a terv, de csak 1000 m-t úsztam" bejegyzéséből SEMMI nem
+        // lett – pedig a mondat vége kimondja a megtörtént ezer métert.
+        if (s.matches("(?s).*(?<![a-z])(?:de|viszont|vegul)\\s+csak\\s+"
+                + "[^,;.]*\\d.*"))
+            s = s.replaceAll("(?<![a-z])\\d{1,4}(?:[.,]\\d{1,2})?\\s?"
+                    + "(?:m|km|perc\\w*|hossz\\w*)\\s+volt\\s+a\\s+terv"
+                    + "(?![a-z])[^,;.]*", " ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
