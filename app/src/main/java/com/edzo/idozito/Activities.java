@@ -1785,6 +1785,23 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])\\d{1,4}(?:[.,]\\d{1,2})?\\s?"
                     + "(?:m|km|perc\\w*|hossz\\w*)\\s+volt\\s+a\\s+terv"
                     + "(?![a-z])[^,;.]*", " ");
+        // A MECCS MELLETT elfogyasztott vacsora a tévé előtt készült: a
+        // „két sör és egy pizza volt a vacsora a meccs mellett"
+        // negyvenöt perces egyéb mozgást írt a naplóba. A „kondi
+        // mellett" viszont megtörtént edzés – ezért csak a mérkőzés
+        // szava esik ki, és csak saját mozgás-ige nélkül.
+        if (!s.matches("(?s).*(?<![a-z])(?:futottam|edzettem|jatszottam|"
+                + "usztam|tekertem|kondiztam|nyomtam)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:meccs\\w*|merkozes\\w*)"
+                    + "\\s+mellett(?![a-z])", " ");
+        // A LÉPCSŐZÉS szorzója emelet nélkül sem alkalomszám: a „csak a
+        // lépcsőt jártam meg 5-ször" ÖT külön bejegyzést írt a naplóba,
+        // öt napra szétosztva. Emelet híján a szorzó a megmászott
+        // lépcsőké, nem az alkalmaké – egyetlen bejegyzés marad.
+        if (s.matches("(?s).*(?<![a-z])lepcso\\w*.*")
+                && !s.matches("(?s).*(?<![a-z])emelet\\w*.*"))
+            s = s.replaceAll("(?<![a-z\\d])(?:\\d{1,2}\\s?-?sz[oöe]r|ketszer"
+                    + "|haromszor|negyszer|otszor|hatszor)(?![a-z])", " ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.

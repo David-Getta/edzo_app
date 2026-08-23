@@ -9350,4 +9350,25 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    /**
+     * A lépcsőzés szorzója emelet nélkül sem alkalomszám, és a meccs
+     * mellett elfogyasztott vacsora sem edzés.
+     *
+     * A „csak a lépcsőt jártam meg 5-ször" ÖT bejegyzést írt a naplóba,
+     * öt napra szétosztva; a „két sör és egy pizza volt a vacsora a
+     * meccs mellett" negyvenöt perc egyéb mozgást.
+     */
+    @Test
+    public void stairCountsAndAMatchOnTheTelly() {
+        Activities.Parsed l = Activities.parse("Ma nem volt időm edzeni, "
+                + "csak a lépcsőt jártam meg 5-ször.");
+        assertEquals(1, l.plans.size());
+        assertEquals(1, l.days);
+        assertTrue(Activities.parse("Két sör és egy pizza volt a vacsora "
+                + "a meccs mellett.").plans.isEmpty());
+        // A kondi melletti tagadás a kondit meghagyja.
+        assertEquals("kondi", Activities.parse("nem futottam a kondi "
+                + "mellett").plans.get(0).kind.id);
+    }
+
 }
