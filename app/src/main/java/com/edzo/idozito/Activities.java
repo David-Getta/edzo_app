@@ -380,7 +380,7 @@ public final class Activities {
                     // A FIZIOTERÁPIA a gyógytorna hivatalos neve: a
                     // „fizioterápiás gyakorlatok, ma mindkettőt
                     // megcsináltam" eddig üresen jött vissza.
-                    "fizioterap", "fizioter",
+                    "fizioterap", "fizioter", "fizikoterap",
                     // A „megmozgattam magam" ugyanaz a laza átmozgatás.
                     "meditac", "atmozgat", "megmozgat",
                     "mobiliz", "mobilitas", "legzogyakorlat",
@@ -7211,13 +7211,22 @@ public final class Activities {
      * kimondott idő, marad: egy közelítő hossz jobb, mint semmi.
      */
     private static void dropWarmupTimes(String s, List<int[]> mins) {
-        if (mins.size() < 2) return;
+        if (mins.isEmpty()) return;
         List<int[]> keep = new ArrayList<>();
         for (int[] m : mins) if (!warmupWordAt(s, m)) keep.add(m);
         if (!keep.isEmpty() && keep.size() < mins.size()) {
             mins.clear();
             mins.addAll(keep);
+            return;
         }
+        // Ha MINDEN kimondott idő a bemelegítésé és a levezetésé, a
+        // sportnak nem marad sajátja: a „ma reggel 5 km futás előtt
+        // 10 perc bemelegítés, utána 10 perc levezetés" öt kilométeres
+        // futása TÍZ percet kapott – a bemelegítését. Kimondott táv
+        // mellett a tempóból becsült idő a helyes, ezért ilyenkor
+        // egyetlen kimondott idő sem a sporté.
+        if (keep.isEmpty() && s.matches("(?s).*(?<![\\d,.])\\d{1,3}"
+                + "(?:[.,]\\d{1,2})?\\s?km(?![a-z]).*")) mins.clear();
     }
 
     /**

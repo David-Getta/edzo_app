@@ -8998,4 +8998,24 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    /**
+     * A bemelegítés ideje nem a futás ideje – kimondott táv mellett sem.
+     *
+     * A „ma reggel 5 km futás előtt 10 perc bemelegítés, utána 10 perc
+     * levezetés" öt kilométeres futása TÍZ percet kapott.
+     */
+    @Test
+    public void warmupOnlyTimesNeverBecomeTheRunsTime() {
+        assertEquals(30, Activities.parse("Ma reggel 5 km futás előtt "
+                + "10 perc bemelegítés, utána 10 perc levezetés.")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("10 perc bemelegítés, aztán "
+                + "5 km futás.").plans.get(0).minutes);
+        // A sport saját ideje marad az övé.
+        assertEquals(40, Activities.parse("20 perc bemelegítés + 40 perc "
+                + "foci.").plans.get(0).minutes);
+        assertEquals(25, Activities.parse("5 km futás 25 perc alatt.")
+                .plans.get(0).minutes);
+    }
+
 }
