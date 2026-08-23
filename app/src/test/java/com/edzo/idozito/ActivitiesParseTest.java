@@ -9208,4 +9208,26 @@ public class ActivitiesParseTest {
                 + "20 perc.").plans.size());
     }
 
+    /**
+     * A cipő kilométere nem mai futás, az összetett úszás-szó viszont
+     * úszásnak mutatja a gazdátlan távot.
+     *
+     * A „futócipőm 800 km-t futott már" mellé egy negyvenöt perces
+     * futás került, a „Balaton-ÁTúszás, ma 2500 m technikai edzés"
+     * kétezer-ötszáz métere pedig futás lett.
+     */
+    @Test
+    public void shoeMileageAndACompoundSwimWord() {
+        assertTrue(Activities.parse("A futócipőm 800 km-t futott már, "
+                + "ideje lecserélni.").plans.isEmpty());
+        Activities.Parsed b = Activities.parse("Két hét múlva jön a "
+                + "Balaton-átúszás, ma 2500 m technikai edzés.");
+        assertEquals(1, b.plans.size());
+        assertEquals("uszas", b.plans.get(0).kind.id);
+        assertEquals(2.5, b.plans.get(0).km, 0.01);
+        // A cipőben megtett saját táv marad futás.
+        assertEquals(10.0, Activities.parse("Az új cipőben ma 10 km-t "
+                + "futottam.").plans.get(0).km, 0.01);
+    }
+
 }

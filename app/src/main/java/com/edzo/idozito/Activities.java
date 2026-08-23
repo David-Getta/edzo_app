@@ -1677,6 +1677,19 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])(?:a\\s+)?hetvegi\\s+"
                     + "(?:verseny\\w*|futoverseny\\w*|maraton\\w*|meccs\\w*)"
                     + "(?=\\s)", " ");
+        // A CIPŐ élettartama nem mai futás: az „a futócipőm 800 km-t
+        // futott már, ideje lecserélni" mellé egy negyvenöt perces futás
+        // került a naplóba – a cipő kilométeréből. Saját, első személyű
+        // ige mellett marad („a cipőben ma 10 km-t futottam").
+        // Csak a cipő SAJÁT teljesítményét mondó tagmondat esik ki: ott a
+        // kilométer mellett harmadik személyű ige áll („futott", „ment").
+        // Az „új cipőben 12 km" a MI futásunk, az marad.
+        if (!s.matches("(?s).*(?<![a-z])\\p{L}{3,}(?:tam|tem|tunk|tuk)"
+                + "(?![a-z]).*"))
+            s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*(?<![a-z])"
+                    + "(?:futo)?cipo\\w*[^,;.]*?\\d{2,4}\\s?km"
+                    + "[^,;.]*?(?<![a-z])(?:futott|ment|birt|kibirt|"
+                    + "teljesitett)(?![a-z])[^,;.]*", " ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
@@ -4399,7 +4412,12 @@ public final class Activities {
             // idővel, a valódi úszás helyett.
             // Az USZODA MELLETTI park viszont szárazföld: ott az „uszoda"
             // csak helyszín, az 5 km nem úszás.
-            boolean swimWord = rawText.matches("(?s).*(?<![a-z])usz(?!od)\\w*.*")
+            // Az IGEKÖTŐS és összetett alak is úszás: a „két hét múlva jön
+            // a Balaton-ÁTúszás, ma 2500 m technikai edzés" kétezer-ötszáz
+            // métere FUTÁS lett – az „át" előtag miatt a szóhatár nem
+            // illeszkedett.
+            boolean swimWord = rawText.matches("(?s).*(?<![a-z])"
+                    + "(?:at|le|fel|meg|be|ki|vissza)?usz(?!od)\\w*.*")
                     || (rawText.matches("(?s).*(?<![a-z])uszoda\\w*.*")
                         && !rawText.matches("(?s).*uszoda\\w*\\s+mellett\\w*.*"));
             if (swimWord && !rawText.matches("(?s).*(?<![a-z])fut\\w*.*"))
