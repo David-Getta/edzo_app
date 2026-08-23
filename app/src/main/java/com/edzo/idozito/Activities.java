@@ -7796,8 +7796,15 @@ public final class Activities {
         // futása TÍZ percet kapott – a bemelegítését. Kimondott táv
         // mellett a tempóból becsült idő a helyes, ezért ilyenkor
         // egyetlen kimondott idő sem a sporté.
-        if (keep.isEmpty() && s.matches("(?s).*(?<![\\d,.])\\d{1,3}"
-                + "(?:[.,]\\d{1,2})?\\s?km(?![a-z]).*")) mins.clear();
+        // A SÚLYZÓS SOROZAT ugyanígy a magáét kapja: az „edzésen 10 perc
+        // bemelegítés, 5x3 guggolás 120 kg, 10 perc levezetés" kondija TÍZ
+        // percet kapott – a bemelegítését –, pedig a sorozatok maguk
+        // mondják meg, hogy valódi edzés volt.
+        if (keep.isEmpty() && (s.matches("(?s).*(?<![\\d,.])\\d{1,3}"
+                    + "(?:[.,]\\d{1,2})?\\s?km(?![a-z]).*")
+                || s.matches("(?s).*\\d\\s?[x×]\\s?\\d.*")
+                || s.matches("(?s).*(?<![a-z])(?:sorozat|szett|ismetles)"
+                    + "\\w*.*"))) mins.clear();
     }
 
     /**

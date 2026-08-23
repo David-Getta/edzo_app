@@ -3896,6 +3896,24 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A bemelegítés perce nem a súlyzós edzés hossza.
+     *
+     * Az „edzésen 10 perc bemelegítés, 5x3 guggolás 120 kg, 10 perc
+     * levezetés" kondija TÍZ percet kapott – a bemelegítését –, pedig a
+     * sorozatok maguk mondják meg, hogy valódi edzés volt.
+     */
+    @Test public void aWarmupMinuteIsNotTheLiftingSession() {
+        Activities.Parsed p = Activities.parse("Az edzésen 10 perc "
+                + "bemelegítés, 5x3 guggolás 120 kg, 10 perc levezetés.");
+        assertEquals(1, p.plans.size());
+        assertTrue("túl rövid: " + p.plans.get(0).minutes,
+                p.plans.get(0).minutes >= 30);
+        // A kimondott saját idő marad.
+        assertEquals(40, Activities.parse("10 perc bemelegítés, aztán "
+                + "40 perc kondi.").plans.get(0).minutes);
+    }
+
+    /**
      * A „csak ennyi lett" a terem-edzés helyett áll.
      *
      * A „délután elmentem a kondiba, de tele volt, csak 20 percet
