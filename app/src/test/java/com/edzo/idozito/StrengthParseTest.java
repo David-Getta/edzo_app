@@ -2031,6 +2031,13 @@ public class StrengthParseTest {
                 + "körönként 15 guggolás.");
         assertEquals(5, one.get(0).sets.size());
         assertEquals(15, one.get(0).sets.get(0).reps);
+        // A kötőjeles felsorolás ugyanaz a lista, és a fel nem ismert
+        // név (a kardió burpee) is elhasznál egy helyet a számok közül.
+        List<StrengthParse.Item> d = StrengthParse.parse("4 kör "
+                + "burpee-guggolás-fekvőtámasz, körönként 10-15-20.");
+        assertEquals(2, d.size());
+        assertEquals(15, d.get(0).sets.get(0).reps);
+        assertEquals(20, d.get(1).sets.get(0).reps);
     }
 
     /**

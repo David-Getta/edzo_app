@@ -9388,4 +9388,22 @@ public class ActivitiesParseTest {
                 + "alatt.").plans.get(0).minutes);
     }
 
+    /**
+     * Az átlag a beszámoló vége, az átlagtempó pedig tempó.
+     *
+     * A „két hét alatt 5 alkalommal edzettem, ez heti 2,5 átlag" TÍZ
+     * edzést írt a naplóba, a „4:55-ös átlagtempó 10 km-en" pedig a
+     * mozgásforma átlagával számolt hatvan percet.
+     */
+    @Test
+    public void anAverageClauseAndAnAveragePace() {
+        assertEquals(5, Activities.parse("Két hét alatt 5 alkalommal "
+                + "edzettem, ez heti 2,5 átlag.").plans.get(0).count);
+        assertEquals(49, Activities.parse("A reggeli futásnál 4:55-ös "
+                + "átlagtempó jött ki 10 km-en.").plans.get(0).minutes);
+        // A kimondott tempó változatlanul számít.
+        assertEquals(55, Activities.parse("10 km-t futottam 5:30-as "
+                + "tempóval.").plans.get(0).minutes);
+    }
+
 }

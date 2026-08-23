@@ -1810,6 +1810,12 @@ public final class Activities {
                 + "(?:a\\s+)?(?:hegy\\s+)?"
                 + "(?=csucsra|tetejere|hegytetore|nyeregbe)",
                 "turaztam ");
+        // Az ÁTLAG a beszámoló vége, nem újabb alkalom: a „két hét alatt
+        // 5 alkalommal edzettem, ez heti 2,5 átlag" TÍZ edzést írt a
+        // naplóba – az ötöt a két és feles átlaggal szorozva.
+        s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*(?<![a-z])"
+                + "(?:heti|havi|napi)\\s+\\d{1,2}(?:[.,]\\d)?\\s*"
+                + "atlag\\w*[^,;.]*", " ");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
@@ -7608,7 +7614,10 @@ public final class Activities {
      */
     private static double pace(String s, Kind kind) {
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(\\d{1,2}):([0-5]\\d) ?(?:-?[a-z]{0,3} ?tempo|/ ?km|per km)")
+                // A „4:55-ös ÁTLAGtempó" ugyanaz a szám: az összetett szó
+                // miatt eddig a mozgásforma átlagával számolt a becslés.
+                .compile("(\\d{1,2}):([0-5]\\d) ?"
+                        + "(?:-?[a-z]{0,3} ?(?:atlag)?tempo|/ ?km|per km)")
                 .matcher(s);
         if (m.find()) {
             double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;

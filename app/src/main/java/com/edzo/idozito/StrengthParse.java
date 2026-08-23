@@ -433,18 +433,28 @@ public final class StrengthParse {
                 .matcher(text);
         if (kr.find()) {
             String[] reps = kr.group(3).split("\\s?-\\s?");
-            String[] names = kr.group(2).split("[,;:]");
+            // A KÖTŐJELES felsorolás ugyanaz a lista: a „4 kör
+            // burpee-guggolás-fekvőtámasz, körönként 10-15-20" második
+            // és harmadik gyakorlata eddig elveszett.
+            String[] names = kr.group(2).split("[,;:-]");
             StringBuilder nb = new StringBuilder();
             int used = 0;
+            int slot = 0;
             for (String n : names) {
                 String t = n.trim();
-                if (t.isEmpty() || t.matches("(?s).*\\d.*")
-                        || nameIn(t) == null) continue;
-                if (used >= reps.length) break;
-                if (nb.length() > 0) nb.append(", ");
-                nb.append(t).append(' ').append(kr.group(1)).append('x')
-                        .append(reps[used].trim());
-                used++;
+                if (t.isEmpty() || t.matches("(?s).*\\d.*")) continue;
+                if (slot >= reps.length) break;
+                // A FEL NEM ISMERT név is elhasznál egy helyet: a
+                // „burpee-guggolás-fekvőtámasz, körönként 10-15-20"
+                // guggolása a TIZET kapta a tizenöt helyett, mert a
+                // burpee (kardió) kimaradt a számolásból.
+                if (nameIn(t) != null) {
+                    if (nb.length() > 0) nb.append(", ");
+                    nb.append(t).append(' ').append(kr.group(1)).append('x')
+                            .append(reps[slot].trim());
+                    used++;
+                }
+                slot++;
             }
             if (used >= 2)
                 text = text.substring(0, kr.start()) + nb
