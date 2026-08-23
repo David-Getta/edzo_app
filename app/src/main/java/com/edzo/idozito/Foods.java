@@ -2893,6 +2893,13 @@ public final class Foods {
         // sima adag lett, a „feladag rizs" pedig egy egész – vagyis a
         // mennyiség épp az ellenkezőjére fordult. Külön írva mindkettő
         // rendben volt.
+        // A HÁTRAVETETT mennyiség a mondat végén is mennyiség: az „egy
+        // egész csomag kekszet megettem, 200 g volt" negyven grammal – a
+        // keksz alapadagjával – ment be, pedig a mondat kimondja a
+        // kétszáz grammot. A „volt" csak a mondat végét zárja.
+        query = query.replaceAll("(?iu)(\\d{1,4}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:g|gr|gramm|dkg|kg|dl|ml|liter))\\s+volt(?![\\p{L}])",
+                "$1");
         query = query.replaceAll("(?iu)(?<!\\p{L})(dupla|f[eé]l|m[aá]sf[eé]l|"
                 + "harmad|negyed|tripla)adag(?![\\p{L}])", "$1 adag");
         // A TÖRT alakú mennyiség: az „1/2 kg csirkemell" fél kiló – eddig

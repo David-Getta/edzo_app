@@ -1594,7 +1594,10 @@ public final class Activities {
         // mellőle. A „ma" szava kimondja, melyik nap a bejegyzésé.
         if (s.matches("(?s).*(?<![a-z])ma\\s+(?:is\\s+|csak\\s+|meg\\s+)*"
                 + "\\p{L}*(?:tam|tem|unk|ünk)(?![a-z]).*")
-                || s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
+                // A „ma CSAK 3 km-t" ugyanígy mai: a töltelékszó nem
+                // szakítja el a naptól a számot.
+                || s.matches("(?s).*(?<![a-z])ma\\s+(?:is\\s+|csak\\s+"
+                    + "|meg\\s+|mar\\s+)*\\d.*"))
             s = s.replaceAll("(?<![a-z])(?:a\\s+)?tegnapi\\s+"
                     + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:km|kilometer\\w*"
                     + "|perc\\w*|lepes\\w*)(?![a-z])[^,;.]{0,12}?"

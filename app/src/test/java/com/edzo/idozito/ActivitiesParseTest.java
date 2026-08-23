@@ -9406,4 +9406,22 @@ public class ActivitiesParseTest {
                 + "tempóval.").plans.get(0).minutes);
     }
 
+    /**
+     * A töltelékszó nem szakítja el a naptól a mai számot.
+     *
+     * A „tegnapi 15 km után ma CSAK 3 km-t kocogtam" a tegnapi
+     * tizenöt kilométert is bejegyzésként írta be, tegnapra keltezve.
+     */
+    @Test
+    public void aFillerWordKeepsTodaysNumberToday() {
+        Activities.Parsed p = Activities.parse("A tegnapi 15 km után ma "
+                + "csak 3 km-t kocogtam levezetésnek.");
+        assertEquals(1, p.plans.size());
+        assertEquals(3.0, p.plans.get(0).km, 0.01);
+        assertEquals(0, p.offset);
+        // A tegnapi futás magában marad tegnapi.
+        assertEquals(1, Activities.parse("Tegnap 15 km-t futottam.")
+                .offset);
+    }
+
 }

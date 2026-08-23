@@ -2549,6 +2549,23 @@ public class FoodsParseTest {
     }
 
     /**
+     * A hátravetett mennyiség a mondat végén is mennyiség.
+     *
+     * Az „egy egész csomag kekszet megettem, 200 g volt" negyven
+     * grammal – a keksz alapadagjával – ment be.
+     */
+    @Test public void aTrailingWeightStillCounts() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(200.0, Foods.parse(all, "Egy egész csomag kekszet "
+                + "megettem, 200 g volt.").get(0).grams, 0.01);
+        assertEquals(150.0, Foods.parse(all, "Ettem egy szelet tortát, "
+                + "150 g volt.").get(0).grams, 0.01);
+        // Mennyiség nélkül marad az alapadag.
+        assertEquals(40.0, Foods.parse(all, "Megettem egy csomag "
+                + "kekszet.").get(0).grams, 0.01);
+    }
+
+    /**
      * A vizelés nem ivás, a „soron" pedig nem sör.
      *
      * A „82,3 kg éhgyomorra, vizelés után" mellé negyed liter víz, az
