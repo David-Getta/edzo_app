@@ -1492,6 +1492,14 @@ public final class Foods {
                 .matcher(q);
         while (cn.find())
             for (int k = cn.start(); k < cn.end(); k++) sb.setCharAt(k, ' ');
+        // A TURMIXBA MENT hozzávaló-lista maga az ital: a „smoothie-ba
+        // ment: banán, spenót, zab" mellé egy KÜLÖN háromdecis turmix is
+        // került – ugyanarról a pohárról.
+        java.util.regex.Matcher tb = java.util.regex.Pattern.compile(
+                "(?<![a-z])(?:smoothie|turmix)\\w*[- ]?ba\\w*\\s+"
+                + "(?=ment|kerult|dobtam|tettem)").matcher(q);
+        while (tb.find())
+            for (int k = tb.start(); k < tb.end(); k++) sb.setCharAt(k, ' ');
         // A SZÁZALÉKOS zsír testzsír, nem olaj: a „78,4 kg, 17,9 százalék
         // zsír" tíz gramm olajat írt az étkezésnaplóba.
         java.util.regex.Matcher pz = java.util.regex.Pattern.compile(

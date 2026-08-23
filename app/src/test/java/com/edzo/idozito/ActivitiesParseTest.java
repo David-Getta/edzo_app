@@ -8882,4 +8882,29 @@ public class ActivitiesParseTest {
         assertEquals(1, h.days);
     }
 
+    /**
+     * A gép kijelzőjén álló km, a hajrá és az átrendezett súlyzó.
+     *
+     * A „crosstrainer 40 percet mutatott és 5,2 km-t" mellé egy külön
+     * futás került, az „utolsó 2 km-t sprintben nyomtam a 12-ből"
+     * kétkilométeres bejegyzés lett, a „súlyzókat átrendeztük a
+     * garázsban" pedig a fizikai munka mellé egy órás kondit is írt.
+     */
+    @Test
+    public void aMachineReadoutAFinalPushAndTidiedWeights() {
+        Activities.Parsed c = Activities.parse("A crosstrainer 40 "
+                + "percet mutatott és 5,2 km-t.");
+        assertEquals(1, c.plans.size());
+        assertEquals(40, c.plans.get(0).minutes);
+        assertEquals(12.0, Activities.parse("Hajrá: az utolsó 2 km-t "
+                + "sprintben nyomtam a 12-ből.").plans.get(0).km, 0.01);
+        Activities.Parsed sz = Activities.parse("A súlyzókat "
+                + "átrendeztük a garázsban, az is felért egy edzéssel.");
+        assertEquals(1, sz.plans.size());
+        assertEquals("munka", sz.plans.get(0).kind.id);
+        // A futópadon futott táv marad futás a crosstrainer mellett is.
+        assertEquals(5.0, Activities.parse("A futópadon futottam 5 km-t, "
+                + "a crosstraineren meg 20 percet.").plans.get(0).km, 0.01);
+    }
+
 }

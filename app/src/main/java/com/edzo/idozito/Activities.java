@@ -1362,7 +1362,8 @@ public final class Activities {
         // A HASONLÍTÁS órája nem a mozgás ideje: a „vibrációs tréningen
         // voltam 25 percet, állítólag felér egy órás edzéssel" HATVAN
         // perces bejegyzés lett a huszonöt helyett.
-        s = s.replaceAll("(?<![a-z])feler\\s+(?:egy\\s+)?[^,;.]*", "");
+        s = s.replaceAll("(?<![a-z])fel[eé]r(?:t)?\\s+(?:az\\s+is\\s+)?"
+                + "(?:egy\\s+)?[^,;.]*", "");
         // A MUNKA MIATT gyűjtött lépés nem külön edzés: a „ma nem
         // edzettem, de a fizikai munkám miatt így is 15 000 lépésem lett"
         // mellé egy órás fizikai-munka bejegyzés is került – a lépések
@@ -1509,6 +1510,28 @@ public final class Activities {
                 + "(?:be)?fizet\\w*[^,;.]*", " ");
         s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*\\d[\\d ]*\\s?"
                 + "(?:ft|forint\\w*)(?![a-z])[^,;.]*", " ");
+        // A GÉP KIJELZŐJÉN álló km a gépé, nem külön futás: a
+        // „crosstrainer 40 percet mutatott és 5,2 km-t" mellé egy
+        // ötkilométeres futás került. Futó-ige nélkül a táv a gépé.
+        if (s.matches("(?s).*(?<![a-z])(?:crosstrainer|cross trainer"
+                + "|orbitrek|elliptik\\w*)(?![a-z]).*")
+                && !s.matches("(?s).*(?<![a-z])fut\\w*.*"))
+            s = s.replaceAll("(?<![\\d,.])\\d{1,2}(?:[.,]\\d{1,2})?"
+                    + "\\s?km-?t?(?![a-z])", " ");
+        // Az „UTOLSÓ 2 KM A 12-BŐL" tizenkét kilométer: a hajrá táva a
+        // teljes futás része, mégis a kettes lett a bejegyzés.
+        if (s.matches("(?s).*(?<![a-z])utolso\\s+\\d{1,2}\\s?km"
+                + "[^;.]{0,30}\\d{1,3}\\s?-?b[oó]l.*")) {
+            s = s.replaceAll("(?<![a-z])az?\\s+utolso\\s+\\d{1,2}"
+                    + "\\s?km-?t?(?![a-z])", " ");
+            s = s.replaceAll("(?<![a-z\\d,.])a\\s+(\\d{1,3})\\s?-?b[oó]l"
+                    + "(?![a-z])", "$1 km");
+        }
+        // Az ÁTRENDEZETT súlyzó bútor, nem edzés: a „a súlyzókat
+        // átrendeztük a garázsban" egy órás kondit írt a fizikai munka
+        // MELLÉ.
+        s = s.replaceAll("(?<![a-z])(?:a\\s+)?sulyzok\\w*\\s+"
+                + "(?=atrendez|atpakol|elpakol|rendezget)", "");
         // A JELZŐS kilométer is kilométer: a „bejárattam az új futócipőt,
         // 3 könnyű kilométer" hármasa a jelző miatt levált a távról, és a
         // bejegyzésből semmi nem lett.

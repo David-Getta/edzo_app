@@ -2547,4 +2547,20 @@ public class FoodsParseTest {
         assertEquals(2, h.size());
         assertEquals("Kávé (fekete)", h.get(0).food.name);
     }
+
+    /**
+     * A turmixba ment hozzávaló-lista maga az ital.
+     *
+     * A „smoothie-ba ment: banán, spenót, zab" mellé egy KÜLÖN
+     * háromdecis turmix is bekerült – ugyanarról a pohárról.
+     */
+    @Test public void aSmoothiesIngredientsAreTheSmoothie() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (Foods.Hit h : Foods.parse(all, "A smoothie-ba ment: banán, "
+                + "spenót, zabpehely, mandulatej."))
+            assertFalse(h.food.name.startsWith("Gyümölcsturmix"));
+        // A magában ivott smoothie marad turmix.
+        assertEquals("Gyümölcsturmix / smoothie", Foods.parse(all,
+                "Ittam egy smoothie-t az edzés után.").get(0).food.name);
+    }
 }
