@@ -2654,6 +2654,28 @@ public class FoodsParseTest {
     }
 
     /**
+     * A kísérő nem viszi el a fogás mennyiségét, és a „kb." nem határ.
+     *
+     * A „vacsorára sült krumpli majonézzel, 300 g" háromszáz grammja a
+     * MAJONÉZÉ lett – kétezer kalória egy kanálnyi helyett –, a rövidítés
+     * pontja pedig tagmondat-határnak számított, így a „kb. 300 g" alakban
+     * a mennyiség nem talált vissza az ételhez.
+     */
+    @Test public void aTrailingWeightBelongsToTheDish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (String q : new String[]{"Vacsorára sült krumpli majonézzel, 300 g.",
+                "Vacsorára sült krumpli majonézzel, kb. 300 g."})
+            for (Foods.Hit h : Foods.parse(all, q))
+                if (h.food.name.startsWith("Sült krumpli"))
+                    assertEquals(q, 300, h.grams, 0.5);
+                else assertEquals(q, 0, h.grams, 0.5);
+        // A folyadék mértéke marad a folyadéké.
+        List<Foods.Hit> t = Foods.parse(all, "zabkása fél liter tejjel");
+        assertEquals("Tej", t.get(1).food.name);
+        assertEquals(500, t.get(1).grams, 0.5);
+    }
+
+    /**
      * A gyakorlat sora nem sör.
      *
      * Az „egy sor guggolás után meghúzódott a combom" fél liter sört írt a

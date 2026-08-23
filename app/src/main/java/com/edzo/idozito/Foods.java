@@ -1603,7 +1603,7 @@ public final class Foods {
         // A mondatvégi írásjel és a dupla szóköz nem jelentés – a telefonon
         // viszont mindkettő gyakori, és a szabályok szóközre illesztenek.
         // Enélkül egy felkiáltójel egész sorozatot vitt el a naplóból.
-        s = s.replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
+        s = abbrevDot(s).replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
         // Az ä nem magyar ékezet, de márkanevekben előfordul (Jägermeister).
         return s.replace('á','a').replace('é','e').replace('í','i').replace('ó','o')
                 .replace('ö','o').replace('ő','o').replace('ú','u').replace('ü','u')
@@ -1620,7 +1620,44 @@ public final class Foods {
     static String normAcc(String s) {
         if (s == null) return "";
         s = s.toLowerCase(new Locale("hu"));
-        return s.replaceAll("[!?…]", " ").replaceAll("\\s+", " ").trim();
+        return abbrevDot(s).replaceAll("[!?…]", " ")
+                .replaceAll("\\s+", " ").trim();
+    }
+
+    /**
+     * -val/-vel ragos-e az étel szava? („majonézzel", „csirkével")
+     *
+     * A rag hasonul, ezért a legtöbb alak kettőzött mássalhangzó + „el"/„al"
+     * végű: tejjel, mézzel, sajttal, kenyérrel. A magánhangzó után álló
+     * teljes alak („csirkével", „krumplival") külön ág.
+     */
+    private static boolean instrumentalAt(String q, int pos, int len) {
+        int e = pos + len;
+        while (e < q.length() && Character.isLetter(q.charAt(e))) e++;
+        int s = pos;
+        while (s > 0 && Character.isLetter(q.charAt(s - 1))) s--;
+        String w = q.substring(s, e);
+        if (w.endsWith("val") || w.endsWith("vel")) return true;
+        int n = w.length();
+        if (n < 5) return false;
+        char c = w.charAt(n - 1), b = w.charAt(n - 2), a = w.charAt(n - 3);
+        return c == 'l' && (b == 'e' || b == 'a') && a == w.charAt(n - 4)
+                && "aeiou".indexOf(a) < 0;
+    }
+
+    /**
+     * A RÖVIDÍTÉS pontja nem mondathatár.
+     *
+     * A „vacsorára sült krumpli, kb. 300 g" háromszáz grammja elveszett, és
+     * a tipikus adag (150 g) került a naplóba: a „kb." pontja tagmondat-
+     * határnak számított, így a mennyiség egy önálló, étel nélküli
+     * tagmondatba került, és nem talált vissza a krumplihoz. A pont helyére
+     * szóköz lép – a csere KARAKTER-HELYES, ezért a norm() és a normAcc()
+     * indexei továbbra is megegyeznek.
+     */
+    private static String abbrevDot(String s) {
+        return s.replaceAll("(?iu)(?<![\\p{L}])(kb|cca|ca|kb|max|min|ill)\\.",
+                "$1 ");
     }
 
     /**
@@ -3529,6 +3566,22 @@ public final class Foods {
                 if (clause[foodPos.get(k)] != clause[numPos.get(n)]) continue;
                 int from = foodPos.get(k), to = from + foodLen.get(k);
                 int d = Math.min(Math.abs(from - numPos.get(n)), Math.abs(to - numPos.get(n)));
+                // A KÍSÉRŐ nem viszi el a fogás mennyiségét: a „vacsorára
+                // sült krumpli majonézzel, 300 g" háromszáz grammja a
+                // MAJONÉZÉ lett (kétezer kalória egy kanálnyi helyett), a
+                // „zabkása mézzel, 200 g" kétszáz grammja pedig a mézé. A
+                // -val/-vel rag épp azt mondja ki, hogy az az étel a
+                // kísérő; a hátravetett mennyiség a fogásé. Ha nincs más
+                // étel a tagmondatban, a kísérő továbbra is megkapja.
+                // Csak a mondat VÉGÉN álló, szilárd mértékegységű mennyiség
+                // esik ide: a folyadék mértéke a folyadéké („zabkása fél
+                // liter tejjel" öt deci TEJ), és azt a mennyiség-olvasó már
+                // az ital mellé teszi.
+                if (numPos.get(n) > to && instrumentalAt(q, from, foodLen.get(k))
+                        && q.substring(numPos.get(n)).matches("\\s*\\d+"
+                            + "(?:[.,]\\d+)?\\s*(?:g|gr|gramm|dkg|deka|kg)?"
+                            + "[\\s.,;]*"))
+                    d += 1000;
                 if (d < bestDist) { bestDist = d; bestIdx = k; }
             }
             if (bestIdx >= 0) grams[bestIdx] = numVal.get(n);
