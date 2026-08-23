@@ -2012,6 +2012,27 @@ public class StrengthParseTest {
     }
 
     /**
+     * A tanács tagmondata nem viszi el a mai sorozatot.
+     *
+     * Az „edző azt mondta, jövő héten emeljünk, ma 3x8 60 kg ment
+     * fekvenyomásban" sorozata nyomtalanul eltűnt az erőnaplóból.
+     */
+    @Test public void anAdviceClauseSparesTodaysSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edző azt "
+                + "mondta, jövő héten emeljünk, ma 3x8 60 kg ment "
+                + "fekvenyomásban.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(60.0, it.get(0).topWeight(), 0.01);
+        // A gyakorlat nevét hordozó cél-tagmondat megmarad.
+        List<StrengthParse.Item> g = StrengthParse.parse("Az edzőm "
+                + "szerint jövő hónapra meglesz a 100 kg-os guggolás, "
+                + "ma 92,5 ment.");
+        assertEquals(1, g.size());
+        assertEquals(92.5, g.get(0).topWeight(), 0.01);
+    }
+
+    /**
      * A súly az első tagmondatban, az ismétlés-lista a másodikban.
      *
      * A „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel" sorozata

@@ -474,6 +474,27 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\p{L}\\d])(\\d{1,2})\\s?k[oö]r"
                 + "[^\\p{L}\\d]{0,3}\\s*k[oö]r[oö]nk[eé]nt\\s+"
                 + "(\\d{1,3})\\s+(\\p{L}{3,})\\s*[.!]?\\s*$", "$3 $1x$2");
+        // A TANÁCS tagmondata nem viszi el a mai sorozatot: az „edző azt
+        // mondta, jövő héten emeljünk, ma 3x8 60 kg ment
+        // fekvenyomásban" sorozata NYOMTALANUL eltűnt az erőnaplóból –
+        // a harmadik személyű mondás és a jövő szava az egészet
+        // elnémította. A „ma" tagmondata a sajátom.
+        if (text.toLowerCase().matches("(?s).*(?<![\\p{L}])ma\\s+.*")) {
+            StringBuilder keep = new StringBuilder();
+            for (String cl : text.split("(?<=[,;.])")) {
+                boolean advice = cl.matches("(?iu)(?s).*(?<![\\p{L}])"
+                        + "edz[oő]\\w*\\s+(?:azt\\s+)?"
+                        + "(?:mondta|szerint|javasolta).*")
+                        || cl.matches("(?iu)(?s).*(?<![\\p{L}])"
+                            + "j[oö]v[oő]\\s+\\p{L}+\\s+emelj\\w*.*");
+                // A gyakorlat NEVÉT hordozó tagmondat marad: a „jövő
+                // hónapra meglesz a 100 kg-os guggolás, ma 92,5 ment"
+                // guggolása a célból jön, a súly a mából.
+                if (advice && nameIn(cl) == null) continue;
+                keep.append(cl);
+            }
+            if (!keep.toString().trim().isEmpty()) text = keep.toString();
+        }
         // A SÚLY az első tagmondatban, az ismétlés-lista a másodikban: a
         // „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel" sorozata
         // SAJÁT TESTSÚLLYAL került be – a tizenkét kiló elveszett a
