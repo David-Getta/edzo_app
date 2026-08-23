@@ -3872,6 +3872,23 @@ public class ActivitiesParseTest {
      * az intervallum-olvasó vitte el a szorzatot, és huszonöt perc maradt.
      * Munkás szó nélkül a 2x25 marad intervallum.
      */
+    /**
+     * A crossfit kör állomása nem külön kardió.
+     *
+     * Az „a crossfit edzésen 21-15-9 burpee és evezés volt időre" evezése a
+     * kör egyik állomása, mégis egy KÜLÖN félórás evezőgépezés került a
+     * kondi mellé – ugyanarról az egy edzésről.
+     */
+    @Test public void aCrossfitStationIsNotASecondSession() {
+        Activities.Parsed p = Activities.parse("A crossfit edzésen 21-15-9 "
+                + "burpee és evezés volt időre.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+        // A kimondott idejű szakasz viszont marad külön.
+        assertEquals(2, Activities.parse("Crossfit edzés után még 20 perc "
+                + "evezés.").plans.size());
+    }
+
     @Test public void aCommutePairAddsUp() {
         Activities.Parsed p = Activities.parse("biciklivel mentem "
                 + "dolgozni, 2x25 perc");

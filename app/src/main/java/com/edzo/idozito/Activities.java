@@ -5449,6 +5449,20 @@ public final class Activities {
             }
             if (!kept.isEmpty()) out = kept;
         }
+        // A CROSSFIT KÖR gyakorlata sem külön kardió: az „a crossfit
+        // edzésen 21-15-9 burpee és evezés volt időre" evezése a kör egyik
+        // állomása, mégis egy KÜLÖN félórás evezőgépezés került a kondi
+        // mellé – ugyanarról az egy edzésről. A WOD egyetlen alkalom, ezért
+        // a saját idő és táv nélküli tétel a köré tartozik. (A kimondott
+        // „crossfit után 20 perc evezés" viszont marad külön szakasz.)
+        if (out.size() > 1 && beforeBlank.matches("(?s).*(?<![a-z])"
+                + "(crossfit|cross fit|wod|metcon|amrap|emom)\\p{L}*.*")) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out)
+                if ("kondi".equals(p.kind.id) || p.km > 0 || p.steps > 0
+                        || p.minutes != p.kind.defaultMin) kept.add(p);
+            if (!kept.isEmpty()) out = kept;
+        }
         // A JÁTÉK perce ugyanannak az edzésnek a másik fele: a „vízilabda
         // edzésen 30 perc úszás és 45 perc játék volt" negyvenöt perce
         // nyomtalanul eltűnt – a játék szava mellett nem állt sportnév,

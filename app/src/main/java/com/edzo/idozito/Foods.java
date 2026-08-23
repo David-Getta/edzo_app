@@ -1480,6 +1480,15 @@ public final class Foods {
                 "(?<![a-z])zsirt?\\s?eget\\p{L}*").matcher(q);
         while (zs.find())
             for (int k = zs.start(); k < zs.end(); k++) sb.setCharAt(k, ' ');
+        // A GYAKORLAT SORA nem sör: az „egy sor guggolás után meghúzódott a
+        // combom" fél liter sört írt a naplóba – a „sör" és a „sor" ékezet
+        // nélkül ugyanaz a szó, a sorozat egyik magyar neve pedig épp „sor".
+        // A pohárban lévő sört nem gyakorlatnév követi.
+        java.util.regex.Matcher sr = java.util.regex.Pattern.compile(
+                "(?<![\\p{L}])sor(?:t|ok|okat)?\\s+(\\p{L}{4,20})").matcher(q);
+        while (sr.find())
+            if (StrengthParse.nameIn(sr.group(1)) != null)
+                for (int k = sr.start(); k < sr.start(1); k++) sb.setCharAt(k, ' ');
         // A FŐZÉS ALAPANYAGA nem a megevett adag: a „800 g marhalábszárból
         // főztem pörköltet, én egy adagot ettem" NYOLCSZÁZ gramm pörköltet
         // írt a naplóba – a fazéknyi hús a család vacsorája.

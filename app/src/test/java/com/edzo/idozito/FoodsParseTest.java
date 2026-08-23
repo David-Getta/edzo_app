@@ -2654,6 +2654,24 @@ public class FoodsParseTest {
     }
 
     /**
+     * A gyakorlat sora nem sör.
+     *
+     * Az „egy sor guggolás után meghúzódott a combom" fél liter sört írt a
+     * naplóba – a „sör" és a „sor" ékezet nélkül ugyanaz a szó, a sorozat
+     * egyik magyar neve pedig épp „sor".
+     */
+    @Test public void aRowOfSquatsIsNotABeer() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Egy sor guggolás után meghúzódott "
+                + "a combom, abba is hagytam.").isEmpty());
+        assertTrue(Foods.parse(all, "Két sor fekvenyomás ment csak, "
+                + "aztán feladtam.").isEmpty());
+        // A pohárban lévő sör marad sör.
+        assertEquals("Sör", Foods.parse(all, "Edzés után megittam egy "
+                + "sört a haverokkal.").get(0).food.name);
+    }
+
+    /**
      * A meghagyott étel nem megevett étel.
      *
      * Az „ebédre levest ettem, de a körtét meghagytam" körtéje a naplóba
