@@ -3371,6 +3371,19 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // A KILÓ a futónyelvben KILOMÉTER: a „ma 3 kilót szaladtam, semmi
+        // extra" NYOMTALANUL eltűnt (a hármas súlynak látszott), a „ma 3
+        // kilót futottam" pedig táv nélküli, becsült háromnegyed órás
+        // futás lett. Csak mozgás-ige mellett írjuk át, és csak akkor, ha
+        // a mondat nem a testsúlyról beszél – a „3 kilót fogytam" marad
+        // kiló.
+        if (s.matches("(?s).*(?<![a-z])(?:fut|szalad|kocog|teker|bringaz"
+                    + "|gyalogol|setal|usz|megy|lefut|vegigfut)\\w*.*")
+                && !s.matches("(?s).*(?<![a-z])(?:fogy\\w*|hiz\\w*|merleg\\w*"
+                    + "|sulyom|sulyod|nyomok|vagyok|lettem|leadt\\w*"
+                    + "|felszedt\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d)?)\\s?kilot?"
+                    + "(?![a-z])", "$1 km");
         // A TÁRGYAS kör igéje sem választja el a szorzót a távtól: az
         // „5 kört csináltam: 400 m futás és 15 guggolás körönként"
         // négyszáz métert írt a naplóba a kettőből.

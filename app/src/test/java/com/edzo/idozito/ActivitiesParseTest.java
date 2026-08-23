@@ -7842,6 +7842,24 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A futónyelvben a kiló kilométer.
+     *
+     * A „ma 3 kilót szaladtam, semmi extra" NYOMTALANUL eltűnt – a hármas
+     * súlynak látszott –, a „ma 3 kilót futottam" pedig táv nélküli,
+     * becsült háromnegyed órás futás lett. A testsúlyról szóló mondatban
+     * a kiló marad kiló.
+     */
+    @Test public void aKiloIsAKilometreWhenYouRun() {
+        assertEquals(3.0, Activities.parse("Ma 3 kilót szaladtam, semmi "
+                + "extra.").plans.get(0).km, 0.01);
+        assertEquals(10.0, Activities.parse("Lefutottam 10 kilót ma "
+                + "délelőtt.").plans.get(0).km, 0.01);
+        // A fogyás kilója nem táv.
+        assertTrue(Activities.parse("Ma 3 kilót fogytam a nyár óta.")
+                .plans.isEmpty());
+    }
+
+    /**
      * A „csak" nem választja el a mát a számtól.
      *
      * A „két hét múlva lesz a félmaraton, ma csak 6 km lazítás" hat
