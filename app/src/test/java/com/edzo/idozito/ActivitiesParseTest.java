@@ -9230,4 +9230,22 @@ public class ActivitiesParseTest {
                 + "futottam.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A „mindkettő" azt mondja, hogy mindkét alkalom megvolt.
+     *
+     * A „naponta kétszer 10 perc gyógytorna, ma is megvolt mindkettő"
+     * TÍZ percet írt a naplóba a húsz helyett.
+     */
+    @Test
+    public void bothDailySessionsCount() {
+        Activities.Parsed p = Activities.parse("A gerincem miatt "
+                + "naponta kétszer 10 perc gyógytorna, ma is megvolt "
+                + "mindkettő.");
+        assertEquals(1, p.plans.size());
+        assertEquals(20, p.plans.get(0).minutes);
+        // A puszta terv marad terv.
+        assertTrue(Activities.parse("Naponta kétszer 10 perc gyógytorna "
+                + "a terv.").plans.isEmpty());
+    }
+
 }

@@ -1690,6 +1690,20 @@ public final class Activities {
                     + "(?:futo)?cipo\\w*[^,;.]*?\\d{2,4}\\s?km"
                     + "[^,;.]*?(?<![a-z])(?:futott|ment|birt|kibirt|"
                     + "teljesitett)(?![a-z])[^,;.]*", " ");
+        // A MINDKETTŐ azt mondja, hogy MINDKÉT alkalom megvolt: a
+        // „naponta kétszer 10 perc gyógytorna, ma is megvolt mindkettő"
+        // TÍZ percet írt a naplóba a húsz helyett.
+        if (s.matches("(?s).*(?<![a-z])mindkett(?:o|ot|oje)(?![a-z]).*")
+                || s.matches("(?s).*(?<![a-z])mind\\s?a\\s?kett(?:o|ot)"
+                    + "(?![a-z]).*")) {
+            java.util.regex.Matcher mk = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:naponta\\s+)?ketszer\\s+(\\d{1,3})"
+                    + "\\s?perc(?:et|es|ig)?(?![a-z])").matcher(s);
+            if (mk.find())
+                s = s.substring(0, mk.start())
+                        + (2 * Integer.parseInt(mk.group(1))) + " perc"
+                        + s.substring(mk.end());
+        }
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
