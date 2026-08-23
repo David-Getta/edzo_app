@@ -482,6 +482,9 @@ public final class BodyParse {
         // A RAJTAM mért szám az enyém, akárki olvasta le a mérleget: az
         // „az orvosnál 84 kg-ot mértek rajtam" eddig másénak látszott.
         s = s.replaceAll("mertek\\s+rajtam", "mertem");
+        // A RENDELŐBEN mért szám is az enyém: a „a recepción mérték:
+        // 78,4 kg" mérése harmadik személyű igén ült, és elveszett.
+        s = s.replaceAll("(?<![a-z])mertek\\s*:?\\s*(?=\\d)", "mertem ");
         // A TÁRGYRAGOS mérés kg nélkül is súly: az „én 84-et mértem ma"
         // mértékegység híján eddig elveszett.
         s = s.replaceAll("(?<![\\d,.])(\\d{2,3})\\s?-?[ae]?t\\s+mertem",

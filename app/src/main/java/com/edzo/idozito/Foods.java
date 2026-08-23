@@ -1492,6 +1492,13 @@ public final class Foods {
                 .matcher(q);
         while (cn.find())
             for (int k = cn.start(); k < cn.end(); k++) sb.setCharAt(k, ' ');
+        // A SZÁZALÉKOS zsír testzsír, nem olaj: a „78,4 kg, 17,9 százalék
+        // zsír" tíz gramm olajat írt az étkezésnaplóba.
+        java.util.regex.Matcher pz = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])\\d{1,2}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:szazalek\\w*|%)\\s?zsir\\w*").matcher(q);
+        while (pz.find())
+            for (int k = pz.start(); k < pz.end(); k++) sb.setCharAt(k, ' ');
         // A „-NAK SZÓLÓ" szólója nem szőlő: a „kezdő futóknak szóló tervet
         // követek" mellé száz gramm szőlő került a naplóba.
         java.util.regex.Matcher so = java.util.regex.Pattern.compile(
@@ -3990,8 +3997,10 @@ public final class Foods {
         if (!s.matches("(?s).*(?<![a-z])(?:biztos|szerintem|valoszinuleg"
                 // A „tudom, hogy csak víz" ugyanaz a magyarázat: a
                 // szaunában leadott kiló vize negyed liter ital lett.
-                + "|gondolom|lehet|nyilvan|talan|tudom)(?:,? hogy)?\\s+"
-                + "(?:csak\\s+)?(?:ez\\s+|az\\s+)?a?\\s?viz(?![a-z]).*")) return ms;
+                // A „de az csak víz" kötőszavas alakja is az.
+                + "|gondolom|lehet|nyilvan|talan|tudom|de)(?:,? hogy)?\\s+"
+                + "(?:csak\\s+)?(?:ez\\s+|az\\s+)?(?:csak\\s+)?"
+                + "a?\\s?viz(?![a-z]).*")) return ms;
         // Az ivás igéje csak akkor ment fel, ha UGYANARRA a vízre mutat: a
         // „tegnap este sokat ittam, szóval lehet csak víz" ivása az esti
         // italozásról szól, a víz ott is a mérleg magyarázata – mégis
@@ -4301,6 +4310,12 @@ public final class Foods {
             {"Palacsinta", "Hortobágyi palacsinta"},
             // A TÚRÓS palacsinta tölteléke túró: a „túrós palacsinta" mellé
             // eddig egy külön adag túró is bekerült.
+            // A DIÓS süti dísze a dió, nem külön marék: a „diós sütit
+            // ettem" mellé harminc gramm dió is került.
+            {"Dió", "Sütemény", "Kalács / bejgli", "Keksz", "Palacsinta"},
+            // A CUKKINIS lasagne rétege a cukkini: külön adag zöldségként
+            // is bekerült.
+            {"Cukkini", "Lasagne", "Rakott krumpli"},
             {"Túró", "Palacsinta", "Túrós batyu", "Túrós csusza",
                     // Az egybeírt túrórudi tövében is ott a túró szó.
                     "Túró rudi"},

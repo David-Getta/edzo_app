@@ -1275,6 +1275,15 @@ public class BodyParseTest {
                 + "84,5, már csak 4,5 kiló a cél.").kg, 0.01);
     }
 
+    @Test public void aReceptionMeasurementIsMine() {
+        // A „recepción mérték: 78,4 kg, 17,9 százalék zsír" mérése a
+        // harmadik személyű igén ült, és elveszett.
+        BodyParse.Body b = BodyParse.parse("A recepción mérték: 78,4 kg, "
+                + "17,9 százalék zsír.");
+        assertEquals(78.4, b.kg, 0.01);
+        assertEquals(17.9, b.fatPct, 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

@@ -1495,6 +1495,20 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z\\d])(?:\\d{1,2}\\s?-?szor|ketszer"
                 + "|haromszor|negyszer|otszor)\\s+"
                 + "(?=huztam|nyomtam|toltam|emeltem)", "");
+        // A FÉLBESZAKADT edzés km-nél írt táva megtett táv: a „nyári
+        // zápor szakította félbe a tekerést 32 km-nél" harminckettője a
+        // -nél rag miatt kiesett, és a tekerés táv nélkül maradt.
+        if (s.matches("(?s).*(?<![a-z])(?:szakit\\w*|abbahagyt\\w*"
+                + "|feladt\\w*|megallit\\w*|leallit\\w*)(?![a-z]).*"))
+            s = s.replaceAll("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                    + "\\s?km-?n[ae]l(?![a-z])", "$1 km");
+        // A BEFIZETETT díj nem edzés: az „úszásoktatás díját befizettem,
+        // 8 alkalom 24 000 Ft" negyvenöt perc úszást írt a naplóba – a
+        // pénztárnál. A forintos tagmondat is a pénztárcáé.
+        s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*dij\\w*\\s+"
+                + "(?:be)?fizet\\w*[^,;.]*", " ");
+        s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*\\d[\\d ]*\\s?"
+                + "(?:ft|forint\\w*)(?![a-z])[^,;.]*", " ");
         // A JELZŐS kilométer is kilométer: a „bejárattam az új futócipőt,
         // 3 könnyű kilométer" hármasa a jelző miatt levált a távról, és a
         // bejegyzésből semmi nem lett.

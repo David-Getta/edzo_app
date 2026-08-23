@@ -8852,6 +8852,25 @@ public class ActivitiesParseTest {
      * vissza, a „holtemelésem új csúcsa 180 kg, háromszor húztam meg"
      * pedig három kondi-edzés lett, három napra szétosztva.
      */
+    /**
+     * A félbeszakadt tekerés táva és a befizetett díj.
+     *
+     * A „nyári zápor szakította félbe a tekerést 32 km-nél" táv nélkül
+     * maradt, az „úszásoktatás díját befizettem, 8 alkalom 24 000 Ft"
+     * pedig negyvenöt perc úszást írt a naplóba – a pénztárnál.
+     */
+    @Test
+    public void anInterruptedRideAndAPaidFee() {
+        assertEquals(32.0, Activities.parse("Nyári zápor szakította "
+                + "félbe a tekerést 32 km-nél, beáztam rendesen.")
+                .plans.get(0).km, 0.01);
+        assertTrue(Activities.parse("Az úszásoktatás díját befizettem, "
+                + "8 alkalom 24 000 Ft.").plans.isEmpty());
+        // A jelzőtábla melletti km-nél marad érintetlen.
+        assertTrue(Activities.parse("Láttam egy 5 km-nél jelzőtáblát.")
+                .plans.isEmpty());
+    }
+
     @Test
     public void anAdjectiveKilometerAndATripleLockout() {
         assertEquals(3.0, Activities.parse("Bejárattam az új futócipőt, "

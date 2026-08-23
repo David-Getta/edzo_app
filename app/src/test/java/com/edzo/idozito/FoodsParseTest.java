@@ -2520,6 +2520,24 @@ public class FoodsParseTest {
     }
 
     /**
+     * A diós süti dísze és a cukkinis lasagne rétege nem külön adag.
+     */
+    @Test public void adjectiveIngredientsStayInTheirDish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> d = Foods.parse(all, "Diós sütit ettem, két kis "
+                + "kockát.");
+        assertEquals(1, d.size());
+        assertEquals("Sütemény", d.get(0).food.name);
+        List<Foods.Hit> c = Foods.parse(all, "Cukkinis lasagne volt, "
+                + "két adagot ettem.");
+        assertEquals(1, c.size());
+        assertEquals("Lasagne", c.get(0).food.name);
+        // A magában evett dió marad dió.
+        assertEquals("Dió", Foods.parse(all, "Diót ettem, egy nagy "
+                + "marékkal.").get(0).food.name);
+    }
+
+    /**
      * A neszkávé is kávé.
      */
     @Test public void nescafeIsCoffee() {
