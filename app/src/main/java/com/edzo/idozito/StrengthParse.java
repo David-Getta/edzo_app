@@ -421,6 +421,44 @@ public final class StrengthParse {
         // kézisúlyzókkal" sorozata eddig nyomtalanul eltűnt.
         text = text.replaceAll("(?iu)(?<![\\p{L}])v[aá]llgyakorlat",
                 "vállemelés");
+        // A KÖRÖNKÉNTI ismétlés-lista a felsorolt gyakorlatoké, sorban:
+        // az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás,
+        // körönként 10-10-5" bejegyzésében csak a guggolás maradt meg –
+        // a másik két gyakorlat nyomtalanul eltűnt, a „10-10-5" pedig
+        // egyetlen furcsa sorozat lett belőle.
+        java.util.regex.Matcher kr = java.util.regex.Pattern.compile(
+                "(?iu)(?<![\\p{L}\\d])(\\d{1,2})\\s?k[oö]r"
+                + "[^\\p{L}\\d]{0,3}(.*?)"
+                + "k[oö]r[oö]nk[eé]nt\\s+(\\d{1,3}(?:\\s?-\\s?\\d{1,3})+)")
+                .matcher(text);
+        if (kr.find()) {
+            String[] reps = kr.group(3).split("\\s?-\\s?");
+            String[] names = kr.group(2).split("[,;:]");
+            StringBuilder nb = new StringBuilder();
+            int used = 0;
+            for (String n : names) {
+                String t = n.trim();
+                if (t.isEmpty() || t.matches("(?s).*\\d.*")
+                        || nameIn(t) == null) continue;
+                if (used >= reps.length) break;
+                if (nb.length() > 0) nb.append(", ");
+                nb.append(t).append(' ').append(kr.group(1)).append('x')
+                        .append(reps[used].trim());
+                used++;
+            }
+            if (used >= 2)
+                text = text.substring(0, kr.start()) + nb
+                        + text.substring(kr.end());
+        }
+        // Az EGYETLEN körönkénti szám is sorozat: az „5 kör, körönként
+        // 15 guggolás" TIZENÖT ismétlést írt be egyetlen sorozatként –
+        // a hetvenöt helyett.
+        // Csak az EGYETLEN gyakorlatot soroló, mondatvégi alak: a több
+        // gyakorlatos köredzést („3 kör, körönként 12 guggolás, 10
+        // evezés") a kör-olvasó a maga módján bontja.
+        text = text.replaceAll("(?iu)(?<![\\p{L}\\d])(\\d{1,2})\\s?k[oö]r"
+                + "[^\\p{L}\\d]{0,3}\\s*k[oö]r[oö]nk[eé]nt\\s+"
+                + "(\\d{1,3})\\s+(\\p{L}{3,})\\s*[.!]?\\s*$", "$3 $1x$2");
         // A LISTA VÉGÉN álló sorozat MINDEGYIK gyakorlaté: a „mellgép,
         // hátgép, lábgép, 3x12" második és harmadik gépe nyomtalanul
         // elveszett – a sorozat csak az elsőhöz tapadt. Csak akkor

@@ -2012,6 +2012,28 @@ public class StrengthParseTest {
     }
 
     /**
+     * A körönkénti ismétlés-lista a felsorolt gyakorlatoké, sorban.
+     *
+     * Az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás, körönként
+     * 10-10-5" bejegyzésében csak a guggolás maradt meg, „10-10-5"
+     * ismétléssel; a másik két gyakorlat nyomtalanul eltűnt.
+     */
+    @Test public void perRoundRepsSpreadAcrossTheExercises() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Összesen "
+                + "4 kör: guggolás, fekvőtámasz, húzódzkodás, körönként "
+                + "10-10-5.");
+        assertEquals(3, it.size());
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(10, it.get(0).sets.get(0).reps);
+        assertEquals(5, it.get(2).sets.get(0).reps);
+        // Az egyetlen gyakorlat körönkénti száma is sorozat.
+        List<StrengthParse.Item> one = StrengthParse.parse("5 kör, "
+                + "körönként 15 guggolás.");
+        assertEquals(5, one.get(0).sets.size());
+        assertEquals(15, one.get(0).sets.get(0).reps);
+    }
+
+    /**
      * A lista végén álló sorozat mindegyik gyakorlaté.
      *
      * A „mellgép, hátgép, lábgép, 3x12" második és harmadik gépe
