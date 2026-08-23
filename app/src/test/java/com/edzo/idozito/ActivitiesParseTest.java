@@ -9069,4 +9069,25 @@ public class ActivitiesParseTest {
                 + "parkban.").plans.get(0).kind.id);
     }
 
+    /**
+     * Az „ebből" a részt mondja ki, és a terem mérlege sem edzés.
+     *
+     * Az „uszodában 45 perc, ebből 30 perc úszás, 15 perc vízitorna"
+     * mellé egy második, tizenöt perces úszás is bekerült; az
+     * „edzőterem saját mérlege 1,5 kilót többet mutat" pedig egy órás
+     * kondit írt a naplóba.
+     */
+    @Test
+    public void aPartOfTheTotalAndTheGymsOwnScale() {
+        Activities.Parsed u = Activities.parse("Uszodában 45 perc, "
+                + "ebből 30 perc úszás, 15 perc vízitorna.");
+        assertEquals(1, u.plans.size());
+        assertEquals(45, u.plans.get(0).minutes);
+        assertTrue(Activities.parse("Az edzőterem saját mérlege 1,5 "
+                + "kilót többet mutat, mint az otthoni.").plans.isEmpty());
+        // A lépésekből levont futás marad két külön tétel.
+        assertEquals(2, Activities.parse("Ma 12 500 lépés, ebből 5 km "
+                + "futás volt.").plans.size());
+    }
+
 }

@@ -1466,6 +1466,10 @@ public final class Activities {
         // 84,2 voltam" mérése mellé egy órás kondi került – a terem
         // szavából.
         s = s.replaceAll("(?<![a-z])(?:edzoterem\\w*|konditerem\\w*)\\s+"
+                // A birtokos jelző beékelődhet: az „edzőterem SAJÁT
+                // mérlege 1,5 kilót többet mutat" mellé is egy órás kondi
+                // került a naplóba.
+                + "(?:sajat\\s+|uj\\s+|regi\\s+|digitalis\\s+)?"
                 + "(?=merleg)", "");
         // A „SOK X-TÓL" ok, nem mai edzés: a „nyugalmi pulzusom lement
         // 52-re a sok futástól" futása a magyarázat, mégis negyvenöt
@@ -5059,6 +5063,25 @@ public final class Activities {
                 for (int[] m : mins) if (m[1] == out.get(k2).minutes) said2 = true;
                 out.remove(said2 ? k1 : k2);
             }
+        }
+        // Az „EBBŐL" a részt mondja ki, nem egy másik alkalmat: az
+        // „uszodában 45 perc, ebből 30 perc úszás, 15 perc vízitorna"
+        // mellé egy MÁSODIK, tizenöt perces úszás is bekerült –
+        // hatvan perc abból a negyvenötből, ami megvolt. Azonos
+        // mozgásformánál a hosszabb, összesítő tétel marad.
+        if (beforeBlank.matches("(?s).*(?<![a-z])(?:ebbol|amibol|ebben"
+                + "|beleertve|azon belul|ezen belul)(?![a-z]).*")
+                && out.size() > 1) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out) {
+                boolean covered = false;
+                for (Plan o : out)
+                    if (o != p && o.kind == p.kind && o.km <= 0 && p.km <= 0
+                            && o.steps <= 0 && p.steps <= 0
+                            && o.minutes > p.minutes) covered = true;
+                if (!covered) kept.add(p);
+            }
+            if (!kept.isEmpty()) out = kept;
         }
         // A JÁTÉK perce ugyanannak az edzésnek a másik fele: a „vízilabda
         // edzésen 30 perc úszás és 45 perc játék volt" negyvenöt perce
