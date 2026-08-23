@@ -7842,6 +7842,26 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A második napszak ideje ugyanazé a mozgásé.
+     *
+     * A „ma reggel 40 perc séta, délután még 20 perc" NYOMTALANUL eltűnt:
+     * a két idő összevonása a séta nevét is elvitte a számok közül, és a
+     * mondat mozgás nélkül maradt. A „délután még 20" húsz perce pedig
+     * egyszerűen elveszett – a záró tagmondatban idő állt, más semmi.
+     */
+    @Test public void theSecondDayPartKeepsTheSport() {
+        Activities.Parsed p = Activities.parse("Ma reggel 40 perc séta, "
+                + "délután még 20 perc.");
+        assertEquals(1, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes);
+        assertEquals("tura", p.plans.get(0).kind.id);
+        int sum = 0;
+        for (Activities.Plan q : Activities.parse("Ma reggel a kutyával "
+                + "40 perc séta, délután még 20.").plans) sum += q.minutes;
+        assertEquals(60, sum);
+    }
+
+    /**
      * A bemelegítés az edzés szakasza, nem maga az edzés.
      *
      * Az „edzőteremben 40 percet töltöttem, ebből 10 perc bemelegítés"

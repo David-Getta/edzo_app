@@ -2209,7 +2209,19 @@ public final class Activities {
             if (mp.find()) {
                 int total = Integer.parseInt(mp.group(1))
                         + Integer.parseInt(mp.group(2));
+                // A KÖZTES szöveg a MOZGÁS NEVE is lehet: a „ma reggel 40
+                // perc séta, délután még 20 perc" összevonása eddig a
+                // sétát is elvitte a két szám közül, és az egész bejegyzés
+                // NYOMTALANUL eltűnt – a nap egy órája. Az ismétlés és a
+                // napszak szava kiesik, a mozgás neve marad.
+                String mid = s.substring(mp.end(1), mp.start(2))
+                        .replaceFirst("^\\s?perc(?:et|ig|re|ot)?", " ")
+                        .replaceAll("(?<![a-z])(?:meg|megint|ujra|pedig"
+                            + "|reggel|delelott|delben|delutan|este|ejjel"
+                            + "|hajnalban|masodszor)(?![a-z])", " ")
+                        .replaceAll("[,;]", " ").replaceAll("\\s+", " ").trim();
                 s = s.substring(0, mp.start()) + total + " perc"
+                        + (mid.isEmpty() ? "" : " " + mid)
                         + s.substring(mp.end());
             }
         }
@@ -3378,6 +3390,20 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // A MÁSODIK NAPSZAK ideje ugyanazé a mozgásé: a „ma reggel 40 perc
+        // séta, délután még 20 perc" NYOMTALANUL eltűnt (a gazdátlan idő az
+        // egész bejegyzést elnémította), a „délután még 20" húsz perce
+        // pedig egyszerűen elveszett. A záró tagmondatban a napszak és egy
+        // idő áll, más semmi – a mozgás neve csak az első tagmondatban
+        // hangzott el, de mindkettőre vonatkozik.
+        String dayPart = "(?:reggel|delelott|delben|delutan|este|ejjel"
+                + "|hajnalban|masodszor)";
+        s = s.replaceAll("(?<![a-z])(\\p{L}{3,20})\\s*([,;]\\s*" + dayPart
+                + "\\s+(?:meg\\s+|pedig\\s+|ujra\\s+|megegyszer\\s+)?"
+                + "\\d{1,3}\\s?(?:perc|ora)\\w*)(?![^,;.]*\\p{L})", "$1$2 $1");
+        s = s.replaceAll("(?<![a-z])perc\\w*\\s+(\\p{L}{3,20})\\s*([,;]\\s*"
+                + dayPart + "\\s+(?:meg\\s+|pedig\\s+|ujra\\s+|megegyszer\\s+)?"
+                + "\\d{1,3})(?![^,;.]*[\\p{L}\\d])", "perc $1$2 perc $1");
         // A KÉZI KEZELÉS nem kézilabda: a „terápián 20 perc biciklizés és
         // 20 perc kézi kezelés volt" húsz perc KÉZILABDÁT írt a naplóba, a
         // „kézi kezelést kaptam a hátamra" pedig egy másfél órás meccset –
