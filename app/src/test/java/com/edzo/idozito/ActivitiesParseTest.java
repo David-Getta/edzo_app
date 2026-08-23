@@ -9305,4 +9305,25 @@ public class ActivitiesParseTest {
                 + "20 perc.").plans.get(0).minutes);
     }
 
+    /**
+     * A körök a bennük futott távot is szorozzák.
+     *
+     * A „reggeli edzésen 3 kör: 400 m futás, 20 guggolás, 10
+     * fekvőtámasz" NÉGYSZÁZ méteres futást írt a naplóba az
+     * ezerkétszáz helyett – pedig a sorozatokat már háromszorosan
+     * számolta.
+     */
+    @Test
+    public void roundsMultiplyTheDistanceInsideThem() {
+        Activities.Parsed p = Activities.parse("A reggeli edzésen 3 kör: "
+                + "400 m futás, 20 guggolás, 10 fekvőtámasz.");
+        double km = 0;
+        for (Activities.Plan pl : p.plans)
+            if ("futas".equals(pl.kind.id)) km = pl.km;
+        assertEquals(1.2, km, 0.01);
+        // A pálya hossza körökkel szorozva marad a régi olvasat.
+        assertEquals(2.0, Activities.parse("5 kör a 400 m-es pályán.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

@@ -1745,6 +1745,28 @@ public final class Activities {
                     Math.max(3, ns.group(1).length() - 4));
             s = s.replaceAll("(?<![a-z])" + stem + "\\w*", " ");
         }
+        // A KÖRÖK a benne futott távot is szorozzák: a „reggeli edzésen
+        // 3 kör: 400 m futás, 20 guggolás, 10 fekvőtámasz" NÉGYSZÁZ
+        // méteres futást írt a naplóba – az ezerkétszáz helyett. A
+        // sorozatokat a súlyzós olvasó már így számolja.
+        {
+            java.util.regex.Matcher kk = java.util.regex.Pattern.compile(
+                    "(?<![\\dx,.])(\\d{1,2})\\s?kor\\s*[:,]").matcher(s);
+            if (kk.find()) {
+                int rounds = Integer.parseInt(kk.group(1));
+                if (rounds >= 2 && rounds <= 20) {
+                    java.util.regex.Matcher dm = java.util.regex.Pattern.compile(
+                            "(?<![\\dx,.])(\\d{2,4})\\s?m(?![a-z])"
+                            + "(?=[^,;.]{0,12}fut)").matcher(s);
+                    if (dm.find() && dm.start() > kk.end()) {
+                        int tot = rounds * Integer.parseInt(dm.group(1));
+                        if (tot <= 60000)
+                            s = s.substring(0, dm.start()) + tot + " m"
+                                    + s.substring(dm.end());
+                    }
+                }
+            }
+        }
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
