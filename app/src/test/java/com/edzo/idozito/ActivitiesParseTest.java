@@ -7842,6 +7842,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „csak" nem választja el a mát a számtól.
+     *
+     * A „két hét múlva lesz a félmaraton, ma csak 6 km lazítás" hat
+     * kilométere NYOMTALANUL eltűnt: a vezető terv-tagmondat az egész
+     * bejegyzést elnémította, mert a mai beszámolót ige helyett szám
+     * jelölte, és közé egyetlen módosítószó ékelődött.
+     */
+    @Test public void anOnlyDoesNotSilenceTodaysRun() {
+        Activities.Parsed p = Activities.parse("Két hét múlva lesz a "
+                + "félmaraton, ma csak 6 km lazítás.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertEquals(6.0, Activities.parse("Holnap lesz a verseny, ma "
+                + "csak 6 km lazítás.").plans.get(0).km, 0.01);
+    }
+
+    /**
      * A nevezett táv és az égetés eszköze nem mai edzés.
      *
      * Az „a 10k-s versenyre neveztem, október 12-én lesz, ma 6 km

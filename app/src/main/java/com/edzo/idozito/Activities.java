@@ -5569,7 +5569,13 @@ public final class Activities {
                 // lesz, ma 6 km alapozás" hatosa valódi mai futás – ige
                 // híján a vezető terv-tagmondat eddig állva maradt, és a
                 // jövő-felismerő az egészet elnémította.
-                || s.matches("(?s).*(?<![a-z])ma\\s+\\d.*");
+                // A „CSAK" nem választja el a mát a számtól: a „két hét
+                // múlva lesz a félmaraton, ma csak 6 km lazítás" hat
+                // kilométere NYOMTALANUL eltűnt – a vezető terv-tagmondat
+                // az egész bejegyzést elnémította, mert a „ma" és a szám
+                // közé egyetlen módosítószó ékelődött.
+                || s.matches("(?s).*(?<![a-z])ma\\s+(?:csak|mar|meg|viszont"
+                        + "|pedig|is|osszesen|kb\\.?|korulbelul)?\\s*\\d.*");
     }
 
     /**
