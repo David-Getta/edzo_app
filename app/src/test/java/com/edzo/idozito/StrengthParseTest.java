@@ -915,6 +915,27 @@ public class StrengthParseTest {
         assertSets("3 sorozat 1 perc plank", "Plank", 3, 60, 0);
     }
 
+    /**
+     * A sorozatszám a súly mellett valódi napló.
+     *
+     * A „4 sorozat lehúzást csináltam 55 kg-mal" NYOMTALANUL eltűnt az
+     * erőnaplóból: ismétlésszám nélkül a gyakorlat nem talált sorozatot,
+     * pedig a súly és a sorozatszám is ki volt mondva. Ilyenkor egy
+     * ismétlés a becslés – a rekordokban a kiló a fontos.
+     */
+    @Test public void aSetCountBesideAWeightIsALog() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "4 sorozat lehúzást csináltam 55 kg-mal, meg 3x10 evezést 40-nél.");
+        assertEquals(2, it.size());
+        assertEquals("Lehúzás", it.get(0).name);
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(55.0, it.get(0).topWeight(), 0.01);
+        assertEquals("Evezés", it.get(1).name);
+        assertEquals(10, it.get(1).sets.get(0).reps);
+        // Súly nélkül továbbra sincs kitalált sorozat.
+        assertTrue(StrengthParse.parse("3 sorozat guggolás").isEmpty());
+    }
+
     private static void assertSets(String q, String name, int sets, int reps, double kg) {
         List<StrengthParse.Item> it = StrengthParse.parse(q);
         assertEquals(q, 1, it.size());

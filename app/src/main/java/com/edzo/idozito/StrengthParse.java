@@ -740,6 +740,33 @@ public final class StrengthParse {
         // pihenő másodperce nem lesz belőle kiló.
         text = text.replaceAll("(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s?/\\s?"
                 + "\\d{1,3}(?![\\d,.])", "$1");
+        // A SOROZATSZÁM a súly mellett valódi napló: a „4 sorozat lehúzást
+        // csináltam 55 kg-mal" NYOMTALANUL eltűnt az erőnaplóból, mert
+        // ismétlésszám nélkül nem talált sorozatot – pedig a súly és a
+        // sorozatszám is ki volt mondva. Ilyenkor egy ismétlés a becslés:
+        // a rekordokban a kiló a fontos, és a puszta „3 sorozat guggolás"
+        // (súly nélkül) továbbra sem lesz kitalált sorozat.
+        if (text.matches("(?siu).*(?:sorozat|szett|set)\\p{L}*.*")) {
+            String[] cls = text.split("(?<=[,;.])");
+            StringBuilder sb = new StringBuilder();
+            for (String cl : cls) {
+                // A kimondott ismétlésszám mellől nem kell becslés: a
+                // „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel"
+                // sorozatait a rep-lista adja meg.
+                boolean rep = cl.matches("(?siu).*(?:ism[eé]tl|\\d\\s?[x×]\\s?\\d"
+                        + "|\\d\\s?db|(?<![\\p{L}])ism(?![\\p{L}])).*");
+                // A sorozatszám UTÁN álló szám a maga jogán ismétlés vagy
+                // súly – a „3 sorozat 60 kg guggolás" szándékosan üres
+                // marad. Csak a gyakorlat NEVE követheti a becsléshez.
+                if (!rep && cl.matches("(?siu).*\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
+                        + "(?:kg|kil[oó]).*"))
+                    cl = cl.replaceAll("(?iu)(?<![\\d,.\\p{L}])(\\d{1,2})\\s?"
+                            + "(?:sorozat|szett|set)(?:ot|et|ban|ben|[eé]rt)?"
+                            + "(?![\\p{L}])\\s+(?=\\p{L})", "$1x1 ");
+                sb.append(cl);
+            }
+            text = sb.toString();
+        }
         String clean = dropDumbbellPair(maskDistance(maskClock(maskLyingDown(
                 kgBeforeMultiplier(joinRepList(stripPercent(stripListMarkers(
                         Hu.correction(Foods.norm(text))))))))));

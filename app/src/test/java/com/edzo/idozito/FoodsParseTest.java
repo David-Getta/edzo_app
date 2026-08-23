@@ -2652,4 +2652,23 @@ public class FoodsParseTest {
         assertEquals("Gyümölcsturmix / smoothie", Foods.parse(all,
                 "Ittam egy smoothie-t az edzés után.").get(0).food.name);
     }
+
+    /**
+     * A meghagyott étel nem megevett étel.
+     *
+     * Az „ebédre levest ettem, de a körtét meghagytam" körtéje a naplóba
+     * került – pont abból, ami a tányéron maradt. A tagadó ige itt az
+     * étel MÖGÖTT áll, ezért az előre néző tagadás-szabályok egyike sem
+     * érte el.
+     */
+    @Test public void whatIsLeftOnThePlateIsNotEaten() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Ebédre levest ettem, de a "
+                + "körtét meghagytam.");
+        for (Foods.Hit x : h) assertFalse(x.food.name.equals("Körte"));
+        assertFalse(h.isEmpty());
+        // A tört rész marad megevett étel: a felét megette.
+        assertFalse(Foods.parse(all, "Ettem egy pizzát, a felét "
+                + "meghagytam.").isEmpty());
+    }
 }

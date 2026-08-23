@@ -4858,6 +4858,25 @@ public final class Foods {
                 p = q.indexOf(w, p + 1);
             }
         }
+        // A MEGHAGYOTT étel nem megevett étel: az „ebédre levest ettem, de a
+        // körtét meghagytam" körtéje a naplóba került – pont abból, ami a
+        // tányéron maradt. A tagadó ige itt az étel MÖGÖTT áll, ezért az
+        // eddigi előre néző szabályok egyike sem érte el. A tört rész („a
+        // felét meghagytam") szándékosan kimarad: azt a hányad-számoló
+        // viszi, és a fele adag megevett étel.
+        for (String w : new String[]{"meghagytam", "meghagytuk", "meghagyta",
+                "otthagytam", "otthagytuk", "otthagyta"}) {
+            int p = q.indexOf(w);
+            while (p >= 0) {
+                int cs = p;
+                while (cs > 0 && !isBreak(q.charAt(cs - 1))) cs--;
+                if (!q.substring(cs, p).matches("(?s).*(?<![a-z])(felet"
+                        + "|harmadat|negyedet|ketharmadat|nagy reszet"
+                        + "|tobbseget)(?![a-z]).*"))
+                    for (Match m : in) if (m.pos >= cs && m.pos < p) dead.add(m);
+                p = q.indexOf(w, p + 1);
+            }
+        }
         if (dead.isEmpty()) return in;
         List<Match> out = new ArrayList<>();
         for (Match m : in) if (!dead.contains(m)) out.add(m);
