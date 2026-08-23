@@ -3297,6 +3297,16 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"
                 + "(?:egy\\s+|az?\\s+)?", "fél ");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
+        // A RÁNTOTTA darabszáma a FELHASZNÁLT TOJÁS: az „egy tojásrántotta
+        // három tojásból" egyetlen tojásnyi rántottát írt a naplóba – 55
+        // grammot a százhatvanötből. Az „egy" a fogást számolta, a három
+        // meg a hozzávalót, és a tojások száma a fogás MÖGÖTT állt. A szám
+        // a fogás elé kerül, darabszámként.
+        query = query.replaceAll("(?iu)(?:(?<!\\p{L})(?:egy|1)\\s+)?"
+                + "((?:toj[aá]s)?(?:r[aá]ntott[aá]|omlett)\\p{L}*)"
+                + "\\s+(?:\\p{L}+\\s+){0,2}?"
+                + "(\\d{1,2}|k[eé]t|kett[oő]|h[aá]rom|n[eé]gy|[oö]t|hat)"
+                + "\\s?toj[aá]sb[oó]l(?!\\p{L})", "$2 db $1");
         // A FELESBEN ivott turmix fejenként fél: az „ittunk egy protein
         // shake-et felesben a párommal" egész adagként ment be. A szó a
         // kettéosztás bevett alakja – a „ketten" szabálya érti.

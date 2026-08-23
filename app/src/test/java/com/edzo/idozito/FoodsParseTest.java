@@ -2654,6 +2654,25 @@ public class FoodsParseTest {
     }
 
     /**
+     * A rántotta darabszáma a felhasznált tojás.
+     *
+     * Az „egy tojásrántotta három tojásból" egyetlen tojásnyi rántottát írt
+     * a naplóba – 55 grammot a százhatvanötből. Az „egy" a fogást
+     * számolta, a három meg a hozzávalót, és a tojások száma a fogás
+     * MÖGÖTT állt. A fordított szórend („három tojásból rántotta") régóta
+     * jól működött – ugyanaz a reggeli kétféle számot kapott.
+     */
+    @Test public void theEggsMakeTheOmelette() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(165, Foods.parse(all, "Reggel egy tojásrántotta három "
+                + "tojásból, két szelet bacon.").get(0).grams, 0.5);
+        assertEquals(165, Foods.parse(all, "Reggel egy rántotta 3 "
+                + "tojásból.").get(0).grams, 0.5);
+        assertEquals(110, Foods.parse(all, "Egy omlett két tojásból.")
+                .get(0).grams, 0.5);
+    }
+
+    /**
      * A számjegyes ráadás is hozzáadódik.
      *
      * A „reggel ettem 2 szelet kenyeret, aztán még 3-at" háromja elveszett:

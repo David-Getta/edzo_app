@@ -168,7 +168,10 @@ public final class StrengthParse {
             {"Hátizom gép", "hatizom", "hatgep"},
             // A PEK DECK a mellgép angol neve – eddig üresen jött vissza.
             {"Mellgép", "mellgep", "pek deck", "pekdeck", "peck deck",
-                    "tarogat", "pillango", "mellnyom", "mellrepul", "butterfly",
+                    // A TÁRÁZÁS a terem szlengje ugyanerre: a „tárázás 3x12
+                    // 10 kg" eddig üresen jött vissza.
+                    "tarogat", "taraz", "pillango", "mellnyom", "mellrepul",
+                    "butterfly",
                     "chest press", "pec deck", "pecdeck",
                     // A kábeles keresztezés ugyanaz a mozgás, más eszközzel.
                     "keresztez", "cable cross", "crossover", "kabelkereszt"},

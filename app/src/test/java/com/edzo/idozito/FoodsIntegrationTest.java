@@ -51,7 +51,10 @@ public class FoodsIntegrationTest {
                 summary("sörözés: 3 korsó sör és egy hamburger"));
         assertEquals("Chips 50g + Csokoládé 25g",
                 summary("nassoltam egy zacskó chipset meg egy csokit"));
-        assertEquals("Rántotta 150g + Paradicsom 100g",
+        // Három tojás három darab: a fordított szórend („3 tojásból
+        // rántotta") régóta ennyit ad, a „rántotta 3 tojásból" viszont a
+        // tipikus adagot adta – ugyanaz a vacsora kétféle számot kapott.
+        assertEquals("Rántotta 165g + Paradicsom 100g",
                 summary("vacsira rántotta 3 tojásból, paradicsommal"));
     }
 
