@@ -2011,4 +2011,17 @@ public class StrengthParseTest {
         assertEquals(5, pr.get(2).sets.size());
     }
 
+    /**
+     * A zárójel mögött álló gyakorlat is megvan.
+     *
+     * A „3 kör (10 guggolás + 10 fekvő + 10 hasizom)" guggolása
+     * nyomtalanul elveszett – a nyitó zárójel a kör számához tapadt.
+     */
+    @Test public void aParenthesizedFirstExerciseSurvives() {
+        List<StrengthParse.Item> it = StrengthParse.parse("3 kör "
+                + "(10 guggolás + 10 fekvő + 10 hasizom).");
+        assertEquals(3, it.size());
+        assertEquals("Guggolás", it.get(0).name);
+    }
+
 }

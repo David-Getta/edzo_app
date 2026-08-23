@@ -8761,4 +8761,24 @@ public class ActivitiesParseTest {
                 + "új gépei jók.").plans.size());
     }
 
+    /**
+     * A kisfiam meccse az övé, a zárójeles kör pedig egy edzés.
+     *
+     * A „kisfiam első focimeccse volt" kilencven perc focit írt az apa
+     * naplójába; az „otthoni edzés: 3 kör (10 guggolás + 10 fekvő +
+     * 10 hasizom), kb 15 perc" pedig KÉT kondi-bejegyzést kapott, és a
+     * zárójel mögött a guggolás sora elveszett.
+     */
+    @Test
+    public void aSonsMatchAndAParenthesizedCircuit() {
+        assertTrue(Activities.parse("A kisfiam első focimeccse volt, "
+                + "büszke apa vagyok.").plans.isEmpty());
+        assertEquals(1, Activities.parse("A kisfiammal fociztunk "
+                + "30 percet.").plans.size());
+        Activities.Parsed c = Activities.parse("Otthoni edzés: 3 kör "
+                + "(10 guggolás + 10 fekvő + 10 hasizom), kb 15 perc.");
+        assertEquals(1, c.plans.size());
+        assertEquals(15, c.plans.get(0).minutes);
+    }
+
 }

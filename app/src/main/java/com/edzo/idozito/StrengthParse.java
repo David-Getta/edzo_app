@@ -381,6 +381,11 @@ public final class StrengthParse {
         // Az utolsó gyakorlat eltűnése a leglátványosabb adatvesztés, mert
         // a felhasználó pont azt írta le utoljára.
         text = text.replaceAll("[\\r\\n]+", ", ");
+        // A ZÁRÓJEL tagmondat-határ: a „3 kör (10 guggolás + 10 fekvő)"
+        // nyitó zárójele a kör számához tapadt, és a guggolás sora
+        // nyomtalanul elveszett. A számozott lista „1)" jelölője marad –
+        // azt a sorszám-maszkoló kezeli.
+        text = text.replaceAll("\\(|(?<!\\d)\\)", ", ");
         // A PERC ÉS MÁSODPERC együtt egyetlen idő: a „plank kihívás 12.
         // napja: ma 2 perc 15 másodperc" tartása 120 másodpercként ment be
         // a 135 helyett – az emelkedő kihívás épp attól kihívás, hogy a

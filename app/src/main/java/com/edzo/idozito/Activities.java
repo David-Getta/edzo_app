@@ -4817,6 +4817,25 @@ public final class Activities {
             }
             if (any) out = fixed;
         }
+        // KÉT kondi ugyanarról az edzésről: az „otthoni edzés: 3 kör (10
+        // guggolás…), kb 15 perc" egyszerre kapott egy ismétlésekből
+        // becsült ÉS egy kimondott hosszú kondi-bejegyzést – ugyanarról a
+        // negyedóráról. A kimondott hossz marad.
+        if (!lifts.isEmpty()) {
+            int k1 = -1, k2 = -1;
+            for (int i = 0; i < out.size(); i++) {
+                Plan p = out.get(i);
+                if ("kondi".equals(p.kind.id) && p.count == 1
+                        && p.km <= 0 && p.steps <= 0) {
+                    if (k1 < 0) k1 = i; else k2 = i;
+                }
+            }
+            if (k1 >= 0 && k2 >= 0) {
+                boolean said2 = false;
+                for (int[] m : mins) if (m[1] == out.get(k2).minutes) said2 = true;
+                out.remove(said2 ? k1 : k2);
+            }
+        }
         // Bejegyzés nélkül nincs mit szétosztani: a „3x12 evezés 50 kg"
         // sorozat-száma tizenkét naposra tágította az időszakot, pedig egy
         // mozgás sem került bele. Az üres eredmény mindig egyetlen nap.
@@ -8028,6 +8047,9 @@ public final class Activities {
             // 5 km-t futott ma, én csak 2 km-t sétáltam" öt kilométere is a
             // naplóba került. (A „szomszédom" már itt volt, a női alak nem.)
             "szomszedasszony", "szomszedasszonyom",
+            // A becézett gyerek is gyerek: a „kisfiam első focimeccse
+            // volt" kilencven perc focit írt az apa naplójába.
+            "kisfiam", "kislanyom",
             // A becézett szülő-nevek is alanyok: az „apu 10 km-t
             // biciklizett" az apa túrája volt, mégis a naplómba került.
             // A teljes alak (anya, apa, nagypapa) szándékosan nincs itt:
