@@ -1636,10 +1636,16 @@ public final class Activities {
         // volt gyorson, 400 m mellen, 200 m háton" ezerhatszáz métere
         // KÉT bejegyzésre esett szét, és a kétszáz méter el is veszett.
         if (s.matches("(?s).*(?<![a-z])usz\\w*.*")) {
+            // Az ÚSZÓK a mértékegységet is elhagyják: az „úszás: 400
+            // gyors, 200 hát, 400 gyors, 200 mell" ezerkétszáz métere
+            // NÉGYSZÁZ méterre zsugorodott. A szám a méteré, a mögötte
+            // álló úszásnem pedig a szakasz neve.
             java.util.regex.Matcher uw = java.util.regex.Pattern.compile(
-                    "(?<![\\d,.:])(\\d{2,4})\\s?m(?![a-z])\\s*"
-                    + "(?:volt\\s+)?(?=gyorson|mellen|haton|pillangon"
-                    + "|vegyesen|gyorsban|hatuszas|melluszas)").matcher(s);
+                    "(?<![\\d,.:])(\\d{2,4})\\s?m?(?![a-z0-9])\\s*"
+                    + "(?:volt\\s+)?(?=(?:gyorson|mellen|haton|pillangon"
+                    + "|vegyesen|gyorsban|hatuszas|melluszas"
+                    + "|gyors|mell|hat|pillango|vegyes)"
+                    + "(?![a-z]))").matcher(s);
             int usum = 0, ucount = 0, ufirst = -1;
             StringBuffer ub = new StringBuffer();
             while (uw.find()) {

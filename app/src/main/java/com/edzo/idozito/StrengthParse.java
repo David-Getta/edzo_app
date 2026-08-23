@@ -474,6 +474,14 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\p{L}\\d])(\\d{1,2})\\s?k[oö]r"
                 + "[^\\p{L}\\d]{0,3}\\s*k[oö]r[oö]nk[eé]nt\\s+"
                 + "(\\d{1,3})\\s+(\\p{L}{3,})\\s*[.!]?\\s*$", "$3 $1x$2");
+        // A SÚLY az első tagmondatban, az ismétlés-lista a másodikban: a
+        // „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel" sorozata
+        // SAJÁT TESTSÚLLYAL került be – a tizenkét kiló elveszett a
+        // tagmondat-határon.
+        text = text.replaceAll("(?iu)(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+                + "(?:kg|kil[oó])(?:val|s|os)?\\s*,\\s*"
+                + "((?:\\d{1,3}\\s?-\\s?)+\\d{1,3})\\s+ism[eé]tl[eé]s"
+                + "\\w*", "$2 ismétléssel $1 kg");
         // A LISTA VÉGÉN álló sorozat MINDEGYIK gyakorlaté: a „mellgép,
         // hátgép, lábgép, 3x12" második és harmadik gépe nyomtalanul
         // elveszett – a sorozat csak az elsőhöz tapadt. Csak akkor

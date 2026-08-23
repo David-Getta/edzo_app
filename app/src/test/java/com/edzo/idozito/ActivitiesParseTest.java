@@ -9516,4 +9516,22 @@ public class ActivitiesParseTest {
         assertEquals(1.485, r.plans.get(0).km, 0.01);
     }
 
+    /**
+     * Az úszók a mértékegységet is elhagyják.
+     *
+     * Az „úszás: 400 gyors, 200 hát, 400 gyors, 200 mell" ezerkétszáz
+     * métere NÉGYSZÁZ méterre zsugorodott.
+     */
+    @Test
+    public void bareMeterStrokeSegmentsAddUp() {
+        Activities.Parsed p = Activities.parse("Úszás: 400 gyors, "
+                + "200 hát, 400 gyors, 200 mell");
+        assertEquals(1, p.plans.size());
+        assertEquals(1.2, p.plans.get(0).km, 0.01);
+        // A mértékegységgel írt szakaszok ugyanígy összeadódnak.
+        assertEquals(1.6, Activities.parse("Az úszásom 1000 m volt "
+                + "gyorson, 400 m mellen, 200 m háton.")
+                .plans.get(0).km, 0.01);
+    }
+
 }

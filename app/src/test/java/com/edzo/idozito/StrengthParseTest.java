@@ -2012,6 +2012,23 @@ public class StrengthParseTest {
     }
 
     /**
+     * A súly az első tagmondatban, az ismétlés-lista a másodikban.
+     *
+     * A „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel" sorozata
+     * saját testsúllyal került be – a tizenkét kiló elveszett a
+     * tagmondat-határon.
+     */
+    @Test public void aWeightBeforeTheRepListSurvives() {
+        List<StrengthParse.Item> it = StrengthParse.parse("3 szett "
+                + "bicepsz 12 kilóval, 12-10-8 ismétléssel");
+        assertEquals(1, it.size());
+        assertEquals(12.0, it.get(0).topWeight(), 0.01);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(12, it.get(0).sets.get(0).reps);
+        assertEquals(8, it.get(0).sets.get(2).reps);
+    }
+
+    /**
      * A vessző nélküli felsorolásban a név előtti szám a gyakorlaté.
      *
      * A „15 burpee 20 guggolás 10 fekvőtámasz" guggolása a TIZENÖTÖT
