@@ -2081,9 +2081,16 @@ public final class Activities {
         // kiindulópontot mondja, a játszótér-tő mégis egyéb mozgást írt be
         // a hazafelé futás MELLÉ. Csak megnevezett sport mellett esik ki –
         // magában a ragozott alak is játszótéri játék marad.
-        if (s.matches("(?s).*(?<![a-z])(?:futott\\w*|usz\\w*|tekert\\w*"
-                + "|kocog\\w*|setal\\w*)(?![a-z]).*"))
-            s = s.replaceAll("(?<![a-z])jatszoter\\w*rol(?![a-z])", " ");
+        // A CÉLPONT ragjai ugyanígy: a „délután a gyerekkel bicikliztünk
+        // 8 km-t a játszótérig és vissza" mellé egy háromnegyed órás
+        // „egyéb mozgás" is bekerült – a játszótér ott az útirány, nem egy
+        // külön délután a mászókán. A helyhatározós alak („játszótéren")
+        // marad játszótéri játék.
+        if (s.matches("(?s).*(?<![a-z])(?:el|le|ki|be|meg|at|vissza|oda)?"
+                + "(?:futott|usz|tekert|kocog|setal|biciklizt|bringazt"
+                + "|gyalogolt)\\w*(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])jatszoter\\w*"
+                    + "(?:rol|ig|re|hez|hoz|tol)(?![a-z])", " ");
         // A HÉTVÉGI ok nem hétvégi bejegyzés: az „a hétvégi túlórás munka
         // miatt csak ma jutottam el futni" futása a hétvégére került két
         // napra szétosztva – pedig a mondat kimondja, hogy MA volt.

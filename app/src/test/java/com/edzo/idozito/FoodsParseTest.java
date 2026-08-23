@@ -2654,6 +2654,26 @@ public class FoodsParseTest {
     }
 
     /**
+     * A gyűjtőnév a megnevezett fogás visszautalása.
+     *
+     * A „vacsorára sült lazac párolt zöldséggel, kb. 200 g hal" kétszáz
+     * grammja ugyanaz a lazac – a naplóba mégis a tipikus adag (150 g)
+     * került, mert a mennyiség a gyűjtőnév mellett ragadt, azt pedig
+     * visszautalásként kitakartuk.
+     */
+    @Test public void aCollectiveNounRestatesTheDish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (Foods.Hit h : Foods.parse(all, "Vacsorára sült lazac párolt "
+                + "zöldséggel, kb. 200 g hal."))
+            if (h.food.name.equals("Lazac")) assertEquals(200, h.grams, 0.5);
+        assertEquals(250, Foods.parse(all, "Ebédre pörkölt nokedlivel, "
+                + "kb 250 g hús.").get(0).grams, 0.5);
+        // A gyűjtőnév magában marad önálló étel.
+        assertEquals("Hal (fehér)", Foods.parse(all, "Vacsorára 300 g hal "
+                + "párolt zöldséggel.").get(0).food.name);
+    }
+
+    /**
      * A rántotta darabszáma a felhasznált tojás.
      *
      * Az „egy tojásrántotta három tojásból" egyetlen tojásnyi rántottát írt

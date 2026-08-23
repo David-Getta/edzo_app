@@ -3896,6 +3896,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A játszótér mint célpont nem játszótéri délután.
+     *
+     * A „délután a gyerekkel bicikliztünk 8 km-t a játszótérig és vissza"
+     * mellé egy háromnegyed órás „egyéb mozgás" is bekerült – a játszótér
+     * ott az útirány, nem egy külön délután a mászókán.
+     */
+    @Test public void aPlaygroundAsADestinationIsNotASession() {
+        Activities.Parsed p = Activities.parse("Délután a gyerekkel "
+                + "bicikliztünk 8 km-t a játszótérig és vissza.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("Elfutottam a játszótérig, 3 km.")
+                .plans.size());
+        // A helyhatározós alak marad játszótéri játék.
+        assertEquals(60, Activities.parse("Délután a játszótéren voltunk "
+                + "a gyerekkel 1 órát.").plans.get(0).minutes);
+    }
+
+    /**
      * A bemelegítés perce nem a súlyzós edzés hossza.
      *
      * Az „edzésen 10 perc bemelegítés, 5x3 guggolás 120 kg, 10 perc

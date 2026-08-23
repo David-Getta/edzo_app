@@ -3297,6 +3297,41 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"
                 + "(?:egy\\s+|az?\\s+)?", "fél ");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
+        // A GYŰJTŐNÉV a megnevezett fogás VISSZAUTALÁSA: a „vacsorára sült
+        // lazac párolt zöldséggel, kb. 200 g hal" kétszáz grammja ugyanaz a
+        // lazac – a naplóba mégis a tipikus adag (150 g) került, mert a
+        // mennyiség a gyűjtőnév mellett ragadt, azt pedig visszautalásként
+        // kitakartuk. A gyűjtőnév elhagyva a tagmondat puszta mennyiséggé
+        // válik, és a fogáshoz olvad.
+        // A kimondott DARABSZÁM mellett nem nyúlunk hozzá: ott a
+        // mennyiség már a fogáshoz talált, a gyűjtőnév elhagyása viszont a
+        // darabszámot a köretre engedné.
+        java.util.regex.Matcher rb = java.util.regex.Pattern.compile(
+                query.matches("(?siu).*\\d\\s*(?:db|darab)(?![\\p{L}]).*")
+                ? "(?!x)x" :
+                "(?iu)([,;]\\s*(?:kb\\.?|k[oö]r[uü]lbel[uü]l|nagyj[aá]b[oó]l)?"
+                + "\\s*\\d{1,4}(?:[.,]\\d{1,2})?\\s*(?:g|gr|gramm|dkg))"
+                + "\\s+(hal|h[uú]s|sajt)(?![\\p{L}])").matcher(query);
+        StringBuffer rbb = new StringBuffer();
+        boolean rbAny = false;
+        while (rb.find()) {
+            String head = Foods.norm(query.substring(0, rb.start()));
+            String[] mates = Foods.norm(rb.group(2)).startsWith("hal")
+                    ? new String[]{"lazac", "tonhal", "ponty", "pisztrang",
+                        "harcsa", "hekk", "tokehal", "halrud", "halaszle"}
+                    : Foods.norm(rb.group(2)).startsWith("sajt")
+                    ? new String[]{"trappista", "mozzarella", "cheddar",
+                        "parmezan", "feta", "camembert", "gouda"}
+                    : new String[]{"csirke", "sertes", "marha", "pulyka",
+                        "karaj", "tarja", "borda", "comb", "porkolt"};
+            boolean seen = false;
+            for (String w : mates) if (head.contains(w)) { seen = true; break; }
+            if (!seen) continue;
+            rb.appendReplacement(rbb,
+                    java.util.regex.Matcher.quoteReplacement(rb.group(1)));
+            rbAny = true;
+        }
+        if (rbAny) { rb.appendTail(rbb); query = rbb.toString(); }
         // A RÁNTOTTA darabszáma a FELHASZNÁLT TOJÁS: az „egy tojásrántotta
         // három tojásból" egyetlen tojásnyi rántottát írt a naplóba – 55
         // grammot a százhatvanötből. Az „egy" a fogást számolta, a három
