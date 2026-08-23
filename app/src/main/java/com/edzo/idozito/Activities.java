@@ -1600,6 +1600,11 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])(?:de\\s+)?csak\\s+"
                     + "(\\d{1,3}(?:[.,]\\d{1,2})?)[- ]?(?:et|at|ot)(?![a-z])",
                     "csak $1 km");
+            // Az „utolsó 2-t már sétáltam" ugyanez: a szám a kilométeré,
+            // enélkül a séta kitalált kilencven percet kapott.
+            s = s.replaceAll("(?<![a-z])(?:az?\\s+)?utolso\\s+"
+                    + "(\\d{1,3}(?:[.,]\\d{1,2})?)[- ]?(?:et|at|ot|t)"
+                    + "(?![a-z])", "utolso $1 km");
         // A TEGNAPI táv a tegnapi naplóé: a „tegnapi 12 km után ma csak
         // lazítottam, 20 perc görgő" TEGNAPRA írt egy tizenkét
         // kilométeres futást, a mai húsz perc lazítás meg elveszett
@@ -1678,13 +1683,21 @@ public final class Activities {
                     + "|ok|unk))\\s*(?:fel-?\\s?le|le-?\\s?fel|fel|le)?"
                     + "(?![a-z])", "lepcsoztem");
         java.util.regex.Matcher emx = java.util.regex.Pattern.compile(
-                "(?<![\\d,.])(\\d{1,2})\\s?-?szer\\s+(?:az?\\s+)?"
+                // A szorzó és az emelet közé beékelődhet az ige: a „ma az
+                // órák között 4-szer futottam fel a 3. emeletre" NÉGY
+                // külön bejegyzés lett, négy napra szétosztva.
+                "(?<![\\d,.])(\\d{1,2})\\s?-?sz[oöe]r\\s+"
+                + "(?:\\p{L}{2,12}\\s+){0,3}?(?:az?\\s+)?"
                 + "(\\d{1,3})\\.?\\s?emelet\\w*").matcher(s);
         StringBuffer ebx = new StringBuffer();
         boolean emAny = false;
         while (emx.find()) {
             int n = Integer.parseInt(emx.group(1)) * Integer.parseInt(emx.group(2));
-            emx.appendReplacement(ebx, Math.min(300, n) + " emelet");
+            // A lépcsőzés szava is bekerül: a csere elvitte a mozgás
+            // igéjét („futottam fel"), és a puszta emeletszám mellől
+            // eltűnt volna az egész bejegyzés.
+            emx.appendReplacement(ebx,
+                    "lepcsozes " + Math.min(300, n) + " emelet");
             emAny = true;
         }
         if (emAny) { emx.appendTail(ebx); s = ebx.toString(); }

@@ -9476,4 +9476,25 @@ public class ActivitiesParseTest {
         assertEquals(1, p.days);
     }
 
+    /**
+     * A távolabb álló emelet-szorzó és a sétával zárt utolsó kilométer.
+     *
+     * A „ma az órák között 4-szer futottam fel a 3. emeletre" NÉGY
+     * bejegyzés lett négy napra szétosztva, a „6 km-t futottam, de az
+     * utolsó 2-t már sétáltam" sétája pedig kitalált kilencven percet
+     * kapott.
+     */
+    @Test
+    public void floorsBetweenClassesAndAWalkedLastKilometer() {
+        Activities.Parsed e = Activities.parse("Ma az órák között "
+                + "4-szer futottam fel a 3. emeletre.");
+        assertEquals(1, e.plans.size());
+        assertEquals(1, e.days);
+        assertEquals(6, e.plans.get(0).minutes);
+        Activities.Parsed f = Activities.parse("Ma 6 km-t futottam, de "
+                + "az utolsó 2-t már sétáltam.");
+        assertEquals(2, f.plans.size());
+        assertEquals(2.0, f.plans.get(1).km, 0.01);
+    }
+
 }
