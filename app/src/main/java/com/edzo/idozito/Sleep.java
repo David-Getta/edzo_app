@@ -118,6 +118,43 @@ public final class Sleep {
      * a közvetlenül a szám után álló „és fél" hozzáadódik.
      */
     public static double parse(String q) {
+        double h = hours(q);
+        if (h <= 0) return h;
+        // Az ELALVÁSIG eltelt idő nem alvás: a „22:30-kor feküdtem le és
+        // 6-kor keltem, de csak fél óra múlva aludtam el" hét és fél órát
+        // írt a naplóba a hétből – a forgolódás fél órája is alvásnak
+        // számított. Épp az az éjszaka a rossz, amit így naplóz az ember.
+        double d = fallAsleepDelay(q);
+        if (d <= 0) return h;
+        double v = h - d;
+        return v >= MIN_H ? Math.round(v * 10) / 10.0 : h;
+    }
+
+    /** Az elalvásig eltelt idő órában, 0 ha nincs kimondva. */
+    private static double fallAsleepDelay(String q) {
+        String s = Foods.norm(q == null ? "" : q);
+        // Csak a LEFEKVÉS–ÉBREDÉS tartományból vonjuk le: aki azt írja, „8
+        // órát aludtam, de csak fél óra után tudtam elaludni", az már a
+        // valódi alvást mondta meg – abból nem jár levonás.
+        if (!s.matches("(?s).*(?<![a-z])(?:lefekud\\w*|fekudtem|fekudtunk"
+                    + "|agyban)(?![a-z]).*")
+                || !s.matches("(?s).*(?<![a-z])(?:keltem|keltunk|ebredtem"
+                    + "|felebredtem)(?![a-z]).*"))
+            return 0;
+        s = s.replaceAll("(?<![a-z])fel\\s?ora\\w*", "30 perc");
+        s = Hu.digits(s);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,3})\\s?perc\\w*\\s+(?:mulva|utan)\\s+"
+                + "(?:tudtam\\s+|sikerult\\s+)?(?:aludtam el|elaludtam"
+                + "|elaludni|elaludnom|alszom el)(?![a-z])").matcher(s);
+        if (!m.find()) return 0;
+        int min;
+        try { min = Integer.parseInt(m.group(1)); }
+        catch (NumberFormatException e) { return 0; }
+        return min >= 5 && min <= 180 ? min / 60.0 : 0;
+    }
+
+    private static double hours(String q) {
         if (q == null) return -1;
         String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
         // A „FÉL 1-TŐL FÉL 7-IG" számmal írt fél óra: 0:30-tól 6:30-ig

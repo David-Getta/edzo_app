@@ -535,4 +535,27 @@ public class SleepTest {
                 + "keltem."), 0.01);
     }
 
+    /**
+     * Az elalv\u00e1sig eltelt id\u0151 nem alv\u00e1s.
+     *
+     * A \u201e22:30-kor fek\u00fcdtem le \u00e9s 6-kor keltem, de csak f\u00e9l \u00f3ra m\u00falva
+     * aludtam el" h\u00e9t \u00e9s f\u00e9l \u00f3r\u00e1t \u00edrt a napl\u00f3ba a h\u00e9tb\u0151l \u2013 a forgol\u00f3d\u00e1s
+     * f\u00e9l \u00f3r\u00e1ja is alv\u00e1snak sz\u00e1m\u00edtott. \u00c9pp az az \u00e9jszaka a rossz, amit \u00edgy
+     * napl\u00f3z az ember.
+     */
+    @Test
+    public void theTimeToFallAsleepIsNotSleep() {
+        assertEquals(7.0, Sleep.parse("22:30-kor fek\u00fcdtem le \u00e9s 6-kor "
+                + "keltem, de csak f\u00e9l \u00f3ra m\u00falva aludtam el."), 0.01);
+        assertEquals(7.7, Sleep.parse("23-kor fek\u00fcdtem, 7-kor keltem, "
+                + "20 perc m\u00falva aludtam el."), 0.05);
+        // A kimondott alv\u00e1sid\u0151b\u0151l nem vonunk le: azt m\u00e1r a felhaszn\u00e1l\u00f3
+        // sz\u00e1molta ki.
+        assertEquals(8.0, Sleep.parse("8 \u00f3r\u00e1t aludtam, de csak f\u00e9l \u00f3ra "
+                + "ut\u00e1n tudtam elaludni."), 0.01);
+        // A tartom\u00e1ny levon\u00e1s n\u00e9lk\u00fcl marad annyi, amennyi.
+        assertEquals(7.5, Sleep.parse("22:30-kor fek\u00fcdtem le \u00e9s 6-kor "
+                + "keltem."), 0.01);
+    }
+
 }
