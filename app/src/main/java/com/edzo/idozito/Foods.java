@@ -3162,6 +3162,11 @@ public final class Foods {
         // át – nem étel-szóra alkalmazva ártalmatlan.
         query = query.replaceAll("(?iu)(?<!\\p{L})az? (\\p{L}{3,}) "
                 + "fel(?:e|et|ét)(?!\\p{L})", "fél $1");
+        // A „MELLÉ" névelős étele EGY darab: az „ettem két szeletet a
+        // kávé mellé" kávéja megduplázódott – a szelet-szám a kávéra is
+        // ráragadt. A kimondott darabszám („két kávé mellé") marad.
+        query = query.replaceAll("(?iu)(?<!\\p{L})az? (\\p{L}{3,}) "
+                + "mell[eé](?!\\p{L})", "egy $1 mellé");
         // A FELEZETT étel is fél adag: a „feleztünk egy pizzát" fejenként
         // fél pizza, eddig egész ment be.
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"

@@ -2489,6 +2489,22 @@ public class FoodsParseTest {
     }
 
     /**
+     * A „mellé" névelős étele egy darab.
+     *
+     * Az „anya diós bejglijéből ettem két szeletet a kávé mellé"
+     * kávéja megduplázódott – a szelet-szám a kávéra is ráragadt.
+     */
+    @Test public void aSideCoffeeIsOneCoffee() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Anya diós bejglijéből "
+                + "ettem két szeletet a kávé mellé.");
+        assertEquals(200.0, h.get(1).grams, 0.01);
+        // A kimondott két kávé marad kettő.
+        assertEquals(400.0, Foods.parse(all, "Két kávé mellé ettem egy "
+                + "kekszet.").get(0).grams, 0.01);
+    }
+
+    /**
      * A neszkávé is kávé.
      */
     @Test public void nescafeIsCoffee() {

@@ -8781,4 +8781,39 @@ public class ActivitiesParseTest {
         assertEquals(15, c.plans.get(0).minutes);
     }
 
+    /**
+     * A bemelegítéses szakaszok egy edzés részei, és összeadódnak.
+     *
+     * A „futóklub keddi edzése: 2 km bemelegítés, 6x400 m, 2 km
+     * levezetés" hat és fél kilométeréből csak az első kettő került be,
+     * az „úszásedzés: 400 bemelegítés, 8x100 gyors, 200 levezetés"
+     * csupasz számai pedig félig elvesztek.
+     */
+    @Test
+    public void warmupSegmentsAddUpToOneSession() {
+        Activities.Parsed f = Activities.parse("A futóklub keddi "
+                + "edzése: 2 km bemelegítés, 6x400 m, 2 km levezetés.");
+        assertEquals(1, f.plans.size());
+        assertEquals(6.4, f.plans.get(0).km, 0.01);
+        Activities.Parsed u = Activities.parse("Úszásedzés: 400 "
+                + "bemelegítés, 8x100 gyors, 200 levezetés.");
+        assertEquals(1, u.plans.size());
+        assertEquals(1.4, u.plans.get(0).km, 0.01);
+    }
+
+    /**
+     * A lezárt lépés-cél és a lelátón ülő néző.
+     *
+     * A „10 000 lépéses célt 12 340-nel zártam" üresen jött vissza, a
+     * „jégkorong meccsen a harmadik sorban ültünk" pedig hatvan perc
+     * korcsolyát írt a naplóba.
+     */
+    @Test
+    public void aClosedStepGoalAndARinksideSeat() {
+        assertEquals(12340, Activities.parse("A 10 000 lépéses célt "
+                + "12 340-nel zártam.").plans.get(0).steps);
+        assertTrue(Activities.parse("A jégkorong meccsen a harmadik "
+                + "sorban ültünk, óriási hangulat volt.").plans.isEmpty());
+    }
+
 }

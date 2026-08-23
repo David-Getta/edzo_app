@@ -1407,6 +1407,12 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(?:az?\\s+)?(?:\\p{L}+\\s+){0,3}?"
                 + "edzesterv\\w*\\s+(?:\\d{1,2}\\s?\\.?\\s+)?"
                 + "het(?:e|en|eben)?(?![a-z])\\s*:?\\s*", " ");
+        // A LEZÁRT lépés-cél a napzáró szám: „a 10 000 lépéses célt
+        // 12 340-nel zártam" bejegyzéséből semmi nem lett – a cél szava
+        // az egészet elnémította.
+        s = s.replaceAll("(\\d[\\d ]{0,6}\\d)\\s?lepes\\w*\\s+cel\\w*\\s+"
+                + "(\\d[\\d ]{0,6}\\d)\\s?-?[nv][ae]l\\s+zartam",
+                "$2 lepes lett");
         // A „DE AZ ÓRÁM…-AT ÍRT" a helyesbített lépésszám: az „a telefonom
         // szerint 9800 lépés, de az órám 10 400-at írt" mondatból a telefon
         // száma került a naplóba – pedig a „de" épp azt mondja, hogy az óra
@@ -1576,6 +1582,56 @@ public final class Activities {
                 + "|ismetles\\w*|szakasz\\w*)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:koztuk|kozben|kozte)\\s+"
                     + "(?:laza\\s+)?seta\\w*[^,;.]*", " ");
+        // Az ÚSZÓEDZÉS csupasz számai méterek: az „úszásedzés: 400
+        // bemelegítés, 8x100 gyors, 200 levezetés" négyszáza mértékegység
+        // nélkül állt, és a szakaszok fele elveszett.
+        if (s.matches("(?s).*(?<![a-z])usz\\w*.*")) {
+            s = s.replaceAll("(?<![\\dx,.])(\\d{3,4})\\s+"
+                    + "(?=bemelegites|levezetes|gyors|lassu|vegyes"
+                    + "|mell(?![a-z])|pillango|haton)", "$1 m ");
+            s = s.replaceAll("(?<![\\dx,.])(\\d{1,2})x(\\d{2,4})\\s+"
+                    + "(?=bemelegites|levezetes|gyors|lassu|vegyes"
+                    + "|mell(?![a-z])|pillango|haton)", "$1x$2 m ");
+        }
+        // A SZAKASZOK EGY edzés részei: a „2 km bemelegítés, 6x400 m
+        // tempó, 2 km levezetés" hat és fél kilométeréből eddig csak az
+        // első két kilométer került be – vagy két külön futás lett
+        // belőle. A címkézett szakaszok távjai összeadódnak.
+        // Csak bemelegítéses és összeg nélküli mondatban: a kimondott
+        // „összesen" a maga szabályát követi, a bemelegítés nélküli
+        // levezetés pedig a főszakasz kísérője marad.
+        if (s.matches("(?s).*(?<![a-z])bemelegites\\w*.*")
+                && !s.matches("(?s).*(?<![a-z])osszesen(?![a-z]).*")) {
+            java.util.regex.Matcher sg = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.x])(?:(\\d{1,2})x(\\d{2,4})\\s?m(?![a-z])"
+                    + "|(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?km(?![a-z])"
+                    + "|(\\d{3,4})\\s?m(?![a-z]))\\s*(?:-?es\\s+)?"
+                    // A címkétlen köztes sorozat („…, 6x400 m, …") is
+                    // szakasz: a tagmondat-határ előtt állva ugyanabba az
+                    // edzésbe tartozik.
+                    + "(?=bemelegites|levezetes|tempo|gyors|lassu|iram"
+                    + "|\\s*[,;.]|\\s*$)").matcher(s);
+            double sum = 0;
+            int n = 0, first = -1, firstEnd = -1;
+            StringBuffer sb2 = new StringBuffer();
+            while (sg.find()) {
+                if (first < 0) { first = sg.start(); firstEnd = sg.end(); }
+                if (sg.group(1) != null)
+                    sum += Integer.parseInt(sg.group(1))
+                            * Integer.parseInt(sg.group(2)) / 1000.0;
+                else if (sg.group(3) != null)
+                    sum += Double.parseDouble(sg.group(3).replace(',', '.'));
+                else sum += Integer.parseInt(sg.group(4)) / 1000.0;
+                n++;
+                sg.appendReplacement(sb2, "");
+            }
+            if (n >= 2) {
+                sg.appendTail(sb2);
+                String total = (String.valueOf(Math.round(sum * 10) / 10.0))
+                        .replace('.', ',').replaceAll(",0$", "");
+                s = sb2.insert(first, total + " km ").toString();
+            }
+        }
         // A PIHENŐ-KOCOGÁS táva a szakaszok köze, nem a futás: a „8x200 m
         // intervall, 200 m kocogással köztük" kétszáz méteres futás lett –
         // a nyolcszor kétszáz helyett. A sorozat-jelölés melletti, kocogó
@@ -3310,7 +3366,12 @@ public final class Activities {
         if ((sm.matches("(?s).*(?<![a-z])csak\\s+(?:neztem|neztuk|vegigneztem|"
                     + "figyeltem|szurkoltam)(?![a-z]).*")
                 || sm.matches("(?s).*(?<![a-z])(?:szurkoltam|szurkoltunk|"
-                    + "drukkoltam|drukkoltunk)(?![a-z]).*"))
+                    + "drukkoltam|drukkoltunk|lelato\\w*|nezoter\\w*)"
+                    + "(?![a-z]).*")
+                // A SORBAN ÜLŐ is néző: a „jégkorong meccsen a harmadik
+                // sorban ültünk" hatvan perc korcsolyát írt a naplóba.
+                || sm.matches("(?s).*(?<![a-z])sorban\\s+ult(?:unk|em)"
+                    + "(?![a-z]).*"))
                 && !sm.matches("(?s).*(?<![a-z])(futottam|futottunk|edzettem|"
                     + "edzettunk|usztam|usztunk|jatszottam|jatszottunk|"
                     + "bicikliztem|bringaztam|setaltam|setaltunk|turaztam|"
