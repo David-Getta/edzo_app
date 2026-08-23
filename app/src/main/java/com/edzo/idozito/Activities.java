@@ -6761,7 +6761,18 @@ public final class Activities {
         if (ps.find()) {
             String g = ps.group(1) != null ? ps.group(1) : ps.group(2);
             int v = Integer.parseInt(g);
-            if (v >= 20 && v <= 50) pool = v;
+            if (v >= 20 && v <= 50) {
+                pool = v;
+                // A MEDENCE HOSSZA nem külön úszás: az „a medence 50
+                // m-es, 20 hosszt úsztam benne" ötven méteres úszást is
+                // beírt a valódi kilométer MELLÉ. A szorzáshoz elolvasott
+                // szám ezután nem lehet táv.
+                // Csak a SZÁM tűnik el, a medence szava marad: az az
+                // egyetlen jel, ami az úszást a futástól elválasztja.
+                int gi = ps.group(1) != null ? 1 : 2;
+                blank(q, ps.start(gi), ps.end(gi));
+                s = new String(q);
+            }
         }
         boolean done = false;
         java.util.regex.Matcher m = java.util.regex.Pattern

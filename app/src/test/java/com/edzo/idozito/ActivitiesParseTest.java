@@ -9497,4 +9497,23 @@ public class ActivitiesParseTest {
         assertEquals(2.0, f.plans.get(1).km, 0.01);
     }
 
+    /**
+     * A medence hossza nem külön úszás.
+     *
+     * Az „a medence 50 m-es, 20 hosszt úsztam benne" ötven méteres
+     * úszást is beírt a valódi kilométer mellé.
+     */
+    @Test
+    public void thePoolLengthIsNotASecondSwim() {
+        Activities.Parsed p = Activities.parse("A medence 50 m-es, "
+                + "20 hosszt úsztam benne ma.");
+        assertEquals(1, p.plans.size());
+        assertEquals(1.0, p.plans.get(0).km, 0.01);
+        // A medence szava megmarad: az különbözteti meg a futástól.
+        Activities.Parsed r = Activities.parse("45 hossz a 33-as "
+                + "medencében.");
+        assertEquals("uszas", r.plans.get(0).kind.id);
+        assertEquals(1.485, r.plans.get(0).km, 0.01);
+    }
+
 }
