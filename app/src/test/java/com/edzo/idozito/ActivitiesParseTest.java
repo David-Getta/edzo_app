@@ -9018,4 +9018,30 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A napüdvözletek száma nem napok száma, a szokás jelen ideje pedig
+     * kimondott táv mellett megtörtént út.
+     *
+     * A „108 napüdvözletet csináltunk végig, 90 perc" bejegyzése
+     * SZÁZNYOLC napra terült szét, a „konditerembe biciklivel megyek,
+     * oda-vissza 5 km, plusz az edzés 1 óra" pedig üresen jött vissza.
+     */
+    @Test
+    public void sunSalutationsAndAHabitualCommute() {
+        Activities.Parsed j = Activities.parse("A jógaórán ma 108 "
+                + "napüdvözletet csináltunk végig, 90 perc.");
+        assertEquals(1, j.days);
+        assertEquals(90, j.plans.get(0).minutes);
+        Activities.Parsed b = Activities.parse("A konditerembe "
+                + "biciklivel megyek, oda-vissza 5 km, plusz az edzés "
+                + "1 óra.");
+        assertEquals(1, b.plans.size());
+        assertEquals(5.0, b.plans.get(0).km, 0.01);
+        // A jövő szavával kimondott terv marad terv.
+        assertTrue(Activities.parse("Szombaton sítúrára megyünk.")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Holnap futni megyek 10 km-t.")
+                .plans.isEmpty());
+    }
+
 }

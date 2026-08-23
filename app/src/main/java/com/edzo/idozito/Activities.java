@@ -1546,6 +1546,19 @@ public final class Activities {
                     + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:km|kilometer\\w*"
                     + "|perc\\w*|lepes\\w*)(?![a-z])[^,;.]{0,12}?"
                     + "(?=\\s*(?:,|utan|ota))", " ");
+        // A SZOKÁS jelen ideje megtörtént utat is jelenthet: a
+        // „konditerembe biciklivel megyek, oda-vissza 5 km, plusz az
+        // edzés 1 óra" bejegyzéséből SEMMI nem lett – a „megyek" a jövő
+        // szava volt. Kimondott táv vagy időtartam mellett, jövő-jelölő
+        // nélkül ez a mai út leírása; a „szombaton sítúrára megyünk"
+        // ott a hétvége és a jövő szavával marad terv.
+        if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?"
+                + "\\s?(?:km|perc\\w*|or[aá]\\w*)(?![a-z]).*")
+                && !s.matches("(?s).*(?<![a-z])(?:holnap\\w*|jovo\\w*|majd"
+                    + "|lesz|leszek|fogok|fogunk|hetvegen|jovohet\\w*"
+                    + "|szombaton|vasarnap|hetfon|kedden|szerdan"
+                    + "|csutortokon|penteken)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])megy(?:ek|unk)(?![a-z])", "mentem");
         // A TOLT bicikli nem tekerés: a „gyerek biciklijét toltam fel a
         // dombra, közben én is gyalogoltam 2 km-t" mellé egy órás
         // kerékpározás került – abból, hogy valaki TOLTA a bringát.
@@ -6805,6 +6818,14 @@ public final class Activities {
 
     private static boolean isNotSpan(String word) {
         for (String w : NOT_SPAN) if (w.equals(word)) return true;
+        // A RAGOZOTT alak ugyanaz a szó: a „108 napüdvözletET csináltunk"
+        // száznyolc NAPOS bejegyzéssé terült szét, mert a lista csak a
+        // ragtalan alakot ismerte. Csak a hosszabb, félreérthetetlen
+        // szavaknál engedjük a ragot – a rövid „napi", „naplo" tövekre a
+        // pontos egyezés marad.
+        for (String w : new String[]{"napudvozlet", "naptar", "napozas",
+                "napsutes", "naplo", "hetvege", "hetkoznap"})
+            if (word.startsWith(w)) return true;
         // A HETVEN és összetételei számok, nem hetek. A „hét" magában
         // kétértelmű (hét nap vagy hetes szám), ezért az marad időszaknak – a
         // „hetvenöt perc kondi" viszont eddig egyhetes időszakká vált, és
