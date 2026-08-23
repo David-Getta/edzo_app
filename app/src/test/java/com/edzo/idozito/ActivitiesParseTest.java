@@ -9155,4 +9155,27 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A rövid sprint-szakaszok percei összeadódnak.
+     *
+     * A „6x1 perc sprint a dombon" ÖT perces futás lett – a szorzat
+     * helyett egy alapérték –, és a „köztük lesétálás" mellé egy
+     * másfél órás túra is bekerült.
+     */
+    @Test
+    public void shortSprintSegmentsAddUpTheirMinutes() {
+        Activities.Parsed p = Activities.parse("Ma 6x1 perc sprint a "
+                + "dombon, köztük lesétálás.");
+        assertEquals(1, p.plans.size());
+        assertEquals(6, p.plans.get(0).minutes);
+        assertEquals(12, Activities.parse("6x2 perc sprint.")
+                .plans.get(0).minutes);
+        // A hosszú blokk marad egyetlen blokk.
+        assertEquals(25, Activities.parse("2x25 perc intervall futás.")
+                .plans.get(0).minutes);
+        // A súlyzós tartás ideje a súlyzós olvasóé.
+        assertEquals(60, Activities.parse("Plank 3x1 perc.")
+                .plans.get(0).minutes);
+    }
+
 }

@@ -1407,6 +1407,34 @@ public final class Activities {
                     + "|kitores|nyomas|huzodzkod).*"))
             s = s.replaceAll("(?<![\\dx,.])(\\d{1,2})\\s?x\\s?"
                     + "(\\d{1,3})\\s?perc(?![a-z])", "$1szor $2 perc");
+        // A SPRINT-SOROZAT percei összeadódnak: a „6x1 perc sprint a
+        // dombon" ÖT perces futás lett – a szorzat helyett egy
+        // alapérték. Súlyzós gyakorlat neve mellett nem él: ott a
+        // „plank 3x1 perc" a tartás ideje, azt a súlyzós olvasó érti.
+        if (s.matches("(?s).*(?<![a-z])(?:sprint\\w*|intervall\\w*"
+                + "|futas\\w*|futott\\w*|kocog\\w*|tempo\\w*)"
+                + "(?![a-z]).*")
+                && !s.matches("(?s).*(?:plank|fekvotamasz|guggol|felules"
+                    + "|kitores|nyomas|huzodzkod|szett|deszka).*")) {
+            java.util.regex.Matcher sp = java.util.regex.Pattern.compile(
+                    "(?<![\\dx,.])(\\d{1,2})\\s?[x\u00d7]\\s?(\\d{1,3})"
+                    + "\\s?perc(?:es|et|ig)?(?![a-z])").matcher(s);
+            StringBuffer sb2 = new StringBuffer();
+            boolean spAny = false;
+            while (sp.find()) {
+                int reps = Integer.parseInt(sp.group(1));
+                int each = Integer.parseInt(sp.group(2));
+                // Csak a RÖVID szakaszok szorzódnak: a „6x1 perc sprint"
+                // hat perc munka, a „2x25 perc intervall futás" viszont
+                // egyetlen huszonöt perces blokk – arról külön teszt szól.
+                if (each > 5 || reps < 3) continue;
+                int tot = reps * each;
+                if (tot < 1 || tot > 300) continue;
+                sp.appendReplacement(sb2, tot + " perc");
+                spAny = true;
+            }
+            if (spAny) { sp.appendTail(sb2); s = sb2.toString(); }
+        }
         // A MARATON-TERV papír, nem táv: a „végigcsináltam a 12 hetes
         // félmaraton-tervet, vasárnap lesz a verseny!" MAI, huszonegy
         // kilométeres futást írt be – a verseny neve a terv nevében ült.
@@ -1767,7 +1795,10 @@ public final class Activities {
         if (s.matches("(?s).*(?<![a-z])(?:sprint\\w*|intervall\\w*"
                 + "|ismetles\\w*|szakasz\\w*)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:koztuk|kozben|kozte)\\s+"
-                    + "(?:laza\\s+)?seta\\w*[^,;.]*", " ");
+                    // Az igekötős alak ugyanaz a pihenő: a „6x1 perc
+                    // sprint, köztük LEsétálás" mellé egy másfél órás
+                    // túra került a naplóba.
+                    + "(?:laza\\s+)?(?:le|vissza|el)?seta\\w*[^,;.]*", " ");
         // Az ÚSZÓEDZÉS csupasz számai méterek: az „úszásedzés: 400
         // bemelegítés, 8x100 gyors, 200 levezetés" négyszáza mértékegység
         // nélkül állt, és a szakaszok fele elveszett.
