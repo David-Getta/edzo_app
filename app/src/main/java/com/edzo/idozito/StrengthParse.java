@@ -105,7 +105,10 @@ public final class StrengthParse {
                     // A TOLÓNYOMÁS ugyanez a gyakorlat lendülettel (push
                     // press) – a magyar terem így hívja, és eddig válasz
                     // nélkül maradt.
-                    "tolonyom", "tolo nyom", "push press", "pushpress",
+                    // A VÁLLTOLÁS a terem másik neve ugyanerre: a „válltolás
+                    // 3x10 30 kg" sorozata eddig nyomtalanul elveszett.
+                    "tolonyom", "tolo nyom", "valltolas", "vall tolas",
+                    "push press", "pushpress",
                     "nyak moge nyom", "katonai nyomas", "military press", "shoulder press",
                     // A TARKÓNYOMÁS a nyak mögötti nyomás rövid neve.
                     "tarkonyomas", "tarko nyomas"},
@@ -801,7 +804,7 @@ public final class StrengthParse {
         // elveszett, pedig együtt teljesen egyértelmű.
         String pending = null, pendingKg = null;
         for (String part : splitClauses(whole)) {
-            Item it = parseOne(part);
+            Item it = parseOne(part, whole);
             // A név ékezetes, szép alak; a tagmondat viszont már normalizált,
             // ezért a nevet is úgy adjuk hozzá.
             // A JELZŐS súly is átjön a névvel: a „húsz kilós kettlebell
@@ -811,7 +814,7 @@ public final class StrengthParse {
             // súlya erősebb: a hozott csak a végére kerül.
             if (it == null && pending != null)
                 it = parseOne(Foods.norm(pending) + " " + part
-                        + (pendingKg != null ? " " + pendingKg + " kg" : ""));
+                        + (pendingKg != null ? " " + pendingKg + " kg" : ""), whole);
             if (it != null) { out.add(it); pending = null; pendingKg = null; continue; }
             if (out.isEmpty() && pending == null) {
                 pending = moveIn(part);
@@ -1155,7 +1158,18 @@ public final class StrengthParse {
     }
 
     /** Egy tagmondat → gyakorlat + sorozatok, vagy null. */
-    private static Item parseOne(String s) {
+    private static Item parseOne(String s) { return parseOne(s, s); }
+
+    /**
+     * Ugyanaz, a TELJES mondattal együtt.
+     *
+     * A csúcs-szó gyakran külön tagmondatban áll: a „fekvenyomás 100 kg,
+     * új rekord" száz kilója NYOMTALANUL eltűnt – a tagmondatban, amiben a
+     * súly állt, nem volt csúcs-szó, a csúcs-szó tagmondatában meg nem volt
+     * gyakorlat. Pedig épp ez az a bejegyzés, amit az ember a legjobban
+     * szeretne látni a naplóban.
+     */
+    private static Item parseOne(String s, String full) {
         // Az RPE a NYERS tagmondatból: a súly keresése közben a mondat
         // átalakul, és a „holtemelés 5x5 rpe 7" hetese súly-jelöltként
         // kiesett – a nehézség-jelölés csak akkor maradt meg, ha súly is
@@ -1439,7 +1453,10 @@ public final class StrengthParse {
                     // A „PB" a személyes csúcs rövidítése – a „pb a mai
                     // napon: 100 kg guggolás" eddig üresen jött vissza.
                     "pb ", "pb:", "personal best"})
-                if (s.contains(w)) { sets.add(new Set(1, weight)); break; }
+                if (s.contains(w) || full.contains(w)) {
+                    sets.add(new Set(1, weight));
+                    break;
+                }
         if (sets.isEmpty()) return null;
         Item it = new Item(name, sets);
         it.rpe = rpeIn(raw);

@@ -916,6 +916,40 @@ public class StrengthParseTest {
     }
 
     /**
+     * A csúcs szava a szomszéd tagmondatból is felment.
+     *
+     * A „fekvenyomás 100 kg, új rekord" száz kilója NYOMTALANUL eltűnt: a
+     * tagmondatban, amiben a súly állt, nem volt csúcs-szó, a csúcs-szó
+     * tagmondatában meg nem volt gyakorlat. Pedig épp ez az a bejegyzés,
+     * amit az ember a legjobban szeretne látni a naplóban.
+     */
+    @Test public void theRecordWordCarriesAcrossTheComma() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Fekvenyomás 100 kg, új rekord.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+        assertEquals(100.0, StrengthParse.parse("Fekvenyomásban ma 100 kg-ot "
+                + "toltam elsőre, új rekord.").get(0).topWeight(), 0.01);
+        // Csúcs-szó nélkül továbbra sincs kitalált sorozat.
+        assertTrue(StrengthParse.parse("60 kg").isEmpty());
+    }
+
+    /**
+     * A válltolás vállból nyomás.
+     *
+     * A „ma válltolás 3x10 30 kg, majd oldalemelés 3x15 8 kg" első
+     * gyakorlata nyomtalanul elveszett – a terem szava nem volt tő.
+     */
+    @Test public void aShoulderPushIsAnOverheadPress() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma válltolás "
+                + "3x10 30 kg, majd oldalemelés 3x15 8 kg.");
+        assertEquals(2, it.size());
+        assertEquals("Vállból nyomás", it.get(0).name);
+        assertEquals(30.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
      * A hát nem a hat számnév.
      *
      * A „reggel 30 perc szobabicikli, aztán 3 sorozat hasizom és hát" HAT
