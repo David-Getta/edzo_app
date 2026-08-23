@@ -3207,7 +3207,14 @@ public final class Activities {
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:perc|ora)\\w*"
                 + "([^,;.0-9]{0,20}?(?:voltam|voltunk|toltottem|toltottunk|"
                 + "bent voltam|kint voltam)\\w*)"
-                + "(?=,?\\s*(?:ebbol|amibol|ebben)(?![a-z]))",
+                // …és csak akkor, ha a bontás VALÓDI mozgásformát nevez meg.
+                // A bemelegítés, a nyújtás és a levezetés az edzés SZAKASZA,
+                // nem maga az edzés: az „edzőteremben 40 percet töltöttem,
+                // ebből 10 perc bemelegítés" negyven percéből TÍZ perces
+                // kondi lett – a nap munkájának a negyede.
+                + "(?=,?\\s*(?:ebbol|amibol|ebben)(?![a-z])"
+                + "(?![^,;.]{0,40}(?:bemelegit|bemeleg|levezet|nyujt|lazit"
+                + "|oltoz|zuhany|pihen|szunet)))",
                 "$1");
         // Az ALVÁS órája nem edzéshossz: a „keveset aludtam (5 óra), de
         // azért lementem 30 percre a terembe" ÖTÓRÁS kondi-edzést írt be –
@@ -3371,6 +3378,13 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // A KÉZI KEZELÉS nem kézilabda: a „terápián 20 perc biciklizés és
+        // 20 perc kézi kezelés volt" húsz perc KÉZILABDÁT írt a naplóba, a
+        // „kézi kezelést kaptam a hátamra" pedig egy másfél órás meccset –
+        // a „kézi" a kézilabda beszélt neve, de itt jelző, nem sport.
+        s = s.replaceAll("(?<![a-z])kezi\\s+(?=(?:kezel|terap|masszazs|massz"
+                + "|munka|mosogat|szerszam|fek(?![a-z])|valto|kocsi|kotes"
+                + "|iras|vezerl|erovel))", " ");
         // A KILÓ a futónyelvben KILOMÉTER: a „ma 3 kilót szaladtam, semmi
         // extra" NYOMTALANUL eltűnt (a hármas súlynak látszott), a „ma 3
         // kilót futottam" pedig táv nélküli, becsült háromnegyed órás

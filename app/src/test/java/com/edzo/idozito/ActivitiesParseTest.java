@@ -7842,6 +7842,45 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A bemelegítés az edzés szakasza, nem maga az edzés.
+     *
+     * Az „edzőteremben 40 percet töltöttem, ebből 10 perc bemelegítés"
+     * negyven percéből TÍZ perces kondi lett – a nap munkájának a negyede.
+     * A jelenlét-idő levonása csak akkor jogos, ha a bontás valódi
+     * mozgásformát nevez meg („uszodában 45 perc, ebből 30 perc úszás").
+     */
+    @Test public void aWarmupShareDoesNotShrinkTheSession() {
+        assertEquals(40, Activities.parse("Az edzőteremben 40 percet "
+                + "töltöttem, ebből 10 perc bemelegítés.")
+                .plans.get(0).minutes);
+        assertEquals(40, Activities.parse("Az edzőteremben 40 percet "
+                + "töltöttem, ebből 10 perc nyújtás.").plans.get(0).minutes);
+        // A valódi mozgásforma bontása marad levonás.
+        Activities.Parsed u = Activities.parse("Az uszodában 45 percet "
+                + "voltam, ebből kb 30 perc úszás volt.");
+        assertEquals(30, u.plans.get(0).minutes);
+        assertEquals("uszas", u.plans.get(0).kind.id);
+    }
+
+    /**
+     * A kézi kezelés nem kézilabda.
+     *
+     * A „terápián 20 perc biciklizés és 20 perc kézi kezelés volt" húsz
+     * perc KÉZILABDÁT írt a naplóba, a „kézi kezelést kaptam a hátamra"
+     * pedig egy másfél órás meccset.
+     */
+    @Test public void aManualTreatmentIsNotHandball() {
+        for (Activities.Plan p : Activities.parse("A terápián 20 perc "
+                + "biciklizés és 20 perc kézi kezelés volt.").plans)
+            assertFalse("kitalált kézilabda", "kezilabda".equals(p.kind.id));
+        assertTrue(Activities.parse("Kézi kezelést kaptam a hátamra.")
+                .plans.isEmpty());
+        // A kézi mint sport marad kézilabda.
+        assertEquals("kezilabda", Activities.parse("Ma kézi meccs volt, "
+                + "60 perc.").plans.get(0).kind.id);
+    }
+
+    /**
      * A futónyelvben a kiló kilométer.
      *
      * A „ma 3 kilót szaladtam, semmi extra" NYOMTALANUL eltűnt – a hármas
