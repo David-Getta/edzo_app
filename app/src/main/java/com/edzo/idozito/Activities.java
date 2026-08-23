@@ -3371,6 +3371,24 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])zona\\s?[1-5](?![0-9])", "zona");
         s = s.replaceAll("(?<![0-9])[1-5]\\s?-?[eo]s\\s+zona", "zona");
         s = s.replaceAll("(?<![a-z0-9])z[1-5](?![0-9a-z])", "zona");
+        // A TÁRGYAS kör igéje sem választja el a szorzót a távtól: az
+        // „5 kört csináltam: 400 m futás és 15 guggolás körönként"
+        // négyszáz métert írt a naplóba a kettőből.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2})\\s+kor\\w*\\s+"
+                + "(?:csinaltam|csinaltunk|nyomtam|toltam|mentem|futottam"
+                + "|teljesitettem|lefutottam)\\s*[:,]?\\s*"
+                + "(?=\\d{2,4}(?:[.,]\\d+)?\\s?(?:m|meter\\p{L}*|km)(?![\\p{L}]))",
+                "$1 kor ");
+        // A KÖR TÁVJA a sportnév MÖGÖTT is állhat: az „a WOD ma: 5 kör futás
+        // 400 m és 15 kettlebell swing" négyszáz métert írt a naplóba a
+        // kettőből – a szorzó csak a közvetlenül mögötte álló távot vitte,
+        // és a sportnév közéjük ékelődött. A táv a kör-szám mellé kerül, a
+        // sportnév mögé: onnan a szorzó már megtalálja.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2}\\s+kor\\w*)\\s+"
+                + "(fut\\p{L}*|kocog\\p{L}*|evez\\p{L}*|usz\\p{L}*|seta\\p{L}*"
+                + "|gyalog\\p{L}*|bicikliz\\p{L}*|tekeres)\\s+"
+                + "(\\d{2,4}(?:[.,]\\d+)?\\s?(?:m|meter\\p{L}*|km)(?![\\p{L}]))",
+                "$1 $3 $2");
         // A KÖRHOSSZ szorozva a körszámmal: az „500 m-es köröket futottam,
         // összesen 8-at" fél kilométeres futás lett NÉGY helyett – a
         // körhossz bement távnak, a nyolc kör elveszett mellőle.

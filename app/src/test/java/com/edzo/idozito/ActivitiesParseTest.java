@@ -3873,6 +3873,29 @@ public class ActivitiesParseTest {
      * Munkás szó nélkül a 2x25 marad intervallum.
      */
     /**
+     * A kör szorzója a táv és az ismétlés fölött is érvényes.
+     *
+     * Az „a WOD ma: 5 kör futás 400 m és 15 kettlebell swing" NÉGYSZÁZ
+     * métert és EGYETLEN sorozatot írt a naplóba – a napi munka ötödét.
+     * A sportnév és a tárgyas kör igéje egyaránt elválasztotta a szorzót
+     * a távtól.
+     */
+    @Test public void aCircuitMultipliesBothDistanceAndReps() {
+        Activities.Parsed p = Activities.parse("A WOD ma: 5 kör futás "
+                + "400 m és 15 kettlebell swing.");
+        double km = 0;
+        for (Activities.Plan pl : p.plans) if (pl.km > 0) km = pl.km;
+        assertEquals(2.0, km, 0.01);
+        assertEquals(5, StrengthParse.parse("A WOD ma: 5 kör futás 400 m "
+                + "és 15 kettlebell swing.").get(0).sets.size());
+        double km2 = 0;
+        for (Activities.Plan pl : Activities.parse("5 kört csináltam: "
+                + "400 m futás és 15 guggolás körönként.").plans)
+            if (pl.km > 0) km2 = pl.km;
+        assertEquals(2.0, km2, 0.01);
+    }
+
+    /**
      * A crossfit kör állomása nem külön kardió.
      *
      * Az „a crossfit edzésen 21-15-9 burpee és evezés volt időre" evezése a

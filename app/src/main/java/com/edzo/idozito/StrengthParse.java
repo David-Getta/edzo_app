@@ -843,7 +843,12 @@ public final class StrengthParse {
         // minden gyakorlatból EGY sorozat lett, vagyis a napló a munka
         // ötödét mutatta. Csak akkor lép be, ha egyik gyakorlatnak sincs
         // saját sorozatszáma: a „3 kör: guggolás 3x10" hármasa a guggolásé.
-        if (merged.size() >= 2) {
+        // EGY gyakorlat is lehet a kör tagja: az „a WOD ma: 5 kör futás
+        // 400 m és 15 kettlebell swing" tizenöt lendítése a kör EGY
+        // állomása – ötször tizenöt a napi munka, a naplóba mégis egyetlen
+        // sorozat került. A kör másik tétele futás, azt a mozgás-oldal
+        // viszi, ezért a listában egyedül maradt a swing.
+        if (merged.size() >= 1) {
             // A kör-számot az EREDETI mondatból is megnézzük: a normalizálás
             // az „5 kör 15 fekvőtámasz" alakot „5x15"-re írja át, és onnan a
             // kör szó már hiányzik.
@@ -862,6 +867,14 @@ public final class StrengthParse {
             // nem szóköz, és minden gyakorlat egyetlen sorozat maradt.
             if (rounds <= 0) rounds = numberBefore(whole, "kor,");
             if (rounds <= 0) rounds = numberBefore(raw, "kor,");
+            // A TÁRGYAS kör is kör: az „5 kört csináltam: 400 m futás és 15
+            // guggolás körönként" ötöse eddig elveszett, mert a szó után
+            // nem szóköz vagy kettőspont, hanem a tárgyrag állt.
+            for (String kw : new String[]{"kort ", "kort:", "kort,"}) {
+                if (rounds > 0) break;
+                rounds = numberBefore(whole, kw);
+                if (rounds <= 0) rounds = numberBefore(raw, kw);
+            }
             // Az első gyakorlat gyakran MÁR megkapta a kör-számot (vele egy
             // tagmondatban áll), a többi nem. Akkor bővítünk, ha minden tétel
             // vagy egy sorozatos, vagy pont ennyi sorozatos – így a saját
