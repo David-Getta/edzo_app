@@ -8686,4 +8686,43 @@ public class ActivitiesParseTest {
                 .plans.isEmpty());
     }
 
+    /**
+     * A tűzifa pakolása, a hazatolt bicikli és a vezetett gyerekedzés.
+     *
+     * A „3 köbméter tűzifát pakoltam be" üresen jött vissza, a „bicajom
+     * defektet kapott, 5 km-t toltam hazáig" tolása mellé egy órás
+     * tekerés került, a gyerekeknek vezetett futballedzés pedig kilencven
+     * perc focit írt az edző naplójába.
+     */
+    @Test
+    public void firewoodAFlatTireAndACoachedKidsSession() {
+        Activities.Parsed t = Activities.parse("Ma 3 köbméter tűzifát "
+                + "pakoltam be.");
+        assertEquals(1, t.plans.size());
+        assertEquals("munka", t.plans.get(0).kind.id);
+        Activities.Parsed d = Activities.parse("A bicajom defektet "
+                + "kapott, 5 km-t toltam hazáig.");
+        assertEquals(1, d.plans.size());
+        assertEquals("tura", d.plans.get(0).kind.id);
+        Activities.Parsed g = Activities.parse("Futball edzés "
+                + "gyerekeknek, én vezettem, közben én is mozogtam vagy "
+                + "30 percet.");
+        assertEquals(1, g.plans.size());
+        assertEquals(30, g.plans.get(0).minutes);
+        // A rock and roll tánc, nem egyéb mozgás.
+        assertEquals("tanc", Activities.parse("90 perc rock and roll "
+                + "edzés volt a lányommal.").plans.get(0).kind.id);
+    }
+
+    /**
+     * A most kezdődő óra terv, a már elkezdődött megtörtént.
+     */
+    @Test
+    public void aClassAboutToStartIsAPlan() {
+        assertTrue(Activities.parse("Ma este 19:30-kor kezdődik a "
+                + "jógaóra, már becsekkoltam.").plans.isEmpty());
+        assertEquals(1, Activities.parse("A jógaóra 19:30-kor "
+                + "kezdődött, végig ott voltam.").plans.size());
+    }
+
 }

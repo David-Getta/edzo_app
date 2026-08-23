@@ -340,6 +340,10 @@ public final class Activities {
                     "bodycombat", "body combat"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
                     "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
+                    // A rock and roll is tánc: eddig egyéb mozgásként ment be.
+                    // (Az „&"-es írásmódot a normalizálás „and" nélkülire
+                    // egyszerűsíti, ezért az itt nem tő.)
+                    "rock and roll", "rockandroll", "rock n roll",
                     // A Les Mills kardió-óra neve: a „body attack óra"
                     // eddig üresen jött vissza.
                     "body attack", "bodyattack",
@@ -482,6 +486,10 @@ public final class Activities {
                     // cipekedtem" válasz nélkül maradt.
                     "kaszal", "kaszalas", "cipeked", "cipekedes", "cipeltem",
                     "pakolas", "bepakol", "kipakol",
+                    // A fordított szórendű ige is pakolás: a „3 köbméter
+                    // tűzifát pakoltam be" eddig üresen jött vissza – csak
+                    // az igekötős alak volt tő.
+                    "pakoltam", "pakoltunk",
                     // A ház körüli nehezebb munkák igéi: a fahasogatás, a
                     // kézi autómosás, az ablakpucolás és a szobafestés is
                     // üresen jött vissza.
@@ -1411,6 +1419,34 @@ public final class Activities {
         // bejegyzésből harminc kilós testsúly-mérés lett.
         s = s.replaceAll("(?<![a-z])lement(?:em|unk)\\s+"
                 + "(?=(?:a\\s+)?\\d{1,3}\\s?hossz)", "usztam ");
+        // A DEFEKTES bicikli nem tekerés: az „a bicajom defektet kapott,
+        // 5 km-t toltam hazáig" tolása gyaloglás, a defekt tagmondatában
+        // ülő bicaj mégis egy órás kerékpározást írt be. Csak a szám
+        // nélküli defekt-tagmondat esik ki, és csak a kimondott TOLÁS
+        // mellett – a „defektet kaptam a 40. km-nél" túrája megtörtént,
+        // a magában álló defekt pedig marad a bringa jele.
+        if (s.matches("(?s).*(?<![a-z])tolt(?:am|uk|unk)(?![a-z]).*")) {
+            java.util.regex.Matcher df = java.util.regex.Pattern.compile(
+                    "(?:^|(?<=[,;.]))[^,;.]*defekt[^,;.]*").matcher(s);
+            StringBuffer db = new StringBuffer();
+            boolean dfAny = false;
+            while (df.find()) {
+                if (!df.group().matches("(?s).*\\d.*")) {
+                    df.appendReplacement(db, " ");
+                    dfAny = true;
+                }
+            }
+            if (dfAny) { df.appendTail(db); s = db.toString(); }
+        }
+        // A GYEREKEKNEK vezetett edzés a gyerekeké: a „futball edzés
+        // gyerekeknek, én vezettem, közben én is mozogtam vagy 30 percet"
+        // kilencven perc focit írt be az edzőnek – a saját harminc perce
+        // mellé. Csak a kimondott vezetés mellett esik ki.
+        if (s.matches("(?s).*(?<![a-z])(?:en\\s+)?(?:vezettem|tartottam"
+                + "|edzokent)(?![a-z]).*"))
+            s = s.replaceAll("(?:^|(?<=[,;.]))[^,;.]*edzes\\w*\\s+"
+                    + "(?:a\\s+)?(?:gyerek\\w*|ovis\\w*|kezdo\\w*|halad\\w*)"
+                    + "n[ae]k[^,;.]*", " ");
         // A KUTYÁS körök rovása séta: az „a kutyával a szokásos köröket
         // róttuk, majdnem 4 km lett" négy kilométere futásként került be –
         // a csupasz táv alapmozgása a futás, pedig a kört róni gyalog
@@ -5272,6 +5308,10 @@ public final class Activities {
                 // megyünk" kétórás síelést írt a MAI naplóba – egy jövő
                 // heti tervből.
                 "szeretne", "megyek", "megyunk", "lesz idom", "majd lesz",
+                // A MOST KEZDŐDŐ óra is jövő: a „ma este 19:30-kor kezdődik
+                // a jógaóra, már becsekkoltam" jelen idejű, mégis terv –
+                // a múlt idejű „kezdődött" marad megtörtént edzés.
+                "kezdodik", "fog kezdodni", "becsekkoltam",
                 // A MEGÍRT edzésterv nem megtörtént edzés: a „futóedzőm új
                 // tervet írt: heti 3 futás" három egyéb mozgást írt a
                 // naplóba – egy papírra írt tervből.
