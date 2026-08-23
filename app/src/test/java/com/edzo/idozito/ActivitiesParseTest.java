@@ -8907,4 +8907,26 @@ public class ActivitiesParseTest {
                 + "a crosstraineren meg 20 percet.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A második meccs-szó a valódi mérkőzés, a „3 kör futás" pedig kör.
+     *
+     * A „meccs előtt 30 perc bemelegítés, a meccs 2x30 perc volt"
+     * bejegyzéséből semmi nem lett – az első meccs-szó időpont-horgony
+     * volt. A „3 kör futást toltam le" pedig hajnali háromra került.
+     */
+    @Test
+    public void aSecondMatchWordAndLapsThatAreNotOClock() {
+        Activities.Parsed m = Activities.parse("Meccs előtt 30 perc "
+                + "bemelegítés, a meccs 2x30 perc volt.");
+        assertEquals(1, m.plans.size());
+        assertEquals(60, m.plans.get(0).minutes);
+        assertEquals(12, Activities.parse("Az edzőterem zárva volt, így "
+                + "a parkban toltam le 3 kör futást, 4,5 km.").hour);
+        // Az „edzés után" horgonya marad horgony.
+        assertTrue(Activities.parse("Edzés után ittam egy "
+                + "fehérjeturmixot.").plans.isEmpty());
+        // A napszakkal kimondott óra marad óra.
+        assertEquals(7, Activities.parse("Reggel 7 kor 5 km futás.").hour);
+    }
+
 }

@@ -4428,17 +4428,26 @@ public final class Activities {
             // szabályok úgyis kiszűrik.
             for (String w : new String[]{"edzes", "edzett", "edzeget", "edzeni", "alkalom",
                     "mozgas", "hiit", "intervall", "meccs", "merkozes"}) {
-                int p = s.indexOf(w);
+                // MINDEN előfordulást megnézünk, nem csak az elsőt: a „meccs
+                // előtt 30 perc bemelegítés, a meccs 2x30 perc volt" első
+                // meccs-szava időpont-horgony, a MÁSODIK viszont a valódi
+                // mérkőzés – eddig az első miatt az egész bejegyzés eltűnt.
+                int p = -1;
+                for (int c = s.indexOf(w); c >= 0; c = s.indexOf(w, c + 1)) {
+                    // Az „edzés UTÁN" nem edzés, hanem IDŐPONT. Az „edzés
+                    // után ittam egy fehérjeturmixot" mondatból eddig
+                    // negyvenöt perc egyéb mozgás lett – és mivel az
+                    // edzés-felismerő az étkezés elé áll, a turmix el is
+                    // veszett mellőle. Ugyanez az „edzés előtt" és az „edzés
+                    // közben". A KIFEHÉRÍTETLEN szövegen nézzük: a „35
+                    // perces edzés alatt" percesét a gyűjtő már
+                    // kifehérítette, és a kimondott hosszú edzés is
+                    // időpontnak látszott – az egész eltűnt.
+                    if (timePhraseAfter(beforeBlank, c + w.length())) continue;
+                    p = c;
+                    break;
+                }
                 if (p < 0) continue;
-                // Az „edzés UTÁN" nem edzés, hanem IDŐPONT. Az „edzés után
-                // ittam egy fehérjeturmixot" mondatból eddig negyvenöt perc
-                // egyéb mozgás lett – és mivel az edzés-felismerő az étkezés
-                // elé áll, a turmix el is veszett mellőle. Ugyanez az „edzés
-                // előtt" és az „edzés közben". A KIFEHÉRÍTETLEN szövegen
-                // nézzük: a „35 perces edzés alatt" percesét a gyűjtő már
-                // kifehérítette, és a kimondott hosszú edzés is időpontnak
-                // látszott – az egész eltűnt.
-                if (timePhraseAfter(beforeBlank, p + w.length())) continue;
                 Kind other = byId("egyeb");
                 int n = countBefore(s, p, null);
                 // A szorzószám itt is állhat hátul: „a héten edzettem négyszer".
@@ -6369,6 +6378,17 @@ public final class Activities {
                     + "hajnalban|ejszaka)\\w*\\s*$")
                     && StrengthParse.nameIn(s.substring(m.end(),
                         Math.min(s.length(), m.end() + 20))) != null) continue;
+            // A KÖR után MOZGÁSFORMA is állhat: a „3 kör futást toltam le a
+            // parkban" hajnali háromra tette a bejegyzést. Időpont után a
+            // mozgás neve tárgyesetben nem áll ott – a napszakkal kimondott
+            // óra viszont óra marad („reggel 7 kor futás").
+            if (spaced && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                    + "(reggel|delelott|delben|delutan|este|ejjel|"
+                    + "hajnalban|ejszaka)\\w*\\s*$")
+                    && s.substring(m.end(), Math.min(s.length(), m.end() + 20))
+                        .matches("(?s)\\s*(?:futas|futast|kocogas|kocogast|"
+                            + "uszas|uszast|sprint\\w*|gyakorlat\\w*|"
+                            + "ismetles\\w*|szakasz\\w*)(?![a-z]).*")) continue;
             // Az IDŐPONT után nem áll újabb szám: a „4 kör 10 burpee, 15
             // guggolás" hajnali négyre került a naplóban. A napszak melletti
             // óra viszont maradjon óra – a „reggel 7 kor 5 km futás" hetese
