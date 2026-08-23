@@ -1395,6 +1395,29 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(?:az?\\s+)?(?:\\p{L}+\\s+){0,3}?"
                 + "edzesterv\\w*\\s+(?:\\d{1,2}\\s?\\.?\\s+)?"
                 + "het(?:e|en|eben)?(?![a-z])\\s*:?\\s*", " ");
+        // A „DE AZ ÓRÁM…-AT ÍRT" a helyesbített lépésszám: az „a telefonom
+        // szerint 9800 lépés, de az órám 10 400-at írt" mondatból a telefon
+        // száma került a naplóba – pedig a „de" épp azt mondja, hogy az óra
+        // számát tartja igaznak.
+        s = s.replaceAll("(\\d[\\d ]{0,6})\\s?lepes\\w*\\s*,?\\s+de\\s+az?\\s+"
+                + "ora\\w*\\s+(\\d[\\d ]{0,6}\\d|\\d)\\s?-?[ae]t\\s+irt",
+                "$2 lepes");
+        // A LEMENT hossz leúszott hossz: a „lementem 30 hosszt a másik
+        // sávban" úszás – a „lementem" ige mégis fogyásnak hangzott, és a
+        // bejegyzésből harminc kilós testsúly-mérés lett.
+        s = s.replaceAll("(?<![a-z])lement(?:em|unk)\\s+"
+                + "(?=(?:a\\s+)?\\d{1,3}\\s?hossz)", "usztam ");
+        // A KUTYÁS körök rovása séta: az „a kutyával a szokásos köröket
+        // róttuk, majdnem 4 km lett" négy kilométere futásként került be –
+        // a csupasz táv alapmozgása a futás, pedig a kört róni gyalog
+        // szokás. Csak kimondott sport nélkül, a kutya mellett.
+        if (s.matches("(?s).*(?<![a-z])kutya\\w*.*")
+                && !s.matches("(?s).*(?:fut|kocog|bicikl|bring|teker).*"))
+            s = s.replaceAll("(?<![a-z])(?:koroket|kort|koreinket)\\s+"
+                    + "rott(?:am|uk|unk)(?![a-z])", "setaltam")
+                 .replaceAll("(?<![a-z])rott(?:am|uk|unk)\\s+"
+                    + "(?:a\\s+|egy\\s+)?(?:szokasos\\s+)?"
+                    + "(?:koroket|kort)(?![a-z])", "setaltam");
         // A FÉL ÓRA számmal írva is óra: a „fél 7-től fél 8-ig úszás"
         // hatvan perce negyvenöt lett – a „fél 7" nem számított időpontnak.
         // 6:30-ra fordítjuk, onnan a tartomány-szabály érti.

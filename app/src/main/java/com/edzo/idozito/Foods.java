@@ -3631,7 +3631,8 @@ public final class Foods {
                 : m.group(1).startsWith("harmad") ? 1 / 3.0
                 : 0.25;
         boolean left = m.group(2).startsWith("hagy") || m.group(2).startsWith("otthagy")
-                || m.group(2).startsWith("meghagy");
+                || m.group(2).startsWith("meghagy") || m.group(2).startsWith("atad")
+                || m.group(2).startsWith("odaad") || m.group(2).startsWith("atenged");
         return left ? 1 - f : f;
     }
 
@@ -3640,11 +3641,15 @@ public final class Foods {
             java.util.regex.Pattern.compile(
                     "csak\\s(?:a\\s)?(felet|harmadat|ketharmadat|negyedet)(?![a-z])");
 
-    /** „a felét ettem meg" / „a negyedét otthagytam" – előre lefordítva. */
+    /** „a felét ettem meg" / „a negyedét otthagytam" – előre lefordítva.
+     *  Az ÁTADOTT hányad a meghagyott tükörképe: a „220 gramm volt a steak,
+     *  a felét átadtam a férjemnek" fele az övé lett – mégis a teljes
+     *  huszonkét deka került a naplóba. */
     private static final java.util.regex.Pattern FRACTION_CLAUSE =
             java.util.regex.Pattern.compile(
                     "(?<![a-z])(felet|harmadat|ketharmadat|negyedet)\\s"
-                    + "(ettem|megettem|hagytam|otthagytam|meghagytam)(?![a-z])");
+                    + "(ettem|megettem|hagytam|otthagytam|meghagytam"
+                    + "|atadtam|odaadtam|atengedtem)(?![a-z])");
 
     /**
      * Egy mérőszónyi étel grammban: egy tábla csoki száz gramm, egy szelet

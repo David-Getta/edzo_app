@@ -8596,4 +8596,32 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /**
+     * A lement hossz, a kutyás körök és az óra helyesbített lépése.
+     *
+     * A „lementem 30 hosszt a másik sávban" testsúly-mérés lett, a
+     * „kutyával a szokásos köröket róttuk, majdnem 4 km" futásként
+     * ment be, a „telefonom szerint 9800 lépés, de az órám 10 400-at
+     * írt" pedig a telefon számát vette.
+     */
+    @Test
+    public void swimLapsDogLapsAndACorrectedStepCount() {
+        Activities.Parsed u = Activities.parse("Az úszásoktatásra "
+                + "kísértem a gyereket, közben lementem 30 hosszt a "
+                + "másik sávban.");
+        assertEquals(1, u.plans.size());
+        assertEquals("uszas", u.plans.get(0).kind.id);
+        assertEquals(0.75, u.plans.get(0).km, 0.01);
+        Activities.Parsed k = Activities.parse("A kutyával a szokásos "
+                + "köröket róttuk, majdnem 4 km lett.");
+        assertEquals("tura", k.plans.get(0).kind.id);
+        assertEquals(4.0, k.plans.get(0).km, 0.01);
+        assertEquals(10400, Activities.parse("A telefonom szerint 9800 "
+                + "lépés, de az órám 10 400-at írt, az órának hiszek.")
+                .plans.get(0).steps);
+        // A futva rótt kör marad futás.
+        assertEquals("futas", Activities.parse("Futva róttuk a köröket "
+                + "a kutyával, 5 km lett.").plans.get(0).kind.id);
+    }
+
 }

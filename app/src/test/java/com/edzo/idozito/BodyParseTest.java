@@ -1246,4 +1246,18 @@ public class BodyParseTest {
         assertEquals(92.7, BodyParse.parse("A fogy\u00f3k\u00fara els\u0151 hete "
                 + "lez\u00e1rult: -1,8 kg, most 92,7.").kg, 0.01);
     }
+
+    /**
+     * A lement hossz le\u00faszott hossz, nem leadott kil\u00f3.
+     *
+     * A \u201element\u00fcnk 30 hosszt a m\u00e1sik s\u00e1vban" harmincasa a
+     * hosszak sz\u00e1ma \u2013 a \u201elementem" ige m\u00e9gis harminc kil\u00f3s
+     * m\u00e9r\u00e9st \u00edrt a s\u00falytrendbe.
+     */
+    @Test public void aSwimLapCountIsNotAWeight() {
+        assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
+                + "s\u00e1vban.").kg, 0.01);
+        // A kil\u00f3ra lemen\u0151 sz\u00e1m marad m\u00e9r\u00e9s.
+        assertEquals(78.0, BodyParse.parse("Lementem 78 kil\u00f3ra.").kg, 0.01);
+    }
 }

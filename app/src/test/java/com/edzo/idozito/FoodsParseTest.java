@@ -2418,4 +2418,19 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "Elfelejtettem enni a zabkásámat "
                 + "reggel.").isEmpty());
     }
+
+    /**
+     * Az átadott fél a meghagyott fél tükörképe.
+     *
+     * A „220 gramm volt a steak, a felét átadtam a férjemnek" teljes
+     * huszonkét dekaként került a naplóba – pedig a fele az övé lett.
+     */
+    @Test public void aHandedOverHalfIsNotEaten() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(110.0, Foods.parse(all, "220 gramm volt a steak, "
+                + "a felét átadtam a férjemnek.").get(0).grams, 0.01);
+        // A meghagyott fél szabálya marad.
+        assertEquals(75.0, Foods.parse(all, "Nem ettem meg az egész "
+                + "steaket, csak a felét.").get(0).grams, 0.01);
+    }
 }

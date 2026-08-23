@@ -804,7 +804,12 @@ public final class BodyParse {
             for (String u : new String[]{"perc", "ora", "mp", "masodperc", "km", "lepes",
                     // A KONYHAI mértékegység sem testsúly: a „zabkása 60 g"
                     // hatvanas száma az adag, nem a mérleg száma.
-                    "g ", "gramm", "dkg", "dl", "ml", "liter"})
+                    "g ", "gramm", "dkg", "dl", "ml", "liter",
+                    // Az uszodai HOSSZ sem kiló: a „lementem 30 hosszt"
+                    // harmincasa a leúszott hosszak száma – a „lementem" ige
+                    // mégis mérés-mondatnak mutatta, és harminc kilós mérés
+                    // került tőle a súlytrendbe.
+                    "hossz"})
                 if (rest.startsWith(u)) { rest = "#"; break; }
             if (rest.equals("#")) continue;
             // Az IZOMTÖMEG nem a testsúly. A mérleg ugyanabban a sorban írja
