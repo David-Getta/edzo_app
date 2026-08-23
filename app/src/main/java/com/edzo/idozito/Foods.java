@@ -146,7 +146,10 @@ public final class Foods {
                 "porridge"),
         new Food("Müzli", 380, 9, 60, "muzli", "granola",
                 // Ékezet nélkül gépelve leggyakrabban így: „musli".
-                "musli"),
+                // A gabonapehely-márkák ugyanez a tétel: eddig csak a
+                // mellé öntött tej került a naplóba.
+                // (A kukoricapehelynek saját tétele van.)
+                "musli", "cheerios"),
         // A „kakaós palacsinta" teljes alakja szótő, különben a kakaó egy
         // bögre tejes kakaónak számítana a kanálnyi töltelék helyett.
         new Food("Palacsinta", 220, 6, 150, "palacsinta", "kakaos palacsinta",
@@ -1523,6 +1526,18 @@ public final class Foods {
                 .matcher(q);
         while (cb.find())
             for (int k = cb.start(); k < cb.end(); k++) sb.setCharAt(k, ' ');
+        // A FAGYI ÍZE nem külön étel: a „két gombóc fagyi, csoki és
+        // vanília" mellé huszonöt gramm táblás csokoládé került a
+        // naplóba – a gombócok ízéből.
+        if (q.matches("(?s).*(?<![a-z])(?:fagyi|fagylalt|gombocz?|gombo?c)"
+                + "\\w*.*")) {
+            java.util.regex.Matcher iz = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:csoki|csokolade|vanilia|pisztacia|eper"
+                    + "|malna|citrom|kave|karamell|rum|dio|kokusz)"
+                    + "(?:s|as|os|es)?(?![a-z])").matcher(q);
+            while (iz.find())
+                for (int k = iz.start(); k < iz.end(); k++) sb.setCharAt(k, ' ');
+        }
         // A SZÁZALÉKOS zsír testzsír, nem olaj: a „78,4 kg, 17,9 százalék
         // zsír" tíz gramm olajat írt az étkezésnaplóba.
         java.util.regex.Matcher pz = java.util.regex.Pattern.compile(
@@ -2893,6 +2908,13 @@ public final class Foods {
         // sima adag lett, a „feladag rizs" pedig egy egész – vagyis a
         // mennyiség épp az ellenkezőjére fordult. Külön írva mindkettő
         // rendben volt.
+        // A DOBOZON ÁLLÓ tápérték nem az adag: a „proteinszelet 20 g
+        // fehérjét tartalmaz, kettőt ettem" HÚSZ grammos szeletet írt a
+        // naplóba – a fehérjetartalmat véve adagnak. A „tartalmaz" ige
+        // kimondja, hogy a szám a dobozé.
+        query = query.replaceAll("(?iu)(\\d{1,3}\\s?(?:g|gr|gramm)\\s+"
+                + "(?:feh[eé]rj[eé]t?|szénhidr[aá]tot?|zs[ií]rt?))\\s+"
+                + "tartalmaz\\w*", "tartalom");
         // A HÁTRAVETETT mennyiség a mondat végén is mennyiség: az „egy
         // egész csomag kekszet megettem, 200 g volt" negyven grammal – a
         // keksz alapadagjával – ment be, pedig a mondat kimondja a

@@ -2549,6 +2549,27 @@ public class FoodsParseTest {
     }
 
     /**
+     * A dobozon álló tápérték nem az adag, a fagyi íze nem külön csoki.
+     *
+     * A „proteinszelet 20 g fehérjét tartalmaz, kettőt ettem" HÚSZ
+     * grammos szeletet írt a naplóba, a „két gombóc fagyi, csoki és
+     * vanília" mellé pedig huszonöt gramm táblás csokoládé került.
+     */
+    @Test public void aLabelValueAndAnIceCreamFlavour() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(120.0, Foods.parse(all, "A Lidl-es proteinszelet "
+                + "20 g fehérjét tartalmaz, kettőt ettem.")
+                .get(0).grams, 0.01);
+        List<Foods.Hit> f = Foods.parse(all, "Két gombóc fagyi volt a "
+                + "strandon, csoki és vanília.");
+        assertEquals(1, f.size());
+        assertEquals("Fagylalt", f.get(0).food.name);
+        // A táblás csoki magában marad csoki.
+        assertEquals("Csokoládé", Foods.parse(all, "Ettem egy tábla "
+                + "csokit.").get(0).food.name);
+    }
+
+    /**
      * A hátravetett mennyiség a mondat végén is mennyiség.
      *
      * Az „egy egész csomag kekszet megettem, 200 g volt" negyven

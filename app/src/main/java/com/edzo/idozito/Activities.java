@@ -5003,7 +5003,10 @@ public final class Activities {
             boolean said = !mins.isEmpty() || !kms.isEmpty() || p0.steps > 0;
             out.set(0, new Plan(p0.kind, c,
                     said ? Math.max(1, p0.minutes / c) : p0.minutes,
-                    p0.km > 0 ? p0.km / c : 0, p0.steps / c));
+                    // Két tizedesre kerekítve: a „160 km futás 9 edzésre"
+                    // osztása 17,77777777777778 kilométert írt a naplóba.
+                    p0.km > 0 ? Math.round(p0.km / c * 100) / 100.0 : 0,
+                    p0.steps / c));
         }
         // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.
         if (wdBacks != null && !out.isEmpty()) {
@@ -5069,7 +5072,7 @@ public final class Activities {
                     }
                     spread.add(new Plan(p.kind, per,
                             Math.max(1, Math.round(p.minutes / (float) per)),
-                            p.km / per, 0));
+                            Math.round(p.km / per * 100) / 100.0, 0));
                 }
                 out = spread;
             }
