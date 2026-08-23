@@ -2012,6 +2012,26 @@ public class StrengthParseTest {
     }
 
     /**
+     * A mértékegység ragja nem számnév.
+     *
+     * A „100 kg-ot fekvenyomásban" ékezet nélküli „-ot" ragjából ÖT
+     * ismétlés lett – egy kitalált sorozat a rekordok közé. A csúcs-szó
+     * melletti alak egyetlen ismétlés marad.
+     */
+    @Test public void aUnitSuffixIsNotTheNumeralFive() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az "
+                + "edzőteremben ma léptem át először a 100 kg-ot "
+                + "fekvenyomásban.");
+        assertEquals(1, it.size());
+        assertEquals(1, it.get(0).sets.size());
+        assertEquals(1, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+        // Csúcs-szó nélkül, ismétlés nélkül nincs mit menteni.
+        assertTrue(StrengthParse.parse("100 kg-ot fekvenyomásban.")
+                .isEmpty());
+    }
+
+    /**
      * A körönkénti ismétlés-lista a felsorolt gyakorlatoké, sorban.
      *
      * Az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás, körönként

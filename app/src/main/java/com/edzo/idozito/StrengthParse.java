@@ -586,9 +586,11 @@ public final class StrengthParse {
         if (!tp.equals(text)) {
             // Az összevetés MÁSIK fele a saját súly: az „én még csak 90-et"
             // kilencvene kilogramm, nem kilencven ismétlés.
+            // A SIKERÜLT szó a teljesített egyest jelöli: ismétlésszám
+            // nélkül a súly magában nem sorozat, és a bejegyzés elveszne.
             text = tp.replaceAll("(?iu)(?<![\\p{L}])[eé]n\\s+(?:m[eé]g\\s+)?"
                     + "(?:csak\\s+)?(\\d{1,3})(?:[.,]\\d{1,2})?\\s?-?[ae]t"
-                    + "(?![\\p{L}])", "$1 kg-ot");
+                    + "(?![\\p{L}])", "sikerult $1 kg");
         }
         // A JÖVŐBELI cél melletti MAI eredmény nem veszhet el: az „az edzőm
         // szerint jövő hónapra meglesz a 100 kg-os guggolás, ma 92,5 ment"

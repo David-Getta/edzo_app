@@ -88,8 +88,13 @@ public final class Hu {
                 // rag egybeesik, és a „6-ot" ebből 6-5 lett – vagyis egy
                 // hatmásodperces munka ötmásodperces pihenővel, a mérleg
                 // számából. („A mérleg 79,6-ot mutatott" időzítő-terv volt.)
+                // A MÉRTÉKEGYSÉG ragja ugyanez: a „100 kg-ot fekvenyomásban"
+                // ékezet nélküli „-ot" ragjából ÖT ismétlés lett – egy
+                // kitalált sorozat a rekordok közé. A kötőjel előtt álló
+                // betű ugyanúgy a szó vége, mint a számjegy.
                 boolean caseSuffix = p > 1 && out.charAt(p - 1) == '-'
-                        && Character.isDigit(out.charAt(p - 2));
+                        && (Character.isDigit(out.charAt(p - 2))
+                            || Character.isLetter(out.charAt(p - 2)));
                 // A „hát" nem hat. Ékezet nélkül a testtáj és a számnév
                 // egybeesik, és a „felső hát erősítés" hat darab hatvanperces
                 // kondi-bejegyzés lett hat napra elosztva. A jelző dönti el:
