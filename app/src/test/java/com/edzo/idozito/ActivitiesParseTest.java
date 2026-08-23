@@ -8929,4 +8929,27 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("Reggel 7 kor 5 km futás.").hour);
     }
 
+    /**
+     * A tegnapi táv a tegnapi naplóé, a ragtalan görgő pedig henger.
+     *
+     * A „tegnapi 12 km után ma csak lazítottam, 20 perc görgő" TEGNAPRA
+     * írt egy tizenkét kilométeres futást, a mai húsz perc lazítás meg
+     * elveszett mellőle.
+     */
+    @Test
+    public void yesterdaysDistanceAndABareFoamRoller() {
+        Activities.Parsed p = Activities.parse("A tegnapi 12 km után ma "
+                + "csak lazítottam, 20 perc görgő.");
+        assertEquals(1, p.plans.size());
+        assertEquals("joga", p.plans.get(0).kind.id);
+        assertEquals(20, p.plans.get(0).minutes);
+        assertEquals(0, p.offset);
+        // A kerékpáros görgő marad tekerés.
+        assertEquals("kerekpar", Activities.parse("Görgőn tekertem "
+                + "40 percet.").plans.get(0).kind.id);
+        // A tegnapi futás magában marad tegnapi bejegyzés.
+        assertEquals(1, Activities.parse("Tegnap 12 km-t futottam.")
+                .offset);
+    }
+
 }

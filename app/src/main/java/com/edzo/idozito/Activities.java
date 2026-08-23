@@ -390,6 +390,9 @@ public final class Activities {
                     // nem tő, mert a képernyőt is görgetjük. A McKenzie a
                     // hátgyakorlatok neve.
                     "hengerrel gorgettem", "mckenzie",
+                    // A GÖRGŐ főnév maga az eszköz: a „20 perc görgő"
+                    // izomlazítás – a hírfolyam-görgetés igéje (görgettem)
+                    // más tő, azt nem érinti.
                     // Az autogén tréning a relaxáció műfaja – a meditáció
                     // családjába tartozik, eddig üresen jött vissza.
                     "autogen trening",
@@ -1532,6 +1535,24 @@ public final class Activities {
         // MELLÉ.
         s = s.replaceAll("(?<![a-z])(?:a\\s+)?sulyzok\\w*\\s+"
                 + "(?=atrendez|atpakol|elpakol|rendezget)", "");
+        // A TEGNAPI táv a tegnapi naplóé: a „tegnapi 12 km után ma csak
+        // lazítottam, 20 perc görgő" TEGNAPRA írt egy tizenkét
+        // kilométeres futást, a mai húsz perc lazítás meg elveszett
+        // mellőle. A „ma" szava kimondja, melyik nap a bejegyzésé.
+        if (s.matches("(?s).*(?<![a-z])ma\\s+(?:csak\\s+|meg\\s+)?\\p{L}*"
+                + "(?:tam|tem|unk|ünk)(?![a-z]).*")
+                || s.matches("(?s).*(?<![a-z])ma\\s+\\d.*"))
+            s = s.replaceAll("(?<![a-z])(?:a\\s+)?tegnapi\\s+"
+                    + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:km|kilometer\\w*"
+                    + "|perc\\w*|lepes\\w*)(?![a-z])[^,;.]{0,12}?"
+                    + "(?=\\s*(?:,|utan|ota))", " ");
+        // A RAGTALAN GÖRGŐ az izomlazító henger: a „20 perc görgő" üresen
+        // jött vissza. A KERÉKPÁROS görgő ragot kap („görgőn tekertem"),
+        // és a bringa szava is ott áll mellette – ott marad tekerés.
+        if (!s.matches("(?s).*(?<![a-z])(?:gorgon|bringa\\w*|bicikli\\w*"
+                + "|bicaj\\w*|teker\\w*|watt\\w*|zwift)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])gorgo(?:t|vel|zes)?(?![a-z])",
+                    "hengerezes");
         // A JELZŐS kilométer is kilométer: a „bejárattam az új futócipőt,
         // 3 könnyű kilométer" hármasa a jelző miatt levált a távról, és a
         // bejegyzésből semmi nem lett.

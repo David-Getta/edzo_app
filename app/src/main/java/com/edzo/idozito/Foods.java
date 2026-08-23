@@ -927,6 +927,9 @@ public final class Foods {
             // A VÍZÁLLÁS a folyóé, a VÍZBEN töltött idő a strandé – egyik
             // sem megivott pohár víz.
             "vizholyag", "vizpart", "vizen", "vizallas", "vizben",
+            // A PEZSGŐFÜRDŐ a medence sarka, nem ital: az „úszás után
+            // 15 perc pezsgőfürdő" másfél deci pezsgőt írt a naplóba.
+            "pezsgofurdo", "pezsgo furdo", "pezsgomedence",
             // A DEHIDRATÁLTSÁG panasz, nem vízivás: a „kicsit dehidratáltan"
             // negyed liter ásványvizet írt a naplóba – a hidratálás tövéből.
             "dehidrat",
@@ -1277,6 +1280,9 @@ public final class Foods {
             // A SZERVIZ végén a víz: a „bringaszerviz után próbakör" mellé
             // egy pohár ásványvíz került a naplóba.
             "szerviz",
+            // A STÚDIÓ végén a DIÓ: a „jógastúdió új órája: yin jóga"
+            // mellé harminc gramm dió került a naplóba.
+            "studio", "studiob", "studion", "studiot",
             // Az ÉPÍTÉS összetétel MÁSODIK tagjaként is a pite tövén ül: a
             // „hóemberépítés a kertben" mellé egy szelet almás pite került.
             "epites",

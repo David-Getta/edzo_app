@@ -2549,6 +2549,23 @@ public class FoodsParseTest {
     }
 
     /**
+     * A pezsgőfürdő a medence sarka, a stúdió végén álló dió sem falat.
+     *
+     * Az „úszás után 15 perc pezsgőfürdő" másfél deci pezsgőt, a
+     * „jógastúdió új órája" harminc gramm diót írt a naplóba.
+     */
+    @Test public void aJacuzziAndAStudioAreNotFood() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Úszás után 15 perc pezsgőfürdő és "
+                + "10 perc gőzkabin.").isEmpty());
+        assertTrue(Foods.parse(all, "A jógastúdió új órája: yin jóga, "
+                + "75 perc.").isEmpty());
+        // A pohárban lévő pezsgő marad pezsgő.
+        assertEquals("Pezsgő", Foods.parse(all, "Egy pohár pezsgőt "
+                + "ittam.").get(0).food.name);
+    }
+
+    /**
      * A turmixba ment hozzávaló-lista maga az ital.
      *
      * A „smoothie-ba ment: banán, spenót, zab" mellé egy KÜLÖN
