@@ -1506,6 +1506,16 @@ public final class Foods {
                 + "(?=ment|kerult|dobtam|tettem)").matcher(q);
         while (tb.find())
             for (int k = tb.start(); k < tb.end(); k++) sb.setCharAt(k, ' ');
+        // A SAJÁT COMB testrész, nem csirkecomb: a „15 perc görgőzés a
+        // comboknak" mellé százötven gramm csirkecomb került a naplóba.
+        // A -nak/-re/-on rag a testrészé; az evés tárgyesetben áll
+        // („combot ettem"), az pedig érintetlen marad.
+        java.util.regex.Matcher cb = java.util.regex.Pattern.compile(
+                "(?<![a-z])comb(?:ok|jaim|jaimat|om|omat|jai)"
+                + "(?:nak|nek|ra|re|on|en|ban|ben|hoz|at)?(?![a-z])")
+                .matcher(q);
+        while (cb.find())
+            for (int k = cb.start(); k < cb.end(); k++) sb.setCharAt(k, ' ');
         // A SZÁZALÉKOS zsír testzsír, nem olaj: a „78,4 kg, 17,9 százalék
         // zsír" tíz gramm olajat írt az étkezésnaplóba.
         java.util.regex.Matcher pz = java.util.regex.Pattern.compile(

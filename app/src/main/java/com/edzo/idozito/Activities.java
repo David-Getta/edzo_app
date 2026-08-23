@@ -2248,16 +2248,24 @@ public final class Activities {
                 s = s.substring(0, fl.start())
                         + (2 * Integer.parseInt(fl.group(1))) + " emelet"
                         + fl.group(2) + s.substring(fl.end());
+            // A szorzó ELTÁVOLODHAT az emeletektől: a „ma is 5 emeletet
+            // mentem fel gyalog háromszor" háromszorosa három külön
+            // alkalom lett, három perccel – tizenöt emelet helyett.
             java.util.regex.Matcher ks = java.util.regex.Pattern.compile(
-                    "(?<![\\d,.])(\\d{1,3})\\s?emelet(\\w*)\\s*,?\\s*"
-                    + "(ketszer|haromszor|negyszer)(?=\\s*(?:[,;.!]|$))")
+                    "(?<![\\d,.])(\\d{1,3})\\s?emelet(\\w*)"
+                    + "((?:\\s+\\p{L}{2,12}){0,4}?)\\s*,?\\s*"
+                    // A szorzó után még állhat helyhatározó („háromszor a
+                    // lépcsőn"), csak újabb szám nem.
+                    + "(ketszer|haromszor|negyszer)"
+                    + "(?=(?:\\s+\\p{L}{1,12}){0,3}\\s*(?:[,;.!]|$))")
                     .matcher(s);
             if (ks.find()) {
-                int mul = ks.group(3).startsWith("ketszer") ? 2
-                        : ks.group(3).startsWith("haromszor") ? 3 : 4;
+                int mul = ks.group(4).startsWith("ketszer") ? 2
+                        : ks.group(4).startsWith("haromszor") ? 3 : 4;
+                // A közbeeső szavak (a mozgás igéje!) a helyükön maradnak.
                 s = s.substring(0, ks.start())
                         + (mul * Integer.parseInt(ks.group(1))) + " emelet"
-                        + ks.group(2) + s.substring(ks.end());
+                        + ks.group(2) + ks.group(3) + s.substring(ks.end());
             }
         }
         // A puszta „lépcső" az EMELETEK mellett maga a mozgás: a „lépcső,

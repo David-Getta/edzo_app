@@ -2549,6 +2549,23 @@ public class FoodsParseTest {
     }
 
     /**
+     * A saját comb testrész, nem csirkecomb.
+     *
+     * A „15 perc görgőzés a comboknak" mellé százötven gramm csirkecomb
+     * került a naplóba.
+     */
+    @Test public void myOwnThighsAreNotChickenThighs() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "A pilates óra után 15 perc "
+                + "görgőzés a comboknak.").isEmpty());
+        // A megevett comb marad csirkecomb.
+        assertEquals("Csirkecomb", Foods.parse(all, "Sült csirkecombot "
+                + "ettem vacsorára.").get(0).food.name);
+        assertEquals("Csirkecomb", Foods.parse(all, "Két combot ettem "
+                + "meg.").get(0).food.name);
+    }
+
+    /**
      * A pezsgőfürdő a medence sarka, a stúdió végén álló dió sem falat.
      *
      * Az „úszás után 15 perc pezsgőfürdő" másfél deci pezsgőt, a

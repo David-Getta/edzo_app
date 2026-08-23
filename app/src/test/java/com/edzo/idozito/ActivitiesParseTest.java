@@ -9136,4 +9136,23 @@ public class ActivitiesParseTest {
                 + "30 mp pihi.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A távolabb álló szorzó is az emeleteké.
+     *
+     * A „ma is 5 emeletet mentem fel gyalog háromszor a lépcsőn"
+     * háromszorosa HÁROM külön alkalom lett, három perccel – tizenöt
+     * emelet helyett.
+     */
+    @Test
+    public void aDistantMultiplierStillCountsFloors() {
+        Activities.Parsed p = Activities.parse("Ma is 5 emeletet mentem "
+                + "fel gyalog háromszor a lépcsőn.");
+        assertEquals(1, p.plans.size());
+        assertEquals(8, p.plans.get(0).minutes);
+        // A fel-és-le dupla útja marad.
+        assertEquals(12, Activities.parse("Az irodában lépcsőztem "
+                + "ebédszünetben, 6 emelet fel és le, kétszer.")
+                .plans.get(0).minutes);
+    }
+
 }
