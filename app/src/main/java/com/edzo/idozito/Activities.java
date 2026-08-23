@@ -1489,6 +1489,18 @@ public final class Activities {
             // A jelen idejű szokás-ige külön bejegyzést is szült volna.
             s = s.replaceAll("(?<![a-z])lepcsozom(?![a-z])", "lepcsoztem");
         }
+        // A „HÁROMSZOR HÚZTAM MEG" szorzója az ismétlésé, nem az
+        // alkalomé: a „holtemelésem új csúcsa 180 kg, háromszor húztam
+        // meg" HÁROM kondi-edzés lett, három napra szétosztva.
+        s = s.replaceAll("(?<![a-z\\d])(?:\\d{1,2}\\s?-?szor|ketszer"
+                + "|haromszor|negyszer|otszor)\\s+"
+                + "(?=huztam|nyomtam|toltam|emeltem)", "");
+        // A JELZŐS kilométer is kilométer: a „bejárattam az új futócipőt,
+        // 3 könnyű kilométer" hármasa a jelző miatt levált a távról, és a
+        // bejegyzésből semmi nem lett.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s+"
+                + "(?:konnyu|kemeny|gyors|lassu|laza|tempos|nyugodt"
+                + "|kenyelmes)\\s+(?=km(?![a-z])|kilometer)", "$1 ");
         // A KUTYÁS körök rovása séta: az „a kutyával a szokásos köröket
         // róttuk, majdnem 4 km lett" négy kilométere futásként került be –
         // a csupasz táv alapmozgása a futás, pedig a kört róni gyalog

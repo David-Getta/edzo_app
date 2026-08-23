@@ -754,6 +754,9 @@ public final class Foods {
         new Food("Kelbimbó", 40, 3, 150, "kelbimbo"),
         new Food("Margarin", 600, 0, 10, "margarin"),
         new Food("Sportital / izotóniás", 25, 0, 500, "sportital", "izotonias",
+                // Az „izo" a terem rövidítése – csak mérőszó vagy ivás-ige
+                // mellett tő, mert a „bizottság" belsejében is ott ül.
+                "dl izot", "liter izot", "izot ittam", "izoval",
                 // Az „izo ital" a verseny-frissítés rövid neve.
                 "elektrolit", "izo ital"),
         // A verseny-gél tasaknyi gyors szénhidrát – a hosszú futás

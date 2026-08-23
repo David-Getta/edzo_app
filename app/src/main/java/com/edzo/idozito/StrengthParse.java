@@ -421,6 +421,31 @@ public final class StrengthParse {
         // kézisúlyzókkal" sorozata eddig nyomtalanul eltűnt.
         text = text.replaceAll("(?iu)(?<![\\p{L}])v[aá]llgyakorlat",
                 "vállemelés");
+        // A „HÁROMSZOR HÚZTAM MEG" három ismétlés: a „holtemelésem új
+        // csúcsa 180 kg, háromszor húztam meg" egy ismétléses sor lett,
+        // a mozgás-oldalon meg három külön edzés.
+        java.util.regex.Matcher tx = java.util.regex.Pattern.compile(
+                "(?iu)(?<![\\p{L}])(k[eé]tszer|h[aá]romszor|n[eé]gyszer"
+                + "|[oö]tsz[oö]r)\\s+(h[uú]ztam|nyomtam|toltam|emeltem)"
+                + "(?:\\s+(?:meg|ki|fel))?(?![\\p{L}])").matcher(text);
+        StringBuffer txb = new StringBuffer();
+        boolean txAny = false;
+        while (tx.find()) {
+            String w = java.text.Normalizer.normalize(
+                    tx.group(1).toLowerCase(),
+                    java.text.Normalizer.Form.NFD)
+                    .replaceAll("\\p{M}", "");
+            int n = w.startsWith("ketszer") ? 2
+                    : w.startsWith("haromszor") ? 3
+                    : w.startsWith("negyszer") ? 4 : 5;
+            tx.appendReplacement(txb, tx.group(2) + " " + n + " ismétlés");
+            txAny = true;
+        }
+        if (txAny) { tx.appendTail(txb); text = txb.toString(); }
+        // Számjeggyel írva (vagy már számjegyre fordítva) ugyanez.
+        text = text.replaceAll("(?iu)(?<![\\p{L}\\d])(\\d{1,2})\\s?-?"
+                + "sz[oö]r\\s+(h[uú]ztam|nyomtam|toltam|emeltem)"
+                + "(?:\\s+(?:meg|ki|fel))?(?![\\p{L}])", "$2 $1 ismétlés");
         // A RAGOS szám a súly: a „vállból nyomás ma csak 2x10 ment
         // 30-cal" harmincasa a rúdon volt, mégis saját testsúlyos sor
         // lett belőle.

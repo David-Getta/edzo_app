@@ -8845,4 +8845,22 @@ public class ActivitiesParseTest {
         assertEquals(9, l.plans.get(0).minutes);
     }
 
+    /**
+     * A jelzős kilométer és a háromszor meghúzott csúcs.
+     *
+     * A „bejárattam az új futócipőt, 3 könnyű kilométer" üresen jött
+     * vissza, a „holtemelésem új csúcsa 180 kg, háromszor húztam meg"
+     * pedig három kondi-edzés lett, három napra szétosztva.
+     */
+    @Test
+    public void anAdjectiveKilometerAndATripleLockout() {
+        assertEquals(3.0, Activities.parse("Bejárattam az új futócipőt, "
+                + "3 könnyű kilométer.").plans.get(0).km, 0.01);
+        Activities.Parsed h = Activities.parse("A holtemelésem új "
+                + "csúcsa 180 kg, háromszor húztam meg.");
+        assertEquals(1, h.plans.size());
+        assertEquals(1, h.plans.get(0).count);
+        assertEquals(1, h.days);
+    }
+
 }
