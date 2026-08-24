@@ -1120,6 +1120,12 @@ public class FoodsParseTest {
         assertEquals(300, h.get(0).food.portion, 0.5);
         // A kimondott turmix-mennyiség viszont marad.
         assertEquals(300, hits("300 g fehérjeturmixot ittam").get(0).grams, 0.5);
+        // A KÜLÖNÍRT alak ugyanez: a „30 g fehérje shake" harminc grammja
+        // a fehérjéé, nem a pohárban lévő turmixé.
+        assertEquals(0, hits("súlyzós edzés után 30 g fehérje shake, "
+                + "300 ml tejjel").get(0).grams, 0.5);
+        // A por grammja viszont a poré.
+        assertEquals(150, hits("ma 150 gramm fehérjepor").get(0).grams, 0.5);
     }
 
     @Test public void theFoodBeforeInsteadOfWasNotEaten() {

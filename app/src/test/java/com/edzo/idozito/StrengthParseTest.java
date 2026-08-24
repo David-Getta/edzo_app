@@ -919,6 +919,23 @@ public class StrengthParseTest {
     }
 
     /**
+     * A tolódzás és a francia is gyakorlatnév.
+     *
+     * A „kondi: fekve 4x8 70 kg, tolódzás 3x12, francia 3x12 25 kg"
+     * második és harmadik tétele nyomtalanul elveszett – a rövidebb
+     * beszélt alakok nem voltak tövek. A franciasaláta viszont továbbra
+     * sem gyakorlat: a puszta „francia" csak sorozat-adat előtt az.
+     */
+    @Test public void theDipAndTheFrenchAreMovesToo() {
+        List<StrengthParse.Item> it = StrengthParse.parse("kondi: fekve "
+                + "4x8 70kg, tolódzás 3x12, francia 3x12 25kg");
+        assertEquals(3, it.size());
+        assertEquals("Tolódzkodás", it.get(1).name);
+        assertEquals("Tricepsz", it.get(2).name);
+        assertEquals(25.0, it.get(2).topWeight(), 0.01);
+    }
+
+    /**
      * A sorozat és az ismétlés két tagmondatban is összetartozik.
      *
      * Az „edzésen 3 sorozat felhúzás 100 kg-mal, 5 ismétlés mindegyik"

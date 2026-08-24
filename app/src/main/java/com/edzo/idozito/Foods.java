@@ -3306,6 +3306,16 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:meg)?felez\\p{L}*\\s+"
                 + "(?:egy\\s+|az?\\s+)?", "fél ");
         query = query.replaceAll("(?iu)(?<!\\p{L})dupl[aá]zott\\s+", "2 ");
+        // A FEHÉRJETARTALOM nem a turmix tömege: a „súlyzós edzés után 30 g
+        // fehérje shake, 300 ml tejjel" harminc grammja a FEHÉRJE
+        // mennyisége – a naplóba mégis egy harminc grammos turmix került,
+        // vagyis a shake tizede. A szám elhagyva a turmix a saját adagját
+        // kapja; a fehérje a makró-olvasóé marad.
+        // A SZÓKÖZ kötelező: a „150 gramm fehérjepor" grammja a poré, ott
+        // a szám a valódi adag.
+        query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?"
+                + "(?:g|gr|gramm)\\s+(feh[eé]rje\\s+"
+                + "(?:shake|turmix|italpor|kokt[eé]l|smoothie))", "$1");
         // A GYŰJTŐNÉV a megnevezett fogás VISSZAUTALÁSA: a „vacsorára sült
         // lazac párolt zöldséggel, kb. 200 g hal" kétszáz grammja ugyanaz a
         // lazac – a naplóba mégis a tipikus adag (150 g) került, mert a

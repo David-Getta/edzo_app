@@ -129,7 +129,8 @@ public final class StrengthParse {
                     "francia fekvenyom", "skull crusher", "skullcrusher",
                     // A puszta „franciafekvés" is ez a gyakorlat – a
                     // „fekvés" töve eddig fekvenyomássá tette.
-                    "franciafekves", "francia fekves",
+                    "franciafekves", "francia fekves", "francia nyom",
+                    "franciaz",
                     "tricepsz lenyom", "nyujtott karu lenyom"},
             {"Kitörés", "kitores", "lunge", "kitort"},
             // A gép NEVE a teremben „lábtoló", nem „lábtolás": a
@@ -140,7 +141,10 @@ public final class StrengthParse {
             // A puszta „fekvő" a terem szlengje ugyanerre: a „húsz burpee,
             // húsz fekvő, húsz guggolás" fekvőtámasza eddig elveszett.
             {"Fekvőtámasz", "fekvotamasz", "fekvo", "push up", "pushup"},
-            {"Tolódzkodás", "tolodzkod", "dipp", "dips", "dip"},
+            // A TOLÓDZÁS a rövidebb beszélt alak: a „tolódzás 3x12" eddig
+            // nyomtalanul elveszett.
+            {"Tolódzkodás", "tolodzkod", "tolodzas", "tolodzt", "dipp",
+                    "dips", "dip"},
             // A „kábelhúzás" a magyar termek gyűjtőneve a csigás húzásra – a
             // leggyakoribb változata a hátnak szóló lehúzás.
             {"Lehúzás", "lehuzas", "kabelhuz", "kabel huz",
@@ -746,6 +750,12 @@ public final class StrengthParse {
         // pihenő másodperce nem lesz belőle kiló.
         text = text.replaceAll("(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s?/\\s?"
                 + "\\d{1,3}(?![\\d,.])", "$1");
+        // A puszta „FRANCIA" a teremben francia nyomás: a „kondi: fekve
+        // 4x8 70 kg, tolódzás 3x12, francia 3x12 25 kg" harmadik tétele
+        // NYOMTALANUL eltűnt. Csak sorozat-adat előtt: a franciasaláta és
+        // a francia krémes nem gyakorlat.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])francia(?![\\p{L}])"
+                + "(?=\\s*\\d{1,2}\\s?[x×])", "francia nyomas");
         // A HÁT ékezet nélkül a HAT számnév: a „reggel 30 perc szobabicikli,
         // aztán 3 sorozat hasizom és hát" HAT hasprés-ismétlést írt az
         // erőnaplóba – a testtájék nevéből lett ismétlésszám. Az ékezetes
