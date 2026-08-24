@@ -339,7 +339,10 @@ public final class Activities {
                     // a comb-tő miatt az étel-oldalon csirkecomb lett belőle.
                     "bodycombat", "body combat"),
             new Kind("tanc", "💃", "Tánc / aerobik", 5.5, false, 60,
-                    "tanc", "aerobik", "zumba", "kangoo", "alakformalo", "balett", "salsa",
+                    // Az ANGOL írásmód ugyanaz az óra: a „45 perc aerobic
+                    // óra a konditeremben" eddig üresen jött vissza.
+                    "tanc", "aerobik", "aerobic", "zumba", "kangoo",
+                    "alakformalo", "balett", "salsa",
                     // A rock and roll is tánc: eddig egyéb mozgásként ment be.
                     // (Az „&"-es írásmódot a normalizálás „and" nélkülire
                     // egyszerűsíti, ezért az itt nem tő.)
@@ -3454,6 +3457,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])perc\\w*\\s+(\\p{L}{3,20})\\s*([,;]\\s*"
                 + dayPart + "\\s+(?:meg\\s+|pedig\\s+|ujra\\s+|megegyszer\\s+)?"
                 + "\\d{1,3})(?![^,;.]*[\\p{L}\\d])", "perc $1$2 perc $1");
+        // A TEREM csak a helyszín, ha az ÓRA neve is ott van: a „ma 45 perc
+        // aerobic óra a konditeremben" kondi-edzésként került a naplóba –
+        // pedig az aerobik saját mozgásforma, más intenzitással. A terem
+        // szava ilyenkor nem mond semmit a mozgásról.
+        if (s.matches("(?s).*(?<![a-z])(?:aerobik|aerobic|zumba|spinning"
+                + "|pilates|tabata|bodypump|kangoo|jumping|step aerobik)"
+                + "\\w*.*"))
+            s = s.replaceAll("(?<![a-z])(?:kondi|edzo|torna)?terem\\w*", " ");
         // A KÉZI KEZELÉS nem kézilabda: a „terápián 20 perc biciklizés és
         // 20 perc kézi kezelés volt" húsz perc KÉZILABDÁT írt a naplóba, a
         // „kézi kezelést kaptam a hátamra" pedig egy másfél órás meccset –

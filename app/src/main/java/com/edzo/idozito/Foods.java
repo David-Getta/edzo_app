@@ -4504,6 +4504,10 @@ public final class Foods {
             // A CUKKINIS lasagne rétege a cukkini: külön adag zöldségként
             // is bekerült.
             {"Cukkini", "Lasagne", "Rakott krumpli"},
+            // A RAKOTT KARFIOL rétege a karfiol: a „két szelet rakott
+            // karfiol" mellé egy külön adag karfiol is bekerült – ugyanaz
+            // a zöldség kétszer. A rántott karfiol ugyanígy.
+            {"Karfiol", "Rakott krumpli", "Rántott zöldség"},
             {"Túró", "Palacsinta", "Túrós batyu", "Túrós csusza",
                     // Az egybeírt túrórudi tövében is ott a túró szó.
                     "Túró rudi"},

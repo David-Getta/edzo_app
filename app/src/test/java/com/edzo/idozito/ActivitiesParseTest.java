@@ -3896,6 +3896,24 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A terem csak a helyszín, ha az óra neve is ott van.
+     *
+     * A „ma 45 perc aerobic óra a konditeremben" kondi-edzésként került a
+     * naplóba – pedig az aerobik saját mozgásforma, más intenzitással. Az
+     * angol írásmód ráadásul tő sem volt.
+     */
+    @Test public void theClassNameBeatsTheVenue() {
+        Activities.Parsed p = Activities.parse("Ma 45 perc aerobic óra a "
+                + "konditeremben.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tanc", p.plans.get(0).kind.id);
+        assertEquals(45, p.plans.get(0).minutes);
+        // A terem magában marad kondi.
+        assertEquals("kondi", Activities.parse("Ma 45 percet kondiztam az "
+                + "edzőteremben.").plans.get(0).kind.id);
+    }
+
+    /**
      * A fele-fele bontás egy edzés.
      *
      * A „ma az edzőben 45 percet toltam, fele kardió, fele súlyzó" mellé

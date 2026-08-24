@@ -2654,6 +2654,22 @@ public class FoodsParseTest {
     }
 
     /**
+     * A rakott karfiol rétege a karfiol.
+     *
+     * A „két szelet rakott karfiol" mellé egy külön adag karfiol is
+     * bekerült – ugyanaz a zöldség kétszer.
+     */
+    @Test public void theCasseroleContainsItsVegetable() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Ebédre két szelet rakott "
+                + "karfiol.");
+        assertEquals(1, h.size());
+        // A párolt karfiol magában marad zöldség.
+        assertEquals("Karfiol", Foods.parse(all, "Ebédre párolt karfiol "
+                + "csirkével.").get(0).food.name);
+    }
+
+    /**
      * A cipekedés nem evés.
      *
      * A „boltból hazafelé cipeltem 10 kiló krumplit" negyed kiló főtt
