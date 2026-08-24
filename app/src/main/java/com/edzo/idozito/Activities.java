@@ -3347,6 +3347,26 @@ public final class Activities {
         if (s.matches(".*(?<![\\d,.])(?:1[89]|[2-9]\\d)\\s?km\\s?/\\s?h.*")
                 && kindByText(s) == null)
             s = "kerekpar " + s;
+        // A SEBESSÉG ugyanazt mondja meg, mint a tempó: a „4 km-t futottam
+        // a futópadon 12-es sebességgel" húsz perc, a naplóba mégis a
+        // mozgásforma átlagából becsült huszonnégy került. A kilométer per
+        // óra a tempó reciproka – átváltva a kimondott tempó szabálya
+        // veszi át, és a becslés helyett a valódi idő kerül be.
+        java.util.regex.Matcher sp = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,2}(?:[.,]\\d)?)\\s?"
+                + "(?:-?[oöea]?s\\s+(?:atlag)?sebesseg\\w*"
+                + "|\\s?km\\s?/\\s?h|kmh)(?![a-z])").matcher(s);
+        if (sp.find()) {
+            double v = Double.parseDouble(sp.group(1).replace(',', '.'));
+            if (v >= 4 && v <= 45) {
+                double pmin = 60 / v;
+                int mm = (int) pmin, ss = (int) Math.round((pmin - mm) * 60);
+                if (ss == 60) { mm++; ss = 0; }
+                s = s.substring(0, sp.start()) + mm + ":"
+                        + (ss < 10 ? "0" : "") + ss + "-as tempo"
+                        + s.substring(sp.end());
+            }
+        }
         // A TÁNCSZŐNYEGEN ugrálás egyetlen tánc: az „ugráltunk" egyéb-töve
         // külön hatvanperces bejegyzést csinált a tánc mellé.
         if (s.contains("tancszonyeg")) s = s.replaceAll("ugral\\w*", "");

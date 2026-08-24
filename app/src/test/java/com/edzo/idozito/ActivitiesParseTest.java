@@ -3896,6 +3896,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A sebesség ugyanazt mondja meg, mint a tempó.
+     *
+     * A „4 km-t futottam a futópadon 12-es sebességgel" húsz perc, a
+     * naplóba mégis a mozgásforma átlagából becsült huszonnégy került. A
+     * kilométer per óra a tempó reciproka.
+     */
+    @Test public void aStatedSpeedSetsThePace() {
+        assertEquals(20, Activities.parse("Ma 4 km-t futottam a futópadon "
+                + "12-es sebességgel.").plans.get(0).minutes);
+        assertEquals(100, Activities.parse("Ma 40 km bringa 24 km/h "
+                + "átlaggal.").plans.get(0).minutes);
+        // A kimondott idő erősebb a sebességnél.
+        assertEquals(80, Activities.parse("Ma 1 óra 20 perc kerékpár, "
+                + "32 km, átlag 24 km/h.").plans.get(0).minutes);
+    }
+
+    /**
      * Az utolsó szakasz nem külön edzés, a futónyelv száma kilométer.
      *
      * A „ma reggel 6 km-t futottam, de az utolsó kilométert sétáltam"
