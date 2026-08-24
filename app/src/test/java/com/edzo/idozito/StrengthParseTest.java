@@ -919,6 +919,22 @@ public class StrengthParseTest {
     }
 
     /**
+     * A „helyett" a megvalósult sorozatot vezeti be.
+     *
+     * A „guggolásban ma nem bírtam a súlyt, 3x5 helyett csak 3x3 ment
+     * 100 kg-mal" a TERVEZETT sorozatot írta a naplóba – a valódi
+     * hármas-hármas helyett.
+     */
+    @Test public void theInsteadClauseKeepsWhatHappened() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolásban ma "
+                + "nem bírtam a súlyt, 3x5 helyett csak 3x3 ment 100 kg-mal.");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(3, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
      * A tolódzás és a francia is gyakorlatnév.
      *
      * A „kondi: fekve 4x8 70 kg, tolódzás 3x12, francia 3x12 25 kg"

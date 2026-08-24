@@ -3480,6 +3480,13 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])kezi\\s+(?=(?:kezel|terap|masszazs|massz"
                 + "|munka|mosogat|szerszam|fek(?![a-z])|valto|kocsi|kotes"
                 + "|iras|vezerl|erovel))", " ");
+        // A MEGÁLLTAM NYÚJTANI egy mozdulat, nem edzés: a „ma 6 km-t
+        // futottam, de a felénél megálltam nyújtani" mellé egy
+        // háromnegyed órás jóga is bekerült – a futás közbeni pár
+        // másodpercből. A főnévi igenév idő nélkül nem alkalom.
+        s = s.replaceAll("(?<![a-z])(?:megall\\w*|leall\\w*|le\\s?kellett)"
+                + "\\s+(nyujtani|nyujtozni|pihenni|lazitani|levegot venni)"
+                + "(?![a-z])", " ");
         // A HELYETT a MEGVALÓSULT számot vezeti be: a „ma 12 000 lépés
         // helyett csak 4000 lett" NYOMTALANUL eltűnt – a „helyett"
         // tagadás-szava az egész bejegyzést elvitte, pedig a második szám

@@ -3896,6 +3896,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A megálltam nyújtani egy mozdulat, nem edzés.
+     *
+     * A „ma 6 km-t futottam, de a felénél megálltam nyújtani" mellé egy
+     * háromnegyed órás jóga is bekerült – a futás közbeni pár
+     * másodpercből.
+     */
+    @Test public void stoppingToStretchIsNotASession() {
+        Activities.Parsed p = Activities.parse("Ma 6 km-t futottam, de a "
+                + "felénél megálltam nyújtani.");
+        assertEquals(1, p.plans.size());
+        assertEquals("futas", p.plans.get(0).kind.id);
+        // A kimondott idejű nyújtás marad bejegyzés.
+        assertEquals(2, Activities.parse("Ma 6 km futás, utána 10 perc "
+                + "nyújtás.").plans.size());
+    }
+
+    /**
      * A feltétel a következményre is áll, a „helyett" a megvalósultat vezeti be.
      *
      * A „ha holnap jó idő lesz, futok 10-et, ma csak 20 perc szoba bringa"

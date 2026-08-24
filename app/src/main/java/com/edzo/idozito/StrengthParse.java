@@ -762,6 +762,13 @@ public final class StrengthParse {
         // alak félreérthetetlen: az izomcsoport neve önmagában úgysem hoz
         // sorozatot, a számnév pedig ékezet nélkül áll.
         text = text.replaceAll("(?u)(?<![\\p{L}])[Hh]át(?![\\p{L}])", " ");
+        // A HELYETT a MEGVALÓSULT sorozatot vezeti be: az „edzésen ma nem
+        // bírtam a súlyt, 3x5 helyett csak 3x3 ment 100 kg-mal" NYOMTALANUL
+        // eltűnt – a tervezett sorozat mellett a valódi is elveszett. A
+        // „helyett" utáni szám az, ami megtörtént.
+        text = text.replaceAll("(?iu)\\d{1,2}\\s?[x×]\\s?\\d{1,3}\\s+"
+                + "helyett\\s+(?:csak\\s+|mind[oö]ssze\\s+)?"
+                + "(\\d{1,2}\\s?[x×]\\s?\\d{1,3})", "$1");
         // A SOROZAT és az ISMÉTLÉS két tagmondatban: az „edzésen 3 sorozat
         // felhúzás 100 kg-mal, 5 ismétlés mindegyik" hármas-ötöse két
         // tagmondatra esett szét – a sorozatszám az elsőben, az ismétlés a
