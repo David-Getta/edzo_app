@@ -3896,6 +3896,22 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A „vissza is" második szám nélkül is hazautat mond.
+     *
+     * A „ma 45 percet gyalogoltam a munkahelyre és vissza is" kilencven
+     * perc – a naplóba mégis negyvenöt került, a napi ingázás fele.
+     */
+    @Test public void theWayBackDoublesTheMinutes() {
+        assertEquals(90, Activities.parse("Ma 45 percet gyalogoltam a "
+                + "munkahelyre és vissza is.").plans.get(0).minutes);
+        assertEquals(40, Activities.parse("Ma 20 percet bicikliztem a "
+                + "boltba, vissza is.").plans.get(0).minutes);
+        // Hazaút nélkül marad annyi, amennyi.
+        assertEquals(45, Activities.parse("Ma 45 percet gyalogoltam a "
+                + "munkahelyre.").plans.get(0).minutes);
+    }
+
+    /**
      * A cipekedés útja nem futás.
      *
      * A „ma a boltból hazafelé cipeltem 10 kiló krumplit 1 km-en át" mellé

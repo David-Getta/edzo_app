@@ -3652,6 +3652,20 @@ public final class Activities {
         // aztán bicajjal munkába 8 km, este vissza 8 km" nyolc kilométert írt
         // a naplóba a tizenhatból – a két egyforma táv egyetlen tekerésnek
         // látszott. A percnél ez a szabály már megvolt, a kilométernél nem.
+        // A „VISSZA IS" második szám nélkül is hazautat mond: a „ma 45
+        // percet gyalogoltam a munkahelyre és vissza is" kilencven perc –
+        // a naplóba mégis negyvenöt került, a napi ingázás fele. A „vissza
+        // is" épp azt mondja ki, hogy a másik irány UGYANANNYI volt.
+        java.util.regex.Matcher ovi = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,3})\\s?perc(?:et|ig|re|ot)?"
+                        + "([^.;\\d]{0,30}?)[,\\s]\\s*(?:es\\s+|meg\\s+)?"
+                        + "vissza\\s+is(?![a-z])").matcher(s);
+        if (ovi.find()) {
+            int sum = 2 * Integer.parseInt(ovi.group(1));
+            if (sum >= 2 && sum <= 24 * 60)
+                s = s.substring(0, ovi.start()) + sum + " perc" + ovi.group(2)
+                        + s.substring(ovi.end());
+        }
         // A VISSZAÚT az „is" szócskával és „annyi"-val is kimondható: a
         // „bringával mentem munkába oda 8 km, vissza is 8 km" tizenhat
         // kilométeréből NYOLC lett, a „gyalog a boltba oda 1,5 km, vissza
