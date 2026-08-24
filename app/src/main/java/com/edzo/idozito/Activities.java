@@ -7145,6 +7145,12 @@ public final class Activities {
                         + "|salak|tartan|futokor|margitsziget|sziget"
                         + "|tombon|haztomb|tomb korul"
                         + "|liget|korut|korben).*")) continue;
+            // A SORREND szava körökről beszél: az „edzésen 5 perc
+            // kötélugrás bemelegítés, aztán 4 kör" hajnali NÉGYRE tette a
+            // bejegyzést – időpont elé nem teszünk „aztán"-t.
+            if (spaced && s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                    + "(?:aztan|majd|utana|azutan|kesobb|vegul)\\s*$"))
+                continue;
             // A KIMONDOTT TÁV is körökről beszél: az óraállás mellé nem
             // szokás kilométert írni, a körök mellé viszont igen.
             if (spaced && s.substring(m.end(),

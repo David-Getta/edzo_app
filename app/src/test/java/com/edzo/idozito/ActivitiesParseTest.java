@@ -3896,6 +3896,20 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A sorrend szava körökről beszél, nem óráról.
+     *
+     * Az „edzésen 5 perc kötélugrás bemelegítés, aztán 4 kör" hajnali
+     * NÉGYRE tette a bejegyzést – ékezet nélkül a „kör" és a „-kor"
+     * egybeesik, időpont elé viszont nem teszünk „aztán"-t.
+     */
+    @Test public void anAfterwardsWordMeansLapsNotAnHour() {
+        assertEquals(12, Activities.parse("Az edzésen 5 perc kötélugrás "
+                + "bemelegítés, aztán 4 kör.").hour);
+        // A napszakkal kimondott óra marad óra.
+        assertEquals(6, Activities.parse("Reggel 6 kor 5 km futás.").hour);
+    }
+
+    /**
      * A megálltam nyújtani egy mozdulat, nem edzés.
      *
      * A „ma 6 km-t futottam, de a felénél megálltam nyújtani" mellé egy
