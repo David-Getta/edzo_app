@@ -3896,6 +3896,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A sorozatszám nem alkalomszám, a második napszak bare száma idő.
+     *
+     * Az „edzőteremben ma háromszor 12 lehúzás ment 50 kg-mal" HÁROM külön
+     * kondi-edzést írt a naplóba – a hármas a sorozatoké. A „ma 40 percet
+     * gyalogoltam a kutyával reggel és 40-et este" nyolcvan percéből
+     * negyven lett: az esti séta mellől elmaradt a mértékegység.
+     */
+    @Test public void setsAreNotSessionsAndTheEveningCountsToo() {
+        Activities.Parsed p = Activities.parse("Az edzőteremben ma "
+                + "háromszor 12 lehúzás ment 50 kg-mal.");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(80, Activities.parse("Ma 40 percet gyalogoltam a "
+                + "kutyával reggel és 40-et este.").plans.get(0).minutes);
+    }
+
+    /**
      * A tópart is körpálya, és a „minden kör" is szoroz.
      *
      * A „ma reggel 3 kör a tóparton, minden kör 1,5 km" hajnali háromra

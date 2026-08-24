@@ -3718,6 +3718,22 @@ public final class Activities {
         // aztán bicajjal munkába 8 km, este vissza 8 km" nyolc kilométert írt
         // a naplóba a tizenhatból – a két egyforma táv egyetlen tekerésnek
         // látszott. A percnél ez a szabály már megvolt, a kilométernél nem.
+        // A MÁSODIK NAPSZAK bare száma is idő: a „ma 40 percet gyalogoltam
+        // a kutyával reggel és 40-et este" nyolcvan percéből negyven lett –
+        // az esti séta nyomtalanul elveszett, mert a szám mellől elmaradt
+        // a mértékegység.
+        java.util.regex.Matcher dp2 = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,3})\\s?perc(?:et|ig|re|ot)?"
+                        + "([^.;\\d]{0,30}?)\\s+(?:es|meg)\\s+"
+                        + "(\\d{1,3})\\s?-?[eoa]?t\\s+(?:reggel|delelott"
+                        + "|delben|delutan|este|ejjel)(?![a-z])").matcher(s);
+        if (dp2.find()) {
+            int sum = Integer.parseInt(dp2.group(1))
+                    + Integer.parseInt(dp2.group(3));
+            if (sum >= 2 && sum <= 24 * 60)
+                s = s.substring(0, dp2.start()) + sum + " perc" + dp2.group(2)
+                        + s.substring(dp2.end());
+        }
         // A „VISSZA IS" második szám nélkül is hazautat mond: a „ma 45
         // percet gyalogoltam a munkahelyre és vissza is" kilencven perc –
         // a naplóba mégis negyvenöt került, a napi ingázás fele. A „vissza
@@ -7830,9 +7846,14 @@ public final class Activities {
 
     /** Van-e olyan felismert sorozat, amelynek ennyi az ismétlésszáma? */
     private static boolean repsMatch(List<StrengthParse.Item> lifts, int n) {
-        for (StrengthParse.Item it : lifts)
+        for (StrengthParse.Item it : lifts) {
+            // A SOROZATSZÁM ugyanígy téves alkalomszám: az „edzőteremben ma
+            // háromszor 12 lehúzás ment 50 kg-mal" HÁROM külön kondi-edzést
+            // írt a naplóba – a hármas a sorozatoké, nem az alkalmaké.
+            if (it.sets.size() == n) return true;
             for (StrengthParse.Set st : it.sets)
                 if (st.reps == n) return true;
+        }
         return false;
     }
 
