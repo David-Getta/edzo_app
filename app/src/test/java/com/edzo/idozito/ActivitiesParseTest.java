@@ -10194,6 +10194,14 @@ public class ActivitiesParseTest {
         // A gyalogtúra marad túra.
         assertEquals("tura", Activities.parse("Tura a hegyekben, "
                 + "12 km.").plans.get(0).kind.id);
+        // A vízitúra evezés (mellé eddig kilencven perc gyaloglás
+        // került), a futótúra pedig futás.
+        Activities.Parsed v = Activities.parse("Vizitura a Tiszan, "
+                + "20 km kajakkal.");
+        assertEquals(1, v.plans.size());
+        assertEquals("evezes", v.plans.get(0).kind.id);
+        assertEquals("futas", Activities.parse("Ma futotura a "
+                + "Normafanal, 12 km.").plans.get(0).kind.id);
     }
 
 }

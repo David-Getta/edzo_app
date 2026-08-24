@@ -2184,6 +2184,12 @@ public final class Activities {
                 + "|kerekparos|mtb-s|gravel)\\s+tura\\w*", "kerekparozas");
         s = s.replaceAll("(?<![a-z])(?:bringa|bicikli|kerekpar|bicaj)"
                 + "\\s?tura\\w*", "kerekparozas");
+        // Ugyanez a VÍZITÚRA és a FUTÓTÚRA: az előbbi mellé kilencven
+        // perc gyaloglás került az evezés mellé, az utóbbi pedig
+        // gyalogtúraként ment a naplóba – pedig futás volt.
+        s = s.replaceAll("(?<![a-z])(?:vizi|kajak|kenu|raft)"
+                + "\\s?tura\\w*", "evezes");
+        s = s.replaceAll("(?<![a-z])(?:futo|trail)\\s?tura\\w*", "futas");
         // A puszta „KOSÁR" a bevásárlókosár miatt nem sport – de a
         // kimondott hossz vagy a meccs-szó eldönti: a „ma 60 perc kosár"
         // egyéb mozgásként került a naplóba, pedig kosárlabda volt.
