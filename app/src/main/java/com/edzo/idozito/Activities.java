@@ -2177,6 +2177,13 @@ public final class Activities {
         // séta mellé. A „lefutotta a maratont" marad futás.
         s = s.replaceAll("(?<=\\p{L}r[ae]\\s)futott[ae](?![a-z])", " ");
         s = s.replaceAll("(?<![a-z])futotta\\s+ra(?![a-z])", " ");
+        // A BRINGÁS TÚRA kerékpározás: a „bringás túránk 65 km volt, 3 óra
+        // 10 perc alatt" mellé egy hatvanöt kilométeres GYALOGTÚRA is
+        // bekerült a naplóba – tíz óra séta egy délutáni tekerés mellé.
+        s = s.replaceAll("(?<![a-z])(?:bringas|biciklis|bicajos"
+                + "|kerekparos|mtb-s|gravel)\\s+tura\\w*", "kerekparozas");
+        s = s.replaceAll("(?<![a-z])(?:bringa|bicikli|kerekpar|bicaj)"
+                + "\\s?tura\\w*", "kerekparozas");
         // A puszta „KOSÁR" a bevásárlókosár miatt nem sport – de a
         // kimondott hossz vagy a meccs-szó eldönti: a „ma 60 perc kosár"
         // egyéb mozgásként került a naplóba, pedig kosárlabda volt.

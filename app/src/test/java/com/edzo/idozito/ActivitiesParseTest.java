@@ -10174,4 +10174,26 @@ public class ActivitiesParseTest {
                 + "50 perc.").plans.get(0).kind.id);
     }
 
+    /**
+     * A bringás túra kerékpározás, nem gyalogtúra.
+     *
+     * A „bringás túránk 65 km volt, 3 óra 10 perc alatt" mellé egy
+     * hatvanöt kilométeres GYALOGTÚRA is bekerült a naplóba – tíz óra
+     * séta egy délutáni tekerés mellé.
+     */
+    @Test
+    public void aBikeTourIsCycling() {
+        Activities.Parsed p = Activities.parse("A bringas turank 65 km "
+                + "volt, 3 ora 10 perc alatt.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        assertEquals(65.0, p.plans.get(0).km, 0.01);
+        assertEquals(190, p.plans.get(0).minutes);
+        assertEquals("kerekpar", Activities.parse("Kerekparos turan "
+                + "voltunk, 50 km.").plans.get(0).kind.id);
+        // A gyalogtúra marad túra.
+        assertEquals("tura", Activities.parse("Tura a hegyekben, "
+                + "12 km.").plans.get(0).kind.id);
+    }
+
 }
