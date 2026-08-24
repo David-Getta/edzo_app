@@ -2182,16 +2182,35 @@ public final class Activities {
                     "(?<![\\d,.:])(\\d{1,2})(?::([0-5]\\d))?\\s?-?\\s?"
                             + "(?:ora)?tol\\s+(\\d{1,2})(?::([0-5]\\d))?"
                             + "\\s?-?\\s?(?:ora)?ig(?![a-z])").matcher(s);
-            if (tr.find()) {
+            // Az „ESTE 21:00 ÉS 22:30 KÖZÖTT jóga" ugyanez más szavakkal: a
+            // másfél óra eddig elveszett, a jóga a negyvenöt perces
+            // alapértelmezést kapta. Óra-jelölés kell hozzá (kettőspont
+            // vagy kimondott „óra"), különben a „8 és 10 fok között"
+            // alakok is időtartammá válnának.
+            boolean between = !tr.find();
+            if (between)
+                tr = java.util.regex.Pattern.compile(
+                        "(?<![\\d,.:])(\\d{1,2})(?::([0-5]\\d))?\\s?"
+                                + "(?:ora(?![a-z]))?\\s?(?:es|meg)\\s"
+                                + "(\\d{1,2})(?::([0-5]\\d))?\\s?"
+                                + "(?:ora(?![a-z]))?\\s?kozott(?![a-z])")
+                        .matcher(s);
+            if (tr.reset().find()) {
                 int h1 = Integer.parseInt(tr.group(1));
                 int n1 = tr.group(2) == null ? 0 : Integer.parseInt(tr.group(2));
                 int h2 = Integer.parseInt(tr.group(3));
                 int n2 = tr.group(4) == null ? 0 : Integer.parseInt(tr.group(4));
-                if (h1 <= 23 && h2 <= 23) {
+                boolean clock = !between || tr.group(0).contains(":")
+                        || tr.group(0).matches("(?s).*(?<![a-z])ora(?![a-z]).*");
+                if (h1 <= 23 && h2 <= 23 && clock) {
                     int d = (h2 * 60 + n2) - (h1 * 60 + n1);
                     if (d < 0) d += 24 * 60;
+                    // A KEZDÉS ideje megmarad: a „17:30-tól 19:00-ig
+                    // futottam" napszaka eddig elveszett a csere során, és
+                    // a délutáni futás dél körüli órát kapott a naplóban.
                     if (d > 0 && d <= 8 * 60)
-                        s = s.substring(0, tr.start()) + d + " perc"
+                        s = s.substring(0, tr.start())
+                                + (h1 + " orakor " + d + " perc")
                                 + s.substring(tr.end());
                 }
             }

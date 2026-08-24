@@ -10036,4 +10036,28 @@ public class ActivitiesParseTest {
             if (x.kind.id.equals("tura")) assertTrue(x.minutes > 60);
     }
 
+    /**
+     * A „KÉT IDŐPONT KÖZÖTT" ugyanolyan hossz, mint a tól-ig.
+     *
+     * Az „este 21:00 és 22:30 között jóga" másfél órája elveszett: a jóga
+     * a negyvenöt perces alapértelmezést kapta. A kezdés órája is
+     * megmarad, hogy a bejegyzés a napszakához kerüljön.
+     */
+    @Test
+    public void anHourRangeWithBetweenCounts() {
+        Activities.Parsed p = Activities.parse("Este 21:00 es 22:30 "
+                + "kozott joga.");
+        assertEquals(90, p.plans.get(0).minutes);
+        assertEquals(21, p.hour);
+        assertEquals(45, Activities.parse("Reggel 6:15 es 7:00 kozott "
+                + "bicikliztem.").plans.get(0).minutes);
+        // Kimondott „óra" nélkül nem időtartam a két szám közti tartomány.
+        assertEquals(30, Activities.parse("3 es 4 sorozat kozott "
+                + "tartottam pihenot, 30 perc kondi.")
+                .plans.get(0).minutes);
+        // A tól-ig alak órája is megmarad.
+        assertEquals(17, Activities.parse("17:30-tol 19:00-ig "
+                + "futottam.").hour);
+    }
+
 }
