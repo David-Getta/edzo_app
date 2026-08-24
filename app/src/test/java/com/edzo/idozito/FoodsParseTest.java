@@ -2935,4 +2935,23 @@ public class FoodsParseTest {
         // A magában álló, s-re végződő FOGÁSNEVEK megmaradnak.
         assertEquals(3, Foods.parse(all, "Ebéd: leves, rizs, csirke.").size());
     }
+
+    /**
+     * A gyűjtőnév mennyisége vesszős felsorolásban is a fogásé.
+     *
+     * A „vacsorára csirkemell salátával, 200 g hús, 100 g saláta"
+     * tányérján a két adag FELCSERÉLŐDÖTT: a csirke kapta a tipikus
+     * százötven grammot, a saláta a kétszázat.
+     */
+    @Test public void aCollectiveNounQuantityInACommaList() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        double hus = 0, sal = 0;
+        for (Foods.Hit x : Foods.parse(all, "Vacsorára csirkemell "
+                + "salátával, 200 g hús, 100 g saláta.")) {
+            if (x.food.name.startsWith("Csirkemell")) hus = x.grams;
+            if (x.food.name.startsWith("Saláta")) sal = x.grams;
+        }
+        assertEquals(200.0, hus, 0.1);
+        assertEquals(100.0, sal, 0.1);
+    }
 }

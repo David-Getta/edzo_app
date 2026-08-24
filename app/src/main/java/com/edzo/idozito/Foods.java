@@ -3421,7 +3421,8 @@ public final class Foods {
         java.util.regex.Matcher qm = java.util.regex.Pattern.compile(
                 "(?iu)[,;]\\s*(?:kb\\.?|k[oö]r[uü]lbel[uü]l|nagyj[aá]b[oó]l)?"
                 + "\\s*(\\d{1,4}(?:[.,]\\d{1,2})?\\s?(?:g|gr|gramm|dkg))"
-                + "\\s+(hal|h[uú]s|sajt)(?![\\p{L}])\\s*(?:[eé]s|meg)\\s+(?=\\d)")
+                + "\\s+(hal|h[uú]s|sajt)(?![\\p{L}])"
+                + "\\s*(?:[eé]s\\s+|meg\\s+|,\\s*)(?=\\d)")
                 .matcher(query);
         if (!query.matches("(?siu).*\\d\\s*(?:db|darab)(?![\\p{L}]).*") && qm.find()) {
             String head = Foods.norm(query.substring(0, qm.start()));

@@ -675,6 +675,13 @@ public final class IntervalParse {
         if (cool < 0 || cool > MAX_SEC) cool = 0;
         if (rounds <= 0) rounds = 1;
         if (rounds > MAX_ROUNDS) return null;
+        // EGY kör pihenő nélkül nem intervallum: a „ma reggel 5 percet
+        // sprinteltem a busz után" mellé egy egykörös, ötperces
+        // időzítő-terv került – az nem intervall-edzés, csak egy
+        // stopper. A rövid (két percnél nem hosszabb) tartás marad:
+        // a plank és a fal-ülés valódi egykörös terv.
+        if (rounds == 1 && rest == 0 && warm == 0 && cool == 0
+                && work > 120) return null;
         Plan p = new Plan(rounds, work, rest, warm, cool);
         // A szakaszok külön-külön hihetőek lehetnek, EGYÜTT mégsem: a
         // „8x 60 perc" nyolc órás időzítőt állítana be. Ilyen edzés nincs –

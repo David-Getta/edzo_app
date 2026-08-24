@@ -1004,4 +1004,22 @@ public class IntervalParseTest {
                 + "10 mp pihenő."));
     }
 
+    /**
+     * Egy kör pihenő nélkül nem intervallum.
+     *
+     * A „ma reggel 5 percet sprinteltem a busz után" mellé egykörös,
+     * ötperces időzítő-terv került – az nem intervall-edzés, csak egy
+     * stopper.
+     */
+    @Test public void aSingleLongBlockIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Ma reggel 5 percet sprinteltem "
+                + "a busz után, ez is edzés."));
+        // A pihenővel írt egykörös terv marad.
+        assertNotNull(IntervalParse.parse("1 kör 90 mp munka, 30 mp "
+                + "pihenő."));
+        // A többkörös sprint-edzés is marad.
+        assertNotNull(IntervalParse.parse("Sprint edzés: 6 kör, 30 mp "
+                + "hajrá, 60 mp séta."));
+    }
+
 }
