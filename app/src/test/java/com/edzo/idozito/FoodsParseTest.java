@@ -2954,4 +2954,29 @@ public class FoodsParseTest {
         assertEquals(200.0, hus, 0.1);
         assertEquals(100.0, sal, 0.1);
     }
+
+    /**
+     * A fajta elviszi a húst, a felsorolásé viszont megmarad.
+     *
+     * Az „ebédre rántott húst ettem" mellé egy MÁSODIK adag (grillezett)
+     * hús is bekerült a naplóba: a „húst ettem" önálló fogásnév. A „csak
+     * zöldséget és húst" húsa fordítva járt – nyomtalanul elveszett,
+     * mert a tő az evés igéjét is megkövetelte.
+     */
+    @Test public void aMeatKindDoesNotDoubleUp() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Ebédre rántott húst ettem "
+                + "rizzsel.");
+        for (Foods.Hit x : h) assertFalse(x.food.name.equals("Grillhús"));
+        assertEquals(2, h.size());
+        // A kötőszós felsorolás húsa bekerül.
+        boolean meat = false;
+        for (Foods.Hit x : Foods.parse(all, "Ma nem ettem semmi "
+                + "cukrosat, csak zöldséget és húst."))
+            if (x.food.name.equals("Grillhús")) meat = true;
+        assertTrue(meat);
+        // A magában álló hús marad hús.
+        assertEquals("Grillhús", Foods.parse(all, "Ebédre húst "
+                + "ettem.").get(0).food.name);
+    }
 }

@@ -47,7 +47,13 @@ public final class Foods {
         // egyértelmű alakok.
         // (A „sült hús" a Sertéskaraj tője marad – ez a vegyes grill.)
         new Food("Grillhús", 250, 26, 150, "grillhus",
+                // A KÖTŐSZÓS felsorolás húsa is fogás: a „csak zöldséget
+                // és húst" húsa nyomtalanul elveszett, mert a tő eddig
+                // az evés igéjét is megkövetelte. A puszta „hust" nem
+                // lehet tő: a „rántott húst" mellé egy második,
+                // grillezett adagot írna.
                 "grillezett hus", "hust ettem", "hust ettunk",
+                "es hust", "meg hust", "csak hust",
                 "grill hus"),
         new Food("Rántott csirkemell", 250, 25, 180, "rantott csirke",
                 // A gyorséttermi csíkok is bundásak – nem grillmell. (A
@@ -3396,6 +3402,14 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?"
                 + "(?:g|gr|gramm)\\s+(feh[eé]rje\\s+"
                 + "(?:shake|turmix|italpor|kokt[eé]l|smoothie))", "$1");
+        // A FAJTA elviszi a húst: az „ebédre rántott húst ettem" mellé
+        // egy MÁSODIK adag (grillezett) hús is bekerült a naplóba, mert a
+        // „húst ettem" önálló fogásnév. Az ige elé hozva a szórend
+        // ugyanazt jelenti, a kettős találat viszont megszűnik.
+        query = query.replaceAll("(?iu)(?<![\\p{L}])(r[aá]ntott|s[uü]lt"
+                + "|f[oő]tt|p[aá]rolt|grillezett|dar[aá]lt|vadas|rizses"
+                + "|tarhony[aá]s|marha|sert[eé]s|csirke|pulyka)\\s+"
+                + "h[uú]st\\s+(ettem|ett[uü]nk)(?![\\p{L}])", "$2 $1 húst");
         // Az „AZ EGÉSZ" a fogás teljes tömege: a „vacsora: gyros tál, kb
         // 500 g az egész" ötszáz grammja elveszett, mert külön
         // tagmondatba került, a gyros pedig a tipikus adagot kapta. A
