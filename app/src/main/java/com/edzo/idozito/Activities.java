@@ -5600,6 +5600,21 @@ public final class Activities {
                     kept.add(p);
             if (!kept.isEmpty()) out = kept;
         }
+        // A puszta „MOZGÁS" szó nem külön edzés: a „ma 8000 lépés csak,
+        // kevés volt a mozgás" mellé negyvenöt perc egyéb mozgás került a
+        // lépések sétája mellé – a nap kétszer. A szó itt az egészre
+        // utal vissza, nem egy másik tevékenységre.
+        if (out.size() > 1 && rawText.matches("(?s).*(?<![a-z])mozgas"
+                + "(?:om|od|a|unk|t|ra|rol|sal)?(?![a-z]).*")) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out) {
+                if ("egyeb".equals(p.kind.id) && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin && p.count == 1)
+                    continue;
+                kept.add(p);
+            }
+            if (!kept.isEmpty()) out = kept;
+        }
         // A VÉGIG JÁTSZOTTAM ugyanaz a meccs, nem egy másik: a „ma 90
         // perc foci, végig játszottam" mellé negyvenöt perc egyéb mozgás
         // került a naplóba – ugyanaz a meccs kétszer. A lejátszott meccs

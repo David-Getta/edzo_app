@@ -10138,4 +10138,24 @@ public class ActivitiesParseTest {
                 + "gyaloglas.").plans.size());
     }
 
+    /**
+     * A puszta „mozgás" szó nem külön edzés.
+     *
+     * A „ma 8000 lépés csak, kevés volt a mozgás" mellé negyvenöt perc
+     * EGYÉB mozgás került a lépések sétája mellé – ugyanaz a nap
+     * kétszer. A szó itt az egészre utal vissza.
+     */
+    @Test
+    public void theWordMovementIsNotASecondWorkout() {
+        Activities.Parsed p = Activities.parse("Ma 8000 lepes csak, "
+                + "keves volt a mozgas.");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(1, Activities.parse("Ma 30 perc kondi, jo mozgas "
+                + "volt.").plans.size());
+        // Magában viszont marad mozgás.
+        assertEquals(40, Activities.parse("Ma 40 perc mozgas a "
+                + "szabadban.").plans.get(0).minutes);
+    }
+
 }
