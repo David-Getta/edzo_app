@@ -4644,6 +4644,10 @@ public final class Foods {
                 // szelet tortát", az rendszerint meg is ette – a naplózó
                 // mezőben a kapott étel elfogyasztott étel.
                 "vettem", "veszek", "vasarol", "hoztam", "hozok",
+                // A CIPEKEDÉS nem evés: a „boltból hazafelé cipeltem 10 kiló
+                // krumplit" negyed kiló főtt burgonyát írt a naplóba abból,
+                // ami a szatyorban volt.
+                "cipeltem", "cipeltunk", "cipelt", "hazacipeltem",
                 // A többes számú vétel is bevásárlás: a „a piacon vettünk
                 // kacsamellet vasárnapra" kacsája a kamráé, nem a mai napé.
                 "vettunk",

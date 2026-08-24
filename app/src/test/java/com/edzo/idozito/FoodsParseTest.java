@@ -2654,6 +2654,21 @@ public class FoodsParseTest {
     }
 
     /**
+     * A cipekedés nem evés.
+     *
+     * A „boltból hazafelé cipeltem 10 kiló krumplit" negyed kiló főtt
+     * burgonyát írt a naplóba abból, ami a szatyorban volt.
+     */
+    @Test public void whatYouCarryHomeIsNotEaten() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "Ma a boltból hazafelé cipeltem 10 kiló "
+                + "krumplit 1 km-en át.").isEmpty());
+        // A tányéron lévő krumpli marad étel.
+        assertFalse(Foods.parse(all, "Ebédre krumplit ettem húsos "
+                + "szafttal.").isEmpty());
+    }
+
+    /**
      * A gyűjtőnév a megnevezett fogás visszautalása.
      *
      * A „vacsorára sült lazac párolt zöldséggel, kb. 200 g hal" kétszáz

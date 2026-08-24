@@ -5561,6 +5561,24 @@ public final class Activities {
             }
             if (!kept.isEmpty()) out = kept;
         }
+        // A CIPEKEDÉS ÚTJA nem futás: a „ma a boltból hazafelé cipeltem
+        // 10 kiló krumplit 1 km-en át" mellé egy KÜLÖN egy kilométeres
+        // futás is bekerült – a puszta táv alapértelmezésben futás, pedig
+        // a mondatban egy futó szó sincs, a cipekedés meg már ott van a
+        // naplóban. Csak akkor esik ki, ha a mondat MÁSIK mozgása fizikai
+        // munka. (A szakaszok közti séta melletti sprint-edzés nem esik ide:
+        // ott a futás a bejegyzés lényege.)
+        if (out.size() > 1
+                && !beforeBlank.matches("(?s).*(?<![a-z])(?:fut|kocog|szalad"
+                    + "|jogg|sprint|tempo|intervall)\\w*.*")) {
+            boolean ground = false;
+            for (Plan p : out) if ("munka".equals(p.kind.id)) ground = true;
+            if (ground) {
+                List<Plan> kept = new ArrayList<>();
+                for (Plan p : out) if (!"futas".equals(p.kind.id)) kept.add(p);
+                if (!kept.isEmpty() && kept.size() < out.size()) out = kept;
+            }
+        }
         // AZ UTOLSÓ SZAKASZ nem külön edzés: a „ma reggel 6 km-t futottam,
         // de az utolsó kilométert sétáltam" mellé egy MÁSFÉL ÓRÁS gyaloglás
         // is bekerült – abból az egy kilométerből, ami a hatnak a része. A

@@ -3896,6 +3896,24 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A cipekedés útja nem futás.
+     *
+     * A „ma a boltból hazafelé cipeltem 10 kiló krumplit 1 km-en át" mellé
+     * egy KÜLÖN egy kilométeres futás is bekerült – a puszta táv
+     * alapértelmezésben futás, pedig a mondatban egy futó szó sincs, a
+     * cipekedés meg már ott van a naplóban.
+     */
+    @Test public void carryingHomeIsNotARun() {
+        Activities.Parsed p = Activities.parse("Ma a boltból hazafelé "
+                + "cipeltem 10 kiló krumplit 1 km-en át.");
+        assertEquals(1, p.plans.size());
+        assertEquals("munka", p.plans.get(0).kind.id);
+        // A puszta táv magában marad futás.
+        assertEquals("futas", Activities.parse("Ma 5 km-t tettem meg.")
+                .plans.get(0).kind.id);
+    }
+
+    /**
      * A sebesség ugyanazt mondja meg, mint a tempó.
      *
      * A „4 km-t futottam a futópadon 12-es sebességgel" húsz perc, a
