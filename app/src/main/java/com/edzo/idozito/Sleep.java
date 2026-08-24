@@ -187,6 +187,22 @@ public final class Sleep {
                 + "|lefekud\\w*|fekudtem|ejszaka\\w*|ejjel|keltem)"
                 + "(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])pihentem(?![a-z])", "aludtam");
+        // Az ÉJSZAKAI FELÉBREDÉS nem az ébredés ideje: az „éjjel 11-től
+        // reggel 7-ig aludtam, de éjfélkor felkeltem a babához" nyolc
+        // órája TIZENHÁROM lett – az éjfél időpontja vitte el az ébredés
+        // szerepét, és a reggeli hét kimaradt. Az éjszaka közepi ébredést
+        // említő tagmondat időpontja nem határolja az alvást.
+        if (s.matches("(?s).*(?:alud\\w*|alvas\\w*|fekud\\w*).*")) {
+            StringBuilder nb = new StringBuilder();
+            for (String part : s.split("(?=[,;])")) {
+                if (part.matches("(?s).*(?:ejfel|hajnal)\\w*.*")
+                        && part.matches("(?s).*(?:felkelt|felebredt"
+                            + "|felriadt|felkeltem|felebredtem)\\w*.*"))
+                    continue;
+                nb.append(part);
+            }
+            if (nb.length() > 0) s = nb.toString();
+        }
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");

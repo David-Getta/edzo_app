@@ -558,4 +558,20 @@ public class SleepTest {
                 + "keltem."), 0.01);
     }
 
+    /**
+     * Az éjszakai felébredés nem az ébredés ideje.
+     *
+     * Az „éjjel 11-től reggel 7-ig aludtam, de éjfélkor felkeltem a
+     * babához" nyolc órája TIZENHÁROM lett: az éjfél időpontja vitte el
+     * az ébredés szerepét, a reggeli hét pedig kimaradt.
+     */
+    @Test public void aNightWakingIsNotTheMorning() {
+        assertEquals(8.0, Sleep.parse("Éjjel 11-től reggel 7-ig "
+                + "aludtam, de éjfélkor felkeltem a babához."), 0.01);
+        assertEquals(8.0, Sleep.parse("Este 10-kor feküdtem, reggel "
+                + "6-kor keltem, éjfélkor felébredtem egyszer."), 0.01);
+        // Az éjszaka közepi ébredés említése nélkül minden marad.
+        assertEquals(8.0, Sleep.parse("Éjjel 11-től reggel 7-ig "
+                + "aludtam."), 0.01);
+    }
 }
