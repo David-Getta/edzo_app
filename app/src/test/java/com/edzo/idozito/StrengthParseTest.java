@@ -919,6 +919,22 @@ public class StrengthParseTest {
     }
 
     /**
+     * A padon nyomás fekvenyomás.
+     *
+     * Az „edzésen a padon 4 sorozatot nyomtam, 8-8-6-6 ismétléssel, 75 kg"
+     * gyakorlata nyomtalanul elveszett – a tő két szava egymás mellett
+     * áll, a mondatban viszont a sorozatszám ékelődött közéjük.
+     */
+    @Test public void pressingOnTheBenchIsABenchPress() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen a "
+                + "padon 4 sorozatot nyomtam, 8-8-6-6 ismétléssel, 75 kg.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(75.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
      * A „helyett" a megvalósult sorozatot vezeti be.
      *
      * A „guggolásban ma nem bírtam a súlyt, 3x5 helyett csak 3x3 ment

@@ -2582,7 +2582,13 @@ public final class Foods {
                 c[i] = idx;
                 continue;
             }
-            if ((ch == 'e' || ch == 'm') && isWordAt(q, i, ch == 'e' ? "es" : "meg")) {
+            if ((ch == 'e' || ch == 'm') && isWordAt(q, i, ch == 'e' ? "es" : "meg")
+                    // A „MEG" IGEKÖTŐ is lehet: az „ebédre a pörköltet
+                    // ettem meg, kb. 250 g" mondatban nem tagmondatot nyit,
+                    // hanem az igéhez tartozik – a fölösleges határ miatt a
+                    // mennyiség nem talált vissza az ételhez, és a tipikus
+                    // adag ment be helyette.
+                    && !(ch == 'm' && afterEatingVerb(q, i))) {
                 idx++;
                 int len = ch == 'e' ? 2 : 3;
                 for (int k = i; k < i + len && k < q.length(); k++) c[k] = idx;
@@ -2592,6 +2598,20 @@ public final class Foods {
             c[i] = idx;
         }
         return mergeQuantityOnly(q, c, idx);
+    }
+
+    /** Evés-ige áll-e közvetlenül a szó előtt (akkor a „meg" igekötő)? */
+    private static boolean afterEatingVerb(String q, int at) {
+        int e = at;
+        while (e > 0 && !Character.isLetter(q.charAt(e - 1))) e--;
+        int b = e;
+        while (b > 0 && Character.isLetter(q.charAt(b - 1))) b--;
+        String w = q.substring(b, e);
+        for (String v : new String[]{"ettem", "ettuk", "ettunk", "ettek",
+                "ittam", "ittuk", "ittunk", "ittak", "kertem", "kaptam",
+                "csinaltam", "sutottem", "foztem"})
+            if (v.equals(w)) return true;
+        return false;
     }
 
     /** Mértékegységek és töltelékszavak – ezek magukban nem jelentenek ételt. */

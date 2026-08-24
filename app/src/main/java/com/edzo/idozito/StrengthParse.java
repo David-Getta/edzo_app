@@ -79,7 +79,11 @@ public final class StrengthParse {
             // A „fekve" magában is fekvenyomás: a magyar terem fordított
             // szórenddel is mondja („nyomtam 100 kilót fekve ötöt"), és a
             // fekvőtámasz szótöve más, tehát nem ütközik vele.
-            {"Fekvenyomás", "fekvenyom", "fekve nyom", "fekve", "bench", "mellet nyom"},
+            {"Fekvenyomás", "fekvenyom", "fekve nyom", "fekve", "bench", "mellet nyom",
+                    // A PADON NYOMÁS ugyanez a gyakorlat: az „edzésen a
+                    // padon 4 sorozatot nyomtam, 8-8-6-6 ismétléssel,
+                    // 75 kg" eddig üresen jött vissza.
+                    "padon nyom", "padnyomas", "padon toltam"},
             // A jelzős változatok KÜLÖN gyakorlatok, nem a bázis becézései: a
             // román felhúzás jóval könnyebb súllyal megy, mint a holtemelés, a
             // bolgár kitörés pedig egy lábra. Egy vödörbe téve a
@@ -762,6 +766,13 @@ public final class StrengthParse {
         // alak félreérthetetlen: az izomcsoport neve önmagában úgysem hoz
         // sorozatot, a számnév pedig ékezet nélkül áll.
         text = text.replaceAll("(?u)(?<![\\p{L}])[Hh]át(?![\\p{L}])", " ");
+        // A PADON és a NYOMTAM közé beékelődhet a sorozatszám: az
+        // „edzésen a padon 4 sorozatot nyomtam, 8-8-6-6 ismétléssel,
+        // 75 kg" gyakorlata nyomtalanul elveszett – a tő két szava
+        // egymás mellett áll, a mondatban viszont nem.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])padon\\s+"
+                + "((?:\\p{L}+\\s+|\\d+\\s+){0,3}?)nyomt(?:am|unk|a)"
+                + "(?![\\p{L}])", "padon nyomas $1");
         // A HELYETT a MEGVALÓSULT sorozatot vezeti be: az „edzésen ma nem
         // bírtam a súlyt, 3x5 helyett csak 3x3 ment 100 kg-mal" NYOMTALANUL
         // eltűnt – a tervezett sorozat mellett a valódi is elveszett. A

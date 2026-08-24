@@ -2660,6 +2660,22 @@ public class FoodsParseTest {
     }
 
     /**
+     * A „meg" igekötő nem tagmondat-határ.
+     *
+     * Az „ebédre a maradék pörköltet ettem meg, kb. 250 g" mennyisége nem
+     * talált vissza az ételhez – a „meg" határt nyitott a mondat közepén,
+     * és a tipikus adag (300 g) ment be a kimondott 250 helyett.
+     */
+    @Test public void theVerbPrefixIsNotAClauseBreak() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(250, Foods.parse(all, "Ebédre a maradék pörköltet "
+                + "ettem meg, kb. 250 g.").get(0).grams, 0.5);
+        // A kötőszói „meg" továbbra is határ.
+        assertEquals(2, Foods.parse(all, "Ettem egy almát meg egy körtét.")
+                .size());
+    }
+
+    /**
      * A feltételes és a „majdnem" tagmondata nem étkezés.
      *
      * Az „este 3 dl bort ittam volna, de inkább teát ittam" három deci
