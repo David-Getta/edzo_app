@@ -2798,6 +2798,12 @@ public final class Activities {
                 + "\\w*\\s?:?\\s?\\d{2,4}\\s?(?:m|meter)(?![a-z])", "$1");
         s = s.replaceAll("(?<![\\d,.])\\d{2,4}\\s?(?:m|meter)(?![a-z])"
                 + "\\s+szint\\w*", "szint");
+        // Az EMELKEDÉS igéje ugyanezt mondja: a „ma a hegyen 900 métert
+        // emelkedtem 12 km alatt" mellé egy KÜLÖN 0,9 km-es futás is
+        // bekerült – a magasságból lett táv, a tizenkét kilométeres túra
+        // mellé. A mászás métere sosem a megtett út.
+        s = s.replaceAll("(?<![\\d,.])\\d{2,4}\\s?(?:m|meter|metert)(?![a-z])"
+                + "\\s+(?:emelked\\w*|maszt\\w*|kapaszkod\\w*)", " ");
         // A TERMI RÖVIDÍTÉS perce nem méter: a „cardio 20m + súlyok 40m"
         // húsz és negyven PERC – méterként negyven méteres futás lett
         // belőle. Csak termi szó mellett és úszás nélkül merjük.
@@ -7063,9 +7069,18 @@ public final class Activities {
                     Math.min(s.length(), m.end() + 28))
                     // A NEVEZETES FUTÓKÖR is helyszín: a „ma 3 kör a
                     // Margitszigeten, ez kb 16 km" hajnali háromra került.
+                    // A HÁZTÖMB ugyanilyen kör: a „ma reggel 3 kör a
+                    // tömbön, kb. 2,4 km" hajnali háromra került.
                     .matches("(?s).*(palya|stadion|tavon|to korul|medence"
                         + "|salak|tartan|futokor|margitsziget|sziget"
+                        + "|tombon|haztomb|tomb korul"
                         + "|liget|korut|korben).*")) continue;
+            // A KIMONDOTT TÁV is körökről beszél: az óraállás mellé nem
+            // szokás kilométert írni, a körök mellé viszont igen.
+            if (spaced && s.substring(m.end(),
+                    Math.min(s.length(), m.end() + 32))
+                    .matches("(?s).*(?<![\\d,.])\\d{1,3}([.,]\\d{1,2})?"
+                        + "\\s?(km|meter|m(?![a-z])).*")) continue;
             // A KETTŐSPONT a körök felsorolását nyitja: az „5 kör: 400 m
             // futás, 15 fekvőtámasz" hajnali ötre került a naplóban.
             // Időpont után kettőspont nem áll – az már perc lenne.

@@ -3896,6 +3896,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az emelkedés métere nem táv, a háztömb köre nem óraállás.
+     *
+     * A „ma a hegyen 900 métert emelkedtem 12 km alatt" mellé egy külön
+     * 0,9 km-es futás is bekerült – a magasságból lett táv. A „ma reggel
+     * 3 kör a tömbön, kb. 2,4 km" pedig hajnali háromra került: ékezet
+     * nélkül a „kör" és a „-kor" egybeesik.
+     */
+    @Test public void climbMetresAndBlockLaps() {
+        Activities.Parsed p = Activities.parse("Ma a hegyen 900 métert "
+                + "emelkedtem 12 km alatt.");
+        assertEquals(1, p.plans.size());
+        assertEquals(12.0, p.plans.get(0).km, 0.01);
+        assertEquals(8, Activities.parse("Ma reggel 3 kör a tömbön, "
+                + "kb. 2,4 km.").hour);
+        // A kimondott óraállás marad óra.
+        assertEquals(20, Activities.parse("Este 8 kor edzés.").hour);
+    }
+
+    /**
      * A „vissza is" második szám nélkül is hazautat mond.
      *
      * A „ma 45 percet gyalogoltam a munkahelyre és vissza is" kilencven
