@@ -1476,6 +1476,18 @@ public final class Foods {
                 .matcher(q);
         while (yc.find())
             for (int k = yc.start(); k < yc.end(); k++) sb.setCharAt(k, ' ');
+        // A MAGÁBAN ÁLLÓ JELZŐ a fogást írja le, nem külön étel: a
+        // „délben egy gyros tál, csirkés, sok zöldséggel" csirkés szava a
+        // tál fajtáját mondja meg – a naplóba mégis egy külön adag
+        // csirkemell került mellé. Csak a vessző közé zárt, egyetlen
+        // jelzői szó esik ki, és csak a mondat ELSŐ tagmondata után: a
+        // „csirkés tészta" fogásnév marad, ott a jelző mellett ott a
+        // fogás is.
+        java.util.regex.Matcher adj = java.util.regex.Pattern.compile(
+                "(?<=[,;])\\s*(?!gyros(?![a-z]))\\p{L}{4,}[oeaiu]s"
+                + "\\s*(?=[,;])").matcher(q);
+        while (adj.find())
+            for (int k = adj.start(); k < adj.end(); k++) sb.setCharAt(k, ' ');
         // A ZSÍRÉGETÉS edzés, nem kanál olaj: a „ma zsírt égettem: 40 perc
         // kardió éhgyomorra" mellé tíz gramm olaj került a naplóba. Az
         // egybeírt zsírégető ugyanígy.
@@ -3384,6 +3396,23 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?"
                 + "(?:g|gr|gramm)\\s+(feh[eé]rje\\s+"
                 + "(?:shake|turmix|italpor|kokt[eé]l|smoothie))", "$1");
+        // Az „AZ EGÉSZ" a fogás teljes tömege: a „vacsora: gyros tál, kb
+        // 500 g az egész" ötszáz grammja elveszett, mert külön
+        // tagmondatba került, a gyros pedig a tipikus adagot kapta. A
+        // vessző elhagyásával a mennyiség a fogáshoz olvad.
+        // Csak akkor, ha a mennyiség KÖZVETLENÜL a fogás tagmondata után
+        // áll: több tagmondatnál nem tudni, melyik fogásé az összeg, és a
+        // szám a legutolsó kísérőre ragadna („sok zöldséggel, 500 g").
+        java.util.regex.Matcher wh = java.util.regex.Pattern.compile(
+                "(?iu)[,;]\\s*((?:kb\\.?|k[oö]r[uü]lbel[uü]l"
+                + "|nagyj[aá]b[oó]l)?\\s*\\d{1,4}(?:[.,]\\d{1,2})?\\s?"
+                + "(?:g|gr|gramm|dkg|dl|ml))\\s+(?:az\\s+)?eg[eé]sz"
+                + "(?:e|et|en)?(?![\\p{L}])").matcher(query);
+        if (wh.find()) {
+            String pre = query.substring(0, wh.start());
+            if (pre.indexOf(',') < 0 && pre.indexOf(';') < 0)
+                query = pre + " " + wh.group(1) + query.substring(wh.end());
+        }
         // Ha a tagmondatban MÁSIK mennyiség is áll, a gyűjtőnév elhagyása
         // kevés: az „ebéd: csirkemell rizzsel, kb 200 g hús és 150 g rizs"
         // kétszáz grammja a RIZSRE csúszott, a csirke maradt a tipikus

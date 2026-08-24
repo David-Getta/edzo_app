@@ -2914,4 +2914,25 @@ public class FoodsParseTest {
         assertEquals(180.0, Foods.parse(all, "Vacsora: sült lazac, kb "
                 + "180 g hal és 200 g burgonya.").get(0).grams, 0.1);
     }
+
+    /**
+     * Az „AZ EGÉSZ" a fogás tömege, a magában álló jelző nem külön étel.
+     *
+     * A „vacsora: gyros tál, kb 500 g az egész" ötszáz grammja elveszett
+     * (a gyros a tipikus adagot kapta), a „délben egy gyros tál, csirkés"
+     * mellé pedig egy külön adag csirkemell került – pedig a csirkés szó
+     * a tálat írja le.
+     */
+    @Test public void aWholeMealWeightAndALoneAdjective() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(500.0, Foods.parse(all, "Vacsora: gyros tál, kb "
+                + "500 g az egész.").get(0).grams, 0.1);
+        for (Foods.Hit x : Foods.parse(all, "Délben egy gyros tál, "
+                + "csirkés, sok zöldséggel."))
+            assertFalse(x.food.name.startsWith("Csirkemell"));
+        // A jelző + fogás páros marad két tétel, ott a fogás is ott van.
+        assertEquals(2, Foods.parse(all, "Ebédre csirkés tészta.").size());
+        // A magában álló, s-re végződő FOGÁSNEVEK megmaradnak.
+        assertEquals(3, Foods.parse(all, "Ebéd: leves, rizs, csirke.").size());
+    }
 }
