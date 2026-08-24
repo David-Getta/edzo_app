@@ -3896,6 +3896,24 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A mászás igéje is lépcsőzés, és az ötszörös szorzó is szorzó.
+     *
+     * A „ma 3 emeletet másztam liftezés helyett" NYOMTALANUL eltűnt – a
+     * lépcső szava nélkül az emeletek nem váltak mozgássá –, az „ötször a
+     * nap során" tizenöt emelete pedig szorzó nélkül maradt.
+     */
+    @Test public void climbedFloorsCountAsStairs() {
+        assertFalse(Activities.parse("Ma 3 emeletet másztam liftezés "
+                + "helyett.").plans.isEmpty());
+        int one = Activities.parse("Ma 3 emeletet másztam liftezés "
+                + "helyett.").plans.get(0).minutes;
+        int five = Activities.parse("Ma 3 emeletet másztam liftezés "
+                + "helyett, ötször a nap során.").plans.get(0).minutes;
+        assertTrue("az ötszörös nem szorzott: " + one + " → " + five,
+                five >= 3 * one);
+    }
+
+    /**
      * Az emelkedés métere nem táv, a háztömb köre nem óraállás.
      *
      * A „ma a hegyen 900 métert emelkedtem 12 km alatt" mellé egy külön

@@ -2741,6 +2741,12 @@ public class FoodsParseTest {
      * a mennyiség nem talált vissza az ételhez.
      */
     @Test public void aTrailingWeightBelongsToTheDish() {
+        // A hasonult rag is rag: a „rizzsel" ugyanúgy kísérő, mint a
+        // „majonézzel" – a hátravetett mennyiség a fogásé.
+        for (Foods.Hit x : Foods.parse(Arrays.asList(Foods.ALL),
+                "Vacsorára rántott csirkemell rizzsel, kb. 220 g hús."))
+            if (x.food.name.startsWith("Rántott csirke"))
+                assertEquals(220, x.grams, 0.5);
         List<Foods.Food> all = Arrays.asList(Foods.ALL);
         for (String q : new String[]{"Vacsorára sült krumpli majonézzel, 300 g.",
                 "Vacsorára sült krumpli majonézzel, kb. 300 g."})

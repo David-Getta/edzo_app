@@ -2523,12 +2523,17 @@ public final class Activities {
                     + "((?:\\s+\\p{L}{2,12}){0,4}?)\\s*,?\\s*"
                     // A szorzó után még állhat helyhatározó („háromszor a
                     // lépcsőn"), csak újabb szám nem.
-                    + "(ketszer|haromszor|negyszer)"
+                    // Az ÖTSZÖR és a HATSZOR ugyanilyen szorzó: a „ma
+                    // 3 emeletet másztam liftezés helyett, ötször a nap
+                    // során" tizenöt emelete NYOMTALANUL eltűnt.
+                    + "(ketszer|haromszor|negyszer|otszor|hatszor)"
                     + "(?=(?:\\s+\\p{L}{1,12}){0,3}\\s*(?:[,;.!]|$))")
                     .matcher(s);
             if (ks.find()) {
                 int mul = ks.group(4).startsWith("ketszer") ? 2
-                        : ks.group(4).startsWith("haromszor") ? 3 : 4;
+                        : ks.group(4).startsWith("haromszor") ? 3
+                        : ks.group(4).startsWith("otszor") ? 5
+                        : ks.group(4).startsWith("hatszor") ? 6 : 4;
                 // A közbeeső szavak (a mozgás igéje!) a helyükön maradnak.
                 s = s.substring(0, ks.start())
                         + (mul * Integer.parseInt(ks.group(1))) + " emelet"
@@ -2543,6 +2548,12 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])lepcso(?!z)\\w*\\s*,?\\s*(\\d{1,3})\\s?emelet",
                 "lepcsozes $1 emelet");
         s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emelet(?:et)?\\s+lepcso(?!z)\\w*",
+                "lepcsozes $1 emelet");
+        // A MÁSZÁS igéje is lépcsőzés: a „ma 3 emeletet másztam liftezés
+        // helyett" NYOMTALANUL eltűnt – a lépcső szava nélkül az emeletek
+        // nem váltak mozgássá, pedig az ige kimondja, mi történt.
+        s = s.replaceAll("(?<![a-z])(\\d{1,3})\\s?emelet(?:et|en)?\\s+"
+                + "(?:fel\\s?)?(?:maszt\\w*|megmaszt\\w*|kapaszkod\\w*)",
                 "lepcsozes $1 emelet");
         // A GYALOG megtett emelet is lépcsőzés: a „ma három emelet
         // gyalog" KILENCVEN perces gyaloglás lett – a lépcső szava

@@ -1640,9 +1640,18 @@ public final class Foods {
         if (w.endsWith("val") || w.endsWith("vel")) return true;
         int n = w.length();
         if (n < 5) return false;
-        char c = w.charAt(n - 1), b = w.charAt(n - 2), a = w.charAt(n - 3);
-        return c == 'l' && (b == 'e' || b == 'a') && a == w.charAt(n - 4)
-                && "aeiou".indexOf(a) < 0;
+        char c = w.charAt(n - 1), b = w.charAt(n - 2);
+        if (c != 'l' || (b != 'e' && b != 'a')) return false;
+        // A rag HASONUL, és a kétjegyű mássalhangzó kettőzése magyarul a
+        // szó közepén sűrűsödik: rizs + -vel = rizzsel, kés + -vel =
+        // késsel, meggy + -vel = meggyel. A „rizzsel" eddig nem számított
+        // ragos alaknak, és a hátravetett mennyiség a köretre került.
+        String stem = w.substring(0, n - 2);
+        for (String d : new String[]{"zzs", "ssz", "ccs", "ggy", "nny",
+                "tty", "lly", "ss", "zz", "tt", "ll", "rr", "nn", "gg",
+                "jj", "vv", "bb", "dd", "kk", "pp", "mm"})
+            if (stem.endsWith(d)) return true;
+        return false;
     }
 
     /**
