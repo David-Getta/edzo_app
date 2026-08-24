@@ -1306,6 +1306,24 @@ public class BodyParseTest {
                 .kg, 0.01);
     }
 
+    /**
+     * Az úszásnem nem körfogat.
+     *
+     * Az „uszodában 1500 m gyors, 500 m mell, 200 m hát" mellúszásából
+     * KÉTSZÁZ CENTIS mellbőség lett a mérés-naplóban – a méteres szám
+     * távot mond, nem mérőszalagot.
+     */
+    @Test public void aSwimStrokeIsNotAGirth() {
+        BodyParse.Body b = BodyParse.parse("Az uszodában 1500 m gyors, "
+                + "500 m mell, 200 m hát.");
+        for (int i = 0; i < BodyParse.PART_KEYS.length; i++)
+            assertEquals("kitalált körfogat: " + BodyParse.PART_KEYS[i],
+                    0.0, b.cm[i], 0.01);
+        // A valódi mellbőség marad mérés.
+        assertEquals(100.0, BodyParse.parse("Mellbőségem 100 cm.")
+                .cm[2], 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

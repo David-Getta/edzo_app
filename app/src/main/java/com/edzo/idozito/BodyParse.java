@@ -930,7 +930,13 @@ public final class BodyParse {
                         // A TÖBBES jelzős szám sem körfogat: a „bicepsz
                         // 21-esek 3 kör" a huszonegyes ismétlés-séma neve,
                         // nem huszonegy centis kar.
-                                + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg|\\s?-?[oae]sek)"
+                        // Az ÚSZÁSNEM sem körfogat: az „uszodában 1500 m
+                        // gyors, 500 m mell, 200 m hát" mellúszásából
+                        // KÉTSZÁZ CENTIS mellbőség lett a mérés-naplóban. A
+                        // méteres szám távot mond, nem mérőszalagot.
+                                + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg"
+                                + "|\\s?m(?![a-z])|\\s?km|\\s?m[eé]ter"
+                                + "|\\s?-?[oae]sek)"
                                 + "\\s?(cm|centi\\w*)?"
                         : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
                                 + "(?<![a-z])" + stem + "(?![a-z])");
