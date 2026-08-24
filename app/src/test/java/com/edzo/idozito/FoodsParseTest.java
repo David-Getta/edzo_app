@@ -2875,4 +2875,21 @@ public class FoodsParseTest {
         assertFalse(Foods.parse(all, "Ettem egy pizzát, a felét "
                 + "meghagytam.").isEmpty());
     }
+
+    /**
+     * A csuromvizes edzés nem pohár víz.
+     *
+     * A „8 km-t futottam esőben, csuromvizes lettem" mellé egy 250
+     * milliliteres víz került a naplóba: a szóban benne álló „víz"
+     * italnak látszott, pedig az edző volt bőrig ázva.
+     */
+    @Test public void beingSoakedIsNotDrinkingWater() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (Foods.Hit x : Foods.parse(all, "Ma 8 km-t futottam esoben, "
+                + "45 perc, csuromvizes lettem."))
+            assertFalse(x.food.name.startsWith("Víz"));
+        // A kimondott víz marad víz.
+        assertEquals("Víz / ásványvíz", Foods.parse(all, "Futás után "
+                + "megittam két pohár vizet.").get(0).food.name);
+    }
 }

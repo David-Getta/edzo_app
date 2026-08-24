@@ -10015,4 +10015,25 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /**
+     * A kimondott perc erősebb a lépésből becsültnél.
+     *
+     * A „12 000 lépés, 8,5 km, 105 perc" száznégy perce elveszett: a
+     * naplóba a lépésszámból becsült kilencvenkettő ment. A mondott
+     * időt csak akkor veszi át a séta, ha nem egy MÁSIK bejegyzés
+     * ideje – a „10 000 lépés és 30 perc kondi" harminca a kondié.
+     */
+    @Test
+    public void aStatedTimeBeatsTheStepEstimate() {
+        Activities.Parsed p = Activities.parse("Ma 12 000 lepes, "
+                + "8,5 km, 105 perc.");
+        assertEquals(1, p.plans.size());
+        assertEquals(105, p.plans.get(0).minutes);
+        // A másik mozgás ideje nem vándorol át a sétához.
+        Activities.Parsed q = Activities.parse("Ma 10 000 lepes es "
+                + "30 perc kondi.");
+        for (Activities.Plan x : q.plans)
+            if (x.kind.id.equals("tura")) assertTrue(x.minutes > 60);
+    }
+
 }

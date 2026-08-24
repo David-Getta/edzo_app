@@ -1173,7 +1173,10 @@ public final class Foods {
             // Az elBUKTAm nem bukta, az állaPÍTAni nem pita, a vilÁGOMBAn
             // nem gomba, a vizELETe nem víz-ital, a halgass nem hal.
             "buktam", "buktal", "buktunk", "buktak", "allapit", "vilagom",
-            "vizelet", "halgass", "sztar",
+            // A CSUROMVIZES a testtel van tele, nem pohárral: a „ma 8 km-t
+            // futottam esőben, csuromvizes lettem" két deci vizet írt a
+            // naplóba.
+            "vizelet", "csuromviz", "csurom viz", "halgass", "sztar",
             // A „marhára jó" nem marhahús, a vízesés és a vízvezeték nem ital.
             "marhara", "vizeses", "vizvezetek", "babe",
             // A HAGYJA nem hagyma, a KÉSZEN nem keszeg, a HARCRA nem hal,

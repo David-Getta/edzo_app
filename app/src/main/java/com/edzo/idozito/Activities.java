@@ -221,6 +221,10 @@ public final class Activities {
                     "eronleti",
                     // A SÚLYOK a súlyzók termi rövidítése („súlyok 40 perc").
                     "sulyok",
+                    // A HAS-HÁT a törzsedzés termi neve: az „edzőteremben
+                    // 40 perc kardió és 20 perc has-hát" húsz perce eddig
+                    // gazdátlan maradt, és nyomtalanul elveszett.
+                    "has-hat", "has es hat", "hasizom edzes", "torzsedzes",
                     // Otthoni edzésvideó-platformok.
                     "freeletics", "chloe ting",
                     // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
@@ -5137,7 +5141,8 @@ public final class Activities {
             int ti = -1;
             for (int i = 0; i < out.size(); i++)
                 if (out.get(i).kind.id.equals("tura")) ti = i;
-            if (ti < 0) out.add(new Plan(byId("tura"), 1, smin, skm, (int) steps));
+            if (ti < 0)
+                out.add(new Plan(byId("tura"), 1, smin, skm, (int) steps));
             else {
                 Plan t = out.get(ti);
                 // A kimondott idő (ami eltér az alapértelmezettől) erősebb.
@@ -5518,7 +5523,15 @@ public final class Activities {
                 for (String w : run.words) if (rawText.contains(w)) { saidRun = true; break; }
             if (stepPlan != null && kmPlan != null && !saidRun) {
                 List<Plan> one = new ArrayList<>();
-                one.add(new Plan(stepPlan.kind, 1, stepPlan.minutes,
+                // A KIMONDOTT idő az összevonást is túléli: a „ma 12 000
+                // lépés, 8,5 km, 105 perc" száznégy perce elveszett, mert
+                // az összevont sor a lépésből becsült kilencvenkettőt
+                // tartotta meg. A becslés csak akkor marad, ha időt
+                // senki nem mondott ki.
+                int mm = stepPlan.minutes;
+                for (int[] mv : mins)
+                    if (mv[1] == kmPlan.minutes) { mm = kmPlan.minutes; break; }
+                one.add(new Plan(stepPlan.kind, 1, mm,
                         kmPlan.km, stepPlan.steps));
                 out = one;
             }
