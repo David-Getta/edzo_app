@@ -5592,6 +5592,18 @@ public final class Activities {
             }
             if (!kept.isEmpty()) out = kept;
         }
+        // A FELE-FELE bontás EGY edzés: a „ma az edzőben 45 percet toltam,
+        // fele kardió, fele súlyzó" mellé egy ÓRÁS kondi is bekerült –
+        // ugyanarról a negyvenöt percről, vagyis a nap mozgása két és
+        // félszeresére nőtt. A „fele" a kimondott idő része, nem új alkalom.
+        if (out.size() > 1 && beforeBlank.matches("(?s).*(?<![a-z])fele\\s+"
+                + "\\p{L}{3,}.*(?<![a-z])(?:masik\\s+)?fele\\s+\\p{L}{3,}.*")) {
+            // A kimondott idő az ELSŐ tételre került; a többi fél már
+            // ugyanabból az órából van.
+            List<Plan> kept = new ArrayList<>();
+            kept.add(out.get(0));
+            out = kept;
+        }
         // A CIPEKEDÉS ÚTJA nem futás: a „ma a boltból hazafelé cipeltem
         // 10 kiló krumplit 1 km-en át" mellé egy KÜLÖN egy kilométeres
         // futás is bekerült – a puszta táv alapértelmezésben futás, pedig

@@ -3896,6 +3896,23 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A fele-fele bontás egy edzés.
+     *
+     * A „ma az edzőben 45 percet toltam, fele kardió, fele súlyzó" mellé
+     * egy ÓRÁS kondi is bekerült – ugyanarról a negyvenöt percről, vagyis
+     * a nap mozgása két és félszeresére nőtt.
+     */
+    @Test public void halfAndHalfIsOneSession() {
+        Activities.Parsed p = Activities.parse("Ma az edzőben 45 percet "
+                + "toltam, fele kardió, fele súlyzó.");
+        assertEquals(1, p.plans.size());
+        assertEquals(45, p.plans.get(0).minutes);
+        // A két kimondott idejű szakasz marad két bejegyzés.
+        assertEquals(2, Activities.parse("Ma 30 perc futás és 30 perc "
+                + "kondi.").plans.size());
+    }
+
+    /**
      * A mászás igéje is lépcsőzés, és az ötszörös szorzó is szorzó.
      *
      * A „ma 3 emeletet másztam liftezés helyett" NYOMTALANUL eltűnt – a

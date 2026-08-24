@@ -1313,6 +1313,23 @@ public class BodyParseTest {
      * KÉTSZÁZ CENTIS mellbőség lett a mérés-naplóban – a méteres szám
      * távot mond, nem mérőszalagot.
      */
+    /**
+     * A célsúly nem mai mérés.
+     *
+     * A „ma reggel 84,5 kg, a célom 80 kg karácsonyig" mérése NYOMTALANUL
+     * eltűnt: a cél kilója mellett két súly-szám állt a mondatban, és két
+     * szám közül a mérés-olvasó inkább egyiket sem választja.
+     */
+    @Test public void aGoalWeightDoesNotSilenceTodaysMeasurement() {
+        assertEquals(84.5, BodyParse.parse("Ma reggel 84,5 kg, a célom "
+                + "80 kg karácsonyig.").kg, 0.01);
+        assertEquals(79.1, BodyParse.parse("Reggel 79,1 kg. Cél: 75 alá "
+                + "szeptember végéig.").kg, 0.01);
+        // A puszta cél marad cél.
+        assertEquals(0.0, BodyParse.parse("A célom 80 kg karácsonyig.")
+                .kg, 0.01);
+    }
+
     @Test public void aSwimStrokeIsNotAGirth() {
         BodyParse.Body b = BodyParse.parse("Az uszodában 1500 m gyors, "
                 + "500 m mell, 200 m hát.");

@@ -318,6 +318,15 @@ public final class BodyParse {
         // egésze kiesett. A mérleg számát senki nem írja „kg-mal" alakban.
         q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
                 + "(?:kg|kil[oó])\\w*-?(?:mal|vel|lal|el)(?![\\p{L}])", " ");
+        // A CÉLSÚLY nem mai mérés: a „ma reggel 84,5 kg, a célom 80 kg
+        // karácsonyig" mérése NYOMTALANUL eltűnt – a cél kilója mellett a
+        // mondatban két súly-szám állt, és két szám közül a mérés-olvasó
+        // inkább egyiket sem választja. A cél SZÁMÁT vesszük ki: a mai
+        // mérés így magában marad.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])(?:az?\\s+)?"
+                + "c[eé]l(?:om|unk|ja|s[uú]ly\\p{L}*)?\\s*:?\\s*"
+                + "\\d{2,3}(?:[.,]\\d)?\\s?(?:kg|kil[oó]\\p{L}*)?(?![\\p{L}])",
+                " ");
         // A TÖMÖR napló-sor rövidítései nem kilók: a „futás 10k 52p; kondi
         // 40p; alvás 7h; súly 79,3" sorból NEGYVEN kilós mérés lett – a
         // kondi perceiből –, a valódi hetvenkilenc egész három tized meg
