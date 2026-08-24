@@ -2892,4 +2892,26 @@ public class FoodsParseTest {
         assertEquals("Víz / ásványvíz", Foods.parse(all, "Futás után "
                 + "megittam két pohár vizet.").get(0).food.name);
     }
+
+    /**
+     * A gyűjtőnév mennyisége a fogásé, ha a köret is meg van mérve.
+     *
+     * Az „ebéd: csirkemell rizzsel, kb 200 g hús és 150 g rizs" kétszáz
+     * grammja a RIZSRE csúszott, a csirke pedig a tipikus adagot kapta –
+     * a tányér két fele felcserélődött.
+     */
+    @Test public void aCollectiveNounQuantityStaysWithTheDish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        double hus = 0, rizs = 0;
+        for (Foods.Hit x : Foods.parse(all, "Ebéd: csirkemell rizzsel, "
+                + "kb 200 g hús és 150 g rizs, plusz saláta.")) {
+            if (x.food.name.startsWith("Csirkemell")) hus = x.grams;
+            if (x.food.name.startsWith("Rizs")) rizs = x.grams;
+        }
+        assertEquals(200.0, hus, 0.1);
+        assertEquals(150.0, rizs, 0.1);
+        // Köret nélkül is a fogásé marad a mennyiség.
+        assertEquals(180.0, Foods.parse(all, "Vacsora: sült lazac, kb "
+                + "180 g hal és 200 g burgonya.").get(0).grams, 0.1);
+    }
 }

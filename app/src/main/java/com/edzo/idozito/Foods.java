@@ -1627,6 +1627,23 @@ public final class Foods {
         return sb.toString();
     }
 
+    /**
+     * A gyűjtőnév alá tartozó fogások tövei („hal" alatt a lazac, a
+     * tonhal, a ponty). A visszautalás felismerésének kelléke: a
+     * gyűjtőnév csak akkor ugyanaz az étel, ha valamelyik fajtája már
+     * szerepelt a mondat elején.
+     */
+    static String[] collectiveMates(String w) {
+        if (w.startsWith("hal"))
+            return new String[]{"lazac", "tonhal", "ponty", "pisztrang",
+                "harcsa", "hekk", "tokehal", "halrud", "halaszle"};
+        if (w.startsWith("sajt"))
+            return new String[]{"trappista", "mozzarella", "cheddar",
+                "parmezan", "feta", "camembert", "gouda"};
+        return new String[]{"csirke", "sertes", "marha", "pulyka",
+            "karaj", "tarja", "borda", "comb", "porkolt"};
+    }
+
     /** Ékezet-mentesítés + kisbetű, a rugalmas kereséshez. */
     static String norm(String s) {
         if (s == null) return "";
@@ -3367,6 +3384,28 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?"
                 + "(?:g|gr|gramm)\\s+(feh[eé]rje\\s+"
                 + "(?:shake|turmix|italpor|kokt[eé]l|smoothie))", "$1");
+        // Ha a tagmondatban MÁSIK mennyiség is áll, a gyűjtőnév elhagyása
+        // kevés: az „ebéd: csirkemell rizzsel, kb 200 g hús és 150 g rizs"
+        // kétszáz grammja a RIZSRE csúszott, a csirke maradt a tipikus
+        // adagnál. Ilyenkor a mennyiség odaköltözik a fogás elé, a
+        // visszautaló tagmondat pedig eltűnik.
+        java.util.regex.Matcher qm = java.util.regex.Pattern.compile(
+                "(?iu)[,;]\\s*(?:kb\\.?|k[oö]r[uü]lbel[uü]l|nagyj[aá]b[oó]l)?"
+                + "\\s*(\\d{1,4}(?:[.,]\\d{1,2})?\\s?(?:g|gr|gramm|dkg))"
+                + "\\s+(hal|h[uú]s|sajt)(?![\\p{L}])\\s*(?:[eé]s|meg)\\s+(?=\\d)")
+                .matcher(query);
+        if (!query.matches("(?siu).*\\d\\s*(?:db|darab)(?![\\p{L}]).*") && qm.find()) {
+            String head = Foods.norm(query.substring(0, qm.start()));
+            int at = -1;
+            for (String w : collectiveMates(Foods.norm(qm.group(2)))) {
+                int i = head.lastIndexOf(w);
+                if (i > at) at = i;
+            }
+            if (at >= 0)
+                query = query.substring(0, at) + qm.group(1) + " "
+                        + query.substring(at, qm.start()) + " "
+                        + query.substring(qm.end());
+        }
         // A GYŰJTŐNÉV a megnevezett fogás VISSZAUTALÁSA: a „vacsorára sült
         // lazac párolt zöldséggel, kb. 200 g hal" kétszáz grammja ugyanaz a
         // lazac – a naplóba mégis a tipikus adag (150 g) került, mert a
@@ -3386,14 +3425,7 @@ public final class Foods {
         boolean rbAny = false;
         while (rb.find()) {
             String head = Foods.norm(query.substring(0, rb.start()));
-            String[] mates = Foods.norm(rb.group(2)).startsWith("hal")
-                    ? new String[]{"lazac", "tonhal", "ponty", "pisztrang",
-                        "harcsa", "hekk", "tokehal", "halrud", "halaszle"}
-                    : Foods.norm(rb.group(2)).startsWith("sajt")
-                    ? new String[]{"trappista", "mozzarella", "cheddar",
-                        "parmezan", "feta", "camembert", "gouda"}
-                    : new String[]{"csirke", "sertes", "marha", "pulyka",
-                        "karaj", "tarja", "borda", "comb", "porkolt"};
+            String[] mates = collectiveMates(Foods.norm(rb.group(2)));
             boolean seen = false;
             for (String w : mates) if (head.contains(w)) { seen = true; break; }
             if (!seen) continue;
