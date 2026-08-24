@@ -2705,6 +2705,11 @@ public class FoodsParseTest {
                 + "tojásból.").get(0).grams, 0.5);
         assertEquals(110, Foods.parse(all, "Egy omlett két tojásból.")
                 .get(0).grams, 0.5);
+        // A vessző is elválaszthatja: a tojás nem lesz külön tétel.
+        List<Foods.Hit> h = Foods.parse(all, "Reggel egy kis rántotta, "
+                + "két tojásból, sonkával.");
+        for (Foods.Hit x : h) assertFalse(x.food.name.equals("Tojás"));
+        assertEquals(110, h.get(0).grams, 0.5);
     }
 
     /**

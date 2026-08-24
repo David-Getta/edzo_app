@@ -3339,7 +3339,10 @@ public final class Foods {
         // a fogás elé kerül, darabszámként.
         query = query.replaceAll("(?iu)(?:(?<!\\p{L})(?:egy|1)\\s+)?"
                 + "((?:toj[aá]s)?(?:r[aá]ntott[aá]|omlett)\\p{L}*)"
-                + "\\s+(?:\\p{L}+\\s+){0,2}?"
+                // A VESSZŐ is elválaszthatja: az „egy kis rántotta, két
+                // tojásból, sonkával" tojásai eddig KÜLÖN tételként is
+                // bekerültek – a rántotta MELLÉ két egész tojás.
+                + "\\s*,?\\s*(?:\\p{L}+\\s+){0,2}?"
                 + "(\\d{1,2}|k[eé]t|kett[oő]|h[aá]rom|n[eé]gy|[oö]t|hat)"
                 + "\\s?toj[aá]sb[oó]l(?!\\p{L})", "$2 db $1");
         // A FELESBEN ivott turmix fejenként fél: az „ittunk egy protein
