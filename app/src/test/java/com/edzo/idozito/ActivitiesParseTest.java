@@ -10078,4 +10078,47 @@ public class ActivitiesParseTest {
                 + "varosban.").plans.get(0).minutes);
     }
 
+    /**
+     * A félidő a meccs fele, a „végig játszottam" ugyanaz a meccs.
+     *
+     * A „ma 90 perc foci, de csak a második félidőben játszottam"
+     * kilencven percet írt a naplóba – az egész meccset, pedig az ember
+     * a felét a kispadon ülte végig. A „végig játszottam" mellé pedig
+     * negyvenöt perc EGYÉB mozgás került: ugyanaz a meccs kétszer.
+     */
+    @Test
+    public void aHalfMatchIsHalfTheTime() {
+        Activities.Parsed p = Activities.parse("Ma 90 perc foci, de csak "
+                + "a masodik felidoben jatszottam.");
+        assertEquals(1, p.plans.size());
+        assertEquals(45, p.plans.get(0).minutes);
+        // A sport mellett a lejátszott meccs nem külön mozgás.
+        Activities.Parsed q = Activities.parse("Ma 90 perc foci, vegig "
+                + "jatszottam.");
+        assertEquals(1, q.plans.size());
+        assertEquals(90, q.plans.get(0).minutes);
+        // Sport nélkül viszont marad a meccs mozgásnak.
+        assertEquals(1, Activities.parse("Vegig jatszottam a meccset.")
+                .plans.size());
+    }
+
+    /**
+     * A kimondott hossz melletti „kosár" kosárlabda.
+     *
+     * A „ma 60 perc kosár" egyéb mozgásként került a naplóba, mert a
+     * puszta szó a bevásárlókosár miatt nem sport. A hossz vagy a
+     * meccs-szó viszont eldönti – bevásárlás mellett nem.
+     */
+    @Test
+    public void basketballNextToALengthIsASport() {
+        assertEquals("kosarlabda", Activities.parse("Ma 60 perc kosar, "
+                + "vegig jatszottam.").plans.get(0).kind.id);
+        assertEquals("kosarlabda", Activities.parse("Este kosar meccs a "
+                + "haverokkal.").plans.get(0).kind.id);
+        // A bevásárlókosár nem lesz sport.
+        for (Activities.Plan x : Activities.parse("Bevasaroltam, tele "
+                + "volt a kosar, 20 perc gyaloglas hazaig.").plans)
+            assertFalse(x.kind.id.equals("kosarlabda"));
+    }
+
 }

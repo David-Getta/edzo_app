@@ -305,7 +305,10 @@ public final class Activities {
                     // A puszta „kosár" nem sport: a bevásárlókosár is az.
                     // A streetball az utcai változat – eddig üresen jött
                     // vissza.
-                    "kosarlabda", "kosaraz", "kosar edzes", "streetball"),
+                    // A kimondott hossz vagy a meccs szó viszont eldönti: a
+                    // „60 perc kosár" nem bevásárlás.
+                    "kosarlabda", "kosaraz", "kosar edzes", "streetball",
+                    "perc kosar", "ora kosar", "kosar meccs", "kosarmeccs"),
             new Kind("roplabda", "🏐", "Röplabda", 4.0, false, 60,
                     "roplabda", "roplab", "roplabdaz"),
             new Kind("tenisz", "🎾", "Tenisz / squash / tollas", 7.3, false, 60,
@@ -2170,6 +2173,19 @@ public final class Activities {
         // séta mellé. A „lefutotta a maratont" marad futás.
         s = s.replaceAll("(?<=\\p{L}r[ae]\\s)futott[ae](?![a-z])", " ");
         s = s.replaceAll("(?<![a-z])futotta\\s+ra(?![a-z])", " ");
+        // A puszta „KOSÁR" a bevásárlókosár miatt nem sport – de a
+        // kimondott hossz vagy a meccs-szó eldönti: a „ma 60 perc kosár"
+        // egyéb mozgásként került a naplóba, pedig kosárlabda volt.
+        // A hossznak vagy a meccs-szónak KÖZVETLENÜL a szó mellett kell
+        // állnia: a „kosár 30 perc kondi" kosara továbbra is a
+        // bevásárlókosár.
+        if (!s.matches("(?s).*(?:bevasar|bolt|piac|szatyor"
+                + "|kosarba|kosarat|kosaram).*")) {
+            s = s.replaceAll("(?<=\\d\\s?(?:perc|ora)\\s)kosar(?![a-z])",
+                    "kosarlabda");
+            s = s.replaceAll("(?<![a-z])kosar(?=\\s(?:meccs|edzes|jatek))",
+                    "kosarlabda");
+        }
         // Az ÓRÁTÓL ÓRÁIG tartó edzés hossza kiszámolható: a „ma reggel
         // 6-tól 7-ig futottam a parkban" hatvan perce elveszett, és a futás
         // a negyvenöt perces alapértelmezést kapta – vagyis a naplóba
@@ -5568,6 +5584,31 @@ public final class Activities {
                 if (p.km > 0 || p.steps > 0 || p.minutes != p.kind.defaultMin)
                     kept.add(p);
             if (!kept.isEmpty()) out = kept;
+        }
+        // A VÉGIG JÁTSZOTTAM ugyanaz a meccs, nem egy másik: a „ma 90
+        // perc foci, végig játszottam" mellé negyvenöt perc egyéb mozgás
+        // került a naplóba – ugyanaz a meccs kétszer. A lejátszott meccs
+        // csak akkor önálló mozgás, ha a sport nincs kimondva.
+        if (out.size() > 1 && rawText.matches("(?s).*(?:vegig\\s?jatszottam"
+                + "|meccset jatszottam|meccsen jatszottam"
+                + "|meccset nyertunk).*")) {
+            List<Plan> kept = new ArrayList<>();
+            for (Plan p : out) {
+                if ("egyeb".equals(p.kind.id) && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin && p.count == 1)
+                    continue;
+                kept.add(p);
+            }
+            if (!kept.isEmpty()) out = kept;
+        }
+        // A FÉLIDŐ a meccs FELE: a „ma 90 perc foci, de csak a második
+        // félidőben játszottam" kilencven percet írt a naplóba – az egész
+        // meccset, pedig az ember a felét a kispadon ülte végig.
+        if (out.size() == 1 && rawText.matches("(?s).*(?<![a-z])csak\\s+"
+                + "(?:az?\\s+)?(?:elso|masodik|2\\.|1\\.)?\\s*felido\\w*.*")) {
+            Plan p0 = out.get(0);
+            if (p0.minutes >= 40 && p0.km <= 0 && p0.steps <= 0)
+                out.set(0, new Plan(p0.kind, p0.count, p0.minutes / 2, 0));
         }
         // A HAZASÉTÁLÁS nem másfél órás túra: a „futottam 5 km-t, utána
         // hazasétáltam" mellé kilencven perc gyaloglás került a naplóba –
