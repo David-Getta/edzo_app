@@ -42,10 +42,18 @@ public final class BodyParse {
             {"derek", "derekam", "derekboseg", "derekbosege", "derekbosegem",
                     "has", "hasam",
                     "hasboseg", "hasbosege", "haskorfogat"},
-            {"csipo", "csipom", "csipoboseg", "csipobosege", "fenek"},
-            {"mellkas", "mell", "mellboseg", "mellbosege"},
-            {"comb", "combom", "combboseg", "combbosege"},
-            {"kar", "karom", "bicepszem", "felkar", "bicepsz"},
+            {"csipo", "csipom", "csipoboseg", "csipobosege",
+                    "csipobosegem", "fenek", "fenekem"},
+            // A BIRTOKOS alak a mellkasnál is kell: az „a mellkasom 98"
+            // méretéből TESTSÚLY lett a naplóban (kilencvennyolc kiló),
+            // mert a birtokos tő nem egyezett, és a szám a súly-olvasóhoz
+            // esett tovább.
+            {"mellkas", "mellkasom", "mellkasa", "mell", "mellem",
+                    "mellboseg", "mellbosege", "mellbosegem",
+                    "mellkasboseg", "mellkasbosegem"},
+            {"comb", "combom", "combboseg", "combbosege", "combbosegem"},
+            {"kar", "karom", "bicepszem", "felkar", "bicepsz",
+                    "karboseg", "karbosegem", "bicepszboseg"},
     };
     /** Életszerű körfogat-határok centiben. */
     static final double MIN_CM = 15, MAX_CM = 200;

@@ -5569,6 +5569,19 @@ public final class Activities {
                     kept.add(p);
             if (!kept.isEmpty()) out = kept;
         }
+        // A HAZASÉTÁLÁS nem másfél órás túra: a „futottam 5 km-t, utána
+        // hazasétáltam" mellé kilencven perc gyaloglás került a naplóba –
+        // több, mint maga az edzés. A hazaút hossza nincs kimondva, a
+        // túra-alapértelmezés viszont egy kirándulásé; a hazaút tipikus
+        // húsz perce közelebb van ahhoz, amit az ember tényleg megtett.
+        if (rawText.matches("(?s).*(?:hazaset|haza set|setaltam haza"
+                + "|hazafele gyalog|gyalog jottem|hazagyalog|haza gyalog).*"))
+            for (int i = 0; i < out.size(); i++) {
+                Plan p = out.get(i);
+                if ("tura".equals(p.kind.id) && p.km <= 0 && p.steps <= 0
+                        && p.minutes == p.kind.defaultMin)
+                    out.set(i, new Plan(p.kind, p.count, 20, 0));
+            }
         // Az ISMÉTLÉSSZÁM nem alkalomszám. Az „5 kör: 500 m evezés, 15
         // kettlebell swing" tizenötöse a lendítések száma – a kettlebell
         // viszont kondi-szótő is, így tizenöt darab hatvanperces edzés lett

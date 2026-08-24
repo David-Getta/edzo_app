@@ -1347,4 +1347,25 @@ public class BodyParseTest {
         // A kil\u00f3ra lemen\u0151 sz\u00e1m marad m\u00e9r\u00e9s.
         assertEquals(78.0, BodyParse.parse("Lementem 78 kil\u00f3ra.").kg, 0.01);
     }
+
+    /**
+     * A birtokos mellkas-alak nem testsúly.
+     *
+     * A „derékbőségem 88 cm, a csípőm 102, a mellkasom 98" utolsó száma
+     * TESTSÚLYKÉNT került a naplóba: kilencvennyolc kiló egy
+     * kilencvennyolc centis mellkasból. A birtokos tő hiányzott, a szám
+     * pedig továbbesett a súly-olvasóhoz.
+     */
+    @Test public void aPossessiveChestIsNotBodyWeight() {
+        BodyParse.Body b = BodyParse.parse("Derékbőségem 88 cm, a csípőm "
+                + "102, a mellkasom 98.");
+        assertEquals(0.0, b.kg, 0.01);
+        assertEquals(88.0, b.cm[0], 0.01);
+        assertEquals(102.0, b.cm[1], 0.01);
+        assertEquals(98.0, b.cm[2], 0.01);
+        // Magában is mérés marad.
+        assertEquals(98.0, BodyParse.parse("Mellkasom 98 cm.").cm[2], 0.01);
+        // A kimondott súly marad súly.
+        assertEquals(98.0, BodyParse.parse("Súlyom 98 kg, derék 88.").kg, 0.01);
+    }
 }

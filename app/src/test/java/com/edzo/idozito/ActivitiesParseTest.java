@@ -10060,4 +10060,22 @@ public class ActivitiesParseTest {
                 + "futottam.").hour);
     }
 
+    /**
+     * A hazasétálás nem másfél órás túra.
+     *
+     * A „futottam 5 km-t, utána hazasétáltam" mellé kilencven perc
+     * gyaloglás került – több, mint maga az edzés. A hazaút hossza nincs
+     * kimondva, a túra-alapértelmezés viszont egy kirándulásé.
+     */
+    @Test
+    public void theWalkHomeIsNotAHike() {
+        Activities.Parsed p = Activities.parse("Futottam 5 km-t, utana "
+                + "hazasetaltam.");
+        for (Activities.Plan x : p.plans)
+            if (x.kind.id.equals("tura")) assertEquals(20, x.minutes);
+        // A kimondott hosszú séta marad a maga hosszával.
+        assertEquals(40, Activities.parse("Ma 40 percet setaltam a "
+                + "varosban.").plans.get(0).minutes);
+    }
+
 }
