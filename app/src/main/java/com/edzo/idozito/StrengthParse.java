@@ -752,6 +752,16 @@ public final class StrengthParse {
         // alak félreérthetetlen: az izomcsoport neve önmagában úgysem hoz
         // sorozatot, a számnév pedig ékezet nélkül áll.
         text = text.replaceAll("(?u)(?<![\\p{L}])[Hh]át(?![\\p{L}])", " ");
+        // A SOROZAT és az ISMÉTLÉS két tagmondatban: az „edzésen 3 sorozat
+        // felhúzás 100 kg-mal, 5 ismétlés mindegyik" hármas-ötöse két
+        // tagmondatra esett szét – a sorozatszám az elsőben, az ismétlés a
+        // másodikban –, és a naplóba három EGYES sorozat került száz
+        // kilóval. A két szám egy sorozat-jelölés.
+        text = text.replaceAll("(?iu)(?<![\\d,.\\p{L}])(\\d{1,2})\\s?"
+                + "(?:sorozat|szett|set)(?:ot|et)?(?![\\p{L}])(\\s+)"
+                + "((?:[^,;.]){0,60}?)[,;]\\s*(\\d{1,3})\\s?ism[eé]tl\\p{L}*"
+                + "(?:\\s+(?:mindegyik|mind|egyenk[eé]nt|volt))?",
+                "$1x$4$2$3");
         // A SOROZATSZÁM a súly mellett valódi napló: a „4 sorozat lehúzást
         // csináltam 55 kg-mal" NYOMTALANUL eltűnt az erőnaplóból, mert
         // ismétlésszám nélkül nem talált sorozatot – pedig a súly és a

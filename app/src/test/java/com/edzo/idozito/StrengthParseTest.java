@@ -919,6 +919,22 @@ public class StrengthParseTest {
     }
 
     /**
+     * A sorozat és az ismétlés két tagmondatban is összetartozik.
+     *
+     * Az „edzésen 3 sorozat felhúzás 100 kg-mal, 5 ismétlés mindegyik"
+     * hármas-ötöse két tagmondatra esett szét, és a naplóba három EGYES
+     * sorozat került száz kilóval – a munka ötöde.
+     */
+    @Test public void theSetCountAndTheRepsMeetAcrossTheComma() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen "
+                + "3 sorozat felhúzás 100 kg-mal, 5 ismétlés mindegyik.");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(5, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
      * A napi összes tartás is tartásidő.
      *
      * A „ma 12 perc plank összesen, három részletben" tizenkét perce
