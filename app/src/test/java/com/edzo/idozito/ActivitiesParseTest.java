@@ -10121,4 +10121,21 @@ public class ActivitiesParseTest {
             assertFalse(x.kind.id.equals("kosarlabda"));
     }
 
+    /**
+     * A visszaút szava a szám után is állhat.
+     *
+     * A „ma 20 perc bringa a munkába és 20 perc vissza" negyven perce
+     * húsz maradt a naplóban – a napi ingázás fele nyomtalanul elveszett.
+     */
+    @Test
+    public void theReturnTripAddsUpWhenTheWordComesLast() {
+        assertEquals(40, Activities.parse("Ma 20 perc bringa a munkaba "
+                + "es 20 perc vissza.").plans.get(0).minutes);
+        assertEquals(30, Activities.parse("Reggel 15 perc seta a boltba, "
+                + "15 perc vissza.").plans.get(0).minutes);
+        // A visszaút MÁS mozgása külön marad.
+        assertEquals(2, Activities.parse("Kondi 45 perc, vissza 10 perc "
+                + "gyaloglas.").plans.size());
+    }
+
 }

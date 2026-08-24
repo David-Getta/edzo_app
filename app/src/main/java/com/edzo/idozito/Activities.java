@@ -3753,6 +3753,21 @@ public final class Activities {
                 s = s.substring(0, ov2.start()) + sum + " perc" + ov2.group(2)
                         + s.substring(ov2.end());
         }
+        // A VISSZAÚT szava a szám UTÁN is állhat: a „ma 20 perc bringa a
+        // munkába és 20 perc vissza" negyven perce húsz maradt a naplóban
+        // – a napi ingázás fele nyomtalanul elveszett.
+        java.util.regex.Matcher ov3 = java.util.regex.Pattern
+                .compile("(?<![\\d,.])(\\d{1,3})\\s?perc(?:et|ig)?"
+                        + "([^.;\\d]{0,30}?)[,\\s]\\s*(?:es\\s+|meg\\s+)?"
+                        + "(\\d{1,3})\\s?perc(?:et|ig)?\\s+"
+                        + "(?:vissza|hazafele|haza)(?![a-z])").matcher(s);
+        if (ov3.find()) {
+            int sum = Integer.parseInt(ov3.group(1))
+                    + Integer.parseInt(ov3.group(3));
+            if (sum >= 2 && sum <= 24 * 60)
+                s = s.substring(0, ov3.start()) + sum + " perc" + ov3.group(2)
+                        + s.substring(ov3.end());
+        }
         // A VISSZAÚT TÁVJA is összeadódik: a „reggeli súlyzózás 40 perc,
         // aztán bicajjal munkába 8 km, este vissza 8 km" nyolc kilométert írt
         // a naplóba a tizenhatból – a két egyforma táv egyetlen tekerésnek

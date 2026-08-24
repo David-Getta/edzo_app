@@ -513,7 +513,20 @@ public final class StrengthParse {
         // „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel" sorozata
         // SAJÁT TESTSÚLLYAL került be – a tizenkét kiló elveszett a
         // tagmondat-határon.
-        text = text.replaceAll("(?iu)(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+        // A RÁMPA két listája tagmondat-határon is összetartozik: a
+        // „fekvenyomás 60-70-80 kg, 8-6-4 ismétlés" rep-listája a vessző
+        // utáni tagmondatban maradt, gyakorlatnév nélkül – így a naplóba
+        // a SÚLYOK kerültek ismétlésként (hatvan, hetven, nyolcvan
+        // ismétlés nyolc, hat és négy helyett).
+        text = text.replaceAll("(?iu)((?:\\d{2,3}\\s?-\\s?)+\\d{2,3})\\s?"
+                + "(?:kg|kil[oó])(?:val|s|os)?\\s*,\\s*"
+                + "((?:\\d{1,2}\\s?-\\s?)+\\d{1,2})\\s+ism[eé]tl[eé]s\\w*",
+                "$2 $1 kg");
+        // A RÁMPA utolsó tagja NEM önálló súly: a „fekvenyomás 60-70-80 kg,
+        // 8-6-4 ismétlés" nyolcvanasa a súly-lista vége – kiemelve a
+        // maradék „60-70-" a rep-listával folyt egybe, és „60-70-8-6-4"
+        // ismétlés került a naplóba.
+        text = text.replaceAll("(?iu)(?<![-\\d.,])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
                 + "(?:kg|kil[oó])(?:val|s|os)?\\s*,\\s*"
                 + "((?:\\d{1,3}\\s?-\\s?)+\\d{1,3})\\s+ism[eé]tl[eé]s"
                 + "\\w*", "$2 ismétléssel $1 kg");
@@ -1230,8 +1243,11 @@ public final class StrengthParse {
         // vette ismétlésnek, és „60-70-80 ismétlés" került a naplóba nyolc,
         // hat és négy helyett. A fordított szórend („8-6-4 60-70-80 kg")
         // eddig is jó volt, ezért arra írjuk át.
+        // A két lista közé VESSZŐ is kerülhet: a „fekvenyomás 60-70-80 kg,
+        // 8-6-4 ismétlés" a naplóba „60-70-8-6-4" ismétlésként ment be –
+        // a két lista egymásba folyt.
         s = s.replaceAll("(?<![\\d.,])(\\d{2,3}(?:-\\d{2,3}){1,4})\\s?(?:kg|kilo)"
-                + "\\s+(\\d{1,2}(?:-\\d{1,2}){1,4})(?![\\d.,-])", "$2 $1 kg");
+                + "[\\s,;]+(\\d{1,2}(?:-\\d{1,2}){1,4})(?![\\d.,-])", "$2 $1 kg");
         // A TEMPÓ-jelölés nem ismétlés: a „tempó 3-1-1-0" négy szakasz
         // másodperce (le, alul, fel, fent), nem négy sorozat. Kimondott
         // tempó-szó nélkül a kötőjeles lista továbbra is piramis („12-10-8").

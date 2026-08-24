@@ -2325,4 +2325,24 @@ public class StrengthParseTest {
         assertEquals("Guggolás", it.get(0).name);
     }
 
+    /**
+     * A rámpa két listája tagmondat-határon is összetartozik.
+     *
+     * A „fekvenyomás 60-70-80 kg, 8-6-4 ismétlés" naplójába a SÚLYOK
+     * kerültek ismétlésként: hatvan, hetven és nyolcvan ismétlés nyolc,
+     * hat és négy helyett – a rep-lista a vessző utáni tagmondatban
+     * maradt, gyakorlatnév nélkül.
+     */
+    @Test public void aRampWeightListAndRepListPairUpAcrossAComma() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen: "
+                + "fekvenyomás 60-70-80 kg, 8-6-4 ismétlés.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(18, it.get(0).totalReps());
+        assertEquals(80.0, it.get(0).topWeight(), 0.01);
+        // A vessző nélküli szórend változatlan.
+        assertEquals(18, StrengthParse.parse("Fekvenyomás 60-70-80 kg "
+                + "8-6-4.").get(0).totalReps());
+    }
 }
