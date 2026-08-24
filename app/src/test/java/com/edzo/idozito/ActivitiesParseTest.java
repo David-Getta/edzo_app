@@ -3896,6 +3896,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A feltétel a következményre is áll, a „helyett" a megvalósultat vezeti be.
+     *
+     * A „ha holnap jó idő lesz, futok 10-et, ma csak 20 perc szoba bringa"
+     * tíz kilométere a naplóba került – egy meg nem történt futásból. A
+     * „ma 12 000 lépés helyett csak 4000 lett" viszont NYOMTALANUL eltűnt,
+     * pedig a második szám épp azt mondja meg, mennyi lett belőle.
+     */
+    @Test public void aConditionCoversItsConsequence() {
+        Activities.Parsed p = Activities.parse("Ha holnap jó idő lesz, "
+                + "futok 10-et, ma csak 20 perc szoba bringa.");
+        assertEquals(1, p.plans.size());
+        assertEquals("kerekpar", p.plans.get(0).kind.id);
+        Activities.Parsed st = Activities.parse("Ma 12 000 lépés helyett "
+                + "csak 4000 lett.");
+        assertEquals(1, st.plans.size());
+        assertEquals(4000, st.plans.get(0).steps);
+    }
+
+    /**
      * A cipekedve a séta módja, nem külön munka.
      *
      * Az „elmentem a piacra gyalog, oda 20 perc, vissza cipekedve 25"

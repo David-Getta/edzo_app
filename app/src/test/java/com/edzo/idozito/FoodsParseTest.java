@@ -2660,6 +2660,27 @@ public class FoodsParseTest {
     }
 
     /**
+     * A feltételes és a „majdnem" tagmondata nem étkezés.
+     *
+     * Az „este 3 dl bort ittam volna, de inkább teát ittam" három deci
+     * bort írt a naplóba abból, amit meg sem ivott az ember. Az „ebédre
+     * majdnem rendeltem pizzát, de végül salátát ettem" fordítva: az
+     * egész bejegyzés elnémult attól a fogástól, amit épp NEM evett meg.
+     */
+    @Test public void theAlmostAndTheWouldHaveAreNotMeals() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (Foods.Hit h : Foods.parse(all, "Este 3 dl bort ittam volna, "
+                + "de inkább teát ittam."))
+            assertFalse(h.food.name.startsWith("Bor"));
+        List<Foods.Hit> m = Foods.parse(all, "Ebédre majdnem rendeltem "
+                + "pizzát, de végül salátát ettem.");
+        assertEquals(1, m.size());
+        assertEquals("Saláta (zöld)", m.get(0).food.name);
+        // A puszta majdnem-mondat továbbra sem étkezés.
+        assertTrue(Foods.parse(all, "Majdnem rendeltem pizzát.").isEmpty());
+    }
+
+    /**
      * Az ok nem falat.
      *
      * A „reggel mérleg 79,9, este 80,6 – víz miatt" két deci vizet írt a

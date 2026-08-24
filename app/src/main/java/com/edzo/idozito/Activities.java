@@ -3480,6 +3480,13 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])kezi\\s+(?=(?:kezel|terap|masszazs|massz"
                 + "|munka|mosogat|szerszam|fek(?![a-z])|valto|kocsi|kotes"
                 + "|iras|vezerl|erovel))", " ");
+        // A HELYETT a MEGVALÓSULT számot vezeti be: a „ma 12 000 lépés
+        // helyett csak 4000 lett" NYOMTALANUL eltűnt – a „helyett"
+        // tagadás-szava az egész bejegyzést elvitte, pedig a második szám
+        // épp azt mondja meg, mennyi lett belőle.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}[ .]?\\d{3}\\s?lepes\\w*"
+                + "\\s+helyett\\s+(?:csak\\s+|mindossze\\s+)?"
+                + "(\\d{1,2}[ .]?\\d{3})(?![\\d])", "$1 lepes");
         // A FUTÓNYELV ELLIPSZISE: az „elmentem futni 5-öt" és a „futottam
         // ma tízet" mértékegység nélkül is kilométert mond – a futók között
         // ez egyértelmű, a naplóba viszont táv nélküli, becsült
@@ -5725,14 +5732,24 @@ public final class Activities {
         String s = new String(q);
         java.util.List<int[]> future = new ArrayList<>();
         java.util.List<int[]> lead = new ArrayList<>();
-        boolean anyKept = false;
+        boolean anyKept = false, cond = false;
         int start = 0;
         for (int i = 0; i <= s.length(); i++) {
             if (i < s.length() && s.charAt(i) != ',' && s.charAt(i) != ';'
                     && s.charAt(i) != '.') continue;
             String cl = s.substring(start, i);
             if (!cl.trim().isEmpty()) {
-                if (!plannedClause(cl)) {
+                // A FELTÉTEL a KÖVETKEZMÉNYRE is áll: a „ha holnap jó idő
+                // lesz, futok 10-et, ma csak 20 perc szoba bringa" tíz
+                // kilométere a naplóba került – egy meg nem történt
+                // futásból. A „ha" tagmondat utáni ige ugyanannak a
+                // feltételnek a része, amíg a mondat vissza nem tér a
+                // mához.
+                boolean condTail = cond && !cl.matches("(?s).*(?<![a-z])"
+                        + "(?:ma|tegnap|reggel|delelott|delben|delutan|este)"
+                        + "(?![a-z]).*") && !pastTense(cl);
+                cond = cl.matches("(?s)\\s*ha\\s.*") && plannedClause(cl);
+                if (!plannedClause(cl) && !condTail) {
                     anyKept = true;
                 } else if (anyKept || pastTense(s)) {
                     // Csak a megtörtént UTÁN álló terv takarható ki: a „ha

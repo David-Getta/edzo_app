@@ -1480,6 +1480,16 @@ public final class Foods {
                 "(?<![a-z])zsirt?\\s?eget\\p{L}*").matcher(q);
         while (zs.find())
             for (int k = zs.start(); k < zs.end(); k++) sb.setCharAt(k, ' ');
+        // A MAJDNEM tagmondata nem étkezés: az „ebédre majdnem rendeltem
+        // pizzát, de végül salátát ettem" pizzája a naplóba került – abból,
+        // amit a felhasználó épp NEM evett meg. A tagmondat végéig
+        // kitakarva a mellette álló valódi fogás megmarad.
+        java.util.regex.Matcher mj = java.util.regex.Pattern.compile(
+                "(?<![\\p{L}])majdnem\\s+(?:meg|be|el)?"
+                + "(?:ettem|ittam|kaptam|rendeltem|vettem|haraptam)"
+                + "(?![\\p{L}])[^,;.]*").matcher(q);
+        while (mj.find())
+            for (int k = mj.start(); k < mj.end(); k++) sb.setCharAt(k, ' ');
         // Az OK nem falat: a „reggel mérleg 79,9, este 80,6 – víz miatt"
         // két deci vizet írt a naplóba abból, amivel a mérleg mozgását
         // magyarázza az ember. A „miatt" névutó okot mond; ami előtte áll,
@@ -4815,8 +4825,14 @@ public final class Foods {
         // de nem" hatvan gramm fánkot írt a naplóba – abból, amit a
         // felhasználó épp hogy NEM evett meg. Az evés-ige itt is ott van a
         // mondatban, ezért a kivétel-lista különben felmentené.
+        // …de csak akkor, ha a mondat MÁSIK fele nem valódi étkezés: az
+        // „ebédre majdnem rendeltem pizzát, de végül salátát ettem"
+        // salátája NYOMTALANUL eltűnt – az egész bejegyzés elnémult attól
+        // a fogástól, amit a felhasználó épp NEM evett meg.
         if (s.matches("(?s).*(?<![a-z])majdnem\\s+(?:meg|be|el)?"
-                + "(?:ettem|ittam|kaptam|rendeltem|vettem|haraptam)(?![a-z]).*"))
+                + "(?:ettem|ittam|kaptam|rendeltem|vettem|haraptam)(?![a-z]).*")
+                && !s.matches("(?s).*(?<![a-z])(?:de|viszont|helyette|inkabb)"
+                    + "\\s+[^,;.]{0,30}?(?:meg)?(?:ettem|ittam)(?![a-z]).*"))
             return true;
         // A mondat végi „DE NEM" visszavonja az egészet: a „megkínáltak
         // sütivel, de nem kértem" száz gramm süteményt írt a naplóba – egy
@@ -5018,6 +5034,27 @@ public final class Foods {
                     int ps = Math.max(0, cs - 1);
                     while (ps > 0 && !isBreak(q.charAt(ps - 1))) ps--;
                     for (Match m : in) if (m.pos >= ps && m.pos < cs) dead.add(m);
+                }
+                p = q.indexOf(w, p + 1);
+            }
+        }
+        // A FELTÉTELES és a MAJDNEM tagmondata nem étkezés: az „este 3 dl
+        // bort ittam volna, de inkább teát ittam" három deci bort írt a
+        // naplóba abból, amit meg sem ivott az ember, az „ebédre majdnem
+        // rendeltem pizzát" pizzája ugyanígy. A tagmondat-hatókör miatt a
+        // mellette álló valódi fogás megmarad.
+        for (String w : new String[]{"volna"}) {
+            int p = q.indexOf(w);
+            while (p >= 0) {
+                boolean whole = (p == 0 || !Character.isLetter(q.charAt(p - 1)))
+                        && (p + w.length() >= q.length()
+                            || !Character.isLetter(q.charAt(p + w.length())));
+                if (whole) {
+                    int cs = p, ce = p;
+                    while (cs > 0 && !isBreak(q.charAt(cs - 1))) cs--;
+                    while (ce < q.length() && !isBreak(q.charAt(ce))) ce++;
+                    for (Match m : in)
+                        if (m.pos >= cs && m.pos < ce) dead.add(m);
                 }
                 p = q.indexOf(w, p + 1);
             }
