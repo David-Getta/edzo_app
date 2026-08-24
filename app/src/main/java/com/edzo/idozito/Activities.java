@@ -3494,6 +3494,14 @@ public final class Activities {
         s = s.replaceAll("(?<![\\d,.])\\d{1,2}[ .]?\\d{3}\\s?lepes\\w*"
                 + "\\s+helyett\\s+(?:csak\\s+|mindossze\\s+)?"
                 + "(\\d{1,2}[ .]?\\d{3})(?![\\d])", "$1 lepes");
+        // A ROHANÁS futás, ha ideje is van: a „ma reggel a kutya
+        // elszaladt, 10 percet rohantam utána" tíz perce NYOMTALANUL
+        // eltűnt. Idő vagy táv nélkül viszont a „rohantam a buszhoz" nem
+        // edzés, ezért a puszta ige nem szótő.
+        if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?(?:perc|km|m(?![a-z])"
+                + "|kilometer)\\w*.*"))
+            s = s.replaceAll("(?<![a-z])roha(?:ntam|ntunk|ngaltam)(?![a-z])",
+                    "futottam");
         // A FUTÓNYELV ELLIPSZISE: az „elmentem futni 5-öt" és a „futottam
         // ma tízet" mértékegység nélkül is kilométert mond – a futók között
         // ez egyértelmű, a naplóba viszont táv nélküli, becsült
@@ -3549,7 +3557,11 @@ public final class Activities {
         // négyszáz méteres futás lett ezerhatszáz helyett – a kör-szám és
         // a körhossz közé az „egyenként" ékelődik.
         java.util.regex.Matcher lap2 = java.util.regex.Pattern
-                .compile("(\\d{1,2})\\s?kor\\w*[^0-9]{0,12}?egyenkent\\s?"
+                // A MINDEN KÖR ugyanezt mondja: a „ma reggel 3 kör a
+                // tóparton, minden kör 1,5 km" négy és fél kilométeréből
+                // másfél lett – a kör-szám elveszett a hossz mellől.
+                .compile("(\\d{1,2})\\s?kor\\w*[^0-9]{0,22}?"
+                        + "(?:egyenkent|minden kor\\w*|koronkent)\\s?"
                         + "(\\d{1,4}(?:[.,]\\d+)?)\\s?(m|meter\\w*|km)(?![a-z])")
                 .matcher(s);
         if (lap2.find()) {
@@ -7143,7 +7155,7 @@ public final class Activities {
                     // tömbön, kb. 2,4 km" hajnali háromra került.
                     .matches("(?s).*(palya|stadion|tavon|to korul|medence"
                         + "|salak|tartan|futokor|margitsziget|sziget"
-                        + "|tombon|haztomb|tomb korul"
+                        + "|tombon|haztomb|tomb korul|topart|tavat"
                         + "|liget|korut|korben).*")) continue;
             // A SORREND szava körökről beszél: az „edzésen 5 perc
             // kötélugrás bemelegítés, aztán 4 kör" hajnali NÉGYRE tette a

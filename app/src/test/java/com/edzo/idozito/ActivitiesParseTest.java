@@ -3896,6 +3896,25 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A tópart is körpálya, és a „minden kör" is szoroz.
+     *
+     * A „ma reggel 3 kör a tóparton, minden kör 1,5 km" hajnali háromra
+     * került, a négy és fél kilométeréből pedig másfél lett – a kör-szám
+     * elveszett a hossz mellől.
+     */
+    @Test public void lakesideLapsMultiply() {
+        Activities.Parsed p = Activities.parse("Ma reggel 3 kör a "
+                + "tóparton, minden kör 1,5 km.");
+        assertEquals(8, p.hour);
+        assertEquals(4.5, p.plans.get(0).km, 0.01);
+        // A rohanás ideje futás, a puszta rohanás nem.
+        assertEquals(10, Activities.parse("Ma reggel a kutya elszaladt, "
+                + "10 percet rohantam utána.").plans.get(0).minutes);
+        assertTrue(Activities.parse("Ma reggel rohantam a buszhoz.")
+                .plans.isEmpty());
+    }
+
+    /**
      * A sorrend szava körökről beszél, nem óráról.
      *
      * Az „edzésen 5 perc kötélugrás bemelegítés, aztán 4 kör" hajnali
