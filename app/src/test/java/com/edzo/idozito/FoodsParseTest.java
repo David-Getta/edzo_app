@@ -2660,6 +2660,26 @@ public class FoodsParseTest {
     }
 
     /**
+     * Az ok nem falat.
+     *
+     * A „reggel mérleg 79,9, este 80,6 – víz miatt" két deci vizet írt a
+     * naplóba abból, amivel a mérleg mozgását magyarázza az ember.
+     */
+    @Test public void aReasonIsNotAMeal() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertTrue(Foods.parse(all, "reggel mérleg 79,9 este 80,6 - "
+                + "víz miatt").isEmpty());
+        assertTrue(Foods.parse(all, "Fáradt vagyok a sok kávé miatt.")
+                .isEmpty());
+        // Az evés igéje felmenti a tagmondatot.
+        assertFalse(Foods.parse(all, "Megettem a csokit, a stressz "
+                + "miatt.").isEmpty());
+        // Az ok után álló valódi bevitel megmarad.
+        assertFalse(Foods.parse(all, "vaspótlás miatt vas + C reggel")
+                .isEmpty());
+    }
+
+    /**
      * A rakott karfiol rétege a karfiol.
      *
      * A „két szelet rakott karfiol" mellé egy külön adag karfiol is

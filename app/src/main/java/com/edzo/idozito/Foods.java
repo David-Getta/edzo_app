@@ -1480,6 +1480,24 @@ public final class Foods {
                 "(?<![a-z])zsirt?\\s?eget\\p{L}*").matcher(q);
         while (zs.find())
             for (int k = zs.start(); k < zs.end(); k++) sb.setCharAt(k, ' ');
+        // Az OK nem falat: a „reggel mérleg 79,9, este 80,6 – víz miatt"
+        // két deci vizet írt a naplóba abból, amivel a mérleg mozgását
+        // magyarázza az ember. A „miatt" névutó okot mond; ami előtte áll,
+        // az nem a mai bevitel. Az evés igéje felmenti a tagmondatot.
+        java.util.regex.Matcher mi = java.util.regex.Pattern.compile(
+                // A ZÁRÓ ok-tagmondat a magyarázat: a „vaspótlás miatt
+                // vas + C reggel" fordítva áll, ott az ok után jön a
+                // valódi bevitel.
+                "(\\p{L}{3,})\\s+miatt(?![\\p{L}])(?=[^\\p{L}]*$"
+                + "|[^\\p{L}]*[,;.])").matcher(q);
+        while (mi.find()) {
+            int cs = mi.start(1);
+            while (cs > 0 && !isBreak(q.charAt(cs - 1))) cs--;
+            if (q.substring(cs, mi.end()).matches("(?s).*(?<![a-z])"
+                    + "(?:ettem|megettem|ittam|megittam|ettunk|ittunk"
+                    + "|fogyasztottam)(?![a-z]).*")) continue;
+            for (int k = mi.start(1); k < mi.end(1); k++) sb.setCharAt(k, ' ');
+        }
         // A GYAKORLAT SORA nem sör: az „egy sor guggolás után meghúzódott a
         // combom" fél liter sört írt a naplóba – a „sör" és a „sor" ékezet
         // nélkül ugyanaz a szó, a sorozat egyik magyar neve pedig épp „sor".
