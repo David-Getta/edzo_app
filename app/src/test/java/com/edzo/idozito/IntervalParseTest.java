@@ -988,4 +988,20 @@ public class IntervalParseTest {
         assertNotNull(IntervalParse.parse("Tabata 8x20-10."));
     }
 
+    /**
+     * A kerti munka nem munkaszakasz.
+     *
+     * A „ma 40 perc kerti munka" mellé negyven perces időzítő-terv került
+     * – egyetlen körrel, pihenő nélkül. A jelző elárulja, hogy itt a
+     * munka a tevékenység neve, nem az intervallumé.
+     */
+    @Test public void gardenWorkIsNotAWorkInterval() {
+        assertNull(IntervalParse.parse("Ma 40 perc kerti munka."));
+        assertNull(IntervalParse.parse("Ma 30 perc fizikai munka a ház "
+                + "körül."));
+        // A valódi munka/pihenő pár marad terv.
+        assertNotNull(IntervalParse.parse("Tabata: 8 kör, 20 mp munka, "
+                + "10 mp pihenő."));
+    }
+
 }

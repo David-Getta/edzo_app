@@ -996,6 +996,15 @@ public final class IntervalParse {
                             || s.startsWith(" soran", p + 5)
                             || s.startsWith("ido", p + 5)
                             || s.startsWith("nap", p + 5))) notRound = true;
+                // A KERTI MUNKA nem munkaszakasz: a „ma 40 perc kerti
+                // munka" mellé negyven perces időzítő-terv került –
+                // egyetlen körrel, pihenő nélkül. A jelző elárulja, hogy
+                // itt a munka a tevékenység neve, nem az intervallumé.
+                if (w.equals("munka"))
+                    for (String b : new String[]{"kerti ", "fizikai ",
+                            "hazi ", "haz koruli ", "kert ", "nehez "})
+                        if (p >= b.length() && s.startsWith(b, p - b.length()))
+                            notRound = true;
                 if (!dayOff && !notRound
                         && (p == 0 || !Character.isLetter(s.charAt(p - 1))))
                     return true;
