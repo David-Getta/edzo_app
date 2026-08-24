@@ -3896,6 +3896,21 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * A cipekedve a séta módja, nem külön munka.
+     *
+     * Az „elmentem a piacra gyalog, oda 20 perc, vissza cipekedve 25"
+     * negyvenöt percéből húsz maradt, és mellé egy ÓRÁS fizikai munka is
+     * bekerült – a hazaút mellé, ami maga a mozgás.
+     */
+    @Test public void aCarryingAdverbIsPartOfTheWalk() {
+        Activities.Parsed p = Activities.parse("Ma reggel elmentem a "
+                + "piacra gyalog, oda 20 perc, vissza cipekedve 25.");
+        assertEquals(1, p.plans.size());
+        assertEquals(45, p.plans.get(0).minutes);
+        assertEquals("tura", p.plans.get(0).kind.id);
+    }
+
+    /**
      * A terem csak a helyszín, ha az óra neve is ott van.
      *
      * A „ma 45 perc aerobic óra a konditeremben" kondi-edzésként került a

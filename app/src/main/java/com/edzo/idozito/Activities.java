@@ -3457,6 +3457,14 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])perc\\w*\\s+(\\p{L}{3,20})\\s*([,;]\\s*"
                 + dayPart + "\\s+(?:meg\\s+|pedig\\s+|ujra\\s+|megegyszer\\s+)?"
                 + "\\d{1,3})(?![^,;.]*[\\p{L}\\d])", "perc $1$2 perc $1");
+        // A CIPEKEDVE módhatározó a séta módja, nem külön munka: az „oda
+        // 20 perc, vissza cipekedve 25" mellé egy ÓRÁS fizikai munka is
+        // bekerült – a hazaút mellé, ami maga a mozgás. A határozói igenév
+        // nem önálló alkalom.
+        if (s.matches("(?s).*(?<![a-z])(?:gyalog|setal\\w*|mentem|jottem"
+                + "|indultam|futott\\w*)\\w*.*"))
+            s = s.replaceAll("(?<![a-z])(?:cipekedve|cipelve|pakolva"
+                    + "|cuccolva)(?![a-z])", " ");
         // A TEREM csak a helyszín, ha az ÓRA neve is ott van: a „ma 45 perc
         // aerobic óra a konditeremben" kondi-edzésként került a naplóba –
         // pedig az aerobik saját mozgásforma, más intenzitással. A terem
@@ -3654,8 +3662,12 @@ public final class Activities {
         // 25, vissza 28 perc" eddig csak a vissza-időt kapta meg – a napi
         // ingázás fele elveszett. A két szám összege az egy bejegyzés.
         java.util.regex.Matcher ov = java.util.regex.Pattern
-                .compile("oda\\s?(\\d{1,3})\\s?(?:perc)?\\s?[,;]?\\s?(?:es\\s)?"
-                        + "vissza\\s?(\\d{1,3})\\s?perc").matcher(s);
+                // A HAZAÚT módhatározója közéékelődhet, és a percet is
+                // elhagyhatja: az „oda 20 perc, vissza cipekedve 25"
+                // negyvenöt perce eddig húsz maradt.
+                .compile("oda\\s?(\\d{1,3})\\s?(?:perc\\w*)?\\s?[,;]?\\s?"
+                        + "(?:es\\s)?vissza\\s+(?:\\p{L}+\\s+)?"
+                        + "(\\d{1,3})(?:\\s?perc\\w*)?(?![\\d])").matcher(s);
         if (ov.find()) {
             int sum = Integer.parseInt(ov.group(1)) + Integer.parseInt(ov.group(2));
             if (sum >= 2 && sum <= 24 * 60)
