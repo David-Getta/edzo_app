@@ -1368,4 +1368,23 @@ public class BodyParseTest {
         // A kimondott súly marad súly.
         assertEquals(98.0, BodyParse.parse("Súlyom 98 kg, derék 88.").kg, 0.01);
     }
+
+    /**
+     * A mérés IDEJE és az előző naphoz hasonlítás nem tiltószó.
+     *
+     * A „ma reggel 8 óra körül mértem: 81,3 kg, ez 400 grammal kevesebb
+     * mint tegnap" mérése TELJESEN elveszett: a „körül" a súly
+     * hozzávetőlegességét jelző tiltószó volt, pedig itt az ÓRÁRA
+     * vonatkozott, a hasonlítás szavai pedig idegenként maradtak a
+     * tagmondatban.
+     */
+    @Test public void aMeasuringTimeDoesNotSwallowTheWeight() {
+        assertEquals(81.3, BodyParse.parse("Ma reggel 8 óra körül "
+                + "mértem: 81,3 kg, ez 400 grammal kevesebb mint "
+                + "tegnap.").kg, 0.01);
+        assertEquals(81.3, BodyParse.parse("81,3 kg, ez 400 grammal "
+                + "kevesebb mint tegnap.").kg, 0.01);
+        // A VÁGY továbbra sem mérés.
+        assertEquals(0.0, BodyParse.parse("Szeretnék 75 kg lenni.").kg, 0.01);
+    }
 }

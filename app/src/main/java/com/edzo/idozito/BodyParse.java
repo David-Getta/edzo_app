@@ -451,6 +451,11 @@ public final class BodyParse {
         // A KÖRÜL a mérleg ingadozását mondja, nem tiltószó: a „stagnál a
         // súlyom 82 körül" nyolcvankét kiló – eddig elveszett.
         s = s.replaceAll("(?<=\\d)\\s?korul(?![a-z])", "");
+        // Az IDŐPONT hozzávetőlegessége sem tiltószó: a „ma reggel 8 óra
+        // körül mértem: 81,3 kg" mérése teljesen elveszett – a „körül" az
+        // ÓRÁRA vonatkozott, nem a súlyra.
+        s = s.replaceAll("(?<![a-z])(\\d{1,2}\\s?ora)\\s+"
+                + "(?:korul|tajban|tajt|tajekan)(?![a-z])", "$1");
         // A TESTVÍZ százaléka nem testzsír: a „testzsír 18,2 / víz 55%"
         // zsírja ötvenöt százalék lett – az okosmérleg víz-rovata kiesik.
         s = s.replaceAll("(?<![a-z])viz\\w*\\s?:?\\s?\\d{1,2}"
@@ -1045,6 +1050,17 @@ public final class BodyParse {
                         + "augusztus|szeptember|oktober|november|december|"
                         + "jan|feb|marc|apr|maj|jun|jul|aug|szept|okt|nov|dec|"
                         + "en|an|jen|ejen|"
+                        // A MÉRÉS IDEJE és a hozzávetőlegesség is kíséret: a
+                        // „ma reggel 8 óra körül mértem: 81,3 kg" mérése
+                        // teljesen elveszett, mert az „óra" és a „körül"
+                        // idegen szóként maradt a tagmondatban.
+                        + "ora|orat|oraval|korul|koruli|tajban|tajt|tajekan|"
+                        + "kb|korulbelul|nagyjabol|"
+                        // Az ELŐZŐ NAPHOZ hasonlítás is csak kíséret: a
+                        // „81,3 kg, ez 400 grammal kevesebb mint tegnap"
+                        // mérése ugyanígy esett ki.
+                        + "ez|az|grammal|gramm|dekaval|deka|dekagramm|"
+                        + "kevesebb|tobb|mint|kevesebbet|tobbet|"
                         + "hete|honapja|eve|napja|hetre|honapra|evre)"
                         + "(?![a-z])", " ")
                 .replaceAll("[^a-z]", " ").trim();
