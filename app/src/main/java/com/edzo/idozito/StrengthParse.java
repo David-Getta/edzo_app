@@ -1151,7 +1151,11 @@ public final class StrengthParse {
             int v = Integer.parseInt(m.group(1));
             int sec = v * 60 + (m.group(2) == null ? 0 : Integer.parseInt(m.group(2)) * 6);
             m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(
-                    v > 0 && v <= 10 ? sec + " mp" : m.group()));
+                    // A NAPI ÖSSZES tartás is idő: a „ma 12 perc plank
+                    // összesen, három részletben" tizenkét perce eddig
+                    // NEM lett tartásidő (a tíz perces határ fölött volt),
+                    // és a naplóba HÁROM másodperc került helyette.
+                    v > 0 && v <= 20 ? sec + " mp" : m.group()));
         }
         m.appendTail(sb);
         return sb.toString();
@@ -1204,7 +1208,7 @@ public final class StrengthParse {
         if (timed) s = holdSeconds(s);
         // Egy négyperces fal ülés hihető; négyszáz ismétlés nem. A korlát
         // ezért a mértékegységhez igazodik.
-        int maxRep = timed ? 600 : 200;
+        int maxRep = timed ? 1200 : 200;
 
         double weight = weightIn(s);
         List<Set> sets = new ArrayList<>();

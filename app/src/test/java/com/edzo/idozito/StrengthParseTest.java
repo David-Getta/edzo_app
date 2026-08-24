@@ -488,8 +488,11 @@ public class StrengthParseTest {
                 for (StrengthParse.Item it : items) {
                     assertTrue(!it.name.isEmpty());
                     assertTrue(it.sets.size() >= 1 && it.sets.size() <= 60);
+                    // Tartásnál a szám MÁSODPERC: a „12 perc plank" hét-
+                    // százhúsz, nem tizenkét ismétlés.
+                    int cap = StrengthParse.isTimed(it.name) ? 1200 : 200;
                     for (StrengthParse.Set s : it.sets) {
-                        assertTrue(s.reps >= 1 && s.reps <= 200);
+                        assertTrue(s.reps >= 1 && s.reps <= cap);
                         assertTrue(s.weight >= 0 && s.weight <= 500);
                     }
                     assertTrue(!it.label().isEmpty());
@@ -913,6 +916,26 @@ public class StrengthParseTest {
         // Tartásnál viszont a másodperc az ismétlés helyén áll: az marad.
         assertSets("3 sorozat 45 mp plank", "Plank", 3, 45, 0);
         assertSets("3 sorozat 1 perc plank", "Plank", 3, 60, 0);
+    }
+
+    /**
+     * A napi összes tartás is tartásidő.
+     *
+     * A „ma 12 perc plank összesen, három részletben" tizenkét perce
+     * eddig NEM lett tartásidő – a tíz perces határ fölött volt –, és a
+     * naplóba a „három részletben" HÁROM másodperce került helyette.
+     */
+    @Test public void aDailyPlankTotalIsAHold() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Ma 12 perc plank összesen, három részletben.");
+        assertEquals(1, it.size());
+        assertEquals("Plank", it.get(0).name);
+        assertEquals(720, it.get(0).sets.get(0).reps);
+        assertEquals(720, StrengthParse.parse("Ma 12 perc plank.")
+                .get(0).sets.get(0).reps);
+        // A rövid tartás marad annyi, amennyi.
+        assertEquals(120, StrengthParse.parse("Ma 2 perc plank.")
+                .get(0).sets.get(0).reps);
     }
 
     /**
