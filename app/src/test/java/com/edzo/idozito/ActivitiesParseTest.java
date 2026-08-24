@@ -10158,4 +10158,20 @@ public class ActivitiesParseTest {
                 + "szabadban.").plans.get(0).minutes);
     }
 
+    /**
+     * A felsőtest-nap súlyzós edzés.
+     *
+     * Az „edzésen ma csak a felsőtestet vittem: mell, váll, tricepsz"
+     * EGYÉB mozgásként ment a naplóba – pedig ez a terem szóhasználata
+     * egy súlyzós napra.
+     */
+    @Test
+    public void anUpperBodyDayIsAGymSession() {
+        assertEquals("kondi", Activities.parse("Az edzesen ma csak a "
+                + "felsotestet vittem: mell, vall, tricepsz.")
+                .plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("Ma alsotest edzes, "
+                + "50 perc.").plans.get(0).kind.id);
+    }
+
 }

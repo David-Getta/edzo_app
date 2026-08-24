@@ -225,6 +225,10 @@ public final class Activities {
                     // 40 perc kardió és 20 perc has-hát" húsz perce eddig
                     // gazdátlan maradt, és nyomtalanul elveszett.
                     "has-hat", "has es hat", "hasizom edzes", "torzsedzes",
+                    // A TESTTÁJ-NAP a terem szóhasználata: az „edzésen ma
+                    // csak a felsőtestet vittem: mell, váll, tricepsz"
+                    // egyéb mozgásként ment a naplóba, pedig súlyzós nap.
+                    "felsotest", "alsotest",
                     // Otthoni edzésvideó-platformok.
                     "freeletics", "chloe ting",
                     // A FITNESZTEREM egyben fedi a „fitnesz" (egyéb) és a
