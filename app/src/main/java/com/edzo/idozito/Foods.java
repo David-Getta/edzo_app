@@ -1671,6 +1671,12 @@ public final class Foods {
             // hosszabb szó, az marad szósz.
             if (!hide && tok.matches("(?:fok|lila|uj|voros)?hagymas(?:an)?"))
                 hide = true;
+            // A GOMBÁS jelző a HÚS mellett a mártásé: a „gombás
+            // csirkemell, 200 g" kétszáz grammja a GOMBÁRA került. A
+            // „gombás rizottó" viszont valódi feltét, ott a gomba marad.
+            if (!hide && tok.equals("gombas"))
+                hide = sb.substring(j).trim().matches("(?s)(?:csirke|serte"
+                        + "|marha|pulyka|borda|karaj|tarja|comb|hus)\\w*.*");
             if (hide) for (int k = i; k < j; k++) sb.setCharAt(k, ' ');
             prev = tok;
             i = j;
@@ -4346,8 +4352,15 @@ public final class Foods {
                 while (a > 0 && Character.isLetter(q.charAt(a - 1))) a--;
                 String prev = q.substring(a, e);
                 if (prev.equals("tofu") || prev.startsWith("szoja")
-                        || prev.equals("vegan") || prev.startsWith("noveny")
-                        || prev.startsWith("gomba")) continue;
+                        || prev.equals("vegan") || prev.startsWith("noveny"))
+                    continue;
+                // A GOMBÁS CSIRKE valódi csirke: a „vacsorára gombás
+                // csirkemell, 200 g" mellől a HÚS tűnt el, és kétszáz
+                // gramm gomba került a naplóba helyette. A gomba csak
+                // növényi környezetben jelöl hús-pótlót.
+                if (prev.startsWith("gomba")
+                        && q.matches("(?s).*(?:vegan|noveny|husmentes"
+                            + "|hus mentes|alapu|vega).*")) continue;
             }
             out.add(m);
         }

@@ -3127,4 +3127,33 @@ public class FoodsParseTest {
         assertTrue(Foods.parse(all, "A vízbevitelem ma kevés "
                 + "volt.").isEmpty());
     }
+
+    /**
+     * A gombás csirke valódi csirke.
+     *
+     * A „vacsorára gombás csirkemell, 200 g" mellől a HÚS tűnt el, és
+     * kétszáz gramm GOMBA került a naplóba helyette: a gomba jelzőként a
+     * hús-pótlók listáján szerepelt. A gomba csak növényi környezetben
+     * jelöl hús-helyettesítőt; a mártás jelzője pedig nem külön adag.
+     */
+    @Test public void mushroomSauceOnMeatIsStillMeat() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Vacsorára gombás "
+                + "csirkemell, 200 g, és párolt rizs.");
+        double hus = 0;
+        boolean gomba = false;
+        for (Foods.Hit x : h) {
+            if (x.food.name.startsWith("Csirkemell")) hus = x.grams;
+            if (x.food.name.equals("Gomba")) gomba = true;
+        }
+        assertEquals(200.0, hus, 0.1);
+        assertFalse(gomba);
+        // A gomba mint valódi feltét és mint önálló fogás marad.
+        assertEquals(2, Foods.parse(all, "gombás rizottó").size());
+        assertEquals("Gomba", Foods.parse(all, "Vacsorára gombát "
+                + "pároltam, 150 g.").get(0).food.name);
+        // A tofu-csirke marad hús-pótló.
+        assertEquals("Tofu", Foods.parse(all, "Ebédre tofu "
+                + "csirke.").get(0).food.name);
+    }
 }
