@@ -3070,11 +3070,19 @@ public final class Activities {
         // 25 perc, vissza 30 perc, kb 9 km egy út" kilenc kilométert írt a
         // naplóba – a ténylegesen letekert tizennyolc helyett. Az „egy út"
         // épp azt mondja ki, hogy a szám csak az egyik irányé.
-        if (s.contains("vissza") || s.contains("haza")) {
+        // A BEJÁRÁS igéje mellett az „ODA" is egy irányt jelöl: a
+        // „biciklivel jártam be a melóhelyre, 12 km oda" tizenkét
+        // kilométert írt a naplóba – a valóban letekert huszonnégy
+        // helyett. Az ingázás mindkét irányt jelenti.
+        boolean commute = s.matches("(?s).*(?<![a-z])(?:jartam be|jartunk be"
+                + "|bejartam|bejartunk|ingazt\\w*|jarok be|jaros be)"
+                + "(?![a-z]).*");
+        if (s.contains("vissza") || s.contains("haza") || commute) {
             java.util.regex.Matcher one = java.util.regex.Pattern
                     .compile("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
                             + "(?:km|kilometer\\w*)\\s+(?:egy ut(?:ra)?|"
-                            + "egy irany\\w*|utankent|iranyonkent)(?![a-z])")
+                            + "egy irany\\w*|utankent|iranyonkent"
+                            + (commute ? "|oda" : "") + ")(?![a-z])")
                     .matcher(s);
             if (one.find()) {
                 double v = Double.parseDouble(one.group(1).replace(',', '.')) * 2;

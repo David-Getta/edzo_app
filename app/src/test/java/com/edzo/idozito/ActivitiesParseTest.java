@@ -10284,4 +10284,19 @@ public class ActivitiesParseTest {
                 .plans.get(0).steps);
     }
 
+    /**
+     * Az ingázás „oda" távja mindkét irányt jelenti.
+     *
+     * A „biciklivel jártam be a melóhelyre, 12 km oda" tizenkét
+     * kilométert írt a naplóba – a valóban letekert huszonnégy helyett.
+     */
+    @Test
+    public void aOneWayCommuteDistanceCountsBothWays() {
+        assertEquals(24.0, Activities.parse("biciklivel jartam be a "
+                + "melohelyre, 12 km oda").plans.get(0).km, 0.01);
+        // Bejárás nélkül az „oda" nem duplázódik.
+        assertEquals(12.0, Activities.parse("Ma 12 km-t bicikliztem oda "
+                + "a tohoz.").plans.get(0).km, 0.01);
+    }
+
 }
