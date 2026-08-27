@@ -3044,4 +3044,25 @@ public class FoodsParseTest {
             if (x.food.name.startsWith("Magvaj")) vaj = x.grams;
         assertEquals(30.0, vaj, 0.1);
     }
+
+    /**
+     * A megvett mennyiség nem a megevett.
+     *
+     * A „ma 1 kiló almát vettem, de csak kettőt ettem meg" ezer grammot
+     * írt a naplóba – egy kiló alma kalóriáját abból, hogy valaki két
+     * szemet evett meg.
+     */
+    @Test public void whatWasBoughtIsNotWhatWasEaten() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Ma 1 kiló almát vettem, "
+                + "de csak kettőt ettem meg.");
+        assertEquals(1, h.size());
+        assertEquals(300.0, h.get(0).grams, 0.1);
+        // A vásárlás igéje a mennyiség előtt is állhat.
+        assertEquals(15.0, Foods.parse(all, "Ma vettem egy kiló szőlőt, "
+                + "csak 3 szemet ettem.").get(0).grams, 0.1);
+        // A megevett kiló marad kiló.
+        assertEquals(1000.0, Foods.parse(all, "Ma 1 kiló almát vettem, "
+                + "és meg is ettem.").get(0).grams, 0.1);
+    }
 }
