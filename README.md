@@ -431,7 +431,7 @@ sem talált, tehát ha talál, az tényleg ott van.
   melléknévi kötőjel két hozzávalót köt össze), a „túró-rudi" viszont egy.
   A „sonkás-sajtos szendvics" is egy tétel: ott a feltét már benne van a
   szendvics adagjában
-- **361 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
+- **362 étel** kcal- és fehérje-értékkel (a magyar konyha klasszikusaitól
   az italokig), kereshető és lapozható **kalóriatáblázattal**,
   amelyből egy koppintással naplózhatsz
 - **Saját ételek** felvétele – a felismerés is megtalálja őket

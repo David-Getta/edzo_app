@@ -248,6 +248,11 @@ public final class Foods {
         new Food("Paprika", 25, 1, 100, "paprika"),
         // A „gyümölcssaláta" korábban zöld salátára esett: 200 grammból 30
         // kalória lett a valós ~120 helyett, mert a rövidebb „salata" tő nyert.
+        // A GYŰMÖLCS gyűjtőnévként is fogás: a „2 adag gyümölcsöt ettem"
+        // nyomtalanul elveszett, mert csak a nevesített gyümölcsök és a
+        // gyümölcslé volt a listán. A hosszabb nevek (gyümölcslé,
+        // gyümölcssaláta, gyümölcsturmix) elviszik előle a szót.
+        new Food("Gyümölcs (vegyes)", 55, 0.7, 150, "gyumolcs"),
         new Food("Gyümölcssaláta", 60, 0.8, 200, "gyumolcssalata",
                 "gyumolcs salata"),
         new Food("Saláta (zöld)", 15, 1.4, 50, "salata", "sali",
@@ -465,7 +470,8 @@ public final class Foods {
         new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake",
                 "kazein turmix", "whey turmix", "gainer",
                 "feherjeturmix", "feherje turmix", "feherjeshake"),
-        new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "turmix", "smoothie", "acai"),
+        new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "gyumolcsturmix",
+                "turmix", "smoothie", "acai"),
         // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
         // talált, vagy a 100 kcal/100 g-os kész italra esett – harmadannyi kalória.
         new Food("Fehérjepor", 380, 75, 30, "feherjepor", "feherje por", "protein por",
@@ -822,7 +828,10 @@ public final class Foods {
         new Food("Gyümölcspüré / bébiétel", 65, 0.5, 100,
                 "gyumolcspure", "almapure", "almaszosz", "bebietel"),
         new Food("Gránátalma", 83, 1, 150, "granatalma"),
-        new Food("Bogyós gyümölcs", 50, 1, 100, "bogyos", "szeder", "ribizli",
+        // A teljes név is szótő: a gyűjtőnévi „gyümölcs" különben külön
+        // tételként is bekerülne a bogyós gyümölcs mellé.
+        new Food("Bogyós gyümölcs", 50, 1, 100, "bogyos gyumolcs",
+                "bogyos", "szeder", "ribizli",
                 "egres", "josta", "homoktovis", "licsi", "bodza", "kokeny",
                 "naspolya", "maracuja", "passiogyumolcs"),
         new Food("Mangó", 60, 0.8, 200, "mango"),

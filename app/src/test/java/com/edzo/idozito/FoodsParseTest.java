@@ -3065,4 +3065,26 @@ public class FoodsParseTest {
         assertEquals(1000.0, Foods.parse(all, "Ma 1 kiló almát vettem, "
                 + "és meg is ettem.").get(0).grams, 0.1);
     }
+
+    /**
+     * A gyümölcs gyűjtőnévként is fogás.
+     *
+     * A „2 adag gyümölcsöt ettem" nyomtalanul elveszett: csak a
+     * nevesített gyümölcsök és a gyümölcslé volt a listán. A hosszabb
+     * nevek (bogyós gyümölcs, gyümölcsturmix, gyümölcssaláta) továbbra
+     * is elviszik előle a szót.
+     */
+    @Test public void fruitAsACollectiveNounIsAFood() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        double gy = 0;
+        for (Foods.Hit x : Foods.parse(all, "Ma 4 adag zöldséget és "
+                + "2 adag gyümölcsöt ettem."))
+            if (x.food.name.startsWith("Gyümölcs (")) gy = x.grams;
+        assertEquals(300.0, gy, 0.1);
+        // A fajtát megnevező hosszabb név nyer.
+        assertEquals("Bogyós gyümölcs", Foods.parse(all, "Reggelire "
+                + "bogyós gyümölcsöt ettem, 150 g.").get(0).food.name);
+        assertEquals(1, Foods.parse(all, "Uzsonna: aszalt gyümölcs, "
+                + "egy marék.").size());
+    }
 }
