@@ -2366,4 +2366,27 @@ public class StrengthParseTest {
         assertEquals(20, it.get(0).sets.get(0).reps);
         assertEquals(100, it.get(0).totalReps());
     }
+
+    /**
+     * A „mind 4x10" mindegyik gyakorlaté.
+     *
+     * Az „edzőteremben ma 3 gyakorlat: fekvenyomás, evezés, lehúzás,
+     * mind 4x10" második és harmadik gyakorlata elveszett – az evezésből
+     * ráadásul egy félórás evezőgépes kardió-bejegyzés lett.
+     */
+    @Test public void theSharedSetSpecAfterMindReachesEveryExercise() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az "
+                + "edzőteremben ma 3 gyakorlat: fekvenyomás, evezés, "
+                + "lehúzás, mind 4x10.");
+        assertEquals(3, it.size());
+        for (StrengthParse.Item x : it) {
+            assertEquals(4, x.sets.size());
+            assertEquals(10, x.sets.get(0).reps);
+        }
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals("Evezés", it.get(1).name);
+        // A „mindegyik" szó ugyanígy szétosztja a sorozatot.
+        assertEquals(2, StrengthParse.parse("Az edzés: fekvenyomás, "
+                + "guggolás, mindegyik 5x5.").size());
+    }
 }

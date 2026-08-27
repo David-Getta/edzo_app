@@ -535,8 +535,14 @@ public final class StrengthParse {
         // elveszett – a sorozat csak az elsőhöz tapadt. Csak akkor
         // osztjuk szét, ha a felsorolt nevek mellett SEMMILYEN szám nem
         // áll: a saját számmal írt tételek a magukét viszik.
+        // A MIND szó ugyanezt mondja ki: az „edzőteremben ma 3 gyakorlat:
+        // fekvenyomás, evezés, lehúzás, mind 4x10" második és harmadik
+        // gyakorlata elveszett – az evezésből ráadásul egy félórás
+        // EVEZŐGÉPES kardió-bejegyzés lett a napló mozgás-oldalán.
         java.util.regex.Matcher tl = java.util.regex.Pattern.compile(
-                "(?iu),\\s*(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s*[.!]?\\s*$")
+                "(?iu),\\s*(?:mind(?:egyik|h[aá]rom|h[aá]romn[aá]l"
+                + "|egyikn[eé]l)?\\s+)?(\\d{1,2}\\s?[x×]\\s?\\d{1,3})"
+                + "\\s*[.!]?\\s*$")
                 .matcher(text);
         if (tl.find()) {
             String sets = tl.group(1);

@@ -3616,9 +3616,13 @@ public final class Activities {
                 // A MINDEN KÖR ugyanezt mondja: a „ma reggel 3 kör a
                 // tóparton, minden kör 1,5 km" négy és fél kilométeréből
                 // másfél lett – a kör-szám elveszett a hossz mellől.
+                // A NÉGYJEGYŰ méter már össztáv: az „5 kör, körönként 400 m
+                // futás" négyszázát egy korábbi szabály már kétezerre
+                // szorozta – ez a minta rá még egyszer rászorzott, és tíz
+                // kilométer futás került a naplóba a kettőből.
                 .compile("(\\d{1,2})\\s?kor\\w*[^0-9]{0,22}?"
                         + "(?:egyenkent|minden kor\\w*|koronkent)\\s?"
-                        + "(\\d{1,4}(?:[.,]\\d+)?)\\s?(m|meter\\w*|km)(?![a-z])")
+                        + "(\\d{1,3}(?:[.,]\\d+)?)\\s?(m|meter\\w*|km)(?![a-z])")
                 .matcher(s);
         if (lap2.find()) {
             double d = Double.parseDouble(lap2.group(2).replace(',', '.'));

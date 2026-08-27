@@ -10250,4 +10250,23 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A körhossz csak EGYSZER szorzódik a körszámmal.
+     *
+     * Az „5 kör, körönként 400 m futás" két kilométere TÍZ kilométer
+     * lett a naplóban: két szabály is rászorzott a körszámmal.
+     */
+    @Test
+    public void aLapLengthIsMultipliedOnlyOnce() {
+        assertEquals(2.0, Activities.parse("5 kor, koronkent 400 m "
+                + "futas.").plans.get(0).km, 0.01);
+        assertEquals(2.0, Activities.parse("Az edzes: 5 kor, koronkent "
+                + "400 m futas es 20 guggolas.").plans.get(0).km, 0.01);
+        // A többi köralak változatlan.
+        assertEquals(1.6, Activities.parse("Futottam 4 kort, egyenkent "
+                + "400 m.").plans.get(0).km, 0.01);
+        assertEquals(4.5, Activities.parse("Ma reggel 3 kor a toparton, "
+                + "minden kor 1,5 km.").plans.get(0).km, 0.01);
+    }
+
 }
