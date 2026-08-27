@@ -7929,7 +7929,21 @@ public final class Activities {
                 half = we >= 3 && s.startsWith("fel", we - 3)
                         && (we < 4 || !Character.isLetter(s.charAt(we - 4)));
             }
-            out.add(new double[]{mp, half ? 21.1 : 42.2, mp});
+            // A KIMONDOTT táv ugyanaz a futás: az „a futásom 21 km volt,
+            // félmaraton, 1 óra 52 perc" mondatból KÉT futás lett (21 és
+            // 21,1 km) – ugyanaz a verseny kétszer, negyvenkét
+            // kilométerként a heti összegzésben.
+            double dist = half ? 21.1 : 42.2;
+            // A MARATON EDZÉS a felkészülés neve, nem a táv: a „maraton
+            // edzés: 15 km futás" mellé egy teljes, 42 kilométeres
+            // versenytáv is bekerült a naplóba.
+            boolean label = s.substring(Math.min(s.length(), mp + 7))
+                    .matches("(?s)\\w*\\s?(?:edzes|edzesem|felkeszul\\w*"
+                        + "|program\\w*|terv\\w*|tempo\\w*)(?![a-z]).*");
+            boolean said = label;
+            for (double[] k : out)
+                if (Math.abs(k[1] - dist) <= dist * 0.15) { said = true; break; }
+            if (!said) out.add(new double[]{mp, dist, mp});
         }
         return out;
     }

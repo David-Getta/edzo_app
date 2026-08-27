@@ -10204,4 +10204,29 @@ public class ActivitiesParseTest {
                 + "Normafanal, 12 km.").plans.get(0).kind.id);
     }
 
+    /**
+     * A kimondott táv és a versenynév ugyanaz a futás.
+     *
+     * Az „a futásom 21 km volt, félmaraton, 1 óra 52 perc" mondatból KÉT
+     * futás lett (21 és 21,1 km) – ugyanaz a verseny kétszer,
+     * negyvenkét kilométerként a heti összegzésben. A „maraton edzés:
+     * 15 km futás" mellé pedig a teljes versenytáv is bekerült.
+     */
+    @Test
+    public void aRaceNameNextToTheStatedDistanceIsOneRun() {
+        Activities.Parsed p = Activities.parse("A futasom 21 km volt, "
+                + "felmaraton, 1 ora 52 perc.");
+        assertEquals(1, p.plans.size());
+        assertEquals(21.0, p.plans.get(0).km, 0.01);
+        Activities.Parsed q = Activities.parse("Maraton edzes: 15 km "
+                + "futas.");
+        assertEquals(1, q.plans.size());
+        assertEquals(15.0, q.plans.get(0).km, 0.01);
+        // A puszta versenynév továbbra is maga a táv.
+        assertEquals(21.1, Activities.parse("Ma lefutottam a "
+                + "felmaratont.").plans.get(0).km, 0.01);
+        assertEquals(42.2, Activities.parse("Ma maraton, 4 ora 10 "
+                + "perc.").plans.get(0).km, 0.01);
+    }
+
 }
