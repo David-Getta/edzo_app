@@ -3087,4 +3087,23 @@ public class FoodsParseTest {
         assertEquals(1, Foods.parse(all, "Uzsonna: aszalt gyümölcs, "
                 + "egy marék.").size());
     }
+
+    /**
+     * A tejtermék kategória-szó, nem pohár tej.
+     *
+     * A „ma tejterméket alig ettem, csak egy joghurtot" mellé két deci
+     * TEJ került a naplóba – abból, hogy valaki épp keveset evett
+     * belőle. A szó eleje maga a tej töve, ezért a szó-belseji tiltás
+     * nem érte el.
+     */
+    @Test public void theWordDairyIsNotAGlassOfMilk() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Ma tejterméket alig ettem, "
+                + "csak egy joghurtot.");
+        assertEquals(1, h.size());
+        assertEquals("Joghurt", h.get(0).food.name);
+        // A kimondott tej marad tej.
+        assertEquals(300.0, Foods.parse(all, "Reggelire tejet ittam, "
+                + "3 dl.").get(0).grams, 0.1);
+    }
 }

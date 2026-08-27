@@ -1320,6 +1320,7 @@ public final class Foods {
             // Egyik tő sem áll összetétel második tagjaként az adatbázisban,
             // tehát a szó belsejében nyugodtan kitakarhatók.
             "haboru", "sertes", "szolo", "kettej",
+
             // A SZERVIZ végén a víz: a „bringaszerviz után próbakör" mellé
             // egy pohár ásványvíz került a naplóba.
             "szerviz",
@@ -1506,6 +1507,14 @@ public final class Foods {
                 .matcher(q);
         while (yc.find())
             for (int k = yc.start(); k < yc.end(); k++) sb.setCharAt(k, ' ');
+        // A TEJTERMÉK kategória-szó, nem pohár tej: a „ma tejterméket alig
+        // ettem, csak egy joghurtot" mellé két deci TEJ került a naplóba –
+        // abból, hogy valaki épp keveset evett belőle. A szó eleje maga a
+        // tej töve, ezért a szó-belseji tiltás nem érte el.
+        java.util.regex.Matcher tt = java.util.regex.Pattern.compile(
+                "(?<![\\p{L}])tejtermek\\p{L}*").matcher(q);
+        while (tt.find())
+            for (int k = tt.start(); k < tt.end(); k++) sb.setCharAt(k, ' ');
         // A MAGÁBAN ÁLLÓ JELZŐ a fogást írja le, nem külön étel: a
         // „délben egy gyros tál, csirkés, sok zöldséggel" csirkés szava a
         // tál fajtáját mondja meg – a naplóba mégis egy külön adag
