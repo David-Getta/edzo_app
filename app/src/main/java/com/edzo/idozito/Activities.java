@@ -5687,6 +5687,20 @@ public final class Activities {
             }
             if (!kept.isEmpty()) out = kept;
         }
+        // A FELE-FELE két egyenlő rész: az „esti edzés 1,5 óra volt, kondi
+        // és kardió fele-fele" mellé kilencven perc kondi ÉS negyvenöt
+        // perc egyéb mozgás került – százharmincöt perc a kilencvenből.
+        // A kimondott hossz a KETTŐÉ együtt, tehát feleződik.
+        if (out.size() == 2 && rawText.matches("(?s).*(?:fele\\s?-?\\s?fele"
+                + "|50\\s?-\\s?50|fifty ?fifty).*")) {
+            Plan a = out.get(0), b = out.get(1);
+            int tot = Math.max(a.minutes, b.minutes);
+            if (tot >= 20 && a.km <= 0 && b.km <= 0 && a.steps <= 0
+                    && b.steps <= 0) {
+                out.set(0, new Plan(a.kind, a.count, Math.max(1, tot / 2), 0));
+                out.set(1, new Plan(b.kind, b.count, Math.max(1, tot / 2), 0));
+            }
+        }
         // A FÉLIDŐ a meccs FELE: a „ma 90 perc foci, de csak a második
         // félidőben játszottam" kilencven percet írt a naplóba – az egész
         // meccset, pedig az ember a felét a kispadon ülte végig.

@@ -10317,4 +10317,27 @@ public class ActivitiesParseTest {
                 + "400 gyors, 200 mell").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A „fele-fele" két egyenlő rész.
+     *
+     * Az „esti edzés 1,5 óra volt, kondi és kardió fele-fele" mellé
+     * kilencven perc kondi ÉS negyvenöt perc egyéb mozgás került –
+     * százharmincöt perc a kilencvenből.
+     */
+    @Test
+    public void halfAndHalfSplitsTheStatedLength() {
+        Activities.Parsed p = Activities.parse("Az esti edzes 1,5 ora "
+                + "volt, kondi es kardio fele-fele.");
+        assertEquals(2, p.plans.size());
+        for (Activities.Plan x : p.plans) assertEquals(45, x.minutes);
+        Activities.Parsed q = Activities.parse("Ma 60 perc edzes, futas "
+                + "es kondi 50-50.");
+        for (Activities.Plan x : q.plans) assertEquals(30, x.minutes);
+        // A külön kimondott hosszak változatlanok.
+        Activities.Parsed r = Activities.parse("Ma 20 perc bicikli es "
+                + "40 perc gyaloglas.");
+        assertEquals(20, r.plans.get(0).minutes);
+        assertEquals(40, r.plans.get(1).minutes);
+    }
+
 }
