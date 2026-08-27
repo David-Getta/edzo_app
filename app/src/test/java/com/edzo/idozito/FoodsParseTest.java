@@ -3106,4 +3106,25 @@ public class FoodsParseTest {
         assertEquals(300.0, Foods.parse(all, "Reggelire tejet ittam, "
                 + "3 dl.").get(0).grams, 0.1);
     }
+
+    /**
+     * A kimondott vízbevitel valódi ital.
+     *
+     * Az „a napi vízbevitelem 2,5 liter volt" mennyisége nyomtalanul
+     * elveszett: a szó az app saját cél-kifejezése is, ezért ki van
+     * takarva a felismerés elől. A kimondott mennyiség viszont a nap
+     * tényleges vize – a cél („a vízbevitel célom 3 liter") marad
+     * szándék.
+     */
+    @Test public void aStatedWaterIntakeIsADrink() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "A napi vízbevitelem 2,5 "
+                + "liter volt.");
+        assertEquals(1, h.size());
+        assertEquals(2500.0, h.get(0).grams, 0.1);
+        assertTrue(Foods.parse(all, "A vízbevitel célom 3 liter "
+                + "naponta.").isEmpty());
+        assertTrue(Foods.parse(all, "A vízbevitelem ma kevés "
+                + "volt.").isEmpty());
+    }
 }

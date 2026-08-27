@@ -872,12 +872,26 @@ public final class StrengthParse {
             if (it == null && pending != null)
                 it = parseOne(Foods.norm(pending) + " " + part
                         + (pendingKg != null ? " " + pendingKg + " kg" : ""), whole);
+            // A SÚLY az első tagmondatban, a sorozat a másodikban: a „ma 20
+            // kg-mal nyomtam a mellgépen, 3x12" húsz kilója elveszett – a
+            // második tagmondat magától is teljes tétel lett, saját
+            // testsúllyal. A hozott súly csak akkor kerül rá, ha a
+            // tagmondatnak nincs sajátja.
+            if (it != null && pendingKg != null && it.topWeight() <= 0) {
+                Item w = parseOne(part + " " + pendingKg + " kg", whole);
+                if (w != null && w.name.equals(it.name)) it = w;
+            }
             if (it != null) { out.add(it); pending = null; pendingKg = null; continue; }
             if (out.isEmpty() && pending == null) {
                 pending = moveIn(part);
                 if (pending != null) {
                     java.util.regex.Matcher aw = java.util.regex.Pattern
-                            .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg-?os|kg os|kilos)")
+                            // Az ESZKÖZRAGOS alak ugyanaz a súly: a „20
+                            // kg-mal nyomtam" húsz kilója eddig nem
+                            // számított hozott súlynak.
+                            .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?"
+                                    + "(?:kg-?os|kg os|kilos|kg-?mal"
+                                    + "|kg-?al|kiloval)")
                             .matcher(part);
                     if (aw.find()) pendingKg = aw.group(1);
                 }

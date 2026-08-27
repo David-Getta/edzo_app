@@ -3439,6 +3439,23 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?"
                 + "(?:g|gr|gramm)\\s+(feh[eé]rje\\s+"
                 + "(?:shake|turmix|italpor|kokt[eé]l|smoothie))", "$1");
+        // A KIMONDOTT vízbevitel valódi ital: az „a napi vízbevitelem 2,5
+        // liter volt" mennyisége nyomtalanul elveszett, mert a szó az app
+        // saját cél-kifejezése is, és ezért ki van takarva. Múlt idejű
+        // beszámolóban viszont a nap tényleges vize.
+        // A CÉL nem beszámoló: az „a vízbevitel célom 3 liter naponta"
+        // egy szándék, abból nem lesz bejegyzés. (A múlt idő igéje itt
+        // nem használható szűrőnek: a „volt" szót a mondat-tisztítás már
+        // korábban leszedi.)
+        if (query.matches("(?siu).*(?<![\\p{L}])v[ií]zbevitel\\w*.*")
+                && !query.matches("(?siu).*(?<![\\p{L}])(?:c[eé]l\\w*"
+                    + "|kellene|k[eé]ne|szeretn[eé]\\w*|tervezek)"
+                    + "(?![\\p{L}]).*"))
+            query = query.replaceAll("(?iu)(?<![\\p{L}])v[ií]zbevitel\\w*"
+                    + "([^.;]{0,20}?)(\\d{1,2}(?:[.,]\\d{1,2})?\\s*"
+                    // Az ivás igéjével együtt, mert a puszta „volt" mellett
+                    // a mondat nem látszik étkezésnek.
+                    + "(?:liter|l|dl|ml)(?![\\p{L}]))", "$1$2 vizet ittam,");
         // A MEGVETT mennyiség nem a MEGEVETT: a „ma 1 kiló almát vettem,
         // de csak kettőt ettem meg" ezer grammot írt a naplóba – egy
         // kiló alma kalóriáját abból, hogy valaki két szemet evett meg.

@@ -2389,4 +2389,23 @@ public class StrengthParseTest {
         assertEquals(2, StrengthParse.parse("Az edzés: fekvenyomás, "
                 + "guggolás, mindegyik 5x5.").size());
     }
+
+    /**
+     * Az eszközragos súly átjön a sorozat tagmondatába.
+     *
+     * A „ma 20 kg-mal nyomtam a mellgépen, 3x12" húsz kilója elveszett:
+     * a második tagmondat magától is teljes tétel lett, saját
+     * testsúllyal. A tagmondat SAJÁT súlya erősebb marad („guggolás 60
+     * kg bemelegítés, aztán 3x5 100").
+     */
+    @Test public void anInstrumentalWeightTravelsToTheSetClause() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma 20 kg-mal "
+                + "nyomtam a mellgépen, 3x12.");
+        assertEquals(1, it.size());
+        assertEquals(20.0, it.get(0).topWeight(), 0.01);
+        assertEquals(20.0, StrengthParse.parse("Ma 20 kilóval toltam a "
+                + "mellgépet, 3x12.").get(0).topWeight(), 0.01);
+        assertEquals(100.0, StrengthParse.parse("Guggolás 60 kg "
+                + "bemelegítés, aztán 3x5 100.").get(0).topWeight(), 0.01);
+    }
 }
