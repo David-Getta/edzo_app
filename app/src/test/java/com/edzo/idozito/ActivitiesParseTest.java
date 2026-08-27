@@ -10229,4 +10229,25 @@ public class ActivitiesParseTest {
                 + "perc.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * Az összesítő mondat számai összegek.
+     *
+     * A „heti mérleg: 5 edzés, 240 perc" öt darab NÉGYÓRÁS edzést írt a
+     * naplóba – húsz óra mozgást négyből. A mérleg- és összesítés-szó
+     * ugyanazt mondja ki, mint az „összesen".
+     */
+    @Test
+    public void aSummarySentenceHoldsTotals() {
+        Activities.Parsed p = Activities.parse("A heti merleg: 5 edzes, "
+                + "240 perc, 3200 kcal egetes.");
+        assertEquals(1, p.plans.size());
+        assertEquals(5, p.plans.get(0).count);
+        assertEquals(48, p.plans.get(0).minutes);
+        assertEquals(30, Activities.parse("Heti osszesites: 3 futas, "
+                + "90 perc.").plans.get(0).minutes);
+        // Összesítő szó nélkül a szám alkalmankénti marad.
+        assertEquals(100, Activities.parse("Ma 2 edzes, 100 perc.")
+                .plans.get(0).minutes);
+    }
+
 }

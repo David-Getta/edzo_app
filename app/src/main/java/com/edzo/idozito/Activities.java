@@ -5295,9 +5295,16 @@ public final class Activities {
         // a „háromszor sétáltam, összesen 90 perc" három KILENCVENPERCES
         // sétát írt be – négy és fél óra mozgást másfél órából. A táv
         // ugyanígy oszlik.
+        // Az ÖSSZESÍTŐ mondat számai is összegek, akkor is, ha az
+        // „összesen" szó nincs kimondva: a „heti mérleg: 5 edzés, 240
+        // perc" öt darab NÉGYÓRÁS edzést írt a naplóba – húsz óra
+        // mozgást négyből. A mérleg-, összesítés- és összegzés-szó
+        // ugyanazt mondja ki, mint az „összesen".
         if (out.size() == 1 && out.get(0).count > 1
                 && (rawText.contains("osszesen")
-                    || rawText.contains("osszessegeben"))) {
+                    || rawText.contains("osszessegeben")
+                    || rawText.matches("(?s).*(?<![a-z])(?:merleg|osszesites"
+                        + "|osszegzes|osszesito|kimutatas)\\w*.*"))) {
             Plan p0 = out.get(0);
             int c = p0.count;
             // Csak a KIMONDOTT összeg oszlik: a „reggel és este is futottam,
