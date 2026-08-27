@@ -2979,4 +2979,43 @@ public class FoodsParseTest {
         assertEquals("Grillhús", Foods.parse(all, "Ebédre húst "
                 + "ettem.").get(0).food.name);
     }
+
+    /**
+     * A húsgombóc és a paradicsomszósz saját fogás.
+     *
+     * A „4 db húsgombóc paradicsomszósszal" darabszáma a PARADICSOMRA
+     * szállt (négy szem nyers paradicsom, 480 g), a hús pedig teljesen
+     * elveszett. A -val rag hasonulása („szósszal") miatt a mártás
+     * szótöve sem talált.
+     */
+    @Test public void meatballsAndTomatoSauceAreTheirOwnFoods() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        double hus = 0;
+        boolean szosz = false, nyers = false;
+        for (Foods.Hit x : Foods.parse(all, "Vacsorára 4 db húsgombóc "
+                + "paradicsomszósszal és tésztával.")) {
+            if (x.food.name.equals("Fasírt")) hus = x.grams;
+            if (x.food.name.equals("Paradicsomszósz")) szosz = true;
+            if (x.food.name.equals("Paradicsom")) nyers = true;
+        }
+        assertEquals(240.0, hus, 0.1);
+        assertTrue(szosz);
+        assertFalse(nyers);
+    }
+
+    /**
+     * A többszavas szótő nem kezdődhet szó közepén.
+     *
+     * A „fasírozó húsgolyó" közepén ott áll az „őz hús" töve
+     * (fasír-OZ HÚS-golyó), és attól VADHÚS került a naplóba.
+     */
+    @Test public void aTwoWordStemNeedsAWordBoundary() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        for (Foods.Hit x : Foods.parse(all, "Ettem egy fasírozó "
+                + "húsgolyót."))
+            assertFalse(x.food.name.startsWith("Vadhús"));
+        // A valódi őz hús marad vadhús.
+        assertEquals("Vadhús (szarvas, vaddisznó, nyúl)", Foods.parse(all,
+                "Vacsorára őz húst ettem.").get(0).food.name);
+    }
 }

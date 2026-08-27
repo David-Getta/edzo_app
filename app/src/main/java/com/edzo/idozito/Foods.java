@@ -86,7 +86,12 @@ public final class Foods {
                 "birkahus", "birkaporkolt"),
         new Food("Marhahús", 250, 26, 150, "marha", "belszin", "steak", "stek",
                 "rostelyos", "ozgerinc"),
-        new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt", "stefania"),
+        // A HÚSGOMBÓC ugyanez a fogás más néven: a „4 db húsgombóc
+        // paradicsomszósszal" darabszáma eddig a PARADICSOMRA szállt
+        // (négy szem nyers paradicsom), a hús meg elveszett.
+        new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt",
+                "stefania", "husgomboc", "hus gomboc", "husgolyo",
+                "hus golyo"),
         // Vadas: marhahús tejfölös-zöldséges mártásban, jellemzően zsemlegombóccal.
         new Food("Vadas hús", 150, 14, 350, "vadas", "vadas hus", "vadashus"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
@@ -297,6 +302,16 @@ public final class Foods {
                 "sajtszosz", "fokhagymaszosz", "gombamartas", "sajtmartas",
                 "kapros martas", "besamel"),
         new Food("Szójaszósz", 60, 6, 10, "szojaszosz", "szoja szosz"),
+        // A PARADICSOMSZÓSZ főtt mártás, nem nyers paradicsom: a „tészta
+        // paradicsomszósszal" mellé eddig tíz deka friss paradicsom
+        // került a naplóba.
+        // A -val rag hasonul: a „paradicsomszósszal" alakban két sz áll
+        // egymás mellett, ezért az kü:lön szótő – enélkül csak a puszta
+        // „paradicsom" talált, és nyers paradicsom került a naplóba.
+        new Food("Paradicsomszósz", 60, 1.5, 100, "paradicsomszosz",
+                "paradicsomszossz", "paradicsom szossz",
+                "paradicsom szosz", "paradicsomos szosz", "pomodoro",
+                "paradicsommartas", "paradicsom martas"),
         new Food("Tartármártás", 520, 1, 30, "tartarmartas", "tartar"),
         new Food("Pesto", 450, 5, 30, "pesto"),
         new Food("Guacamole", 150, 2, 50, "guacamole", "guakamole"),
@@ -1886,8 +1901,12 @@ public final class Foods {
      * @param qAcc ugyanaz, de „ö/ő"-vel – ugyanazokkal az indexekkel
      */
     static int stemIndex(String q, String qAcc, String ns) {
+        // A TÖBBSZAVAS tő is a szó elejéhez kötött: a „fasírozó húsgolyó"
+        // közepén ott áll az „oz hus" (fasír-OZ HÚS-golyó), és attól
+        // VADHÚS került a naplóba. Egy szóköz utáni második szó soha nem
+        // kezdődhet egy másik szó közepén.
         // Szókezdethez kötött tövek: a szó BELSEJÉBEN nem illeszkednek.
-        if (startOnly(ns)) {
+        if (startOnly(ns) || ns.indexOf(' ') >= 0) {
             for (int p = q.indexOf(ns); p >= 0; p = q.indexOf(ns, p + 1))
                 if (p == 0 || !Character.isLetter(q.charAt(p - 1))) return p;
             return -1;
