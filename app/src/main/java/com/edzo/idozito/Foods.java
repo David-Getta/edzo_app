@@ -3784,10 +3784,23 @@ public final class Foods {
             int bestIdx = -1, bestDist = Integer.MAX_VALUE;
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
-                // Csak a szám saját tagmondatán belül keresünk ételt.
-                if (clause[foodPos.get(k)] != clause[numPos.get(n)]) continue;
                 int from = foodPos.get(k), to = from + foodLen.get(k);
                 int d = Math.min(Math.abs(from - numPos.get(n)), Math.abs(to - numPos.get(n)));
+                // Csak a szám saját tagmondatán belül keresünk ételt – egy
+                // kivétellel. A MONDAT VÉGÉRE vetett mennyiség a fogásé
+                // akkor is, ha közben csak kísérők jönnek: az „ebéd:
+                // sertéspörkölt galuskával, savanyúsággal, kb 500 g" fél
+                // kilója a SAVANYÚSÁGRA került (fél kiló uborka egy adag
+                // pörkölt mellé). A kísérő ilyenkor is hátrébb sorolódik,
+                // a saját tagmondatában álló valódi fogás pedig előrébb.
+                if (clause[foodPos.get(k)] != clause[numPos.get(n)]) {
+                    if (numPos.get(n) < to
+                            || instrumentalAt(q, from, foodLen.get(k))
+                            || !q.substring(numPos.get(n)).matches("\\s*\\d+"
+                                + "(?:[.,]\\d+)?\\s*(?:g|gr|gramm|dkg|deka|kg)?"
+                                + "[\\s.,;]*")) continue;
+                    d += 500;
+                }
                 // A KÍSÉRŐ nem viszi el a fogás mennyiségét: a „vacsorára
                 // sült krumpli majonézzel, 300 g" háromszáz grammja a
                 // MAJONÉZÉ lett (kétezer kalória egy kanálnyi helyett), a

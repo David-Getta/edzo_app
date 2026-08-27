@@ -3018,4 +3018,30 @@ public class FoodsParseTest {
         assertEquals("Vadhús (szarvas, vaddisznó, nyúl)", Foods.parse(all,
                 "Vacsorára őz húst ettem.").get(0).food.name);
     }
+
+    /**
+     * A mondat végére vetett mennyiség a fogásé, nem a kísérőé.
+     *
+     * Az „ebéd: sertéspörkölt galuskával, savanyúsággal, kb 500 g" fél
+     * kilója a SAVANYÚSÁGRA került – fél kiló uborka egy adag pörkölt
+     * mellé. A mennyiség külön tagmondatba esett, és onnan csak a
+     * legközelebbi kísérőt látta.
+     */
+    @Test public void aTrailingWeightReachesBackToTheDish() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        double pork = 0, sav = 0;
+        for (Foods.Hit x : Foods.parse(all, "Ebéd: sertéspörkölt "
+                + "galuskával, savanyúsággal, kb 500 g.")) {
+            if (x.food.name.equals("Pörkölt")) pork = x.grams;
+            if (x.food.name.startsWith("Savanyúság")) sav = x.grams;
+        }
+        assertEquals(500.0, pork, 0.1);
+        assertEquals(0.0, sav, 0.1);
+        // A saját tagmondatában álló mennyiség marad a helyén.
+        double vaj = 0;
+        for (Foods.Hit x : Foods.parse(all, "Reggeli: zabkása, 30 g "
+                + "mogyoróvaj."))
+            if (x.food.name.startsWith("Magvaj")) vaj = x.grams;
+        assertEquals(30.0, vaj, 0.1);
+    }
 }
