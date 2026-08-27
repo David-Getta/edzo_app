@@ -10269,4 +10269,19 @@ public class ActivitiesParseTest {
                 + "minden kor 1,5 km.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A napszó nem szakítja el a lépésszámot a számától.
+     *
+     * A „lépésszám ma 9800" sétája nyomtalanul elveszett, pedig az „a
+     * lépésszám 9800" jó volt – a kettő közé ékelődő „ma" miatt.
+     */
+    @Test
+    public void aDayWordBetweenTheStepWordAndItsNumber() {
+        Activities.Parsed p = Activities.parse("lepesszam ma 9800");
+        assertEquals(1, p.plans.size());
+        assertEquals(9800, p.plans.get(0).steps);
+        assertEquals(9800, Activities.parse("lepesszam ma reggelig 9800")
+                .plans.get(0).steps);
+    }
+
 }

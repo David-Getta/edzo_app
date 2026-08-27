@@ -1311,7 +1311,13 @@ public final class Activities {
                 + "(?=[^,;.]{0,24}marad)", "");
         // A LÉPÉSSZÁM utáni szám lépés: az „a lépésszám 13 450" sétája
         // eddig elveszett – a szám mögül hiányzott a lépés szava.
+        // A NAPSZÓ beékelődhet a szó és a szám közé: a „lépésszám ma 9800"
+        // sétája nyomtalanul elveszett, pedig az „a lépésszám 9800" jó
+        // volt. Csak időhatározó fér be, más szó nem: attól a szám már
+        // máshoz tartozhatna.
         s = s.replaceAll("(?<![a-z])lepesszam\\w*\\s*:?\\s*"
+                + "(?:(?:ma|mai|tegnap|tegnapi|eddig|idaig|reggelig"
+                + "|estig|delig|osszesen)\\s+){0,2}"
                 + "(\\d[\\d ]{0,6}\\d)(?!\\d)(?![.,]\\d)", "$1 lepes");
         // A NEVEZÉS mellett a MAI edzés valóság: a „beneveztünk egy 10
         // km-es jótékonysági futásra októberben, elkezdtünk készülni: ma
