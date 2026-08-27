@@ -135,6 +135,13 @@ public final class IntervalParse {
                 && !s.contains("intervall") && !s.contains("hiit")
                 && !s.contains("kor ") && !s.contains("sprint")
                 && !s.contains("munka") && !s.contains("piheno")) return null;
+        // A SOROZAT-lista nem munka/pihenő pár: a „100 fekvőtámasz 5
+        // sorozatban, 20-20" húszasai ISMÉTLÉSEK, mégis egy ötkörös,
+        // húsz/húsz másodperces időzítő-terv lett belőle a napló mellé.
+        // A kimondott munka/pihenő szó felmenti a mondatot.
+        if (s.matches("(?s).*(?<![a-z])(?:sorozat|szett|szeria)\\w*.*")
+                && !s.contains("munka") && !s.contains("piheno")
+                && !s.contains("szunet")) return null;
         // Az ÚSZÓ-TEMPÓ sem ritmus: a „2:10/100m tempó" munka/pihenő
         // párnak látszott, és időzítő-tervet ajánlott rá az app.
         s = s.replaceAll("(?<![\\d])\\d{1,2}:\\d{2}\\s?/\\s?100\\s?m"

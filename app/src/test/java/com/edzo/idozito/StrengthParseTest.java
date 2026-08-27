@@ -1732,9 +1732,13 @@ public class StrengthParseTest {
         assertEquals(1, it.size());
         assertEquals(3, it.get(0).sets.size());
         assertEquals(40, it.get(0).sets.get(0).reps);
+        // Az OSZTHATÓ szám az ÖSSZES ismétlés: a „20 húzódzkodás 4
+        // sorozatban" húsz darab, ötösével – nem nyolcvan. A „100
+        // fekvőtámasz 5 sorozatban" ugyanígy száz volt, nem ötszáz.
         List<StrengthParse.Item> h = StrengthParse.parse("20 h\u00faz\u00f3dzkod\u00e1s 4 sorozatban");
         assertEquals(4, h.get(0).sets.size());
-        assertEquals(20, h.get(0).sets.get(0).reps);
+        assertEquals(5, h.get(0).sets.get(0).reps);
+        assertEquals(20, h.get(0).totalReps());
         // A megszokott sorrend v\u00e1ltozatlan.
         List<StrengthParse.Item> f = StrengthParse.parse("3 sorozat 40 fekv\u0151t\u00e1masz");
         assertEquals(3, f.get(0).sets.size());
@@ -2344,5 +2348,22 @@ public class StrengthParseTest {
         // A vessző nélküli szórend változatlan.
         assertEquals(18, StrengthParse.parse("Fekvenyomás 60-70-80 kg "
                 + "8-6-4.").get(0).totalReps());
+    }
+
+    /**
+     * A sorozatszámmal osztható darabszám az ÖSSZES ismétlés.
+     *
+     * A „100 fekvőtámasz 5 sorozatban, 20-20" naplójába ÖTSZÁZ
+     * fekvőtámasz került: a száz darabot a rendszer sorozatonkéntinek
+     * vette. Ami nem osztható („40 fekvőtámasz 3 sorozatban"),
+     * az sorozatonkénti marad.
+     */
+    @Test public void aDivisibleCountIsTheTotalAcrossSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma 100 "
+                + "fekvőtámasz 5 sorozatban, 20-20.");
+        assertEquals(1, it.size());
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(20, it.get(0).sets.get(0).reps);
+        assertEquals(100, it.get(0).totalReps());
     }
 }

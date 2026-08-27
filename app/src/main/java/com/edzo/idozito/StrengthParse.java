@@ -1410,6 +1410,14 @@ public final class StrengthParse {
                 if (reps <= 0) {
                     int before = repsBeforeSeries(s, seriesWord);
                     if (before > 0 && before <= maxRep) reps = before;
+                    // Az OSZTHATÓ szám az ÖSSZES ismétlés, nem a
+                    // sorozatonkénti: a „100 fekvőtámasz 5 sorozatban"
+                    // száz darab húszasával – a naplóba mégis ÖTSZÁZ
+                    // fekvőtámasz került. Ha a szám nem osztható a
+                    // sorozatszámmal („40 fekvőtámasz 3 sorozatban"), az
+                    // sorozatonkénti marad.
+                    if (reps > 0 && series > 1 && reps % series == 0
+                            && reps / series >= 3) reps = reps / series;
                 }
             }
             if (reps > 0 && reps <= maxRep) {

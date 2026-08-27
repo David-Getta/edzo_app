@@ -1022,4 +1022,19 @@ public class IntervalParseTest {
                 + "hajrá, 60 mp séta."));
     }
 
+    /**
+     * A sorozat-lista nem munka/pihenő pár.
+     *
+     * A „100 fekvőtámasz 5 sorozatban, 20-20" húszasai ISMÉTLÉSEK,
+     * mégis egy ötkörös, húsz/húsz másodperces időzítő-terv lett
+     * belőle a napló mellé.
+     */
+    @Test public void aSetListIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Ma 100 fekvőtámasz 5 "
+                + "sorozatban, 20-20."));
+        // A kimondott munka/pihenő pár sorozat-szó mellett is terv.
+        assertNotNull(IntervalParse.parse("5 sorozat, 30 mp munka, "
+                + "30 mp pihenő."));
+    }
+
 }
