@@ -1667,8 +1667,14 @@ public final class Activities {
             // NÉGYSZÁZ méterre zsugorodott. A szám a méteré, a mögötte
             // álló úszásnem pedig a szakasz neve.
             java.util.regex.Matcher uw = java.util.regex.Pattern.compile(
-                    "(?<![\\d,.:])(\\d{2,4})\\s?m?(?![a-z0-9])\\s*"
-                    + "(?:volt\\s+)?(?=(?:gyorson|mellen|haton|pillangon"
+                    // A MÉRTÉKEGYSÉG és az ige is beékelődhet: a „ma 500
+                    // métert úsztam gyorson és 500-at mellen" ezer métere
+                    // ötszázra olvadt, mert az első szakasz száma mögött
+                    // ott állt a „métert úsztam".
+                    "(?<![\\d,.:])(\\d{2,4})\\s?(?:m|meter\\w*)?"
+                    + "(?:\\s?-?(?:at|et|ot))?"
+                    + "(?![a-z0-9])\\s*(?:(?:volt|usztam|usztunk|uszva)"
+                    + "\\s+)?(?=(?:gyorson|mellen|haton|pillangon"
                     + "|vegyesen|gyorsban|hatuszas|melluszas"
                     + "|gyors|mell|hat|pillango|vegyes)"
                     + "(?![a-z]))").matcher(s);
@@ -2259,6 +2265,14 @@ public final class Activities {
         // NYOMTALANUL eltűnt – a nap fele kimaradt a naplóból. A magyar így
         // rövidít: a mértékegység egyszer van kimondva. Sorozatjelölés
         // mellett nem élünk vele, ott a puszta szám ismétlést is jelenthet.
+        // A MÉTER ugyanígy: a „ma 500 métert úsztam gyorson és 500-at
+        // mellen" ezer métere FÉL kilométerre olvadt – a második szakasz
+        // mértékegység nélkül állt, és nyomtalanul elveszett.
+        if (s.matches("(?s).*(?<![\\d,.])\\d{2,4}\\s?(?:m|meter\\w*)"
+                + "(?![a-z]).*")
+                && !s.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*"))
+            s = s.replaceAll("(?<![a-z])(es|meg|majd|aztan|utana)\\s+"
+                    + "(\\d{2,4})[- ]?(?:et|at|ot)(?![a-z])", "$1 $2 m");
         if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}(?:[.,]\\d{1,2})?\\s?km"
                 + "(?![a-z]).*")
                 && !s.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*"))

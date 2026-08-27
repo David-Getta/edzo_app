@@ -2408,4 +2408,22 @@ public class StrengthParseTest {
         assertEquals(100.0, StrengthParse.parse("Guggolás 60 kg "
                 + "bemelegítés, aztán 3x5 100.").get(0).topWeight(), 0.01);
     }
+
+    /**
+     * A hátravetett igekötő ugyanaz a gyakorlat.
+     *
+     * Az „edzésen 40 kilóval húztam le, 4x12" lehúzása nyomtalanul
+     * elveszett az erőnaplóból – a „lehúzás" töve csak egybeírva
+     * létezett.
+     */
+    @Test public void aSplitVerbPrefixIsStillTheExercise() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen "
+                + "40 kilóval húztam le, 4x12.");
+        assertEquals(1, it.size());
+        assertEquals("Lehúzás", it.get(0).name);
+        assertEquals(40.0, it.get(0).topWeight(), 0.01);
+        // A hosszabb gyakorlatnév elviszi előle a szót.
+        assertEquals("Húzódzkodás", StrengthParse.parse("Ma 20 "
+                + "húzódzkodást húztam le.").get(0).name);
+    }
 }

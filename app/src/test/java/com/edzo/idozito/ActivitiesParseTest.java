@@ -10299,4 +10299,22 @@ public class ActivitiesParseTest {
                 + "a tohoz.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * Az úszásnem-szakaszok az ige és a rag mellett is összeadódnak.
+     *
+     * A „ma 500 métert úsztam gyorson és 500-at mellen" ezer métere
+     * ÖTSZÁZRA olvadt: az első szám mögött ott állt a „métert úsztam", a
+     * másodikról meg lemaradt a mértékegység.
+     */
+    @Test
+    public void swimSegmentsAddUpAroundTheVerb() {
+        Activities.Parsed p = Activities.parse("Ma 500 metert usztam "
+                + "gyorson es 500-at mellen.");
+        assertEquals(1, p.plans.size());
+        assertEquals(1.0, p.plans.get(0).km, 0.01);
+        // A vesszős felsorolás változatlan.
+        assertEquals(1.2, Activities.parse("Uszas: 400 gyors, 200 hat, "
+                + "400 gyors, 200 mell").plans.get(0).km, 0.01);
+    }
+
 }

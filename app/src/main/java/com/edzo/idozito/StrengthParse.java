@@ -151,7 +151,10 @@ public final class StrengthParse {
                     "dips", "dip"},
             // A „kábelhúzás" a magyar termek gyűjtőneve a csigás húzásra – a
             // leggyakoribb változata a hátnak szóló lehúzás.
-            {"Lehúzás", "lehuzas", "kabelhuz", "kabel huz",
+            // Az IGEKÖTŐ hátravetve is ugyanaz a gyakorlat: az „edzésen 40
+            // kilóval húztam le, 4x12" gyakorlata nyomtalanul elveszett.
+            {"Lehúzás", "lehuzas", "huztam le", "huztuk le", "huzom le",
+                    "kabelhuz", "kabel huz",
                     "latpull", "lat pull", "lat huzas", "athuzas", "pullover",
                     "pulover"},
             {"Oldalemelés", "oldalemel", "eloreemel", "vallemel", "elulso vall"},
