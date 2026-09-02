@@ -2442,4 +2442,24 @@ public class StrengthParseTest {
         assertEquals(80.0, StrengthParse.parse("Fekvenyomás 5x5, "
                 + "mindegyik 80 kg.").get(0).topWeight(), 0.01);
     }
+
+    /**
+     * A jövő heti cél tagmondata nem viszi el a mai sorozatot.
+     *
+     * Az „edzésen: fekvenyomás 80 kg 5x5, siker, jövő héten 82,5!"
+     * teljes erő-naplója elveszett: a záró terv miatt az egész mondat
+     * jövőnek látszott.
+     */
+    @Test public void aTrailingPlanClauseDoesNotEraseTheDoneSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen: "
+                + "fekvenyomás 80 kg 5x5, siker, jövő héten 82,5!");
+        assertEquals(1, it.size());
+        assertEquals(80.0, it.get(0).topWeight(), 0.01);
+        assertEquals(25, it.get(0).totalReps());
+        // A tiszta terv-mondat változatlanul kimarad.
+        assertTrue(StrengthParse.parse("Holnap guggolás 5x5 "
+                + "100 kg.").isEmpty());
+        assertTrue(StrengthParse.parse("Ma edzettem, holnap 5x5 100 kg "
+                + "guggolás lesz.").isEmpty());
+    }
 }

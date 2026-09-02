@@ -689,6 +689,16 @@ public final class StrengthParse {
         // sorozat – csak épp még nem történt meg. A mozgás-oldalon ez a
         // szabály régóta megvan; itt hiányzott, és a kitalált sorozat a
         // rekordba, az 1RM-be és a progresszió-javaslatba is beszámított.
+        // A JÖVŐ HETI cél tagmondata nem viszi el a MAI sorozatot: az
+        // „edzésen: fekvenyomás 80 kg 5x5, siker, jövő héten 82,5!"
+        // teljes erő-naplója elveszett – a záró terv miatt az egész
+        // mondat jövőnek látszott. A vessző utáni terv-tagmondat
+        // kitakarható, ha a mondatban kimondott sorozat áll.
+        if (Foods.norm(text).matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*"))
+            text = text.replaceAll("(?iu)[,;][^,;.!]*(?<![\\p{L}])"
+                    + "(?:j[oö]v[oő]\\s+h[eé]ten|j[oö]v[oő]\\s+h[oó]napban"
+                    + "|j[oö]v[oő]re|holnap\\w*|legk[oö]zelebb)"
+                    + "(?![\\p{L}])[^,;.!]*", " ");
         if (Activities.looksLikeFuture(text)) return out;
         // A HETI BEOSZTÁS sem napló: a „hétfő mell és tricepsz, kedd hát és
         // bicepsz" azt írja le, mikor mit edz az ember – sorozatszám nincs
