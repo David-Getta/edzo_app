@@ -533,6 +533,28 @@ public final class StrengthParse {
                 + "(?:kg|kil[oó])(?:val|s|os)?\\s*,\\s*"
                 + "((?:\\d{1,3}\\s?-\\s?)+\\d{1,3})\\s+ism[eé]tl[eé]s"
                 + "\\w*", "$2 ismétléssel $1 kg");
+        // A NAPSZAKOS második adag összeadódik: a „reggel 30 guggolás,
+        // este 30, napi rutin" hatvan guggolása HARMINCRA olvadt – az
+        // esti adag száma gazdátlanul elveszett. A mértékegységes szám
+        // (perc, kg) nem ismétlés, azt békén hagyjuk.
+        java.util.regex.Matcher dsum = java.util.regex.Pattern.compile(
+                "(?iu)(?<![\\d,.x])(\\d{1,3})\\s+(\\p{L}{4,})\\s*,\\s*"
+                + "(?:[eé]s\\s+)?(?:este|reggel|d[eé]lben|d[eé]lut[aá]n"
+                + "|[eé]jjel)\\s+(\\d{1,3})"
+                + "(?!\\d)(?![.,]\\d)(?!\\s?[x\u00d7])"
+                + "(?!\\s?(?:perc|km|kg|kil[oó]|m(?![\\p{L}])))")
+                .matcher(text);
+        // Legfeljebb három napszak: „reggel 20, délben 20, este 20".
+        for (int dpass = 0; dpass < 3; dpass++) {
+            if (!dsum.reset(text).find()
+                    || nameIn(Foods.norm(dsum.group(2))) == null) break;
+            int sum2 = Integer.parseInt(dsum.group(1))
+                    + Integer.parseInt(dsum.group(3));
+            if (sum2 > 400) break;
+            text = text.substring(0, dsum.start())
+                    + sum2 + " " + dsum.group(2)
+                    + text.substring(dsum.end());
+        }
         // A SÚLY a MÁSODIK tagmondatban is állhat: az „edzésen 4x8
         // guggolás, mindegyik sorozat 100 kg-mal" száz kilója elveszett,
         // és saját testsúlyos guggolás került a rekordok közé. A súly a

@@ -2462,4 +2462,20 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("Ma edzettem, holnap 5x5 100 kg "
                 + "guggolás lesz.").isEmpty());
     }
+
+    /**
+     * A napszakos második adag összeadódik.
+     *
+     * A „reggel 30 guggolás, este 30, napi rutin" hatvan guggolása
+     * HARMINCRA olvadt – az esti adag száma gazdátlanul elveszett.
+     */
+    @Test public void dayPartRepBatchesAddUp() {
+        assertEquals(60, StrengthParse.parse("Reggel 30 guggolás, este "
+                + "30, napi rutin.").get(0).totalReps());
+        assertEquals(60, StrengthParse.parse("Reggel 20 fekvőtámasz, "
+                + "délben 20, este 20.").get(0).totalReps());
+        // A mértékegységes szám nem ismétlés.
+        assertEquals(30, StrengthParse.parse("Guggolás 3x10, este 60 "
+                + "perc séta.").get(0).totalReps());
+    }
 }
