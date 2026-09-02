@@ -1745,6 +1745,22 @@ public final class Activities {
             emAny = true;
         }
         if (emAny) { emx.appendTail(ebx); s = ebx.toString(); }
+        // FORDÍTOTT szórenddel is: a „ma 4 emeletet másztam meg 6-szor a
+        // lépcsőházban" négy emeletnyi (két perces) sétát írt a naplóba
+        // a huszonnégy helyett – a hátravetett szorzó elveszett.
+        java.util.regex.Matcher emy = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,3})\\.?\\s?emelet\\w*\\s+"
+                + "(?:\\p{L}{2,12}\\s+){0,3}?"
+                + "(\\d{1,2})\\s?-?sz[o\u00f6e]r(?![a-z])").matcher(s);
+        StringBuffer eby = new StringBuffer();
+        boolean emAny2 = false;
+        while (emy.find()) {
+            int n = Integer.parseInt(emy.group(1)) * Integer.parseInt(emy.group(2));
+            emy.appendReplacement(eby,
+                    "lepcsozes " + Math.min(300, n) + " emelet");
+            emAny2 = true;
+        }
+        if (emAny2) { emy.appendTail(eby); s = eby.toString(); }
         // A SZOKÁS igéje mellett a MAI szám a mai edzés: az „este a
         // lányommal biciklizni szoktunk, ma 12 km lett" tizenkét
         // kilométere FUTÁSKÉNT került be – a szokás-tagmondat a bringa

@@ -10423,4 +10423,20 @@ public class ActivitiesParseTest {
                 + "medenceben.").plans.get(0).km, 0.01);
     }
 
+    /**
+     * A hátravetett lépcsőző-szorzó is szorzó.
+     *
+     * A „ma 4 emeletet másztam meg 6-szor a lépcsőházban" négy emeletnyi
+     * (két perces) sétát írt a naplóba a huszonnégy helyett – a szorzó a
+     * mondat végén állt, arra nem volt szabály.
+     */
+    @Test
+    public void aTrailingStairMultiplierCounts() {
+        assertEquals(12, Activities.parse("Ma 4 emeletet masztam meg "
+                + "6-szor a lepcsohazban.").plans.get(0).minutes);
+        // A szorzó elöl változatlan.
+        assertEquals(20, Activities.parse("Ma a lepcsohazban futottam "
+                + "fel-le 10-szer a 4. emeletig.").plans.get(0).minutes);
+    }
+
 }
