@@ -2317,6 +2317,11 @@ public final class Foods {
              "szeletet", "szelettel",
              "gombóc", "gomboc", "pohar", "pohár",
              "korso", "korsó", "feles", "felespohar", "felespohár",
+             // Az eszköz- és tárgyragos alak is a név UTÁN áll: a
+             // „kávéból 4 csészével ittam" négy csészéje eddig elveszett.
+             "cseszet", "cseszevel", "poharat", "poharral", "korsot",
+             "korsoval", "uveget", "uveggel", "dobozt", "dobozzal",
+             "bogre", "bogret", "bogrevel", "kupicat", "kupicaval",
              "csesze", "csésze", "doboz", "uveg", "üveg",
              "kupica", "stampedli", "korty", "kortyot", "kortynyi",
              "kancso", "kancsó",
@@ -3988,9 +3993,22 @@ public final class Foods {
             if (!portionWord && !fractionAtEnd && !isCountWord(unit)
                     && !isPortionWord(unit)) continue;
             int best = -1;
+            // Ha a darabszám tagmondatában nincs étel, az ELŐZŐ tagmondat
+            // ételére mutat vissza: a „kávé, 4 csésze" négy csészéje eddig
+            // elveszett a vessző miatt.
+            boolean foodInNumClause = false;
+            for (int k = 0; k < foods.size(); k++)
+                if (foodPos.get(k) >= 0
+                        && clause[foodPos.get(k)] == clause[numStart]) {
+                    foodInNumClause = true;
+                    break;
+                }
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0 || foodPos.get(k) >= numStart) continue;
-                if (clause[foodPos.get(k)] != clause[numStart]) continue;
+                if (clause[foodPos.get(k)] != clause[numStart]
+                        && (foodInNumClause
+                            || clause[numStart] - clause[foodPos.get(k)] != 1))
+                    continue;
                 // Csak az étel és a szám KÖZÖTT álló írásjelek engedettek:
                 // a „banán (2 db)" zárójele nem szakítja el, egy közbeékelt
                 // másik szó viszont igen.
@@ -3999,7 +4017,10 @@ public final class Foods {
                     // „pizzából ettem 2 szeletet" és a „kenyérből 3 szeletet"
                     // számmal mért adag – eddig a tipikus adag ment be.
                     String mid = q.substring(foodPos.get(k) + foodLen.get(k), numStart);
+                    // A NAPSZÓ is beékelődhet: a „kávéból ma 4 csészével
+                    // ittam" négy csészéje eddig elveszett.
                     if (!mid.matches("[a-z]{0,6}\\s+"
+                            + "(?:(?:ma|tegnap|megint|is|meg)\\s+)?"
                             + "(?:(?:meg)?(?:ettem|ittam|ettunk|ittunk)\\s+)?"))
                         continue;
                 }

@@ -575,4 +575,22 @@ public class FoodsQuantityTest {
         assertEquals(25.0, Foods.parse(all, "25 gr fehérjepor")
                 .get(0).grams, 0.01);
     }
+
+    /**
+     * A név után álló csésze-szám is darabszám.
+     *
+     * A „kávéból ma 4 csészével ittam" és a „kávé, 4 csésze" négy
+     * csészéje elveszett: nyolcszáz helyett kétszáz milliliter ment a
+     * naplóba. Az eszköz- és tárgyragos edény-szavak, a beékelt napszó
+     * és a vessző utáni puszta darabszám-tagmondat mind ide tartozik.
+     */
+    @Test public void aCupCountAfterTheNameCounts() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        assertEquals(800.0, Foods.parse(all, "Kávéból ma 4 csészével "
+                + "ittam.").get(0).grams, 0.1);
+        assertEquals(800.0, Foods.parse(all, "Kávéból 4 csészét "
+                + "ittam.").get(0).grams, 0.1);
+        assertEquals(800.0, Foods.parse(all, "Kávé, 4 csésze.")
+                .get(0).grams, 0.1);
+    }
 }
