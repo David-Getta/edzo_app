@@ -3476,9 +3476,15 @@ public final class Foods {
         // kiló alma kalóriáját abból, hogy valaki két szemet evett meg.
         // A kimondott darabszám lép a bevásárlás tömege helyére.
         {
+            // A MEGSÜTÖTT adag sem a megevett: a „palacsintát sütöttem,
+            // 12 db-ot, ebből 4-et ettem meg" tizenkét darabot írt a
+            // naplóba a négy helyett. Az „ebből" ugyanúgy a megevett
+            // részt vezeti be, mint a „csak".
             java.util.regex.Matcher ea = java.util.regex.Pattern.compile(
-                    "(?iu)(?<![\\p{L}])csak\\s+(\\d{1,2}|egyet|kett[oő]t"
-                    + "|h[aá]rmat|n[eé]gyet|[oö]t[oö]t)\\s*"
+                    "(?iu)(?<![\\p{L}])(?:csak|ebb[oő]l)\\s+"
+                    + "(\\d{1,2}|egyet|kett[oő]t"
+                    + "|h[aá]rmat|n[eé]gyet|[oö]t[oö]t)"
+                    + "(?:\\s?-?[ea]t|\\s?-?ot)?\\s*"
                     + "(?:szemet|darabot|db-?ot)?\\s+(?:meg)?ettem")
                     .matcher(query);
             if (ea.find()) {
@@ -3491,18 +3497,32 @@ public final class Foods {
                     query = query.replaceAll("(?iu)(?<![\\p{L}])"
                             + "(?:\\d{1,3}(?:[.,]\\d{1,2})?|egy|k[eé]t"
                             + "|f[eé]l|m[aá]sf[eé]l)"
-                            + "\\s*(?:kil[oó]\\w*|kg|dkg|deka)\\s+"
+                            + "\\s*(?:kil[oó]\\w*|kg|dkg|deka"
+                            + "|db-?o?t?|darabot)[\\s,]+"
                             + "(?=[^.;]*(?<![\\p{L}])(?:vettem|v[aá]s[aá]roltam"
-                            + "|hoztam)(?![\\p{L}]))", n + " db ");
+                            + "|hoztam|s[uü]t[oö]ttem|f[oő]ztem"
+                            + "|k[eé]sz[ií]tettem)(?![\\p{L}]))", n + " db ");
                 if (n >= 1 && n <= 20)
                     // A vásárlás igéje a mennyiség ELŐTT is állhat:
                     // „vettem egy kiló szőlőt, csak 3 szemet ettem".
                     query = query.replaceAll("(?iu)((?<![\\p{L}])"
-                            + "(?:vettem|v[aá]s[aá]roltam|hoztam)\\s+)"
+                            + "(?:vettem|v[aá]s[aá]roltam|hoztam"
+                            + "|s[uü]t[oö]ttem|f[oő]ztem"
+                            + "|k[eé]sz[ií]tettem)[\\s,]+)"
                             + "(?:\\d{1,3}(?:[.,]\\d{1,2})?|egy|k[eé]t"
                             + "|f[eé]l|m[aá]sf[eé]l)"
-                            + "\\s*(?:kil[oó]\\w*|kg|dkg|deka)\\s+",
+                            + "\\s*(?:kil[oó]\\w*|kg|dkg|deka"
+                            + "|db-?o?t?|darabot)[\\s,]+",
                             "$1" + n + " db ");
+                // A megevett rész tagmondata ezután már csak ismétlés:
+                // az „ebből 4-et ettem meg" négyese másodszor is számnak
+                // látszana. Az evés igéje marad, a szám megy.
+                if (n >= 1 && n <= 20)
+                    query = query.replaceAll("(?iu)(?<![\\p{L}])"
+                            + "(?:ebb[oő]l|csak)\\s+\\d{1,2}\\s?-?[ea]?t"
+                            + "(?:\\s+darabot|\\s+szemet)?"
+                            + "\\s+((?:meg)?ettem)(?:\\s+meg)?",
+                            "$1");
             }
         }
         // A FAJTA elviszi a húst: az „ebédre rántott húst ettem" mellé

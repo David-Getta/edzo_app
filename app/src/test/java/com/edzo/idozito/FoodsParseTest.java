@@ -3212,4 +3212,21 @@ public class FoodsParseTest {
         assertEquals("Rakott krumpli", Foods.parse(all, "Vacsora: rakott "
                 + "krumpli kolbásszal.").get(0).food.name);
     }
+
+    /**
+     * A megsütött adag sem a megevett.
+     *
+     * A „ma este palacsintát sütöttem, 12 db-ot, ebből 4-et ettem meg"
+     * TIZENKÉT palacsintát írt a naplóba a négy helyett – hétszázhúsz
+     * grammot kétszáznegyven helyett.
+     */
+    @Test public void whatWasBakedIsNotWhatWasEaten() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals(240.0, Foods.parse(all, "Ma este palacsintát "
+                + "sütöttem, 12 db-ot, ebből 4-et ettem meg.")
+                .get(0).grams, 0.1);
+        // A megevett darabszám magában változatlan.
+        assertEquals(240.0, Foods.parse(all, "Ettem 4 palacsintát.")
+                .get(0).grams, 0.1);
+    }
 }
