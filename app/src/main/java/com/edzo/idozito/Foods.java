@@ -5414,6 +5414,13 @@ public final class Foods {
             if (Character.isLetterOrDigit(ch)) continue;
             if (ch == '-') {
                 if (i > 0 && q.charAt(i - 1) == 's') return false;   // sonkás-sajtos
+                // KÉT KÜLÖN ÉTEL kötőjellel: a „csirke-rizs" csirkéje
+                // nyomtalanul elveszett – a kötőjel egy szónak mutatta a
+                // párost, és a rizs kiütötte a csirkét. Ha a kötőjel két
+                // teljes ételnevet köt össze (a két találat épp a két
+                // oldalán ér véget/kezdődik), az felsorolás.
+                if (a.pos + a.len == i && b.pos == i + 1) return false;
+                if (b.pos + b.len == i && a.pos == i + 1) return false;
                 continue;                                            // túró-rudi
             }
             return false;

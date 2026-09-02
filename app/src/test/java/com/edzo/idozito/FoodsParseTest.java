@@ -3172,4 +3172,26 @@ public class FoodsParseTest {
         assertEquals(2, Foods.parse(all, "Este egy pohár bor és egy "
                 + "fröccs is volt.").size());
     }
+
+    /**
+     * A kötőjeles ételpár felsorolás, nem egyetlen szó.
+     *
+     * A „csirke-rizs" csirkéje nyomtalanul elveszett: a kötőjel egy
+     * szónak mutatta a párost, és a rizs kiütötte a csirkét. A
+     * „túró-rudi" viszont egy étel marad.
+     */
+    @Test public void aHyphenatedFoodPairIsAList() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "A mai kajám: zabkása, "
+                + "csirke-rizs, túró.");
+        boolean csirke = false, rizs = false;
+        for (Foods.Hit x : h) {
+            if (x.food.name.startsWith("Csirkemell")) csirke = true;
+            if (x.food.name.startsWith("Rizs")) rizs = true;
+        }
+        assertTrue(csirke);
+        assertTrue(rizs);
+        assertEquals("Túró rudi", Foods.parse(all, "Vacsora: "
+                + "túró-rudi.").get(0).food.name);
+    }
 }
