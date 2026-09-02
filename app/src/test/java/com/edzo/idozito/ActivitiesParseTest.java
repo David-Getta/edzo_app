@@ -10361,4 +10361,24 @@ public class ActivitiesParseTest {
         assertEquals(1, q.plans.get(1).count);
     }
 
+    /**
+     * Az „ebből" sétája a lépések része, nem a lépések helyettesítője.
+     *
+     * A „ma 11 500 lépés lett, ebből 4 km tempós séta" négy kilométerre
+     * és negyvennyolc percre olvadt – a maradék négy és fél
+     * kilométernyi lépés nyomtalanul eltűnt a naplóból.
+     */
+    @Test
+    public void aWalkWithinTheStepsKeepsTheFullTotal() {
+        Activities.Parsed p = Activities.parse("Ma 11 500 lepes lett, "
+                + "ebbol 4 km tempos seta.");
+        assertEquals(1, p.plans.size());
+        assertEquals(8.6, p.plans.get(0).km, 0.05);
+        assertEquals(11500, p.plans.get(0).steps);
+        // Az „ebből futás" külön sport marad, a maradék lépés séta.
+        Activities.Parsed q = Activities.parse("Ma 12 500 lepes, ebbol "
+                + "5 km futas volt.");
+        assertEquals(2, q.plans.size());
+    }
+
 }

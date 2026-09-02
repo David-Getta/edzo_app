@@ -5264,8 +5264,18 @@ public final class Activities {
                 Plan t = out.get(ti);
                 // A kimondott idő (ami eltér az alapértelmezettől) erősebb.
                 int m = t.minutes == t.kind.defaultMin ? smin : t.minutes;
-                out.set(ti, new Plan(t.kind, t.count, m,
-                        t.km > 0 ? t.km : skm, (int) steps));
+                double km = t.km > 0 ? t.km : skm;
+                // Az „EBBŐL" sétája a lépések RÉSZE: a „ma 11 500 lépés,
+                // ebből 4 km tempós séta" négy kilométerre és negyvennyolc
+                // percre olvadt – a maradék négy és fél kilométernyi lépés
+                // nyomtalanul eltűnt. Ilyenkor a lépésekből számolt teljes
+                // táv és idő az igazi.
+                if (skm > km && beforeBlank.matches("(?s).*(?<![a-z])"
+                        + "(?:ebbol|amibol|ebben|beleertve)(?![a-z]).*")) {
+                    km = skm;
+                    m = smin;
+                }
+                out.set(ti, new Plan(t.kind, t.count, m, km, (int) steps));
             }
         }
 
