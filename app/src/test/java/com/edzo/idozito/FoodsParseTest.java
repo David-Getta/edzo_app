@@ -3229,4 +3229,22 @@ public class FoodsParseTest {
         assertEquals(240.0, Foods.parse(all, "Ettem 4 palacsintát.")
                 .get(0).grams, 0.1);
     }
+    /**
+     * A megevett darabszám az ige után is állhat.
+     *
+     * A „vettem egy kiló almát, megettem kettőt út közben" ezer grammot
+     * írt a naplóba a két szem helyett – a „csak/ebből" nélküli
+     * fordított szórend kimaradt a vett-vs-evett szabályból.
+     */
+    @Test public void eatenCountAfterTheVerbBeatsTheBoughtMass() {
+        List<Foods.Hit> h = hits(
+                "Vettem egy kil\u00f3 alm\u00e1t, megettem kett\u0151t \u00fat k\u00f6zben");
+        assertEquals(1, h.size());
+        assertEquals("Alma", h.get(0).food.name);
+        assertEquals(300.0, h.get(0).grams, 0.01);
+        // A szeletes mondat száma a szeleté marad.
+        List<Foods.Hit> p = hits("Megettem 2 szelet pizz\u00e1t");
+        assertEquals(1, p.size());
+        assertEquals(200.0, p.get(0).grams, 0.01);
+    }
 }

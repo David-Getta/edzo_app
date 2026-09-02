@@ -3525,6 +3525,58 @@ public final class Foods {
                             "$1");
             }
         }
+        // A MEGEVETT darabszám az ige UTÁN is állhat: a „vettem egy kiló
+        // almát, megettem kettőt út közben" ezer grammot írt a naplóba a
+        // két szem helyett – a „csak/ebből" nélküli fordított szórend
+        // kimaradt. Csak a tárgyragos számot vesszük („kettőt", „4-et",
+        // „3 darabot"): a „megettem 2 szelet pizzát" számát a szelet
+        // viszi, az marad.
+        {
+            java.util.regex.Matcher ea2 = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}])((?:meg)?ettem)\\s+"
+                    + "(\\d{1,2}\\s?-?[eaoö]?t|egyet|kett[oő]t"
+                    + "|h[aá]rmat|n[eé]gyet|[oö]t[oö]t"
+                    + "|\\d{1,2}(?=\\s(?:szemet|darabot|db-?ot)(?![\\p{L}])))"
+                    + "(?:\\s+(?:szemet|darabot|db-?ot))?(?![\\p{L}])")
+                    .matcher(query);
+            if (ea2.find()) {
+                String w = Foods.norm(ea2.group(2)).replaceAll("[^a-z0-9]", "");
+                int n = w.equals("egyet") ? 1 : w.equals("kettot") ? 2
+                        : w.equals("harmat") ? 3 : w.equals("negyet") ? 4
+                        : w.equals("otot") ? 5 : -1;
+                if (n < 0) try {
+                    n = Integer.parseInt(w.replaceAll("[a-z]+$", ""));
+                } catch (Exception ig) { n = -1; }
+                if (n >= 1 && n <= 20) {
+                    String before = query;
+                    query = query.replaceAll("(?iu)(?<![\\p{L}])"
+                            + "(?:\\d{1,3}(?:[.,]\\d{1,2})?|egy|k[eé]t"
+                            + "|f[eé]l|m[aá]sf[eé]l)"
+                            + "\\s*(?:kil[oó]\\w*|kg|dkg|deka)[\\s,]+"
+                            + "(?=[^.;]*(?<![\\p{L}])(?:vettem|v[aá]s[aá]roltam"
+                            + "|hoztam|s[uü]t[oö]ttem|f[oő]ztem"
+                            + "|k[eé]sz[ií]tettem)(?![\\p{L}]))", n + " db ");
+                    query = query.replaceAll("(?iu)((?<![\\p{L}])"
+                            + "(?:vettem|v[aá]s[aá]roltam|hoztam"
+                            + "|s[uü]t[oö]ttem|f[oő]ztem"
+                            + "|k[eé]sz[ií]tettem)[\\s,]+)"
+                            + "(?:\\d{1,3}(?:[.,]\\d{1,2})?|egy|k[eé]t"
+                            + "|f[eé]l|m[aá]sf[eé]l)"
+                            + "\\s*(?:kil[oó]\\w*|kg|dkg|deka)[\\s,]+",
+                            "$1" + n + " db ");
+                    // Csak akkor némul el a megevett szám, ha tényleg egy
+                    // bevásárlás tömegének a helyére lépett – különben ő
+                    // az egyetlen mennyiség, és maradnia kell.
+                    if (!before.equals(query))
+                        query = query.replaceAll("(?iu)(?<![\\p{L}])"
+                                + "((?:meg)?ettem)\\s+"
+                                + "(?:\\d{1,2}\\s?-?[eaoö]?t|egyet"
+                                + "|kett[oő]t|h[aá]rmat|n[eé]gyet|[oö]t[oö]t)"
+                                + "(?:\\s+(?:szemet|darabot|db-?ot))?"
+                                + "(?![\\p{L}])", "$1");
+                }
+            }
+        }
         // A FAJTA elviszi a húst: az „ebédre rántott húst ettem" mellé
         // egy MÁSODIK adag (grillezett) hús is bekerült a naplóba, mert a
         // „húst ettem" önálló fogásnév. Az ige elé hozva a szórend
