@@ -532,8 +532,15 @@ public final class Kcal {
             // A CÉL szava is a fehérjéé: az „elértem a fehérjecélt, 140 g"
             // száma eddig sehova nem kapcsolódott. (Hogy a nem teljesült cél
             // ne kerüljön be, arról a GOAL-szűrő gondoskodik.)
-            "(?<![a-z])(?:feherje|protein)(?:cel\\w*)?(?![a-z])"
-                    + "[^0-9]{0,4}(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?(?![a-z])");
+            // A BIRTOKOS alak és a beékelt szó is fehérje: az „a fehérjém
+            // ma 80 g volt" és a „ma a fehérje csak 80 gramm lett"
+            // nyolcvana sehova nem került. A beékelődés csak a felsorolt
+            // szavakból állhat, a kcal-számot pedig nem vesszük el.
+            "(?<![a-z])(?:feherje|protein)(?:cel\\w*|m|d|je|nk)?(?![a-z])"
+                    + "(?:\\s+(?:ma|tegnap|csak|kb|korulbelul|osszesen"
+                    + "|kereken|pedig|sajnos))*"
+                    + "[^0-9]{0,4}(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?"
+                    + "(?![a-z])(?!\\s?-?(?:kcal|kalor))");
 
     /**
      * A mondatban kimondott fehérje grammban, vagy -1.

@@ -678,4 +678,19 @@ public class KcalTest {
         assertEquals(-1, Kcal.protein("A napi fehérjecélom 140 g."));
     }
 
+    /**
+     * A birtokos fehérje és a beékelt „csak" is bevitel.
+     *
+     * A „ma a fehérje csak 80 gramm lett, kevés" és az „a fehérjém ma
+     * 80 g volt" nyolcvana sehova nem került: a birtokos alakot és a
+     * beékelt szót a minta nem ismerte.
+     */
+    @Test public void possessiveProteinWithFillerWordsCounts() {
+        assertEquals(80, Kcal.protein("Ma a fehérje csak 80 gramm "
+                + "lett, kevés."));
+        assertEquals(80, Kcal.protein("A fehérjém ma 80 g volt."));
+        // A kalória-szám nem fehérje.
+        assertEquals(-1, Kcal.protein("A fehérje kevés volt, 2100 "
+                + "kcal ment be."));
+    }
 }
