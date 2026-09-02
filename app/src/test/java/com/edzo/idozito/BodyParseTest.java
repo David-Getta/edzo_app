@@ -1404,4 +1404,21 @@ public class BodyParseTest {
         assertEquals(79.8, BodyParse.parse("Végre átléptem a 80-as "
                 + "határt lefelé, 79,8.").kg, 0.01);
     }
+    /**
+     * A -ról ragos szám kiindulópont, nem a nap későbbi mérése.
+     *
+     * A „70 kiló vagyok már, 82-ről indultam" hetvenese teljesen
+     * elveszett – a „már … 82" párost a nap-két-mérése szabály esti
+     * mérésnek nézte, pedig a -ről rag a fogyás kiindulópontját jelöli.
+     */
+    @Test public void aStartingPointAfterMarIsNotTheLaterReading() {
+        kg("70 kil\u00f3 vagyok m\u00e1r, 82-r\u0151l indultam", 70);
+        kg("70 kil\u00f3 vagyok m\u00e1r csak, 82-r\u0151l indultam", 70);
+        // A kiindulópontos mondatban a „kb" nem becslés, hanem ingadozás.
+        kg("Kb 70 kil\u00f3 vagyok m\u00e1r csak, 82-r\u0151l indultam", 70);
+        // A magában álló „kb" becslés marad.
+        none("kb 80 kg vagyok");
+        // A valódi esti második mérés továbbra is a későbbi értéket adja.
+        kg("Ma reggel m\u00e9g 79,8 volt, este m\u00e1r 79,2", 79.2);
+    }
 }

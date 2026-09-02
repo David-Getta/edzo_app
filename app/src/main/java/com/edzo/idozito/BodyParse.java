@@ -460,6 +460,17 @@ public final class BodyParse {
         // A KÖRÜL a mérleg ingadozását mondja, nem tiltószó: a „stagnál a
         // súlyom 82 körül" nyolcvankét kiló – eddig elveszett.
         s = s.replaceAll("(?<=\\d)\\s?korul(?![a-z])", "");
+        // A HOZZÁVETŐLEGES kiló csak akkor mérés, ha a mondat máshol
+        // kimondja, hogy mérlegről van szó: a „kb 70 kiló vagyok már csak,
+        // 82-ről indultam" hetvenese eddig teljesen elveszett – a „kb"
+        // tiltószóként az egész tagmondatot elnémította, pedig a
+        // kiindulópontos mondat fogyás-napló, nem becslés. A magában álló
+        // „kb 80 kg vagyok" becslés marad, ahogy eddig.
+        if (s.matches("(?s).*(?<![a-z])(?:merleg\\w*|mertem|megmertem"
+                + "|indultam|fogytam|leadtam)(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:kb|cca|korulbelul|nagyjabol"
+                    + "|megkozelitoleg|kozel)\\.?\\s?"
+                    + "(?=\\d{2,3}(?:[.,]\\d{1,2})?\\s?(?:kg|kilo))", "");
         // Az IDŐPONT hozzávetőlegessége sem tiltószó: a „ma reggel 8 óra
         // körül mértem: 81,3 kg" mérése teljesen elveszett – a „körül" az
         // ÓRÁRA vonatkozott, nem a súlyra.
@@ -496,7 +507,12 @@ public final class BodyParse {
             java.util.regex.Matcher tm = java.util.regex.Pattern.compile(
                     "(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)[^0-9]{1,30}?"
                     + "(?<![a-z])(?:ma|most|este|mar|estere)(?![a-z])"
-                    + "[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])")
+                    // A -ról/-ből/-tól ragos szám KIINDULÓPONT, nem a
+                    // későbbi mérés: a „70 kiló vagyok már, 82-ről
+                    // indultam" hetvenese eddig teljesen elveszett – a
+                    // „már … 82" párost esti mérésnek nézte a szabály.
+                    + "[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])"
+                    + "(?!\\s?-?(?:rol|bol|tol))")
                     .matcher(s);
             if (tm.find())
                 s = s.substring(0, tm.start()) + "sulyom " + tm.group(2)
