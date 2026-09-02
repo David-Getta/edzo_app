@@ -5229,6 +5229,15 @@ public final class Activities {
                     // kifehérítette, és a kimondott hosszú edzés is
                     // időpontnak látszott – az egész eltűnt.
                     if (timePhraseAfter(beforeBlank, c + w.length())) continue;
+                    // A „MECCS MELLÉ" nassolás, nem játék: az „1 kis
+                    // zacskó sós mogyoró a meccs mellé" negyvenöt perc
+                    // egyéb mozgást írt a naplóba – abból, hogy valaki
+                    // tévét nézett.
+                    String t2 = beforeBlank.substring(
+                            Math.min(beforeBlank.length(), c + w.length())).trim();
+                    if (t2.startsWith("melle") || t2.startsWith("mellett")
+                            || t2.startsWith("nezese")
+                            || t2.startsWith("kozvetites")) continue;
                     p = c;
                     break;
                 }

@@ -10439,4 +10439,21 @@ public class ActivitiesParseTest {
                 + "fel-le 10-szer a 4. emeletig.").plans.get(0).minutes);
     }
 
+    /**
+     * A „meccs mellé" nassolás, nem játék.
+     *
+     * Az „1 kis zacskó sós mogyoró a meccs mellé" negyvenöt perc egyéb
+     * mozgást írt a naplóba – abból, hogy valaki tévét nézett.
+     */
+    @Test
+    public void snackingBesideTheMatchIsNotAWorkout() {
+        assertEquals(0, Activities.parse("Este 1 kis zacsko sos mogyoro "
+                + "a meccs melle.").plans.size());
+        assertEquals(0, Activities.parse("A meccs melle sort "
+                + "ittunk.").plans.size());
+        // A lejátszott meccs marad mozgás.
+        assertEquals(60, Activities.parse("Este meccs volt, 60 percet "
+                + "jatszottam.").plans.get(0).minutes);
+    }
+
 }
