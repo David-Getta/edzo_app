@@ -1387,4 +1387,21 @@ public class BodyParseTest {
         // A VÁGY továbbra sem mérés.
         assertEquals(0.0, BodyParse.parse("Szeretnék 75 kg lenni.").kg, 0.01);
     }
+
+    /**
+     * A küszöb tagmondata nem veszi el a kimondott mérést.
+     *
+     * A „ma 100,4 kg, átléptem a 100-at lefelé... na jó, majdnem" mérése
+     * TELJESEN elveszett: a küszöb- és a majdnem-tagmondat idegen szavai
+     * kiejtették a mondatot, a küszöb kerek száma pedig elrontotta.
+     */
+    @Test public void aThresholdClauseDoesNotEatTheMeasurement() {
+        assertEquals(100.4, BodyParse.parse("Ma 100,4 kg, átléptem a "
+                + "100-at lefelé... na jó, majdnem.").kg, 0.01);
+        assertEquals(100.4, BodyParse.parse("Ma 100,4 kg, majdnem "
+                + "100.").kg, 0.01);
+        // A küszöb utáni valódi mérés változatlan.
+        assertEquals(79.8, BodyParse.parse("Végre átléptem a 80-as "
+                + "határt lefelé, 79,8.").kg, 0.01);
+    }
 }

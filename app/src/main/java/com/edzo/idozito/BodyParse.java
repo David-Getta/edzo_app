@@ -308,6 +308,15 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // A KÜSZÖB tagmondata nem veszi el a kimondott mérést: a „ma
+        // 100,4 kg, átléptem a 100-at lefelé... na jó, majdnem" mérése
+        // TELJESEN elveszett – a küszöb- és a majdnem-tagmondat idegen
+        // szavai (és a küszöb kerek száma) kiejtették vagy elrontották.
+        // A kg-jelöléses szám mellett ezek a tagmondatok kitakarhatók.
+        if (q.matches("(?s).*\\d(?:[.,]\\d{1,2})?\\s?(?:kg|kil[oó])(?![\\p{L}]).*")) {
+            q = q.replaceAll("(?iu)[,;][^,;.]*(?<![\\p{L}])[aá]tl[eé]p\\w*[^,;.]*", " ");
+            q = q.replaceAll("(?iu)[,;][^,;.]*(?<![\\p{L}])majdnem(?![\\p{L}])[^,;.]*", " ");
+        }
         // A VÉRCUKOR nem testsúly: a „14:20-kor 132-es vércukrot mértem"
         // százharminckét KILÓS mérésként került a trendbe. A vérnyomás
         // perjeles párját a maszk régóta ismeri; az egyszámos vércukor nem.
