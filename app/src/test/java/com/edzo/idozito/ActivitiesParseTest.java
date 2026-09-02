@@ -10381,4 +10381,26 @@ public class ActivitiesParseTest {
         assertEquals(2, q.plans.size());
     }
 
+    /**
+     * Az „NxM perc" a mozgás mögött is alkalomszám.
+     *
+     * A „ma nyújtás 2x15 perc, reggel és lefekvés előtt" tizenöt perc
+     * lett a naplóban – a másik alkalom eltűnt. A számmal kezdett alak
+     * („2x15 perc nyújtás") eddig is két alkalom volt.
+     */
+    @Test
+    public void aTimesFormAfterTheSportCountsSessions() {
+        Activities.Parsed p = Activities.parse("Ma nyujtas 2x15 perc, "
+                + "reggel es lefekves elott.");
+        assertEquals(2, p.plans.get(0).count);
+        assertEquals(15, p.plans.get(0).minutes);
+        assertEquals(2, Activities.parse("Ma tenisz 2x45 perc.")
+                .plans.get(0).count);
+        // A játék-igés alak összege változatlan: egy alkalom, összeadva.
+        Activities.Parsed q = Activities.parse("Este a haverokkal "
+                + "fociztunk a palyan, 2x30 perc.");
+        assertEquals(1, q.plans.get(0).count);
+        assertEquals(60, q.plans.get(0).minutes);
+    }
+
 }

@@ -3156,4 +3156,20 @@ public class FoodsParseTest {
         assertEquals("Tofu", Foods.parse(all, "Ebédre tofu "
                 + "csirke.").get(0).food.name);
     }
+
+    /**
+     * A fröccsben benne a bor.
+     *
+     * Az „1 pohár rozé fröccs" bora és fröccse KÉT italként ment be –
+     * másfél deci bor a háromdecis fröccs mellé, ugyanabból a pohárból.
+     */
+    @Test public void theWineInsideASpritzerIsNotASecondDrink() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        List<Foods.Hit> h = Foods.parse(all, "Ma este 1 pohár rozé "
+                + "fröccs és sajttál kettőnknek.");
+        for (Foods.Hit x : h) assertFalse(x.food.name.startsWith("Bor"));
+        // A felsorolt bor ÉS fröccs két ital marad.
+        assertEquals(2, Foods.parse(all, "Este egy pohár bor és egy "
+                + "fröccs is volt.").size());
+    }
 }

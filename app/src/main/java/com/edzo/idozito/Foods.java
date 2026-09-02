@@ -4744,6 +4744,10 @@ public final class Foods {
                     "Rántott csirke"},
             // A csusza tejfölös: ez a neve, nem egy külön kanál tejföl.
             {"Tejföl", "Túrós csusza"},
+            // A fröccsben benne a bor: az „1 pohár rozé fröccs" bora és
+            // fröccse KÉT italként ment be – másfél deci bor a háromdecis
+            // fröccs mellé, ugyanabból a pohárból.
+            {"Bor (vörös/fehér)", "Fröccs"},
             // A hortobágyi palacsintában benne a palacsinta: a „hortobágyi
             // húsos palacsinta" mellé eddig egy sima palacsinta is került.
             {"Palacsinta", "Hortobágyi palacsinta"},

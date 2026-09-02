@@ -4763,6 +4763,20 @@ public final class Activities {
                         mu[1] = -mu[1];
                         break;
                     }
+            // Az „NxM PERC" a mozgás MÖGÖTT is alkalomszám: a „ma nyújtás
+            // 2x15 perc" tizenöt perc lett a naplóban – a másik alkalom
+            // eltűnt. A számmal kezdett alak („2x15 perc nyújtás") eddig
+            // is két alkalom volt.
+            if (count <= 1) {
+                // A perc-olvasó ilyenkorra már kitakarta a „15 perc"-et,
+                // ezért a szorzóból csak egy árva „2x" marad – azt keressük.
+                java.util.regex.Matcher xn = java.util.regex.Pattern
+                        .compile("(?<![\\dx.,])([2-6])\\s?x\\s?"
+                                + "(?:\\d{1,3}\\s?perc"
+                                + "|(?=\\s*(?:[,;.]|$)))").matcher(s);
+                if (xn.find(h[0]) && xn.start() < nextHit)
+                    count = Integer.parseInt(xn.group(1));
+            }
             // A mozgás ELŐTT álló szorzó is az övé, ha köztük nincs másik
             // mozgás: a „ma 3-szor 15 percet bicikliztem" és a „3
             // alkalommal 10 percet nyújtottam" EGY alkalom lett – a nap
