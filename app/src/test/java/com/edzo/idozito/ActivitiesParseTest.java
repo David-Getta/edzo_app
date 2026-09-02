@@ -10456,4 +10456,22 @@ public class ActivitiesParseTest {
                 + "jatszottam.").plans.get(0).minutes);
     }
 
+    /**
+     * A gyakorlatszám nem időtartam.
+     *
+     * Az „az edzés 5 gyakorlat volt, 45 perc alatt" ÖT PERC egyéb
+     * mozgásként került a naplóba – a gyakorlatok száma elvitte az edzés
+     * hosszát.
+     */
+    @Test
+    public void anExerciseCountIsNotADuration() {
+        assertEquals(45, Activities.parse("Az edzes 5 gyakorlat volt, "
+                + "45 perc alatt.").plans.get(0).minutes);
+        assertEquals(45, Activities.parse("Az edzes 45 perc volt, 5 "
+                + "gyakorlat.").plans.get(0).minutes);
+        // Szám nélkül is 45 perces alapértelmezés, nem öt perc.
+        assertEquals(45, Activities.parse("Az edzes 5 gyakorlat volt.")
+                .plans.get(0).minutes);
+    }
+
 }

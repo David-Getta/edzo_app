@@ -2211,6 +2211,11 @@ public final class Activities {
         // séta mellé. A „lefutotta a maratont" marad futás.
         s = s.replaceAll("(?<=\\p{L}r[ae]\\s)futott[ae](?![a-z])", " ");
         s = s.replaceAll("(?<![a-z])futotta\\s+ra(?![a-z])", " ");
+        // A GYAKORLATSZÁM nem időtartam és nem alkalomszám: az „az edzés
+        // 5 gyakorlat volt, 45 perc alatt" ÖT PERC egyéb mozgásként került
+        // a naplóba – a gyakorlatok száma elvitte az edzés hosszát.
+        s = s.replaceAll("(?<![\\d,.])\\d{1,2}\\s?gyakorlat"
+                + "(?:ot|bol|tal|b[oó]l)?(?![a-z])", "gyakorlat");
         // A BRINGÁS TÚRA kerékpározás: a „bringás túránk 65 km volt, 3 óra
         // 10 perc alatt" mellé egy hatvanöt kilométeres GYALOGTÚRA is
         // bekerült a naplóba – tíz óra séta egy délutáni tekerés mellé.
