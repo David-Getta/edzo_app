@@ -2426,4 +2426,20 @@ public class StrengthParseTest {
         assertEquals("Húzódzkodás", StrengthParse.parse("Ma 20 "
                 + "húzódzkodást húztam le.").get(0).name);
     }
+
+    /**
+     * A „mindegyik sorozat N kg-mal" súlya a gyakorlaté.
+     *
+     * Az „edzésen 4x8 guggolás, mindegyik sorozat 100 kg-mal" száz
+     * kilója elveszett, és saját testsúlyos guggolás került a rekordok
+     * közé – a súly a vessző utáni tagmondatban állt.
+     */
+    @Test public void aWeightInTheFollowingClauseBelongsToTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen "
+                + "4x8 guggolás, mindegyik sorozat 100 kg-mal.");
+        assertEquals(1, it.size());
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+        assertEquals(80.0, StrengthParse.parse("Fekvenyomás 5x5, "
+                + "mindegyik 80 kg.").get(0).topWeight(), 0.01);
+    }
 }

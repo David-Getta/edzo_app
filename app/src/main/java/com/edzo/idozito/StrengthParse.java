@@ -533,6 +533,14 @@ public final class StrengthParse {
                 + "(?:kg|kil[oó])(?:val|s|os)?\\s*,\\s*"
                 + "((?:\\d{1,3}\\s?-\\s?)+\\d{1,3})\\s+ism[eé]tl[eé]s"
                 + "\\w*", "$2 ismétléssel $1 kg");
+        // A SÚLY a MÁSODIK tagmondatban is állhat: az „edzésen 4x8
+        // guggolás, mindegyik sorozat 100 kg-mal" száz kilója elveszett,
+        // és saját testsúlyos guggolás került a rekordok közé. A súly a
+        // vessző elhagyásával az előző tagmondathoz olvad.
+        text = text.replaceAll("(?iu)[,;]\\s*mindegyik"
+                + "(?:\\s+sorozat\\w*|\\s+szett\\w*)?\\s+"
+                + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kil[oó])\\w*",
+                " $1 kg");
         // A LISTA VÉGÉN álló sorozat MINDEGYIK gyakorlaté: a „mellgép,
         // hátgép, lábgép, 3x12" második és harmadik gépe nyomtalanul
         // elveszett – a sorozat csak az elsőhöz tapadt. Csak akkor
