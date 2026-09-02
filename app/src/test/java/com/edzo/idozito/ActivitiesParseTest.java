@@ -10403,4 +10403,24 @@ public class ActivitiesParseTest {
         assertEquals(60, q.plans.get(0).minutes);
     }
 
+    /**
+     * A hosszban mondott úszásnem-szakaszok is összeadódnak.
+     *
+     * A „ma 40 perc úszás: 20 hossz mell, 10 hossz hát" hétszázötven
+     * métere ötszázra olvadt – a második szakasz elveszett, mert a
+     * szakasz-összeadó csak a méterben írt távokat ismerte.
+     */
+    @Test
+    public void poolLengthSegmentsAddUp() {
+        Activities.Parsed p = Activities.parse("Ma 40 perc uszas: 20 "
+                + "hossz mell, 10 hossz hat.");
+        assertEquals(1, p.plans.size());
+        assertEquals(0.75, p.plans.get(0).km, 0.01);
+        // A sima hossz-alak és a kimondott medencehossz változatlan.
+        assertEquals(0.75, Activities.parse("Ma reggel 40 perc uszas, "
+                + "30 hossz a 25 meteres medenceben.").plans.get(0).km, 0.01);
+        assertEquals(1.485, Activities.parse("45 hossz a 33-as "
+                + "medenceben.").plans.get(0).km, 0.01);
+    }
+
 }

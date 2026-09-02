@@ -1671,7 +1671,11 @@ public final class Activities {
                     // métert úsztam gyorson és 500-at mellen" ezer métere
                     // ötszázra olvadt, mert az első szakasz száma mögött
                     // ott állt a „métert úsztam".
-                    "(?<![\\d,.:])(\\d{2,4})\\s?(?:m|meter\\w*)?"
+                    // A HOSSZ is szakasz: a „40 perc úszás: 20 hossz mell,
+                    // 10 hossz hát" hétszázötven métere ötszázra olvadt –
+                    // a hosszban mondott második szakasz elveszett. A hossz
+                    // az uszodák alapmérete, huszonöt méter.
+                    "(?<![\\d,.:])(\\d{1,4})\\s?(?:(hossz\\w*)|m|meter\\w*)?"
                     + "(?:\\s?-?(?:at|et|ot))?"
                     + "(?![a-z0-9])\\s*(?:(?:volt|usztam|usztunk|uszva)"
                     + "\\s+)?(?=(?:gyorson|mellen|haton|pillangon"
@@ -1682,7 +1686,9 @@ public final class Activities {
             StringBuffer ub = new StringBuffer();
             while (uw.find()) {
                 if (ufirst < 0) ufirst = uw.start();
-                usum += Integer.parseInt(uw.group(1));
+                int uv = Integer.parseInt(uw.group(1));
+                if (uw.group(2) != null) uv *= 25;
+                usum += uv;
                 ucount++;
                 uw.appendReplacement(ub, "");
             }
