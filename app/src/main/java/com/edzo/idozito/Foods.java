@@ -217,7 +217,11 @@ public final class Foods {
         new Food("Tócsni / lapcsánka", 250, 4, 150, "tocsni", "lapcsanka", "tocsi",
                 "krumplilangos", "berthake"),
         new Food("Töltött dagadó", 330, 18, 200, "toltott dagado", "dagado"),
-        new Food("Rakott zöldbab", 110, 5, 350, "rakott zoldbab", "rakott zoldseg"),
+        // A többi rakott zöldség is ide fut be: a „rakott karfiol" eddig
+        // RAKOTT KRUMPLIKÉNT került a naplóba, másfélszeres kalóriával.
+        new Food("Rakott zöldbab", 110, 5, 350, "rakott zoldbab",
+                "rakott zoldseg", "rakott karfiol", "rakott cukkini",
+                "rakott padlizsan", "rakott brokkoli"),
         // A toroskáposzta a disznóvágás húsos káposztája – kalóriában a
         // töltött káposzta rokona, nem a párolt köreté.
         // Az EGYBEÍRT alak is ugyanaz a fogás: a „töltöttkáposztát ettem"

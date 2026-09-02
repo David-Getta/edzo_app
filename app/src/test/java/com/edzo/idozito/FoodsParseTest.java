@@ -3194,4 +3194,22 @@ public class FoodsParseTest {
         assertEquals("Túró rudi", Foods.parse(all, "Vacsora: "
                 + "túró-rudi.").get(0).food.name);
     }
+
+    /**
+     * A rakott karfiol nem rakott krumpli.
+     *
+     * A „rakott karfiol" (és a rakott cukkini) RAKOTT KRUMPLIKÉNT került
+     * a naplóba, másfélszeres kalóriával – a puszta „rakott" tő a
+     * krumplié.
+     */
+    @Test public void aVegetableBakeIsNotAPotatoBake() {
+        List<Foods.Food> all = Arrays.asList(Foods.ALL);
+        assertEquals("Rakott zöldbab", Foods.parse(all, "Vacsora: rakott "
+                + "karfiol sok sajttal.").get(0).food.name);
+        assertEquals("Rakott zöldbab", Foods.parse(all, "Ebéd: rakott "
+                + "cukkini darált hússal.").get(0).food.name);
+        // A rakott krumpli marad krumpli.
+        assertEquals("Rakott krumpli", Foods.parse(all, "Vacsora: rakott "
+                + "krumpli kolbásszal.").get(0).food.name);
+    }
 }
