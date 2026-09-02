@@ -592,5 +592,8 @@ public class FoodsQuantityTest {
                 + "ittam.").get(0).grams, 0.1);
         assertEquals(800.0, Foods.parse(all, "Kávé, 4 csésze.")
                 .get(0).grams, 0.1);
+        // A „csak" is beékelődhet, a kockát tárgyragja is darabszó.
+        assertEquals(10.0, Foods.parse(all, "Csokiból csak 2 kockát "
+                + "ettem.").get(0).grams, 0.1);
     }
 }

@@ -2337,7 +2337,7 @@ public final class Foods {
              // …és KOCKÁRA is: a „2 kocka csoki" eddig ugyanannyi volt, mint
              // az egy kocka, mert a kocka nem volt mérőszó, és a darabszám
              // némán elveszett.
-             "kocka",
+             "kocka", "kockat", "kockaval",
              // A kulacs az edzőterem palackja.
              "kulacs", "kulaccsal",
              // A falat és a harapás a legkisebb magyar mérték: az „egy
@@ -4020,7 +4020,8 @@ public final class Foods {
                     // A NAPSZÓ is beékelődhet: a „kávéból ma 4 csészével
                     // ittam" négy csészéje eddig elveszett.
                     if (!mid.matches("[a-z]{0,6}\\s+"
-                            + "(?:(?:ma|tegnap|megint|is|meg)\\s+)?"
+                            + "(?:(?:ma|tegnap|megint|is|meg|csak"
+                            + "|osszesen)\\s+)?"
                             + "(?:(?:meg)?(?:ettem|ittam|ettunk|ittunk)\\s+)?"))
                         continue;
                 }
@@ -4148,7 +4149,7 @@ public final class Foods {
         // A kocka a tábla törésrácsa: egy százgrammos táblában nagyjából
         // húsz kocka van. Adagnyinak (25 g) számolni ötszörös túlbecslés
         // lenne épp annál, aki büszkén írja be, hogy CSAK egy kockát evett.
-        if (unit.equals("kocka") && f.name.equals("Csokoládé")) return 5;
+        if (unit.startsWith("kocka") && f.name.equals("Csokoládé")) return 5;
         // A falat és a harapás ételtől függetlenül pár deka: aki ennyit
         // ír, az pont azt mondja, hogy alig evett belőle.
         if (unit.startsWith("falat") || unit.startsWith("harapas")) return 15;
