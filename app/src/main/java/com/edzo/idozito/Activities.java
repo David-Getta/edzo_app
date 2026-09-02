@@ -4760,8 +4760,26 @@ public final class Activities {
                 for (int[] mu : mults)
                     if (mu[0] > h[0] && mu[0] < nextHit && mu[1] > 1) {
                         count = Math.min(50, mu[1]);
+                        mu[1] = -mu[1];
                         break;
                     }
+            // A mozgás ELŐTT álló szorzó is az övé, ha köztük nincs másik
+            // mozgás: a „ma 3-szor 15 percet bicikliztem" és a „3
+            // alkalommal 10 percet nyújtottam" EGY alkalom lett – a nap
+            // kétharmada eltűnt. A gyakoriság-szavas mondat kimarad, azt
+            // a maga szabálya bontja ki.
+            if (count <= 1 && !s.matches("(?s).*(?<![a-z])(?:heti|hetente"
+                    + "|havi|havonta|naponta|napi)(?![a-z]).*")) {
+                // Az elhasznált szorzó (negatívra fordítva) kimarad: az
+                // „úsztam kétszer és futottam egyszer" kettese az úszásé.
+                int prevHit = i > 0 ? keep.get(i - 1)[0] : -1;
+                for (int[] mu : mults)
+                    if (mu[0] < h[0] && mu[0] > prevHit && mu[1] > 1) {
+                        count = Math.min(50, mu[1]);
+                        mu[1] = -mu[1];
+                        break;
+                    }
+            }
             // A „100 fekvőtámasz" száz ISMÉTLÉS, nem száz edzés – az
             // ismétlés-szavaknál a nagy szám egyetlen alkalom, és az időt is
             // az ismétlésszámból becsüljük.

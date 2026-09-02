@@ -10340,4 +10340,25 @@ public class ActivitiesParseTest {
         assertEquals(40, r.plans.get(1).minutes);
     }
 
+    /**
+     * A mozgás előtt álló szorzó is az övé.
+     *
+     * A „ma 3 alkalommal 10 percet nyújtottam" és a „3-szor 15 percet
+     * bicikliztem" EGY alkalom lett a naplóban – a nap kétharmada
+     * eltűnt. A főneves alak („3-szor 15 perc bicikli") eddig is jó
+     * volt, az igés nem.
+     */
+    @Test
+    public void aMultiplierBeforeTheVerbCountsToo() {
+        assertEquals(3, Activities.parse("Ma 3 alkalommal 10 percet "
+                + "nyujtottam.").plans.get(0).count);
+        assertEquals(3, Activities.parse("Ma 3-szor 15 percet "
+                + "bicikliztem.").plans.get(0).count);
+        // Az elhasznált szorzót a következő mozgás nem veszi el újra.
+        Activities.Parsed q = Activities.parse("usztam ketszer es "
+                + "futottam egyszer");
+        assertEquals(2, q.plans.get(0).count);
+        assertEquals(1, q.plans.get(1).count);
+    }
+
 }
