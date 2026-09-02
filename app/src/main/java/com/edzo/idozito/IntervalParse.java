@@ -689,6 +689,12 @@ public final class IntervalParse {
         // a plank és a fal-ülés valódi egykörös terv.
         if (rounds == 1 && rest == 0 && warm == 0 && cool == 0
                 && work > 120) return null;
+        // Az EGYETLEN hosszú munka/pihenő pár sem az: a „ma 2 órát
+        // túráztunk, közben 15 perc pihenő a csúcson" mellé egy egykörös,
+        // negyed óra munka / negyed óra pihenő időzítő került – a túra
+        // pihenőjéből.
+        if (rounds == 1 && warm == 0 && cool == 0
+                && work >= 300 && rest >= 300) return null;
         Plan p = new Plan(rounds, work, rest, warm, cool);
         // A szakaszok külön-külön hihetőek lehetnek, EGYÜTT mégsem: a
         // „8x 60 perc" nyolc órás időzítőt állítana be. Ilyen edzés nincs –

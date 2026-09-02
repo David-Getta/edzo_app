@@ -1037,4 +1037,19 @@ public class IntervalParseTest {
                 + "30 mp pihenő."));
     }
 
+    /**
+     * A túra pihenője nem munka/pihenő pár.
+     *
+     * A „ma 2 órát túráztunk, közben 15 perc pihenő a csúcson" mellé egy
+     * egykörös, negyed óra munka / negyed óra pihenő időzítő-terv került
+     * – a kirándulás pihenőjéből.
+     */
+    @Test public void aHikeBreakIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Ma 2 órát túráztunk, közben "
+                + "15 perc pihenő a csúcson."));
+        // A rövid, valódi egykörös pár marad terv.
+        assertNotNull(IntervalParse.parse("1 kör 90 mp munka, 30 mp "
+                + "pihenő."));
+    }
+
 }
