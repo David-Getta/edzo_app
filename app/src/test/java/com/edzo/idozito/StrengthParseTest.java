@@ -2478,4 +2478,29 @@ public class StrengthParseTest {
         assertEquals(30, StrengthParse.parse("Guggolás 3x10, este 60 "
                 + "perc séta.").get(0).totalReps());
     }
+    /**
+     * A ráadás szett is sorozat.
+     *
+     * A „fekvenyomás 5x5 80 kilóval, aztán ráadásnak még egy szett
+     * 10-es" hajrá-sorozata nyomtalanul eltűnt – pedig pont arra
+     * büszke az ember.
+     */
+    @Test public void bonusSetJoinsThePreviousExercise() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás "
+                + "5x5 80 kilóval, aztán ráadásnak még egy szett 10-es.");
+        assertEquals(1, it.size());
+        assertEquals(35, it.get(0).totalReps());
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(80.0, it.get(0).sets.get(5).weight, 0.01);
+        // Fordított szórenddel, a mondat végén is.
+        assertEquals(4, StrengthParse.parse("Guggolás 3x8 60 kg, végén "
+                + "még egy 12-es szett.").get(0).sets.size());
+        // Kiírt ismétlésszóval.
+        assertEquals(48, StrengthParse.parse("Vállnyomás 4x10 20 kilóval, "
+                + "ráadásként egy szett 8 ismétléssel.").get(0).totalReps());
+        // A „10-es kézisúlyzóval" száma súly, nem ráadás sorozat.
+        assertEquals(3, StrengthParse.parse("Fekvenyomás 3x10, még egy "
+                + "szett 10-es kézisúlyzóval bicepsz.").get(0)
+                .sets.size());
+    }
 }

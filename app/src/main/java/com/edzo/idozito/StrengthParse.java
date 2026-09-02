@@ -443,6 +443,20 @@ public final class StrengthParse {
         // kézisúlyzókkal" sorozata eddig nyomtalanul eltűnt.
         text = text.replaceAll("(?iu)(?<![\\p{L}])v[aá]llgyakorlat",
                 "vállemelés");
+        // A RÁADÁS SZETT is sorozat: a „fekvenyomás 5x5 80 kilóval, aztán
+        // ráadásnak még egy szett 10-es" hajrá-sorozata nyomtalanul eltűnt –
+        // pedig pont arra büszke az ember. Számmal írt alakra „1xN" lesz
+        // belőle, amit a folytatás-olvasó az előző gyakorlat súlyával vesz
+        // fel. A „10-es kézisúlyzóval" alak kimarad: ott a szám a súly.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:(?:r[aá]ad[aá]s(?:nak"
+                + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(?:utols[oó]\\s+"
+                + "|extra\\s+|r[aá]ad[aá]s\\s+)?szett(?:et)?\\s+(\\d{1,2})"
+                + "\\s?-?(?:[aeo\u00f6]s|ism[eé]tl[eé]s(?:es|sel))(?![\\p{L}])"
+                + "(?!\\s?(?:kg|kil[oó]|k[eé]zis[uú]lyz[oó]))", " 1x$1 ");
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:(?:r[aá]ad[aá]s(?:nak"
+                + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(\\d{1,2})\\s?-?"
+                + "(?:[aeo\u00f6]s|ism[eé]tl[eé]ses)\\s+szett(?:et)?"
+                + "(?![\\p{L}])", " 1x$1 ");
         // A KÖRÖNKÉNTI ismétlés-lista a felsorolt gyakorlatoké, sorban:
         // az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás,
         // körönként 10-10-5" bejegyzésében csak a guggolás maradt meg –
@@ -1071,6 +1085,7 @@ public final class StrengthParse {
         String t = trimPunct(s).trim();
         t = t.replaceAll("^(?:es\\s+|majd\\s+|aztan\\s+|utana\\s+|azutan\\s+|meg\\s+|"
                 + "munkasorozat\\s+|munkaszett\\s+|munkasuly\\s+|bemelegites\\s+|"
+                + "vegen\\s+|vegul\\s+|zarasnak\\s+|zaraskent\\s+|raadasnak\\s+|"
                 + "felvezetes\\s+|sorozatok\\s+)+", "");
         t = t.replaceAll("(?:\\s+(?:dolgoztam|nyomtam|toltam|huztam|csinaltam|mentem|"
                 + "ment|jott|kovetkezett|volt))+$", "");
