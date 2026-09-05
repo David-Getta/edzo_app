@@ -2626,4 +2626,18 @@ public class StrengthParseTest {
         assertEquals(5, it.get(0).sets.size());
         assertEquals(10.0, it.get(0).topWeight(), 0.01);
     }
+    /**
+     * Az irányszó és a „-tel" rag sem akasztja meg a folytatást.
+     *
+     * A „vállemelés oldalra 3x15 6 kg-mal, előre 3x12 5-tel" második
+     * három sorozata nyomtalanul eltűnt.
+     */
+    @Test public void directionWordAndTelSuffixStillContinueTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Vállemelés oldalra "
+                + "3x15 6 kg-mal, előre 3x12 5-tel");
+        assertEquals(1, it.size());
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(5.0, it.get(0).sets.get(5).weight, 0.01);
+        assertEquals(81, it.get(0).totalReps());
+    }
 }

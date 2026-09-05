@@ -10515,4 +10515,18 @@ public class ActivitiesParseTest {
         assertEquals(1, p.plans.size());
         assertEquals(11340, p.plans.get(0).steps);
     }
+    /**
+     * A „meccsen" helyhatározó a nézőé, ha nincs mellette játék vagy idő.
+     *
+     * A „két hot dog és egy nagy kóla a meccsen" negyvenöt perc egyéb
+     * mozgást írt a naplóba – abból, hogy valaki a lelátón evett. Aki
+     * játszott, gólt lőtt vagy percet mondott, az mozgott.
+     */
+    @Test public void eatingAtTheMatchIsNotPlayingIt() {
+        assertTrue(Activities.parse("Két hot dog és egy nagy kóla a meccsen")
+                .isEmpty());
+        assertEquals(60, Activities.parse("A meccsen 60 percet játszottam, "
+                + "aztán lecseréltek").plans.get(0).minutes);
+        assertFalse(Activities.parse("Meccsen voltunk, 2 gólt lőttem").isEmpty());
+    }
 }

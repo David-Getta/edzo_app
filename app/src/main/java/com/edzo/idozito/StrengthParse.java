@@ -1164,6 +1164,7 @@ public final class StrengthParse {
                 + "munkasorozat\\s+|munkaszett\\s+|munkasuly\\s+|bemelegites\\s+|"
                 + "vegen\\s+|vegul\\s+|zarasnak\\s+|zaraskent\\s+|raadasnak\\s+|"
                 + "raadaskent\\s+|raadas\\s+|plusz\\s+|"
+                + "elore\\s+|oldalra\\s+|hatra\\s+|"
                 + "felvezetes\\s+|sorozatok\\s+)+", "");
         t = t.replaceAll("(?:\\s+(?:dolgoztam|nyomtam|toltam|huztam|csinaltam|mentem|"
                 + "ment|jott|kovetkezett|volt))+$", "");
@@ -1176,7 +1177,7 @@ public final class StrengthParse {
         t = t.replaceAll("(?<=\\d)\\s?(?:kg|kilo)\\s?-?(?:os|as|s)\\s+"
                 + "(?:tarcsa|kezisulyzo|sulyzo|kettlebell|rud|golyo|lemez"
                 + "|korong)\\w*$", " kg");
-        t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel)$", "");
+        t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel|tal|tel)$", "");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")

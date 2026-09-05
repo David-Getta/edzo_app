@@ -5261,6 +5261,15 @@ public final class Activities {
                     if (t2.startsWith("melle") || t2.startsWith("mellett")
                             || t2.startsWith("nezese")
                             || t2.startsWith("kozvetites")) continue;
+                    // A „MECCSEN" helyhatározó a nézőé, ha nincs mellette
+                    // se játék, se időtartam: a „két hot dog és egy nagy
+                    // kóla a meccsen" negyvenöt perc egyéb mozgást írt a
+                    // naplóba – abból, hogy valaki a lelátón evett.
+                    if ((w.equals("meccs") || w.equals("merkozes"))
+                            && t2.matches("(?s)(?:en|eken)(?![a-z]).*")
+                            && !beforeBlank.matches("(?s).*(?:\\d\\s?(?:perc|ora)"
+                                + "|jatsz|felido|fel ido|gol|nyert|vesztett"
+                                + "|edz).*")) continue;
                     p = c;
                     break;
                 }

@@ -2202,6 +2202,9 @@ public final class Foods {
             // Egy kréker, sajtos tallér vagy ropi pár gramm: a „pár szem
             // sajtos keksz" százötven grammként ment be – öt adagként.
             {"Ropi / kréker", "5"},
+            // Egy aszalt szilva vagy sárgabarack tíz gramm: a „2 szem
+            // aszalt szilva" nyolcvan grammként ment be.
+            {"Aszalt gyümölcs", "10"},
             {"Koktélparadicsom", "20"},
             {"Paprika", "120"}, {"Fagylalt", "50"}, {"Proteinszelet", "60"},
             {"Péksütemény", "60"}, {"Tojásfehérje", "33"},

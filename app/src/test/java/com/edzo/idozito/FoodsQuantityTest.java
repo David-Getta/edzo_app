@@ -596,4 +596,16 @@ public class FoodsQuantityTest {
         assertEquals(10.0, Foods.parse(all, "Csokiból csak 2 kockát "
                 + "ettem.").get(0).grams, 0.1);
     }
+    /**
+     * Egy aszalt szilva tíz gramm, nem negyven.
+     *
+     * A „2 szem aszalt szilva" nyolcvan grammként ment be.
+     */
+    @Test public void aDriedPlumIsTenGrams() {
+        List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Uzsonna: egy marék mandula meg 2 szem aszalt szilva");
+        assertEquals(2, h.size());
+        assertEquals("Aszalt gyümölcs", h.get(1).food.name);
+        assertEquals(20.0, h.get(1).grams, 0.01);
+    }
 }
