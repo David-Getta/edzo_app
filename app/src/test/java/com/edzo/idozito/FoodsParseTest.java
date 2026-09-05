@@ -3336,4 +3336,19 @@ public class FoodsParseTest {
         // A jelzős „proteines palacsinta" marad egyetlen palacsinta.
         assertEquals(1, hits("proteines palacsinta").size());
     }
+    /**
+     * A gyűjtőnév kettőspontos listája a lista maga.
+     *
+     * Az „egy kis tál gyümölcs: banán, alma, néhány szem szőlő" mellé
+     * egy adag vegyes gyümölcs is bekerült a három tétel tetejébe.
+     */
+    @Test public void aCollectiveFollowedByItsListIsJustTheList() {
+        List<Foods.Hit> h = hits("Egy kis tál gyümölcs: banán, alma, néhány "
+                + "szem szőlő");
+        assertEquals(3, h.size());
+        assertEquals("Banán", h.get(0).food.name);
+        assertEquals(3, hits("Vegyes saláta: paradicsom, uborka, paprika").size());
+        // Egyetlen tétel mellett a gyűjtőnév marad.
+        assertEquals(2, hits("Gyümölcs: banán").size());
+    }
 }

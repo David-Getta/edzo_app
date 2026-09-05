@@ -1446,4 +1446,16 @@ public class BodyParseTest {
         // A kötőjeles időpont marad időpont.
         kg("reggel 7-kor 80 kg voltam", 80);
     }
+    /**
+     * A napnév utáni „még N" a múlt, ha előtte már áll a mai mérés.
+     *
+     * A „reggel 81,2 kg – hétfőn még 82" két száma közül a mérés-olvasó
+     * egyiket sem választotta, és az egész mérés elveszett.
+     */
+    @Test public void aDayNamedPastReadingYieldsToToday() {
+        kg("Reggel 81,2 kg \u2013 h\u00e9tf\u0151n m\u00e9g 82", 81.2);
+        kg("Ma 79,4 kg, a m\u00falt h\u00e9ten 80,1", 79.4);
+        // A napnév magában időpont, nem múlt.
+        kg("kedden 80 kg voltam", 80);
+    }
 }

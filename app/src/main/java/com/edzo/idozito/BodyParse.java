@@ -292,6 +292,19 @@ public final class BodyParse {
                     + "[^,;.\\d]{0,12}?\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
                     + "(?:(?:kg|kilo|cm|centi|%|szazalek)\\w*|volt(?![a-z]))"
                     + "(?:\\s?volt(?![a-z]))?", "");
+        // A NAPNÉV utáni „még N" is a múlt: a „reggel 81,2 kg – hétfőn még
+        // 82" két száma közül a mérés-olvasó egyiket sem választotta, és
+        // az egész mérés elveszett. Csak kimondott mai mérés MÖGÖTT: a
+        // „kedden 80 kg voltam" marad egyetlen mérés.
+        if (s.matches("(?s).*\\d\\s?(?:kg|kilo).*(?<![a-z])(?:hetfon|kedden"
+                + "|szerdan|csutortokon|penteken|szombaton|vasarnap"
+                + "|a mult heten|mult heten|a heten|het elejen)(?![a-z])"
+                + "\\s+(?:meg\\s+)?\\d.*"))
+            s = s.replaceAll("(?<![a-z])(?:hetfon|kedden|szerdan|csutortokon"
+                    + "|penteken|szombaton|vasarnap|a mult heten|mult heten"
+                    + "|a heten|het elejen)(?![a-z])\\s+(?:meg\\s+)?"
+                    + "\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:(?:kg|kilo)\\w*)?"
+                    + "(?:\\s?volt(?![a-z]))?", "");
         return s;
     }
 

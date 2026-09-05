@@ -4514,7 +4514,13 @@ public final class Foods {
         List<Match> out = new ArrayList<>();
         for (Match m : ms) {
             boolean shake = m.food.name.startsWith("Gyümölcsturmix")
-                    || m.food.name.startsWith("Protein turmix");
+                    || m.food.name.startsWith("Protein turmix")
+                    // A GYŰJTŐNÉV kettőspontos listája is a lista maga: az
+                    // „egy kis tál gyümölcs: banán, alma, néhány szem
+                    // szőlő" mellé egy adag vegyes gyümölcs is bekerült.
+                    || m.food.name.startsWith("Gyümölcs (vegyes")
+                    || m.food.name.startsWith("Zöldség (vegyes")
+                    || m.food.name.startsWith("Saláta (zöld");
             if (shake) {
                 int e = m.pos + m.len;
                 while (e < q.length() && q.charAt(e) == ' ') e++;
