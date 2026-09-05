@@ -2519,4 +2519,25 @@ public class StrengthParseTest {
         assertEquals(4, it.get(0).sets.size());
         assertEquals(150.0, it.get(0).topWeight(), 0.01);
     }
+    /**
+     * A súllyal mondott egyes sorozat is sorozat, a jelzős súly is súly.
+     *
+     * A „fekvenyomás 60 kg 3x10, aztán 70-nel egy 8-as" hetvenes
+     * nyolcasa nyomtalanul eltűnt; az „egy 20-as kézisúlyzóval" pedig
+     * EGY kilós vállnyomás lett – a névelő számnak látszott.
+     */
+    @Test public void aSingleWeightedSetAndAnAdjectiveWeightBothCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 60 kg "
+                + "3x10, aztán 70-nel egy 8-as");
+        assertEquals(1, it.size());
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(70.0, it.get(0).sets.get(3).weight, 0.01);
+        assertEquals(8, it.get(0).sets.get(3).reps);
+        it = StrengthParse.parse("Guggolás 5x5 100 kg, még egy 3-as 110 kilóval");
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(110.0, it.get(0).topWeight(), 0.01);
+        it = StrengthParse.parse("Vállnyomás 3x10 egy 20-as kézisúlyzóval");
+        assertEquals(20.0, it.get(0).topWeight(), 0.01);
+        assertEquals(30, it.get(0).totalReps());
+    }
 }

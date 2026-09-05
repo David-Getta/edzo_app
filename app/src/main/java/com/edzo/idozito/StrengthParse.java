@@ -457,6 +457,26 @@ public final class StrengthParse {
                 + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(\\d{1,2})\\s?-?"
                 + "(?:[aeo\u00f6]s|ism[eé]tl[eé]ses)\\s+szett(?:et)?"
                 + "(?![\\p{L}])", " 1x$1 ");
+        // A SÚLLYAL mondott egyes sorozat is sorozat: a „fekvenyomás 60 kg
+        // 3x10, aztán 70-nel egy 8-as" hetvenes nyolcasa nyomtalanul
+        // eltűnt – a „szett" szó nélkül a fenti szabály nem ismerte fel.
+        // Mindkét szórend: „70-nel egy 8-as" és „egy 8-as 70-nel".
+        text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?(?:kg|kil[oó]\\p{L}*|[nv][ae]l|mal|zal|zel)\\s+"
+                + "(?:m[eé]g\\s+)?egy\\s+(\\d{1,2})\\s?-?[aeo\u00f6]s"
+                + "(?![\\p{L}])(?!\\s?(?:kg|kil[oó]|k[eé]zis[uú]lyz[oó]))",
+                " 1x$2 $1 kg ");
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:m[eé]g\\s+)?egy\\s+"
+                + "(\\d{1,2})\\s?-?[aeo\u00f6]s\\s+(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?(?:kg|kil[oó]\\p{L}*|[nv][ae]l|mal|zal|zel)"
+                + "(?![\\p{L}])", " 1x$1 $2 kg ");
+        // Az „EGY 20-AS kézisúlyzóval" súlya húsz kiló, nem egy: a
+        // vállnyomás egy kilós bejegyzés lett belőle – az „egy" névelő
+        // számnak látszott, a „20-as" jelző pedig elveszett.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:egy|k[eé]t|k[eé]t\\s+darab"
+                + "|k[eé]t\\s+db)\\s+(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?-?[aeo\u00f6]s"
+                + "\\s+(k[eé]zis[uú]lyz[oó]|kettlebell|s[uú]lyz[oó]|t[aá]rcs[aá]"
+                + "|korong|golyó|golyo)", "$1 kg-os $2");
         // A KÖRÖNKÉNTI ismétlés-lista a felsorolt gyakorlatoké, sorban:
         // az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás,
         // körönként 10-10-5" bejegyzésében csak a guggolás maradt meg –

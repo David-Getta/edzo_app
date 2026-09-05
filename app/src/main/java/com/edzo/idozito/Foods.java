@@ -3577,6 +3577,13 @@ public final class Foods {
                 }
             }
         }
+        // A FÉL CSIRKE egy fél sült csirke, nem fél adag csirkemell: az
+        // „ettem egy fél csirkét krumplival" hetvenöt gramm csirkemellé
+        // lett – egy fél grillcsirke húsa a négyszáz grammot is
+        // meghaladja. A fél kiló csirke és a fél csirkemell marad, ami.
+        query = query.replaceAll("(?iu)(?<![\\p{L}])(?:egy\\s+)?f[eé]l\\s+"
+                + "(?:s[uü]lt\\s+|grill\\s+|grillezett\\s+)?(?:grill)?csirk[eé]t?"
+                + "(?![\\p{L}])", "450 g tepsis csirkét");
         // A FAJTA elviszi a húst: az „ebédre rántott húst ettem" mellé
         // egy MÁSODIK adag (grillezett) hús is bekerült a naplóba, mert a
         // „húst ettem" önálló fogásnév. Az ige elé hozva a szórend

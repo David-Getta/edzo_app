@@ -3265,4 +3265,21 @@ public class FoodsParseTest {
                 .get(0).grams, 0.001);
         assertEquals(200.0, hits("virsli 2 pár mustárral").get(0).grams, 0.5);
     }
+    /**
+     * A fél csirke egy fél sült csirke, nem fél adag csirkemell.
+     *
+     * Az „ettem egy fél csirkét krumplival" hetvenöt gramm csirkemell
+     * lett – egy fél grillcsirke húsa a négyszáz grammot is meghaladja.
+     */
+    @Test public void halfAChickenIsHalfARoastChicken() {
+        List<Foods.Hit> h = hits("Ettem egy fél csirkét krumplival");
+        assertEquals("Tepsis csirke", h.get(0).food.name);
+        assertEquals(450.0, h.get(0).grams, 0.01);
+        assertEquals("Tepsis csirke", hits("Fél grillcsirke a piacról")
+                .get(0).food.name);
+        // A fél csirkemell fél csirkemell marad.
+        assertEquals("Csirkemell (sült/grill)", hits("Fél csirkemell salátával")
+                .get(0).food.name);
+        assertEquals(75.0, hits("Fél csirkemell salátával").get(0).grams, 0.01);
+    }
 }
