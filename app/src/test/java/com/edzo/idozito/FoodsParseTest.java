@@ -3316,4 +3316,24 @@ public class FoodsParseTest {
         assertEquals("Fasírt", hits("Sütöttem 4 db húspogácsát, az egyiket "
                 + "megettem, a másikat elraktam").get(0).food.name);
     }
+    /**
+     * A sajtos keksz kréker, az egybeírt proteinturmix turmix.
+     *
+     * A „pár szem sajtos keksz" mellé százötven gramm trappista került,
+     * a „vacsora helyett egy proteinturmix banánnal" turmixa pedig
+     * kiesett – szóköz híján a „proteines" jelző-szabály vitte el.
+     */
+    @Test public void cheeseCrackersAndOneWordProteinShakeResolve() {
+        List<Foods.Hit> h = hits("Este 2 pohár bor és pár szem sajtos keksz");
+        assertEquals(2, h.size());
+        assertEquals("Ropi / kréker", h.get(1).food.name);
+        assertEquals(25.0, h.get(1).grams, 0.01);
+        h = hits("Vacsora helyett egy proteinturmix banánnal");
+        assertEquals(2, h.size());
+        assertEquals("Protein turmix", h.get(0).food.name);
+        assertEquals("Protein turmix", hits("feherjeturmix banánnal")
+                .get(0).food.name);
+        // A jelzős „proteines palacsinta" marad egyetlen palacsinta.
+        assertEquals(1, hits("proteines palacsinta").size());
+    }
 }

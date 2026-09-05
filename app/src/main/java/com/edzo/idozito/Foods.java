@@ -384,7 +384,10 @@ public final class Foods {
         // kanál cukornak, a mézeskalács kalácsnak számított.
         new Food("Hagymakarika (rántott)", 280, 4, 100, "hagymakarika"),
         new Food("Perec", 380, 9, 50, "perec", "pretzel"),
+        // A „sajtos keksz" sajtos kréker, nem sajt és keksz: a „pár szem
+        // sajtos keksz" mellé százötven gramm trappista került a naplóba.
         new Food("Ropi / kréker", 400, 9, 30, "ropi", "kreker", "sajtos taller", "taller",
+                "sajtos keksz", "sajtos kreker",
                 "sos rud", "sospalcika", "sos palcika"),
         new Food("Pisztácia", 580, 20, 30, "pisztaci"),
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
@@ -473,7 +476,11 @@ public final class Foods {
         // negyven kalóriával kevesebbel írta be a naplóba.
         new Food("Protein turmix", 100, 10, 300, "protein turmix", "protein", "shake",
                 "kazein turmix", "whey turmix", "gainer",
-                "feherjeturmix", "feherje turmix", "feherjeshake"),
+                "feherjeturmix", "feherje turmix", "feherjeshake",
+                // Az egybeírt „proteinturmix" eddig nem volt turmix: a
+                // „vacsora helyett egy proteinturmix banánnal" csak banán
+                // lett.
+                "proteinturmix", "proteinshake", "protein shake"),
         new Food("Gyümölcsturmix / smoothie", 60, 1, 300, "gyumolcsturmix",
                 "turmix", "smoothie", "acai"),
         // Maga a POR, nem a kész turmix: a „30 g fehérjepor” eddig vagy semmit nem
@@ -2192,6 +2199,9 @@ public final class Foods {
             // Amit a próbafuttatás szerint természetes darabra mondani, de eddig
             // a tipikus adaggal számolt („3 keksz", „2 tortilla", „2 paradicsom").
             {"Keksz", "12"}, {"Kétszersült", "10"}, {"Tortilla / wrap", "60"}, {"Paradicsom", "120"},
+            // Egy kréker, sajtos tallér vagy ropi pár gramm: a „pár szem
+            // sajtos keksz" százötven grammként ment be – öt adagként.
+            {"Ropi / kréker", "5"},
             {"Koktélparadicsom", "20"},
             {"Paprika", "120"}, {"Fagylalt", "50"}, {"Proteinszelet", "60"},
             {"Péksütemény", "60"}, {"Tojásfehérje", "33"},
@@ -4425,8 +4435,13 @@ public final class Foods {
         List<Match> out = new ArrayList<>();
         for (Match m : ms) {
             boolean drop = false;
+            // Az EGYBEÍRT „proteinturmix" maga a turmix, nem jelző: a
+            // „proteinturmix eperrel" turmixa eddig kiesett, csak az eper
+            // maradt – a szóköz hiánya miatt jelzőnek látszott.
             if (m.food.name.startsWith("Protein turmix")
-                    && !q.substring(m.pos, m.pos + m.len).contains(" ")) {
+                    && !q.substring(m.pos, m.pos + m.len).contains(" ")
+                    && !q.substring(m.pos, m.pos + m.len)
+                        .matches(".*(?:turmix|shake|sejk|smoothie).*")) {
                 int e = m.pos + m.len;
                 while (e < q.length() && Character.isLetter(q.charAt(e))) e++;
                 while (e < q.length() && q.charAt(e) == ' ') e++;
