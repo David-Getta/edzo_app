@@ -217,6 +217,9 @@ public final class Activities {
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",
+                    // A „core" törzsedzés: az „5 km futás + 20 perc core"
+                    // húsz perce a futás hosszát írta felül, a core eltűnt.
+                    "core",
                     // Az erőnléti a csapatsportok kiegészítő edzése.
                     "eronleti",
                     // A SÚLYOK a súlyzók termi rövidítése („súlyok 40 perc").

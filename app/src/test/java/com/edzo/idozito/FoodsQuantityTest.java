@@ -608,4 +608,17 @@ public class FoodsQuantityTest {
         assertEquals("Aszalt gyümölcs", h.get(1).food.name);
         assertEquals(20.0, h.get(1).grams, 0.01);
     }
+    /**
+     * A tábla fele fél tábla.
+     *
+     * Az „egy tábla étcsoki fele" egész táblaként ment be – a „fele" a
+     * tábláé, nem a csokié.
+     */
+    @Test public void halfOfABarIsHalfABar() {
+        List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Este egy tábla étcsoki fele és 2 dl tej");
+        assertEquals("Csokoládé", h.get(0).food.name);
+        assertEquals(50.0, h.get(0).grams, 0.01);
+        assertEquals(200.0, h.get(1).grams, 0.01);
+    }
 }

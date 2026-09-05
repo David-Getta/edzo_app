@@ -10529,4 +10529,19 @@ public class ActivitiesParseTest {
                 + "aztán lecseréltek").plans.get(0).minutes);
         assertFalse(Activities.parse("Meccsen voltunk, 2 gólt lőttem").isEmpty());
     }
+    /**
+     * A „core" törzsedzés, saját percekkel.
+     *
+     * Az „5 km futás + 20 perc core" húsz perce a futás hosszát írta
+     * felül, a core pedig eltűnt.
+     */
+    @Test public void coreIsAWorkoutOfItsOwn() {
+        List<Activities.Plan> p = Activities.parse("A mai edzés: 5 km futás + "
+                + "20 perc core").plans;
+        assertEquals(2, p.size());
+        assertEquals(5.0, p.get(0).km, 0.001);
+        assertEquals(30, p.get(0).minutes);
+        assertEquals("kondi", p.get(1).kind.id);
+        assertEquals(20, p.get(1).minutes);
+    }
 }

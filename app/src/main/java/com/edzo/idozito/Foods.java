@@ -3445,6 +3445,10 @@ public final class Foods {
         // A BIRTOKOS FELE is fél adag: a „megettem a pizza felét" teljes
         // pizzaként ment be. Az „a SZÓ felét/fele" alak fél SZÓ-ra íródik
         // át – nem étel-szóra alkalmazva ártalmatlan.
+        // A TÁBLA FELE fél tábla: az „egy tábla étcsoki fele" egész
+        // táblaként ment be – a „fele" a tábláé, nem a csokié.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:egy\\s+)?t[aá]bla\\s+"
+                + "(\\p{L}{3,})\\s+fel(?:e|et|ét)(?!\\p{L})", "fél tábla $1");
         query = query.replaceAll("(?iu)(?<!\\p{L})az? (\\p{L}{3,}) "
                 + "fel(?:e|et|ét)(?!\\p{L})", "fél $1");
         // A „MELLÉ" névelős étele EGY darab: az „ettem két szeletet a
