@@ -438,6 +438,9 @@ public final class Foods {
         new Food("Káposzta", 25, 1.3, 150, "kaposzta"),
         new Food("Tükörtojás", 200, 13, 110, "tukortojas"),
         new Food("Bableves", 90, 5, 400, "bableves"),
+        // A lencseleves leves, nem egy adag főtt lencse: az „egy nagy tál
+        // lencseleves" kétszáz gramm főtt lencseként ment be.
+        new Food("Lencseleves", 95, 6, 400, "lencseleves", "lencse leves"),
         new Food("Palócleves", 80, 5, 400, "palocleves", "paloc leves"),
         // A barackleves hosszabb töve veri a barackle-t: a hideg
         // gyümölcsleves nem pohár lé.
@@ -3655,6 +3658,11 @@ public final class Foods {
             rp.appendTail(rb);
             query = rb.toString();
         }
+        // A TEJCSOKI csoki: a „fél tábla tejcsoki és egy pohár tej" teje
+        // elveszett, mert a tej szava a tejcsoki belsejében már elkelt,
+        // és egy étel csak egyszer kerül elő. A jelző elhagyva a csoki
+        // marad csoki, a tej pedig tej.
+        query = query.replaceAll("(?iu)(?<!\\p{L})tej(?=csoki|csokol)", "");
         // A FÉL CSIRKE egy fél sült csirke, nem fél adag csirkemell: az
         // „ettem egy fél csirkét krumplival" hetvenöt gramm csirkemellé
         // lett – egy fél grillcsirke húsa a négyszáz grammot is

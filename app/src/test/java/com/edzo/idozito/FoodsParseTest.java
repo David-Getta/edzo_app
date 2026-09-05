@@ -3351,4 +3351,23 @@ public class FoodsParseTest {
         // Egyetlen tétel mellett a gyűjtőnév marad.
         assertEquals(2, hits("Gyümölcs: banán").size());
     }
+    /**
+     * A tejcsoki csoki, a lencseleves leves.
+     *
+     * A „fél tábla tejcsoki és egy pohár tej" teje elveszett, mert a tej
+     * szava a tejcsoki belsejében már elkelt; az „egy nagy tál
+     * lencseleves" kétszáz gramm főtt lencseként ment be.
+     */
+    @Test public void milkChocolateDoesNotEatTheMilkAndLentilSoupIsSoup() {
+        List<Foods.Hit> h = hits("Fél tábla tejcsoki és egy pohár tej");
+        assertEquals(2, h.size());
+        assertEquals("Csokoládé", h.get(0).food.name);
+        assertEquals(50.0, h.get(0).grams, 0.01);
+        assertEquals("Tej", h.get(1).food.name);
+        assertEquals(200.0, h.get(1).grams, 0.01);
+        h = hits("Ebéd: egy nagy tál lencseleves, 2 szelet kenyérrel");
+        assertEquals("Lencseleves", h.get(0).food.name);
+        assertEquals("Lencse (főtt)", hits("100 g főtt lencse salátában")
+                .get(0).food.name);
+    }
 }
