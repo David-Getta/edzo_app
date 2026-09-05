@@ -325,6 +325,24 @@ public final class BodyParse {
         // méréséből semmi nem lett – a kötőjel a kilóhoz tapadt, és a
         // szám elveszett. A „10-kor" kötőjele szóköz nélkül marad, ami.
         q = q.replaceAll("\\s+[\u2013\u2014-]\\s+", ", ");
+        // A SOROZAT UTÁNI súlylista a gyakorlaté, egyben: a „fekvenyomás
+        // 3x8 (70, 75, 80 kg)" utolsó kilója önálló tagmondatként túlélte
+        // a gyakorlat tiltását, és nyolcvan kilós testsúly lett belőle.
+        // A vesszős listát kötőjelessé írjuk, hogy a tagmondat egyben
+        // maradjon – és egyben essen ki.
+        {
+            java.util.regex.Matcher wl = java.util.regex.Pattern.compile(
+                    "(?iu)(\\d{1,2}\\s?[x\u00d7]\\s?\\d{1,3})\\s*\\(?\\s*"
+                    + "(\\d{2,3}(?:[.,]\\d)?(?:\\s*,\\s*\\d{2,3}(?:[.,]\\d)?){1,5})"
+                    + "\\s?(?:kg|kil[oó]\\p{L}*)?\\s*\\)?").matcher(q);
+            StringBuffer wb = new StringBuffer();
+            while (wl.find())
+                wl.appendReplacement(wb, java.util.regex.Matcher.quoteReplacement(
+                        wl.group(1) + " " + wl.group(2).replaceAll("\\s*,\\s*", "-")
+                        + " kg "));
+            wl.appendTail(wb);
+            q = wb.toString();
+        }
         // A KÜSZÖB tagmondata nem veszi el a kimondott mérést: a „ma
         // 100,4 kg, átléptem a 100-at lefelé... na jó, majdnem" mérése
         // TELJESEN elveszett – a küszöb- és a majdnem-tagmondat idegen
@@ -611,6 +629,7 @@ public final class BodyParse {
         // A „MOST N" elé is határ kerül: a „fogyókúra: most 92,7 kg" mai
         // értéke a kúra tiltószavával egy tagmondatban ült, és elveszett.
         s = s.replaceAll("(?<=[a-z0-9]) (?=most\\s+\\d)", ", ");
+        String pre = s;
         boolean anyBlocked = adjectiveKg(s) || liftStem(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
         if (anyBlocked) {
@@ -624,6 +643,15 @@ public final class BodyParse {
             }
             s = keepB.toString().trim();
             if (s.isEmpty()) return new Body(0, 0);
+            // A GYAKORLAT mellől leszakadt kiló nem mérés: a „fekvenyomás
+            // 3x8 (70, 75, 80 kg)" nyolcvan kilója önálló tagmondatként
+            // túlélte a tiltást, és nyolcvan kilós testsúly lett belőle.
+            // Ha a tiltott tagmondat gyakorlatot nevezett meg, a maradék
+            // csak akkor mérés, ha ki is mondja.
+            if (liftStem(pre) && !s.matches("(?s).*(?<![a-z])(?:vagyok|voltam"
+                    + "|lettem|nyomok|sulyom|suly|testsuly\\w*|merleg\\w*|mertem"
+                    + "|megmertem|meres\\w*|fogytam|hiztam|leadtam)(?![a-z]).*"))
+                return new Body(0, 0);
         }
         // A két kapu közül legalább az egyiknek nyitva kell lennie.
         // A MEG NEM TÖRTÉNT mérés nem mai adat: a „ma nem mértem meg

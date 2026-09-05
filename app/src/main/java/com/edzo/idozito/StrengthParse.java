@@ -439,6 +439,38 @@ public final class StrengthParse {
         // nyitó zárójele a kör számához tapadt, és a guggolás sora
         // nyomtalanul elveszett. A számozott lista „1)" jelölője marad –
         // azt a sorszám-maszkoló kezeli.
+        // A ZÁRÓJELES, vesszős súlylista a sorozatok súlya, sorban: a
+        // „fekvenyomás 3x8 (70, 75, 80 kg)" saját testsúlyos lett, a
+        // vessző nélküli „3x8 70, 75, 80 kg" pedig 75,8 kilós. A listát
+        // kötőjeles piramissá írjuk, amit a súly-olvasó régóta ért.
+        {
+            java.util.regex.Matcher wl = java.util.regex.Pattern.compile(
+                    "(?iu)(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s*\\(?\\s*"
+                    + "(\\d{2,3}(?:[.,]5)?(?:\\s*,\\s*\\d{2,3}(?:[.,]5)?){1,5})"
+                    + "\\s?(kg|kil[oó]\\p{L}*)?\\s*\\)?").matcher(text);
+            StringBuffer wb = new StringBuffer();
+            while (wl.find()) {
+                String[] ws = wl.group(2).split("\\s*,\\s*");
+                String[] nm = wl.group(1).toLowerCase().split("\\s?[x\u00d7]\\s?");
+                String rep;
+                if (nm.length == 2 && String.valueOf(ws.length).equals(nm[0].trim())) {
+                    // Annyi súly, ahány sorozat: mindegyik a sajátját kapja.
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < ws.length; i++) {
+                        if (i > 0) sb.append(", ");
+                        sb.append("1x").append(nm[1].trim()).append(' ')
+                                .append(ws[i]).append(" kg");
+                    }
+                    rep = sb.toString() + " ";
+                } else {
+                    rep = wl.group(1) + " " + wl.group(2).replaceAll("\\s*,\\s*", "-")
+                            + " kg ";
+                }
+                wl.appendReplacement(wb, java.util.regex.Matcher.quoteReplacement(rep));
+            }
+            wl.appendTail(wb);
+            text = wb.toString();
+        }
         text = text.replaceAll("\\(|(?<!\\d)\\)", ", ");
         // Az ÖSSZEG ÉS A BONTÁSA egy adag: a „fekvőtámasz 100 db egy nap
         // alatt, 10x10" száz darabja mellé még tíz tízes sorozat is

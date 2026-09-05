@@ -129,6 +129,12 @@ public final class Sleep {
             String n = Hu.digits(Foods.norm(q));
             n = n.replaceAll("(?<![a-z])(ejjel|ejszaka)\\s+(?:meg\\s+|pedig\\s+)?"
                     + "(\\d{1,2})\\s?-?o?t(?![a-z])", "$1 $2 orat");
+            // A TEGNAPI ÉJSZAKA után a „ma N" a mai: a „tegnap 7 óra alvás,
+            // ma 6,5" hét órát írt a mai napra a hat és fél helyett – a
+            // mai szám mellett nem állt „óra", és a tegnapi nyert.
+            n = n.replaceAll("(?<![a-z])tegnap[^,;.]*?\\d[^,;.]*[,;]\\s*ma\\s+"
+                    + "(\\d{1,2}(?:[.,]\\d)?)(?![\\d,.])"
+                    + "(?!\\s?(?:perc|km|kg|kilo|lepes))", "ma $1 orat aludtam");
             java.util.regex.Matcher nm = java.util.regex.Pattern.compile(
                     "(?<![a-z])(?:(?:delutan|delben|delelott|napkozben|ebed utan)"
                     + "\\s+(?:is\\s+|meg\\s+)?(?:aludtam\\s+)?(\\d{1,2}(?:[.,]\\d)?)"

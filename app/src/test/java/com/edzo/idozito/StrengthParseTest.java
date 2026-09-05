@@ -2669,4 +2669,20 @@ public class StrengthParseTest {
         assertEquals("Csípőemelés", it.get(1).name);
         assertEquals(45, it.get(1).totalReps());
     }
+    /**
+     * A zárójeles, vesszős súlylista a sorozatok súlya, sorban.
+     *
+     * A „fekvenyomás 3x8 (70, 75, 80 kg)" saját testsúlyos lett, a
+     * vessző nélküli „3x8 70, 75, 80 kg" pedig 75,8 kilós.
+     */
+    @Test public void aCommaWeightListAfterTheSetsIsARamp() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Kondi: fekvenyomás "
+                + "3x8 (70, 75, 80 kg)");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(70.0, it.get(0).sets.get(0).weight, 0.01);
+        assertEquals(80.0, it.get(0).sets.get(2).weight, 0.01);
+        assertEquals(80.0, StrengthParse.parse("Fekvenyomás 3x8 70, 75, 80 kg")
+                .get(0).topWeight(), 0.01);
+    }
 }

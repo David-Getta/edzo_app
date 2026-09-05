@@ -590,4 +590,14 @@ public class SleepTest {
                 + "szunyókálás"), 0.01);
         assertTrue(Sleep.parse("Aludtam egy órát délután") <= 0);
     }
+    /**
+     * A tegnapi éjszaka után a „ma N" a mai.
+     *
+     * A „tegnap 7 óra alvás, ma 6,5" hét órát írt a mai napra a hat és
+     * fél helyett – a mai szám mellett nem állt „óra".
+     */
+    @Test public void todaysHoursBeatYesterdays() {
+        assertEquals(6.5, Sleep.parse("Tegnap 7 óra alvás, ma 6,5"), 0.01);
+        assertEquals(8, Sleep.parse("Tegnap 6 órát aludtam, ma 8-at"), 0.01);
+    }
 }

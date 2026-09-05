@@ -1458,4 +1458,16 @@ public class BodyParseTest {
         // A napnév magában időpont, nem múlt.
         kg("kedden 80 kg voltam", 80);
     }
+    /**
+     * A sorozat utáni súlylista a gyakorlaté, nem mérés.
+     *
+     * A „fekvenyomás 3x8 (70, 75, 80 kg)" utolsó kilója önálló
+     * tagmondatként túlélte a gyakorlat tiltását, és nyolcvan kilós
+     * testsúly lett belőle. A kimondott mérés a gyakorlat mellett marad.
+     */
+    @Test public void aWeightListAfterTheSetsIsNotABodyReading() {
+        none("Kondi: fekvenyom\u00e1s 3x8 (70, 75, 80 kg)");
+        none("Fekvenyom\u00e1s 3x8 70, 75, 80 kg");
+        kg("Reggel 80 kg voltam, fekvenyom\u00e1s 3x8 70 kg", 80);
+    }
 }
