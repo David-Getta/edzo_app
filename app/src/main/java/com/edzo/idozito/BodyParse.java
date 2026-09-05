@@ -325,6 +325,12 @@ public final class BodyParse {
         // méréséből semmi nem lett – a kötőjel a kilóhoz tapadt, és a
         // szám elveszett. A „10-kor" kötőjele szóköz nélkül marad, ami.
         q = q.replaceAll("\\s+[\u2013\u2014-]\\s+", ", ");
+        // A NYÍL a -ról/-ra pár: a „testsúly: 90,4 → 89,8 egy hét alatt"
+        // a RÉGI számot vette – a nyíl bal oldalát –, pedig a jobb oldal
+        // a mai. Ugyanígy a „->" és a „=>".
+        q = q.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)\\s*"
+                + "(?:\u2192|->|=>|\u21d2)\\s*(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])",
+                "$1-r\u00f3l $2-ra");
         // A SOROZAT UTÁNI súlylista a gyakorlaté, egyben: a „fekvenyomás
         // 3x8 (70, 75, 80 kg)" utolsó kilója önálló tagmondatként túlélte
         // a gyakorlat tiltását, és nyolcvan kilós testsúly lett belőle.

@@ -1470,4 +1470,16 @@ public class BodyParseTest {
         none("Fekvenyom\u00e1s 3x8 70, 75, 80 kg");
         kg("Reggel 80 kg voltam, fekvenyom\u00e1s 3x8 70 kg", 80);
     }
+    /**
+     * A nyíl a -ról/-ra pár: a jobb oldal a mai.
+     *
+     * A „testsúly: 90,4 → 89,8 egy hét alatt" a RÉGI számot vette – a
+     * nyíl bal oldalát.
+     */
+    @Test public void anArrowPointsToTodaysValue() {
+        kg("Tests\u00faly: 90,4 \u2192 89,8 egy h\u00e9t alatt", 89.8);
+        kg("S\u00faly 82 -> 81,5", 81.5);
+        BodyParse.Body b = BodyParse.parse("Der\u00e9kb\u0151s\u00e9g 92 \u2192 88 cm");
+        assertEquals(88, b.cm[0], 0.01);
+    }
 }

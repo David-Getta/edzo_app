@@ -2906,6 +2906,9 @@ public final class Foods {
                         // „csak vizet ittam, kb 1,5 litert" másfél litere
                         // eddig negyed literes pohárra zsugorodott.
                         + "(\\d{1,2}(?:[.,]\\d{1,2})?|[a-z]{2,10})\\s+"
+                        // A MÉRET jelzője beékelődhet: a „rakott krumpli,
+                        // 2 nagy szelet" kettője eddig elveszett.
+                        + "(?:(?:nagy|kis|kicsi|vekony|vastag|jo\\s+nagy)\\s+)?"
                         // A KÖTŐJELES rag is rag: az „utána palacsintát,
                         // 3 db-ot" hármasa eddig egyetlen adagra
                         // zsugorodott, mert a kötőjel megtörte a szót.

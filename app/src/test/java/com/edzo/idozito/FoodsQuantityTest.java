@@ -637,4 +637,16 @@ public class FoodsQuantityTest {
         assertEquals(300.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
                 "Pizza sonkával, 3 szelet").get(0).grams, 0.01);
     }
+    /**
+     * A méret jelzője beékelődhet a hátravetett darabszámba.
+     *
+     * A „rakott krumpli, 2 nagy szelet" kettője eddig elveszett – egy
+     * adag ment be.
+     */
+    @Test public void aSizeAdjectiveInATrailingCountStillCounts() {
+        assertEquals(700.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Ebéd: rakott krumpli, 2 nagy szelet").get(0).grams, 0.01);
+        assertEquals(300.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Pizza, 3 vékony szelet").get(0).grams, 0.01);
+    }
 }
