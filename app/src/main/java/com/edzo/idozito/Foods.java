@@ -3577,6 +3577,28 @@ public final class Foods {
                 }
             }
         }
+        // A REPETA második adag: az „ebédre kétszer szedtem a lecsóból"
+        // egyetlen adag lecsó lett, a „repetáztam a pörköltből" és a
+        // „duplán szedtem" ugyanúgy – pedig aki ezt leírja, az épp azt
+        // mondja, hogy többet evett a szokásosnál. A szorzó és az ige
+        // helyére a kimondott adagszám kerül.
+        {
+            java.util.regex.Matcher rp = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}])(?:(k[eé]tszer|h[aá]romszor|n[eé]gyszer"
+                    + "|dupl[aá]n|dupla\\s+adagot|dupla\\s+adaggal)\\s+"
+                    + "(?:szedtem|szedt[uü]nk|vettem|mertem|ettem|ett[uü]nk"
+                    + "|rep[eé]t[aá]ztam|rep[eé]t[aá]ztunk)"
+                    + "|(rep[eé]t[aá]ztam|rep[eé]t[aá]ztunk))"
+                    + "(?:\\s+(?:a|az))?\\s+(?=\\p{L})").matcher(query);
+            StringBuffer rb = new StringBuffer();
+            while (rp.find()) {
+                String w = rp.group(1) == null ? "" : Foods.norm(rp.group(1));
+                int n = w.startsWith("harom") ? 3 : w.startsWith("negy") ? 4 : 2;
+                rp.appendReplacement(rb, n + " adag ");
+            }
+            rp.appendTail(rb);
+            query = rb.toString();
+        }
         // A FÉL CSIRKE egy fél sült csirke, nem fél adag csirkemell: az
         // „ettem egy fél csirkét krumplival" hetvenöt gramm csirkemellé
         // lett – egy fél grillcsirke húsa a négyszáz grammot is

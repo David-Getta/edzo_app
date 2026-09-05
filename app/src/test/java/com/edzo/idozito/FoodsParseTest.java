@@ -3282,4 +3282,19 @@ public class FoodsParseTest {
                 .get(0).food.name);
         assertEquals(75.0, hits("Fél csirkemell salátával").get(0).grams, 0.01);
     }
+    /**
+     * A repeta második adag.
+     *
+     * Az „ebédre kétszer szedtem a lecsóból" egyetlen adag lecsó lett,
+     * a „repetáztam a pörköltből" és a „duplán szedtem" ugyanúgy.
+     */
+    @Test public void aSecondHelpingDoublesThePortion() {
+        assertEquals(600.0, hits("Ebédre kétszer szedtem a lecsóból")
+                .get(0).grams, 0.01);
+        assertEquals(600.0, hits("Repetáztam a pörköltből").get(0).grams, 0.01);
+        assertEquals(1200.0, hits("Háromszor szedtem a gulyásból, nagyon "
+                + "finom volt").get(0).grams, 0.01);
+        assertEquals(700.0, hits("Duplán szedtem a rakott krumpliból")
+                .get(0).grams, 0.01);
+    }
 }

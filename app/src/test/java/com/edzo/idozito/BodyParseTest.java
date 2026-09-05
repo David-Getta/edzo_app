@@ -1421,4 +1421,16 @@ public class BodyParseTest {
         // A valódi esti második mérés továbbra is a későbbi értéket adja.
         kg("Ma reggel m\u00e9g 79,8 volt, este m\u00e1r 79,2", 79.2);
     }
+    /**
+     * A „fogyasztottam 2 kg-ot" fogyás, nem evés.
+     *
+     * A „fogyasztottam 2 kg-ot a héten, most 88" nyolcvannyolcasa
+     * teljesen elveszett, mert a mondatban nem volt mérés-szó.
+     */
+    @Test public void colloquialFogyasztottamWithKilosIsWeightLoss() {
+        kg("fogyasztottam 2 kg-ot a h\u00e9ten, most 88", 88);
+        kg("Lefogyasztottam 3 kil\u00f3t, ma 79,4 kg", 79.4);
+        // Étel mellett marad evés.
+        none("Eb\u00e9dre 2 adag p\u00f6rk\u00f6ltet fogyasztottam");
+    }
 }

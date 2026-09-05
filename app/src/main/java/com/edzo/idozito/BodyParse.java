@@ -460,6 +460,12 @@ public final class BodyParse {
         // A KÖRÜL a mérleg ingadozását mondja, nem tiltószó: a „stagnál a
         // súlyom 82 körül" nyolcvankét kiló – eddig elveszett.
         s = s.replaceAll("(?<=\\d)\\s?korul(?![a-z])", "");
+        // A „FOGYASZTOTTAM 2 kg-ot" a köznyelvben fogyás, nem evés: a
+        // „fogyasztottam 2 kg-ot a héten, most 88" nyolcvannyolcasa
+        // teljesen elveszett, mert a mondatban nem volt mérés-szó. Csak
+        // kilós szám előtt: az „ételt fogyasztottam" marad étkezés.
+        s = s.replaceAll("(?<![a-z])(?:le)?fogyasztottam"
+                + "(?=\\s+\\d[\\d,.]*\\s?-?(?:kg|kilo))", "fogytam");
         // A HOZZÁVETŐLEGES kiló csak akkor mérés, ha a mondat máshol
         // kimondja, hogy mérlegről van szó: a „kb 70 kiló vagyok már csak,
         // 82-ről indultam" hetvenese eddig teljesen elveszett – a „kb"
