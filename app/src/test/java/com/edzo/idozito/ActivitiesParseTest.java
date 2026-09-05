@@ -10503,4 +10503,16 @@ public class ActivitiesParseTest {
         // A napszakkal kimondott óra óra marad.
         assertEquals(18, Activities.parse("Este 6 kor tabata 8 kör 20/10").hour);
     }
+    /**
+     * A küszöb utáni „pontosan" a valódi lépésszám.
+     *
+     * A „ma 10 000 lépés felett, pontosan 11 340" tízezer lépésként ment
+     * be – a kerek küszöb nyert a kimondott pontos szám helyett.
+     */
+    @Test public void theExactStepCountBeatsTheThreshold() {
+        Activities.Parsed p = Activities.parse("Ma 10 000 lépés felett, "
+                + "pontosan 11 340");
+        assertEquals(1, p.plans.size());
+        assertEquals(11340, p.plans.get(0).steps);
+    }
 }

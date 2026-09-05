@@ -2942,6 +2942,19 @@ public final class Activities {
         // táv nélküli futás maradt – a h betű miatt egyik táv-szabály sem
         // ismerte fel.
         s = s.replaceAll("(?<![a-z])(fel|negyed)?\\s?marathon", "$1maraton");
+        // A KÜSZÖB utáni „pontosan" a valódi lépésszám: a „ma 10 000 lépés
+        // felett, pontosan 11 340" tízezer lépésként ment be – a kerek
+        // küszöb nyert a kimondott pontos szám helyett.
+        {
+            java.util.regex.Matcher pk = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])\\d{1,3}(?: ?\\d{3})?\\s?(lepes\\w*)\\s+"
+                    + "(?:felett|folott|fole|alatt|ala)(?![a-z])[^,;.]*?[,;]?"
+                    + "\\s*pontosan\\s+(\\d{1,3}(?: ?\\d{3})?)(?![\\d,.])")
+                    .matcher(s);
+            if (pk.find())
+                s = s.substring(0, pk.start()) + pk.group(2).replace(" ", "")
+                        + " " + pk.group(1) + s.substring(pk.end());
+        }
         // A futó-szleng SZÁMNEVES távja kilométer: a „lefutottam egy
         // tízest" tíz kilométer futás – eddig üresen jött vissza.
         {

@@ -75,7 +75,9 @@ public final class StrengthParse {
     static final String[][] MOVES = {
             // Az egy g-s „gugolás" gyakori elírás – eddig semmi nem lett
             // belőle.
-            {"Guggolás", "guggol", "gugol", "szkvot", "squat"},
+            // A „goblet" magában is goblet-guggolás: a „3 kör: 15 swing,
+            // 10 goblet, 5 fekvő" goblet-sora eddig kimaradt.
+            {"Guggolás", "guggol", "gugol", "szkvot", "squat", "goblet"},
             // A „fekve" magában is fekvenyomás: a magyar terem fordított
             // szórenddel is mondja („nyomtam 100 kilót fekve ötöt"), és a
             // fekvőtámasz szótöve más, tehát nem ütközik vele.
@@ -1104,6 +1106,23 @@ public final class StrengthParse {
                 kept.add(it);
             }
             merged = kept;
+        }
+        // Az UTOLSÓ SZETT kimondott száma felülírja az utolsó sorozatot: a
+        // „fekvenyomás 3x8 70 kg, utolsó szett csak 6 ment" nyolc-nyolc-
+        // nyolcként ment be a nyolc-nyolc-hat helyett. Csak lefelé: a
+        // „csak" épp a kudarcot mondja, több ismétlést nem.
+        java.util.regex.Matcher ls = java.util.regex.Pattern.compile(
+                "(?iu)(?<![\\p{L}])(?:az?\\s+)?utols[oó](?:\\s+(?:szett|sorozat"
+                + "|sz[eé]ria))?\\p{L}*\\s+(?:m[aá]r\\s+)?(?:csak\\s+)?(\\d{1,2})"
+                + "(?![\\d,.])(?!\\s?[x×])(?!\\s?-?(?:kg|kil))").matcher(text);
+        if (ls.find() && !merged.isEmpty()) {
+            Item last = merged.get(merged.size() - 1);
+            int n = Integer.parseInt(ls.group(1));
+            if (!last.sets.isEmpty()) {
+                Set old = last.sets.get(last.sets.size() - 1);
+                if (n >= 1 && n < old.reps)
+                    last.sets.set(last.sets.size() - 1, new Set(n, old.weight));
+            }
         }
         return merged;
     }

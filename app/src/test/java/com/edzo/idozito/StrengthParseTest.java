@@ -2585,4 +2585,27 @@ public class StrengthParseTest {
         assertEquals(60.0, it.get(0).topWeight(), 0.01);
         assertEquals(80.0, it.get(1).topWeight(), 0.01);
     }
+    /**
+     * Az utolsó szett kimondott száma felülírja az utolsó sorozatot.
+     *
+     * A „fekvenyomás 3x8 70 kg, utolsó szett csak 6 ment" nyolc-nyolc-
+     * nyolcként ment be a nyolc-nyolc-hat helyett. A goblet magában is
+     * goblet-guggolás.
+     */
+    @Test public void theLastSetsOwnNumberOverridesIt() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 3x8 "
+                + "70 kg, utolsó szett csak 6 ment");
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(22, it.get(0).totalReps());
+        assertEquals(70.0, it.get(0).sets.get(2).weight, 0.01);
+        assertEquals(23, StrengthParse.parse("Guggolás 5x5 100 kg, az utolsó "
+                + "sorozat már csak 3").get(0).totalReps());
+        // A súlyról szóló „utolsó szett" nem ismétlésszám.
+        assertEquals(24, StrengthParse.parse("Fekvenyomás 3x8 70 kg, utolsó "
+                + "szett 10 kg-mal többel").get(0).totalReps());
+        it = StrengthParse.parse("Kettlebell 3 kör: 15 swing, 10 goblet, 5 fekvő");
+        assertEquals(3, it.size());
+        assertEquals("Guggolás", it.get(1).name);
+        assertEquals(30, it.get(1).totalReps());
+    }
 }
