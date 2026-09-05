@@ -1086,10 +1086,14 @@ public final class StrengthParse {
         t = t.replaceAll("^(?:es\\s+|majd\\s+|aztan\\s+|utana\\s+|azutan\\s+|meg\\s+|"
                 + "munkasorozat\\s+|munkaszett\\s+|munkasuly\\s+|bemelegites\\s+|"
                 + "vegen\\s+|vegul\\s+|zarasnak\\s+|zaraskent\\s+|raadasnak\\s+|"
+                + "raadaskent\\s+|raadas\\s+|plusz\\s+|"
                 + "felvezetes\\s+|sorozatok\\s+)+", "");
         t = t.replaceAll("(?:\\s+(?:dolgoztam|nyomtam|toltam|huztam|csinaltam|mentem|"
                 + "ment|jott|kovetkezett|volt))+$", "");
-        t = t.replaceAll("-?(?:mal|vel|nal|nel)$", "");
+        // A „110-zel" és a „100-zal" ugyanaz a -val/-vel rag, csak a
+        // számnév végződéséhez hasonulva: a „majd 2x5 110-zel" folytatása
+        // eddig nyomtalanul elveszett.
+        t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel)$", "");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")

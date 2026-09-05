@@ -2937,6 +2937,11 @@ public final class Activities {
         // látszott, a táv pedig elveszett.
         s = s.replaceAll("(?<![a-z])half\\s?marath?on\\w*", "felmaraton");
         s = s.replaceAll("(?<![a-z])full\\s?marath?on\\w*", "maraton");
+        // Az ANGOLOS „marathon" írásmód is maraton: a „fél marathon volt
+        // ma" mondatból semmi nem lett, a „lefutottam a marathont" pedig
+        // táv nélküli futás maradt – a h betű miatt egyik táv-szabály sem
+        // ismerte fel.
+        s = s.replaceAll("(?<![a-z])(fel|negyed)?\\s?marathon", "$1maraton");
         // A futó-szleng SZÁMNEVES távja kilométer: a „lefutottam egy
         // tízest" tíz kilométer futás – eddig üresen jött vissza.
         {
@@ -7485,6 +7490,15 @@ public final class Activities {
             // óra viszont maradjon óra – a „reggel 7 kor 5 km futás" hetese
             // időpont, és a napszak mondja ki.
             if (spaced && s.substring(m.end()).matches("(?s)\\s*\\d.*")
+                    && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                        + "(reggel|delelott|delben|delutan|este|ejjel|"
+                        + "hajnalban|ejszaka)\\w*\\s*$")) continue;
+            // Az INTERVALL-FORMA neve mellett a kör kör: a „tabata 8 kör
+            // 20/10" reggel nyolcra tette a bejegyzést, mert a munka/pihenő
+            // pár addigra már kikerült a mondatból, és a „8 kor" magára
+            // maradt. A napszakkal kimondott óra itt is óra marad.
+            if (spaced && s.matches("(?s).*(?<![a-z])(?:tabata|hiit|emom"
+                    + "|amrap|intervall\\w*|koredzes\\w*)(?![a-z]).*")
                     && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
                         + "(reggel|delelott|delben|delutan|este|ejjel|"
                         + "hajnalban|ejszaka)\\w*\\s*$")) continue;

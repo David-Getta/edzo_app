@@ -4068,6 +4068,18 @@ public final class Foods {
                     && (unit.isEmpty() || unit.equals("es") || unit.equals("meg"));
             if (!portionWord && !fractionAtEnd && !isCountWord(unit)
                     && !isPortionWord(unit)) continue;
+            // A mérőszó UTÁNI étel, ha az már megkapta a számot: a
+            // „gulyásleves két szelet kenyérrel" kettője a kenyéré, mégis
+            // a leves is megkapta, és nyolcszáz gramm gulyás került a
+            // naplóba egy tányér helyett. Lentebb dől el, kié a szám: azé,
+            // akihez a mérőszó természetes (a levesnek nincs szelete).
+            int laterOwner = -1;
+            for (int k = 0; k < foods.size(); k++)
+                if (grams[k] > 0 && foodPos.get(k) > numEnd
+                        && countWordAt(q, numEnd, foodPos.get(k)) != null) {
+                    laterOwner = k;
+                    break;
+                }
             int best = -1;
             // Ha a darabszám tagmondatában nincs étel, az ELŐZŐ tagmondat
             // ételére mutat vissza: a „kávé, 4 csésze" négy csészéje eddig
@@ -4104,6 +4116,9 @@ public final class Foods {
                 if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
             }
             if (best < 0) continue;
+            if (laterOwner >= 0 && !fractionAtEnd && !portionWord
+                    && pieceFor(foods.get(best), unit) <= 0
+                    && pieceFor(foods.get(laterOwner), unit) > 0) continue;
             double piece = fractionAtEnd ? foods.get(best).portion
                     : pieceFor(foods.get(best), unit);
             if (piece <= 0 && count <= 6) piece = foods.get(best).portion;

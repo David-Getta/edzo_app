@@ -1052,4 +1052,17 @@ public class IntervalParseTest {
                 + "pihenő."));
     }
 
+    /**
+     * A napszak melletti „N kor" időpont, nem körszám.
+     *
+     * A „reggel 7 kor hiit 20 perc" hetese hétkörös időzítő-tervet adott
+     * – az órából.
+     */
+    @Test public void aClockHourNextToADayPartIsNotARoundCount() {
+        IntervalParse.Plan p = IntervalParse.parse("Reggel 7 kor hiit 20 perc");
+        assertNotNull(p);
+        assertTrue(p.rounds != 7);
+        assertEquals(8, IntervalParse.parse("Este 6 kor tabata 8 kör 20/10")
+                .rounds);
+    }
 }

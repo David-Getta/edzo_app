@@ -10474,4 +10474,33 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * Az angolos „marathon" írásmód is maraton.
+     *
+     * A „fél marathon volt ma" mondatból semmi nem lett, a „lefutottam a
+     * marathont" pedig táv nélküli futás maradt – a h betű miatt egyik
+     * táv-szabály sem ismerte fel.
+     */
+    @Test public void theEnglishMarathonSpellingIsAMarathonToo() {
+        Activities.Parsed p = Activities.parse("Fél marathon volt ma, 1:58 lett");
+        assertEquals(1, p.plans.size());
+        assertEquals(21.1, p.plans.get(0).km, 0.01);
+        assertEquals(42.2, Activities.parse("Lefutottam a marathont 4 óra "
+                + "alatt").plans.get(0).km, 0.01);
+    }
+
+    /**
+     * Az intervall-forma köre nem óra.
+     *
+     * A „tabata 8 kör 20/10" reggel nyolcra tette a bejegyzést: a
+     * munka/pihenő pár addigra kikerült a mondatból, és a „8 kor" magára
+     * maradva időpontnak látszott.
+     */
+    @Test public void tabataRoundsAreNotAClockHour() {
+        assertEquals(12, Activities.parse("Tabata 8 kör 20/10, utána 10 perc "
+                + "nyújtás").hour);
+        assertEquals(12, Activities.parse("8 kör 30/15 intervall").hour);
+        // A napszakkal kimondott óra óra marad.
+        assertEquals(18, Activities.parse("Este 6 kor tabata 8 kör 20/10").hour);
+    }
 }

@@ -2503,4 +2503,20 @@ public class StrengthParseTest {
                 + "szett 10-es kézisúlyzóval bicepsz.").get(0)
                 .sets.size());
     }
+    /**
+     * A hasonult -val/-vel rag is súly, a rag nélküli ráadás is folytatás.
+     *
+     * A „guggolás 4x8 100 kg, majd 2x5 110-zel" második sorozata
+     * nyomtalanul eltűnt: a „-zel" nem volt a levágott ragok között.
+     */
+    @Test public void assimilatedInstrumentalSuffixStillContinuesTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolás 4x8 "
+                + "100 kg, majd 2x5 110-zel");
+        assertEquals(1, it.size());
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(110.0, it.get(0).sets.get(5).weight, 0.01);
+        it = StrengthParse.parse("Holtemelés 3x5 140-nel, ráadás 1x3 150-zel");
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(150.0, it.get(0).topWeight(), 0.01);
+    }
 }

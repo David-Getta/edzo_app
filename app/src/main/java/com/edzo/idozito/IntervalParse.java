@@ -1133,6 +1133,16 @@ public final class IntervalParse {
             while (e > 0 && s.charAt(e - 1) == ' ') e--;
             int b = e;
             while (b > 0 && Character.isDigit(s.charAt(b - 1))) b--;
+            // A NAPSZAK melletti „N kor" időpont, nem körszám: a „reggel
+            // 7 kor hiit 20 perc" hetese hétkörös időzítő-tervet adott –
+            // az órából. Ékezet nélkül a „kör" és a „-kor" egybeesik, a
+            // napszak dönti el.
+            if (b < e && word.equals("kor") && s.substring(0, b).matches(
+                    "(?s).*(?<![a-z])(?:reggel|delelott|delben|delutan|este"
+                    + "|ejjel|hajnalban|ejszaka)\\s*$")) {
+                p = s.indexOf(word, p + 1);
+                continue;
+            }
             if (b < e) {
                 try {
                     int v = Integer.parseInt(s.substring(b, e));

@@ -3247,4 +3247,22 @@ public class FoodsParseTest {
         assertEquals(1, p.size());
         assertEquals(200.0, p.get(0).grams, 0.01);
     }
+    /**
+     * A mérőszó ahhoz az ételhez megy, akihez természetes.
+     *
+     * A „gulyásleves két szelet kenyérrel" kettőjét a leves is megkapta,
+     * és nyolcszáz gramm gulyás került a naplóba egy tányér helyett –
+     * pedig a levesnek nincs szelete, a kenyérnek van.
+     */
+    @Test public void aSliceCountBelongsToTheFoodThatHasSlices() {
+        List<Foods.Hit> h = hits("Gulyásleves két szelet kenyérrel");
+        assertEquals(2, h.size());
+        assertEquals("Gulyásleves", h.get(0).food.name);
+        assertEquals(0.0, h.get(0).grams, 0.001);
+        assertEquals(70.0, h.get(1).grams, 0.001);
+        // Ahol az előtte álló ételé a szelet, ott marad az övé.
+        assertEquals(105.0, hits("kenyérből 3 szeletet vajaztam meg")
+                .get(0).grams, 0.001);
+        assertEquals(200.0, hits("virsli 2 pár mustárral").get(0).grams, 0.5);
+    }
 }
