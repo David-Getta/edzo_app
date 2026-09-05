@@ -574,4 +574,20 @@ public class SleepTest {
         assertEquals(8.0, Sleep.parse("Éjjel 11-től reggel 7-ig "
                 + "aludtam."), 0.01);
     }
+    /**
+     * A délutáni szunyókálás hozzáadódik az éjszakához.
+     *
+     * Az „aludtam délután is egy órát, éjjel meg 6-ot" mondatból semmi
+     * nem lett – az egy óra a küszöb alatt volt, a hatos mellett meg nem
+     * állt „óra". Magában a szundi továbbra sem éjszaka.
+     */
+    @Test public void anAfternoonNapAddsToTheNight() {
+        assertEquals(7, Sleep.parse("Aludtam délután is egy órát, éjjel meg "
+                + "6-ot"), 0.01);
+        assertEquals(7, Sleep.parse("Aludtam 6 órát éjjel és egy órát "
+                + "délután"), 0.01);
+        assertEquals(7, Sleep.parse("Éjjel 6 óra alvás, délután még 1 óra "
+                + "szunyókálás"), 0.01);
+        assertTrue(Sleep.parse("Aludtam egy órát délután") <= 0);
+    }
 }

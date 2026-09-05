@@ -2608,4 +2608,22 @@ public class StrengthParseTest {
         assertEquals("Guggolás", it.get(1).name);
         assertEquals(30, it.get(1).totalReps());
     }
+    /**
+     * A súly eszköze nem zavarja a folytatást.
+     *
+     * A „guggolás 3x10 saját testsúllyal, majd 3x10 20 kg-os tárcsával"
+     * második három sorozata eddig elveszett – a „-os tárcsával" farok
+     * nem hagyta a mintát a számnál végződni.
+     */
+    @Test public void theEquipmentAfterTheWeightStillContinuesTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolás 3x10 saját "
+                + "testsúllyal, majd 3x10 20 kg-os tárcsával");
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(0.0, it.get(0).sets.get(0).weight, 0.01);
+        assertEquals(20.0, it.get(0).sets.get(5).weight, 0.01);
+        it = StrengthParse.parse("Vállnyomás 3x12 8 kg, aztán 2x8 10 kilós "
+                + "kézisúlyzókkal");
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(10.0, it.get(0).topWeight(), 0.01);
+    }
 }

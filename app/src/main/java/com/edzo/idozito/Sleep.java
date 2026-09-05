@@ -118,7 +118,44 @@ public final class Sleep {
      * a közvetlenül a szám után álló „és fél" hozzáadódik.
      */
     public static double parse(String q) {
-        double h = hours(q);
+        // A DÉLUTÁNI SZUNYÓKÁLÁS hozzáadódik az éjszakához: az „aludtam
+        // délután is egy órát, éjjel meg 6-ot" mondatból semmi nem lett –
+        // az egy óra az alsó küszöb alatt volt, a hatos mellett meg nem
+        // állt „óra". A szundit kivesszük, az éjszakát megnézzük, a kettő
+        // összege a nap alvása. Magában a szundi továbbra sem éjszaka.
+        double napH = 0;
+        String hq = q;
+        if (q != null) {
+            String n = Hu.digits(Foods.norm(q));
+            n = n.replaceAll("(?<![a-z])(ejjel|ejszaka)\\s+(?:meg\\s+|pedig\\s+)?"
+                    + "(\\d{1,2})\\s?-?o?t(?![a-z])", "$1 $2 orat");
+            java.util.regex.Matcher nm = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:(?:delutan|delben|delelott|napkozben|ebed utan)"
+                    + "\\s+(?:is\\s+|meg\\s+)?(?:aludtam\\s+)?(\\d{1,2}(?:[.,]\\d)?)"
+                    + "\\s?ora\\w*(?:\\s+(?:szundi\\w*|szunyokal\\w*))?"
+                    + "|(\\d{1,2}(?:[.,]\\d)?)\\s?ora\\w*\\s+(?:szundi\\w*"
+                    + "|szunyokal\\w*|alvas\\w*|aludtam)?\\s*(?:delutan|delben"
+                    + "|napkozben)(?![a-z])"
+                    + "|(\\d{1,2}(?:[.,]\\d)?)\\s?ora\\w*\\s+(?:szundi\\w*"
+                    + "|szunyokal\\w*))").matcher(n);
+            if (nm.find()) {
+                String g = nm.group(1) != null ? nm.group(1)
+                        : nm.group(2) != null ? nm.group(2) : nm.group(3);
+                try { napH = Double.parseDouble(g.replace(',', '.')); }
+                catch (NumberFormatException e) { napH = 0; }
+                if (napH > 0 && napH <= 3) {
+                    n = n.substring(0, nm.start()) + " " + n.substring(nm.end());
+                    hq = n;
+                } else {
+                    napH = 0;
+                }
+            } else if (!n.equals(Hu.digits(Foods.norm(q)))) {
+                hq = n;
+            }
+        }
+        double h = hours(hq);
+        if (h > 0 && napH > 0 && h >= MIN_H)
+            h = Math.round((h + napH) * 10) / 10.0;
         if (h <= 0) return h;
         // Az ELALVÁSIG eltelt idő nem alvás: a „22:30-kor feküdtem le és
         // 6-kor keltem, de csak fél óra múlva aludtam el" hét és fél órát

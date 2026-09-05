@@ -1170,6 +1170,12 @@ public final class StrengthParse {
         // A „110-zel" és a „100-zal" ugyanaz a -val/-vel rag, csak a
         // számnév végződéséhez hasonulva: a „majd 2x5 110-zel" folytatása
         // eddig nyomtalanul elveszett.
+        // A SÚLY ESZKÖZE nem zavar: a „majd 3x10 20 kg-os tárcsával"
+        // folytatása eddig elveszett, mert a „-os tárcsával" farok nem
+        // hagyta a mintát a számnál végződni.
+        t = t.replaceAll("(?<=\\d)\\s?(?:kg|kilo)\\s?-?(?:os|as|s)\\s+"
+                + "(?:tarcsa|kezisulyzo|sulyzo|kettlebell|rud|golyo|lemez"
+                + "|korong)\\w*$", " kg");
         t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel)$", "");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
