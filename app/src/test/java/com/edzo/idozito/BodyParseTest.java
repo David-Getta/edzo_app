@@ -1433,4 +1433,17 @@ public class BodyParseTest {
         // Étel mellett marad evés.
         none("Eb\u00e9dre 2 adag p\u00f6rk\u00f6ltet fogyasztottam");
     }
+    /**
+     * A szóközös gondolatjel tagmondat-határ.
+     *
+     * A „ma 82,9 kg – jó irány" méréséből semmi nem lett – a kötőjel a
+     * kilóhoz tapadt, és a szám elveszett.
+     */
+    @Test public void aSpacedDashIsAClauseBoundary() {
+        kg("Ma 82,9 kg \u2013 j\u00f3 ir\u00e1ny", 82.9);
+        kg("Ma 82,9 kg, tegnap 83,4 volt \u2013 j\u00f3 ir\u00e1ny", 82.9);
+        kg("Ma 82,9 kg, tegnap 83,4 volt - j\u00f3 ir\u00e1ny", 82.9);
+        // A kötőjeles időpont marad időpont.
+        kg("reggel 7-kor 80 kg voltam", 80);
+    }
 }

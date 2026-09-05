@@ -308,6 +308,10 @@ public final class BodyParse {
         // egyetlen szóközös sorrá olvadt, és a pulzus szavai miatt a mérés
         // kiesett. Vesszőre váltva ugyanaz, mint a vesszős beírás.
         q = q.replaceAll("[\\r\\n]+", ", ");
+        // A SZÓKÖZÖS GONDOLATJEL tagmondat-határ: a „ma 82,9 kg – jó irány"
+        // méréséből semmi nem lett – a kötőjel a kilóhoz tapadt, és a
+        // szám elveszett. A „10-kor" kötőjele szóköz nélkül marad, ami.
+        q = q.replaceAll("\\s+[\u2013\u2014-]\\s+", ", ");
         // A KÜSZÖB tagmondata nem veszi el a kimondott mérést: a „ma
         // 100,4 kg, átléptem a 100-at lefelé... na jó, majdnem" mérése
         // TELJESEN elveszett – a küszöb- és a majdnem-tagmondat idegen

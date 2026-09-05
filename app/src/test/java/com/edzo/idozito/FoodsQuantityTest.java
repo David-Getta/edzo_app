@@ -621,4 +621,20 @@ public class FoodsQuantityTest {
         assertEquals(50.0, h.get(0).grams, 0.01);
         assertEquals(200.0, h.get(1).grams, 0.01);
     }
+    /**
+     * A hátravetett szelet azé, akinek szelete van.
+     *
+     * A „kalács vajjal, lekvárral, 2 szelet" két szelete a lekváré lett
+     * (a legközelebbié), pedig a szelet a kalácsé.
+     */
+    @Test public void aTrailingSliceCountGoesToTheSliceableFood() {
+        List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Kalács vajjal, lekvárral, 2 szelet");
+        assertEquals("Kalács / bejgli", h.get(0).food.name);
+        assertEquals(80.0, h.get(0).grams, 0.01);
+        assertEquals(0.0, h.get(2).grams, 0.01);
+        // A legközelebbi marad, ha ő a szeletelhető.
+        assertEquals(300.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Pizza sonkával, 3 szelet").get(0).grams, 0.01);
+    }
 }

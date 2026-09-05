@@ -2661,4 +2661,12 @@ public class StrengthParseTest {
         assertEquals(20.0, StrengthParse.parse("Guggolás 3x10 20-as tárcsával "
                 + "a mellkason").get(0).topWeight(), 0.01);
     }
+    /** A „hídemelés" csípőemelés: a „3x15 hídemelés" eddig kimaradt. */
+    @Test public void hidemelesIsAHipBridge() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Este 3x20 felülés, "
+                + "3x15 hídemelés, 2 perc plank");
+        assertEquals(3, it.size());
+        assertEquals("Csípőemelés", it.get(1).name);
+        assertEquals(45, it.get(1).totalReps());
+    }
 }

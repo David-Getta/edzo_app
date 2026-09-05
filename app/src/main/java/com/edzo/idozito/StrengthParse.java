@@ -174,6 +174,8 @@ public final class StrengthParse {
                     // alakok szótövek, a ragtalan „híd" nem – az a
                     // folyón is átvezet.
                     "hidat", "hidak", "hidgyakorlat",
+                    // A „hídemelés" ugyanez: a „3x15 hídemelés" eddig kimaradt.
+                    "hidemel", "hid emel",
                     // A CSÍPŐTOLÁS ugyanez magyarul.
                     "csipotolas", "csipo tolas",
                     "medenceemel", "medence emel", "farizom"},

@@ -2613,6 +2613,9 @@ public final class Foods {
      */
     static final String[][] SLICE_GRAMS = {
             {"Pizza", "100"}, {"Sajttorta", "120"}, {"Sütemény", "80"},
+            // Egy szelet kalács negyven gramm: a „kalács vajjal, lekvárral,
+            // 2 szelet" két szelete eddig a lekváré lett.
+            {"Kalács / bejgli", "40"},
     };
 
     private static int sliceGrams(Food f) {
@@ -2920,12 +2923,14 @@ public final class Foods {
                         // bekerüljön.
                         + "[\\s.!?]*(?=[,;]|$)").matcher(s);
         String head, amount, rest;
+        String unitWord = null;
         if (m.find()) {
             head = s.substring(0, m.start());
             rest = s.substring(m.end());
             // A ragos alakot alapalakra írjuk („két tányérral" → „két
             // tányér"): a mennyiség-olvasó a mértékegység alapalakját ismeri.
             amount = m.group(1) + " " + m.group(2);
+            unitWord = m.group(2);
         } else {
             // Puszta DARABSZÁM a záró tagmondatban: „sütöttem egy adag
             // palacsintát, megettem hatot". A tárgyrag itt a mértékegység
@@ -2966,6 +2971,18 @@ public final class Foods {
         // számított. A távolabbi étel továbbra sem viheti el a számot.
         Match pick = hm.get(0);
         for (Match mm : hm) if (mm.pos > pick.pos) pick = mm;
+        // A SZELET azé, akinek szelete van: a „kalács vajjal, lekvárral,
+        // 2 szelet" két szelete a lekvár elé költözött – a legközelebbi
+        // étel elé –, pedig a szelet a kalácsé. A szeletelhető étel nyer;
+        // ha az nem az utolsó, a mondat marad, és a mérőszó-olvasó veszi
+        // fel a tagmondatokon át.
+        if (unitWord != null && unitWord.startsWith("szelet")) {
+            Match nat = null;
+            for (Match mm : hm)
+                if (sliceGrams(mm.food) > 0 && (nat == null || mm.pos > nat.pos))
+                    nat = mm;
+            if (nat != null) pick = nat;
+        }
         if (hm.size() > 1
                 && tail.substring(pick.pos + pick.len).matches("(?s).*[,;].*"))
             return query;
@@ -4161,9 +4178,16 @@ public final class Foods {
                 }
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0 || foodPos.get(k) >= numStart) continue;
+                // A TERMÉSZETES mérőszó két tagmondatnyira is visszanyúl:
+                // a „kalács vajjal, lekvárral, 2 szelet" kalácsa a
+                // harmadik tagmondattól kettőre áll, a szelet mégis az övé.
+                boolean natural = !fractionAtEnd && !portionWord
+                        && pieceFor(foods.get(k), unit) > 0;
+                int reach = natural ? 2 : 1;
                 if (clause[foodPos.get(k)] != clause[numStart]
                         && (foodInNumClause
-                            || clause[numStart] - clause[foodPos.get(k)] != 1))
+                            || clause[numStart] - clause[foodPos.get(k)] > reach
+                            || clause[numStart] - clause[foodPos.get(k)] < 1))
                     continue;
                 // Csak az étel és a szám KÖZÖTT álló írásjelek engedettek:
                 // a „banán (2 db)" zárójele nem szakítja el, egy közbeékelt
@@ -4175,13 +4199,24 @@ public final class Foods {
                     String mid = q.substring(foodPos.get(k) + foodLen.get(k), numStart);
                     // A NAPSZÓ is beékelődhet: a „kávéból ma 4 csészével
                     // ittam" négy csészéje eddig elveszett.
-                    if (!mid.matches("[a-z]{0,6}\\s+"
+                    // A természetes mérőszó a kísérőkön is átlép, ha a
+                    // szám tagmondatában nincs étel: a „kalács vajjal,
+                    // lekvárral, 2 szelet" kalácsáé a szelet.
+                    if (!(natural && !foodInNumClause)
+                            && !mid.matches("[a-z]{0,6}\\s+"
                             + "(?:(?:ma|tegnap|megint|is|meg|csak"
                             + "|osszesen)\\s+)?"
                             + "(?:(?:meg)?(?:ettem|ittam|ettunk|ittunk)\\s+)?"))
                         continue;
                 }
-                if (best < 0 || foodPos.get(k) > foodPos.get(best)) best = k;
+                // A TERMÉSZETES mérőszó előbbre való a közelségnél: a „kalács
+                // vajjal, lekvárral, 2 szelet" két szelete a lekvárra ment
+                // (a legközelebbire), pedig a szelet a kalácsé.
+                boolean bestNatural = best >= 0 && !fractionAtEnd && !portionWord
+                        && pieceFor(foods.get(best), unit) > 0;
+                if (best < 0 || (natural && !bestNatural)
+                        || (natural == bestNatural
+                            && foodPos.get(k) > foodPos.get(best))) best = k;
             }
             if (best < 0) continue;
             if (laterOwner >= 0 && !fractionAtEnd && !portionWord
