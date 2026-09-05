@@ -2540,4 +2540,49 @@ public class StrengthParseTest {
         assertEquals(20.0, it.get(0).topWeight(), 0.01);
         assertEquals(30, it.get(0).totalReps());
     }
+    /**
+     * A darabszám melletti sorozatszám is sorozat.
+     *
+     * A „húzódzkodás 10 db, 5 sorozatban" egyetlen tízes sorozat lett,
+     * vessző nélkül pedig öt KILÓS húzódzkodás – az „5 sorozatban"
+     * tagmondat gazdátlanul maradt a db-átírás után.
+     */
+    @Test public void pieceCountWithSeriesCountMakesSeries() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Húzódzkodás 10 db, "
+                + "5 sorozatban");
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(50, it.get(0).totalReps());
+        assertEquals(0.0, it.get(0).topWeight(), 0.01);
+        it = StrengthParse.parse("Húzódzkodás 10 db 5 sorozatban");
+        assertEquals(50, it.get(0).totalReps());
+        assertEquals(0.0, it.get(0).topWeight(), 0.01);
+        // Az osztható nagy szám az összes ismétlés.
+        it = StrengthParse.parse("Fekvőtámasz 100 db, 5 sorozatban");
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(100, it.get(0).totalReps());
+        // Fordított szórend: „5 sorozat húzódzkodás, 10 db".
+        assertEquals(50, StrengthParse.parse("5 sorozat húzódzkodás, 10 db")
+                .get(0).totalReps());
+    }
+    /**
+     * A súly és a sorozat közti vessző nem tagmondat-határ.
+     *
+     * A „fekvenyomás 90 kg, 3x5" és a „nyomtam 90 kilót fekve, 3x5"
+     * kilencven kilója nyomtalanul eltűnt – a sorozat tagmondatában nem
+     * volt súly, a súlyéban nem volt sorozat.
+     */
+    @Test public void aCommaBetweenWeightAndSetsDoesNotLoseTheWeight() {
+        assertEquals(90.0, StrengthParse.parse("Fekvenyomás 90 kg, 3x5")
+                .get(0).topWeight(), 0.01);
+        List<StrengthParse.Item> it = StrengthParse.parse("Nyomtam 90 kilót "
+                + "fekve, 3x5");
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(90.0, it.get(0).topWeight(), 0.01);
+        assertEquals(15, it.get(0).totalReps());
+        // Két gyakorlat, mindkettő a saját súlyával.
+        it = StrengthParse.parse("Fekvenyomás 60 kg, 3x10 és guggolás 80 kg, 4x8");
+        assertEquals(2, it.size());
+        assertEquals(60.0, it.get(0).topWeight(), 0.01);
+        assertEquals(80.0, it.get(1).topWeight(), 0.01);
+    }
 }

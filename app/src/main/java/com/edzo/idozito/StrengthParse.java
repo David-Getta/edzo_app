@@ -101,7 +101,7 @@ public final class StrengthParse {
             // A KIHÚZÁS a terem szava ugyanerre: a „3x10 kihúzást 60-nal"
             // eddig nyomtalanul eltűnt az erőnaplóból.
             {"Felhúzás", "felhuzas", "holtemel", "holt emel", "kihuzas",
-                    "deadlift", "dead lift"},
+                    "deadlift", "dead lift", "felhuztam"},
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk", "chin up", "chinup",
                     "allhuzodzkodas", "all fole huzas"},
             {"Vállból nyomás", "vallbol nyom", "vallnyom", "vallbol", "ohp", "mellrol nyom",
@@ -325,6 +325,34 @@ public final class StrengthParse {
         // sorozatban" negyvenkettője eddig elveszett, mert a db-hez nem
         // tartozott sorozat-jelölés. Az „egy sorozatban" farok is a
         // cserébe kerül: a számnévvé váló „egy" különben súlynak látszana.
+        // A DARABSZÁM MELLETTI sorozatszám is sorozat: a „húzódzkodás 10
+        // db, 5 sorozatban" egyetlen tízes sorozat lett – az „5
+        // sorozatban" tagmondat gazdátlanul maradt, vessző nélkül pedig
+        // öt KILÓS húzódzkodás. Az osztható összeg itt is az összes
+        // ismétlés („100 db, 5 sorozatban" = 5x20), a kicsi szám
+        // sorozatonkénti (10 db, 5 sorozatban = 5x10).
+        {
+            java.util.regex.Matcher dbs = java.util.regex.Pattern.compile(
+                    "(?<![\\dx,.])(\\d{1,3})\\s?db(?![a-z]),?\\s+(\\d{1,2})"
+                    + "\\s?(?:sorozatban|szettben|szeriaban|koreben)(?![a-z])"
+                    + "|(?<![\\dx,.])(\\d{1,2})\\s?sorozat\\s+([^,;.\\d]*?),\\s*"
+                    + "(\\d{1,3})\\s?db(?![a-z])").matcher(s);
+            StringBuffer db = new StringBuffer();
+            while (dbs.find()) {
+                int reps = Integer.parseInt(dbs.group(1) != null ? dbs.group(1)
+                        : dbs.group(5));
+                int series = Integer.parseInt(dbs.group(1) != null ? dbs.group(2)
+                        : dbs.group(3));
+                if (series > 1 && reps % series == 0 && reps / series >= 3)
+                    reps = reps / series;
+                String rep = dbs.group(1) != null ? series + "x" + reps
+                        : series + "x" + reps + " " + dbs.group(4);
+                dbs.appendReplacement(db, java.util.regex.Matcher
+                        .quoteReplacement(rep));
+            }
+            dbs.appendTail(db);
+            s = db.toString();
+        }
         s = s.replaceAll("(?<![\\dx,.])(\\d{1,3})\\s?db(?![a-z])"
                 + "(?:\\s?egy (?:sorozatban|szettben|szeriaban))?", "1x$1");
         // A S\u00daLYEMEL\u00c9S mondat\u00e1ban a \u201emost N" az \u00faj munkas\u00faly: az \u201eemeltem a
@@ -408,6 +436,16 @@ public final class StrengthParse {
         // nyomtalanul elveszett. A számozott lista „1)" jelölője marad –
         // azt a sorszám-maszkoló kezeli.
         text = text.replaceAll("\\(|(?<!\\d)\\)", ", ");
+        // A SÚLY ÉS A SOROZAT KÖZTI vessző nem tagmondat-határ: a
+        // „fekvenyomás 90 kg, 3x5" és a „nyomtam 90 kilót fekve, 3x5"
+        // kilencven kilója nyomtalanul eltűnt – a sorozat saját
+        // tagmondatában nem volt súly, a súlyéban nem volt sorozat. Csak
+        // akkor, ha a sorozat mellett nem áll saját súly.
+        text = text.replaceAll("(?iu)(\\d{1,3}(?:[.,]\\d{1,2})?\\s?-?"
+                + "(?:kg|kil[oó]t|kil[oó]val|kil[oó])(?:\\s+\\p{L}{2,12})?)"
+                + "\\s*[,;]\\s*(?=\\d{1,2}\\s?[x×]\\s?\\d{1,3}(?![\\d,.])"
+                + "\\s*(?:[,;.!?]|$|(?:[eé]s|majd|azt[aá]n|ut[aá]na)(?![\\p{L}])))",
+                "$1 ");
         // A PERC ÉS MÁSODPERC együtt egyetlen idő: a „plank kihívás 12.
         // napja: ma 2 perc 15 másodperc" tartása 120 másodpercként ment be
         // a 135 helyett – az emelkedő kihívás épp attól kihívás, hogy a
