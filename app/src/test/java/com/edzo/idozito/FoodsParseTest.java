@@ -3297,4 +3297,23 @@ public class FoodsParseTest {
         assertEquals(700.0, hits("Duplán szedtem a rakott krumpliból")
                 .get(0).grams, 0.01);
     }
+    /**
+     * Az „egyiket" is darabszám, a puszta darabszám is bevásárlás.
+     *
+     * A „hoztam a menzáról 2 fasírtot, az egyiket megettem" mindkét
+     * fasírtot a naplóba írta; a „sütöttem 20 palacsintát, ebből 3-at
+     * ettem" pedig mind a húszat – a kettő és a húsz mellett nem állt
+     * „db", így a vett-vs-evett szabály nem nyúlt hozzá.
+     */
+    @Test public void theOneIAteOutOfTheBoughtOnesIsOne() {
+        assertEquals(60.0, hits("Hoztam a menzáról 2 fasírtot, az egyiket "
+                + "megettem").get(0).grams, 0.01);
+        assertEquals(60.0, hits("Vettem két croissant-t, az egyiket megettem "
+                + "a buszon").get(0).grams, 0.01);
+        assertEquals(180.0, hits("Sütöttem 20 palacsintát, ebből 3-at ettem")
+                .get(0).grams, 0.01);
+        // A húspogácsa fasírt, nem pogácsa.
+        assertEquals("Fasírt", hits("Sütöttem 4 db húspogácsát, az egyiket "
+                + "megettem, a másikat elraktam").get(0).food.name);
+    }
 }

@@ -91,7 +91,7 @@ public final class Foods {
         // (négy szem nyers paradicsom), a hús meg elveszett.
         new Food("Fasírt", 290, 15, 150, "fasirt", "fasiroz", "vagdalt",
                 "stefania", "husgomboc", "hus gomboc", "husgolyo",
-                "hus golyo"),
+                "hus golyo", "huspogacsa", "hus pogacsa"),
         // Vadas: marhahús tejfölös-zöldséges mártásban, jellemzően zsemlegombóccal.
         new Food("Vadas hús", 150, 14, 350, "vadas", "vadas hus", "vadashus"),
         // A „kolbásszal" alakban a sz megkettőződik, ezért az is szótő.
@@ -3471,6 +3471,14 @@ public final class Foods {
                     // Az ivás igéjével együtt, mert a puszta „volt" mellett
                     // a mondat nem látszik étkezésnek.
                     + "(?:liter|l|dl|ml)(?![\\p{L}]))", "$1$2 vizet ittam,");
+        // Az „EGYIKET" is darabszám: a „hoztam a menzáról 2 fasírtot, az
+        // egyiket megettem" mindkét fasírtot a naplóba írta. A „csak 1-et
+        // ettem" alakra hozva a vett-vs-evett szabály elintézi.
+        query = query.replaceAll("(?iu)(?<![\\p{L}])(?:az\\s+)?egyiket\\s+"
+                + "((?:meg)?ettem|ett[uü]k)(?![\\p{L}])", "csak 1-et $1");
+        query = query.replaceAll("(?iu)(?<![\\p{L}])(?:a\\s+)?m[aá]sikat\\s+"
+                + "(?:elraktam|eltettem|otthagytam|elajándékoztam|odaadtam"
+                + "|elaj[aá]nd[eé]koztam)[^,;.]*", " ");
         // A MEGVETT mennyiség nem a MEGEVETT: a „ma 1 kiló almát vettem,
         // de csak kettőt ettem meg" ezer grammot írt a naplóba – egy
         // kiló alma kalóriáját abból, hogy valaki két szemet evett meg.
@@ -3514,6 +3522,20 @@ public final class Foods {
                             + "\\s*(?:kil[oó]\\w*|kg|dkg|deka"
                             + "|db-?o?t?|darabot)[\\s,]+",
                             "$1" + n + " db ");
+                // A PUSZTA darabszám is bevásárlás: a „hoztam a menzáról 2
+                // fasírtot, az egyiket megettem" mindkét fasírtot a naplóba
+                // írta, mert a kettő mellett nem állt „db". A vétel igéje
+                // után álló szám a hozott mennyiség – a megevett a
+                // kimondott.
+                if (n >= 1 && n <= 20)
+                    query = query.replaceAll("(?iu)((?<![\\p{L}])"
+                            + "(?:vettem|v[aá]s[aá]roltam|hoztam"
+                            + "|s[uü]t[oö]ttem|f[oő]ztem|k[eé]sz[ií]tettem)"
+                            + "(?:\\s+(?:a|az)\\s+\\p{L}+"
+                            + "(?:r[oó]l|b[oó]l|t[oó]l|n[aá]l))?[\\s,]+)"
+                            + "(?:\\d{1,2}|k[eé]t|h[aá]rom|n[eé]gy|[oö]t"
+                            + "|hat|t[ií]z)\\s+(?=\\p{L}{3,})",
+                            "$1" + n + " ");
                 // A megevett rész tagmondata ezután már csak ismétlés:
                 // az „ebből 4-et ettem meg" négyese másodszor is számnak
                 // látszana. Az evés igéje marad, a szám megy.
