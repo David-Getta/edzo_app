@@ -2685,4 +2685,23 @@ public class StrengthParseTest {
         assertEquals(80.0, StrengthParse.parse("Fekvenyomás 3x8 70, 75, 80 kg")
                 .get(0).topWeight(), 0.01);
     }
+    /**
+     * A mondatvégi körszám az egész listáé; a ferdepad ferde fekvenyomás.
+     *
+     * A „húzódzkodás 6 db, tolódzkodás 10 db, 5 kör" egy-egy sorozat
+     * lett, az öt kör gazdátlanul maradt; az egybeírt „ferdepad 3x10"
+     * eddig kimaradt.
+     */
+    @Test public void aTrailingRoundCountAppliesToTheWholeList() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Húzódzkodás 6 db, "
+                + "tolódzkodás 10 db, 5 kör");
+        assertEquals(2, it.size());
+        assertEquals(30, it.get(0).totalReps());
+        assertEquals(50, it.get(1).totalReps());
+        it = StrengthParse.parse("Kondi 1 óra: mell nap, fekvenyomás 4x8 80, "
+                + "ferdepad 3x10 30-as súlyzókkal");
+        assertEquals(2, it.size());
+        assertEquals("Ferde fekvenyomás", it.get(1).name);
+        assertEquals(30.0, it.get(1).topWeight(), 0.01);
+    }
 }

@@ -7522,6 +7522,12 @@ public final class Activities {
             // 20/10" reggel nyolcra tette a bejegyzést, mert a munka/pihenő
             // pár addigra már kikerült a mondatból, és a „8 kor" magára
             // maradt. A napszakkal kimondott óra itt is óra marad.
+            // A MONDATVÉGI, vessző utáni kör a lista köre: a „húzódzkodás
+            // 6 db, tolódzkodás 10 db, 5 kör" hajnali ötre tette a
+            // bejegyzést.
+            if (spaced && s.substring(m.end()).matches("(?s)\\s*[.!]?\\s*$")
+                    && s.substring(0, m.start()).matches("(?s).*[,;]\\s*$")
+                    && s.matches("(?s).*(?<![a-z])(?:db|darab|x)\\s?\\d?.*")) continue;
             if (spaced && s.matches("(?s).*(?<![a-z])(?:tabata|hiit|emom"
                     + "|amrap|intervall\\w*|koredzes\\w*)(?![a-z]).*")
                     && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"

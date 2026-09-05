@@ -129,6 +129,13 @@ public final class Sleep {
             String n = Hu.digits(Foods.norm(q));
             n = n.replaceAll("(?<![a-z])(ejjel|ejszaka)\\s+(?:meg\\s+|pedig\\s+)?"
                     + "(\\d{1,2})\\s?-?o?t(?![a-z])", "$1 $2 orat");
+            // Az ÉJFÉL nulla óra a tartományban: az „aludtam éjféltől 7-ig"
+            // és az „éjfél és 7 között aludtam" hét órája eddig elveszett.
+            n = n.replaceAll("(?<![a-z])ejfeltol(?![a-z])", "0-tol");
+            n = n.replaceAll("(?<![a-z])ejfel\\s+es\\s+(\\d{1,2})\\s+kozott(?![a-z])",
+                    "0-tol $1-ig");
+            n = n.replaceAll("(?<![a-z])(\\d{1,2})\\s+es\\s+(\\d{1,2})\\s+kozott"
+                    + "(?=\\s+(?:aludtam|alvas))", "$1-tol $2-ig");
             // A TEGNAPI ÉJSZAKA után a „ma N" a mai: a „tegnap 7 óra alvás,
             // ma 6,5" hét órát írt a mai napra a hat és fél helyett – a
             // mai szám mellett nem állt „óra", és a tegnapi nyert.

@@ -96,7 +96,8 @@ public final class StrengthParse {
             {"Bolgár kitörés", "bolgar kitores", "bolgar guggolas", "bolgar split",
                     "bolgar szplit"},
             {"Ferde fekvenyomás", "ferde fekvenyom", "ferde pad", "ferde nyomas",
-                    "incline"},
+                    // Az egybeírt „ferdepad 3x10" eddig kimaradt.
+                    "incline", "ferdepad"},
             // A „holt emelés" külön írva is ugyanaz a gyakorlat – és sokan
             // így írják. Nélküle a „holt emelés 1x5 140 kg" mondatból SEMMI
             // nem lett: se sorozat, se edzés.
@@ -492,6 +493,12 @@ public final class StrengthParse {
             tb.appendTail(tbb);
             text = tbb.toString();
         }
+        // A MONDATVÉGI körszám az egész listáé: a „húzódzkodás 6 db,
+        // tolódzkodás 10 db, 5 kör" egy-egy sorozat lett – az öt kör
+        // gazdátlanul maradt a végén. Elöl, kettősponttal a kör-olvasó
+        // régóta érti.
+        text = text.replaceAll("(?iu)^\\s*(.*?\\d.*?),\\s*(\\d{1,2})\\s?"
+                + "k[oö]r(?:t|ben|rel|ben)?\\s*[.!]?\\s*$", "$2 kör: $1");
         // A SÚLY ÉS A SOROZAT KÖZTI vessző nem tagmondat-határ: a
         // „fekvenyomás 90 kg, 3x5" és a „nyomtam 90 kilót fekve, 3x5"
         // kilencven kilója nyomtalanul eltűnt – a sorozat saját

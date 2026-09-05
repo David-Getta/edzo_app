@@ -10544,4 +10544,15 @@ public class ActivitiesParseTest {
         assertEquals("kondi", p.get(1).kind.id);
         assertEquals(20, p.get(1).minutes);
     }
+    /**
+     * A mondatvégi, vessző utáni kör a lista köre, nem óra.
+     *
+     * A „húzódzkodás 6 db, tolódzkodás 10 db, 5 kör" hajnali ötre tette
+     * a bejegyzést.
+     */
+    @Test public void aTrailingRoundCountIsNotAClockHour() {
+        assertEquals(12, Activities.parse("Húzódzkodás 6 db, tolódzkodás 10 db, "
+                + "5 kör").hour);
+        assertEquals(7, Activities.parse("Reggel 7 kor futás 5 km").hour);
+    }
 }

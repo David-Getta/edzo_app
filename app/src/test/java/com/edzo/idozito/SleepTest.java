@@ -600,4 +600,16 @@ public class SleepTest {
         assertEquals(6.5, Sleep.parse("Tegnap 7 óra alvás, ma 6,5"), 0.01);
         assertEquals(8, Sleep.parse("Tegnap 6 órát aludtam, ma 8-at"), 0.01);
     }
+    /**
+     * Az éjfél nulla óra a tartományban.
+     *
+     * Az „aludtam éjféltől 7-ig" és az „éjfél és 7 között aludtam" hét
+     * órája eddig elveszett.
+     */
+    @Test public void midnightIsZeroInARange() {
+        assertEquals(7, Sleep.parse("Aludtam éjfél és 7 között, egyszer "
+                + "felébredtem"), 0.01);
+        assertEquals(7, Sleep.parse("Aludtam éjféltől 7-ig"), 0.01);
+        assertEquals(8, Sleep.parse("11 és 7 között aludtam"), 0.01);
+    }
 }
