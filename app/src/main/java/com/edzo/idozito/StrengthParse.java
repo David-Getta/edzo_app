@@ -1408,10 +1408,20 @@ public final class StrengthParse {
             int a = h;
             while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != ';'
                     && s.charAt(a - 1) != '.') a--;
-            char[] c = s.toCharArray();
-            for (int i = a; i < h + 7 && i < c.length; i++) c[i] = ' ';
-            s = new String(c);
-            h = s.indexOf("helyett", h + 1);
+            // A GYAKORLAT NEVE marad, ha a helyettesítő csak számokat
+            // mond: a „fekvenyomás 3x10 60 kg helyett ma csak 3x8 50 kg
+            // ment" mondatból SEMMI nem lett – a név a helyett előtt
+            // állt, a sorozat utána, és a név is kiesett a tervvel.
+            int e = h + 7;
+            while (e < s.length() && s.charAt(e) != ',' && s.charAt(e) != ';'
+                    && s.charAt(e) != '.') e++;
+            String before = s.substring(a, h), after = s.substring(h + 7, e);
+            String keep = "";
+            if (nameIn(after) == null && nameIn(before) != null
+                    && after.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*"))
+                keep = Foods.norm(nameIn(before)) + " ";
+            s = s.substring(0, a) + keep + s.substring(h + 7);
+            h = s.indexOf("helyett", a + keep.length());
         }
         return s;
     }

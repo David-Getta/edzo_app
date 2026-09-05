@@ -2339,6 +2339,9 @@ public final class Foods {
              "korso", "korsó", "feles", "felespohar", "felespohár",
              // Az eszköz- és tárgyragos alak is a név UTÁN áll: a
              // „kávéból 4 csészével ittam" négy csészéje eddig elveszett.
+             // A TÁNYÉR is: az „ebédre gulyás 2 tányérral" kettője eddig
+             // elveszett, egy tányér ment be.
+             "tanyer", "tanyert", "tanyerral", "tanyerbol", "tallal",
              "cseszet", "cseszevel", "poharat", "poharral", "korsot",
              "korsoval", "uveget", "uveggel", "dobozt", "dobozzal",
              "bogre", "bogret", "bogrevel", "kupicat", "kupicaval",
@@ -5142,6 +5145,14 @@ public final class Foods {
         // bejegyzést elnémította.
         s = s.replaceAll("[^,;.:]*elfelejtett(?:em|uk)[^,;.]*?"
                 + "(?:tenni|olvasztani|kapcsolni|inditani)[^,;.]*", " ");
+        // A MARADÉK holnapja nem teszi jövővé a mai adagot: az „ebéd: fél
+        // pizza, a többit holnap" fél pizzája nyomtalanul eltűnt, mert a
+        // „holnap" az egész mondatot szándéknak mutatta. A maradékról
+        // szóló tagmondat kiesik, a megevett rész marad.
+        s = s.replaceAll("[,;]\\s*(?:a\\s+)?(?:tobbit|tobbi|tobbie|masik\\s+fel\\w*"
+                + "|masikat|masik\\s+\\p{L}+t|maradekot|maradek\\w*|felet)\\s+"
+                + "(?:majd\\s+|pedig\\s+)?(?:holnap\\w*|masnap\\w*|kesobb"
+                + "|holnaputan)[^,;.]*", " ");
         boolean intent = false;
         for (String w : new String[]{
                 // Jövő és szándék.

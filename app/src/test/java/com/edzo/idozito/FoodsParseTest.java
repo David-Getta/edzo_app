@@ -3370,4 +3370,20 @@ public class FoodsParseTest {
         assertEquals("Lencse (főtt)", hits("100 g főtt lencse salátában")
                 .get(0).food.name);
     }
+    /**
+     * A maradék holnapja nem teszi jövővé a mai adagot; a tányérral is
+     * tányér.
+     *
+     * Az „ebéd: fél pizza, a többit holnap" fél pizzája nyomtalanul
+     * eltűnt; az „ebédre gulyás 2 tányérral" kettője egy tányér lett.
+     */
+    @Test public void leftoversForTomorrowDoNotEraseTodaysHalf() {
+        List<Foods.Hit> h = hits("Ebéd: fél pizza, a többit holnap");
+        assertEquals(1, h.size());
+        assertEquals(150.0, h.get(0).grams, 0.01);
+        assertEquals(150.0, hits("Fél pizza, a másik felét holnap").get(0).grams,
+                0.01);
+        assertEquals(800.0, hits("Ebédre gulyás 2 tányérral").get(0).grams, 0.01);
+        assertEquals(800.0, hits("Gulyásból 2 tányérral ettem").get(0).grams, 0.01);
+    }
 }

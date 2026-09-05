@@ -2704,4 +2704,23 @@ public class StrengthParseTest {
         assertEquals("Ferde fekvenyomás", it.get(1).name);
         assertEquals(30.0, it.get(1).topWeight(), 0.01);
     }
+    /**
+     * A gyakorlat neve marad, ha a helyettesítő csak számokat mond.
+     *
+     * A „fekvenyomás 3x10 60 kg helyett ma csak 3x8 50 kg ment" mondatból
+     * SEMMI nem lett – a név a helyett előtt állt, a sorozat utána, és a
+     * név is kiesett a tervvel.
+     */
+    @Test public void theNameSurvivesInsteadOfWhenOnlySetsFollow() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 3x10 "
+                + "60 kg helyett ma csak 3x8 50 kg ment");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(24, it.get(0).totalReps());
+        assertEquals(50.0, it.get(0).topWeight(), 0.01);
+        // A névvel mondott helyettesítés változatlan.
+        it = StrengthParse.parse("guggolás 3x10 helyett fekvenyomás 3x8");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+    }
 }
