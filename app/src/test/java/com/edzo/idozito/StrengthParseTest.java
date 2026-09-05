@@ -2640,4 +2640,25 @@ public class StrengthParseTest {
         assertEquals(5.0, it.get(0).sets.get(5).weight, 0.01);
         assertEquals(81, it.get(0).totalReps());
     }
+    /**
+     * Az összeg és a bontása egy adag; a névelőtlen jelzős súly is súly.
+     *
+     * A „fekvőtámasz 100 db egy nap alatt, 10x10" kétszáz fekvőtámasz
+     * lett száz helyett; a „kitörés 3x12 16-os kettlebellel" tizenhat
+     * kilója saját testsúlyra olvadt.
+     */
+    @Test public void aTotalAndItsBreakdownAreOneBatch() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvőtámasz 100 db "
+                + "egy nap alatt, 10x10");
+        assertEquals(1, it.size());
+        assertEquals(10, it.get(0).sets.size());
+        assertEquals(100, it.get(0).totalReps());
+        assertEquals(0.0, it.get(0).topWeight(), 0.01);
+        assertEquals(100, StrengthParse.parse("Fekvőtámasz 100 db, 4x25")
+                .get(0).totalReps());
+        assertEquals(16.0, StrengthParse.parse("Kitörés 3x12 16-os kettlebellel")
+                .get(0).topWeight(), 0.01);
+        assertEquals(20.0, StrengthParse.parse("Guggolás 3x10 20-as tárcsával "
+                + "a mellkason").get(0).topWeight(), 0.01);
+    }
 }

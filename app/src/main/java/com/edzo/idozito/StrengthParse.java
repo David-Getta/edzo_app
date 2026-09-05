@@ -438,6 +438,26 @@ public final class StrengthParse {
         // nyomtalanul elveszett. A számozott lista „1)" jelölője marad –
         // azt a sorszám-maszkoló kezeli.
         text = text.replaceAll("\\(|(?<!\\d)\\)", ", ");
+        // Az ÖSSZEG ÉS A BONTÁSA egy adag: a „fekvőtámasz 100 db egy nap
+        // alatt, 10x10" száz darabja mellé még tíz tízes sorozat is
+        // bekerült – kétszáz fekvőtámasz száz helyett. Ha a bontás
+        // szorzata épp az összeg, az összeg elmarad.
+        {
+            java.util.regex.Matcher tb = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\dx,.])(\\d{1,3})\\s?db(?![\\p{L}])"
+                    + "(?:\\s+(?:egy\\s+nap\\s+alatt|egy\\s+nap|[oö]sszesen"
+                    + "|ma|napk[oö]zben))?\\s*[,;:]?\\s*"
+                    + "(?=(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?![\\d,.]))").matcher(text);
+            StringBuffer tbb = new StringBuffer();
+            while (tb.find()) {
+                int total = Integer.parseInt(tb.group(1));
+                int prod = Integer.parseInt(tb.group(2)) * Integer.parseInt(tb.group(3));
+                tb.appendReplacement(tbb, total == prod ? " " : java.util.regex.Matcher
+                        .quoteReplacement(tb.group()));
+            }
+            tb.appendTail(tbb);
+            text = tbb.toString();
+        }
         // A SÚLY ÉS A SOROZAT KÖZTI vessző nem tagmondat-határ: a
         // „fekvenyomás 90 kg, 3x5" és a „nyomtam 90 kilót fekve, 3x5"
         // kilencven kilója nyomtalanul eltűnt – a sorozat saját
@@ -517,6 +537,11 @@ public final class StrengthParse {
                 + "|k[eé]t\\s+db)\\s+(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?-?[aeo\u00f6]s"
                 + "\\s+(k[eé]zis[uú]lyz[oó]|kettlebell|s[uú]lyz[oó]|t[aá]rcs[aá]"
                 + "|korong|golyó|golyo)", "$1 kg-os $2");
+        // Névelő nélkül is: a „kitörés 3x12 16-os kettlebellel" tizenhat
+        // kilója eddig elveszett – saját testsúlyos kitörés lett belőle.
+        text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?-?"
+                + "[aeo\u00f6]s\\s+(k[eé]zis[uú]lyz[oó]|kettlebell|s[uú]lyz[oó]"
+                + "|t[aá]rcs[aá]|korong|golyó|golyo)", "$1 kg-os $2");
         // A KÖRÖNKÉNTI ismétlés-lista a felsorolt gyakorlatoké, sorban:
         // az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás,
         // körönként 10-10-5" bejegyzésében csak a guggolás maradt meg –
