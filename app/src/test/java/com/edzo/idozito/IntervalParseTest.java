@@ -1,0 +1,1068 @@
+package com.edzo.idozito;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+/**
+ * Intervallum-beállítás egy mondatból.
+ *
+ * Itt az elszámolás nem a naplóban derül ki, hanem edzés közben: rossz
+ * munkaidővel az egész kör használhatatlan. Ezért inkább semmit nem
+ * állítunk be, mint valami kitaláltat.
+ */
+public class IntervalParseTest {
+
+    private static String sum(String q) {
+        IntervalParse.Plan p = IntervalParse.parse(q);
+        return p == null ? "—" : p.rounds + "×" + p.work + "/" + p.rest;
+    }
+
+    @Test public void theSpokenFormWorks() {
+        assertEquals("3×40/20", sum("3 kör 40 mp munka 20 mp pihenő"));
+        assertEquals("5×60/30", sum("5 kör 1 perc munka 30 másodperc pihenő"));
+        assertEquals("6×45/15", sum("6 sorozat 45 másodperc terhelés 15 másodperc szünet"));
+        // A szám a szó után is állhat.
+        assertEquals("4×30/10", sum("4 kör, munka 30 mp, pihenő 10 mp"));
+    }
+
+    @Test public void theGymShorthandWorks() {
+        assertEquals("8×20/10", sum("8x20/10"));
+        assertEquals("6×45/15", sum("45/15 x 6"));
+        assertEquals("1×40/20", sum("40/20"));
+        assertEquals("10×30/30", sum("10 kör 30-30"));
+    }
+
+    @Test public void knownFormatsAreRecognisedByName() {
+        assertEquals("8×20/10", sum("tabata"));
+        assertEquals("8×20/10", sum("csináljunk egy tabatát"));
+        // A kimondott körszám erősebb, mint az alapérték.
+        assertEquals("6×20/10", sum("tabata 6 kör"));
+        assertEquals("10×60/0", sum("emom 10 perc"));
+        // A norvég 4x4: 4×4 perc erős, 3 perc pihenő.
+        assertEquals("4×240/180", sum("norvég 4x4"));
+        assertEquals("4×240/180", sum("norveg intervall"));
+        assertEquals("5×240/180", sum("norvég 4x4, 5 kör"));
+    }
+
+    /** A perjeles pár PERCBEN is mehet: „2 perc / 1 perc, 5 kör". */
+    @Test public void theSlashPairAlsoWorksInMinutes() {
+        assertEquals("5×120/60", sum("2 perc / 1 perc, 5 kör"));
+        assertEquals("4×180/60", sum("4x3 perc / 1 perc"));
+        // A másodperces alak változatlan.
+        assertEquals("8×20/10", sum("8x20/10"));
+        assertEquals("10×40/20", sum("40 mp / 20 mp, 10 kör"));
+    }
+
+    @Test public void aSingleTimeIsTheWorkInterval() {
+        assertEquals("5×30/0", sum("5 kör 30 másodperc"));
+        assertEquals("1×120/0", sum("2 perc"));
+    }
+
+    @Test public void nothingIsInventedWithoutAWorkInterval() {
+        for (String q : new String[]{"", "   ", "3 kör", "edzés", "jó volt",
+                "kör kör kör", "kondi 60 kg", null}) {
+            assertNull("kitalált beállítás: " + q, IntervalParse.parse(q));
+        }
+    }
+
+    @Test public void absurdValuesAreRejected() {
+        // A körszám és az idő is életszerű tartományban marad.
+        for (String q : new String[]{"999 kör 40 mp munka", "3 kör 99999 mp munka",
+                "0 kör 0 mp", "100x1/1"}) {
+            IntervalParse.Plan p = IntervalParse.parse(q);
+            if (p == null) continue;
+            assertTrue("kör: " + q, p.rounds >= 1 && p.rounds <= IntervalParse.MAX_ROUNDS);
+            assertTrue("munka: " + q, p.work >= IntervalParse.MIN_SEC
+                    && p.work <= IntervalParse.MAX_SEC);
+            assertTrue("pihenő: " + q, p.rest >= 0 && p.rest <= IntervalParse.MAX_SEC);
+        }
+    }
+
+    @Test public void theLabelReadsLikeAPlan() {
+        IntervalParse.Plan p = IntervalParse.parse("8x20/10");
+        assertNotNull(p);
+        assertEquals("8 kör  ·  20 mp munka  ·  10 mp pihenő", p.label());
+        assertEquals(240, p.totalSec());
+        assertEquals("5 kör  ·  1 perc munka", IntervalParse.parse("5 kör 60 mp munka").label());
+        assertTrue(IntervalParse.parse("3 kör 90 mp munka").label().contains("1:30"));
+    }
+
+    @Test public void randomTextNeverCrashes() {
+        String[] tokens = {"kör", "3", "40", "mp", "munka", "pihenő", "/", "x", "tabata",
+                "perc", "másodperc", "emom", "-", "0", "9999", "", " ", ",", "szünet",
+                "8x20/10", "1,5 perc", "aaaaaaaaaaaaaaaaaaaaaa", "🏋", "sorozat", "szett"};
+        for (long seed : new long[]{20260804, 7, 4242}) {
+            java.util.Random rnd = new java.util.Random(seed);
+            for (int i = 0; i < 4000; i++) {
+                StringBuilder sb = new StringBuilder();
+                int n = rnd.nextInt(10);
+                for (int w = 0; w < n; w++) {
+                    sb.append(tokens[rnd.nextInt(tokens.length)]);
+                    if (rnd.nextInt(4) > 0) sb.append(' ');
+                }
+                String q = sb.toString();
+                IntervalParse.Plan p = IntervalParse.parse(q);
+                if (p != null) {
+                    assertTrue(q, p.rounds >= 1 && p.rounds <= IntervalParse.MAX_ROUNDS);
+                    assertTrue(q, p.work >= IntervalParse.MIN_SEC
+                            && p.work <= IntervalParse.MAX_SEC);
+                    assertTrue(q, p.rest >= 0 && p.rest <= IntervalParse.MAX_SEC);
+                    assertTrue(!p.label().isEmpty());
+                }
+                // Ugyanaz a mondat mindig ugyanazt adja.
+                IntervalParse.Plan again = IntervalParse.parse(q);
+                assertEquals(p == null, again == null);
+            }
+        }
+    }
+
+    @Test public void warmupAndCooldownAreUnderstood() {
+        IntervalParse.Plan p = IntervalParse.parse("2 perc bemelegítés, 6 kör 40/20");
+        assertNotNull(p);
+        assertEquals(6, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+        assertEquals(120, p.warm);
+        assertEquals(0, p.cool);
+        assertEquals(120 + 6 * 60, p.totalSec());
+        assertTrue(p.label().contains("2 perc bemelegítés"));
+
+        IntervalParse.Plan q = IntervalParse.parse("tabata, levezetés 3 perc");
+        assertNotNull(q);
+        assertEquals(180, q.cool);
+        // Amiről a mondat nem szól, az nulla marad – a hívó ilyenkor nem
+        // írja felül a meglévő beállítást.
+        assertEquals(0, q.warm);
+    }
+
+    @Test public void theRoundCountCanComeFromTheTotalTime() {
+        // „20 perc alatt 40/20”: 60 mp-es kör, tehát 20 kör.
+        assertEquals("20×40/20", sum("20 perc alatt 40/20"));
+        assertEquals("10×45/15", sum("10 percig 45/15"));
+        // Jelzőszó nélkül nem találgatunk: a 30 mp itt a munka, nem a teljes idő.
+        assertEquals("1×30/15", sum("30/15"));
+        // A kimondott körszám erősebb a számolt értéknél.
+        assertEquals("5×40/20", sum("5 kör 40/20 20 perc alatt"));
+    }
+
+    @Test public void theWordsPeopleActuallyUseAreUnderstood() {
+        // Huszonegy valódi terem-megfogalmazással szondáztam a felismerőt;
+        // ezek azok, amiken elhasalt.
+
+        // Kiírt számok – a teremben senki nem ír számjegyet.
+        assertEquals("4×30/0", sum("négy kör 30 másodperc"));
+        assertEquals("4×60/30", sum("egy perc plank, 30 mp pihenő, 4 kör"));
+        // A tizedesvessző nem tagmondathatár: a fél perc fél perc maradt.
+        assertEquals("1×30/30", sum("fél perc munka fél perc pihenő"));
+        // „-szor/-szer”: szorzószám a körökre.
+        assertEquals("8×20/10", sum("20/10 nyolcszor"));
+        // Körszám × szakaszhossz mértékegységgel.
+        assertEquals("6×180/60", sum("6 x 3 perc futás 1 perc séta"));
+        // Csak a pihenőt nevezik meg: a munka az első kimondott idő.
+        assertEquals("10×50/10", sum("köröskénti 50 mp munka és 10 mp pihenő, 10 kör"));
+    }
+
+    @Test public void ambiguousSentencesGiveNothing() {
+        // A „15 percig” a teljes idő, nem egy szakasz hossza – megnevezetlenül
+        // ekkora munkaidőt nem fogadunk el, mert edzés közben derülne ki.
+        assertNull(IntervalParse.parse("minden percben 1 kör, 15 percig"));
+        // Távalapú intervall: nincs benne idő, tehát nincs mit beállítani.
+        assertNull(IntervalParse.parse("intervall: 400 m gyors, 200 m lassú"));
+    }
+
+    @Test public void theSpokenTensAreNumbersToo() {
+        // A „negyven" eddig szó maradt, ezért a munkaidő a pihenőé lett:
+        // negyven másodperc helyett húsz.
+        IntervalParse.Plan p = IntervalParse.parse(
+                "négyszer negyven másodperc munka húsz másodperc pihenő");
+        assertEquals(4, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+    }
+
+    @Test public void theUnitMayStandOnBothSidesOfTheSlash() {
+        // „40 mp / 20 mp": a pihenő eddig némán elveszett.
+        IntervalParse.Plan p = IntervalParse.parse("40 mp / 20 mp, 10 kör");
+        assertEquals(10, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+    }
+
+    @Test public void theGymBoardClockNotationWorks() {
+        // Perc:másodperc, ahogy a táblára írják.
+        IntervalParse.Plan p = IntervalParse.parse("1:30 munka 0:30 pihenő 6 kör");
+        assertEquals(6, p.rounds);
+        assertEquals(90, p.work);
+        assertEquals(30, p.rest);
+        IntervalParse.Plan q = IntervalParse.parse("8 kör 1:00 munka 0:20 pihenő");
+        assertEquals(60, q.work);
+        assertEquals(20, q.rest);
+    }
+
+    @Test public void emomCountsTheMinutesAsRounds() {
+        // Az EMOM percenként egy kör – a szám a név után áll.
+        assertEquals(12, IntervalParse.parse("emom 12").rounds);
+        assertEquals(20, IntervalParse.parse("emom 20 perc").rounds);
+        assertEquals(10, IntervalParse.parse("emom 10 perc").rounds);
+        // Kimondott körszám továbbra is erősebb.
+        assertEquals(6, IntervalParse.parse("tabata 6 kör").rounds);
+    }
+
+    @Test public void theEnglishGymPlanIsUnderstoodToo() {
+        // Az internetről másolt terv angolul érkezik – a mp/perc egységeket
+        // eddig is értette, a kulcsszavakat nem.
+        IntervalParse.Plan p = IntervalParse.parse("8 rounds 20 sec work 10 sec rest");
+        assertEquals(8, p.rounds);
+        assertEquals(20, p.work);
+        assertEquals(10, p.rest);
+        IntervalParse.Plan q = IntervalParse.parse("5 rounds of 30s work 30s rest");
+        assertEquals(5, q.rounds);
+        assertEquals(30, q.work);
+        assertEquals(30, q.rest);
+    }
+
+    @Test public void bracketsAreJustPunctuation() {
+        // „10x(40s/20s)" ugyanaz, mint a „10x40/20" – eddig egy kör lett belőle.
+        IntervalParse.Plan p = IntervalParse.parse("10x(40s/20s)");
+        assertEquals(10, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+    }
+
+    @Test public void theSpokenSecondsAreUnderstood() {
+        IntervalParse.Plan p = IntervalParse.parse("százhúsz másodperc munka 6 kör");
+        assertEquals(120, p.work);
+        assertEquals(6, p.rounds);
+        IntervalParse.Plan q = IntervalParse.parse(
+                "hetven másodperc munka harminc másodperc pihenő 8 kör");
+        assertEquals(70, q.work);
+        assertEquals(30, q.rest);
+        assertEquals(8, q.rounds);
+    }
+
+    @Test public void aLeadingMultiplierIsTheRoundCount() {
+        // „10x30s on 30s off": az „on" nem kulcsszó, a perjel hiányzik – a tíz
+        // kör korábban csendben EGYRE olvadt, és az edzés a tizedénél véget ért.
+        IntervalParse.Plan p = IntervalParse.parse("10x30s on 30s off");
+        assertEquals(10, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+        // A szorzó CSAK végső esetben körszám: a kimondott „kör” előrébb van.
+        assertEquals(8, IntervalParse.parse("30 mp munka 30 mp pihenő 8 kör").rounds);
+        // És nem csinál időzítőt a súlyzós mondatból: a „3x10” tíze ismétlés,
+        // nem másodperc.
+        assertNull(IntervalParse.parse("guggolás 3x10"));
+        assertNull(IntervalParse.parse("3x10 60 kg"));
+    }
+
+    @Test public void theFieldNotationOnTheBoardIsUnderstood() {
+        // A táblára írt terv mezőkből áll, és ott a körszám a szó MÖGÖTT van.
+        IntervalParse.Plan p = IntervalParse.parse("kör: 6, munka: 40mp, pihenő: 20mp");
+        assertEquals(6, p.rounds);
+        assertEquals(40, p.work);
+        assertEquals(20, p.rest);
+        // Kettőspont nélkül nem találgatunk: a „kör 40 mp munka" negyvene
+        // munkaidő, nem negyven kör.
+        IntervalParse.Plan q = IntervalParse.parse("kör 40 mp munka");
+        assertEquals(1, q.rounds);
+        assertEquals(40, q.work);
+    }
+
+    @Test public void amrapIsOneLongBlock() {
+        // Az AMRAP-ban annyi kör megy, amennyi belefér – körszámot adni neki
+        // pont azt venné el, amiről szól.
+        IntervalParse.Plan p = IntervalParse.parse("amrap 20 perc");
+        assertEquals(1, p.rounds);
+        assertEquals(1200, p.work);
+        assertEquals(0, p.rest);
+        assertEquals(1200, IntervalParse.parse("20 perc amrap").work);
+        assertEquals(720, IntervalParse.parse("amrap 12").work);
+        // Idő nélkül nincs mit beállítani.
+        assertNull(IntervalParse.parse("amrap"));
+    }
+
+    @Test public void theRestSurvivesInFourMoreForms() {
+        // Mind a négy alak a teremben szokásos, és mind veszített valamit:
+        // vagy a pihenőt, vagy a körszámot.
+        IntervalParse.Plan a = IntervalParse.parse("8 kör: 20 mp sprint, 40 mp séta");
+        assertEquals(8, a.rounds);
+        assertEquals(20, a.work);
+        assertEquals(40, a.rest);          // a „séta" is pihenő
+        IntervalParse.Plan b = IntervalParse.parse("5x(3 perc / 1 perc)");
+        assertEquals(5, b.rounds);
+        assertEquals(180, b.work);
+        assertEquals(60, b.rest);          // a perjel utáni idő
+        IntervalParse.Plan c = IntervalParse.parse("30 mp on 30 mp off 10x");
+        assertEquals(10, c.rounds);        // záró szorzó
+        assertEquals(30, c.work);
+        assertEquals(30, c.rest);
+        IntervalParse.Plan d = IntervalParse.parse("3 perc munka 1 perc pihenő, 6 ismétlés");
+        assertEquals(6, d.rounds);         // az „ismétlés" itt kör
+        assertEquals(180, d.work);
+        assertEquals(60, d.rest);
+    }
+    /**
+     * A szakasz neve is határ, nem csak a vessző.
+     *
+     * Sokan nem tesznek vesszőt: a „45 másodperc munka 15 pihenő" mondatban a
+     * pihenő elé eső egyetlen KIMONDOTT idő a negyvenöt volt, így a pihenő is
+     * negyvenöt lett – a terv létrejött, csak háromszor hosszabb szünettel.
+     */
+    @Test public void thePhaseNameSeparatesTheTwoTimes() {
+        IntervalParse.Plan p = IntervalParse.parse("45 másodperc munka 15 mp pihenő 8 kör");
+        assertEquals(45, p.work);
+        assertEquals(15, p.rest);
+    }
+
+    /**
+     * Mértékegység nélküli pihenő: a mértékegységet az első kimondott időtől
+     * örökli, mert így beszél az ember.
+     */
+    @Test public void theRestInheritsTheUnit() {
+        IntervalParse.Plan a = IntervalParse.parse("45 másodperc munka 15 pihenő nyolcszor");
+        assertEquals(8, a.rounds);
+        assertEquals(45, a.work);
+        assertEquals(15, a.rest);
+        IntervalParse.Plan b = IntervalParse.parse("2 perc munka 1 pihenő 5 kör");
+        assertEquals(120, b.work);
+        assertEquals(60, b.rest);
+    }
+
+    /**
+     * A bemelegítés ideje sosem a munkaidő.
+     *
+     * A „bemelegítés 5 perc, 10 kör 1/1, levezetés 5 perc" munkaideje eddig öt
+     * perc lett – vagyis egy kör pontosan olyan hosszú, mint a bemelegítés.
+     * A „1/1" mértékegység nélkül nem eldönthető, ezért inkább nem találgatunk.
+     */
+    @Test public void theWarmupIsNeverTheWorkTime() {
+        assertNull(IntervalParse.parse("bemelegítés 5 perc, 10 kör 1/1, levezetés 5 perc"));
+        // Ami egyértelmű, az változatlanul átmegy.
+        IntervalParse.Plan p =
+                IntervalParse.parse("2 perc bemelegítés 6 kör 45/15 3 perc levezetés");
+        assertEquals(45, p.work);
+        assertEquals(15, p.rest);
+        assertEquals(120, p.warm);
+        assertEquals(180, p.cool);
+    }
+    /**
+     * A kötőjeles szorzó is körszám: a „10-szer" ugyanaz, mint a „tízszer".
+     *
+     * Nélküle a terv EGYSZER futott le tíz helyett – a szám ott volt a
+     * mondatban, csak nem jutott el a körszámig.
+     */
+    @Test public void theHyphenatedMultiplierIsARoundCount() {
+        assertEquals(10, IntervalParse.parse("1 perc munka és 1 perc pihenő 10-szer").rounds);
+        assertEquals(8, IntervalParse.parse("20 mp gyors 10 mp lassú 8-szor").rounds);
+        // A kötőjel nélküli alak nem romolhatott el.
+        assertEquals(5, IntervalParse.parse("négy perc munka egy perc pihenő ötször").rounds);
+    }
+
+    /** A „lassú" is pihenő: a váltott tempójú futásban ez a szünet. */
+    @Test public void theSlowPartIsTheRest() {
+        IntervalParse.Plan p = IntervalParse.parse("20 mp gyors 10 mp lassú 8-szor");
+        assertEquals(20, p.work);
+        assertEquals(10, p.rest);
+    }
+    /**
+     * Vesszővel tagolt mezőlista kettőspont nélkül: „kör 8, munka 30,
+     * pihenő 30".
+     *
+     * Ez a táblára írt terv alakja. Kettősponttal már értettük; anélkül
+     * viszont kimaradt az EGÉSZ terv. Általánosan nem találgatunk (a
+     * „kör 40 mp munka" negyvene munkaidő, nem negyven kör) – itt az a
+     * garancia, hogy a tagmondatban a szón és a számon kívül nincs semmi.
+     */
+    @Test public void aCommaSeparatedFieldListWorksWithoutColons() {
+        IntervalParse.Plan p = IntervalParse.parse("kör 8, munka 30, pihenő 30");
+        assertNotNull(p);
+        assertEquals(8, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+        IntervalParse.Plan q = IntervalParse.parse("munka 45, pihenő 15, kör 10");
+        assertEquals(10, q.rounds);
+        assertEquals(45, q.work);
+        assertEquals(15, q.rest);
+        // A kettőspontos alak és a mondatszerű alak nem romolhatott el.
+        assertEquals(6, IntervalParse.parse("kör: 6, munka: 40mp, pihenő: 20mp").rounds);
+        assertEquals(40, IntervalParse.parse("3 kör 40 mp munka 20 mp pihenő").work);
+        // Tagmondat nélküli mezőnév továbbra sem elég: itt a negyven munkaidő.
+        assertEquals(40, IntervalParse.parse("kör 40 mp munka").work);
+    }
+
+    /**
+     * A megosztott terv visszaolvasható – ez a megosztás egész értelme.
+     *
+     * A sablon szövegként megy tovább (üzenetben, jegyzetben), a másik
+     * telefonon pedig ugyanez a felismerő állítja vissza. Ha a két oldal
+     * elcsúszna, a kapott edzés csendben MÁS lenne, mint a küldött.
+     */
+    @Test public void everySharedPlanReadsBackTheSame() {
+        int[] works = {20, 30, 40, 45, 60, 90, 120, 180};
+        int[] rests = {0, 10, 15, 20, 30, 60};
+        int[] rounds = {1, 3, 6, 8, 10, 20};
+        int[] warms = {0, 60, 120, 300};
+        int[] cools = {0, 60, 180};
+        StringBuilder bad = new StringBuilder();
+        int n = 0;
+        for (int w : works) for (int r : rests) for (int c : rounds)
+            for (int wa : warms) for (int co : cools) {
+                IntervalParse.Plan p = IntervalParse.parse(
+                        (wa > 0 ? (wa / 60) + " perc bemelegítés, " : "")
+                        + c + " kör " + w + " mp munka" + (r > 0 ? " " + r + " mp pihenő" : "")
+                        + (co > 0 ? ", " + (co / 60) + " perc levezetés" : ""));
+                if (p == null) continue;
+                n++;
+                IntervalParse.Plan q = IntervalParse.parse(p.sentence());
+                if (q == null) { bad.append("\n  nem olvasható: ").append(p.sentence()); continue; }
+                if (q.rounds != p.rounds || q.work != p.work || q.rest != p.rest
+                        || q.warm != p.warm || q.cool != p.cool)
+                    bad.append("\n  ").append(p.sentence()).append(" -> ").append(q.label());
+            }
+        assertTrue("legalább ezer tervet néztünk", n > 1000);
+        assertEquals("oda-vissza eltérés:" + bad, 0, bad.length());
+    }
+
+    /**
+     * Idő-vezérelt formák: a mondat a HOSSZT mondja ki, nem a körszámot.
+     *
+     * Huszonhat valós intervallum-mondattal végigpróbálva ez a négy fajta
+     * hiányzott. Mindegyik hétköznapi terem-mondat, és egyikben sincs semmi
+     * kétértelmű – csak a körszám nincs kimondva, azt a ritmus adja.
+     */
+    @Test public void timeDrivenFormsAreUnderstood() {
+        IntervalParse.Plan hiit = IntervalParse.parse("hiit 20 perc");
+        assertEquals(20, hiit.rounds);          // 20 perc / (30+30 mp)
+        assertEquals(30, hiit.work);
+        assertEquals(30, hiit.rest);
+        assertTrue("a ritmus a mi javaslatunk", hiit.guessed);
+
+        IntervalParse.Plan f = IntervalParse.parse("fartlek fél óra");
+        assertEquals(15, f.rounds);
+        assertEquals(60, f.work);
+
+        IntervalParse.Plan e = IntervalParse.parse("e2mom 20 perc");
+        assertEquals(10, e.rounds);
+        assertEquals(120, e.work);
+        assertEquals(0, e.rest);
+
+        IntervalParse.Plan p = IntervalParse.parse("2 percenként 10 kör");
+        assertEquals(10, p.rounds);
+        assertEquals(120, p.work);
+
+        // A kimondott számok mindig erősebbek a forma nevénél.
+        IntervalParse.Plan x = IntervalParse.parse("hiit 8 kör 45 mp munka 15 mp pihenő");
+        assertEquals(8, x.rounds);
+        assertEquals(45, x.work);
+        assertEquals(15, x.rest);
+        assertTrue("kimondott szám nem javaslat", !x.guessed);
+    }
+
+    /** A csillag itt is szorzójel: „8*20/10”. */
+    @Test public void asteriskWorksInIntervalsToo() {
+        IntervalParse.Plan p = IntervalParse.parse("8*20/10");
+        assertEquals(8, p.rounds);
+        assertEquals(20, p.work);
+        assertEquals(10, p.rest);
+    }
+
+    /**
+     * A pihenő szakasz neve nem csak „séta" lehet.
+     *
+     * A futó „járás"-t, „kocogás"-t vagy „gyaloglás"-t ír a lassú szakaszra, a
+     * beszélt nyelv meg „pihi"-t. Egyik sem volt a pihenő-szavak közt, így a
+     * „20 mp sprint 40 mp járás 8x" pihenője elveszett: az edzés szünet
+     * nélkülinek látszott, és a kör fele eltűnt.
+     */
+    @Test public void theRestSegmentHasManyNames() {
+        assertEquals("8×20/40", sum("20 mp sprint 40 mp járás 8x"));
+        assertEquals("8×20/40", sum("20 mp sprint 40 mp gyaloglás 8x"));
+        assertEquals("5×300/60", sum("5 perc futás, 1 perc járás, 5x"));
+        assertEquals("6×60/30", sum("6 kör 1 perc munka 30 mp pihi"));
+        // A régi alakok változatlanok.
+        assertEquals("8×20/40", sum("20 mp sprint 40 mp séta 8x"));
+        assertEquals("8×20/10", sum("8x20/10"));
+    }
+
+    /**
+     * A KEMÉNY és a KÖNNYŰ is munka és pihenő.
+     *
+     * A futók és a kerékpárosok így írják le a ritmust: „3 perc kemény,
+     * 2 perc könnyű". Eddig ebből egyetlen, szünet nélküli munkaszakasz
+     * lett – a kör fele elveszett, és az edző órája végig azt mutatta,
+     * hogy hajrá.
+     */
+    @Test public void hardAndEasyAreWorkAndRest() {
+        IntervalParse.Plan a = IntervalParse.parse("3 perc kemény 2 perc könnyű 5x");
+        assertEquals(5, a.rounds);
+        assertEquals(180, a.work);
+        assertEquals(120, a.rest);
+        IntervalParse.Plan b = IntervalParse.parse("6 kör 3 perc erős 2 perc laza");
+        assertEquals(6, b.rounds);
+        assertEquals(180, b.work);
+        assertEquals(120, b.rest);
+    }
+
+    /** A vérnyomás nem ritmus: a „160/95" nem munka/pihenő pár. */
+    @Test public void bloodPressureIsNotAPlan() {
+        assertNull(IntervalParse.parse("160/95 a vérnyomásom"));
+        assertNull(IntervalParse.parse("vérnyomás 140/90 higanymilliméter"));
+        // A valódi ritmus változatlan.
+        assertEquals(8, IntervalParse.parse("8x 40/20").rounds);
+    }
+
+    /**
+     * A körszám a HOSSZBÓL is kijön.
+     *
+     * Az „1 perc gyors, 1 perc laza, felváltva 20 percig" tíz kör – eddig
+     * egyetlen kör lett belőle, vagyis a húszperces edzésből kétperces, és
+     * az időzítő a második kör előtt leállt.
+     */
+    @Test public void theRoundCountCanComeFromTheTotalLength() {
+        IntervalParse.Plan a = IntervalParse.parse("1 perc gyors 1 perc laza felváltva 20 percig");
+        assertEquals(10, a.rounds);
+        assertEquals(60, a.work);
+        assertEquals(60, a.rest);
+        IntervalParse.Plan b = IntervalParse.parse("30 mp munka 30 mp pihi 10 percig");
+        assertEquals(10, b.rounds);
+        // A kimondott körszám erősebb marad a hossznál.
+        assertEquals(8, IntervalParse.parse("8 kör 20 másodperc munka 10 pihi").rounds);
+    }
+
+    /**
+     * A zárójeles csoport körszáma nem veszhet el.
+     *
+     * A „8x (30 mp munka + 30 mp pihenő)" nyolc kör – de a zárójel helyére
+     * lépő szóköz miatt a szorzó elszakadt a számtól, és egyetlen kör
+     * maradt belőle. Nyolcadannyi edzés, ugyanazzal a mondattal.
+     */
+    @Test public void aBracketedGroupKeepsItsRoundCount() {
+        IntervalParse.Plan p = IntervalParse.parse("8x (30 mp munka + 30 mp pihenő)");
+        assertEquals(8, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+    }
+
+    /**
+     * Négy óránál hosszabb edzést nem állítunk be.
+     *
+     * A szakaszok külön-külön hihetőek lehetnek, együtt mégsem: a „8x 60
+     * perc" nyolc órás időzítő, a „8x 22:30" hat. Egy kétszázezer mondatos
+     * véletlen-futtatásban pontosan ez a kilenc eset maradt – mind olyan
+     * óra, ami egész nap ketyegett volna.
+     */
+    @Test public void noPlanRunsLongerThanFourHours() {
+        assertNull(IntervalParse.parse("8x 60 perc"));
+        assertNull(IntervalParse.parse("10 kör 40 perc munka 20 perc pihenő"));
+        // A határon belüli hosszú edzés viszont marad.
+        IntervalParse.Plan p = IntervalParse.parse("4 kör 30 perc munka 5 perc pihenő");
+        assertEquals(4, p.rounds);
+        assertTrue(p.totalSec() <= 4 * 3600);
+        assertEquals(20, IntervalParse.parse("amrap 20 perc").work / 60);
+    }
+
+    /**
+     * „Húsz perc EMOM": a szám a név ELŐTT is állhat.
+     *
+     * Diktálva ez a természetes szórend, és eddig az alapértelmezett tíz kör
+     * lett belőle – feleannyi edzés, mint amit kért. Egy percenként induló
+     * körnél a percszám maga a körszám.
+     */
+    @Test public void emomAcceptsTheNumberBeforeTheName() {
+        assertEquals(20, IntervalParse.parse("húsz perc emom").rounds);
+        assertEquals(20, IntervalParse.parse("20 perc emom").rounds);
+        assertEquals(30, IntervalParse.parse("30 perc emom").rounds);
+        // A régi alakok változatlanok.
+        assertEquals(10, IntervalParse.parse("emom 10 perc").rounds);
+        assertEquals(12, IntervalParse.parse("emom 12").rounds);
+        assertEquals(10, IntervalParse.parse("emom").rounds);
+        // A bemelegítés ideje nem körszám.
+        IntervalParse.Plan p = IntervalParse.parse("5 perc emom bemelegítés");
+        assertEquals(10, p.rounds);
+        assertEquals(300, p.warm);
+    }
+
+    /**
+     * Tíz másodpercnél rövidebb munka nem ritmus.
+     *
+     * Az „5/3/1" egy ismert erőemelő program NEVE, nem öt másodperc munka
+     * három másodperc pihenővel – abból eddig időzítő-terv lett. A
+     * legrövidebb valódi alak a tabata húsz-tíze, az megmarad.
+     */
+    @Test public void aRhythmShorterThanTenSecondsIsNotARhythm() {
+        assertNull(IntervalParse.parse("5/3/1 ciklus 3. hete"));
+        assertNull(IntervalParse.parse("5/3/1"));
+        assertNull(IntervalParse.parse("8/4"));
+        assertEquals(20, IntervalParse.parse("20/10").work);
+        assertEquals(8, IntervalParse.parse("8x20/10").rounds);
+        assertEquals(6, IntervalParse.parse("45/15 x 6").rounds);
+        assertEquals(10, IntervalParse.parse("10 kör 30/30").rounds);
+    }
+
+    /**
+     * Egyetlen perc-adat a terv HOSSZA.
+     *
+     * A „hiit 20 perc, 30/30" húsz perce csak a terv hossza lehet – más nincs
+     * a mondatban, amire vonatkozhatna. Eddig egykörös terv lett belőle: fél
+     * perc munka, és kész. A jelölő szó („20 perc ALATT") eddig kötelező volt,
+     * pedig magyarul senki nem írja ki, ha úgyis egyértelmű.
+     */
+    @Test public void aLoneMinuteValueIsTheLength() {
+        assertEquals("20×30/30", sum("hiit 20 perc, 30/30"));
+        assertEquals("15×40/20", sum("15 perc, 40 mp munka 20 mp pihenő"));
+        // Amit a mondat kimond, az erősebb: a kimondott körszám nyer, és a
+        // bemelegítés perce nem a terv hossza.
+        assertEquals("10×60/30", sum("10 kör 1 perc munka 30 mp pihi, 3 perc bemelegítés"));
+        assertEquals("3×40/20", sum("3 kör 40 mp munka 20 mp pihenő"));
+        // A munka- és pihenő-oldalra írt perc sem a hossz.
+        assertEquals("1×30/30", sum("fél perc munka fél perc pihenő"));
+    }
+
+    /**
+     * Az internetről másolt angol terv szótára.
+     *
+     * A „4x4 min at threshold, 3 min recovery" hármasa elveszett, és pihenő
+     * NÉLKÜLI tervet ajánlott az app – vagyis a norvég 4x4 felét.
+     */
+    @Test public void theEnglishRestWordsAreUnderstood() {
+        assertEquals("4×240/180", sum("4x4 min at threshold, 3 min recovery"));
+        assertEquals("5×180/60", sum("5 rounds of 3 min on 1 min off"));
+        assertEquals("8×20/10", sum("8 rounds 20 sec work 10 sec rest"));
+    }
+
+    /**
+     * Egy szám nem terv.
+     *
+     * A „séta" a körök közti laza szakasz neve is, ezért a „sétáltam 20
+     * percet" húsz perce EGYSZERRE lett munka és pihenő: húsz-húsz perc,
+     * vagyis negyvenperces időzítő egy húszperces sétából. Ha a körszám sincs
+     * kimondva, a mondatban semmi nem utal szakaszokra.
+     */
+    @Test public void oneNumberIsNotAPlan() {
+        assertNull(IntervalParse.parse("sétáltam 20 percet"));
+        assertNull(IntervalParse.parse("csak sétáltam 20 percet"));
+        // Két kimondott idő viszont már ritmus.
+        assertEquals(60, IntervalParse.parse("1 perc gyors, 1 perc laza, "
+                + "felváltva 20 percig").work);
+        // És az egyblokkos AMRAP sem sérül: ott nincs pihenő.
+        assertEquals(1200, IntervalParse.parse("amrap 20 perc").work);
+    }
+
+    /**
+     * A tempó sem ritmus.
+     *
+     * A „10 km @ 5:30" és a „10 km-t futottam 5:30-as tempóval" órán mért
+     * futás, nem szakaszos terv – eddig mindkettőből egykörös, öt és fél
+     * perces időzítő lett.
+     */
+    @Test public void aPaceIsNotAnIntervalPlan() {
+        assertNull(IntervalParse.parse("10 km @ 5:30"));
+        assertNull(IntervalParse.parse("10 km-t futottam 5:30-as tempóval"));
+        // A kimondott terv viszont marad, távval együtt is.
+        assertEquals(8, IntervalParse.parse("8x400 m, köztük 200 m lazán, "
+                + "8 kör 90 mp munka 60 mp pihenő").rounds);
+    }
+
+    /**
+     * A GYAKORLAT szó közepén ott a KÖR.
+     *
+     * A „csípő mobilitás gyakorlatok 15 perc" tervnek látszott – egykörös,
+     * tizenöt perces időzítőnek –, mert a szakasz-szavakat a szó belsejében is
+     * elfogadtuk. A szó eleje mostantól kötött, a vége szabad, hogy a magyar
+     * ragozás („körben", „sorozatot") megmaradjon.
+     */
+    @Test public void theWordExerciseDoesNotContainARound() {
+        assertNull(IntervalParse.parse("csípő mobilitás gyakorlatok 15 perc"));
+        assertNull(IntervalParse.parse("hengereltem a hátamat 10 percet"));
+        // A puszta időtartam viszont marad: az időzítő mezője épp ezt kéri.
+        assertEquals(120, IntervalParse.parse("2 perc").work);
+        assertEquals(5, IntervalParse.parse("5 körben 30 másodperc").rounds);
+    }
+
+    /** Két különböző tevékenység nem munka/pihenő pár. */
+    @Test public void twoActivitiesAreNotAWorkRestPair() {
+        assertNull(IntervalParse.parse("20 perc jóga és 10 perc meditáció"));
+        // A kimondott ritmus viszont marad.
+        assertEquals(60, IntervalParse.parse("1 perc gyors, 1 perc laza, "
+                + "felváltva 20 percig").rest);
+    }
+
+    /** A tartomány sem ritmus: a „10-15 perc nyújtás" egyetlen hossz. */
+    @Test public void aRangeIsNotAWorkRestPair() {
+        assertNull(IntervalParse.parse("10-15 perc nyújtás"));
+        // Kimondott terv mellett a tartomány nem zavar.
+        assertEquals(8, IntervalParse.parse("20-30 mp munka, 10 mp pihenő, "
+                + "8 kör").rounds);
+    }
+
+    /**
+     * A „pihenő" a terv szava, a „pihenés" a hétköznapi szó.
+     *
+     * Az „1 óra pihenés után 30 perc bringa" tervnek látszott – egy óra munka,
+     * egy óra pihenő –, és az „aktív pihenőnap: 30 perc séta" félórája is
+     * munka-pihenő párrá vált.
+     */
+    @Test public void anEverydayRestIsNotAPlannedRest() {
+        assertNull(IntervalParse.parse("1 óra pihenés után 30 perc bringa"));
+        assertNull(IntervalParse.parse("aktív pihenőnap: 30 perc séta"));
+        // A terv-alak ragozva is terv.
+        assertEquals(20, IntervalParse.parse("8 kör 40 mp munka 20 mp pihenés").rest);
+        assertEquals(30, IntervalParse.parse("30 mp munka 30 mp pihenő 8 kör").rest);
+    }
+
+    /** Az alvás-napló sem ritmus: az ébredés időpontjából nem lesz munkaszakasz. */
+    @Test public void aSleepJournalIsNotAPlan() {
+        assertNull(IntervalParse.parse("reggel 5:45 ébredés, 20 perc jóga, "
+                + "feketekávé"));
+        assertNull(IntervalParse.parse("esti rutin: 15 perc nyújtás, "
+                + "23:00 lefekvés"));
+    }
+
+    /** A napirend óra-tartománya sem ritmus: a 12:30-13:00 a nap órái. */
+    @Test public void aClockRangeIsNotAPlan() {
+        assertNull(IntervalParse.parse("ebédidő: 12:30-13:00 séta"));
+        // A perc:mp alakú tábla-írásmód kimondott tervvel marad.
+        assertEquals(90, IntervalParse.parse("5 kör 1:30 munka 0:30 pihenő").work);
+    }
+
+    /**
+     * A „munka előtti úszás" munkája az állás, nem a munkaszakasz.
+     */
+    @Test public void workAsAJobIsNotAWorkInterval() {
+        assertNull(IntervalParse.parse("munka előtti úszás 6:00-6:45"));
+        assertEquals(8, IntervalParse.parse("40 mp munka 20 mp pihenő "
+                + "8 kör").rounds);
+    }
+
+    /**
+     * A „kétszer ébredtem" nem két kör, a „korahajnali" nem kör.
+     *
+     * Az „alvás 22:40-06:10, kétszer ébredtem" éjszakájából kétkörös
+     * időzítő lett: a szorzószám „kör"-ré vált, a szintetikus kör-szó
+     * pedig a terv-őröket is kicselezte. A valódi „20/10 nyolcszor" terv
+     * marad.
+     */
+    @Test public void wakingTwiceIsNotTwoRounds() {
+        assertNull(IntervalParse.parse("alvás 22:40-06:10, kétszer "
+                + "ébredtem"));
+        assertNull(IntervalParse.parse("korahajnali ébredés, 4:50, nem "
+                + "tudtam visszaaludni"));
+        assertEquals(8, IntervalParse.parse("20/10 nyolcszor").rounds);
+    }
+
+    /**
+     * A pártól távolabb álló „10x" is körszám.
+     *
+     * A „30-30 intervall 10x" tíz kör – eddig egy lett belőle, és az
+     * időzítő az első perc után leállt.
+     */
+    @Test public void aDetachedTimesSuffixIsTheRoundCount() {
+        IntervalParse.Plan p = IntervalParse.parse("30-30 intervall 10x");
+        assertEquals(10, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(30, p.rest);
+    }
+    /**
+     * A súly-tartomány nem munka/pihenő ritmus.
+     *
+     * A „70-75 kg között ingadozom" hetvenes párjából időzítő-terv lett
+     * (70 mp munka, 75 pihenő). A kimondott intervall marad.
+     */
+    @Test public void aWeightRangeIsNotATimerPlan() {
+        assertNull(IntervalParse.parse("70-75 kg között ingadozom"));
+        assertNotNull(IntervalParse.parse("30 mp munka 15 mp pihenő, "
+                + "10 kör"));
+    }
+    @Test public void anHourLongAlternationCountsItsRounds() {
+        // A „30 mp sprint 90 mp séta váltakozva fél órán át" tizenöt kör –
+        // eddig egyetlen kör lett, mert a teljes hossz óra-szóval állt.
+        IntervalParse.Plan p = IntervalParse.parse(
+                "30 mp sprint 90 mp séta váltakozva fél órán át");
+        assertNotNull(p);
+        assertEquals(15, p.rounds);
+        assertEquals(30, p.work);
+        assertEquals(90, p.rest);
+        p = IntervalParse.parse("1 perc munka 1 perc pihi egy órán keresztül");
+        assertEquals(30, p.rounds);
+        p = IntervalParse.parse("30/30 váltakozva 20 percen át");
+        assertEquals(20, p.rounds);
+    }
+
+    @Test public void aMatchIsNotAnIntervalTimer() {
+        // Az „edzőmeccs 2x30 perc" hatvan perc játék, a „25-22 lett" a
+        // végeredmény – egyik sem időzítő-terv. A kimondott HIIT felment.
+        assertNull(IntervalParse.parse("edzőmeccs 2x30 perc"));
+        assertNull(IntervalParse.parse("kézilabda meccsen játszottam, 25-22 lett"));
+        assertNotNull(IntervalParse.parse("meccs után hiit 8x30/30"));
+    }
+
+    @Test public void theSpokenSchemeBeatsThePresetName() {
+        // A „tabata dupla: 16x20/10" tizenhat kör – a névre eddig a gyári
+        // nyolc jött. A puszta tabata marad nyolc.
+        IntervalParse.Plan p = IntervalParse.parse("tabata dupla: 16x20/10");
+        assertEquals(16, p.rounds);
+        assertEquals(8, IntervalParse.parse("tabata").rounds);
+        assertEquals(4, IntervalParse.parse("tabata 4 körrel").rounds);
+    }
+
+    @Test public void aFiveASideMatchIsNotAnIntervalWorkout() {
+        assertNull(IntervalParse.parse("kisp\u00e1ly\u00e1s focin j\u00e1tszottam 2x20 percet"));
+    }
+
+    @Test public void aSwimPaceIsNotAWorkRestPair() {
+        assertNull(IntervalParse.parse("30 perc \u00fasz\u00e1s, 2:10/100m temp\u00f3"));
+    }
+
+    @Test public void mealClockTimesAreNotAWorkRestRhythm() {
+        assertNull(IntervalParse.parse(
+                "7:00 zabk\u00e1sa, 12:30 csirke rizzsel, 19:00 toj\u00e1sr\u00e1ntotta"));
+    }
+
+    /**
+     * A s\u00falyz\u00f3s szett nem intervallum: az „5x5 100 kg, pihi 3 perc"
+     * \u00f6tsz\u00f6r \u00f6tje sorozat \u00e9s ism\u00e9tl\u00e9s, nem k\u00f6r.
+     */
+    @Test
+    public void aWeightedSetIsNotAnIntervalPlan() {
+        assertNull(IntervalParse.parse("guggol\u00e1s 5x5 100 kg, pihi 3 perc"));
+        assertNull(IntervalParse.parse("fekvenyom\u00e1s 4x8 70 kg, 2 perc pihi"));
+    }
+
+    /** Az id\u0151re men\u0151 k\u00f6r viszont terv marad, s\u00faly mellett is. */
+    @Test
+    public void timedRoundsStayAPlanEvenWithAWeight() {
+        IntervalParse.Plan p = IntervalParse.parse(
+                "10x30 mp kettlebell swing 16 kg, 30 mp pihen\u0151");
+        assertNotNull(p);
+        assertEquals(10, p.rounds);
+        assertEquals(30, p.work);
+    }
+
+    /**
+     * A bemeleg\u00edt\u00e9s–edz\u00e9s–levezet\u00e9s h\u00e1rmas nem ritmus: a nap fel\u00e9p\u00edt\u00e9s\u00e9b\u00f6l
+     * eddig egyk\u00f6r\u00f6s, negyvenperc munka – t\u00edzperc pihen\u0151 terv lett.
+     */
+    @Test
+    public void aWarmupMainCooldownTrioIsNotAPlan() {
+        assertNull(IntervalParse.parse(
+                "10 perc bemeleg\u00edt\u00e9s, 40 perc fut\u00e1s, 10 perc levezet\u00e9s"));
+    }
+
+    /** K\u00f6rsz\u00e1mmal egy\u00fctt viszont val\u00f3di terv marad. */
+    @Test
+    public void roundsSurviveNextToAWarmup() {
+        IntervalParse.Plan p = IntervalParse.parse(
+                "bemeleg\u00edt\u00e9s 10 perc, azt\u00e1n 8 k\u00f6r 30/30");
+        assertNotNull(p);
+        assertEquals(8, p.rounds);
+    }
+
+    /**
+     * EGY k\u00f6r, pihen\u0151 n\u00e9lk\u00fcl nem ritmus: az „5 perc szauna, 30 perc \u00fasz\u00e1s"
+     * \u00f6tperces id\u0151z\u00edt\u0151-tervet aj\u00e1nlott – k\u00e9t kimondott id\u0151b\u0151l, amelyek
+     * k\u00f6z\u00fcl az egyik nem is mozg\u00e1s.
+     */
+    @Test
+    public void oneRoundWithoutRestIsNotAPlan() {
+        assertNull(IntervalParse.parse("5 perc szauna, 30 perc \u00fasz\u00e1s"));
+        // K\u00e9t k\u00fcl\u00f6nb\u00f6z\u0151 tev\u00e9kenys\u00e9g ideje sem munka/pihen\u0151 p\u00e1r.
+        assertNull(IntervalParse.parse("30 perc busszal, 20 perc gyalogl\u00e1s"));
+        // A kimondott terv \u00e9s a puszta id\u0151mez\u0151 marad.
+        assertNotNull(IntervalParse.parse("amrap 20 perc"));
+        assertNotNull(IntervalParse.parse("2 perc"));
+        assertNotNull(IntervalParse.parse("emom 12 perc"));
+    }
+
+    /**
+     * Az ID\u0150PONT „-kor" ragja nem k\u00f6r: a „6:15-kor keltem" miatt a napi
+     * napl\u00f3-sor tervnek l\u00e1tszott, \u00e9s egyk\u00f6r\u00f6s id\u0151z\u00edt\u0151 lett bel\u0151le.
+     */
+    @Test
+    public void aClockSuffixIsNotARound() {
+        assertNull(IntervalParse.parse("ma reggel 6:15-kor keltem, 7,5 \u00f3r\u00e1t "
+                + "aludtam. 45 perc kondi. Este 30 perc laza bringa."));
+        // A val\u00f3di k\u00f6r marad k\u00f6r.
+        IntervalParse.Plan p = IntervalParse.parse("8 k\u00f6r: 20 mp sprint, 40 mp s\u00e9ta");
+        assertNotNull(p);
+        assertEquals(8, p.rounds);
+    }
+
+    /**
+     * A KORTY, a KORS\u00d3 \u00e9s a K\u00d3RH\u00c1Z nem k\u00f6r: a „30 perc laza bringa,
+     * 3 korty bor" h\u00e1rmas\u00e1b\u00f3l h\u00e1romk\u00f6r\u00f6s id\u0151z\u00edt\u0151-terv lett – \u00e9s a
+     * bringa el is t\u0171nt a napl\u00f3b\u00f3l, mert a mondat tervnek min\u0151s\u00fclt.
+     */
+    @Test
+    public void aSipIsNotARound() {
+        assertNull(IntervalParse.parse("30 perc laza bringa. 3 korty bor."));
+        // A ragozott k\u00f6r marad k\u00f6r.
+        assertEquals(3, IntervalParse.parse("3 k\u00f6r 40 mp munka 20 mp pihen\u0151").rounds);
+        assertEquals(5, IntervalParse.parse("5 k\u00f6r\u00f6nk\u00e9nt 1 perc pihen\u0151").rounds);
+        assertEquals(8, IntervalParse.parse("8 k\u00f6r: 20 mp sprint, 40 mp s\u00e9ta").rounds);
+    }
+
+    /**
+     * A T\u00c1V-alap\u00fa intervallum nem id\u0151z\u00edt\u0151: a „10x400 m\u00e9ter 90 mp
+     * pihen\u0151vel" kilencvenese a PIHEN\u0150 – munkaid\u0151nek is be\u00edrva 90/90-es
+     * terv sz\u00fcletett, aminek a n\u00e9gysz\u00e1z m\u00e9terhez semmi k\u00f6ze, \u00e9s a val\u00f3di
+     * bejegyz\u00e9s (n\u00e9gy kilom\u00e9ter fut\u00e1s) m\u00f6g\u00e9 szorult.
+     */
+    @Test
+    public void aDistanceIntervalIsNotATimer() {
+        assertNull(IntervalParse.parse("10x400 m\u00e9ter 90 mp pihen\u0151vel"));
+        assertNull(IntervalParse.parse("6x800 m\u00e9ter 2 perc pihen\u0151vel"));
+        assertNull(IntervalParse.parse("4x1000 m\u00e9ter 3 perc pihen\u0151vel"));
+        // A K\u00d6RSZ\u00c1M \u00e9s a pihen\u0151 t\u00e1v n\u00e9lk\u00fcl marad terv.
+        assertEquals(5, IntervalParse.parse("5 k\u00f6r\u00f6nk\u00e9nt 1 perc pihen\u0151").rounds);
+        // A kimondott munka\u00fcd\u0151 mellett a t\u00e1v sem baj.
+        assertEquals(4, IntervalParse.parse(
+                "4x4 perc intervall 3 perc pihen\u0151vel").rounds);
+    }
+
+    /**
+     * A MAKR\u00d3-h\u00e1rmas nem ritmus: a „makr\u00f3k: 180/220/70" feh\u00e9rje,
+     * sz\u00e9nhidr\u00e1t \u00e9s zs\u00edr grammban – eddig sz\u00e1zhatvan m\u00e1sodperc munka \u00e9s
+     * k\u00e9tsz\u00e1zh\u00fasz pihen\u0151 id\u0151z\u00edt\u0151-tervet aj\u00e1nlott r\u00e1 az app. A
+     * munka-pihen\u0151 p\u00e1r K\u00c9T sz\u00e1mb\u00f3l \u00e1ll.
+     */
+    @Test
+    public void aMacroTripleIsNotARhythm() {
+        assertNull(IntervalParse.parse("makr\u00f3k: 180/220/70"));
+        assertNull(IntervalParse.parse("180/220/70"));
+        // A val\u00f3di munka/pihen\u0151 p\u00e1r v\u00e1ltozatlan.
+        assertEquals(3, IntervalParse.parse("3 k\u00f6r 40/20").rounds);
+        assertEquals(8, IntervalParse.parse("40/20 tabata").rounds);
+    }
+
+
+    /**
+     * A BEMELEG\u00cdT\u00c9S ideje nem tesz munkaid\u0151t a t\u00e1v mell\u00e9: a \u201esprint edz\u00e9s:
+     * 8x200 m\u00e9ter, k\u00f6zte 90 m\u00e1sodperc pihi, bemeleg\u00edt\u00e9s 15 perc kocog\u00e1s"
+     * kilencven m\u00e1sodperc munk\u00e1b\u00f3l \u00e9s tizen\u00f6t perc pihen\u0151b\u0151l \u00e1ll\u00f3, k\u00e9t \u00f3r\u00e1s
+     * tervv\u00e9 \u00e1llt \u00f6ssze.
+     */
+    @Test
+    public void aWarmupTimeDoesNotInventAWorkInterval() {
+        assertNull(IntervalParse.parse("sprint edz\u00e9s: 8x200 m\u00e9ter, k\u00f6zte "
+                + "90 m\u00e1sodperc pihi, bemeleg\u00edt\u00e9s 15 perc kocog\u00e1s"));
+        assertNull(IntervalParse.parse("10x400 m\u00e9ter 90 mp pihen\u0151vel"));
+        // A kimondott munkaid\u0151s terv marad.
+        IntervalParse.Plan p = IntervalParse.parse("4x4 perc kem\u00e9ny fut\u00e1s, k\u00f6zte 3 perc pihi");
+        assertNotNull(p);
+        assertEquals(240, p.work);
+        assertEquals(180, p.rest);
+    }
+
+
+    /**
+     * A HOSSZ\u00da szakasz pihen\u0151 n\u00e9lk\u00fcl nem id\u0151z\u00edt\u0151-terv: a \u201ema csak s\u00e9t\u00e1ltam a
+     * kuty\u00e1val 3x20 percet" mell\u00e9 egy egy\u00f3r\u00e1s id\u0151z\u00edt\u0151 aj\u00e1nlata ker\u00fclt.
+     */
+    @Test
+    public void aLongBlockWithoutRestIsNotATimerPlan() {
+        assertNull(IntervalParse.parse("ma csak s\u00e9t\u00e1ltam a kuty\u00e1val 3x20 percet"));
+        assertNull(IntervalParse.parse("biciklivel mentem dolgozni, 2x25 perc"));
+        // A kimondott terv-sz\u00f3 \u00e9s a pihen\u0151 fel\u00fcl\u00edr.
+        assertNotNull(IntervalParse.parse("4x15 perc k\u00f6r"));
+        IntervalParse.Plan p = IntervalParse.parse("6 x 3 perc kem\u00e9ny fut\u00e1s, k\u00f6zte 2 perc pihi");
+        assertNotNull(p);
+        assertEquals(180, p.work);
+        assertEquals(120, p.rest);
+    }
+
+    /**
+     * Az ismétlés-tartomány nem munka/pihenő pár.
+     *
+     * A „súlyzós edzés 60 perc: mell, hát, váll, minden 3x10-12 között"
+     * súlyzós napja tíz másodperc munka / tizenkét pihenő tervvé vált –
+     * naplózás helyett egy időzítő indult volna el.
+     */
+    @Test public void aRepRangeIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Súlyzós edzés 60 perc: mell, hát, "
+                + "váll, minden 3x10-12 között."));
+        // A kimondott intervall marad terv.
+        assertNotNull(IntervalParse.parse("Tabata 8x20-10."));
+    }
+
+    /**
+     * A kerti munka nem munkaszakasz.
+     *
+     * A „ma 40 perc kerti munka" mellé negyven perces időzítő-terv került
+     * – egyetlen körrel, pihenő nélkül. A jelző elárulja, hogy itt a
+     * munka a tevékenység neve, nem az intervallumé.
+     */
+    @Test public void gardenWorkIsNotAWorkInterval() {
+        assertNull(IntervalParse.parse("Ma 40 perc kerti munka."));
+        assertNull(IntervalParse.parse("Ma 30 perc fizikai munka a ház "
+                + "körül."));
+        // A valódi munka/pihenő pár marad terv.
+        assertNotNull(IntervalParse.parse("Tabata: 8 kör, 20 mp munka, "
+                + "10 mp pihenő."));
+    }
+
+    /**
+     * Egy kör pihenő nélkül nem intervallum.
+     *
+     * A „ma reggel 5 percet sprinteltem a busz után" mellé egykörös,
+     * ötperces időzítő-terv került – az nem intervall-edzés, csak egy
+     * stopper.
+     */
+    @Test public void aSingleLongBlockIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Ma reggel 5 percet sprinteltem "
+                + "a busz után, ez is edzés."));
+        // A pihenővel írt egykörös terv marad.
+        assertNotNull(IntervalParse.parse("1 kör 90 mp munka, 30 mp "
+                + "pihenő."));
+        // A többkörös sprint-edzés is marad.
+        assertNotNull(IntervalParse.parse("Sprint edzés: 6 kör, 30 mp "
+                + "hajrá, 60 mp séta."));
+    }
+
+    /**
+     * A sorozat-lista nem munka/pihenő pár.
+     *
+     * A „100 fekvőtámasz 5 sorozatban, 20-20" húszasai ISMÉTLÉSEK,
+     * mégis egy ötkörös, húsz/húsz másodperces időzítő-terv lett
+     * belőle a napló mellé.
+     */
+    @Test public void aSetListIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Ma 100 fekvőtámasz 5 "
+                + "sorozatban, 20-20."));
+        // A kimondott munka/pihenő pár sorozat-szó mellett is terv.
+        assertNotNull(IntervalParse.parse("5 sorozat, 30 mp munka, "
+                + "30 mp pihenő."));
+    }
+
+    /**
+     * A túra pihenője nem munka/pihenő pár.
+     *
+     * A „ma 2 órát túráztunk, közben 15 perc pihenő a csúcson" mellé egy
+     * egykörös, negyed óra munka / negyed óra pihenő időzítő-terv került
+     * – a kirándulás pihenőjéből.
+     */
+    @Test public void aHikeBreakIsNotAnInterval() {
+        assertNull(IntervalParse.parse("Ma 2 órát túráztunk, közben "
+                + "15 perc pihenő a csúcson."));
+        // A rövid, valódi egykörös pár marad terv.
+        assertNotNull(IntervalParse.parse("1 kör 90 mp munka, 30 mp "
+                + "pihenő."));
+    }
+
+    /**
+     * A napszak melletti „N kor" időpont, nem körszám.
+     *
+     * A „reggel 7 kor hiit 20 perc" hetese hétkörös időzítő-tervet adott
+     * – az órából.
+     */
+    @Test public void aClockHourNextToADayPartIsNotARoundCount() {
+        IntervalParse.Plan p = IntervalParse.parse("Reggel 7 kor hiit 20 perc");
+        assertNotNull(p);
+        assertTrue(p.rounds != 7);
+        assertEquals(8, IntervalParse.parse("Este 6 kor tabata 8 kör 20/10")
+                .rounds);
+    }
+}

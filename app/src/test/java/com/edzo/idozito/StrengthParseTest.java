@@ -1,0 +1,2543 @@
+package com.edzo.idozito;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Erősítő sorozatok EGY mondatból.
+ *
+ * A felismerés óvatos: ismétlésszám nélkül nincs mentés, mert egy kitalált
+ * sorozat a rekordokba, az 1RM-be és az izomcsoport-egyensúlyba is bekerülne.
+ */
+public class StrengthParseTest {
+
+    private static String sum(String q) {
+        StringBuilder sb = new StringBuilder();
+        for (StrengthParse.Item it : StrengthParse.parse(q)) {
+            if (sb.length() > 0) sb.append(" | ");
+            sb.append(it.name).append(" ").append(it.sets.size()).append("×");
+            for (int i = 0; i < it.sets.size(); i++) {
+                if (i > 0) sb.append("/");
+                sb.append(it.sets.get(i).reps);
+            }
+            sb.append("@").append(Progression.kg(it.topWeight()));
+        }
+        return sb.toString();
+    }
+
+    @Test public void theClassicSetNotationWorks() {
+        assertEquals("Fekvenyomás 3×10/10/10@60", sum("3x10 fekvenyomás 60 kg"));
+        assertEquals("Guggolás 5×5/5/5/5/5@80", sum("guggolás 5x5 80 kg"));
+        // Szóközzel és szorzójellel is.
+        assertEquals("Guggolás 3×8/8/8@100", sum("guggolás 3 × 8 100 kg"));
+    }
+
+    @Test public void bodyweightExercisesNeedNoWeight() {
+        assertEquals("Húzódzkodás 3×8/8/8@0", sum("húzódzkodás 3x8"));
+        assertEquals("Fekvőtámasz 1×50@0", sum("50 fekvőtámasz"));
+        // A saját testsúlyos sorozat is látszik a címkében.
+        assertTrue(StrengthParse.parse("húzódzkodás 3x8").get(0).label()
+                .contains("saját testsúly"));
+    }
+
+    /**
+     * Az időtartam nem ismétlés.
+     *
+     * Az „evezés 20 perc" húsz perc evezőgép, nem húsz húzás – a puszta
+     * darabszám-szabály viszont ráharapott a számra, és a kardió-mondatból
+     * csendben súlyzós bejegyzés lett. Tartásnál a perc továbbra is
+     * másodperc: a plank ideje maga a teljesítmény.
+     */
+    @Test public void aDurationIsNotARepCount() {
+        assertEquals("", sum("evezés 20 perc"));
+        assertEquals("", sum("evezés 1 óra"));
+        assertEquals("", sum("lehúzás 20 percet"));
+        // Tartásnál viszont marad, amit eddig is értett.
+        assertEquals("Plank 1×120@0", sum("plank 2 perc"));
+        assertEquals("Plank 3×60/60/60@0", sum("plank 3x1 perc"));
+        // És a valódi sorozat sem sérül.
+        assertEquals("Evezés 3×10/10/10@40", sum("evezés 3x10 40 kg"));
+    }
+
+    /**
+     * A számozott lista sorszáma nem ismétlésszám.
+     *
+     * A leírt edzésterv gyakran számozott lista, és az „1. guggolás
+     * 2. fekvenyomás 3. evezés" tervből egy KÉTismétléses guggolás és egy
+     * HÁROMismétléses fekvenyomás került a naplóba – kitalált sorozatok,
+     * amik a rekordba és az 1RM-be is beszámítottak.
+     */
+    @Test public void listMarkersAreNotReps() {
+        assertEquals("", sum("1. guggolás 2. fekvenyomás 3. evezés"));
+        assertEquals("", sum("1) guggolás 2) fekvenyomás"));
+        // A mondatvégi pont és a tizedes szám érintetlen.
+        assertEquals("Fekvőtámasz 1×50@0", sum("50 fekvőtámasz."));
+        assertEquals("Guggolás 5×5/5/5/5/5@80", sum("guggolás 5x5 80 kg."));
+        assertEquals("Bicepsz 3×12/12/12@12,5", sum("bicepsz 3x12 12.5 kg"));
+    }
+
+    /**
+     * Elgépelt gyakorlatnévre tipp jár.
+     *
+     * A súlyzós mezőben eddig SEMMI visszajelzés nem jött a fel nem ismert
+     * mondatra – a mező néma maradt. Ugyanaz a szigorú szabály, mint az
+     * ételeknél: hat betűtől, egyező szókezdettel, egy hibával; a felcserélt
+     * betű egy hiba, mert a telefonon az a jellemző elütés.
+     */
+    @Test public void typosInMoveNamesGetASuggestion() {
+        assertEquals("Fekvenyomás", StrengthParse.closestMove("fekvenyomsá 3x10"));
+        assertEquals("Vádliemelés", StrengthParse.closestMove("vádliemeles"));
+        assertEquals("Bicepsz", StrengthParse.closestMove("biceps 3x12"));
+        // Ami nem gyakorlat, arra nincs tipp.
+        for (String q : new String[]{"valami", "asztal", "futottam", "3x10",
+                "csirkemell", "szeretem", ""})
+            assertNull(q, StrengthParse.closestMove(q));
+        assertNull(StrengthParse.closestMove(null));
+    }
+
+    /**
+     * A TERV nem napló.
+     *
+     * A „holnap guggolás 5x5 100 kg" és a „kellene 5x5 80 kg-ot guggolnom"
+     * ugyanazokból a számokból áll, mint a megtörtént sorozat – csak épp még
+     * nem történt meg. A mozgás-oldalon ez a szabály régóta megvolt, itt
+     * hiányzott: a kitalált sorozat a rekordba, az 1RM-be és a
+     * progresszió-javaslatba is beszámított.
+     */
+    @Test public void plansAreNotEntries() {
+        for (String q : new String[]{"holnap guggolás 5x5 100 kg",
+                "kellene 5x5 80 kg-ot guggolnom", "a terv: guggolás 5x5 100 kg",
+                "jövő héten guggolás 5x5 100 kg", "szeretnék 100 kg-ot nyomni"})
+            assertEquals(q, "", sum(q));
+        // A megtörtént sorozat változatlan.
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("guggolás 5x5 100 kg"));
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("tegnap guggolás 5x5 100 kg"));
+    }
+
+    /**
+     * A kiírt kiló a szorzójel előtt: „60 kg x 10".
+     *
+     * A súly×ismétlés írásmódot az app régóta érti („fekvenyomás 60x10,
+     * 70x8"), csakhogy a legtöbb edzés-app ÍGY exportál, kiírt kilóval. A
+     * bemásolt sorból emiatt egyáltalán nem lett bejegyzés – se gyakorlat,
+     * se sorozat, pedig minden adat ott volt benne.
+     */
+    @Test public void theKilogramMayStandBeforeTheMultiplier() {
+        assertEquals("Fekvenyomás 3×10/8/6@80",
+                sum("Fekvenyomás 3 sorozat: 60kg x 10, 70kg x 8, 80kg x 6"));
+        assertEquals("Guggolás 3×5/5/5@100",
+                sum("Guggolás: 100 kg x 5, 100 kg x 5, 100 kg x 5"));
+        // A régi alakok változatlanok.
+        assertEquals("Fekvenyomás 3×10/8/6@80", sum("fekvenyomás 60x10, 70x8, 80x6"));
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60 kg"));
+    }
+
+    /**
+     * Köredzés: a kör-szám az EGÉSZ listára vonatkozik.
+     *
+     * Az „5 kör – 20 burpee, 15 fekvőtámasz, 10 húzódzkodás" a chatben
+     * megosztott edzés tipikus alakja. Eddig minden gyakorlatból EGY sorozat
+     * lett, vagyis a napló a munka ötödét mutatta – és a rekordok, az
+     * izomegyensúly meg a heti volumen is abból számolt.
+     */
+    @Test public void aCircuitRoundCountAppliesToEveryMove() {
+        assertEquals("Fekvőtámasz 5×15/15/15/15/15@0 | Húzódzkodás 5×10/10/10/10/10@0",
+                sum("5 kör - 15 fekvőtámasz, 10 húzódzkodás"));
+        assertEquals("Fekvőtámasz 5×15/15/15/15/15@0 | Húzódzkodás 5×10/10/10/10/10@0",
+                sum("5 kör: 15 fekvőtámasz, 10 húzódzkodás"));
+        assertEquals("Fekvőtámasz 5×15/15/15/15/15@0 | Húzódzkodás 5×10/10/10/10/10@0",
+                sum("5 kör 15 fekvőtámasz, 10 húzódzkodás"));
+        // Ahol van saját sorozatszám, ott azt hagyjuk békén.
+        assertEquals("Guggolás 3×10/10/10@60 | Fekvenyomás 3×8/8/8@50",
+                sum("3 kör: guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg"));
+        // Egyetlen gyakorlatnál változatlan a régi viselkedés.
+        assertEquals("Fekvőtámasz 3×10/10/10@0", sum("3 kör 10 fekvőtámasz"));
+    }
+
+    /**
+     * Minden gyakorlat-szótő minden ragozott alakja a saját gyakorlatát adja.
+     *
+     * Ugyanaz a söprés, ami az ételeknél és a mozgásformáknál fut. Itt
+     * jelenleg NINCS kivétel: mind a tizenkilenc rag átmegy minden tövön –
+     * és ez a nulla az, amit őrizni érdemes.
+     */
+    @Test public void everyMoveStemSurvivesItsInflections() {
+        String[] suf = {"", "t", "ba", "bol", "ban", "val", "hoz", "nak", "n",
+                "ra", "rol", "tol", "nal", "os", "as", "es", "om", "unk", "ok"};
+        StringBuilder bad = new StringBuilder();
+        for (String[] row : StrengthParse.MOVES)
+            for (int i = 1; i < row.length; i++) {
+                if (row[i].indexOf(' ') >= 0) continue;
+                for (String x : suf) {
+                    boolean ok = false;
+                    for (StrengthParse.Item it : StrengthParse.parse(row[i] + x + " 3x10"))
+                        if (it.name.equals(row[0])) ok = true;
+                    if (!ok) bad.append("\n  ").append(row[i]).append(x)
+                            .append(" (").append(row[0]).append(")");
+                }
+            }
+        assertEquals("elveszett ragozott gyakorlat-alak:" + bad, 0, bad.length());
+    }
+
+    @Test public void perSetRepsAreKept() {
+        assertEquals("Bicepsz 3×12/10/8@15", sum("bicepsz 12-10-8 15 kg"));
+        assertEquals("Felhúzás 4×10/8/6/4@120", sum("felhúzás 120 kg 10-8-6-4"));
+    }
+
+    @Test public void wordyFormsWork() {
+        assertEquals("Vállból nyomás 3×12/12/12@20",
+                sum("vállból nyomás 3 sorozat 12 ismétlés 20 kg"));
+        assertEquals("Tricepsz 1×15@25", sum("tricepsz 15 ismétlés 25 kg-mal"));
+        assertEquals("Evezés 4×10/10/10/10@50", sum("evezés 4 szett 10 ism 50 kg"));
+    }
+
+    @Test public void severalExercisesInOneSentence() {
+        assertEquals("Guggolás 3×10/10/10@60 | Fekvenyomás 3×8/8/8@50",
+                sum("guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg"));
+        assertEquals("Guggolás 3×10/10/10@60 | Kitörés 3×12/12/12@0",
+                sum("guggolás 3x10 60 kg és kitörés 3x12"));
+        // Ugyanaz a gyakorlat kétszer: egy bejegyzésbe olvad.
+        assertEquals("Fekvenyomás 5×10/10/10/8/8@60",
+                sum("fekvenyomás 3x10 60 kg, majd fekvenyomás 2x8 60 kg"));
+    }
+
+    @Test public void gymShorthandIsUnderstood() {
+        // A tizedesvessző nem vág ketté mondatot.
+        assertEquals("Bicepsz 3×12/12/12@12,5", sum("bicepsz 3x12 12,5 kg"));
+        // A „3x10x60” harmadik tagja a súly, a „3x10 60” mértékegység nélkül is.
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10x60"));
+        assertEquals("Vállból nyomás 3×10/10/10@30", sum("vállból nyomás 3x10 30"));
+        // Kötőszó nélkül felsorolt gyakorlatok is szétválnak.
+        assertEquals("Guggolás 3×10/10/10@60 | Fekvenyomás 3×8/8/8@50",
+                sum("guggolás 3x10 60kg fekvenyomás 3x8 50kg"));
+        // Bevezető szöveg az első gyakorlat előtt nem zavar.
+        assertEquals("Guggolás 3×10/10/10@60 | Evezés 3×12/12/12@40",
+                sum("két gyakorlat: guggolás 3x10 60 kg; evezés 3x12 40 kg"));
+        // Ragozott alakok.
+        assertEquals("Fekvenyomás 3×10/10/10@60", sum("nyomtam 3x10-et fekvenyomásban 60 kg-mal"));
+        assertEquals("Guggolás 3×10/10/10@60", sum("ma guggolás 3x10 60 kilóval"));
+    }
+
+    @Test public void nothingIsInventedWithoutReps() {
+        // Gyakorlat ismétlés nélkül, vagy ismeretlen mozdulat: nincs találat.
+        for (String q : new String[]{"guggolás", "3 sorozat guggolás", "kondiztam egyet",
+                "60 kg", "", "   ", "jó edzés volt"}) {
+            assertEquals("kitalált sorozat: " + q, 0, StrengthParse.parse(q).size());
+        }
+    }
+
+    /**
+     * Vessző nélküli felsorolás: „5 kör 10 fekvőtámasz 15 guggolás 20 hasizom".
+     *
+     * A megosztott köredzés így néz ki – a magyar felsorolásban a vessző
+     * elmarad, mert a szám maga tagol. Eddig az EGÉSZ lista egy tagmondat
+     * volt: a guggolás megkapta a hasizom ismétlésszámát, a hasprés pedig
+     * egyáltalán nem került be.
+     */
+    @Test public void aListWithoutCommasIsStillAList() {
+        assertEquals("Fekvőtámasz 5×10/10/10/10/10@0 | Guggolás 5×15/15/15/15/15@0"
+                        + " | Hasprés 5×20/20/20/20/20@0",
+                sum("köredzés a parkban: 5 kör 10 fekvőtámasz 15 guggolás 20 hasizom"));
+        assertEquals("Fekvőtámasz 1×20@0 | Guggolás 1×30@0",
+                sum("20 fekvőtámasz 30 guggolás"));
+        // A súly nem nyit új tételt: a „3x10 fekvenyomás 60 kg" egy gyakorlat.
+        assertEquals("Fekvenyomás 3×10/10/10@60", sum("3x10 fekvenyomás 60 kg"));
+        assertEquals("Kettlebell lendítés 5×15/15/15/15/15@16", sum("kettlebell 16 kg 5x15"));
+    }
+
+    /**
+     * A CSÚCS-mondat: „végre lement a 100 kg-os fekvenyomás".
+     *
+     * Ismétlésszám nincs benne, mert egyszeri – és pont ez az a bejegyzés,
+     * amit az ember a legjobban szeretne látni a naplóban. Eddig egyik sem
+     * került be: sem a rekord, sem az 1RM, sem a progresszió nem tudott róla.
+     */
+    @Test public void aPersonalRecordSentenceIsSaved() {
+        assertEquals("Fekvenyomás 1×1@100", sum("végre lement a 100 kg-os fekvenyomás"));
+        assertEquals("Felhúzás 1×1@200", sum("sikerült a 200 kg-os holtemelés"));
+        assertEquals("Guggolás 1×1@150",
+                sum("megdöntöttem a rekordomat guggolásban: 150 kg"));
+        // Csúcs-szó nélkül továbbra sem találunk ki ismétlést.
+        assertEquals(0, StrengthParse.parse("100 kg-os fekvenyomás").size());
+        // A csúcs UTÁN jövő munkasorozatok sem veszhetnek el.
+        assertEquals("Fekvenyomás 4×1/8/8/8@100",
+                sum("végre lement a 100 kg-os fekvenyomás, és utána 3x8 80 kg-mal dolgoztam"));
+    }
+
+    /**
+     * A folytatás magyar mondatban kötőszóval és igével érkezik.
+     *
+     * A minta szigorú marad – bármi MÁS szó azt jelenti, hogy nem sorozatról
+     * van szó –, de a kötőszót és a záró igét leszedjük: az „…és utána 3x8
+     * 80 kg-mal dolgoztam" ugyanaz a folytatás, mint a puszta „3x8 80".
+     */
+    @Test public void aContinuationMaySpeakHungarian() {
+        assertEquals("Guggolás 5×10/10/10/8/8@70", sum("guggolás 3x10, aztán 2x8 70 kg"));
+        // A bemelegítés utáni MUNKASOROZAT is folytatás – eddig csak a
+        // felvezető sorozat került be, a valódi munka nem.
+        assertEquals("Fekvenyomás 4×10/8/8/8@70",
+                sum("fekvenyomás bemelegítés 40x10, munkasorozat 3x8 70"));
+        // A húsz perc futás továbbra sem húsz ismétlés.
+        assertEquals("Fekvenyomás 3×10/10/10@0", sum("fekvenyomás 3x10, majd 20 perc futás"));
+    }
+
+    @Test public void lyingDownIsNotBenchPressing() {
+        // A „fekve" szótő a fordított szórendet fogja, de az alvás-mondat is
+        // tartalmazza: a „lefekvés 23:15, ébredés 6:45" huszonhárom
+        // ismétléses fekvenyomás lett a naplóban.
+        assertEquals(0, StrengthParse.parse("lefekvés 23:15, ébredés 6:45").size());
+        assertEquals(0, StrengthParse.parse("lefeküdtem 23-kor").size());
+        // A fordított szórendű valódi sorozat változatlan.
+        assertEquals("Fekvenyomás 1×5@100", sum("nyomtam 100 kilót fekve ötöt"));
+    }
+
+    @Test public void aMeasurementUnitIsNotAWeight() {
+        // A „ládaugrás 4x8 60 cm" hatvanas száma a doboz MAGASSÁGA – eddig
+        // hatvan kilós ládaugrás került a rekordba.
+        assertEquals("Ládaugrás 4×8/8/8/8@0", sum("ládaugrás 4x8 60 cm"));
+        // A mértékegység nélküli szám továbbra is súly.
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60"));
+    }
+
+    @Test public void aPercentageIsNotAWeight() {
+        // A „@70%" a maximum arányát mondja, nem a rúdon lévő súlyt – a
+        // mondat meg sem mondja, mennyi volt. Hetven kilóként viszont bekerült
+        // a rekordba, az 1RM-becslésbe és a progresszió-javaslatba is.
+        assertEquals("Guggolás 3×8/8/8@0", sum("guggolás 3x8 @70%"));
+        assertEquals("Fekvenyomás 5×3/3/3/3/3@0", sum("fekvenyomás 5x3 85%-on"));
+        // A kukac utáni szám mértékegység nélkül továbbra is súly.
+        assertEquals("Guggolás 3×8/8/8@100", sum("guggolás 3x8 @ 100"));
+    }
+
+    @Test public void aSpacedRepListIsStillAList() {
+        // A tagmondat-vágó a vesszőnél vág, ha szóköz követi: a „12, 10, 8"
+        // tízese és nyolcasa külön, névtelen tagmondatba került, és némán
+        // elveszett – a naplóban a sorozatok harmada maradt.
+        assertEquals("Húzódzkodás 3×12/10/8@0", sum("húzódzkodás max ismétlés: 12, 10, 8"));
+        assertEquals("Bicepsz 3×12/10/8@0", sum("bicepsz 12, 10, 8"));
+        // Két szám még lehet tizedes vagy két külön dolog – ahhoz nem nyúlunk.
+        assertEquals("Guggolás 3×10/10/10@60", sum("guggolás 3x10 60 kg"));
+    }
+
+    @Test public void aThreeDigitNumberOnABarbellMoveIsKilograms() {
+        // A „leguggoltam 140-et" száznegyven KILÓ – száznegyven guggolás nem
+        // létezik egy rúddal. Eddig ismétlésnek olvastuk, és a rekord, az 1RM
+        // és a progresszió-javaslat is ebből számolt.
+        assertEquals("Guggolás 1×1@140", sum("leguggoltam 140-et először életemben"));
+        assertEquals("Fekvenyomás 1×1@120", sum("fekvenyomás 120"));
+        assertEquals("Felhúzás 1×1@180", sum("felhúzás 180-at húztam"));
+        assertEquals("Fekvenyomás 1×1@100", sum("nyomtam 100-at fekve"));
+        // De ha a szám a gyakorlat nevét jelzi, az darabszám – magyarul csak
+        // így mondjuk –, és a saját testsúlyos mozdulatokat sem érinti.
+        assertEquals("Guggolás 1×100@0", sum("csináltam 100 guggolást"));
+        assertEquals("Fekvőtámasz 1×100@0", sum("100 fekvőtámasz"));
+        assertEquals("Guggolás 1×20@0", sum("guggolás 20"));
+    }
+
+    @Test public void anInjuryReportIsNotAWorkoutLog() {
+        // A „vádlimba” szóban ott a „vádli” szótő, ismétlésszám viszont nincs:
+        // a sérülés bejelentéséből eddig „Vádliemelés · 1 · saját testsúly”
+        // lett, és az bekerült a naplóba.
+        for (String q : new String[]{"kaptam egy húzódást a vádlimba futás közben",
+                "fáj a vállam a tegnapi fekvenyomástól",
+                "megrándult a bokám guggolás közben",
+                "gyulladt a könyököm a bicepsztől"}) {
+            assertEquals("kitalált sorozat panaszból: " + q, 0, StrengthParse.parse(q).size());
+        }
+        // De ami MEGTÖRTÉNT, az megtörtént – a fájdalom nem törli a sorozatot.
+        assertEquals("Fekvenyomás 3×8/8/8@60",
+                sum("fájt a vállam, mégis fekvenyomás 3x8 60 kg"));
+        assertEquals("Guggolás 3×10/10/10@0",
+                sum("guggolás 3x10, közben megrándult a térdem"));
+    }
+
+    @Test public void similarNamesDoNotCollide() {
+        // A „fekvenyomás” nem fekvőtámasz, és fordítva.
+        assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x5 100 kg").get(0).name);
+        assertEquals("Fekvőtámasz", StrengthParse.parse("fekvőtámasz 3x20").get(0).name);
+        assertEquals("Vállból nyomás", StrengthParse.parse("vállból nyomás 3x10 30 kg")
+                .get(0).name);
+    }
+
+    @Test public void absurdNumbersAreRejected() {
+        // A számok életszerű tartományban maradnak – a fuzz ne tudjon hülyeséget
+        // bejuttatni a naplóba.
+        for (String q : new String[]{"guggolás 999x999 9999 kg", "bicepsz 0x0",
+                "guggolás 300 ismétlés 900 kg", "fekvenyomás 3x10 800 kg"}) {
+            for (StrengthParse.Item it : StrengthParse.parse(q)) {
+                assertTrue("túl sok sorozat: " + q, it.sets.size() <= 20);
+                for (StrengthParse.Set s : it.sets) {
+                    assertTrue("ismétlés: " + q, s.reps >= 1 && s.reps <= 200);
+                    assertTrue("súly: " + q, s.weight >= 0 && s.weight <= 500);
+                }
+            }
+        }
+    }
+
+    @Test public void gymMachinesAndVariationsAreKnown() {
+        assertEquals("Hasprés 3×20/20/20@0", sum("hasizom 3x20"));
+        assertEquals("Lábnyújtás 3×12/12/12@80", sum("lábgép 3x12 80 kg"));
+        assertEquals("Csuklyás emelés 3×12/12/12@20", sum("csuklyás 3x12 20 kg"));
+        assertEquals("Arnold nyomás 3×10/10/10@16", sum("arnold nyomás 3x10 16 kg"));
+        assertEquals("Fordított tárogatás 3×15/15/15@8", sum("fordított tárogatás 3x15 8 kg"));
+        assertEquals("Mellgép 3×12/12/12@40", sum("mellgép 3x12 40 kg"));
+        assertEquals("Plank 3×45/45/45@0", sum("oldaltámasz 3x45"));
+        assertEquals("Csípőemelés 3×15/15/15@40", sum("farizom 3x15 40 kg"));
+        // A jelzős változatok többsége az alapgyakorlathoz esik – a súlyuk
+        // nagyjából ugyanaz, és külön nyilvántartva csak szétaprózódna a
+        // rekord.
+        assertEquals("Guggolás", StrengthParse.parse("elöl guggolás 3x5 60 kg").get(0).name);
+        // Ahol viszont a súly nagyságrendben más, ott KÜLÖN gyakorlat: a
+        // román felhúzás jóval könnyebb a holtemelésnél, a bolgár kitörés egy
+        // lábra megy, a ferde pad pedig a vállnak dolgoztat. Egy vödörbe téve
+        // a progresszió a nehezebbik súlyát kínálná a könnyebbikhez, és a
+        // rekord sosem dőlne meg a könnyebbikkel.
+        assertEquals("Román felhúzás", StrengthParse.parse("román felhúzás 3x8 80 kg").get(0).name);
+        assertEquals("Bolgár kitörés", StrengthParse.parse("bolgár kitörés 3x10 20 kg").get(0).name);
+        assertEquals("Ferde fekvenyomás", StrengthParse.parse("ferde fekvenyomás 3x8 60 kg").get(0).name);
+        // …de a bázis a maga nevén marad.
+        assertEquals("Felhúzás", StrengthParse.parse("felhúzás 3x8 120 kg").get(0).name);
+        assertEquals("Kitörés", StrengthParse.parse("kitörés 3x10 20 kg").get(0).name);
+        assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x8 80 kg").get(0).name);
+    }
+
+    @Test public void quickChipNamesMatchTheParserNames() {
+        // A gyors chipek és a mondat-felismerés ugyanazt a nevet használják –
+        // különben ugyanaz a gyakorlat két néven élne a naplóban, és a
+        // rekordok, a progresszió-javaslat meg a „mikor csináltad utoljára”
+        // mind kettéválna.
+        java.util.List<String> parsed = Arrays.asList(StrengthParse.names());
+        for (String chip : StrengthLog.COMMON)
+            assertTrue("a chip neve ismeretlen a felismerőnek: " + chip,
+                    parsed.contains(chip));
+    }
+
+    @Test public void everyExerciseNameResolvesToItself() {
+        // Önellenőrzés: ha egy gyakorlat SAJÁT neve máshová esik, akkor egy
+        // hosszabb tő elnyelte – és a mondatból sosem lehet őt felvenni.
+        for (String n : StrengthParse.names()) {
+            List<StrengthParse.Item> got = StrengthParse.parse(n + " 3x10");
+            assertEquals("nem önmagára esik: " + n, 1, got.size());
+            assertEquals("nem önmagára esik: " + n, n, got.get(0).name);
+        }
+    }
+
+    @Test public void noEverydayWordEverBecomesAnExercise() {
+        // Ugyanaz az őrszem-lista, mint az ételeknél (FoodsTest.EVERYDAY): egy
+        // új, túl rövid gyakorlat-szótő ugyanúgy tud csendben beleesni egy
+        // hétköznapi szóba. Az ismétlésszámot hozzáadjuk, hogy tényleg csak a
+        // NÉV döntsön.
+        StringBuilder bad = new StringBuilder();
+        for (String w : FoodsTest.EVERYDAY) {
+            // Az evezőgép valóban evezés: a gép neve maga a gyakorlat.
+            if (w.equals("evezőgép")) continue;
+            for (StrengthParse.Item it : StrengthParse.parse(w + " 3x10"))
+                bad.append("\n  ").append(w).append(" -> ").append(it.name);
+        }
+        assertEquals("hétköznapi szóból gyakorlat lett:" + bad, 0, bad.length());
+        // És izomcsoport sem lesz belőle – a testrészek nevét kivéve, mert az
+        // szándékosan besorolható.
+        StringBuilder mg = new StringBuilder();
+        for (String w : FoodsTest.EVERYDAY) {
+            if (Arrays.asList("kar", "váll", "térd", "boka", "csukló", "könyök",
+                    "medence", "izom", "gerinc", "nyak", "derék",
+                    // A „combos" melléknév a comb tövét viseli: az
+                    // izomcsoport-címke ára itt egy jelző, nem egy kitalált
+                    // bejegyzés – a naplóba semmi nem kerül tőle.
+                    "combos").contains(w)) continue;
+            String g = Muscles.groupOf(w);
+            if (g != null) mg.append("\n  ").append(w).append(" -> ").append(g);
+        }
+        assertEquals("hétköznapi szóból izomcsoport lett:" + mg, 0, mg.length());
+    }
+
+    @Test public void everyKnownExerciseHasAMuscleGroup() {
+        // Amit a mondat-felvétel elment, annak a heti izomcsoport-egyensúlyban
+        // is látszania kell – különben a napló egy része láthatatlan marad.
+        for (String n : StrengthParse.names())
+            assertTrue("nincs izomcsoportja: " + n, Muscles.groupOf(n) != null);
+    }
+
+    @Test public void randomTextNeverCrashes() {
+        // Egy külön, 120 000 mondatos futtatás nulla hibát talált; a magok
+        // váltogatása így is beépült, hogy a CI minden változtatást megfogjon.
+        String[] tokens = {"guggolás", "3x10", "60 kg", "fekvenyomás", "és", ",",
+                "bicepsz", "12-10-8", "ismétlés", "sorozat", "húzódzkodás", "x",
+                "0", "999", "-", "…", "🏋", "", " ", "kg", "szett", "50 fekvőtámasz",
+                "3x10x60", "99x99", "0x0", "1x200", "21x1", "12,5 kg", "1000 kg",
+                "-5 kg", "hasizom", "lábgép", "mellgép", "arnold", "csuklyás",
+                "oldaltámasz", "×", "majd", "utána", ";", "nem", "helyett",
+                "kilóval", "kg-mal", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"};
+        for (long seed : new long[]{20260802, 42, 777}) {
+            java.util.Random rnd = new java.util.Random(seed);
+            for (int i = 0; i < 4000; i++) {
+                StringBuilder sb = new StringBuilder();
+                int n = rnd.nextInt(12);
+                for (int w = 0; w < n; w++) {
+                    sb.append(tokens[rnd.nextInt(tokens.length)]);
+                    if (rnd.nextInt(4) > 0) sb.append(' ');
+                }
+                String q = sb.toString();
+                List<StrengthParse.Item> items = StrengthParse.parse(q);
+                for (StrengthParse.Item it : items) {
+                    assertTrue(!it.name.isEmpty());
+                    assertTrue(it.sets.size() >= 1 && it.sets.size() <= 60);
+                    // Tartásnál a szám MÁSODPERC: a „12 perc plank" hét-
+                    // százhúsz, nem tizenkét ismétlés.
+                    int cap = StrengthParse.isTimed(it.name) ? 1200 : 200;
+                    for (StrengthParse.Set s : it.sets) {
+                        assertTrue(s.reps >= 1 && s.reps <= cap);
+                        assertTrue(s.weight >= 0 && s.weight <= 500);
+                    }
+                    assertTrue(!it.label().isEmpty());
+                }
+                // Ugyanaz a mondat mindig ugyanazt adja (nincs rejtett állapot).
+                assertEquals(items.size(), StrengthParse.parse(q).size());
+            }
+        }
+    }
+    @Test public void theGymWordsRealPeopleWriteAreUnderstood() {
+        // Harmincöt valódi terem-mondattal szondáztam a felismerőt; ezek azok,
+        // amiken elhasalt.
+        assertEquals("Lehúzás 4×12/12/12/12@55", sum("lat húzás 4x12 55"));
+        assertEquals("Mellgép 3×12/12/12@45", sum("mellnyomás gépen 3x12 45 kg"));
+        assertEquals("Ferde fekvenyomás 4×10/10/10/10@30", sum("ferde padon 4x10 30 kg"));
+        assertEquals("Hátfeszítés 3×15/15/15@0", sum("hiperextenzió 3x15"));
+    }
+
+    @Test public void aWeightWrittenWithAnInstrumentalSuffixIsNotRepCount() {
+        // A „100-zal" súly, nem száz ismétlés: onnantól a rekordok, az 1RM és
+        // az izomcsoport-egyensúly is hazudtak volna.
+        assertEquals("Guggolás 3×10/10/10@100", sum("guggolás 3x10 100-zal"));
+        assertEquals("Fekvenyomás 3×8/8/8@80", sum("fekvenyomás 3x8 80-nal"));
+        // Ismétlésszám nélkül inkább semmi, mint kitalált sorozat.
+        assertEquals(0, StrengthParse.parse("guggoltam 100-zal").size());
+    }
+    @Test public void writtenOutNumbersWork() {
+        // A teremben ritkán ír bárki számjegyet.
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("guggolás ötször ötöt 100 kg"));
+        assertEquals("Fekvenyomás 4×8/8/8/8@70", sum("fekvenyomás négyszer nyolcat 70 kg"));
+        assertEquals("Bicepsz 3×12/12/12@15", sum("bicepsz háromszor tizenkettőt 15 kg"));
+        assertEquals("Fekvőtámasz 1×10@0", sum("tíz fekvőtámasz"));
+        assertEquals("Húzódzkodás 5×5/5/5/5/5@0", sum("húzódzkodás ötször ötöt"));
+        // Ez korábban semmit nem adott: a „100-zal" súly, az „ötször ötöt"
+        // pedig öt sorozat öt ismétlés.
+        assertEquals("Guggolás 5×5/5/5/5/5@100", sum("guggoltam 100-zal ötször ötöt"));
+        // Gyakorlat nélkül továbbra sincs bejegyzés.
+        assertEquals(0, StrengthParse.parse("nyomtam háromszor tízet 60 kg").size());
+    }
+    @Test public void theFeltEffortCanComeFromTheSentence() {
+        assertEquals(8, StrengthParse.parse("guggolás 3x10 100 kg rpe 8").get(0).rpe);
+        assertEquals(9, StrengthParse.parse("fekvenyomás 3x5 90 kg rpe9").get(0).rpe);
+        assertEquals(7, StrengthParse.parse("evezés 4x12 60 kg, 7-es rpe").get(0).rpe);
+        // A címkében is látszik.
+        assertTrue(StrengthParse.parse("guggolás 3x10 100 kg rpe 8").get(0).label()
+                .contains("RPE 8"));
+        // Ami nincs a 6–10 sávban, az nem RPE.
+        assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rpe 3").get(0).rpe);
+        assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg").get(0).rpe);
+        // Egy kilónál könnyebb sorozat nincs: a „fél testsúllyal" fele nem súly.
+        assertEquals(0.0, StrengthParse.parse("fekvenyomás 3x8 fél testsúllyal")
+                .get(0).sets.get(0).weight, 0.001);
+        // A valódi kis súly viszont megmarad.
+        assertEquals(1.5, StrengthParse.parse("bicepsz 3x12 1,5 kg")
+                .get(0).sets.get(0).weight, 0.001);
+        assertEquals(1.5, StrengthParse.parse("bicepsz 3x12 másfél kiló")
+                .get(0).sets.get(0).weight, 0.001);
+        // A termi anglicizmusok a magyar nevükre futnak be.
+        assertEquals("Combhajlítás", StrengthParse.parse("leg curl 3x12 40 kg").get(0).name);
+        assertEquals("Lábnyújtás", StrengthParse.parse("leg extension 3x12 45 kg").get(0).name);
+        assertEquals("Mellgép", StrengthParse.parse("chest press 3x10 60 kg").get(0).name);
+        assertEquals("Mellgép", StrengthParse.parse("pec deck 3x12 50 kg").get(0).name);
+        assertEquals("Vállból nyomás",
+                StrengthParse.parse("shoulder press 3x10 40 kg").get(0).name);
+        assertEquals("Evezés", StrengthParse.parse("cable row 3x10 55 kg").get(0).name);
+        assertEquals("Evezés", StrengthParse.parse("pendlay row 5x5 70 kg").get(0).name);
+        assertEquals("Tricepsz", StrengthParse.parse("skull crusher 3x10 25 kg").get(0).name);
+        assertEquals("Bicepsz", StrengthParse.parse("hammer curl 3x12 14 kg").get(0).name);
+        assertEquals("Tolódzkodás", StrengthParse.parse("dip 3x10").get(0).name);
+        // A térdemelés ugyanaz a hasizom-gyakorlat, csak hajlított lábbal.
+        assertEquals("Lábemelés", StrengthParse.parse("térdemelés 3x15").get(0).name);
+        // A RIR a tartalék-ismétlés: RIR 2 = RPE 8. Az öt fölötti szám nem RIR.
+        assertEquals(8, StrengthParse.parse("guggolás 3x10 100 kg rir 2").get(0).rpe);
+        assertEquals(10, StrengthParse.parse("felhúzás 1x1 180 kg rir 0").get(0).rpe);
+        assertEquals(0, StrengthParse.parse("guggolás 3x10 100 kg rir 7").get(0).rpe);
+        // A kg utáni @szám a 6–10 sávban RPE; a kg nélküli „@ 100" súly marad.
+        assertEquals(8, StrengthParse.parse("fekvenyomás 5x5 90 kg @8").get(0).rpe);
+        StrengthParse.Item at = StrengthParse.parse("guggolás 5,5,5 @ 100").get(0);
+        assertEquals(0, at.rpe);
+        assertEquals(100.0, at.sets.get(0).weight, 0.01);
+        // Gyakorlatonként külön: a második mondatrész saját értéket kap.
+        java.util.List<StrengthParse.Item> two =
+                StrengthParse.parse("guggolás 3x10 100 kg rpe 8, fekvenyomás 3x8 60 kg rpe 10");
+        assertEquals(2, two.size());
+        assertEquals(8, two.get(0).rpe);
+        assertEquals(10, two.get(1).rpe);
+    }
+
+    @Test public void theWeightTimesRepsNotationIsUnderstood() {
+        // Az erőemelők jelölése: súly × ismétlés. A hatvan nem lehet sorozat.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 60x10, 70x8, 80x6");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(10, r.get(0).sets.get(0).reps);
+        assertEquals(60.0, r.get(0).sets.get(0).weight, 0.001);
+        assertEquals(6, r.get(0).sets.get(2).reps);
+        assertEquals(80.0, r.get(0).topWeight(), 0.001);
+        assertEquals(24, r.get(0).totalReps());
+    }
+
+    @Test public void aPyramidWithoutCommasKeepsEverySet() {
+        // Vessző nélkül is ugyanaz a mondat – korábban ebből EGY sorozat lett,
+        // a másik kettő némán elveszett.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 60x10 70x8 80x6");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(24, r.get(0).totalReps());
+        assertEquals(80.0, r.get(0).topWeight(), 0.001);
+        // A folytatás nem lép át a következő gyakorlatba.
+        List<StrengthParse.Item> two =
+                StrengthParse.parse("guggolás 60x10 70x8 majd fekvenyomás 50x10");
+        assertEquals(2, two.size());
+        assertEquals(2, two.get(0).sets.size());
+        assertEquals(1, two.get(1).sets.size());
+        assertEquals(50.0, two.get(1).topWeight(), 0.001);
+        // A sorozat × ismétlés alakot a szóköz NEM folytatja: a „3x8” hármasa
+        // sorozatszám, nem súly.
+        List<StrengthParse.Item> mix = StrengthParse.parse("fekvenyomás 60x10 3x8");
+        assertEquals(1, mix.get(0).sets.size());
+        assertEquals(10, mix.get(0).totalReps());
+    }
+
+    @Test public void aCommaSeparatedRepListNeedsThreeNumbers() {
+        // Három számnál a vessző már nem lehet tizedesjel: egy tizedes számban
+        // pontosan egy vessző van.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 12,10,8 60 kg");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(30, r.get(0).totalReps());
+        assertEquals(60.0, r.get(0).topWeight(), 0.001);
+        // Kettőnél viszont igen – a „60,5 kg" súly, nem két sorozat.
+        List<StrengthParse.Item> dec = StrengthParse.parse("guggolás 3x8 60,5 kg");
+        assertEquals(3, dec.get(0).sets.size());
+        assertEquals(60.5, dec.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void theAtSignMarksTheWeight() {
+        // A „@" az edzésnaplók nemzetközi rövidítése a súlyra. Korábban a
+        // „5,5,5 @ 100" egyetlen, SZÁZ ismétléses sorozat lett.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás: 5,5,5 @ 100");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(15, r.get(0).totalReps());
+        assertEquals(100.0, r.get(0).topWeight(), 0.001);
+        List<StrengthParse.Item> x = StrengthParse.parse("guggolás 5x5 @ 100");
+        assertEquals(5, x.get(0).sets.size());
+        assertEquals(100.0, x.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void theNewMachineAndKettlebellNamesAreRecognised() {
+        // Ezek eddig NEM léteztek a felismerőnek: az egész mondat elveszett,
+        // nem csak a név.
+        assertEquals("Kettlebell lendítés",
+                StrengthParse.parse("kettlebell swing 5x20 24 kg").get(0).name);
+        assertEquals("Kettlebell lendítés", StrengthParse.parse("swing 4x20 24 kg").get(0).name);
+        // A „kettlebell" magában nem lendítés: a kettlebell-guggolás guggolás.
+        assertEquals("Guggolás",
+                StrengthParse.parse("kettlebell guggolás 3x10 20 kg").get(0).name);
+        assertEquals("Lábtávolítás", StrengthParse.parse("lábtávolítás 3x15 40 kg").get(0).name);
+        assertEquals("Lábközelítés", StrengthParse.parse("lábközelítés 3x15 35 kg").get(0).name);
+        assertEquals("Fellépés", StrengthParse.parse("fellépés 3x10 20 kg").get(0).name);
+        assertEquals("Alkarhajlítás", StrengthParse.parse("csuklóhajlítás 3x20 8 kg").get(0).name);
+        assertEquals("Orosz csavarás", StrengthParse.parse("russian twist 3x20").get(0).name);
+        // Az „alkartámasz" a plank magyar neve – nem alkarhajlítás.
+        assertEquals("Plank", StrengthParse.parse("alkartámasz 3x60").get(0).name);
+    }
+
+    @Test public void aCommaSeparatedEnumerationIsOneEntry() {
+        // „ma guggoltam, 5 sorozat, 5 ismétlés, 100 kg" – a darabok külön-külön
+        // értelmetlenek, ezért az EGÉSZ mondatból nem lett bejegyzés.
+        List<StrengthParse.Item> r =
+                StrengthParse.parse("ma guggoltam, 5 sorozat, 5 ismétlés, 100 kg");
+        assertEquals(1, r.size());
+        assertEquals("Guggolás", r.get(0).name);
+        assertEquals(5, r.get(0).sets.size());
+        assertEquals(100.0, r.get(0).topWeight(), 0.001);
+        // A folytatás csak a puszta mennyiség-töredékre igaz: a „majd 20 perc
+        // futás" továbbra sem sorozat.
+        assertEquals(3, StrengthParse.parse("guggolás 3x10, majd 20 perc futás")
+                .get(0).sets.size());
+        // És nem nyeli el a KÖVETKEZŐ gyakorlatot, ha az is súllyal kezdődik.
+        List<StrengthParse.Item> two =
+                StrengthParse.parse("60 kg guggolás 3x8, 50 kg fekvenyomás 3x8");
+        assertEquals(2, two.size());
+        assertEquals("Guggolás", two.get(0).name);
+        assertEquals(60.0, two.get(0).topWeight(), 0.001);
+        assertEquals("Fekvenyomás", two.get(1).name);
+        assertEquals(50.0, two.get(1).topWeight(), 0.001);
+    }
+
+    @Test public void twoExercisesNeverSwapTheirWeights() {
+        // Generatív őrszem: bármelyik két gyakorlat, öt szórendben, és a súly
+        // mindig a SAJÁT gyakorlatához tartozik. Az edzés-felismerőben pont
+        // ilyen csúszás fordult elő (idő és táv is), és ott is csendes volt.
+        String[][] moves = {{"guggolás", "Guggolás"}, {"fekvenyomás", "Fekvenyomás"},
+                {"evezés", "Evezés"}, {"bicepsz", "Bicepsz"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] x : moves)
+            for (String[] y : moves) {
+                if (x[1].equals(y[1])) continue;
+                String[] forms = {
+                        x[0] + " 3x8 80 kg, " + y[0] + " 3x10 40 kg",
+                        "80 kg " + x[0] + " 3x8, 40 kg " + y[0] + " 3x10",
+                        "3x8 " + x[0] + " 80 kg, 3x10 " + y[0] + " 40 kg",
+                        x[0] + " 3x8 80 kg és " + y[0] + " 3x10 40 kg",
+                        x[0] + " 80x8, " + y[0] + " 40x10"};
+                for (String q : forms) {
+                    List<StrengthParse.Item> p = StrengthParse.parse(q);
+                    if (p.size() != 2 || !p.get(0).name.equals(x[1])
+                            || !p.get(1).name.equals(y[1])
+                            || Math.abs(p.get(0).topWeight() - 80) > 0.001
+                            || Math.abs(p.get(1).topWeight() - 40) > 0.001) {
+                        bad.append("\n  ").append(q).append(" -> ");
+                        for (StrengthParse.Item i : p)
+                            bad.append(i.name).append("/").append(i.topWeight()).append(" ");
+                    }
+                }
+            }
+        assertEquals("elcsúszott a súly:" + bad, 0, bad.length());
+    }
+
+    @Test public void aMaxLiftIsASingle() {
+        // „fekvenyomás max 120 kg”: a legnehezebb, amit egyszer megnyomott.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás max 120 kg");
+        assertEquals(1, r.size());
+        assertEquals(1, r.get(0).sets.size());
+        assertEquals(1, r.get(0).totalReps());
+        assertEquals(120.0, r.get(0).topWeight(), 0.001);
+        // Súly nélkül vagy ismeretlen ismétlésszámmal nem találunk ki semmit.
+        assertTrue(StrengthParse.parse("húzódzkodás 3 szett maximumig").isEmpty());
+        assertTrue(StrengthParse.parse("fekvenyomás max").isEmpty());
+    }
+
+    @Test public void theThreeDigitWeightSurvives() {
+        // A „100x3" súlya száz kiló – korábban a százból ismétlés lett.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 100x3, 100x3, 100x2");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(8, r.get(0).totalReps());
+        assertEquals(100.0, r.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void aContinuationClauseKeepsTheExercise() {
+        // A vessző utáni sorozat ugyanahhoz a gyakorlathoz tartozik.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 3x10 60kg, 2x8 70kg");
+        assertEquals(1, r.size());
+        assertEquals(5, r.get(0).sets.size());
+        assertEquals(46, r.get(0).totalReps());
+        assertEquals(70.0, r.get(0).topWeight(), 0.001);
+    }
+
+    @Test public void aClauseWithOtherWordsIsNotAContinuation() {
+        // A „20 perc futás" húsz perce nem húsz ismétlés.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 3x10, majd 20 perc futás");
+        assertEquals(1, r.size());
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(30, r.get(0).totalReps());
+    }
+
+    @Test public void aRoundIsASeries() {
+        // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent.
+        List<StrengthParse.Item> r = StrengthParse.parse("3 kör 10 fekvőtámasz");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(30, r.get(0).totalReps());
+        assertEquals(5, StrengthParse.parse("5 kör 20 guggolás").get(0).sets.size());
+    }
+
+    @Test public void aSlashSeparatedRepListWorksLikeADash() {
+        // A per-jel ugyanolyan gyakori elválasztó, mint a kötőjel.
+        List<StrengthParse.Item> r = StrengthParse.parse("fekvenyomás 5/5/5 80 kg");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(15, r.get(0).totalReps());
+        assertEquals(80.0, r.get(0).topWeight(), 0.001);
+        assertEquals(3, StrengthParse.parse("bicepsz 12/10/8 15 kg").get(0).sets.size());
+        // A kötőjeles alak változatlan.
+        assertEquals(3, StrengthParse.parse("fekvenyomás 5-5-5 80 kg").get(0).sets.size());
+    }
+
+    @Test public void aDecimalWeightIsNotARepList() {
+        // A vessző szándékosan NEM elválasztó: a „60,5 kg" tizedes szám, és egy
+        // félreolvasott súly rosszabb, mint egy fel nem ismert sorozatlista.
+        List<StrengthParse.Item> r = StrengthParse.parse("guggolás 3x10 60,5 kg");
+        assertEquals(3, r.get(0).sets.size());
+        assertEquals(60.5, r.get(0).topWeight(), 0.001);
+        assertEquals(60.5, StrengthParse.parse("guggolás 3x10 60.5kg").get(0).topWeight(),
+                0.001);
+    }
+
+    @Test public void theSpokenWeightIsUnderstood() {
+        // A teremben kimondva is mondják a súlyt – az összetett számnevekkel.
+        assertEquals(75.0, StrengthParse.parse("guggolás 5x5 hetvenöt kiló")
+                .get(0).topWeight(), 0.001);
+        assertEquals(85.0, StrengthParse.parse("fekvenyomás 3x10 nyolcvanöt kg")
+                .get(0).topWeight(), 0.001);
+        assertEquals(120.0, StrengthParse.parse("guggolás 3x10 százhúsz kilóval")
+                .get(0).topWeight(), 0.001);
+        assertEquals(110.0, StrengthParse.parse("fekvenyomás 5x5 száztíz kg")
+                .get(0).topWeight(), 0.001);
+        assertEquals(200.0, StrengthParse.parse("guggolás ötször ötöt kétszáz kiló")
+                .get(0).topWeight(), 0.001);
+    }
+    /**
+     * Gyakorlatnév az egyik tagmondatban, sorozat a másikban.
+     *
+     * A „guggolás 60 kg bemelegítés, aztán 3x5 100" első tagmondatában nincs
+     * ismétlésszám, a másodikban nincs név – eddig az EGÉSZ mondat elveszett,
+     * pedig együtt teljesen egyértelmű.
+     */
+    @Test public void theNameCanStandInAnEarlierClause() {
+        List<StrengthParse.Item> it =
+                StrengthParse.parse("guggolás 60 kg bemelegítés, aztán 3x5 100");
+        assertEquals(1, it.size());
+        assertEquals("Guggolás", it.get(0).name);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(5, it.get(0).sets.get(0).reps);
+        assertEquals(100, it.get(0).sets.get(0).weight, 0.001);
+        // A függő név nem ragad rá a KÖVETKEZŐ, saját nevű gyakorlatra.
+        List<StrengthParse.Item> b =
+                StrengthParse.parse("guggolás, majd fekvenyomás 3x8 60");
+        assertEquals(1, b.size());
+        assertEquals("Fekvenyomás", b.get(0).name);
+    }
+
+    /**
+     * A „3x max" hármasa sorozatszám, nem ismétlés.
+     *
+     * Hármat beírni ismétlésként csendes hazugság lenne – a „3 szett
+     * maximumig" alakot ugyanezért nem értjük.
+     */
+    @Test public void aSetCountIsNotARepCount() {
+        assertTrue(StrengthParse.parse("húzódzkodás 3x max").isEmpty());
+        assertTrue(StrengthParse.parse("húzódzkodás 3 szett maximumig").isEmpty());
+        // A teljes alak viszont megy.
+        assertEquals(3, StrengthParse.parse("húzódzkodás 3x8").get(0).sets.size());
+    }
+    /**
+     * Két különböző gyakorlat egy mondatban: mindkettő megmarad, a
+     * sorrendjükben.
+     *
+     * A gyakorlatnevek egymásba érhetnek („fekvenyomás" / „fekvőtámasz",
+     * „alkartámasz" / „alkarhajlítás"), és egy ilyen ütközés csendben elnyeli
+     * az egyik sorozatot. Az összes névpárt átfuttatjuk.
+     */
+    @Test public void twoExercisesInOneSentenceBothSurvive() {
+        String[] names = StrengthParse.names();
+        StringBuilder bad = new StringBuilder();
+        for (int i = 0; i < names.length; i++)
+            for (int j = 0; j < names.length; j++) {
+                if (i == j) continue;
+                String q = names[i] + " 3x10, " + names[j] + " 4x8";
+                List<StrengthParse.Item> it = StrengthParse.parse(q);
+                if (it.size() == 2 && it.get(0).name.equals(names[i])
+                        && it.get(1).name.equals(names[j])) continue;
+                bad.append("\n  ").append(q).append(" -> ");
+                for (StrengthParse.Item x : it) bad.append(x.name).append(' ');
+            }
+        assertEquals("ütköző gyakorlatnév:" + bad, 0, bad.length());
+    }
+    /**
+     * A gyakorlatok IGEALAKJAI is felismerhetők, ha egyértelműek.
+     *
+     * A „nyomtam", a „húztam" és a „toltam" szándékosan NEM: azokból nem
+     * derül ki, melyik gyakorlatról van szó, és egy találgatott gyakorlatnév
+     * rosszabb, mint a hiány. Az „eveztem" viszont egyértelmű.
+     */
+    @Test public void unambiguousVerbFormsAreUnderstood() {
+        assertEquals("Evezés", StrengthParse.parse("eveztem 3x10 50 kg").get(0).name);
+        assertEquals("Felülés", StrengthParse.parse("felültem 3x20").get(0).name);
+        assertEquals("Kitörés", StrengthParse.parse("kitörtem 3x12").get(0).name);
+        assertEquals("Fekvenyomás",
+                StrengthParse.parse("mellet nyomtam 3x10 60 kg").get(0).name);
+        // A többértelmű igék továbbra sem találgatnak.
+        for (String q : new String[]{"nyomtam 3x10 60 kg", "húztam 3x10 60 kg",
+                "toltam 3x10 60 kg", "emeltem 3x10 60 kg"})
+            assertTrue(q, StrengthParse.parse(q).isEmpty());
+    }
+    /**
+     * A „helyett" előtti gyakorlat nem történt meg.
+     *
+     * A „guggolás 3x10 helyett fekvenyomás 3x8" mondatból eddig MINDKÉT
+     * gyakorlat bekerült a naplóba – az is, amit az ember épp kihagyott. Az
+     * étkezés-oldalon ez a szabály régóta megvolt.
+     */
+    @Test public void whatComesBeforeInsteadOfDidNotHappen() {
+        List<StrengthParse.Item> it =
+                StrengthParse.parse("guggolás 3x10 helyett fekvenyomás 3x8");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        // Kötőszóval felsorolva továbbra is mindkettő megvan.
+        assertEquals(2, StrengthParse.parse("guggolás 3x10, fekvenyomás 3x8").size());
+    }
+
+    /**
+     * „4 sorozat 8 fekvenyomás” – az „ismétlés" szó kimondatlan marad.
+     *
+     * A teremben senki nem mondja ki: a sorozatszám után álló szám maga az
+     * ismétlés. Eddig ebből a mondatból SEMMI nem lett – a felismerő látta a
+     * sorozatszámot, ismétlést nem talált hozzá, és inkább kiszállt. A „3x8"
+     * alak működött, a szavakkal kimondott ugyanaz nem.
+     */
+    @Test public void setCountFollowedByRepsNeedsNoRepWord() {
+        assertSets("4 sorozat 8 fekvenyomás", "Fekvenyomás", 4, 8, 0);
+        assertSets("négy sorozat nyolc fekvenyomás", "Fekvenyomás", 4, 8, 0);
+        assertSets("3 szett 12 bicepsz", "Bicepsz", 3, 12, 0);
+        assertSets("5 sorozat 5 felhúzás 100 kg", "Felhúzás", 5, 5, 100);
+        assertSets("3 kör 10 fekvőtámasz", "Fekvőtámasz", 3, 10, 0);
+        // Két gyakorlat egy mondatban, mindkettő ilyen alakban.
+        assertEquals(2, StrengthParse.parse(
+                "3 sorozat 10 guggolás, 4 sorozat 8 fekvenyomás").size());
+    }
+
+    /**
+     * …de a sorozatszám után álló szám nem mindig ismétlés.
+     *
+     * Ha súly vagy időtartam következik, akkor az ismétlésszám továbbra is
+     * ismeretlen – és egy kitalált nyolcas rosszabb, mint a felismerés
+     * elmaradása.
+     */
+    @Test public void aWeightAfterTheSetCountIsNotARepCount() {
+        for (String q : new String[]{"3 sorozat guggolás", "3 sorozat 60 kg guggolás",
+                "3 szett maximumig fekvenyomás", "3 sorozat 2 perc pihenő guggolás"})
+            assertTrue(q, StrengthParse.parse(q).isEmpty());
+        // Tartásnál viszont a másodperc az ismétlés helyén áll: az marad.
+        assertSets("3 sorozat 45 mp plank", "Plank", 3, 45, 0);
+        assertSets("3 sorozat 1 perc plank", "Plank", 3, 60, 0);
+    }
+
+    /**
+     * A padon nyomás fekvenyomás.
+     *
+     * Az „edzésen a padon 4 sorozatot nyomtam, 8-8-6-6 ismétléssel, 75 kg"
+     * gyakorlata nyomtalanul elveszett – a tő két szava egymás mellett
+     * áll, a mondatban viszont a sorozatszám ékelődött közéjük.
+     */
+    @Test public void pressingOnTheBenchIsABenchPress() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen a "
+                + "padon 4 sorozatot nyomtam, 8-8-6-6 ismétléssel, 75 kg.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(75.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A „helyett" a megvalósult sorozatot vezeti be.
+     *
+     * A „guggolásban ma nem bírtam a súlyt, 3x5 helyett csak 3x3 ment
+     * 100 kg-mal" a TERVEZETT sorozatot írta a naplóba – a valódi
+     * hármas-hármas helyett.
+     */
+    @Test public void theInsteadClauseKeepsWhatHappened() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolásban ma "
+                + "nem bírtam a súlyt, 3x5 helyett csak 3x3 ment 100 kg-mal.");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(3, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A tolódzás és a francia is gyakorlatnév.
+     *
+     * A „kondi: fekve 4x8 70 kg, tolódzás 3x12, francia 3x12 25 kg"
+     * második és harmadik tétele nyomtalanul elveszett – a rövidebb
+     * beszélt alakok nem voltak tövek. A franciasaláta viszont továbbra
+     * sem gyakorlat: a puszta „francia" csak sorozat-adat előtt az.
+     */
+    @Test public void theDipAndTheFrenchAreMovesToo() {
+        List<StrengthParse.Item> it = StrengthParse.parse("kondi: fekve "
+                + "4x8 70kg, tolódzás 3x12, francia 3x12 25kg");
+        assertEquals(3, it.size());
+        assertEquals("Tolódzkodás", it.get(1).name);
+        assertEquals("Tricepsz", it.get(2).name);
+        assertEquals(25.0, it.get(2).topWeight(), 0.01);
+    }
+
+    /**
+     * A sorozat és az ismétlés két tagmondatban is összetartozik.
+     *
+     * Az „edzésen 3 sorozat felhúzás 100 kg-mal, 5 ismétlés mindegyik"
+     * hármas-ötöse két tagmondatra esett szét, és a naplóba három EGYES
+     * sorozat került száz kilóval – a munka ötöde.
+     */
+    @Test public void theSetCountAndTheRepsMeetAcrossTheComma() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen "
+                + "3 sorozat felhúzás 100 kg-mal, 5 ismétlés mindegyik.");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(5, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A napi összes tartás is tartásidő.
+     *
+     * A „ma 12 perc plank összesen, három részletben" tizenkét perce
+     * eddig NEM lett tartásidő – a tíz perces határ fölött volt –, és a
+     * naplóba a „három részletben" HÁROM másodperce került helyette.
+     */
+    @Test public void aDailyPlankTotalIsAHold() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Ma 12 perc plank összesen, három részletben.");
+        assertEquals(1, it.size());
+        assertEquals("Plank", it.get(0).name);
+        assertEquals(720, it.get(0).sets.get(0).reps);
+        assertEquals(720, StrengthParse.parse("Ma 12 perc plank.")
+                .get(0).sets.get(0).reps);
+        // A rövid tartás marad annyi, amennyi.
+        assertEquals(120, StrengthParse.parse("Ma 2 perc plank.")
+                .get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A csúcs szava a szomszéd tagmondatból is felment.
+     *
+     * A „fekvenyomás 100 kg, új rekord" száz kilója NYOMTALANUL eltűnt: a
+     * tagmondatban, amiben a súly állt, nem volt csúcs-szó, a csúcs-szó
+     * tagmondatában meg nem volt gyakorlat. Pedig épp ez az a bejegyzés,
+     * amit az ember a legjobban szeretne látni a naplóban.
+     */
+    @Test public void theRecordWordCarriesAcrossTheComma() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Fekvenyomás 100 kg, új rekord.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+        assertEquals(100.0, StrengthParse.parse("Fekvenyomásban ma 100 kg-ot "
+                + "toltam elsőre, új rekord.").get(0).topWeight(), 0.01);
+        // Csúcs-szó nélkül továbbra sincs kitalált sorozat.
+        assertTrue(StrengthParse.parse("60 kg").isEmpty());
+    }
+
+    /**
+     * A válltolás vállból nyomás.
+     *
+     * A „ma válltolás 3x10 30 kg, majd oldalemelés 3x15 8 kg" első
+     * gyakorlata nyomtalanul elveszett – a terem szava nem volt tő.
+     */
+    @Test public void aShoulderPushIsAnOverheadPress() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma válltolás "
+                + "3x10 30 kg, majd oldalemelés 3x15 8 kg.");
+        assertEquals(2, it.size());
+        assertEquals("Vállból nyomás", it.get(0).name);
+        assertEquals(30.0, it.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A hát nem a hat számnév.
+     *
+     * A „reggel 30 perc szobabicikli, aztán 3 sorozat hasizom és hát" HAT
+     * hasprés-ismétlést írt az erőnaplóba – a testtájék nevéből lett
+     * ismétlésszám.
+     */
+    @Test public void theBackIsNotTheNumberSix() {
+        for (StrengthParse.Item it : StrengthParse.parse("Reggel 30 perc "
+                + "szobabicikli, aztán 3 sorozat hasizom és hát."))
+            for (StrengthParse.Set s : it.sets)
+                assertTrue("kitalált ismétlés: " + it.name, s.reps != 6);
+        // Az ékezet nélküli számnév marad számnév.
+        assertEquals(6, StrengthParse.parse("Fekvenyomás hat ismétlés "
+                + "60 kg.").get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A sorozatszám a súly mellett valódi napló.
+     *
+     * A „4 sorozat lehúzást csináltam 55 kg-mal" NYOMTALANUL eltűnt az
+     * erőnaplóból: ismétlésszám nélkül a gyakorlat nem talált sorozatot,
+     * pedig a súly és a sorozatszám is ki volt mondva. Ilyenkor egy
+     * ismétlés a becslés – a rekordokban a kiló a fontos.
+     */
+    @Test public void aSetCountBesideAWeightIsALog() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "4 sorozat lehúzást csináltam 55 kg-mal, meg 3x10 evezést 40-nél.");
+        assertEquals(2, it.size());
+        assertEquals("Lehúzás", it.get(0).name);
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(55.0, it.get(0).topWeight(), 0.01);
+        assertEquals("Evezés", it.get(1).name);
+        assertEquals(10, it.get(1).sets.get(0).reps);
+        // Súly nélkül továbbra sincs kitalált sorozat.
+        assertTrue(StrengthParse.parse("3 sorozat guggolás").isEmpty());
+    }
+
+    private static void assertSets(String q, String name, int sets, int reps, double kg) {
+        List<StrengthParse.Item> it = StrengthParse.parse(q);
+        assertEquals(q, 1, it.size());
+        assertEquals(q, name, it.get(0).name);
+        assertEquals(q, sets, it.get(0).sets.size());
+        for (StrengthParse.Set s : it.get(0).sets) {
+            assertEquals(q, reps, s.reps);
+            assertEquals(q, kg, s.weight, 0.01);
+        }
+    }
+
+    /**
+     * A megosztott bejegyzés visszaolvasható – ez a megosztás értelme.
+     *
+     * A sorozat szövegként megy tovább (üzenetben, edzőnek), a másik
+     * telefonon pedig ugyanez a felismerő teszi a naplóba. Ha a két oldal
+     * elcsúszna, a kapott sorozat csendben MÁS lenne, mint a küldött:
+     * más súllyal, más ismétléssel, esetleg más gyakorlat néven.
+     */
+    @Test public void everySharedEntryReadsBackTheSame() {
+        double[] ws = {0, 20, 42.5, 60, 100, 140};
+        int[][] repSets = {{10, 10, 10}, {8}, {12, 10, 8}, {5, 5, 5, 5, 5}, {20, 20},
+                {60, 60, 60}};
+        StringBuilder bad = new StringBuilder();
+        int n = 0;
+        for (String m : StrengthParse.names())
+            for (double w : ws)
+                for (int[] rs : repSets) {
+                    java.util.List<StrengthLog.SetEntry> sets = new java.util.ArrayList<>();
+                    for (int r : rs) sets.add(new StrengthLog.SetEntry(r, w));
+                    String q = StrengthLog.sentence(m, sets);
+                    n++;
+                    List<StrengthParse.Item> it = StrengthParse.parse(q);
+                    if (it.size() != 1) { bad.append("\n  „").append(q).append("” -> ")
+                            .append(it.size()).append(" gyakorlat"); continue; }
+                    StrengthParse.Item i2 = it.get(0);
+                    if (!i2.name.equals(m)) bad.append("\n  „").append(q).append("” -> ").append(i2.name);
+                    else if (i2.sets.size() != rs.length)
+                        bad.append("\n  „").append(q).append("” -> ").append(i2.sets.size()).append(" sorozat");
+                    else if (Math.abs(i2.topWeight() - w) > 0.01)
+                        bad.append("\n  „").append(q).append("” -> ").append(i2.topWeight()).append(" kg");
+                }
+        assertTrue("legalább ezer bejegyzést néztünk", n > 1000);
+        assertEquals("oda-vissza eltérés:" + bad, 0, bad.length());
+    }
+
+    /**
+     * A hatvan mindennapi gyakorlatnévvel végigpróbált hiánylista.
+     *
+     * Ez a hat teljesen hiányzott, a többi négy csak más néven volt meg. Aki
+     * ezeket írja be, eddig „nem ismerem" választ kapott – pedig a mondat
+     * tökéletes volt.
+     */
+    @Test public void theNewlyAddedNamesAreUnderstood() {
+        String[][] cases = {{"good morning 3x10 40 kg", "Good morning"},
+                {"farmerjárás 3x30", "Farmerjárás"}, {"szakítás 5x3 60 kg", "Szakítás"},
+                {"lökés 3x2 80 kg", "Lökés"}, {"mellrepülés 3x12 20 kg", "Mellgép"},
+                {"pullover 3x12", "Lehúzás"}, {"áthúzás 3x12 25 kg", "Lehúzás"},
+                {"elülső vállemelés 3x12 8 kg", "Oldalemelés"},
+                {"hyperextension 3x15", "Hátfeszítés"},
+                {"medence emelés 3x10 60 kg", "Csípőemelés"}};
+        for (String[] c : cases) {
+            java.util.List<StrengthParse.Item> it = StrengthParse.parse(c[0]);
+            assertEquals(c[0], 1, it.size());
+            assertEquals(c[0], c[1], it.get(0).name);
+        }
+    }
+
+    /**
+     * A csillag ugyanaz a szorzójel, mint az x.
+     *
+     * A telefon billentyűzetén a csillag van kéznél, az x-hez betűre kell
+     * váltani. A „3*10 60 kg" eddig három ISMÉTLÉS volt súly nélkül – nem
+     * hibaüzenet, csak csendben más.
+     */
+    @Test public void asteriskIsAMultiplicationSign() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse("fekvenyomás 3*10 60 kg");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(10, it.get(0).sets.get(0).reps);
+        assertEquals(60, it.get(0).topWeight(), 0.01);
+        assertEquals(3, StrengthParse.parse("fekvenyomás 3 * 10 60 kg").get(0).sets.size());
+    }
+
+    /**
+     * Ahogy a teremben tényleg leírják: kötőjellel, tagolva, hátul a súllyal.
+     *
+     * Három valódi alak veszett el eddig. A „3-szor 10-et" hármasa
+     * ISMÉTLÉSSZÁM lett, a tíz eltűnt. A „3 sorozat, egyenként 8 ismétlés"
+     * hármasa tűnt el, egyetlen nyolcas sorozat maradt. Az „5x5 guggolás
+     * 100" száz kilója pedig saját testsúllyá vált – a rekordokba és a
+     * heti terhelésbe is nullaként.
+     */
+    @Test public void theWayPeopleActuallyWriteItDown() {
+        List<StrengthParse.Item> a = StrengthParse.parse("guggolás 3-szor 10-et 80 kilóval");
+        assertEquals(1, a.size());
+        assertEquals(3, a.get(0).sets.size());
+        assertEquals(10, a.get(0).sets.get(0).reps);
+        assertEquals(80.0, a.get(0).sets.get(0).weight, 0.001);
+
+        List<StrengthParse.Item> b =
+                StrengthParse.parse("guggolás 3 sorozat, egyenként 8 ismétlés, 90 kg");
+        assertEquals(1, b.size());
+        assertEquals(3, b.get(0).sets.size());
+        assertEquals(8, b.get(0).sets.get(0).reps);
+        assertEquals(90.0, b.get(0).sets.get(0).weight, 0.001);
+
+        List<StrengthParse.Item> c = StrengthParse.parse("ma 5x5 guggolás 100");
+        assertEquals(1, c.size());
+        assertEquals(5, c.get(0).sets.size());
+        assertEquals(100.0, c.get(0).sets.get(0).weight, 0.001);
+
+        // A terhelés-jelölés viszont NEM súly: a „rpe 8" nyolcasa nyolc.
+        List<StrengthParse.Item> d = StrengthParse.parse("guggolás 3x10 rpe 8");
+        assertEquals(1, d.size());
+        assertEquals(0.0, d.get(0).sets.get(0).weight, 0.001);
+    }
+
+    /**
+     * Hetvenhárom gyakorlatnév végigpróbálva: ezek hiányoztak.
+     *
+     * A nordic curl és a madár-kutya a rehab-sorokból ismerős, a hasgurító
+     * és a holt bogár a törzs klasszikusai, a kábeles keresztezés pedig
+     * ugyanaz a mozgás, mint a tárogatás, csak más eszközzel. Mind a
+     * naplóban is ugyanazon a néven él.
+     */
+    @Test public void theSecondSweepOfExerciseNames() {
+        String[][] want = {
+                {"kábeles keresztezés 3x12 20 kg", "Mellgép"},
+                {"arcra húzás 3x15", "Fordított tárogatás"},
+                {"kerékkel gurítás 3x10", "Hasgurító"},
+                {"box ugrás 4x5", "Ládaugrás"},
+                {"nordic curl 3x5", "Nordic curl"},
+                {"dead bug 3x10", "Holt bogár"},
+                {"madár-kutya 3x8", "Madár-kutya"},
+                {"medvejárás 3x20", "Medvejárás"},
+                {"vállgép 3x12 30 kg", "Vállból nyomás"}};
+        StringBuilder bad = new StringBuilder();
+        for (String[] w : want) {
+            List<StrengthParse.Item> i = StrengthParse.parse(w[0]);
+            String got = i.isEmpty() ? "-" : i.get(0).name;
+            if (!got.equals(w[1]))
+                bad.append("\n  ").append(w[0]).append(" -> ").append(got);
+        }
+        assertEquals("hiányzó vagy rossz gyakorlatnév:" + bad, 0, bad.length());
+        // A burpee szándékosan marad kardió: az izomcsoport-kimutatásba
+        // beszámítva azt hazudná, hogy a láb erősítő munkát kapott.
+        assertTrue(StrengthParse.parse("burpee 3x10").isEmpty());
+        // A magyar terem fordított szórenddel is mondja: „nyomtam 100 kilót
+        // fekve ötöt". A „fekve" magában is fekvenyomás – a fekvőtámasz
+        // szótöve más, tehát nem ütközik vele.
+        List<StrengthParse.Item> f = StrengthParse.parse("nyomtam 100 kilót fekve ötöt");
+        assertEquals(1, f.size());
+        assertEquals("Fekvenyomás", f.get(0).name);
+        assertEquals(5, f.get(0).sets.get(0).reps);
+        assertEquals(100.0, f.get(0).sets.get(0).weight, 0.001);
+        assertEquals("Fekvőtámasz", StrengthParse.parse("fekvőtámasz 3x20").get(0).name);
+        assertEquals("Fekvőtámasz", StrengthParse.parse("3 kör 10 fekvőtámasz").get(0).name);
+        // A puszta „kettlebell" más gyakorlatnév mellett nem mond semmit, de
+        // egyedül mindenki a lendítésre gondol: a „kettlebell 16 kg 5x15"
+        // eddig edzés-bejegyzés lett, sorozat és súly nélkül.
+        List<StrengthParse.Item> kb = StrengthParse.parse("kettlebell 16 kg 5x15");
+        assertEquals("Kettlebell lendítés", kb.get(0).name);
+        assertEquals(5, kb.get(0).sets.size());
+        assertEquals(16.0, kb.get(0).sets.get(0).weight, 0.001);
+        assertEquals("Guggolás",
+                StrengthParse.parse("kettlebell guggolás 3x10 20 kg").get(0).name);
+        // Sorozat nélkül továbbra sincs bejegyzés.
+        assertTrue(StrengthParse.parse("kettlebell 24 kg").isEmpty());
+        // Perjeles súly/ismétlés: ugyanaz a piramis, amit az „60x10" alakkal
+        // már értettünk – csak a teremben sokan perjellel írják.
+        List<StrengthParse.Item> sl = StrengthParse.parse("fekvenyomás: 60/10, 70/8, 80/6");
+        assertEquals(1, sl.size());
+        assertEquals(3, sl.get(0).sets.size());
+        assertEquals(10, sl.get(0).sets.get(0).reps);
+        assertEquals(60.0, sl.get(0).sets.get(0).weight, 0.001);
+        assertEquals(80.0, sl.get(0).topWeight(), 0.001);
+        // A TEMPÓ-jelölés nem ismétlés: a „tempó 3-1-1-0" négy szakasz
+        // másodperce (le, alul, fel, fent), nem négy sorozat.
+        assertTrue(StrengthParse.parse("tempó 3-1-1-0 fekvenyomás").isEmpty());
+        assertTrue(StrengthParse.parse("fekvenyomás 3-1-1-0 tempóval").isEmpty());
+        // Tempó-szó nélkül a kötőjeles lista továbbra is piramis.
+        assertEquals(3, StrengthParse.parse("bicepsz 12-10-8 15 kg").get(0).sets.size());
+        assertEquals(5, StrengthParse.parse("piramis: 10-8-6-4-2 guggolás").get(0).sets.size());
+        // A RITMUS-jelölés nem súly/ismétlés: a „40/20" időzítő marad.
+        assertTrue(StrengthParse.parse("8x20/10").isEmpty());
+        assertTrue(StrengthParse.parse("40/20 8 kör").isEmpty());
+    }
+
+    /**
+     * Az óraállás nem ismétlésszám.
+     *
+     * Az óra-export így írja le a kardiót: „evezőgép 5000 m 21:45". A
+     * huszonegy eddig ismétlésszám lett, és a húszperces evezésből
+     * huszonegy ismétléses gyakorlat került az erősítő naplóba – a rekordok
+     * és a progresszió-javaslat közé.
+     */
+    @Test public void aClockTimeIsNotARepCount() {
+        assertTrue(StrengthParse.parse("evezőgép 5000 m 21:45").isEmpty());
+        assertTrue(StrengthParse.parse("úszás 1500 m 32:10").isEmpty());
+        // A valódi sorozat marad, időponttal együtt is.
+        List<StrengthParse.Item> it = StrengthParse.parse("18:00-kor fekvenyomás 3x8 60 kg");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(60, it.get(0).sets.get(0).weight, 0.01);
+    }
+
+    /**
+     * A „holt emelés" külön írva is ugyanaz a gyakorlat.
+     *
+     * Sokan így írják, és eddig SEMMI nem lett a mondatból: se sorozat, se
+     * edzés – a „holt emelés 1x5 140 kg" üres választ kapott.
+     */
+    @Test public void theDeadliftIsRecognisedSpelledApart() {
+        assertEquals("Felhúzás", StrengthParse.parse("holt emelés 1x5 140 kg")
+                .get(0).name);
+        assertEquals("Felhúzás", StrengthParse.parse("dead lift 5x5 120 kg")
+                .get(0).name);
+        assertEquals("Román felhúzás",
+                StrengthParse.parse("román holt emelés 3x10 80 kg").get(0).name);
+        // Az egybeírt alak változatlanul működik.
+        assertEquals("Felhúzás", StrengthParse.parse("holtemelés 3x5 150 kg")
+                .get(0).name);
+    }
+
+    /**
+     * A „megvan a 100 kg-os guggolás" is csúcs-mondat.
+     *
+     * A csúcs-alakok közül a legrövidebb magyar forma hiányzott, és épp ez
+     * az a bejegyzés, amit az ember a legjobban szeretne látni a naplóban.
+     */
+    @Test public void theShortestRecordFormIsUnderstood() {
+        List<StrengthParse.Item> it = StrengthParse.parse("megvan a 100 kg-os guggolás, végre");
+        assertEquals(1, it.size());
+        assertEquals("Guggolás", it.get(0).name);
+        assertEquals(100, it.get(0).sets.get(0).weight, 0.01);
+        assertEquals("Felhúzás", StrengthParse.parse("meglett a 140 kg-os felhúzás")
+                .get(0).name);
+    }
+
+    /**
+     * A gondolatjeles felsorolás utolsó tétele sem veszhet el.
+     *
+     * A sorhatár a normalizálás után eltűnik („- 10 fekvőtámasz / - 20
+     * guggolás / - 30 mp plank" egyetlen sorrá olvad), és a plank elveszett
+     * vele. A jel helyére vessző kerül: onnantól ugyanaz, mint a vesszős
+     * felsorolás.
+     */
+    @Test public void aBulletListKeepsItsLastItem() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "- 10 fekvőtámasz\n- 20 guggolás\n- 30 mp plank");
+        assertEquals(3, it.size());
+        assertEquals("Plank", it.get(2).name);
+        // A csillag NEM felsorolás-jel, a szám előtti gondolatjel sem.
+        assertEquals(3, StrengthParse.parse("fekvenyomás 3 * 10 60 kg").get(0).sets.size());
+    }
+
+    /**
+     * A méter nem ismétlésszám.
+     *
+     * Az erőgépek között ott a „pillangó", ami vizes szó is: a „pillangózás
+     * 200 m" kétszáz ismétléses MELLGÉP lett a naplóban. Aki métert ír, az
+     * távot mond.
+     */
+    @Test public void metersAreNeverReps() {
+        assertTrue(StrengthParse.parse("pillangózás 200 m").isEmpty());
+        assertTrue(StrengthParse.parse("farmerséta 40 m").isEmpty());
+        // A kilogramm viszont marad: a szám után ott nem m betű áll.
+        assertEquals(60.0, StrengthParse.parse("fekvenyomás 3x10, 60 kg")
+                .get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A mérőszalag nem edzés.
+     *
+     * A „combom 58 cm, vádli 38" egy testkörfogat-mérés – eddig harmincnyolc
+     * ismétléses VÁDLIEMELÉS lett belőle, mert a vádli gyakorlatnév is.
+     */
+    @Test public void aTapeMeasureIsNotAWorkout() {
+        assertTrue(StrengthParse.parse("combom 58 cm, vádli 38").isEmpty());
+        // A valódi vádliemelés viszont marad.
+        assertEquals("Vádliemelés", StrengthParse.parse("vádliemelés 4x15")
+                .get(0).name);
+    }
+
+    /** A gép neve a teremben „lábtoló", nem „lábtolás". */
+    @Test public void theLegPressIsCalledByItsGymName() {
+        List<StrengthParse.Item> it = StrengthParse.parse("kondi 70 perc: "
+                + "mellnyomás 4x8 70, húzódzkodás 4x6, lábtoló 3x12 120");
+        assertEquals(3, it.size());
+        assertEquals("Lábtolás", it.get(2).name);
+        assertEquals(120.0, it.get(2).topWeight(), 0.01);
+    }
+
+    /**
+     * A francia fekvenyomás tricepsz, nem fekvenyomás.
+     *
+     * A rövidebb „fekvenyom" tő eddig elvitte, és a huszonöt kilós francia a
+     * FEKVENYOMÁS rekordjai közé került – ott pedig a progresszió-javaslat is
+     * ebből számol tovább. A tolónyomás és a kábelhúzás egyszerűen hiányzott.
+     */
+    @Test public void theFrenchPressIsATricepsExercise() {
+        assertEquals("Tricepsz", StrengthParse.parse("franciafekvenyomás "
+                + "3x12 25 kg").get(0).name);
+        assertEquals("Fekvenyomás", StrengthParse.parse("fekvenyomás 3x8 80 kg")
+                .get(0).name);
+        List<StrengthParse.Item> it = StrengthParse.parse("tolónyomás 3x8 40 kg, "
+                + "oldalemelés 3x12 8 kg");
+        assertEquals(2, it.size());
+        assertEquals("Vállból nyomás", it.get(0).name);
+        assertEquals("Lehúzás", StrengthParse.parse("kábelhúzás 3x15").get(0).name);
+    }
+
+    /**
+     * A két kézisúlyzó nem két sorozat.
+     *
+     * A „2x15 kg kézisúlyzóval vállnyomás 3x10" első szorzata a FELSZERELÉS:
+     * két darab tizenöt kilós súlyzó. Eddig ez lett a sorozat (2×1, 15 kg),
+     * a valódi 3×10 meg elveszett.
+     */
+    @Test public void aPairOfDumbbellsIsNotTwoSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("súlyzózás otthon: "
+                + "2x15 kg kézisúlyzóval vállnyomás 3x10");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(15.0, it.get(0).topWeight(), 0.01);
+        // A valódi 2x15-ös sorozat súlyzó-szó nélkül marad sorozat.
+        assertEquals(2, StrengthParse.parse("guggolás 2x15 60 kg")
+                .get(0).sets.size());
+    }
+
+    /**
+     * A jelzős súly is átjön a névvel a következő tagmondatba.
+     *
+     * A „húsz kilós kettlebell swing, 4x15" súlya az első tagmondatban
+     * áll, a sorozat a másodikban – a név mellől eddig elveszett a húsz
+     * kiló, és saját testsúlyos lendítés lett belőle. A tagmondat saját
+     * súlya erősebb: a „guggolás 60 kg bemelegítés, aztán 3x5 100"
+     * munkasorozata száz kilós marad.
+     */
+    @Test public void anAdjectiveWeightTravelsWithTheName() {
+        List<StrengthParse.Item> it = StrengthParse.parse("húsz kilós "
+                + "kettlebell swing, 4x15");
+        assertEquals(1, it.size());
+        assertEquals(20.0, it.get(0).topWeight(), 0.01);
+        assertEquals(100.0, StrengthParse.parse("guggolás 60 kg bemelegítés, "
+                + "aztán 3x5 100").get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A pillangó az uszodában úszásnem, a teremben mellgép.
+     *
+     * A „pillangó technikát gyakoroltam, 4x50" négyszer ötven ismétléses
+     * mellgép lett – egy úszóedzésből. A „pillangó gép" a teremben marad.
+     */
+    @Test public void butterflyStrokeIsNotAPecDeck() {
+        assertTrue(StrengthParse.parse("pillangó technikát gyakoroltam, "
+                + "4x50").isEmpty());
+        assertEquals("Mellgép", StrengthParse.parse("pillangó gép 3x12 "
+                + "40 kg").get(0).name);
+    }
+
+    /** Az angol „biceps curl" z nélkül is bicepsz. */
+    @Test public void englishBicepsCurlIsRecognised() {
+        List<StrengthParse.Item> it = StrengthParse.parse("biceps curl "
+                + "12,5 kg-os kézisúlyzóval 3x12");
+        assertEquals(1, it.size());
+        assertEquals("Bicepsz", it.get(0).name);
+        assertEquals(12.5, it.get(0).topWeight(), 0.01);
+    }
+    /**
+     * A kiírt darabszámú súlyzópár súlya a jelzős szám.
+     *
+     * A „két 12,5-ös kézisúlyzóval" kettese darab (két súlyzó), a súly a
+     * tizenkét és fél – mégis két kilós vállnyomás lett belőle. A számnév-
+     * fordítás előtt futó álarcnak a „két" szót is ismernie kell.
+     */
+    @Test public void aSpelledOutDumbbellPairKeepsItsWeight() {
+        StrengthParse.Item it = StrengthParse.parse(
+                "vállból nyomás 4x10 két 12,5-ös kézisúlyzóval").get(0);
+        assertEquals(12.5, it.topWeight(), 0.01);
+        assertEquals(4, it.sets.size());
+        assertEquals(10, it.sets.get(0).reps);
+        // Az „egy 24-es kettlebell" súlya is a jelzős szám.
+        assertEquals(24.0, StrengthParse.parse(
+                "goblet guggolás egy 24-es kettlebell-lel 3x12").get(0)
+                .topWeight(), 0.01);
+    }
+
+    /**
+     * A centis bicepsz mérőszalag, nem gyakorlat.
+     *
+     * A „bicepszem 38 cm lett" harmincnyolc ismétléses bicepszgyakorlatként
+     * is bekerült a mérés mellé – a testrész-lista nem ismerte a bicepszt.
+     */
+    @Test public void aBicepsMeasurementIsNotAWorkout() {
+        assertTrue(StrengthParse.parse("bicepszem 38 cm lett").isEmpty());
+        // A valódi bicepszgyakorlat marad.
+        assertEquals(12, StrengthParse.parse(
+                "bicepsz curl 3x12 a 12,5 kg-os súlyzóval")
+                .get(0).sets.get(0).reps);
+    }
+    /**
+     * Az üres rúd húsz kiló, a súlyemelés-jegyzet pedig nem ismétlésszám.
+     *
+     * A „szakítás technika üres rúddal 6x3" saját testsúlyosnak számított,
+     * pedig a szabvány rúd húsz kiló. Az „emeltem a guggolás súlyát
+     * 5 kilóval, most 85" nyolcvanöte pedig NYOLCVANÖT ISMÉTLÉS lett –
+     * inkább ne kerüljön be sorozatként, mint így.
+     */
+    @Test public void anEmptyBarWeighsTwentyKilos() {
+        StrengthParse.Item it = StrengthParse.parse(
+                "szakítás technika üres rúddal 6x3").get(0);
+        assertEquals(20.0, it.topWeight(), 0.01);
+        assertEquals(6, it.sets.size());
+        assertTrue(StrengthParse.parse("emeltem a guggolás súlyát "
+                + "5 kilóval, most 85").isEmpty());
+    }
+    /**
+     * A darabszám egy sorozat, a tricepsznyújtás nem jóga.
+     *
+     * Az „AMRAP fekvőtámasz: 42 db egy sorozatban" negyvenkettője
+     * elveszett (a db-hez nem tartozott sorozat-jelölés, az „egy" pedig
+     * súlynak látszott volna); a „tricepsznyújtás" nyújt-töve mellé pedig
+     * egy 45 perces jóga került.
+     */
+    @Test public void aPieceCountIsASingleSet() {
+        StrengthParse.Item it = StrengthParse.parse(
+                "AMRAP fekvőtámasz: 42 db egy sorozatban").get(0);
+        assertEquals(42, it.totalReps());
+        assertEquals(0.0, it.topWeight(), 0.01);
+        // A pluszos jel\u00f6l\u00e9sb\u0151l EGY edz\u00e9s lesz, nem h\u00e1rom.
+        assertEquals(1, Activities.parse("rest-pause tricepsznyújtás "
+                + "15+5+5").plans.size());
+        assertEquals(1, Activities.parse("rest-pause tricepsznyújtás "
+                + "15+5+5").plans.get(0).count);
+    }
+    @Test public void aCompletedHeavySingleIsLogged() {
+        // A „megcsináltam a 100 kilós fekvenyomást" teljesített egyes –
+        // eddig üresen jött vissza, ahogy a „kihúztam 100 kilót" is.
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("megcsináltam a 100 kilós fekvenyomást");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(100, it.get(0).topWeight(), 0.001);
+        it = StrengthParse.parse("kihúztam 100 kilót a földről");
+        assertEquals("Felhúzás", it.get(0).name);
+        assertEquals(100, it.get(0).topWeight(), 0.001);
+        // A „kihúztam a hetet" nem felhúzás.
+        assertTrue(StrengthParse.parse("kihúztam a hetet valahogy").isEmpty());
+    }
+
+    @Test public void theSingleGTypoStillSquats() {
+        // Az egy g-s „gugolás" gyakori elírás – eddig semmi nem lett belőle.
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("gugolás 3x8 a rúdon 60 kilóval");
+        assertEquals("Guggolás", it.get(0).name);
+        assertEquals(60, it.get(0).topWeight(), 0.001);
+        assertEquals(3, it.get(0).sets.size());
+    }
+
+    @Test public void poundsBecomeKilograms() {
+        // A „bench press 3x5 225 lbs" kétszázhuszonöt KILÓ lett a naplóban
+        // – az angol font negyedannyi.
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("bench press 3x5 225 lbs");
+        assertEquals(102.1, it.get(0).topWeight(), 0.1);
+    }
+
+    @Test public void hungarianMachineNamesResolve() {
+        // A letolás, a tarkónyomás és a csípőtolás termi nevek – eddig
+        // egyik sem lett sorozat. A csigás letolás pedig nem kakaós csiga.
+        assertEquals("Tricepsz",
+                StrengthParse.parse("letolás csigán 3x12 25 kg").get(0).name);
+        assertEquals("Vállból nyomás",
+                StrengthParse.parse("tarkónyomás 4x8 40 kg").get(0).name);
+        assertEquals("Csípőemelés",
+                StrengthParse.parse("csípőtolás 3x10 100 kg").get(0).name);
+    }
+
+    @Test public void aChocolateCakeIsNotALunge() {
+        // Az „egy nagy szelet csokitorta" belsejében ott a KITÖRés töve –
+        // lunge-sorozat lett a süteményből. Az igazi kitörés marad.
+        assertTrue(StrengthParse.parse("egy nagy szelet csokitorta").isEmpty());
+        assertEquals("Kitörés",
+                StrengthParse.parse("kitöréseket csináltam 3x10").get(0).name);
+    }
+
+    @Test public void aTimedRowingExportIsNotARepCount() {
+        assertTrue(StrengthParse.parse("rowing 20 min").isEmpty());
+    }
+
+    @Test public void restMinutesDoNotBreakTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "3x10 fekvenyom\u00e1s 2 perc pihen\u0151vel 60 kg");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(60.0, it.get(0).topWeight(), 0.01);
+    }
+
+    @Test public void aConditionalWishIsNotARecord() {
+        assertTrue(StrengthParse.parse(
+                "b\u00e1r tudn\u00e9k 100 kg-ot nyomni fekve").isEmpty());
+    }
+
+    @Test public void aPbHeadlineIsAOneRepRecord() {
+        List<StrengthParse.Item> it = StrengthParse.parse("pb: 120 kg felh\u00faz\u00e1s");
+        assertEquals(1, it.size());
+        assertEquals(120.0, it.get(0).topWeight(), 0.01);
+    }
+
+    @Test public void pekDeckAndTheFrenchPressAreTheirOwnMoves() {
+        assertEquals("Mellg\u00e9p", StrengthParse.parse("pek deck 3x12 40 kg")
+                .get(0).name);
+        assertEquals("Tricepsz", StrengthParse.parse("franciafekv\u00e9s 3x12 25 kg")
+                .get(0).name);
+        assertEquals("Good morning", StrengthParse.parse("goodmorning 3x10 40 kg")
+                .get(0).name);
+    }
+
+    @Test public void aLyingLegRaiseIsNotABenchPress() {
+        assertEquals("L\u00e1bemel\u00e9s",
+                StrengthParse.parse("l\u00e1bemel\u00e9s fekve 3x15").get(0).name);
+        assertEquals("Fekvenyom\u00e1s",
+                StrengthParse.parse("fekvenyom\u00e1s 3x10 60 kg").get(0).name);
+    }
+
+    @Test public void theDayHeaderTellsWhichPressItIs() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "v\u00e1ll: nyom\u00e1s 3x8 40, oldalemel\u00e9s 3x15 8");
+        assertEquals(2, it.size());
+        assertEquals("V\u00e1llb\u00f3l nyom\u00e1s", it.get(0).name);
+        assertEquals(40.0, it.get(0).topWeight(), 0.01);
+        assertEquals("Fekvenyom\u00e1s",
+                StrengthParse.parse("mell nap: nyom\u00e1s 3x8 60").get(0).name);
+    }
+
+    /**
+     * A magyar FELS\u0150FOK ugyanaz a cs\u00facs, mint a „max": a „fekvenyom\u00e1s ma
+     * 60 kg volt a legt\u00f6bb" eddig \u00fcresen j\u00f6tt vissza.
+     */
+    @Test
+    public void aHungarianSuperlativeIsAMaxAttempt() {
+        java.util.List<StrengthParse.Item> l =
+                StrengthParse.parse("fekvenyom\u00e1s ma 60 kg volt a legt\u00f6bb");
+        assertEquals(1, l.size());
+        assertEquals(1, l.get(0).sets.get(0).reps);
+        assertEquals(60.0, l.get(0).sets.get(0).weight, 0.01);
+        assertEquals(1, StrengthParse.parse(
+                "guggol\u00e1sban a legnehezebb 100 kg volt").size());
+        assertEquals(1, StrengthParse.parse("holtemel\u00e9s top szett 140 kg").size());
+    }
+
+    /** Ism\u00e9tl\u00e9s-adat mellett viszont a val\u00f3di sorozat marad. */
+    @Test
+    public void aSupersetiveNextToRealSetsDoesNotOverrideThem() {
+        java.util.List<StrengthParse.Item> l = StrengthParse.parse(
+                "fekvenyom\u00e1s 3x8 60 kg, a legjobb szett az utols\u00f3");
+        assertEquals(3, l.get(0).sets.size());
+        assertEquals(8, l.get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A R\u00c1MPA k\u00e9t list\u00e1ja: a „60-70-80 kg 8-6-4" kil\u00f3s list\u00e1ja a s\u00falyok\u00e9,
+     * a m\u00e1sik az ism\u00e9tl\u00e9sek\u00e9 – eddig „60-70-80 ism\u00e9tl\u00e9s" ker\u00fclt a napl\u00f3ba.
+     */
+    @Test
+    public void aRampsKilosAreNotReps() {
+        java.util.List<StrengthParse.Item> l =
+                StrengthParse.parse("fekvenyom\u00e1s 60-70-80 kg 8-6-4");
+        assertEquals(1, l.size());
+        assertEquals(3, l.get(0).sets.size());
+        assertEquals(8, l.get(0).sets.get(0).reps);
+        assertEquals(4, l.get(0).sets.get(2).reps);
+    }
+
+    /**
+     * Egyetlen er\u0151gyakorlat neve se csin\u00e1ljon M\u00c1S sport\u00e1g\u00fa bejegyz\u00e9st.
+     *
+     * A keresztpr\u00f3ba h\u00e1rmat tal\u00e1lt: a „box jump" harcm\u0171v\u00e9szetet, a „nordic
+     * curl" \u00e9s a „farmers walk" t\u00far\u00e1t. A kondi marad megengedett: a
+     * s\u00falyz\u00f3s gyakorlat neve jogosan hoz l\u00e9tre kondi-alkalmat.
+     */
+    @Test
+    public void noExerciseNameLooksLikeAnotherSport() {
+        StringBuilder bad = new StringBuilder();
+        for (String[] mv : StrengthParse.MOVES)
+            for (int i = 1; i < mv.length; i++) {
+                if (mv[i].length() < 4) continue;
+                // A sorozatsz\u00e1m a val\u00f3di haszn\u00e1lat: a napl\u00f3ban a gyakorlat
+                // neve mellett mindig ott a szett.
+                Activities.Parsed p = Activities.parse(mv[i] + " 3x10");
+                if (p.plans.isEmpty()) continue;
+                String id = p.plans.get(0).kind.id;
+                if (!"kondi".equals(id) && !"evezes".equals(id) && !"joga".equals(id))
+                    bad.append("\n  ").append(mv[0]).append(" | ").append(mv[i])
+                       .append(" -> ").append(id);
+            }
+        assertTrue("m\u00e1s sport\u00e1gnak l\u00e1tszik:" + bad, bad.length() == 0);
+    }
+
+    /**
+     * Az RPE s\u00faly n\u00e9lk\u00fcl is neh\u00e9zs\u00e9g-jel\u00f6l\u00e9s: a „holtemel\u00e9s 5x5 rpe 7"
+     * hetese elveszett, mert a mint\u00e1ban az „5x5" \u00f6t\u00f6se illeszkedett az
+     * „N rpe" \u00e1gra, \u00e9s a keres\u00e9s az „rpe" sz\u00f3 UT\u00c1N folytat\u00f3dott.
+     */
+    @Test
+    public void rpeSurvivesWithoutAWeight() {
+        assertEquals(7, StrengthParse.parse("holtemel\u00e9s 5x5 rpe 7").get(0).rpe);
+        assertEquals(8, StrengthParse.parse("guggol\u00e1s 3x5 rpe 8").get(0).rpe);
+        // S\u00faly mellett tov\u00e1bbra is megvan.
+        assertEquals(7, StrengthParse.parse("fekvenyom\u00e1s 3x5 60 kg rpe 7").get(0).rpe);
+        // A RIR-b\u0151l sz\u00e1m\u00edtott \u00e9rt\u00e9k is.
+        assertEquals(8, StrengthParse.parse("guggol\u00e1s 5x5 rir 2").get(0).rpe);
+    }
+
+    /**
+     * Az RPE sz\u00e1ma nem s\u00faly: a „guggol\u00e1s 3x8 8-as rpe" nyolcasa a
+     * neh\u00e9zs\u00e9g-jel\u00f6l\u00e9s – nyolc kil\u00f3s guggol\u00e1sk\u00e9nt ker\u00fclt a rekordba.
+     */
+    @Test
+    public void anRpeNumberIsNotAWeight() {
+        StrengthParse.Item it = StrengthParse.parse("guggol\u00e1s 3x8 8-as rpe").get(0);
+        assertEquals(0.0, it.sets.get(0).weight, 0.01);
+        assertEquals(8, it.rpe);
+        // A val\u00f3di, m\u00e9rt\u00e9kegys\u00e9g n\u00e9lk\u00fcli s\u00faly marad.
+        assertEquals(80.0, StrengthParse.parse("guggol\u00e1s 3x8 80")
+                .get(0).sets.get(0).weight, 0.01);
+    }
+
+    /**
+     * A SOROZAT m\u00e1sodik sz\u00e1ma nem lista-jel: a „guggol\u00e1s 5x5. valami"
+     * \u00f6t\u00f6se ism\u00e9tl\u00e9s, m\u00e9gis a lista-sorsz\u00e1mok k\u00f6z\u00e9 esett – a
+     * gyakorlat teljesen kiesett az er\u0151napl\u00f3b\u00f3l, ha b\u00e1rmi k\u00f6vette.
+     */
+    @Test
+    public void aSetIsNotLostWhenSomethingFollowsIt() {
+        assertEquals(1, StrengthParse.parse("guggol\u00e1s 5x5. valami").size());
+        java.util.List<StrengthParse.Item> l = StrengthParse.parse(
+                "fekvenyom\u00e1s 4x8 65 kg, guggol\u00e1s 5x5. Este 30 perc laza bringa.");
+        assertEquals(2, l.size());
+        // A val\u00f3di sz\u00e1mozott lista marad lista.
+        assertEquals(2, StrengthParse.parse(
+                "1. guggol\u00e1s 3x10 2. fekvenyom\u00e1s 3x8").size());
+    }
+
+    /**
+     * A FORD\u00cdTOTT sorrend is sorozat: a „40 fekv\u0151t\u00e1masz 3 sorozatban"
+     * mondatb\u00f3l EGY\u00c1LTAL\u00c1N nem lett bejegyz\u00e9s, mert a sorozatsz\u00e1m
+     * ism\u00e9tl\u00e9s n\u00e9lk\u00fcl kisz\u00e1llt – a negyven fekv\u0151t\u00e1masz n\u00e9m\u00e1n elt\u0171nt.
+     */
+    @Test
+    public void repsBeforeTheSetCountStillCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("40 fekv\u0151t\u00e1masz 3 sorozatban");
+        assertEquals(1, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(40, it.get(0).sets.get(0).reps);
+        // Az OSZTHATÓ szám az ÖSSZES ismétlés: a „20 húzódzkodás 4
+        // sorozatban" húsz darab, ötösével – nem nyolcvan. A „100
+        // fekvőtámasz 5 sorozatban" ugyanígy száz volt, nem ötszáz.
+        List<StrengthParse.Item> h = StrengthParse.parse("20 h\u00faz\u00f3dzkod\u00e1s 4 sorozatban");
+        assertEquals(4, h.get(0).sets.size());
+        assertEquals(5, h.get(0).sets.get(0).reps);
+        assertEquals(20, h.get(0).totalReps());
+        // A megszokott sorrend v\u00e1ltozatlan.
+        List<StrengthParse.Item> f = StrengthParse.parse("3 sorozat 40 fekv\u0151t\u00e1masz");
+        assertEquals(3, f.get(0).sets.size());
+        assertEquals(40, f.get(0).sets.get(0).reps);
+        // A S\u00daLY sz\u00e1ma nem ism\u00e9tl\u00e9s: ism\u00e9tl\u00e9s n\u00e9lk\u00fcl nincs mit menteni.
+        assertTrue(StrengthParse.parse("60 kg guggol\u00e1s 3 sorozatban").isEmpty());
+    }
+
+    /**
+     * A TABATA PERJELE id\u0151, nem s\u00faly: a „tabata 8x20/10 fekv\u0151t\u00e1masz"
+     * t\u00edzes\u00e9t S\u00daLYK\u00c9NT \u00edrtuk a napl\u00f3ba – t\u00edz kil\u00f3s fekv\u0151t\u00e1masz ker\u00fclt a
+     * rekordok \u00e9s az 1RM k\u00f6z\u00e9, holott a h\u00fasz \u00e9s a t\u00edz m\u00e1sodperc: munka
+     * \u00e9s pihen\u0151. Ugyanebb\u0151l a mondatb\u00f3l az intervallum-felismer\u0151 helyes
+     * tervet ad, itt csak k\u00e1rt tenn\u00e9nk.
+     */
+    @Test
+    public void theTabataSlashIsTimeNotWeight() {
+        assertTrue(StrengthParse.parse("tabata 8x20/10 fekv\u0151t\u00e1masz").isEmpty());
+        assertTrue(StrengthParse.parse("tabata 8 k\u00f6r 20/10 fekv\u0151t\u00e1masz").isEmpty());
+        // K\u00f6rsz\u00f3 n\u00e9lk\u00fcl a t\u00e9tel megmarad, de a pihen\u0151b\u0151l nem lesz kil\u00f3.
+        List<StrengthParse.Item> it = StrengthParse.parse("8x20/10 fekv\u0151t\u00e1masz");
+        assertEquals(1, it.size());
+        assertEquals(0.0, it.get(0).topWeight(), 0.001);
+        // A PIRAMIS perjele viszont s\u00faly/ism\u00e9tl\u00e9s marad.
+        List<StrengthParse.Item> p = StrengthParse.parse("fekvenyom\u00e1s 60/10");
+        assertEquals(60.0, p.get(0).topWeight(), 0.001);
+    }
+
+    /**
+     * A kimondott „S\u00daLY N\u00c9LK\u00dcL" fel\u00fclírja a r\u00fad-szab\u00e1lyt: a
+     * „leguggoltam 100-at s\u00falyok n\u00e9lk\u00fcl" sz\u00e1z saj\u00e1t tests\u00falyos
+     * guggol\u00e1s – eddig EGY ism\u00e9tl\u00e9s lett bel\u0151le SZ\u00c1Z KIL\u00d3VAL, vagyis a
+     * sz\u00e1z guggol\u00e1s elt\u0171nt, \u00e9s a hely\u00e9re kital\u00e1lt sz\u00e1zkil\u00f3s cs\u00facs
+     * ker\u00fclt a rekordok \u00e9s az 1RM k\u00f6z\u00e9.
+     */
+    @Test
+    public void sayingNoWeightMakesTheNumberReps() {
+        List<StrengthParse.Item> it = StrengthParse.parse("leguggoltam 100-at s\u00falyok n\u00e9lk\u00fcl");
+        assertEquals(100, it.get(0).sets.get(0).reps);
+        assertEquals(0.0, it.get(0).topWeight(), 0.001);
+        List<StrengthParse.Item> r = StrengthParse.parse("leguggoltam 120-at r\u00fad n\u00e9lk\u00fcl");
+        assertEquals(120, r.get(0).sets.get(0).reps);
+        // A R\u00daD-szab\u00e1ly v\u00e1ltozatlan, ha nincs ilyen kik\u00f6t\u00e9s.
+        List<StrengthParse.Item> b = StrengthParse.parse("leguggoltam 140-et");
+        assertEquals(140.0, b.get(0).topWeight(), 0.001);
+    }
+
+    /**
+     * A SORT\u00d6R\u00c9S tagmondat-hat\u00e1r: az edz\u00e9snapl\u00f3t sokan soronk\u00e9nt \u00edrj\u00e1k
+     * vagy m\u00e1solj\u00e1k be, \u00e9s a „3x10 fekvenyom\u00e1s 60 kg" al\u00e1 \u00edrt „3x12
+     * evez\u00e9s 50 kg" N\u00c9M\u00c1N elveszett – a normaliz\u00e1l\u00e1s a sort\u00f6r\u00e9sb\u0151l
+     * sz\u00f3k\u00f6zt csin\u00e1lt, a tagmondat-v\u00e1g\u00f3 pedig csak a vessz\u0151t ismerte.
+     */
+    @Test
+    public void aNewlineSeparatesExercises() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "3x10 fekvenyom\u00e1s 60 kg\n3x12 evez\u00e9s 50 kg");
+        assertEquals(2, it.size());
+        assertEquals("Fekvenyom\u00e1s", it.get(0).name);
+        assertEquals("Evez\u00e9s", it.get(1).name);
+        // Sorsz\u00e1mmal jel\u00f6lve is.
+        List<StrengthParse.Item> n = StrengthParse.parse(
+                "1) 3x10 fekvenyom\u00e1s 60 kg\n2) 3x12 evez\u00e9s 50 kg");
+        assertEquals(2, n.size());
+        // A vessz\u0151s alak v\u00e1ltozatlan.
+        assertEquals(2, StrengthParse.parse(
+                "3x10 fekvenyom\u00e1s 60 kg, 3x12 evez\u00e9s 50 kg").size());
+    }
+
+    /**
+     * A F\u00c1JDALOM-SK\u00c1LA nem sorozat: a „f\u00e1jt a v\u00e1llam a fekvenyom\u00e1s ut\u00e1n,
+     * 6/10" hatos\u00e1b\u00f3l HAT fekvenyom\u00e1s lett a napl\u00f3ban – abb\u00f3l a sz\u00e1mb\u00f3l,
+     * amivel a felhaszn\u00e1l\u00f3 a f\u00e1jdalm\u00e1t mondja meg.
+     */
+    @Test
+    public void aPainScaleIsNotASet() {
+        assertTrue(StrengthParse.parse(
+                "Ma nagyon f\u00e1jt a v\u00e1llam a fekvenyom\u00e1s ut\u00e1n, 6/10.").isEmpty());
+        assertTrue(StrengthParse.parse("f\u00e1j a v\u00e1llam 6/10").isEmpty());
+        // A PIRAMIS perjele marad s\u00faly/ism\u00e9tl\u00e9s.
+        assertEquals(60.0, StrengthParse.parse("fekvenyom\u00e1s 60/10")
+                .get(0).topWeight(), 0.001);
+        assertEquals(100.0, StrengthParse.parse("guggol\u00e1s 100/10")
+                .get(0).topWeight(), 0.001);
+        // \u00c9s a panasz mellett megt\u00f6rt\u00e9nt sorozat is megmarad.
+        assertEquals(1, StrengthParse.parse(
+                "f\u00e1jt a v\u00e1llam, m\u00e9gis fekvenyom\u00e1s 3x8 60 kg").size());
+    }
+
+
+    /**
+     * A SZ\u00d3K\u00d6Z\u00d6S szorz\u00f3jel is \u00f6sszek\u00f6t: a \u201e3 x 12 bicepsz, 3 x 15 tricepsz"
+     * m\u00e1sodik t\u00e9tel\u00e9n\u00e9l a tizen\u00f6t\u00f6s el\u00e9 ker\u00fclt a t\u00e9tel-hat\u00e1r, \u00e9s a h\u00e1rmas
+     * sorozatsz\u00e1m lemaradt r\u00f3la \u2013 a tricepszb\u0151l egyetlen sorozat lett h\u00e1rom
+     * helyett, vagyis a volumen harmada.
+     */
+    @Test
+    public void aSpacedTimesSignKeepsItsSeries() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "Ma 3 x 12 bicepsz 12 kg-mal, \u00e9s 3 x 15 tricepsz k\u00f6t\u00e9len 25 kg.");
+        assertEquals(2, it.size());
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(3, it.get(1).sets.size());
+        assertEquals(15, it.get(1).sets.get(0).reps);
+        assertEquals(25.0, it.get(1).sets.get(0).weight, 0.01);
+        // A tapad\u00f3 alak \u00e9s a puszta ism\u00e9tl\u00e9s-felsorol\u00e1s v\u00e1ltozatlan.
+        assertEquals(3, StrengthParse.parse("3x10 fekvenyom\u00e1s 60 kg")
+                .get(0).sets.size());
+        assertEquals(3, StrengthParse.parse(
+                "50 guggol\u00e1s 40 fekv\u0151t\u00e1masz 30 hasizom").size());
+    }
+
+
+    /**
+     * A GYAKORLATSZ\u00c1M nem ism\u00e9tl\u00e9ssz\u00e1m: az \u201eedz\u0151terem: mellkas \u00e9s tricepsz
+     * nap, \u00f6sszesen 8 gyakorlat, 24 sorozat, 75 perc" nyolcasa azt mondja
+     * meg, H\u00c1NY gyakorlat volt \u2013 a napl\u00f3ba m\u00e9gis nyolc tricepsz-ism\u00e9tl\u00e9s
+     * ker\u00fclt, egyetlen kital\u00e1lt sorozatk\u00e9nt.
+     */
+    @Test
+    public void anExerciseCountIsNotARepCount() {
+        assertTrue(StrengthParse.parse("Edz\u0151terem: mellkas \u00e9s tricepsz nap, "
+                + "\u00f6sszesen 8 gyakorlat, 24 sorozat, 75 perc.").isEmpty());
+        assertTrue(StrengthParse.parse("Edz\u0151terem: h\u00e1t \u00e9s bicepsz nap, "
+                + "\u00f6sszesen 6 gyakorlat, 75 perc.").isEmpty());
+        // A gyakorlatonk\u00e9nti bont\u00e1s marad.
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "guggol\u00e1s 3 sorozat 10 ism\u00e9tl\u00e9s 60 kg");
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(10, it.get(0).sets.get(0).reps);
+    }
+
+
+    /**
+     * Az ID\u0150RE tartott gyakorlat sorozatsz\u00e1ma is sz\u00e1m\u00edt: a \u201ecsin\u00e1ltam 3
+     * sorozat plankot, egyenk\u00e9nt 60 m\u00e1sodpercig" egyetlen hatvan
+     * m\u00e1sodperces plankot \u00edrt a napl\u00f3ba h\u00e1rom helyett.
+     */
+    @Test
+    public void aTimedHoldKeepsItsSetCount() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "Csin\u00e1ltam 3 sorozat plankot, egyenk\u00e9nt 60 m\u00e1sodpercig.");
+        assertEquals(3, it.get(0).sets.size());
+        // Az \u201eegyenk\u00e9nt" n\u00e9lk\u00fcl a pihen\u0151 nem lesz tart\u00e1s.
+        assertEquals(3, StrengthParse.parse("guggol\u00e1s 3x10, 30 mp pihen\u0151")
+                .get(0).sets.size());
+        assertEquals(10, StrengthParse.parse("guggol\u00e1s 3x10, 30 mp pihen\u0151")
+                .get(0).sets.get(0).reps);
+    }
+
+
+    /**
+     * A LEGY\u0150Z\u00d6TT lustas\u00e1g is edz\u00e9s: a \u201ema nem volt kedvem semmihez, de
+     * az\u00e9rt leguggoltam 50-et \u00e9s megcsin\u00e1ltam 30 fekv\u0151t\u00e1maszt" \u00f6tven
+     * guggol\u00e1sa \u00e9s harminc fekv\u0151t\u00e1masza n\u00e9m\u00e1n elveszett.
+     */
+    @Test
+    public void theOvercomeLazinessStillCounts() {
+        java.util.List<StrengthParse.Item> it = StrengthParse.parse(
+                "Ma nem volt kedvem semmihez, de az\u00e9rt leguggoltam 50-et "
+                + "\u00e9s megcsin\u00e1ltam 30 fekv\u0151t\u00e1maszt.");
+        assertEquals(2, it.size());
+        assertEquals(50, it.get(0).sets.get(0).reps);
+        assertEquals(30, it.get(1).sets.get(0).reps);
+        assertEquals(1, StrengthParse.parse("Nem volt kedvem. Leguggoltam 50-et.").size());
+        // A puszta kedvetlens\u00e9g tov\u00e1bbra sem edz\u00e9s.
+        assertTrue(StrengthParse.parse("Nem volt kedvem edzeni ma.").isEmpty());
+    }
+
+
+    /**
+     * A MONDATVÉGI pont nem tizedesjel: a „húzódzkodás 8, 6, 5, 4."
+     * felsorolása a záró pont miatt nem húzódott össze, és a hatos, ötös,
+     * négyes sorozat némán elveszett – a volumen harmada maradt a naplóban.
+     */
+    @Test
+    public void aRepListSurvivesTheClosingPeriod() {
+        java.util.List<StrengthParse.Item> it =
+                StrengthParse.parse("Húzódzkodás 8, 6, 5, 4.");
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(8, it.get(0).sets.get(0).reps);
+        assertEquals(4, it.get(0).sets.get(3).reps);
+        assertEquals(3, StrengthParse.parse("Húzódzkodás 12, 10, 8.")
+                .get(0).sets.size());
+        // A tizedes szám továbbra sem felsorolás.
+        assertTrue(StrengthParse.parse("Súlyom 78,5 kg.").isEmpty());
+    }
+
+
+    /**
+     * Az IDŐPONT száma nem ismétlésszám: az „egy hete húzódik a
+     * combhajlítóm, ma próbáltam óvatosan futni" egyese azt mondja meg,
+     * MIKOR kezdődött a panasz – a naplóba mégis egy ismétléses
+     * combhajlítás került, és onnantól a rekordok közé is.
+     */
+    @Test
+    public void aTimeAgoIsNotARepCount() {
+        assertTrue(StrengthParse.parse("Egy hete húzódik a combhajlítóm, "
+                + "ma próbáltam óvatosan futni.").isEmpty());
+        // A valódi sorozat marad, akkor is, ha időpont áll előtte.
+        assertEquals(3, StrengthParse.parse("Két hete kezdtem el edzeni, "
+                + "ma guggolás 3x10 60 kg.").get(0).sets.size());
+        assertEquals(5, StrengthParse.parse("3 napja fekvenyomás 5x5 80 kg.")
+                .get(0).sets.size());
+        assertEquals(3, StrengthParse.parse("Combhajlítás 3x12 40 kg.")
+                .get(0).sets.size());
+    }
+
+
+    /**
+     * A GÉPEK száma sem ismétlés: az „edzőteremben ma 3 gépet használtam:
+     * lábtolás, mellnyomás, húzódás" hármasából három lábtolás-ismétlés lett
+     * a rekordok között.
+     */
+    @Test
+    public void aMachineCountIsNotARepCount() {
+        assertTrue(StrengthParse.parse("Az edzőteremben ma 3 gépet "
+                + "használtam: lábtolás, mellnyomás, húzódás.").isEmpty());
+        // A valódi sorozat marad.
+        assertEquals(3, StrengthParse.parse("Lábtolás 3x12 100 kg.")
+                .get(0).sets.size());
+    }
+
+
+    /**
+     * A FEJLŐDÉS beszámolója nem sorozat, és az ÉS kötőszó zárhatja a
+     * felsorolást: a „két hónapja edzek, azóta 12 kg-ot emelkedett a
+     * fekvenyomásom" tizenkét kilós fekvenyomást írt a rekordok közé, a
+     * „3 sorozat plank: 60, 45 és 30 másodperc" harmadik tagja meg kimaradt.
+     */
+    @Test
+    public void progressNotesAndAndListsAreRead() {
+        assertTrue(StrengthParse.parse("Két hónapja edzek, azóta 12 kg-ot "
+                + "emelkedett a fekvenyomásom.").isEmpty());
+        assertEquals(3, StrengthParse.parse("Ma 3 sorozat plank: 60, 45 és "
+                + "30 másodperc.").get(0).sets.size());
+        assertEquals(3, StrengthParse.parse("Húzódzkodás 12, 10 és 8.")
+                .get(0).sets.size());
+        // A kimondott sorozat mellett a fejlődés-ige nem takar el semmit.
+        assertEquals(3, StrengthParse.parse("Guggolás 3x8 80 kg, sokat javult.")
+                .get(0).sets.size());
+        // Két szám továbbra sem felsorolás.
+        java.util.List<StrengthParse.Item> two =
+                StrengthParse.parse("80 kg bicepsz 3x8, 40 kg evezés 3x10");
+        assertEquals(2, two.size());
+        assertEquals(40.0, two.get(1).sets.get(0).weight, 0.01);
+    }
+
+    /**
+     * A küszöb nem a megemelt súly.
+     *
+     * A „ma végre 100 kg fölé mentem fekvenyomásban, 102,5 kg lett" száza a
+     * HATÁR, amit átlépett – a rekordba mégis az került, a valódi
+     * száz-kettő és fél helyett.
+     */
+    @Test public void aThresholdIsNotTheLiftedWeight() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma végre 100 kg "
+                + "fölé mentem fekvenyomásban, 102,5 kg lett.");
+        assertEquals(1, it.size());
+        assertEquals(102.5, it.get(0).topWeight(), 0.01);
+        // A valódi sorozat súlya marad.
+        List<StrengthParse.Item> ok = StrengthParse.parse("Fekvenyomás 3x8 "
+                + "60 kg, 80 kg alatt maradtam.");
+        assertEquals(60.0, ok.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A lista végén álló körszám és a „fekvő" szleng.
+     *
+     * A „húsz burpee, húsz fekvő, húsz guggolás, öt körben" listájából
+     * egyetlen húszas guggolás lett: a „fekvő" rövidítést nem ismerte a
+     * szótár, a lista VÉGÉN álló kör-szám pedig nem szorzott – a munka
+     * négyötöde eltűnt.
+     */
+    @Test public void aTrailingRoundCountMultipliesTheList() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma a parkban "
+                + "edzettünk: húsz burpee, húsz fekvő, húsz guggolás, "
+                + "öt körben.");
+        assertEquals(2, it.size());
+        for (StrengthParse.Item x : it) {
+            assertEquals(5, x.sets.size());
+            assertEquals(100, x.totalReps());
+        }
+        // A puszta „fekvő helyzet" nem gyakorlat.
+        assertTrue(StrengthParse.parse("Fekvő helyzetben emeltem lábat.")
+                .isEmpty());
+    }
+
+    /**
+     * A kör sorszáma nem ismétlésszám.
+     *
+     * A „kör 1 – guggolás, kör 2 – fekvőtámasz, kör 3 – plank" címkéiből
+     * egy-, két- és háromismétléses sorok lettek – kitalált számok a
+     * valódi edzés helyett. A szám ELŐTT álló „3 kör" szorzó marad.
+     */
+    @Test public void aRoundLabelIsNotARepCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("45 perc erősítő "
+                + "otthon: kör 1 - guggolás, kör 2 - fekvőtámasz, "
+                + "kör 3 - plank.");
+        for (StrengthParse.Item x : it)
+            assertTrue(x.label(), x.totalReps() <= 1);
+        // A valódi kör-szorzó marad.
+        List<StrengthParse.Item> ok = StrengthParse.parse("3 kör: "
+                + "20 guggolás, 15 fekvőtámasz.");
+        assertEquals(3, ok.get(0).sets.size());
+    }
+
+    /**
+     * A szóközös ezres méter nem ismétlésszám.
+     *
+     * A „10 000 m evezés a gépen, 42 perc alatt" tízese levált, és tíz
+     * ismétléses evezés-sor került az erőnaplóba – egy kardió-adag mellé.
+     */
+    @Test public void aSpacedThousandMeterIsNotAReps() {
+        assertTrue(StrengthParse.parse("Ma 10 000 m evezés a gépen, "
+                + "42 perc alatt, új rekord.").isEmpty());
+        // A valódi evezés-sorozat marad.
+        assertEquals(50.0, StrengthParse.parse("Evezés 3x10 50 kg.")
+                .get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A perc és a másodperc együtt egyetlen tartásidő.
+     *
+     * A „plank kihívás 12. napja: ma 2 perc 15 másodperc lett" tartása 120
+     * másodpercként ment be a 135 helyett – az emelkedő kihívásban épp a
+     * másodpercek számítanak.
+     */
+    @Test public void minutesAndSecondsAddUpForHolds() {
+        List<StrengthParse.Item> it = StrengthParse.parse("A plank kihívás "
+                + "12. napja: ma 2 perc 15 másodperc lett.");
+        assertEquals(135, it.get(0).sets.get(0).reps);
+        assertEquals(90, StrengthParse.parse("Plank: 1 perc 30 másodperc.")
+                .get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A kihúzás felhúzás, a haver súlya pedig nem a naplóé.
+     *
+     * A „3x10 kihúzást 60-nal" eddig nyomtalanul eltűnt, mert a „kihúzás"
+     * tő hiányzott. A „ő már 120-at nyom fekve, én még csak 90-et" pedig
+     * Peti százhúszasát írta az erőnaplóba a saját kilencven helyett.
+     */
+    @Test public void aGymPullAndAFriendsBenchAreSortedOut() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Nyomtam egy 5x5 guggolást 80 kilón, utána 3x10 kihúzást 60-nal.");
+        assertEquals(2, it.size());
+        assertEquals("Felhúzás", it.get(1).name);
+        assertEquals(60.0, it.get(1).topWeight(), 0.01);
+        List<StrengthParse.Item> tp = StrengthParse.parse("Találkoztam "
+                + "Petivel a konditeremben, ő már 120-at nyom fekve, "
+                + "én még csak 90-et.");
+        assertEquals(1, tp.size());
+        assertEquals(90.0, tp.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A vesszős kör is kör, és a jövőbeli cél melletti mai súly az enyém.
+     *
+     * A „3 kör, körönként 12 guggolás…" hármasa elveszett (vessző állt a
+     * „kör" után), az „az edzőm szerint jövő hónapra meglesz a 100 kg-os
+     * guggolás, ma 92,5 ment" mondatból pedig SEMMI nem lett – a jövő
+     * szava az egészet elnémította, pedig a 92,5 ma megtörtént.
+     */
+    @Test public void commaRoundsAndTodaysLiftBesideAGoal() {
+        List<StrengthParse.Item> kr = StrengthParse.parse("Súlyzós "
+                + "köredzés: 3 kör, körönként 12 guggolás 20 kg-mal, "
+                + "10 evezés, 15 felülés.");
+        assertEquals(3, kr.get(0).sets.size());
+        assertEquals(3, kr.get(2).sets.size());
+        List<StrengthParse.Item> gl = StrengthParse.parse("Az edzőm "
+                + "szerint jövő hónapra meglesz a 100 kg-os guggolás, "
+                + "ma 92,5 ment.");
+        assertEquals(1, gl.size());
+        assertEquals(92.5, gl.get(0).topWeight(), 0.01);
+        // A puszta cél mai szám nélkül marad üres.
+        assertTrue(StrengthParse.parse("Az edzőm szerint jövő hónapra "
+                + "meglesz a 100 kg-os guggolás.").isEmpty());
+    }
+
+    /**
+     * A „között" számnévje nem ismétlésszám.
+     *
+     * A „két kávé között lenyomtam 50 fekvőtámaszt az irodában" kettője
+     * lett a sorozat az ötven helyett – a „között" névutó a számnevet a
+     * kávéhoz köti, nem a gyakorlathoz.
+     */
+    @Test public void aNumberBoundToBetweenIsNotARepCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Két kávé között "
+                + "lenyomtam 50 fekvőtámaszt az irodában, részletekben.");
+        assertEquals(50, it.get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A kettőspontos plank-idő is tartásidő.
+     *
+     * A „fitness teszt: 12 húzódzkodás, 45 fekvőtámasz, 2:40 plank"
+     * tartása nyomtalanul elveszett – a 2:40 nem volt másodperc.
+     */
+    @Test public void aShoulderExerciseIsALateralRaise() {
+        // A „vállgyakorlat" a rehab-lap szava volt, és a „vállgyakorlat
+        // 3x12 8 kg-mal" sorozata nyomtalanul eltűnt az erőnaplóból.
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Vállgyakorlat 3x12 8 kg-mal.");
+        assertEquals("Oldalemelés", it.get(0).name);
+        assertEquals(8.0, it.get(0).topWeight(), 0.01);
+    }
+
+    @Test public void aColonTimeBesidePlankIsAHold() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fitness teszt: "
+                + "12 húzódzkodás, 45 fekvőtámasz, 2:40 plank.");
+        assertEquals(3, it.size());
+        assertEquals(160, it.get(2).sets.get(0).reps);
+        assertEquals(160, StrengthParse.parse("Plank: 2:40, új rekord.")
+                .get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A ragos szám a súly, a program sorai pedig sorozatok.
+     *
+     * A „vállból nyomás 2x10 ment 30-cal" saját testsúlyos sor lett, az
+     * „5x5 program: guggolás 92,5, fekve 72,5, evezés 67,5" két utolsó
+     * tétele pedig elveszett – az evezésből fél óra gépes kardió lett.
+     */
+    @Test public void aSuffixedWeightAndAProgramLine() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Vállból "
+                + "nyomás ma csak 2x10 ment 30-cal, fáradt voltam.");
+        assertEquals(30.0, it.get(0).topWeight(), 0.01);
+        List<StrengthParse.Item> pr = StrengthParse.parse("Az 5x5 "
+                + "program második napja: guggolás 92,5, fekve 72,5, "
+                + "evezés 67,5.");
+        assertEquals(3, pr.size());
+        assertEquals(67.5, pr.get(2).topWeight(), 0.01);
+        assertEquals(5, pr.get(2).sets.size());
+    }
+
+    /**
+     * A tanács tagmondata nem viszi el a mai sorozatot.
+     *
+     * Az „edző azt mondta, jövő héten emeljünk, ma 3x8 60 kg ment
+     * fekvenyomásban" sorozata nyomtalanul eltűnt az erőnaplóból.
+     */
+    @Test public void anAdviceClauseSparesTodaysSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edző azt "
+                + "mondta, jövő héten emeljünk, ma 3x8 60 kg ment "
+                + "fekvenyomásban.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(60.0, it.get(0).topWeight(), 0.01);
+        // A gyakorlat nevét hordozó cél-tagmondat megmarad.
+        List<StrengthParse.Item> g = StrengthParse.parse("Az edzőm "
+                + "szerint jövő hónapra meglesz a 100 kg-os guggolás, "
+                + "ma 92,5 ment.");
+        assertEquals(1, g.size());
+        assertEquals(92.5, g.get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A súly az első tagmondatban, az ismétlés-lista a másodikban.
+     *
+     * A „3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel" sorozata
+     * saját testsúllyal került be – a tizenkét kiló elveszett a
+     * tagmondat-határon.
+     */
+    @Test public void aWeightBeforeTheRepListSurvives() {
+        List<StrengthParse.Item> it = StrengthParse.parse("3 szett "
+                + "bicepsz 12 kilóval, 12-10-8 ismétléssel");
+        assertEquals(1, it.size());
+        assertEquals(12.0, it.get(0).topWeight(), 0.01);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(12, it.get(0).sets.get(0).reps);
+        assertEquals(8, it.get(0).sets.get(2).reps);
+    }
+
+    /**
+     * A vessző nélküli felsorolásban a név előtti szám a gyakorlaté.
+     *
+     * A „15 burpee 20 guggolás 10 fekvőtámasz" guggolása a TIZENÖTÖT
+     * kapta – a burpee számát –, mert a kereső az első számnál megállt.
+     */
+    @Test public void theNumberNearestTheNameWins() {
+        List<StrengthParse.Item> it = StrengthParse.parse("15 burpee "
+                + "20 guggolás 10 fekvőtámasz");
+        assertEquals(2, it.size());
+        assertEquals(20, it.get(0).sets.get(0).reps);
+        assertEquals(10, it.get(1).sets.get(0).reps);
+        // A körökkel együtt is a helyes szám szorzódik.
+        List<StrengthParse.Item> k = StrengthParse.parse("3 kör: "
+                + "20 guggolás 10 fekvőtámasz");
+        assertEquals(3, k.get(0).sets.size());
+        assertEquals(20, k.get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A híd a gyógytorna csípőemelése.
+     *
+     * A „fizioterápiás gyakorlatokat ma is megcsináltam, 3x15 hidat"
+     * sorozata nyomtalanul elveszett az erőnaplóból.
+     */
+    @Test public void aBridgeIsAHipThrust() {
+        List<StrengthParse.Item> it = StrengthParse.parse("A "
+                + "fizioterápiás gyakorlatokat ma is megcsináltam, "
+                + "3x15 hidat.");
+        assertEquals(1, it.size());
+        assertEquals("Csípőemelés", it.get(0).name);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(15, it.get(0).sets.get(0).reps);
+    }
+
+    /**
+     * A mértékegység ragja nem számnév.
+     *
+     * A „100 kg-ot fekvenyomásban" ékezet nélküli „-ot" ragjából ÖT
+     * ismétlés lett – egy kitalált sorozat a rekordok közé. A csúcs-szó
+     * melletti alak egyetlen ismétlés marad.
+     */
+    @Test public void aUnitSuffixIsNotTheNumeralFive() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az "
+                + "edzőteremben ma léptem át először a 100 kg-ot "
+                + "fekvenyomásban.");
+        assertEquals(1, it.size());
+        assertEquals(1, it.get(0).sets.size());
+        assertEquals(1, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+        // Csúcs-szó nélkül, ismétlés nélkül nincs mit menteni.
+        assertTrue(StrengthParse.parse("100 kg-ot fekvenyomásban.")
+                .isEmpty());
+    }
+
+    /**
+     * A körönkénti ismétlés-lista a felsorolt gyakorlatoké, sorban.
+     *
+     * Az „összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás, körönként
+     * 10-10-5" bejegyzésében csak a guggolás maradt meg, „10-10-5"
+     * ismétléssel; a másik két gyakorlat nyomtalanul eltűnt.
+     */
+    @Test public void perRoundRepsSpreadAcrossTheExercises() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Összesen "
+                + "4 kör: guggolás, fekvőtámasz, húzódzkodás, körönként "
+                + "10-10-5.");
+        assertEquals(3, it.size());
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(10, it.get(0).sets.get(0).reps);
+        assertEquals(5, it.get(2).sets.get(0).reps);
+        // Az egyetlen gyakorlat körönkénti száma is sorozat.
+        List<StrengthParse.Item> one = StrengthParse.parse("5 kör, "
+                + "körönként 15 guggolás.");
+        assertEquals(5, one.get(0).sets.size());
+        assertEquals(15, one.get(0).sets.get(0).reps);
+        // A kötőjeles felsorolás ugyanaz a lista, és a fel nem ismert
+        // név (a kardió burpee) is elhasznál egy helyet a számok közül.
+        List<StrengthParse.Item> d = StrengthParse.parse("4 kör "
+                + "burpee-guggolás-fekvőtámasz, körönként 10-15-20.");
+        assertEquals(2, d.size());
+        assertEquals(15, d.get(0).sets.get(0).reps);
+        assertEquals(20, d.get(1).sets.get(0).reps);
+    }
+
+    /**
+     * A lista végén álló sorozat mindegyik gyakorlaté.
+     *
+     * A „mellgép, hátgép, lábgép, 3x12" második és harmadik gépe
+     * nyomtalanul elveszett – a sorozat csak az elsőhöz tapadt.
+     */
+    @Test public void aTrailingSetSpreadsAcrossTheList() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az "
+                + "edzőteremben 3 gépen mentem körbe: mellgép, hátgép, "
+                + "lábgép, 3x12.");
+        assertEquals(3, it.size());
+        for (StrengthParse.Item i : it) assertEquals(3, i.sets.size());
+        // A saját számmal írt tételek a magukét viszik.
+        List<StrengthParse.Item> own = StrengthParse.parse("Mellgép "
+                + "3x12, hátgép 3x10.");
+        assertEquals(2, own.size());
+        assertEquals(10, own.get(1).sets.get(0).reps);
+    }
+
+    /**
+     * A zárójel mögött álló gyakorlat is megvan.
+     *
+     * A „3 kör (10 guggolás + 10 fekvő + 10 hasizom)" guggolása
+     * nyomtalanul elveszett – a nyitó zárójel a kör számához tapadt.
+     */
+    @Test public void aParenthesizedFirstExerciseSurvives() {
+        List<StrengthParse.Item> it = StrengthParse.parse("3 kör "
+                + "(10 guggolás + 10 fekvő + 10 hasizom).");
+        assertEquals(3, it.size());
+        assertEquals("Guggolás", it.get(0).name);
+    }
+
+    /**
+     * A rámpa két listája tagmondat-határon is összetartozik.
+     *
+     * A „fekvenyomás 60-70-80 kg, 8-6-4 ismétlés" naplójába a SÚLYOK
+     * kerültek ismétlésként: hatvan, hetven és nyolcvan ismétlés nyolc,
+     * hat és négy helyett – a rep-lista a vessző utáni tagmondatban
+     * maradt, gyakorlatnév nélkül.
+     */
+    @Test public void aRampWeightListAndRepListPairUpAcrossAComma() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen: "
+                + "fekvenyomás 60-70-80 kg, 8-6-4 ismétlés.");
+        assertEquals(1, it.size());
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals(3, it.get(0).sets.size());
+        assertEquals(18, it.get(0).totalReps());
+        assertEquals(80.0, it.get(0).topWeight(), 0.01);
+        // A vessző nélküli szórend változatlan.
+        assertEquals(18, StrengthParse.parse("Fekvenyomás 60-70-80 kg "
+                + "8-6-4.").get(0).totalReps());
+    }
+
+    /**
+     * A sorozatszámmal osztható darabszám az ÖSSZES ismétlés.
+     *
+     * A „100 fekvőtámasz 5 sorozatban, 20-20" naplójába ÖTSZÁZ
+     * fekvőtámasz került: a száz darabot a rendszer sorozatonkéntinek
+     * vette. Ami nem osztható („40 fekvőtámasz 3 sorozatban"),
+     * az sorozatonkénti marad.
+     */
+    @Test public void aDivisibleCountIsTheTotalAcrossSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma 100 "
+                + "fekvőtámasz 5 sorozatban, 20-20.");
+        assertEquals(1, it.size());
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(20, it.get(0).sets.get(0).reps);
+        assertEquals(100, it.get(0).totalReps());
+    }
+
+    /**
+     * A „mind 4x10" mindegyik gyakorlaté.
+     *
+     * Az „edzőteremben ma 3 gyakorlat: fekvenyomás, evezés, lehúzás,
+     * mind 4x10" második és harmadik gyakorlata elveszett – az evezésből
+     * ráadásul egy félórás evezőgépes kardió-bejegyzés lett.
+     */
+    @Test public void theSharedSetSpecAfterMindReachesEveryExercise() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az "
+                + "edzőteremben ma 3 gyakorlat: fekvenyomás, evezés, "
+                + "lehúzás, mind 4x10.");
+        assertEquals(3, it.size());
+        for (StrengthParse.Item x : it) {
+            assertEquals(4, x.sets.size());
+            assertEquals(10, x.sets.get(0).reps);
+        }
+        assertEquals("Fekvenyomás", it.get(0).name);
+        assertEquals("Evezés", it.get(1).name);
+        // A „mindegyik" szó ugyanígy szétosztja a sorozatot.
+        assertEquals(2, StrengthParse.parse("Az edzés: fekvenyomás, "
+                + "guggolás, mindegyik 5x5.").size());
+    }
+
+    /**
+     * Az eszközragos súly átjön a sorozat tagmondatába.
+     *
+     * A „ma 20 kg-mal nyomtam a mellgépen, 3x12" húsz kilója elveszett:
+     * a második tagmondat magától is teljes tétel lett, saját
+     * testsúllyal. A tagmondat SAJÁT súlya erősebb marad („guggolás 60
+     * kg bemelegítés, aztán 3x5 100").
+     */
+    @Test public void anInstrumentalWeightTravelsToTheSetClause() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Ma 20 kg-mal "
+                + "nyomtam a mellgépen, 3x12.");
+        assertEquals(1, it.size());
+        assertEquals(20.0, it.get(0).topWeight(), 0.01);
+        assertEquals(20.0, StrengthParse.parse("Ma 20 kilóval toltam a "
+                + "mellgépet, 3x12.").get(0).topWeight(), 0.01);
+        assertEquals(100.0, StrengthParse.parse("Guggolás 60 kg "
+                + "bemelegítés, aztán 3x5 100.").get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A hátravetett igekötő ugyanaz a gyakorlat.
+     *
+     * Az „edzésen 40 kilóval húztam le, 4x12" lehúzása nyomtalanul
+     * elveszett az erőnaplóból – a „lehúzás" töve csak egybeírva
+     * létezett.
+     */
+    @Test public void aSplitVerbPrefixIsStillTheExercise() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen "
+                + "40 kilóval húztam le, 4x12.");
+        assertEquals(1, it.size());
+        assertEquals("Lehúzás", it.get(0).name);
+        assertEquals(40.0, it.get(0).topWeight(), 0.01);
+        // A hosszabb gyakorlatnév elviszi előle a szót.
+        assertEquals("Húzódzkodás", StrengthParse.parse("Ma 20 "
+                + "húzódzkodást húztam le.").get(0).name);
+    }
+
+    /**
+     * A „mindegyik sorozat N kg-mal" súlya a gyakorlaté.
+     *
+     * Az „edzésen 4x8 guggolás, mindegyik sorozat 100 kg-mal" száz
+     * kilója elveszett, és saját testsúlyos guggolás került a rekordok
+     * közé – a súly a vessző utáni tagmondatban állt.
+     */
+    @Test public void aWeightInTheFollowingClauseBelongsToTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen "
+                + "4x8 guggolás, mindegyik sorozat 100 kg-mal.");
+        assertEquals(1, it.size());
+        assertEquals(100.0, it.get(0).topWeight(), 0.01);
+        assertEquals(80.0, StrengthParse.parse("Fekvenyomás 5x5, "
+                + "mindegyik 80 kg.").get(0).topWeight(), 0.01);
+    }
+
+    /**
+     * A jövő heti cél tagmondata nem viszi el a mai sorozatot.
+     *
+     * Az „edzésen: fekvenyomás 80 kg 5x5, siker, jövő héten 82,5!"
+     * teljes erő-naplója elveszett: a záró terv miatt az egész mondat
+     * jövőnek látszott.
+     */
+    @Test public void aTrailingPlanClauseDoesNotEraseTheDoneSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Az edzésen: "
+                + "fekvenyomás 80 kg 5x5, siker, jövő héten 82,5!");
+        assertEquals(1, it.size());
+        assertEquals(80.0, it.get(0).topWeight(), 0.01);
+        assertEquals(25, it.get(0).totalReps());
+        // A tiszta terv-mondat változatlanul kimarad.
+        assertTrue(StrengthParse.parse("Holnap guggolás 5x5 "
+                + "100 kg.").isEmpty());
+        assertTrue(StrengthParse.parse("Ma edzettem, holnap 5x5 100 kg "
+                + "guggolás lesz.").isEmpty());
+    }
+
+    /**
+     * A napszakos második adag összeadódik.
+     *
+     * A „reggel 30 guggolás, este 30, napi rutin" hatvan guggolása
+     * HARMINCRA olvadt – az esti adag száma gazdátlanul elveszett.
+     */
+    @Test public void dayPartRepBatchesAddUp() {
+        assertEquals(60, StrengthParse.parse("Reggel 30 guggolás, este "
+                + "30, napi rutin.").get(0).totalReps());
+        assertEquals(60, StrengthParse.parse("Reggel 20 fekvőtámasz, "
+                + "délben 20, este 20.").get(0).totalReps());
+        // A mértékegységes szám nem ismétlés.
+        assertEquals(30, StrengthParse.parse("Guggolás 3x10, este 60 "
+                + "perc séta.").get(0).totalReps());
+    }
+    /**
+     * A ráadás szett is sorozat.
+     *
+     * A „fekvenyomás 5x5 80 kilóval, aztán ráadásnak még egy szett
+     * 10-es" hajrá-sorozata nyomtalanul eltűnt – pedig pont arra
+     * büszke az ember.
+     */
+    @Test public void bonusSetJoinsThePreviousExercise() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás "
+                + "5x5 80 kilóval, aztán ráadásnak még egy szett 10-es.");
+        assertEquals(1, it.size());
+        assertEquals(35, it.get(0).totalReps());
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(80.0, it.get(0).sets.get(5).weight, 0.01);
+        // Fordított szórenddel, a mondat végén is.
+        assertEquals(4, StrengthParse.parse("Guggolás 3x8 60 kg, végén "
+                + "még egy 12-es szett.").get(0).sets.size());
+        // Kiírt ismétlésszóval.
+        assertEquals(48, StrengthParse.parse("Vállnyomás 4x10 20 kilóval, "
+                + "ráadásként egy szett 8 ismétléssel.").get(0).totalReps());
+        // A „10-es kézisúlyzóval" száma súly, nem ráadás sorozat.
+        assertEquals(3, StrengthParse.parse("Fekvenyomás 3x10, még egy "
+                + "szett 10-es kézisúlyzóval bicepsz.").get(0)
+                .sets.size());
+    }
+    /**
+     * A hasonult -val/-vel rag is súly, a rag nélküli ráadás is folytatás.
+     *
+     * A „guggolás 4x8 100 kg, majd 2x5 110-zel" második sorozata
+     * nyomtalanul eltűnt: a „-zel" nem volt a levágott ragok között.
+     */
+    @Test public void assimilatedInstrumentalSuffixStillContinuesTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolás 4x8 "
+                + "100 kg, majd 2x5 110-zel");
+        assertEquals(1, it.size());
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(110.0, it.get(0).sets.get(5).weight, 0.01);
+        it = StrengthParse.parse("Holtemelés 3x5 140-nel, ráadás 1x3 150-zel");
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(150.0, it.get(0).topWeight(), 0.01);
+    }
+    /**
+     * A súllyal mondott egyes sorozat is sorozat, a jelzős súly is súly.
+     *
+     * A „fekvenyomás 60 kg 3x10, aztán 70-nel egy 8-as" hetvenes
+     * nyolcasa nyomtalanul eltűnt; az „egy 20-as kézisúlyzóval" pedig
+     * EGY kilós vállnyomás lett – a névelő számnak látszott.
+     */
+    @Test public void aSingleWeightedSetAndAnAdjectiveWeightBothCount() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 60 kg "
+                + "3x10, aztán 70-nel egy 8-as");
+        assertEquals(1, it.size());
+        assertEquals(4, it.get(0).sets.size());
+        assertEquals(70.0, it.get(0).sets.get(3).weight, 0.01);
+        assertEquals(8, it.get(0).sets.get(3).reps);
+        it = StrengthParse.parse("Guggolás 5x5 100 kg, még egy 3-as 110 kilóval");
+        assertEquals(6, it.get(0).sets.size());
+        assertEquals(110.0, it.get(0).topWeight(), 0.01);
+        it = StrengthParse.parse("Vállnyomás 3x10 egy 20-as kézisúlyzóval");
+        assertEquals(20.0, it.get(0).topWeight(), 0.01);
+        assertEquals(30, it.get(0).totalReps());
+    }
+}

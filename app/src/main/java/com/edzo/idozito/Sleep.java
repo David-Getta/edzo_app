@@ -1,0 +1,646 @@
+package com.edzo.idozito;
+
+/**
+ * Alvás-napló: hány órát aludtál – mondatból is.
+ *
+ * A regeneráció az edzés másik fele: ugyanaz a terhelés hét óra alvással
+ * fejlődés, néggyel csak fáradtság. Az app eddig mindent tudott a munkáról
+ * (edzés, étrend, mérés), a pihenésről semmit – pedig az „aludtam 8 órát"
+ * ugyanolyan egyszerű mondat, mint a „78 kg vagyok".
+ *
+ * Szándékosan minimális: egy szám naponta. Se alvásfázis, se időpont –
+ * azt mérje az óra; itt annyi kell, hogy a heti átlag mellé lehessen tenni
+ * az edzésmennyiséget.
+ */
+public final class Sleep {
+
+    private Sleep() {}
+
+    /** Életszerű alváshossz órában. A négy alatti szunyókálás, nem éjszaka. */
+    static final double MIN_H = 2, MAX_H = 16;
+
+    /** Ennyi órát tekintünk egészséges alsó határnak a visszajelzésnél. */
+    static final double GOOD_H = 7;
+
+    /**
+     * Az alvás-szavak: enélkül a puszta „8 óra" bármi lehetne.
+     *
+     * A „8 óra alvás" és az „aludtam 8 órát" a két természetes alak; a
+     * „szunyókáltam" szándékosan nincs itt – az nem éjszakai alvás.
+     */
+    private static final java.util.regex.Pattern[] FORMS = {
+            // „aludtam 8 órát", „aludtam kb 6,5 órát", „aludtam vagy 7 órát" –
+            // a szám és az ige közé pár rövid szó beférhet, de csak kevés:
+            // messzebbről a szám már másról szólhat.
+            // A tagmondat-határ és az ÓRA-SZÓ is kell: a „7,5 órát aludtam, de
+            // 3-szor felébredtem" hármasa az ébredések száma, nem az alvás
+            // hossza – eddig három órás éjszaka került a naplóba a hét és fél
+            // helyett.
+            java.util.regex.Pattern.compile(
+                    "aludtam[^0-9,;.]{0,12}?(\\d{1,2}([.,]\\d)?)"
+                            + "\\s?(?:ora|h(?![a-z])|$|[,.;])"),
+            // „8 óra alvás", „7,5 óra alvás" – és a jelzős alak: a „másfél
+            // órás délutáni alvás" ugyanezt mondja melléknévvel, közé pár
+            // rövid jelző beférhet.
+            java.util.regex.Pattern.compile(
+                    "(\\d{1,2}([.,]\\d)?)\\s?ora(?:t|s)?\\s?"
+                            + "(?:[a-z]+\\s){0,2}?(?:alvas|szundi)"),
+            // „alvás: 8", „alvás 7,5 óra"
+            java.util.regex.Pattern.compile(
+                    "alvas\\w*\\s?:?\\s?(\\d{1,2}([.,]\\d)?)"),
+            // „7,5 órát aludtam", „csak 4 órát aludtam", „tegnap 6 órát
+            // aludtam összesen” – a szám ELÖL áll, az ige mögötte. Ez a
+            // leggyakoribb magyar szórend, és eddig egyszerűen kiesett: aki
+            // így írta le, semmit nem kapott vissza.
+            java.util.regex.Pattern.compile(
+                    "(\\d{1,2}([.,]\\d)?)\\s?ora\\w*[^0-9]{0,14}?aludtam"),
+            // Óra-szó NÉLKÜL is: „nyolcat aludtam", „kb 8-at aludtam". A
+            // magyar az órát ilyenkor elhagyja, mert magától értetődik – a
+            // szám és az ige közé viszont csak a tárgyrag férhet be.
+            java.util.regex.Pattern.compile(
+                    "(\\d{1,2}([.,]\\d)?)\\s?-?(?:[oae]t)?\\s*aludtam"),
+            // Fordított szórenddel is: az „aludtam 8-at" óra-szó nélküli,
+            // ige-elöl alakja eddig üresen jött vissza.
+            java.util.regex.Pattern.compile(
+                    "aludtam\\s+(\\d{1,2}([.,]\\d)?)\\s?-?[oae]t(?![a-z])"),
+            // „rosszul aludtam, kb 5 órát": a hossz a KÖVETKEZŐ tagmondatban
+            // áll. Az ige melletti szám elől a vessző szándékos határ (az
+            // ott álló szám az ébredések száma lenne), de ha az ÓRA-szó ki
+            // van mondva, nincs mit félreérteni. Ez a minta a legvégén áll,
+            // hogy a szigorúbb alakok elébe vághassanak.
+            // A KÖZBEVETÉS hosszabb is lehet: az „éjjel rosszul aludtam a
+            // hőség miatt, talán 5 órát" öt órája huszonkét karakternyi
+            // magyarázat mögött áll – az óra-szó kimondva félreérthetetlen.
+            java.util.regex.Pattern.compile(
+                    "aludtam[^0-9]{0,26}?(\\d{1,2}([.,]\\d)?)"
+                            + "\\s?ora(?:t)?(?![a-z])(?!\\s*mulva)"),
+    };
+
+    /** Alvásról szól-e egyáltalán a mondat. */
+    private static boolean saysSleep(String s) {
+        // A „felébredtem" is alvásról szól: az „éjszaka 3x felébredtem,
+        // összesen talán 5 óra" összegző fele eddig elveszett, mert a
+        // mondatban egyetlen alud-tő sem volt.
+        return s.contains("alud") || s.contains("alvas") || s.contains("aludt")
+                || s.contains("felebred")
+                // Az óra angol exportja: a „sleep score 78, 7h12m" hét óra
+                // tizenkét perce eddig elveszett.
+                || s.contains("sleep")
+                // A TÖBBSZÖRI kelés is éjszakáról szól: „a gyerek miatt
+                // háromszor keltem fel, összesen 6 óra lett". A „fel" a
+                // számnév-fordítás után „0,5", ezért csak a „keltem" marad.
+                || s.matches(".*\\d\\s?-?\\s?szor\\w*\\s+(?:fel)?kelt.*");
+    }
+
+    /**
+     * Ragos óra-számnevek: a „tíztől", „hatig", „hétkor" időpont, de a
+     * számnév-fordítás a rag miatt nem ismeri fel őket – az „este tíztől
+     * reggel hatig aludtam" egésze elveszett. A hét ELŐTTI darabszám
+     * („két hétig") naptári hét, nem hét óra – azt kihagyjuk.
+     */
+    private static String hourWords(String s) {
+        String[][] w = {{"tizenegy", "11"}, {"tizenketto", "12"},
+                {"tizenket", "12"}, {"egy", "1"}, {"ketto", "2"}, {"ket", "2"},
+                {"harom", "3"}, {"negy", "4"}, {"ot", "5"}, {"hat", "6"},
+                {"nyolc", "8"}, {"kilenc", "9"}, {"tiz", "10"}};
+        for (String[] p : w)
+            s = s.replaceAll("(?<![a-z\\d])" + p[0] + "(tol|ig|kor)(?![a-z])",
+                    p[1] + "-$1");
+        return s.replaceAll("(?<![a-z\\d])(?<!fel )(?<!masfel )(?<!egy )"
+                + "(?<!ket )(?<!harom )(?<!negy )(?<!ot )(?<!hat )(?<!par )"
+                + "(?<!nehany )(?<!tobb )het(tol|ig|kor)(?![a-z])", "7-$1");
+    }
+
+    /**
+     * A mondatban kimondott alvásóra, vagy -1.
+     *
+     * A „hét és fél órát aludtam" a számnév-fordítás után „7 es 0,5 orat" –
+     * a közvetlenül a szám után álló „és fél" hozzáadódik.
+     */
+    public static double parse(String q) {
+        double h = hours(q);
+        if (h <= 0) return h;
+        // Az ELALVÁSIG eltelt idő nem alvás: a „22:30-kor feküdtem le és
+        // 6-kor keltem, de csak fél óra múlva aludtam el" hét és fél órát
+        // írt a naplóba a hétből – a forgolódás fél órája is alvásnak
+        // számított. Épp az az éjszaka a rossz, amit így naplóz az ember.
+        double d = fallAsleepDelay(q);
+        if (d <= 0) return h;
+        double v = h - d;
+        return v >= MIN_H ? Math.round(v * 10) / 10.0 : h;
+    }
+
+    /** Az elalvásig eltelt idő órában, 0 ha nincs kimondva. */
+    private static double fallAsleepDelay(String q) {
+        String s = Foods.norm(q == null ? "" : q);
+        // Csak a LEFEKVÉS–ÉBREDÉS tartományból vonjuk le: aki azt írja, „8
+        // órát aludtam, de csak fél óra után tudtam elaludni", az már a
+        // valódi alvást mondta meg – abból nem jár levonás.
+        if (!s.matches("(?s).*(?<![a-z])(?:lefekud\\w*|fekudtem|fekudtunk"
+                    + "|agyban)(?![a-z]).*")
+                || !s.matches("(?s).*(?<![a-z])(?:keltem|keltunk|ebredtem"
+                    + "|felebredtem)(?![a-z]).*"))
+            return 0;
+        s = s.replaceAll("(?<![a-z])fel\\s?ora\\w*", "30 perc");
+        s = Hu.digits(s);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,3})\\s?perc\\w*\\s+(?:mulva|utan)\\s+"
+                + "(?:tudtam\\s+|sikerult\\s+)?(?:aludtam el|elaludtam"
+                + "|elaludni|elaludnom|alszom el)(?![a-z])").matcher(s);
+        if (!m.find()) return 0;
+        int min;
+        try { min = Integer.parseInt(m.group(1)); }
+        catch (NumberFormatException e) { return 0; }
+        return min >= 5 && min <= 180 ? min / 60.0 : 0;
+    }
+
+    private static double hours(String q) {
+        if (q == null) return -1;
+        String s = Hu.digits(hourWords(Hu.correction(Foods.norm(q))));
+        // A „FÉL 1-TŐL FÉL 7-IG" számmal írt fél óra: 0:30-tól 6:30-ig
+        // fordítjuk, onnan a tartomány-szabály érti. Eddig az egész
+        // éjszaka elveszett – a „fél" leválasztotta az órákat.
+        java.util.regex.Matcher fh = java.util.regex.Pattern.compile(
+                "(?<![a-z])fel\\s+(\\d{1,2})(?=\\s?-?(?:tol|ig|kor|re)(?![a-z]))")
+                .matcher(s);
+        StringBuffer fb = new StringBuffer();
+        boolean fhAny = false;
+        while (fh.find()) {
+            int h = Integer.parseInt(fh.group(1));
+            fh.appendReplacement(fb,
+                    (h == 1 ? "0" : String.valueOf(h - 1)) + ":30");
+            fhAny = true;
+        }
+        if (fhAny) { fh.appendTail(fb); s = fb.toString(); }
+        // Az „aluttam" gyakori fonetikus elütés.
+        s = s.replace("aluttam", "aludtam");
+        // Az „aludtma" a betűcserés elütés ugyanerre a szóra.
+        s = s.replace("aludtma", "aludtam");
+        // A „TUDTAM ALUDNI" is alvás: a „két műszak között csak 4 órát
+        // tudtam aludni" eddig elveszett, mert az ige főnévi igenév volt.
+        s = s.replaceAll("(?:tudtam|sikerult|birtam)\s+aludni", "aludtam");
+        // A PIHENTEM alvás-környezetben alvás: a „ma megint elaludtam az
+        // ébresztő előtt, csak 5 órát pihentem" öt órája némán elveszett –
+        // az éjszaka semmi nem került a naplóba. A kanapén töltött „5 órát
+        // pihentem" viszont nem éjszaka: alvás-szó kell mellé.
+        if (s.matches("(?s).*(?<![a-z])(elalud\\w*|elaludtam|ebreszt\\w*"
+                + "|lefekud\\w*|fekudtem|ejszaka\\w*|ejjel|keltem)"
+                + "(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])pihentem(?![a-z])", "aludtam");
+        // Az ÉJSZAKAI FELÉBREDÉS nem az ébredés ideje: az „éjjel 11-től
+        // reggel 7-ig aludtam, de éjfélkor felkeltem a babához" nyolc
+        // órája TIZENHÁROM lett – az éjfél időpontja vitte el az ébredés
+        // szerepét, és a reggeli hét kimaradt. Az éjszaka közepi ébredést
+        // említő tagmondat időpontja nem határolja az alvást.
+        if (s.matches("(?s).*(?:alud\\w*|alvas\\w*|fekud\\w*).*")) {
+            StringBuilder nb = new StringBuilder();
+            for (String part : s.split("(?=[,;])")) {
+                if (part.matches("(?s).*(?:ejfel|hajnal)\\w*.*")
+                        && part.matches("(?s).*(?:felkelt|felebredt"
+                            + "|felriadt|felkeltem|felebredtem)\\w*.*"))
+                    continue;
+                nb.append(part);
+            }
+            if (nb.length() > 0) s = nb.toString();
+        }
+        // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
+        // feküdtem és 19-kor keltem" hét óra nappali alvás.
+        s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");
+        // A NAPSZÓ beékelődhet az alvás-szó és a szám közé: az „alvás
+        // tegnap 7 óra volt" hetese eddig nem talált, és a mondat többi
+        // időpontjából jött ki egy rossz szám.
+        s = s.replaceAll("(alvas\\w*)\\s+(?:ma|tegnap|az ejjel|ejjel)\\s+"
+                + "(?=\\d)", "$1 ");
+        // Az ALVÁSFÁZIS nem a teljes éjszaka: a „mélyalvás 2 óra 10 perc,
+        // összesen 7 óra 30 perc alvás" két óra husz percként ment be. A
+        // kimondott összesen mellől a fázis-sor kiesik.
+        if (s.contains("osszes"))
+            s = s.replaceAll("(?:melyalvas|mely alvas|konnyu alvas"
+                    + "|rem(?: fazis)?)\\s?:?\\s?\\d{1,2}(?::\\d{2})?\\s?"
+                    + "(?:ora\\w*)?\\s?(?:\\d{1,2}\\s?perc)?", "");
+        // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
+        // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.
+        if (s.contains("volna") || s.contains("kellett volna") || s.contains("szerettem"))
+            return -1;
+        // Az ÁTLAG nem egy éjszaka: az „alvásátlagom 6,8 óra a héten" a hét
+        // összefoglalója – ma éjszakai alvásként rögzítve meghamisítaná a
+        // trendet. (Az „átlagpulzus" melletti alvás-adat marad.)
+        if (s.contains("alvasatlag") || s.contains("alvas atlag")
+                || s.contains("atlagosan alszom") || s.contains("atlag alvas"))
+            return -1;
+        // Óra ÉS perc: a „6 óra 30 perc alvás" fél órája eddig elveszett –
+        // sőt az egész mondat, mert a perc a szám mellé állva elrontotta a
+        // mintát. Alvás-szó nélkül ez az ág nem él.
+        if (saysSleep(s)) {
+            // Az „alvás 6:30" hossz, nem időpont: az óra-appok így írják ki.
+            // A perc eddig elveszett belőle – fél óra, minden éjszakán.
+            java.util.regex.Matcher cm = java.util.regex.Pattern
+                    .compile("(?:alvas\\w*|sleep)\\s?:?\\s?(\\d{1,2}):(\\d{2})").matcher(s);
+            if (cm.find()) {
+                double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Fordított szórenddel is: a „7:02 alvásidő" az óra-app sora,
+            // és eddig teljesen elveszett.
+            cm = java.util.regex.Pattern
+                    .compile("(?<![\\d,:])(\\d{1,2}):(\\d{2})\\s?(?:alvas|sleep)").matcher(s);
+            if (cm.find()) {
+                double v = Integer.parseInt(cm.group(1)) + Integer.parseInt(cm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Az ALVÁS-SZÓ UTÁN álló óraszám is hossz: az „alvás 7 óra
+            // volt" szórendjét eddig egyik minta sem fedte – a szám mindig
+            // a szó ELŐTT állt („7 óra alvás").
+            // A PERC is hozzátartozik: a „Garmin: 12500 lépés, alvás 7 óra
+            // 20 perc" hét órát írt be – a húsz perc minden éjszaka
+            // elveszett, mert ez az ág az óra-számnál megállt.
+            cm = java.util.regex.Pattern
+                    .compile("(?<![a-z])(?:alvas\\w*|sleep)\\s?:?\\s?"
+                            + "(\\d{1,2}(?:[.,]\\d{1,2})?)\\s?ora\\w*"
+                            + "(?:\\s?(?:es\\s+)?(\\d{1,2})\\s?perc)?").matcher(s);
+            if (cm.find()) {
+                double v = Double.parseDouble(cm.group(1).replace(',', '.'));
+                if (cm.group(2) != null) v += Integer.parseInt(cm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Óra-jeles rövidítés: „aludtam 7h30", „7h 30m". Az óra-appok és a
+            // sportórák így írják ki, és a perc eddig elveszett belőle.
+            java.util.regex.Matcher sm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?h\\s?(\\d{2})(?![0-9])").matcher(s);
+            if (sm.find()) {
+                double v = Integer.parseInt(sm.group(1)) + Integer.parseInt(sm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Tizedes órajel az alvás-szó mellett: a „7,5h alvás" sor
+            // eddig teljesen elveszett.
+            sm = java.util.regex.Pattern.compile("(\\d{1,2}[.,]\\d{1,2})\\s?h"
+                    + "\\s?(?:alvas|sleep)|(?:alvas\\w*|sleep)\\s?:?\\s?"
+                    + "(\\d{1,2}[.,]\\d{1,2})\\s?h(?![a-z])").matcher(s);
+            if (sm.find()) {
+                String g = sm.group(1) != null ? sm.group(1) : sm.group(2);
+                double v = Double.parseDouble(g.replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // „Rosszul aludtam, 3-szor felébredtem, összesen talán 5 órát": a
+            // hossz a HARMADIK tagmondatban áll, az ige mellől pedig
+            // szándékosan nem vesszük el a számot (az az ébredések száma
+            // lenne). Az „összesen" viszont félreérthetetlen.
+            // Az óra+perc alak ELŐBB fut, mint az „összesen"-szabály: az
+            // „összefoglaló: 7 óra 12 perc alvás" hét egész kettő tized –
+            // az össze-tő korábban elkapta a hetest, és a tizenkét perc
+            // elveszett.
+            java.util.regex.Matcher hm = java.util.regex.Pattern
+                    // Az „és" kötőszóval mondva is óra+perc: az „aludtam
+                    // 6 órát és 45 percet" negyvenöt perce eddig elveszett.
+                    .compile("(\\d{1,2})\\s?ora\\w*\\s?(?:es\\s+)?(\\d{1,2})\\s?perc").matcher(s);
+            if (hm.find()) {
+                double v = Integer.parseInt(hm.group(1)) + Integer.parseInt(hm.group(2)) / 60.0;
+                if (v >= MIN_H && v <= MAX_H) return Math.round(v * 10) / 10.0;
+            }
+            // Az ÖSSZESEN tő szándékosan szűk: az „összefoglaló" nem
+            // összegzés-szó, csak a cím – ossze-előtaggal minden címke
+            // elvitte volna az első óra-számot.
+            java.util.regex.Matcher tm = java.util.regex.Pattern
+                    .compile("osszes\\w*[^0-9]{0,15}?(\\d{1,2}([.,]\\d)?)\\s?ora").matcher(s);
+            if (tm.find()) {
+                double v = Double.parseDouble(tm.group(1).replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return v;
+            }
+            // „hét és fél órát aludtam": a számnév-fordítás után „7 es 0,5
+            // orat", ahol a fél KÜLÖN számként áll. A régi összeadás csak az
+            // ige mögötti alakra élt, az elöl álló számra nem.
+            java.util.regex.Matcher fm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?es\\s?0,5\\s?ora").matcher(s);
+            if (fm.find()) {
+                double v = Integer.parseInt(fm.group(1)) + 0.5;
+                if (v >= MIN_H && v <= MAX_H) return v;
+            }
+            // A TAGMONDAT-VÉGI óraszám is a kimondott alvás: a „nappal
+            // aludtam, mert éjjel dolgoztam: 6 óra" hatosa eddig elveszett –
+            // a szám két tagmondattal odébb áll az igétől.
+            if (s.matches(".*alud\\w*.*")) {
+                java.util.regex.Matcher vm = java.util.regex.Pattern
+                        .compile("(?<!\\d)[:,]\\s?(\\d{1,2}(?:[.,]\\d)?)"
+                                + "\\s?ora\\w*\\s*$").matcher(s);
+                if (vm.find()) {
+                    double v = Double.parseDouble(vm.group(1).replace(',', '.'));
+                    if (v >= MIN_H && v <= MAX_H) return v;
+                }
+            }
+            // Tól-ig: a „8-9 órát aludtam" közepét vesszük. Enélkül a pár úgy
+            // nézett ki, mint egy munka/pihenő ritmus, és az időzítőbe ment.
+            java.util.regex.Matcher rm = java.util.regex.Pattern
+                    .compile("(\\d{1,2})\\s?-\\s?(\\d{1,2})\\s?ora").matcher(s);
+            if (rm.find()) {
+                double lo = Integer.parseInt(rm.group(1)), hi = Integer.parseInt(rm.group(2));
+                if (hi > lo) {
+                    double v = (lo + hi) / 2.0;
+                    if (v >= MIN_H && v <= MAX_H) return v;
+                }
+            }
+            // A „HÚZTAM" szleng is alvás – de csak kimondott alvás-szó
+            // mellett: a „bepótoltam az alvást, 10 órát húztam" tíz órája
+            // eddig elveszett. Alvás-szó nélkül a „2 órát húztam a
+            // teremben" súlyzózás marad, ezért él ez a minta ebben az ágban.
+            java.util.regex.Matcher hz = java.util.regex.Pattern
+                    .compile("(\\d{1,2}([.,]\\d)?)\\s?ora(?:t)?\\s?huztam")
+                    .matcher(s);
+            if (hz.find()) {
+                double v = Double.parseDouble(hz.group(1).replace(',', '.'));
+                if (v >= MIN_H && v <= MAX_H) return v;
+            }
+        }
+        for (java.util.regex.Pattern p : FORMS) {
+            java.util.regex.Matcher m = p.matcher(s);
+            if (!m.find()) continue;
+            double v;
+            try { v = Double.parseDouble(m.group(1).replace(',', '.')); }
+            catch (NumberFormatException e) { continue; }
+            // „7 es 0,5 orat aludtam": a tört külön számként áll a fő szám után.
+            if (s.contains(m.group(1) + " es 0,5")) v += 0.5;
+            if (v >= MIN_H && v <= MAX_H) return v;
+        }
+        // Lefekvés és ébredés: „este 11-kor feküdtem, reggel 7-kor keltem".
+        // Sokan nem hosszat írnak, hanem két időpontot – az óra is így méri.
+        //
+        // A KIMONDOTT hossz viszont erősebb, ezért ez az ág a legvégén áll: a
+        // „ma reggel 5 km, délután 40 perc kondi, este 8 óra alvás" mondatban
+        // a „reggel 5" és az „este 8" időpont-párnak látszott, és három óra
+        // alvás került a naplóba a nyolc helyett.
+        double span = betweenTimes(s);
+        if (span > 0) return span;
+        return -1;
+    }
+
+    /** A felsorolt szavak közül a legkorábbi előfordulás helye, vagy -1. */
+    private static int firstOf(String s, String[] words) {
+        int best = -1;
+        for (String w : words) {
+            int p = s.indexOf(w);
+            if (p >= 0 && (best < 0 || p < best)) best = p;
+        }
+        return best;
+    }
+
+    /** A megadott helyhez legközelebb álló időpont sorszáma, vagy -1. */
+    private static int nearestTime(java.util.List<Integer> at, int pos) {
+        int best = -1, bestD = Integer.MAX_VALUE;
+        for (int i = 0; i < at.size(); i++) {
+            int d = Math.abs(at.get(i) - pos);
+            if (d < bestD) { bestD = d; best = i; }
+        }
+        return best;
+    }
+
+    /**
+     * Két időpont közti alvás, vagy -1: „este 11-kor feküdtem, 7-kor keltem".
+     *
+     * Sokan nem a hosszat írják le, hanem a lefekvést és az ébredést – az óra
+     * is így méri, és a fejben kivonás pont az a lépés, amit egy appnak el
+     * kellene végeznie. A kimondott lefekvés-ébredés páros kötelező, hogy egy
+     * edzés-időpont („18:00-tól 19:30-ig kondi") ne váljon alvássá.
+     *
+     * A délelőtti óraszám (a „fél 11-kor feküdtem" tíz-harmincja) este
+     * értendő: ha az első időpontból képtelen hossz jön ki, tizenkét órát
+     * hozzáadva próbáljuk újra.
+     */
+    private static double betweenTimes(String s) {
+        // A lefekvést nem csak „feküdtem"-mel mondjuk: az „ágyban voltam", a
+        // „lefeküdtem" és az „ágyba bújtam" ugyanaz a pillanat. Enélkül az
+        // „este 10-re ágyban voltam, reggel 6-kor keltem" egésze elveszett,
+        // pedig a nyolc óra ki van mondva benne.
+        // A PUSZTA „ágyban" is lefekvés a párja mellett: a „11-kor ágyban,
+        // fél 7-kor kelés" eddig elveszett, mert az „ágyban" mögül hiányzott
+        // a „voltam". A „kelés" főnév ugyanígy ébredés.
+        // A CSÖRGŐ ÓRA az ébredés: a „hatkor csörgött az óra" ugyanaz,
+        // mint a „hatkor keltem" – eddig se ige, se időpont nem lett belőle.
+        s = s.replaceAll("(?:csorgott|szolt|megszolalt) az? "
+                + "(?:ora|vekker|ebreszto\\w*|telefon)", "keltem");
+        // Az ELALVÁS is lefekvés: az „alhattam el" és az „aludtam el"
+        // ugyanaz a pillanat, csak bizonytalanabbul mondva.
+        s = s.replaceAll("al(?:hat|ud)tam el(?![a-z])", "elaludtam");
+        // A KÖRÜLBELÜLI időpont is időpont: a „fél 12 után aludtam el,
+        // 7 előtt ébredtem" eddig elveszett – az „után" és az „előtt"
+        // elvitte a ragot.
+        s = s.replaceAll("((?:fel|haromnegyed)\\s)?(\\d{1,2})\\s?"
+                + "(?:utan|korul|tajban|tajt)\\s+(?=elalud)", "$1$2-kor ");
+        s = s.replaceAll("((?:fel|haromnegyed)\\s)?(\\d{1,2})\\s?elott\\s+"
+                + "(?=ebred|kel)", "$1$2-kor ");
+        // Az „X-ig fent voltam" az elalvás pillanata: a „hajnali 2-ig fent
+        // voltam, 9-kor keltem" hét órája eddig elveszett.
+        s = s.replaceAll("(\\d{1,2})-ig\\s+fen[nt]\\p{L}*\\s+"
+                + "(?:voltam|maradtam)", "$1-kor elaludtam");
+        // A „11 óra körül" is időpont: az óra-szó kiesik, a rag marad.
+        s = s.replaceAll("(\\d{1,2})\\s?ora\\s?korul", "$1-kor");
+        boolean bed = s.contains("fekudtem") || s.contains("fekszem")
+                || s.contains("lefeku") || s.contains("agyban")
+                || s.contains("agyba bujt") || s.contains("elalud")
+                // Az „ágyba kerültem" is lefekvés – akárhogy áll a szórend.
+                || s.contains("agyba kerul") || s.contains("kerultem agyba")
+                || s.contains("lefekves");
+        // Az ÉJFÉL is időpont, csak nem számmal írják: az „éjfél után
+        // feküdtem, 6-kor keltem" bedagadt volna a szabályba, ha az éjfélt
+        // nullára fordítjuk – hát pont ezt tesszük.
+        // Ha az éjfél után KONKRÉT óra áll („éjfél után 1-kor feküdtem"),
+        // az éjfél csak körülírás – kettőt csinált volna egy időpontból,
+        // és a 0:00→1:00 egyórás „éjszaka" kiejtette az egészet.
+        s = s.replaceAll("(?<![a-z])ejfel utan(?=\\s*\\d)", "");
+        // Ha a mondat KÉSŐBB kimondja a -tól/-ig tartományt („éjfél után
+        // értem haza, 0:30-tól 6:30-ig aludtam"), az éjfél csak körülírás –
+        // a belőle csinált 0:00 harmadik időpontként kiejtette az egészet.
+        s = s.replaceAll("(?<![a-z])ejfel utan"
+                + "(?=[^;.]{0,40}\\d{1,2}[.:]?\\d{0,2}\\s?-?tol)", "");
+        s = s.replaceAll("(?<![a-z])ejfel(?:kor| utan| korul| tajban)?(?![a-z])",
+                "0:00-kor");
+        // A FŐNÉVI alak is ugyanaz a pillanat: a „22:15 lefekvés, 5:45
+        // ébredés" az óra-app kijelzőjéről másolt sor, és eddig teljesen
+        // elveszett – ige nélkül nem látszott alvás-mondatnak.
+        boolean up = s.contains("keltem") || s.contains("ebredtem")
+                || s.contains("ebredes") || s.contains("keles");
+        boolean ctx = s.contains("alud") || s.contains("alvas") || (bed && up);
+        if (!ctx) return -1;
+        java.util.List<Integer> mins = new java.util.ArrayList<>();
+        // Melyik óra volt kettősponttal, teljes alakban kiírva? A „22:45"
+        // huszonnégy órás adat, azon nincs mit igazítani – a tizenkét órás
+        // eltolás csak a csupasz óraszámnak („10-kor feküdtem le") szól.
+        java.util.List<Boolean> exact = new java.util.ArrayList<>();
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                // „22:30" – óra és perc kettősponttal
+                "(?<![\\d,])(\\d{1,2}):(\\d{2})"
+                // „11-kor", „23 órakor", „este 10"
+                + "|(?<![\\d,:])(\\d{1,2})\\s?-?\\s?(?:orakor|kor)"
+                + "|(?:este|reggel|ejjel|hajnalban|delelott)\\s(\\d{1,2})(?![\\d:,])"
+                // „10-től 6-ig aludtam": a tól-ig pár ugyanaz a két időpont,
+                // csak rag jelöli őket – eddig egyikből sem lett hossz.
+                + "|(?<![\\d,:])(\\d{1,2})\\s?-?\\s?(?:tol|ig)(?![a-z])")
+                .matcher(s);
+        // Az időpontok HELYÉT is megjegyezzük: ha háromnál is több van, a
+        // szavakhoz igazítva kell kiválasztani a kettőt, amelyik az alvást
+        // határolja.
+        java.util.List<Integer> at = new java.util.ArrayList<>();
+        while (m.find() && mins.size() < 4) {
+            int h, mi = 0;
+            if (m.group(1) != null) { h = Integer.parseInt(m.group(1)); mi = Integer.parseInt(m.group(2)); }
+            else if (m.group(3) != null) h = Integer.parseInt(m.group(3));
+            else if (m.group(4) != null) h = Integer.parseInt(m.group(4));
+            else h = Integer.parseInt(m.group(5));
+            if (h > 24) continue;
+            // A magyar „fél tizenegy" tíz óra harminc – a számnév-fordítás
+            // után a „0,5" külön számként áll az óra ELŐTT.
+            int b = m.start();
+            if (b >= 4 && s.startsWith("0,5 ", b - 4)) { h = (h + 23) % 24; mi = 30; }
+            // A NEGYED és a HÁROMNEGYED ugyanígy: a „negyed 12-kor feküdtem"
+            // este negyed tizenkettő (23:15) – eddig éjfélnek számított, és
+            // a „fél 7-kor keltem, negyed 12-kor feküdtem" éjszakája hat és
+            // fél órára rövidült a hét és negyed helyett.
+            else if (b >= 7 && s.startsWith("negyed ", b - 7)
+                    && !(b >= 12 && s.startsWith("haromnegyed ", b - 12))) {
+                h = (h + 23) % 24; mi = 15;
+            } else if (b >= 12 && s.startsWith("haromnegyed ", b - 12)) {
+                h = (h + 23) % 24; mi = 45;
+            }
+            mins.add((h % 24) * 60 + mi);
+            exact.add(m.group(1) != null);
+            at.add(b);
+        }
+        if (mins.size() < 2) return -1;
+        // HÁROM időpont: a lefekvés, az ELALVÁS és az ébredés. Aki külön
+        // kimondja, mikor aludt el, annak az alvása ott kezdődik – az „este
+        // 10-kor lefeküdtem, de csak fél 12-kor aludtam el, 6-kor csörgött
+        // az óra" tizenhárom és fél órás alvás lett, mert a beolvasó az
+        // első két időpontot vette: a lefekvést és az elalvást. Az
+        // időpontokat a hozzájuk legközelebbi ige választja ki.
+        boolean picked = false;
+        if (mins.size() > 2) {
+            int fell = firstOf(s, new String[]{"elalud"});
+            int wake = firstOf(s, new String[]{"keltem", "ebredtem",
+                    "ebredes", "keles"});
+            int si = fell >= 0 ? nearestTime(at, fell) : 0;
+            int ei = wake >= 0 ? nearestTime(at, wake) : -1;
+            if (si >= 0 && ei > si) {
+                picked = true;
+                int m0 = mins.get(si), m1 = mins.get(ei);
+                boolean e0 = exact.get(si), e1 = exact.get(ei);
+                mins.clear(); exact.clear();
+                mins.add(m0); mins.add(m1);
+                exact.add(e0); exact.add(e1);
+            }
+        }
+        while (mins.size() > 2) { mins.remove(2); exact.remove(2); }
+        // Az ébredés is állhat elöl: a „reggel 6:30-kor keltem, 22:45-kor
+        // feküdtem le" ugyanaz az éjszaka, csak fordított sorrendben mondva.
+        // Enélkül a különbség tizenhat óra lett, és a tizenkét órás igazítás
+        // négy és negyed órányi alvást hazudott rá.
+        int bedAt = firstOf(s, new String[]{"fekudtem", "fekszem", "lefeku",
+                "agyban", "agyba bujt", "lefekves", "elalud", "agyba kerul",
+                "kerultem agyba"});
+        int upAt = firstOf(s, new String[]{"keltem", "ebredtem", "ebredes",
+                "keles"});
+        if (!picked && bedAt >= 0 && upAt >= 0 && upAt < bedAt) {
+            java.util.Collections.reverse(mins);
+            java.util.Collections.reverse(exact);
+        }
+        for (int shift : new int[]{0, exact.get(0) ? 0 : 12 * 60}) {
+            int from = (mins.get(0) + shift) % (24 * 60);
+            int to = mins.get(1);
+            int diff = to - from;
+            if (diff <= 0) diff += 24 * 60;
+            double v = Math.round(diff / 6.0) / 10.0;
+            if (v >= MIN_H && v <= MAX_H) return v;
+        }
+        return -1;
+    }
+
+    /** Egysoros visszajelzés a mennyiséghez – tanács, nem ítélet. */
+    public static String verdict(double hours) {
+        if (hours <= 0) return "";
+        if (hours < 6) return "kevés – a regeneráció ennyiből nehezen megy";
+        if (hours < GOOD_H) return "a hét óra alatt – ha teheted, told meg";
+        if (hours <= 9.5) return "rendben – a fejlődés ilyenkor történik";
+        return "hosszú éjszaka – néha pont erre van szükség";
+    }
+
+    // ---------- Tárolás ----------
+
+    static final String KEY = "sleep_log";
+    /** Ennyi bejegyzést tartunk meg – bő fél év. */
+    static final int MAX = 200;
+
+    /** Alvás mentése a MAI napra (napi egy érték: az újabb felülírja). */
+    public static void add(android.content.Context c, long ts, double hours) {
+        try {
+            org.json.JSONArray a = load(c);
+            org.json.JSONArray out = new org.json.JSONArray();
+            org.json.JSONObject o = new org.json.JSONObject();
+            o.put("ts", ts);
+            o.put("h", hours);
+            out.put(o);
+            long day = Days.index(ts);
+            for (int i = 0; i < a.length() && out.length() < MAX; i++) {
+                org.json.JSONObject e = a.optJSONObject(i);
+                if (e == null) continue;
+                // Napi egy érték: aki javít, annak a régi szám menjen.
+                if (Days.index(e.optLong("ts")) == day) continue;
+                out.put(e);
+            }
+            c.getSharedPreferences("edzo", android.content.Context.MODE_PRIVATE)
+                    .edit().putString(KEY, out.toString()).apply();
+        } catch (Exception ignored) {
+        }
+    }
+
+    /** A napló, legfrissebb elöl. */
+    public static org.json.JSONArray load(android.content.Context c) {
+        try {
+            return new org.json.JSONArray(c.getSharedPreferences("edzo",
+                    android.content.Context.MODE_PRIVATE).getString(KEY, "[]"));
+        } catch (Exception e) {
+            return new org.json.JSONArray();
+        }
+    }
+
+    /** A legutóbbi bejegyzett éjszaka órái, vagy -1. */
+    public static double last(android.content.Context c) {
+        org.json.JSONArray a = load(c);
+        org.json.JSONObject o = a.optJSONObject(0);
+        return o == null ? -1 : o.optDouble("h", -1);
+    }
+
+    /**
+     * Napi értékek időrendben (régi → új) az elmúlt N napból, a görbéhez.
+     *
+     * Csak a bejegyzett éjszakák kerülnek bele – a kihagyott nap nem nulla
+     * óra alvás, hanem ismeretlen, és egy nulla a görbét a padlóra rántaná.
+     */
+    public static double[] series(android.content.Context c, long now, int days) {
+        org.json.JSONArray a = load(c);
+        java.util.List<Double> vals = new java.util.ArrayList<>();
+        for (int i = a.length() - 1; i >= 0; i--) {
+            org.json.JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            int ago = Days.ago(o.optLong("ts"), now);
+            if (ago < 0 || ago >= days) continue;
+            double h = o.optDouble("h", -1);
+            if (h > 0) vals.add(h);
+        }
+        double[] out = new double[vals.size()];
+        for (int i = 0; i < out.length; i++) out[i] = vals.get(i);
+        return out;
+    }
+
+    /** Átlag az elmúlt N napra (csak a bejegyzett éjszakákból), vagy -1. */
+    public static double avg(android.content.Context c, long now, int days) {
+        org.json.JSONArray a = load(c);
+        double sum = 0;
+        int n = 0;
+        for (int i = 0; i < a.length(); i++) {
+            org.json.JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            int ago = Days.ago(o.optLong("ts"), now);
+            if (ago < 0 || ago >= days) continue;
+            double h = o.optDouble("h", -1);
+            if (h > 0) { sum += h; n++; }
+        }
+        return n == 0 ? -1 : sum / n;
+    }
+}

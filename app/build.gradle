@@ -1,0 +1,61 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.edzo.idozito'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.edzo.idozito'
+        minSdk 24
+        // targetSdk 33: robustabb foreground service (elkerüli az Android 14 FGS-típus
+        // szigorítását), miközben a háttérfutás és a wake lock így is megbízhatóan megy.
+        targetSdk 33
+        // A CI a VERSION_CODE env-változóból növekvő értéket ad, hogy az
+        // automatikus frissítés (Obtainium/Android) minden buildnél működjön.
+        versionCode System.getenv('VERSION_CODE') ? System.getenv('VERSION_CODE').toInteger() : 3
+        versionName '120.15'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // Fix aláíró kulcs, hogy minden CI-build ugyanazzal az aláírással készüljön,
+    // és az Obtainium/Android ütközés nélkül tudjon frissíteni. (Saját használatra
+    // szánt kulcs, ismert jelszóval – nem érzékeny titok.)
+    signingConfigs {
+        stable {
+            storeFile file('mytrainer.keystore')
+            storePassword 'android'
+            keyAlias 'mytrainer'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.stable
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.stable
+        }
+    }
+
+    testOptions {
+        // Az android.jar itt csak csonk. A returnDefaultValues miatt a hívásai
+        // némán 0-t/null-t adnak vissza kivétel helyett – ez a JSON-osztályokra
+        // is áll! Ezért a tesztelt logika mindig sima Java bemenetet kapjon
+        // (tömb, lista), különben a teszt üres adaton futna, és hazudna.
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    // Csak egységteszthez (az APK-ba nem kerül bele). Az ételfelismerés logikáját
+    // fedi le: ott már kétszer csúszott be hiba, amit ránézésre nehéz észrevenni.
+    testImplementation 'junit:junit:4.13.2'
+}

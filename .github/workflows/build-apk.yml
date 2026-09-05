@@ -1,0 +1,139 @@
+name: APK build
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Compute versionCode
+        # Minden buildnél növekvő versionCode, hogy az Android frissítésként telepítse.
+        run: echo "VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+
+      - name: Fetch generated artwork
+        # A Higgsfielddel generált látványos háttér- és fejlécképeket a build
+        # gépe tölti le (a fejlesztői sandbox nem éri el a CDN-t). Ha egy URL
+        # nem elérhető, az app kódból rajzolt gradienssel esik vissza.
+        run: |
+          mkdir -p app/src/main/res/drawable
+          dl() {
+            url="$1"; out="app/src/main/res/drawable/$2"
+            if curl -fsSL "$url" -o "$out.tmp"; then
+              if head -c 4 "$out.tmp" | grep -q "PNG"; then
+                mv "$out.tmp" "$out"; echo "OK: $out"
+              else
+                echo "NEM PNG: $out"; rm -f "$out.tmp"
+              fi
+            else
+              echo "SIKERTELEN letöltés: $url"; rm -f "$out.tmp"
+            fi
+          }
+          # Grit karmazsin/bordó témájú hátterek (2026-07-24-i Higgsfield-generálás).
+          GYM="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_164927_2d4f1c90-97f6-404c-9168-1f38ffda6738.png"
+          RUN="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165456_93cf9056-1916-4b99-a93b-7034d02d5df8.png"
+          TRO="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165303_3556b778-152e-4f05-a0de-6d857b903504.png"
+          BAR="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165649_b8d7b23f-9127-4913-850b-65a7d08b29cf.png"
+          ABS="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_165902_e5d94bca-333c-4065-a062-0c8719050cab.png"
+          # Blaze, a saját gyártású kabalafigura (Duolingo-stílusú lapos maszkot).
+          BLZ="https://d8j0ntlcm91z4.cloudfront.net/user_3E8vVcFnmJOikmDhehEJUMZ0uUq/hf_20260724_181540_4d4f2826-defd-4541-92c9-7034542ad4d8.png"
+          dl "$GYM" "bg_main.png"
+          dl "$RUN" "hero_run.png"
+          dl "$TRO" "bg_stats.png"
+          dl "$ABS" "bg_profile.png"
+          dl "$ABS" "bg_mobility.png"
+          dl "$BAR" "bg_library.png"
+          dl "$TRO" "bg_history.png"
+          dl "$ABS" "bg_reminders.png"
+          dl "$ABS" "bg_settings.png"
+          dl "$BAR" "bg_workout.png"
+          dl "$BAR" "bg_main2.png"
+          dl "$ABS" "bg_main3.png"
+          dl "$GYM" "bg_main4.png"
+          dl "$BLZ" "blaze.png"
+          # PNG → WebP a jóval kisebb APK-ért (a háttérképek nagyok). Ha a cwebp
+          # nem elérhető vagy hibázik, marad a PNG – így a build sosem törik el.
+          if ! command -v cwebp >/dev/null 2>&1; then sudo apt-get update -qq && sudo apt-get install -y -qq webp || true; fi
+          for f in app/src/main/res/drawable/*.png; do
+            [ -e "$f" ] || continue
+            if cwebp -quiet -q 80 "$f" -o "${f%.png}.webp"; then rm -f "$f"; echo "WebP: ${f%.png}.webp"; else echo "cwebp hiba, marad PNG: $f"; fi
+          done
+          ls -la app/src/main/res/drawable/ || true
+
+      - name: Import check
+        run: python3 tools/importcheck.py
+
+      - name: Unit tests
+        # Az ételfelismerés logikáját fedik. Ha elhasalnak, ne készüljön APK:
+        # ott csendben, ránézésre nehezen észrevehetően romlik el a számolás.
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Prepare APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk out/My-Trainer.apk
+          ls -la out
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: My-Trainer-apk
+          path: out/My-Trainer.apk
+          if-no-files-found: error
+
+      # A release szövegébe a commit címsora kerül: az Obtainium-értesítésben
+      # így rögtön látszik, MI változott – nem kell hozzá a git-történet.
+      - name: Commit subject for release notes
+        run: echo "COMMIT_SUBJECT=$(git log -1 --pretty=%s)" >> "$GITHUB_ENV"
+
+      - name: Publish APK to Release
+        if: >-
+          github.ref == 'refs/heads/claude/busy-cori-yjd6to' ||
+          github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          # Egyedi tag minden buildnél, hogy az Obtainium új verzióként lássa.
+          # A GitHub "latest release" mindig a legújabbra mutat, így a fix
+          # .../releases/latest link is működik.
+          tag_name: build-${{ github.run_number }}
+          name: "Grit – build ${{ github.run_number }}"
+          # A tag a TÉNYLEGESEN buildelt commitra mutasson, ne a mainre: a
+          # GitHub a release created_at-jét a célzott commit dátumából
+          # veszi, és mivel a main július 6. óta állt, MINDEN kiadás
+          # azonos dátumúnak látszott – az Obtainium ezért nem tudta,
+          # melyik a legújabb, és a build-999-nél ragadt.
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          body: |
+            Grit automatikus build (v120.15, build ${{ github.run_number }}).
+
+            **Mi változott:** ${{ env.COMMIT_SUBJECT }}
+
+            Obtainiummal magától frissül. Kézi telepítéshez töltsd le a
+            **My-Trainer.apk** fájlt, és engedélyezd az „ismeretlen forrásból"
+            való telepítést.
+          files: out/My-Trainer.apk
