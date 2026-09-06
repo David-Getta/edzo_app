@@ -3843,6 +3843,24 @@ public final class Foods {
             sz.appendTail(szb);
             query = szb.toString();
         }
+        // A SZORZATOS tömeg is szorzat: a „két kis tábla csoki (2x40 g)"
+        // negyven grammként ment be a nyolcvan helyett – a „2x40 g" a
+        // darabszám és a darabsúly, egyben.
+        {
+            java.util.regex.Matcher xg = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}\\d,.])(\\d{1,2})\\s?[x\u00d7]\\s?(\\d{1,4})"
+                    + "\\s?(g|gr|gramm|dkg|deka|ml|dl)(?![\\p{L}])").matcher(query);
+            StringBuffer xb = new StringBuffer();
+            while (xg.find()) {
+                int n = Integer.parseInt(xg.group(1)), egy = Integer.parseInt(xg.group(2));
+                String u = xg.group(3).toLowerCase();
+                if (u.startsWith("d") && !u.equals("dl")) { egy *= 10; u = "g"; }
+                xg.appendReplacement(xb, java.util.regex.Matcher
+                        .quoteReplacement((n * egy) + " " + u + " "));
+            }
+            xg.appendTail(xb);
+            query = xb.toString();
+        }
         // A DARABSZÁM szorozza a darabsúlyt: a „2 db 300 g-os pizza"
         // egyetlen 300 grammos pizzaként ment be – a másik fele lemaradt.
         {

@@ -7527,7 +7527,12 @@ public final class Activities {
             // bejegyzést.
             if (spaced && s.substring(m.end()).matches("(?s)\\s*[.!]?\\s*$")
                     && s.substring(0, m.start()).matches("(?s).*[,;]\\s*$")
-                    && s.matches("(?s).*(?<![a-z])(?:db|darab|x)\\s?\\d?.*")) continue;
+                    && (s.matches("(?s).*(?<![a-z])(?:db|darab|x)\\s?\\d?.*")
+                        // A GYAKORLAT-LISTA záró köre is kör: az „erősítés
+                        // otthon: guggolás, fekvőtámasz, plank, 3 kör"
+                        // hajnali háromra került.
+                        || StrengthParse.nameIn(s.substring(0, m.start())) != null))
+                continue;
             if (spaced && s.matches("(?s).*(?<![a-z])(?:tabata|hiit|emom"
                     + "|amrap|intervall\\w*|koredzes\\w*)(?![a-z]).*")
                     && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"

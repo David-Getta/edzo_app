@@ -649,4 +649,16 @@ public class FoodsQuantityTest {
         assertEquals(300.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
                 "Pizza, 3 vékony szelet").get(0).grams, 0.01);
     }
+    /**
+     * A szorzatos tömeg is szorzat.
+     *
+     * A „két kis tábla csoki (2x40 g)" negyven grammként ment be a
+     * nyolcvan helyett – a „2x40 g" a darabszám és a darabsúly egyben.
+     */
+    @Test public void aTimesGramProductIsMultiplied() {
+        assertEquals(80.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Két kis tábla csoki (2x40 g) az irodában").get(0).grams, 0.01);
+        assertEquals(75.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "3x25 g mogyoró napközben").get(0).grams, 0.01);
+    }
 }

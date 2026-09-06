@@ -10555,4 +10555,16 @@ public class ActivitiesParseTest {
                 + "5 kör").hour);
         assertEquals(7, Activities.parse("Reggel 7 kor futás 5 km").hour);
     }
+    /**
+     * A gyakorlat-lista záró köre kör, nem óra.
+     *
+     * Az „erősítés otthon: guggolás, fekvőtámasz, plank, 3 kör" hajnali
+     * háromra tette a bejegyzést.
+     */
+    @Test public void aListFinalRoundCountIsNotAnHour() {
+        Activities.Parsed p = Activities.parse("Reggel 40 perc erősítés otthon: "
+                + "guggolás, fekvőtámasz, plank, 3 kör");
+        assertEquals(8, p.hour);
+        assertEquals(40, p.plans.get(0).minutes);
+    }
 }
