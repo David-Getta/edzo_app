@@ -2948,6 +2948,11 @@ public final class Activities {
         // táv nélküli futás maradt – a h betű miatt egyik táv-szabály sem
         // ismerte fel.
         s = s.replaceAll("(?<![a-z])(fel|negyed)?\\s?marathon", "$1maraton");
+        // A TEREMFOCI foci: az „1 óra teremfoci" egy hatvanperces kondi ÉS
+        // egy kilencvenperces foci lett – a terem a helyszín, a foci a
+        // sport. Ugyanígy a teremkerékpár és a teremúszás.
+        s = s.replaceAll("(?<![a-z])terem\\s?(foci|kerekpar|uszas|roplabda|kezilabda"
+                + "|tenisz|kosar)", "$1");
         // Az OSZTÓ PERC két alkalomé: a „bicikliztem be a munkába és haza,
         // 2x8 km, kb 25-25 perc" huszonöt perces bringa lett az ötven
         // helyett. Két útnál (oda-vissza, és haza, 2x) a kétszerese.

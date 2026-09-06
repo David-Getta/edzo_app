@@ -200,11 +200,15 @@ public final class Sleep {
         // Csak a LEFEKVÉS–ÉBREDÉS tartományból vonjuk le: aki azt írja, „8
         // órát aludtam, de csak fél óra után tudtam elaludni", az már a
         // valódi alvást mondta meg – abból nem jár levonás.
-        if (!s.matches("(?s).*(?<![a-z])(?:lefekud\\w*|fekudtem|fekudtunk"
-                    + "|agyban)(?![a-z]).*")
-                || !s.matches("(?s).*(?<![a-z])(?:keltem|keltunk|ebredtem"
-                    + "|felebredtem)(?![a-z]).*"))
-            return 0;
+        // A -TÓL/-IG tartomány is lefekvés–ébredés: az „aludtam 23-tól
+        // 7-ig, de csak fél óra múlva aludtam el" nyolc órát adott a hét
+        // és fél helyett.
+        boolean range = s.matches("(?s).*\\d\\s?-?tol(?![a-z]).*\\d\\s?-?ig(?![a-z]).*");
+        boolean bed = s.matches("(?s).*(?<![a-z])(?:lefekud\\w*|fekudtem|fekudtunk"
+                + "|agyban)(?![a-z]).*");
+        boolean woke = s.matches("(?s).*(?<![a-z])(?:keltem|keltunk|ebredtem"
+                + "|felebredtem)(?![a-z]).*");
+        if (!range && !(bed && woke)) return 0;
         s = s.replaceAll("(?<![a-z])fel\\s?ora\\w*", "30 perc");
         s = Hu.digits(s);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(

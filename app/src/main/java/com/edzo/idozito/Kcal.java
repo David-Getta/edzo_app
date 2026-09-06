@@ -248,7 +248,7 @@ public final class Kcal {
                 + "|gyaloglas|kocogas|falmaszas|boxedzes"
                 // A LABDAJÁTÉK is sport: a „2 óra kosárlabda, kb 900 kcal"
                 // kilencszáza BEVITELNEK látszott, nem elégetett kalóriának.
-                + "|kosarlabda|kosar|foci\\w*|focizt\\w*|tenisz\\w*|roplabda"
+                + "|kosarlabda|kosar|foci\\w*|teremfoci|focizt\\w*|tenisz\\w*|roplabda"
                 + "|kezilabda|squash|tollas\\w*|fallabda|tanc\\w*|tancolt\\w*"
                 + "|bicikli\\w*|bringazt\\w*|tekert\\w*|evez\\w*|tura\\w*"
                 + "|jogazt\\w*|joga|pilates|zumba|aerobik|ugrokotel\\w*|boksz\\w*"

@@ -10638,4 +10638,13 @@ public class ActivitiesParseTest {
         assertEquals(2, p.count);
         assertEquals(30, p.minutes);
     }
+    /** A teremfoci foci: „1 óra teremfoci" kondi ÉS foci lett. */
+    @Test public void indoorFootballIsFootball() {
+        List<Activities.Plan> p = Activities.parse("Este 1 óra teremfoci, kb 800 "
+                + "kcal").plans;
+        assertEquals(1, p.size());
+        assertEquals("foci", p.get(0).kind.id);
+        assertEquals(60, p.get(0).minutes);
+        assertEquals(800, Kcal.burned("Este 1 óra teremfoci, kb 800 kcal"));
+    }
 }

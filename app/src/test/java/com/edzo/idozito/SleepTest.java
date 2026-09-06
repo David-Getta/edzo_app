@@ -618,4 +618,10 @@ public class SleepTest {
                 0.01);
         assertEquals(6, Sleep.parse("Éjjel hatot aludtam"), 0.01);
     }
+    /** A -tól/-ig tartományból is levonjuk az elalvásig eltelt időt. */
+    @Test public void theRangeFormAlsoSubtractsTheTimeToFallAsleep() {
+        assertEquals(7.5, Sleep.parse("Aludtam 23-tól 7-ig, de csak fél óra múlva "
+                + "aludtam el"), 0.01);
+        assertEquals(8, Sleep.parse("Aludtam 23-tól 7-ig"), 0.01);
+    }
 }

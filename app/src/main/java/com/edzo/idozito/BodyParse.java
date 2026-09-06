@@ -329,6 +329,13 @@ public final class BodyParse {
         // méréséből semmi nem lett – a kötőjel a kilóhoz tapadt, és a
         // szám elveszett. A „10-kor" kötőjele szóköz nélkül marad, ami.
         q = q.replaceAll("\\s+[\u2013\u2014-]\\s+", ", ");
+        // A HOLNAPI REMÉNY nem mérés: a „ma 77,7 kg, tegnap 78,1, holnap
+        // remélem 77,5" méréséből semmi nem lett – a remélt szám is
+        // számnak látszott. A jövő tagmondata kiesik, ha van kimondott
+        // kilós mérés.
+        if (q.matches("(?s).*\\d\\s?(?:kg|kil[oó]).*"))
+            q = q.replaceAll("(?iu)[,;][^,;.]*(?<![\\p{L}])(?:holnap\\p{L}*|rem[eé]l\\p{L}*"
+                    + "|j[oö]v[oő]\\s+h[eé]t\\p{L}*|holnapra)(?![\\p{L}])[^,;.]*", " ");
         // Az ELŐJELES különbség nem mérés: a „ma 74,8 kg, hétfő óta -1,2"
         // méréséből semmi nem lett – a mínusz egy egész kettő is számnak
         // látszott, és két szám közül a mérés-olvasó egyiket sem

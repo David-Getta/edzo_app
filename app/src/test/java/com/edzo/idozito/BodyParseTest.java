@@ -1504,4 +1504,8 @@ public class BodyParseTest {
         kg("S\u00faly 82,3 kg (+0,4)", 82.3);
         kg("Ma 78 kg, ez -3 kg janu\u00e1r \u00f3ta", 78);
     }
+    /** A holnapi remény nem mérés: „holnap remélem 77,5" elvitte az egészet. */
+    @Test public void tomorrowsHopeIsNotAReading() {
+        kg("Ma 77,7 kg, tegnap 78,1, holnap rem\u00e9lem 77,5", 77.7);
+    }
 }
