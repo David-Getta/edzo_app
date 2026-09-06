@@ -612,4 +612,10 @@ public class SleepTest {
         assertEquals(7, Sleep.parse("Aludtam éjféltől 7-ig"), 0.01);
         assertEquals(8, Sleep.parse("11 és 7 között aludtam"), 0.01);
     }
+    /** A kiírt tárgyragos számnév is óra: „éjjel meg hetet" eddig elveszett. */
+    @Test public void aSpelledOutAccusativeNumberIsHoursToo() {
+        assertEquals(8, Sleep.parse("Aludtam délután egy órát, éjjel meg hetet"),
+                0.01);
+        assertEquals(6, Sleep.parse("Éjjel hatot aludtam"), 0.01);
+    }
 }

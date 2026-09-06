@@ -2730,4 +2730,12 @@ public class StrengthParseTest {
         assertEquals(8, it.get(0).sets.size());
         assertEquals(30.0, it.get(0).topWeight(), 0.01);
     }
+    /** A „döntött" pad ferde fekvenyomás: a „döntött 3x10 25 kg-os" kimaradt. */
+    @Test public void dontottIsAnInclinePress() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 3x8 70 kg, "
+                + "döntött 3x10 25 kg-os kézisúlyzókkal");
+        assertEquals(2, it.size());
+        assertEquals("Ferde fekvenyomás", it.get(1).name);
+        assertEquals(25.0, it.get(1).topWeight(), 0.01);
+    }
 }

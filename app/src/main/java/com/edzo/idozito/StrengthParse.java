@@ -96,8 +96,9 @@ public final class StrengthParse {
             {"Bolgár kitörés", "bolgar kitores", "bolgar guggolas", "bolgar split",
                     "bolgar szplit"},
             {"Ferde fekvenyomás", "ferde fekvenyom", "ferde pad", "ferde nyomas",
-                    // Az egybeírt „ferdepad 3x10" eddig kimaradt.
-                    "incline", "ferdepad"},
+                    // Az egybeírt „ferdepad 3x10" eddig kimaradt, ahogy a
+                    // „döntött 3x10 25 kg-os kézisúlyzókkal" döntött padja is.
+                    "incline", "ferdepad", "dontott pad", "dontott"},
             // A „holt emelés" külön írva is ugyanaz a gyakorlat – és sokan
             // így írják. Nélküle a „holt emelés 1x5 140 kg" mondatból SEMMI
             // nem lett: se sorozat, se edzés.

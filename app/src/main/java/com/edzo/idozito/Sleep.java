@@ -127,8 +127,22 @@ public final class Sleep {
         String hq = q;
         if (q != null) {
             String n = Hu.digits(Foods.norm(q));
+            // A számnév-fordító a „hetet"-ből puszta „7"-et csinál, ezért a
+            // tagmondat végén álló csupasz szám is óra.
             n = n.replaceAll("(?<![a-z])(ejjel|ejszaka)\\s+(?:meg\\s+|pedig\\s+)?"
-                    + "(\\d{1,2})\\s?-?o?t(?![a-z])", "$1 $2 orat");
+                    + "(\\d{1,2})(?:\\s?-?[eao\u00f6]?t(?![a-z])|(?=\\s*(?:[,;.!]|$)))",
+                    "$1 $2 orat");
+            // A KIÍRT tárgyragos számnév ugyanez: az „aludtam délután egy
+            // órát, éjjel meg hetet" hetese eddig elveszett – a „hetet"
+            // nem szám, nem óra.
+            {
+                String[][] acc = {{"egyet", "1"}, {"kettot", "2"}, {"harmat", "3"},
+                        {"negyet", "4"}, {"otot", "5"}, {"hatot", "6"}, {"hetet", "7"},
+                        {"nyolcat", "8"}, {"kilencet", "9"}, {"tizet", "10"}};
+                for (String[] a : acc)
+                    n = n.replaceAll("(?<![a-z])(ejjel|ejszaka)\\s+(?:meg\\s+|pedig\\s+)?"
+                            + a[0] + "(?![a-z])", "$1 " + a[1] + " orat");
+            }
             // Az ÉJFÉL nulla óra a tartományban: az „aludtam éjféltől 7-ig"
             // és az „éjfél és 7 között aludtam" hét órája eddig elveszett.
             n = n.replaceAll("(?<![a-z])ejfeltol(?![a-z])", "0-tol");
