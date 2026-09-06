@@ -3664,6 +3664,14 @@ public final class Foods {
             rp.appendTail(rb);
             query = rb.toString();
         }
+        // A JELZŐS ŰRMÉRTÉK is mennyiség: az „egy 0,33-as sört és egy 2
+        // dl-es bort" söre és bora alapadag maradt – a 0,33-as a
+        // háromdecis üveg, a 2 dl-es a pohár.
+        query = query.replaceAll("(?iu)(?<![\\d,.])(\\d(?:[.,]\\d{1,2})?)\\s?"
+                + "(l|dl|ml|liter)-?[eao\u00f6]s(?![\\p{L}])", "$1 $2");
+        query = query.replaceAll("(?iu)(?<![\\d,.])(0[.,]\\d{1,2})-?[eao\u00f6]s(?![\\p{L}])"
+                + "(?=\\s+(?:s[oö]r|[uü]d[ií]t[oő]|k[oó]l|v[ií]z|energiaital"
+                + "|limon[aá]d|t[oö]m[eé]ny|bor))", "$1 l");
         // A TEJCSOKI csoki: a „fél tábla tejcsoki és egy pohár tej" teje
         // elveszett, mert a tej szava a tejcsoki belsejében már elkelt,
         // és egy étel csak egyszer kerül elő. A jelző elhagyva a csoki

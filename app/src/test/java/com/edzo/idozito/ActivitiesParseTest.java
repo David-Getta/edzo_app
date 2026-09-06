@@ -10601,4 +10601,18 @@ public class ActivitiesParseTest {
         for (Activities.Plan x : p) sum += x.count * x.minutes;
         assertEquals(60, sum);
     }
+    /**
+     * Az osztó perc két alkalomé.
+     *
+     * A „bicikliztem be a munkába és haza, 2x8 km, kb 25-25 perc"
+     * huszonöt perces bringa lett az ötven helyett.
+     */
+    @Test public void distributiveMinutesDoubleForTwoLegs() {
+        Activities.Plan p = Activities.parse("Bicikliztem be a munkába és "
+                + "haza, 2x8 km, kb 25-25 perc").plans.get(0);
+        assertEquals(16.0, p.km, 0.001);
+        assertEquals(50, p.minutes);
+        assertEquals(40, Activities.parse("Oda-vissza gyalog, 20-20 perc")
+                .plans.get(0).minutes);
+    }
 }

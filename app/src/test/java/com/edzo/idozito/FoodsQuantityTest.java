@@ -676,4 +676,18 @@ public class FoodsQuantityTest {
         assertEquals(150.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
                 "csirkemell 150g, rizs 200 g").get(0).grams, 0.01);
     }
+    /**
+     * A jelzős űrmérték is mennyiség.
+     *
+     * Az „egy 0,33-as sört és egy 2 dl-es bort" söre és bora alapadag
+     * maradt – a 0,33-as a háromdecis üveg, a 2 dl-es a pohár.
+     */
+    @Test public void adjectiveVolumesAreVolumes() {
+        List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Ittam egy 0,33-as sört és egy 2 dl-es bort");
+        assertEquals(330.0, h.get(0).grams, 0.01);
+        assertEquals(200.0, h.get(1).grams, 0.01);
+        assertEquals(500.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Egy 0,5-ös sör").get(0).grams, 0.01);
+    }
 }

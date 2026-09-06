@@ -2948,6 +2948,18 @@ public final class Activities {
         // táv nélküli futás maradt – a h betű miatt egyik táv-szabály sem
         // ismerte fel.
         s = s.replaceAll("(?<![a-z])(fel|negyed)?\\s?marathon", "$1maraton");
+        // Az OSZTÓ PERC két alkalomé: a „bicikliztem be a munkába és haza,
+        // 2x8 km, kb 25-25 perc" huszonöt perces bringa lett az ötven
+        // helyett. Két útnál (oda-vissza, és haza, 2x) a kétszerese.
+        if (s.matches("(?s).*(?<![a-z])(?:oda-?vissza|es haza|es vissza|2\\s?x"
+                + "|ketszer|mindket)(?![a-z]).*")) {
+            java.util.regex.Matcher dd = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,3})\\s?-\\s?\\1\\s?(perc)(?![a-z])")
+                    .matcher(s);
+            if (dd.find())
+                s = s.substring(0, dd.start()) + (2 * Integer.parseInt(dd.group(1)))
+                        + " " + dd.group(2) + s.substring(dd.end());
+        }
         // A TÁVBÓL sétált rész nem plusz táv: a „futás 6 km, de az utolsó
         // 2 km-t sétáltam" hat kilométer futás ÉS két kilométer séta lett
         // – nyolc kilométer hatból. Az utolsó két kilométer a hatból van:
