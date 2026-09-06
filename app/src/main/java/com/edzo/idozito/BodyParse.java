@@ -329,6 +329,14 @@ public final class BodyParse {
         // méréséből semmi nem lett – a kötőjel a kilóhoz tapadt, és a
         // szám elveszett. A „10-kor" kötőjele szóköz nélkül marad, ami.
         q = q.replaceAll("\\s+[\u2013\u2014-]\\s+", ", ");
+        // Az ELŐJELES különbség nem mérés: a „ma 74,8 kg, hétfő óta -1,2"
+        // méréséből semmi nem lett – a mínusz egy egész kettő is számnak
+        // látszott, és két szám közül a mérés-olvasó egyiket sem
+        // választja. A számhoz tapadó előjel a változásé; csak kimondott
+        // kilós mérés mellett hagyjuk el.
+        if (q.matches("(?s).*\\d\\s?(?:kg|kil[oó]).*"))
+            q = q.replaceAll("(?<![\\d,.\\p{L}])[\u2212\u2013+-]\\d{1,2}(?:[.,]\\d{1,2})?"
+                    + "(?:\\s?(?:kg|kil[oó]\\p{L}*))?(?![\\d,.])", " ");
         // A NYÍL a -ról/-ra pár: a „testsúly: 90,4 → 89,8 egy hét alatt"
         // a RÉGI számot vette – a nyíl bal oldalát –, pedig a jobb oldal
         // a mai. Ugyanígy a „->" és a „=>".

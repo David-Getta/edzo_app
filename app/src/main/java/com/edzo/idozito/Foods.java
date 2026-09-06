@@ -3672,6 +3672,10 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<![\\d,.])(0[.,]\\d{1,2})-?[eao\u00f6]s(?![\\p{L}])"
                 + "(?=\\s+(?:s[oö]r|[uü]d[ií]t[oő]|k[oó]l|v[ií]z|energiaital"
                 + "|limon[aá]d|t[oö]m[eé]ny|bor))", "$1 l");
+        // A CÉLHATÁROZÓS víz nem ivás: az „egyszer felkeltem vízért" mellé
+        // egy pohár víz került a naplóba – és az alvás-bejegyzés étkezéssé
+        // lett. Aki vízért kel fel, az még nem ivott.
+        query = query.replaceAll("(?iu)(?<!\\p{L})v[ií]z[eé]rt(?!\\p{L})", " ");
         // A TEJCSOKI csoki: a „fél tábla tejcsoki és egy pohár tej" teje
         // elveszett, mert a tej szava a tejcsoki belsejében már elkelt,
         // és egy étel csak egyszer kerül elő. A jelző elhagyva a csoki

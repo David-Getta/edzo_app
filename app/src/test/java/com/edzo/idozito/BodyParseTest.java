@@ -1493,4 +1493,15 @@ public class BodyParseTest {
         kg("Ma 82,0 kg, tegnap 82,4", 82.0);
         kg("tegnap 82,9 kg volt", 82.9);
     }
+    /**
+     * Az előjeles különbség nem mérés.
+     *
+     * A „ma 74,8 kg, hétfő óta -1,2" méréséből semmi nem lett – a
+     * mínusz egy egész kettő is számnak látszott.
+     */
+    @Test public void aSignedDifferenceIsNotAReading() {
+        kg("Ma 74,8 kg, h\u00e9tf\u0151 \u00f3ta -1,2", 74.8);
+        kg("S\u00faly 82,3 kg (+0,4)", 82.3);
+        kg("Ma 78 kg, ez -3 kg janu\u00e1r \u00f3ta", 78);
+    }
 }

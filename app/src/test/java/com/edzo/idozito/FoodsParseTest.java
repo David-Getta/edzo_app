@@ -3405,4 +3405,16 @@ public class FoodsParseTest {
         // A későbbi előfordulás továbbra is megkapja a számot.
         assertEquals(1500.0, hits("sörözés: 3 korsó sör").get(0).grams, 0.01);
     }
+    /**
+     * A célhatározós víz nem ivás.
+     *
+     * Az „aludtam 8 óra 10 percet, egyszer felkeltem vízért" mellé egy
+     * pohár víz került, és az alvás-bejegyzés étkezéssé lett.
+     */
+    @Test public void gettingUpForWaterIsNotDrinkingIt() {
+        assertTrue(hits("Aludtam 8 óra 10 percet, egyszer felkeltem vízért")
+                .isEmpty());
+        assertEquals(Sentence.Kind.SLEEP, Sentence.of("Aludtam 8 óra 10 percet, "
+                + "egyszer felkeltem vízért", DB, 0L));
+    }
 }
