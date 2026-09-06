@@ -1385,7 +1385,10 @@ public final class Activities {
         // kilencven perc a valódi hatvan helyett. A lista jobbról balra
         // öröklődik, ezért a csere addig fut, amíg van mit írni.
         for (int gi = 0; gi < 4; gi++) {
-            String g = s.replaceAll("(?<![\\d,.])(\\d{1,3})\\s*"
+            // A SOROZAT ismétlésszáma nem a lista tagja: a „guggolás 3x40,
+            // 25 perc" negyvenese percet kapott, és a kondi negyven perces
+            // lett a huszonöt helyett.
+            String g = s.replaceAll("(?<![\\d,.x×])(?<![x×]\\s)(\\d{1,3})\\s*"
                     + "(?=,\\s*(?:\\p{L}{2,12}\\s+){0,2}?"
                     + "\\d{1,3}\\s?perc(?:et|re|ig)?(?![a-z]))", "$1 perc");
             if (g.equals(s)) break;

@@ -10583,4 +10583,22 @@ public class ActivitiesParseTest {
         assertEquals(8.5, p.get(0).km, 0.001);
         assertEquals(1.5, p.get(1).km, 0.001);
     }
+    /**
+     * A sorozat ismétlésszáma nem a perc-lista tagja.
+     *
+     * A „guggolás 3x40, 25 perc" negyvenese percet kapott a lista-terítő
+     * szabálytól, és a kondi negyven perces lett a huszonöt helyett.
+     */
+    @Test public void repsBeforeACommaAreNotMinutes() {
+        assertEquals(25, Activities.parse("Guggolás 3x40, 25 perc")
+                .plans.get(0).minutes);
+        assertEquals(30, Activities.parse("Fekvőtámasz 3x30, felülés 3x40, "
+                + "guggolás 3x40, 30 perc").plans.get(0).minutes);
+        // A valódi perc-lista változatlan.
+        List<Activities.Plan> p = Activities.parse("kutyát sétáltattam "
+                + "háromszor: reggel 20, délben 10, este 30 perc").plans;
+        int sum = 0;
+        for (Activities.Plan x : p) sum += x.count * x.minutes;
+        assertEquals(60, sum);
+    }
 }

@@ -3386,4 +3386,23 @@ public class FoodsParseTest {
         assertEquals(800.0, hits("Ebédre gulyás 2 tányérral").get(0).grams, 0.01);
         assertEquals(800.0, hits("Gulyásból 2 tányérral ettem").get(0).grams, 0.01);
     }
+    /**
+     * A másik étel nevében ülő tő nem a miénk.
+     *
+     * Az „1 zsemle sajttal, 2 db rántott sajt" kettője a trappistáé lett
+     * – a „rántott sajt" belsejéből –, a rántott sajt meg egy adag maradt.
+     */
+    @Test public void aStemInsideAnotherFoodsNameDoesNotTakeItsCount() {
+        List<Foods.Hit> h = hits("Reggeli: 1 zsemle sajttal és 1 kefir, ebéd: "
+                + "2 db rántott sajt hasábbal");
+        double sajt = 0, rantott = 0;
+        for (Foods.Hit x : h) {
+            if (x.food.name.startsWith("Sajt (")) sajt = x.grams;
+            if (x.food.name.equals("Rántott sajt")) rantott = x.grams;
+        }
+        assertEquals(0.0, sajt, 0.01);
+        assertEquals(240.0, rantott, 0.01);
+        // A későbbi előfordulás továbbra is megkapja a számot.
+        assertEquals(1500.0, hits("sörözés: 3 korsó sör").get(0).grams, 0.01);
+    }
 }

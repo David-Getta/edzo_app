@@ -4134,6 +4134,18 @@ public final class Foods {
                         if (ns.isEmpty()) continue;
                         int p2 = q.indexOf(ns, numEnd);
                         if (p2 < 0) continue;
+                        // A MÁSIK ÉTEL NEVÉBEN ülő tő nem a miénk: az „1
+                        // zsemle sajttal, 2 db rántott sajt" kettője a
+                        // trappistáé lett – a „rántott sajt" belsejéből.
+                        boolean inside = false;
+                        for (int k2 = 0; k2 < foods.size(); k2++)
+                            if (k2 != k && foodPos.get(k2) >= 0
+                                    && foodPos.get(k2) <= p2
+                                    && p2 < foodPos.get(k2) + foodLen.get(k2)) {
+                                inside = true;
+                                break;
+                            }
+                        if (inside) continue;
                         between = countWordAt(q, numEnd, p2);
                         if (between != null) break;
                     }
