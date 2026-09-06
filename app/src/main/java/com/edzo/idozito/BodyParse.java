@@ -290,7 +290,11 @@ public final class BodyParse {
                 + "(?<![a-z])(?:tegnap|tegnapelott|multkor)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:tegnapelott|tegnap|multkor)(?![a-z])"
                     + "[^,;.\\d]{0,12}?\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
-                    + "(?:(?:kg|kilo|cm|centi|%|szazalek)\\w*|volt(?![a-z]))"
+                    + "(?:(?:kg|kilo|cm|centi|%|szazalek)\\w*|volt(?![a-z])"
+                    // A PUSZTA szám is a tegnapé, ha a tagmondat vele zárul:
+                    // a „ma reggel 82,0 kg, tegnap 82,4, tegnapelőtt 82,9"
+                    // három száma közül egyik sem lett mérés.
+                    + "|(?=\\s*(?:[,;.]|$)))"
                     + "(?:\\s?volt(?![a-z]))?", "");
         // A NAPNÉV utáni „még N" is a múlt: a „reggel 81,2 kg – hétfőn még
         // 82" két száma közül a mérés-olvasó egyiket sem választotta, és

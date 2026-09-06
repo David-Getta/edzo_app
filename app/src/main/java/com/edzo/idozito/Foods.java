@@ -4056,9 +4056,31 @@ public final class Foods {
         for (int n = 0; n < numPos.size(); n++) {
             int bestIdx = -1, bestDist = Integer.MAX_VALUE;
             for (int k = 0; k < foods.size(); k++) {
-                if (grams[k] > 0 || foodPos.get(k) < 0) continue;
+                if (foodPos.get(k) < 0) continue;
+                // A KÉSŐBBI EMLÍTÉS is az ételé: az „egy nagy tál müzli
+                // tejjel, kb 80 g müzli" nyolcvan grammja a második müzli
+                // mellett állt, az étel tárolt helye viszont az elsőé, és a
+                // szám nem talált oda – a „nagy tál" becslése maradt. A
+                // szám UTÁN közvetlenül álló ismételt név a kimondott
+                // gramm, az a becslést is felülírja.
+                boolean direct = false;
+                // Csak ISMÉTELT említésre: a „tészta 100 g sonkával" sonkája
+                // első említés, ott a hátrakötött gramm a tésztáé marad.
+                for (String ns : foodPos.get(k) < numPos.get(n)
+                        ? foods.get(k).nstems : new String[0]) {
+                    if (ns.isEmpty()) continue;
+                    int p2 = q.indexOf(ns, numPos.get(n));
+                    if (p2 < 0 || p2 <= foodPos.get(k)) continue;
+                    String gap = q.substring(numPos.get(n), p2);
+                    if (gap.matches("\\d+(?:[.,]\\d+)?\\s?(?:g|gr|gramm|dkg|deka|ml|dl)\\s+")) {
+                        direct = true;
+                        break;
+                    }
+                }
+                if (grams[k] > 0 && !direct) continue;
                 int from = foodPos.get(k), to = from + foodLen.get(k);
-                int d = Math.min(Math.abs(from - numPos.get(n)), Math.abs(to - numPos.get(n)));
+                int d = direct ? 0 : Math.min(Math.abs(from - numPos.get(n)),
+                        Math.abs(to - numPos.get(n)));
                 // Csak a szám saját tagmondatán belül keresünk ételt – egy
                 // kivétellel. A MONDAT VÉGÉRE vetett mennyiség a fogásé
                 // akkor is, ha közben csak kísérők jönnek: az „ebéd:
@@ -4066,7 +4088,7 @@ public final class Foods {
                 // kilója a SAVANYÚSÁGRA került (fél kiló uborka egy adag
                 // pörkölt mellé). A kísérő ilyenkor is hátrébb sorolódik,
                 // a saját tagmondatában álló valódi fogás pedig előrébb.
-                if (clause[foodPos.get(k)] != clause[numPos.get(n)]) {
+                if (!direct && clause[foodPos.get(k)] != clause[numPos.get(n)]) {
                     if (numPos.get(n) < to
                             || instrumentalAt(q, from, foodLen.get(k))
                             || !q.substring(numPos.get(n)).matches("\\s*\\d+"

@@ -661,4 +661,19 @@ public class FoodsQuantityTest {
         assertEquals(75.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
                 "3x25 g mogyoró napközben").get(0).grams, 0.01);
     }
+    /**
+     * A későbbi említés grammja is az ételé, és felülírja a becslést.
+     *
+     * Az „egy nagy tál müzli tejjel, kb 80 g müzli" nyolcvan grammja a
+     * második müzli mellett állt, az étel tárolt helye az elsőé volt – a
+     * „nagy tál" becslése (60 g) maradt.
+     */
+    @Test public void aLaterMentionWithGramsWinsOverTheEstimate() {
+        List<Foods.Hit> h = Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Egy nagy tál müzli tejjel, kb 80 g müzli");
+        assertEquals("Müzli", h.get(0).food.name);
+        assertEquals(80.0, h.get(0).grams, 0.01);
+        assertEquals(150.0, Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "csirkemell 150g, rizs 200 g").get(0).grams, 0.01);
+    }
 }

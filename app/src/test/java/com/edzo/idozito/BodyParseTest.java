@@ -1482,4 +1482,15 @@ public class BodyParseTest {
         BodyParse.Body b = BodyParse.parse("Der\u00e9kb\u0151s\u00e9g 92 \u2192 88 cm");
         assertEquals(88, b.cm[0], 0.01);
     }
+    /**
+     * A tegnapi puszta szám is a tegnapé, ha a tagmondat vele zárul.
+     *
+     * A „ma reggel 82,0 kg, tegnap 82,4, tegnapelőtt 82,9" három száma
+     * közül egyik sem lett mérés.
+     */
+    @Test public void bareYesterdayNumbersAtClauseEndAreThePast() {
+        kg("Ma reggel 82,0 kg, tegnap 82,4, tegnapel\u0151tt 82,9", 82.0);
+        kg("Ma 82,0 kg, tegnap 82,4", 82.0);
+        kg("tegnap 82,9 kg volt", 82.9);
+    }
 }
