@@ -3672,6 +3672,15 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<![\\d,.])(0[.,]\\d{1,2})-?[eao\u00f6]s(?![\\p{L}])"
                 + "(?=\\s+(?:s[oö]r|[uü]d[ií]t[oő]|k[oó]l|v[ií]z|energiaital"
                 + "|limon[aá]d|t[oö]m[eé]ny|bor))", "$1 l");
+        // A JOGHURTOS ÖNTET joghurtja az öntet: az „1 dl joghurtos öntet"
+        // mellé egy deci joghurt is bekerült. A jelző elmarad, az öntet
+        // marad öntet – a külön joghurt („és egy joghurt desszertnek")
+        // viszont joghurt.
+        // (A mennyiség ekkorra már a jelző és az öntet közé költözhetett:
+        // „joghurtos 1 dl öntet".)
+        query = query.replaceAll("(?iu)(?<!\\p{L})joghurtos(?=\\s+(?:\\d[\\d,.]*\\s?"
+                + "(?:dl|ml|g|gr|gramm|kan[aá]l\\p{L}*|ev[oő]kan[aá]l\\p{L}*)\\s+)?"
+                + "[o\u00f6]ntet)", "");
         // A CÉLHATÁROZÓS víz nem ivás: az „egyszer felkeltem vízért" mellé
         // egy pohár víz került a naplóba – és az alvás-bejegyzés étkezéssé
         // lett. Aki vízért kel fel, az még nem ivott.

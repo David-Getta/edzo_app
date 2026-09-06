@@ -3417,4 +3417,15 @@ public class FoodsParseTest {
         assertEquals(Sentence.Kind.SLEEP, Sentence.of("Aludtam 8 óra 10 percet, "
                 + "egyszer felkeltem vízért", DB, 0L));
     }
+    /** A joghurtos öntet joghurtja az öntet: „1 dl joghurtos öntet" egy tétel. */
+    @Test public void yogurtDressingIsNotAlsoYogurt() {
+        List<Foods.Hit> h = hits("Ebéd: sült csirkemell 200 g, párolt rizs 150 g, "
+                + "1 dl joghurtos öntet");
+        assertEquals(3, h.size());
+        assertEquals("Joghurtos öntet", h.get(2).food.name);
+        assertEquals(100.0, h.get(2).grams, 0.01);
+        // A külön joghurt viszont joghurt.
+        assertEquals(3, hits("Saláta joghurtos öntettel és egy joghurt desszertnek")
+                .size());
+    }
 }
