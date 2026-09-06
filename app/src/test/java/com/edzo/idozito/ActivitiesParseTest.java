@@ -10647,4 +10647,16 @@ public class ActivitiesParseTest {
         assertEquals(60, p.get(0).minutes);
         assertEquals(800, Kcal.burned("Este 1 óra teremfoci, kb 800 kcal"));
     }
+    /**
+     * Az összesen a részek összege, nem harmadik táv.
+     *
+     * A „reggel 6 km, este 4 km futás, összesen 10 km" tíz ÉS hat
+     * kilométer futás lett – tizenhat a tízből.
+     */
+    @Test public void aTotalEqualToThePartsIsNotAThirdDistance() {
+        double sum = 0;
+        for (Activities.Plan p : Activities.parse("Reggel 6 km, este 4 km futás, "
+                + "összesen 10 km").plans) sum += p.count * p.km;
+        assertEquals(10.0, sum, 0.001);
+    }
 }

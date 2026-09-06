@@ -2748,4 +2748,12 @@ public class StrengthParseTest {
         assertEquals(7, it.get(0).sets.size());
         assertEquals(110.0, it.get(0).topWeight(), 0.01);
     }
+    /** A puszta „alkar 3x15 10" alkarhajlítás. */
+    @Test public void bareAlkarIsAForearmCurl() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Kondi: bicepsz 4x10 15, "
+                + "tricepsz 4x10 25, alkar 3x15 10");
+        assertEquals(3, it.size());
+        assertEquals("Alkarhajlítás", it.get(2).name);
+        assertEquals(10.0, it.get(2).topWeight(), 0.01);
+    }
 }

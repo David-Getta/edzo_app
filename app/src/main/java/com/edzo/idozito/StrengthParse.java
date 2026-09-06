@@ -205,7 +205,8 @@ public final class StrengthParse {
             {"Lábközelítés", "labkozelit", "combkozelit", "adduktor"},
             {"Fellépés", "fellepes", "step up", "stepup"},
             // Csak a teljes szó: az „alkartámasz" plank, nem alkarhajlítás.
-            {"Alkarhajlítás", "alkarhajlit", "csuklohajlit"},
+            // A puszta „alkar 3x15 10" is alkarhajlítás – eddig kimaradt.
+            {"Alkarhajlítás", "alkarhajlit", "csuklohajlit", "alkar"},
             {"Orosz csavarás", "orosz csav", "oroszcsav", "russian twist"},
             // A név a beépített programokét követi („Fal-ülés"), hogy a
             // mondatból és a programból felvett gyakorlat egy néven éljen.

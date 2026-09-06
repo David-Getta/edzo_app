@@ -2948,6 +2948,30 @@ public final class Activities {
         // táv nélküli futás maradt – a h betű miatt egyik táv-szabály sem
         // ismerte fel.
         s = s.replaceAll("(?<![a-z])(fel|negyed)?\\s?marathon", "$1maraton");
+        // Az ÖSSZESEN a részek összege, nem harmadik táv: a „reggel 6 km,
+        // este 4 km futás, összesen 10 km" tíz ÉS hat kilométer futás lett
+        // – tizenhat a tízből. Ha az összesen mondott szám a többi táv
+        // összege, az összesen-tagmondat elmarad.
+        {
+            java.util.regex.Matcher ot = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:osszesen|osszesitve|mindosszesen|ez\\s+osszesen)\\s+"
+                    + "(\\d{1,3}(?:[.,]\\d)?)\\s?km(?![a-z])").matcher(s);
+            if (ot.find()) {
+                double total = Double.parseDouble(ot.group(1).replace(',', '.'));
+                double sum = 0;
+                java.util.regex.Matcher km = java.util.regex.Pattern.compile(
+                        "(?<![\\d,.])(\\d{1,3}(?:[.,]\\d)?)\\s?km(?![a-z])").matcher(s);
+                while (km.find())
+                    if (km.start() != ot.start(1))
+                        sum += Double.parseDouble(km.group(1).replace(',', '.'));
+                if (sum > 0 && Math.abs(sum - total) < 0.05) {
+                    int a = ot.start(), b = ot.end();
+                    while (a > 0 && s.charAt(a - 1) != ',' && s.charAt(a - 1) != ';'
+                            && s.charAt(a - 1) != '.') a--;
+                    s = s.substring(0, a) + " " + s.substring(b);
+                }
+            }
+        }
         // A TEREMFOCI foci: az „1 óra teremfoci" egy hatvanperces kondi ÉS
         // egy kilencvenperces foci lett – a terem a helyszín, a foci a
         // sport. Ugyanígy a teremkerékpár és a teremúszás.

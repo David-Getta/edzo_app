@@ -1508,4 +1508,8 @@ public class BodyParseTest {
     @Test public void tomorrowsHopeIsNotAReading() {
         kg("Ma 77,7 kg, tegnap 78,1, holnap rem\u00e9lem 77,5", 77.7);
     }
+    /** A „na jó, pont 80" a mérés megerősítése, nem másik szám. */
+    @Test public void aConfirmingFillerDoesNotHideTheReading() {
+        kg("Ma 80,0 kg \u2013 el\u0151sz\u00f6r 80 alatt... na j\u00f3, pont 80", 80);
+    }
 }
