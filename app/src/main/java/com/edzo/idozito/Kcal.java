@@ -240,7 +240,16 @@ public final class Kcal {
                 + "|elliptikus|crosstrainer|szobabicikli|evezogep|futopad"
                 + "|trener|crossfit|wod|emom|amrap|hiit"
                 + "|guggolas|fekvenyomas|holtemeles|fekvotamasz"
-                + "|gyaloglas|kocogas|falmaszas|boxedzes)(?![a-z]).*");
+                + "|gyaloglas|kocogas|falmaszas|boxedzes"
+                // A LABDAJÁTÉK is sport: a „2 óra kosárlabda, kb 900 kcal"
+                // kilencszáza BEVITELNEK látszott, nem elégetett kalóriának.
+                + "|kosarlabda|kosar|foci\\w*|focizt\\w*|tenisz\\w*|roplabda"
+                + "|kezilabda|squash|tollas\\w*|fallabda|tanc\\w*|tancolt\\w*"
+                + "|bicikli\\w*|bringazt\\w*|tekert\\w*|evez\\w*|tura\\w*"
+                + "|jogazt\\w*|joga|pilates|zumba|aerobik|ugrokotel\\w*|boksz\\w*"
+                + "|kickbox\\w*|ping-?pong|asztalitenisz|korcsolya\\w*|si|sielt\\w*"
+                + "|gorkori\\w*|hoki|kajak\\w*|kenu\\w*|szorf\\w*|kertesz\\w*"
+                + "|meccs\\w*|edzo\\w*)(?![a-z]).*");
     }
 
     /**
@@ -261,7 +270,8 @@ public final class Kcal {
                 if (w.matcher(s).find()) { strongCue = true; break; }
             if (!strongCue) for (String w : new String[]{"polar", "garmin",
                     "suunto", "fitbit", "strava", "apple watch", "coros",
-                    "aktiv kalori", "atlag hr", "atlagpulzus", "kal ment el"})
+                    "aktiv kalori", "atlag hr", "atlagpulzus", "kal ment el",
+                    "ora szerint", "az ora", "oram szerint"})
                 if (s.contains(w)) { strongCue = true; break; }
             if (!sportCue && !strongCue) return -1;
             // A NAPLÓ-LISTA elöl álló kalóriája bevitel (lásd

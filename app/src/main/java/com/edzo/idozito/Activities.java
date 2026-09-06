@@ -2945,6 +2945,30 @@ public final class Activities {
         // táv nélküli futás maradt – a h betű miatt egyik táv-szabály sem
         // ismerte fel.
         s = s.replaceAll("(?<![a-z])(fel|negyed)?\\s?marathon", "$1maraton");
+        // A TÁVBÓL sétált rész nem plusz táv: a „futás 6 km, de az utolsó
+        // 2 km-t sétáltam" hat kilométer futás ÉS két kilométer séta lett
+        // – nyolc kilométer hatból. Az utolsó két kilométer a hatból van:
+        // négy futás, kettő séta. Az „ebből 2 km séta" ugyanez.
+        {
+            java.util.regex.Matcher ks = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,3}(?:[.,]\\d)?)\\s?km(-?t)?((?:\\s+[a-z]+){0,2}?)"
+                    + "\\s*,\\s*(?:de\\s+(?:ebbol\\s+)?(?:az\\s+)?(?:utolso\\s+)?"
+                    + "|ebbol\\s+(?:az\\s+)?(?:utolso\\s+)?|az\\s+utolso\\s+|utolso\\s+)"
+                    + "(\\d{1,3}(?:[.,]\\d)?)\\s?km(?:-?e?t)?\\s+(setaltam|gyalogoltam"
+                    + "|seta|gyaloglas|toltam|toltuk)(?![a-z])").matcher(s);
+            if (ks.find()) {
+                double all = Double.parseDouble(ks.group(1).replace(',', '.'));
+                double part = Double.parseDouble(ks.group(4).replace(',', '.'));
+                if (part < all) {
+                    String rest = String.valueOf(all - part).replace(".0", "")
+                            .replace('.', ',');
+                    s = s.substring(0, ks.start()) + rest + " km"
+                            + (ks.group(2) == null ? "" : ks.group(2)) + ks.group(3)
+                            + ", " + ks.group(4) + " km " + ks.group(5)
+                            + s.substring(ks.end());
+                }
+            }
+        }
         // A KÜSZÖB utáni „pontosan" a valódi lépésszám: a „ma 10 000 lépés
         // felett, pontosan 11 340" tízezer lépésként ment be – a kerek
         // küszöb nyert a kimondott pontos szám helyett.

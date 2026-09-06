@@ -693,4 +693,16 @@ public class KcalTest {
         assertEquals(-1, Kcal.protein("A fehérje kevés volt, 2100 "
                 + "kcal ment be."));
     }
+    /**
+     * A labdajáték kalóriája is elégetett.
+     *
+     * A „2 óra kosárlabda, kb 900 kcal" kilencszáza bevitelnek látszott.
+     */
+    @Test public void ballSportCaloriesAreBurned() {
+        assertEquals(900, Kcal.burned("2 óra kosárlabda, kb 900 kcal"));
+        assertEquals(600, Kcal.burned("1 óra tenisz, 600 kcal az óra szerint"));
+        // Az ebéd kalóriája bevitel marad a foci mellett is.
+        assertEquals(650, Kcal.stated("Ebéd 650 kcal, aztán 1 óra foci"));
+        assertEquals(-1, Kcal.burned("Ebéd 650 kcal, aztán 1 óra foci"));
+    }
 }

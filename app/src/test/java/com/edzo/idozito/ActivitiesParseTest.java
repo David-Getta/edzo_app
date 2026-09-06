@@ -10567,4 +10567,20 @@ public class ActivitiesParseTest {
         assertEquals(8, p.hour);
         assertEquals(40, p.plans.get(0).minutes);
     }
+    /**
+     * A távból sétált rész nem plusz táv.
+     *
+     * A „futás 6 km, de az utolsó 2 km-t sétáltam" hat kilométer futás
+     * ÉS két kilométer séta lett – nyolc kilométer hatból.
+     */
+    @Test public void theWalkedPartComesOutOfTheRun() {
+        List<Activities.Plan> p = Activities.parse("Futás 6 km, de az utolsó "
+                + "2 km-t sétáltam").plans;
+        assertEquals(2, p.size());
+        assertEquals(4.0, p.get(0).km, 0.001);
+        assertEquals(2.0, p.get(1).km, 0.001);
+        p = Activities.parse("10 km futás, az utolsó 1,5 km-t sétáltam").plans;
+        assertEquals(8.5, p.get(0).km, 0.001);
+        assertEquals(1.5, p.get(1).km, 0.001);
+    }
 }
