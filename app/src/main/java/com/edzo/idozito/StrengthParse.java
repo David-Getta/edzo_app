@@ -1245,6 +1245,13 @@ public final class StrengthParse {
                 + "(?:tarcsa|kezisulyzo|sulyzo|kettlebell|rud|golyo|lemez"
                 + "|korong)\\w*$", " kg");
         t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel|tal|tel|cal|cel)$", "");
+        // A SÚLY A SOROZAT ELŐTT is állhat: az „aztán 70 kg-mal még 2x6"
+        // folytatása eddig elveszett – a súly és a sorozat sorrendje
+        // fordított, a „még" meg közéjük ékelődött.
+        t = t.replaceAll("^(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo\\w*)?-?"
+                + "(?:mal|val|vel|nal|nel|zal|zel|tal|tel|cal|cel)?\\s+"
+                + "(?:meg\\s+|es\\s+|aztan\\s+)?(\\d{1,2}\\s?[x\u00d7]\\s?\\d{1,3})$",
+                "$2 $1 kg");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")

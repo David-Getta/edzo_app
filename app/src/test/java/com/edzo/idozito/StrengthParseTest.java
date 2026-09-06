@@ -2738,4 +2738,14 @@ public class StrengthParseTest {
         assertEquals("Ferde fekvenyomás", it.get(1).name);
         assertEquals(25.0, it.get(1).topWeight(), 0.01);
     }
+    /** A súly a sorozat előtt is állhat: „aztán 70 kg-mal még 2x6" elveszett. */
+    @Test public void weightBeforeTheSetsStillContinues() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 3x10 60 kg, "
+                + "aztán 70 kg-mal még 2x6");
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(70.0, it.get(0).sets.get(4).weight, 0.01);
+        it = StrengthParse.parse("Guggolás 5x5 100 kg, aztán 110-zel 2x3");
+        assertEquals(7, it.get(0).sets.size());
+        assertEquals(110.0, it.get(0).topWeight(), 0.01);
+    }
 }

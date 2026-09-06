@@ -5020,10 +5020,15 @@ public final class Activities {
         // Mindkét esetben a nap fele hiányzott a naplóból.
         if (out.size() == 1 && out.get(0).count == 1 && dayParts(s) >= 2) {
             Plan p = out.get(0);
-            if (mins.size() == 2) {
-                int total = mins.get(0)[1] + mins.get(1)[1];
+            // HÁROM napszak is három alkalom: a „reggel 40 perc séta a
+            // kutyával, délben 20 perc, este 30 perc" egyetlen negyven
+            // perces séta lett – a déli és az esti gazdátlanul maradt.
+            if (mins.size() >= 2 && mins.size() <= 4 && dayParts(s) >= mins.size()) {
+                int total = 0;
+                for (int[] m : mins) total += m[1];
                 if (total >= 2 && total <= 24 * 60)
-                    out.set(0, new Plan(p.kind, 2, Math.max(1, total / 2), p.km));
+                    out.set(0, new Plan(p.kind, mins.size(),
+                            Math.max(1, total / mins.size()), p.km));
             } else if (mins.size() == 1 && distributiveBefore(rawText, mins.get(0))) {
                 // „reggel és este is futottam 20-20 percet": az osztó alak
                 // ALKALMANKÉNT húsz percet jelent, nem összesen annyit.

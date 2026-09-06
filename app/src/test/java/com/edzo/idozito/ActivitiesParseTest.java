@@ -10615,4 +10615,27 @@ public class ActivitiesParseTest {
         assertEquals(40, Activities.parse("Oda-vissza gyalog, 20-20 perc")
                 .plans.get(0).minutes);
     }
+    /**
+     * Három napszak három alkalom.
+     *
+     * A „reggel 40 perc séta a kutyával, délben 20 perc, este 30 perc"
+     * egyetlen negyven perces séta lett – a déli és az esti gazdátlanul
+     * maradt.
+     */
+    @Test public void threeDayPartsAreThreeOccasions() {
+        int sum = 0, n = 0;
+        for (Activities.Plan p : Activities.parse("Reggel 40 perc séta a "
+                + "kutyával, délben 20 perc, este 30 perc").plans) {
+            assertEquals("tura", p.kind.id);
+            sum += p.count * p.minutes;
+            n += p.count;
+        }
+        assertEquals(3, n);
+        assertEquals(90, sum);
+        // A két napszakos alak változatlan.
+        Activities.Plan p = Activities.parse("Séta a kutyával reggel 25 perc, "
+                + "este 35 perc").plans.get(0);
+        assertEquals(2, p.count);
+        assertEquals(30, p.minutes);
+    }
 }
