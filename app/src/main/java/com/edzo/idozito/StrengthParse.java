@@ -1243,7 +1243,7 @@ public final class StrengthParse {
         t = t.replaceAll("(?<=\\d)\\s?(?:kg|kilo)\\s?-?(?:os|as|s)\\s+"
                 + "(?:tarcsa|kezisulyzo|sulyzo|kettlebell|rud|golyo|lemez"
                 + "|korong)\\w*$", " kg");
-        t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel|tal|tel)$", "");
+        t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel|tal|tel|cal|cel)$", "");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")

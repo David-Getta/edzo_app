@@ -159,6 +159,11 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
+        // A SZÓKÖZÖS EZRES egy szám: a „ma 1 800 kcal-t ettem" nyolcszáz
+        // kalória lett – az ezres levált. A mozgás-oldal régóta összevonja.
+        if (q != null)
+            q = q.replaceAll("(?<![\\d.,:])(\\d{1,2})\\s(\\d{3})"
+                    + "(?=\\s?-?(?:kcal|kalori|cal)(?![\\p{L}]))", "$1$2");
         // A NAPZÁRÓ szám a bevitel: az „a dietetikus 1600 kcal-t írt elő,
         // ma 1550-nél zártam" ezerötszázötvene eddig elveszett – az egység
         // csak az előíráson volt, az pedig cél, nem étel.
@@ -259,6 +264,11 @@ public final class Kcal {
      * kcal", annak a számát nem illik a saját becslésünkre cserélni.
      */
     public static int burned(String q) {
+        // A SZÓKÖZÖS EZRES itt is egy szám: az „1 200 kcal az óra szerint"
+        // kétszáz elégetett kalória lett.
+        if (q != null)
+            q = q.replaceAll("(?<![\\d.,:])(\\d{1,2})\\s(\\d{3})"
+                    + "(?=\\s?-?(?:kcal|kalori|cal)(?![\\p{L}]))", "$1$2");
         // IRÁNY nélkül a kalória bevitel: a „reggeli 7:30-kor: 250 kcal
         // körül" kétszázötvene eddig az égetéshez IS hozzáadódott – a napi
         // mérleg mindkét oldala elmozdult egyetlen reggelitől. Égetés csak

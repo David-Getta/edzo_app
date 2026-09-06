@@ -2723,4 +2723,11 @@ public class StrengthParseTest {
         assertEquals(1, it.size());
         assertEquals("Fekvenyomás", it.get(0).name);
     }
+    /** A „30-cal" hasonult ragja is súly: a „végül 2x8 30-cal" elveszett. */
+    @Test public void theCalSuffixStillContinuesTheSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolás 3x10 saját "
+                + "testsúllyal, majd 3x10 20 kg-os tárcsával, végül 2x8 30-cal");
+        assertEquals(8, it.get(0).sets.size());
+        assertEquals(30.0, it.get(0).topWeight(), 0.01);
+    }
 }

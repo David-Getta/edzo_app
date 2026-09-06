@@ -705,4 +705,11 @@ public class KcalTest {
         assertEquals(650, Kcal.stated("Ebéd 650 kcal, aztán 1 óra foci"));
         assertEquals(-1, Kcal.burned("Ebéd 650 kcal, aztán 1 óra foci"));
     }
+    /** A szóközös ezres egy szám: a „ma 1 800 kcal-t ettem" nyolcszáz lett. */
+    @Test public void spacedThousandsAreOneNumber() {
+        assertEquals(1800, Kcal.stated("Ma 1 800 kcal-t ettem, 120 g fehérje"));
+        assertEquals(2200, Kcal.stated("Kalóriabevitel ma kb 2 200 kcal"));
+        assertEquals(1200, Kcal.burned("Este bringa 25 km, 1 200 kcal az óra "
+                + "szerint"));
+    }
 }
