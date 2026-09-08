@@ -8,9 +8,17 @@ import java.util.regex.Pattern;
  * Gyorsítótárazott reguláris kifejezések – csak a webes változatban.
  *
  * A felismerés mondatonként több mint ezer mintát használ, és mindig
- * ugyanazokat. A JVM-en a fordításuk elhanyagolható, a böngészőben viszont
- * ez tette a felismerést hétszáz ezredmásodpercessé – gépelés közben
- * használhatatlanná. Egy minta így egyszer fordul le az app életében.
+ * ugyanazokat. A JVM-en ez elhanyagolható, a böngészőben viszont ez tette a
+ * felismerést hétszáz ezredmásodpercessé – gépelés közben használhatatlanná.
+ * Négy fogás hozza vissza a használhatóságot:
+ *
+ * <ul>
+ *   <li>Egy minta egyszer fordul le az app életében (700 → 105 ms).
+ *   <li>Aminek a kötelező szava nincs a mondatban, azt el se indítjuk.
+ *   <li>Az illesztőket újrahasználjuk: nem foglalunk hozzájuk tömböket.
+ *   <li>Ha a keresés nem talál semmit, a cserét meg se kíséreljük – a
+ *       szöveg lemásolása volt a legdrágább egyetlen tétel (105 → 73 ms).
+ * </ul>
  *
  * A hívásokat nem kézzel írjuk át: a webes fordítás előtt a
  * tools/regexgyorsito.py teszi meg a KIVONATOLT másolatokon. Az eredeti
@@ -272,10 +280,316 @@ final class Rx {
         return m.length() - 1;
     }
 
+    /**
+     * A minta KÖTELEZŐ szövegdarabjai mintánként – üres tömb = nincs ilyen.
+     *
+     * A legtöbb minta konkrét magyar szavakra vadászik („lepcso", „emelet",
+     * „ismetles"), gyakran egy szólistára („palya|stadion|medence"). Ha
+     * EGYIK szó sincs a mondatban, a minta biztosan nem illeszkedik – a
+     * keresést el se kell kezdeni.
+     */
+    private static final Map<String, String[]> KOTELEZO = new HashMap<>();
+
+    /** Ennél hosszabb szólistát nem éri meg végigpróbálni. */
+    private static final int AGAK = 40;
+
+    /** Ennél rövidebb darab szinte minden mondatban ott van. */
+    private static final int LEGROVIDEBB = 3;
+
+    /**
+     * Elindítható-e egyáltalán a keresés?
+     *
+     * A böngészőben a regex-keresés nagyságrendekkel drágább, mint egy
+     * részszöveg-keresés: egy mondat felismerése több mint ezer mintát
+     * futtat le, és a túlnyomó többségük olyan szóra vár, ami ott sincs.
+     * A szűrő ezt a többséget ejti ki – a jelentés nem változik, mert csak
+     * akkor mond nemet, ha a minta ÚGYSEM illeszkedne.
+     */
+    private static boolean kihagyhato(String s, String minta) {
+        String[] kell = KOTELEZO.get(minta);
+        if (kell == null) {
+            kell = kotelezoSzoveg(minta);
+            if (KOTELEZO.size() >= MAX) KOTELEZO.clear();
+            KOTELEZO.put(minta, kell);
+        }
+        if (kell.length == 0) return false;
+        for (int i = 0; i < kell.length; i++) {
+            if (s.indexOf(kell[i]) >= 0) return false;
+        }
+        return true;
+    }
+
+    /**
+     * A minta kötelező szavai: a találathoz legalább az EGYIKÜKNEK ott kell
+     * lennie a szövegben. Üres tömb, ha ilyet nem tudunk biztosan kimondani.
+     *
+     * Óvatosan olvassuk: a karakterosztályokat és minden elhagyható elemet
+     * átugorjuk, a vagylagos ágakból pedig csak akkor lesz lista, ha
+     * MINDEGYIK ág megköveteli a magáét. Inkább mondjunk le a szűrésről,
+     * mint hogy egy találatot elveszítsünk – ezt a web/test/Szuro.java
+     * minden mintára, minden korpusz-mondattal ellenőrzi.
+     */
+    private static String[] kotelezoSzoveg(String minta) {
+        // A \Q…\E idézet és a kis-nagybetű jelző mást jelentene, mint amit
+        // a részszöveg-keresés ellenőriz.
+        if (minta.indexOf("\\Q") >= 0 || kisNagybetus(minta)) return URES;
+        return koveteles(minta);
+    }
+
+    private static final String[] URES = new String[0];
+
+    /** Van-e a mintában kis-nagybetűt elnéző `(?i)` jelző? */
+    private static boolean kisNagybetus(String m) {
+        int i = m.indexOf("(?");
+        while (i >= 0) {
+            for (int j = i + 2; j < m.length(); j++) {
+                char c = m.charAt(j);
+                if (c == 'i') return true;
+                if (c != 'd' && c != 'm' && c != 's' && c != 'u'
+                        && c != 'x' && c != 'U' && c != '-') break;
+            }
+            i = m.indexOf("(?", i + 2);
+        }
+        return false;
+    }
+
+    /**
+     * Egy minta-szakasz követelése: a szavak, amikből legalább egy kell.
+     *
+     * Vagylagos ágakra a két oldal követelése ÖSSZEADÓDIK – de csak akkor,
+     * ha mindkettő megköveteli a magáét: ha az egyik ág bármit elfogad,
+     * akkor az egész szakasz is bármit elfogad.
+     */
+    private static String[] koveteles(String m) {
+        int[] agak = agHatarok(m);
+        if (agak != null) {
+            String[] ossz = URES;
+            int eleje = 0;
+            for (int i = 0; i <= agak.length; i++) {
+                int vege = i < agak.length ? agak[i] : m.length();
+                String[] r = koveteles(m.substring(eleje, vege));
+                if (r.length == 0) return URES;
+                ossz = osszefuz(ossz, r);
+                if (ossz.length > AGAK) return URES;
+                eleje = vege + 1;
+            }
+            return ossz;
+        }
+        return sorozatKovetelese(m);
+    }
+
+    /** A felső szintű `|` jelek helye, vagy null, ha nincs ilyen. */
+    private static int[] agHatarok(String m) {
+        int darab = 0;
+        for (int menet = 0; menet < 2; menet++) {
+            int[] ki = menet == 1 ? new int[darab] : null;
+            int talalt = 0;
+            int i = 0;
+            while (i < m.length()) {
+                char c = m.charAt(i);
+                if (c == '\\') { i += 2; continue; }
+                if (c == '[') { i = osztalyVege(m, i) + 1; continue; }
+                if (c == '(') { i = csoportVege(m, i) + 1; continue; }
+                if (c == '|') {
+                    if (ki != null) ki[talalt] = i;
+                    talalt++;
+                }
+                i++;
+            }
+            if (menet == 0) {
+                if (talalt == 0) return null;
+                darab = talalt;
+            } else {
+                return ki;
+            }
+        }
+        return null;
+    }
+
+    private static String[] osszefuz(String[] a, String[] b) {
+        String[] ki = new String[a.length + b.length];
+        System.arraycopy(a, 0, ki, 0, a.length);
+        System.arraycopy(b, 0, ki, a.length, b.length);
+        return ki;
+    }
+
+    /**
+     * Egy vagylagosság nélküli szakasz követelése: a legerősebb elem.
+     *
+     * Egy szakaszban minden elemnek illeszkednie kell, ezért bármelyik
+     * követelését választhatjuk – a legerősebbet érdemes: a leghosszabb
+     * legrövidebb szavút, azonos hosszon a rövidebb listát.
+     */
+    private static String[] sorozatKovetelese(String m) {
+        String[] leg = URES;
+        StringBuilder most = new StringBuilder();
+        int i = 0;
+        int n = m.length();
+        while (i < n) {
+            char c = m.charAt(i);
+            if (c == '(') {
+                int z = csoportVege(m, i);
+                int utan = kvantorUtan(m, z + 1);
+                boolean elhagyhato = utan != z + 1 && elhagyhatoKvantor(m, z + 1);
+                int test = testKezdete(m, i, z);
+                // A csoport határán a betűsor megszakad: a körültekintés nem
+                // fogyaszt karaktert, a saját belseje viszont ott van a
+                // szövegben – azt külön jelöltként nézzük.
+                leg = jobbik(leg, most);
+                most.setLength(0);
+                if (!elhagyhato && test > 0) {
+                    leg = jobbik(leg, koveteles(m.substring(test, z)));
+                }
+                i = utan;
+                continue;
+            }
+            if (c == '[') {
+                leg = jobbik(leg, most);
+                most.setLength(0);
+                i = kvantorUtan(m, osztalyVege(m, i) + 1);
+                continue;
+            }
+            int v = atomVege(m, i);
+            if (v < 0) {
+                leg = jobbik(leg, most);
+                most.setLength(0);
+                // A magára maradt kapcsos zárójel egy kvantor eleje: a
+                // benne álló számjegyeket ne nézzük szövegnek. („.{1,24}?"
+                // kötelező szövege így lett egyszer „1,24".)
+                int z = c == '{' ? m.indexOf('}', i) : -1;
+                i = z < 0 ? i + 1 : z + 1;
+                continue;
+            }
+            // Csak a magától álló, szó szerinti karakter számít: a `.`, a
+            // `\d` és társaik nem betűk, az elhagyható elem pedig nem
+            // kötelező.
+            String atom = m.substring(i, v + 1);
+            boolean szoSzerinti = c != '.'
+                    && (atom.length() == 1
+                        || (atom.length() == 2 && atom.charAt(0) == '\\'
+                            && !Character.isLetterOrDigit(atom.charAt(1))));
+            char betu = atom.charAt(atom.length() - 1);
+            int utan = kvantorUtan(m, v + 1);
+            boolean elhagyhato = utan != v + 1 && elhagyhatoKvantor(m, v + 1);
+            if (szoSzerinti && !elhagyhato) {
+                most.append(betu);
+            } else {
+                leg = jobbik(leg, most);
+                most.setLength(0);
+            }
+            i = utan;
+        }
+        return jobbik(leg, most);
+    }
+
+    private static String[] jobbik(String[] leg, StringBuilder most) {
+        if (most.length() < LEGROVIDEBB) return leg;
+        return jobbik(leg, new String[]{most.toString()});
+    }
+
+    /** A két követelés közül az erősebb (üres tömb = nincs követelés). */
+    private static String[] jobbik(String[] a, String[] b) {
+        if (b.length == 0) return a;
+        if (a.length == 0) return b;
+        int ra = legrovidebb(a);
+        int rb = legrovidebb(b);
+        if (rb > ra) return b;
+        if (rb == ra && b.length < a.length) return b;
+        return a;
+    }
+
+    private static int legrovidebb(String[] a) {
+        int r = Integer.MAX_VALUE;
+        for (int i = 0; i < a.length; i++) r = Math.min(r, a[i].length());
+        return r;
+    }
+
+    /**
+     * A csoport TESTÉNEK kezdete, vagy -1, ha nem szabad belenézni.
+     *
+     * A tagadó körültekintés (`(?!`, `(?&lt;!`) belseje épp hogy nem lehet ott
+     * a szövegben, a jelző-csoportnak (`(?s)`) pedig nincs teste.
+     */
+    private static int testKezdete(String m, int nyito, int zaro) {
+        if (nyito + 1 >= zaro) return -1;
+        if (m.charAt(nyito + 1) != '?') return nyito + 1;
+        char a = m.charAt(nyito + 2);
+        if (a == ':' || a == '=' || a == '>') return nyito + 3;
+        if (a == '!') return -1;
+        if (a == '<') {
+            char b = nyito + 3 < zaro ? m.charAt(nyito + 3) : ' ';
+            if (b == '!') return -1;
+            if (b == '=') return nyito + 4;
+            int z = m.indexOf('>', nyito + 3);
+            return z > 0 && z < zaro ? z + 1 : -1;
+        }
+        // Jelzők: `(?s:…)` teste a kettőspont után kezdődik, a `(?s)` üres.
+        int j = nyito + 2;
+        while (j < zaro && "dmsuxU-".indexOf(m.charAt(j)) >= 0) j++;
+        return j < zaro && m.charAt(j) == ':' ? j + 1 : -1;
+    }
+
+    /** Az `i` helyen esetleg álló kvantor utáni hely. */
+    private static int kvantorUtan(String m, int i) {
+        if (i >= m.length()) return i;
+        char c = m.charAt(i);
+        int veg;
+        if (c == '*' || c == '+' || c == '?') {
+            veg = i;
+        } else if (c == '{') {
+            veg = m.indexOf('}', i);
+            if (veg < 0) return i;
+        } else {
+            return i;
+        }
+        char utana = veg + 1 < m.length() ? m.charAt(veg + 1) : ' ';
+        return utana == '?' || utana == '+' ? veg + 2 : veg + 1;
+    }
+
+    /** Elhagyható-e az `i` helyen álló kvantorral az előtte álló elem? */
+    private static boolean elhagyhatoKvantor(String m, int i) {
+        char c = m.charAt(i);
+        if (c == '*' || c == '?') return true;
+        if (c != '{') return false;
+        int veg = m.indexOf('}', i);
+        if (veg < 0) return false;
+        String belso = m.substring(i + 1, veg);
+        int vesszo = belso.indexOf(',');
+        return szam(vesszo < 0 ? belso : belso.substring(0, vesszo)) == 0;
+    }
+
+    /**
+     * Újrahasznált illesztők mintánként.
+     *
+     * Minden illesztő létrehozása tömböket foglal a csoportoknak, és a
+     * felismerés mondatonként több száz keresést indít. Egy szálon futunk
+     * (a webes munkás), és az illesztő a hívás végén már senkinek nem kell:
+     * elég egyszer megcsinálni, aztán csak új szöveget adni neki.
+     */
+    private static final Map<String, java.util.regex.Matcher> ILLESZTOK = new HashMap<>();
+
+    private static java.util.regex.Matcher illeszto(String minta, String s) {
+        java.util.regex.Matcher m = ILLESZTOK.get(minta);
+        if (m == null) {
+            m = c(minta).matcher(s);
+            if (ILLESZTOK.size() >= MAX) ILLESZTOK.clear();
+            ILLESZTOK.put(minta, m);
+            return m;
+        }
+        return m.reset(s);
+    }
+
     static String ra(String s, String minta, String csere) {
+        if (kihagyhato(s, minta)) return s;
+        java.util.regex.Matcher mt = illeszto(minta, s);
+        // Találat nélkül a csere az EGÉSZ szöveget lemásolná, holott semmi
+        // nem változik. A minták túlnyomó része nem talál semmit, és a
+        // fölösleges másolás volt a legdrágább egyetlen tétel a böngészőben.
+        if (!mt.find()) return s;
+        mt.reset();
         Pattern p = c(minta);
         try {
-            return p.matcher(s).replaceAll(csere);
+            return mt.replaceAll(csere);
         } catch (RuntimeException e) {
             // A böngészőbeli regex-motor nem a JVM: ha a mintában van egy
             // NEM RÉSZT VEVŐ opcionális csoport, amire a csere hivatkozik
@@ -329,18 +643,27 @@ final class Rx {
     }
 
     static String rf(String s, String minta, String csere) {
-        return c(minta).matcher(s).replaceFirst(csere);
+        if (kihagyhato(s, minta)) return s;
+        java.util.regex.Matcher mt = illeszto(minta, s);
+        if (!mt.find()) return s;
+        mt.reset();
+        return mt.replaceFirst(csere);
     }
 
     static boolean m(String s, String minta) {
-        return c(minta).matcher(s).matches();
+        if (kihagyhato(s, minta)) return false;
+        return illeszto(minta, s).matches();
     }
 
     static String[] sp(String s, String minta) {
+        // Ha az elválasztó nem fordul elő, a darabolás az egész szöveget
+        // adja vissza – pontosan úgy, ahogy a keresés is tenné.
+        if (kihagyhato(s, minta)) return new String[]{s};
         return c(minta).split(s, 0);
     }
 
     static String[] sp(String s, String minta, int hatar) {
+        if (kihagyhato(s, minta)) return new String[]{s};
         return c(minta).split(s, hatar);
     }
 }

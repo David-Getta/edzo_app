@@ -50,9 +50,13 @@ public final class Build {
         // veremkép egybetűs függvényneveket mutat, amiből nem derül ki,
         // melyik felismerő szállt el.  WEB_DEBUG=1 bash tools/webepites.sh
         boolean debug = System.getenv("WEB_DEBUG") != null;
+        // A sebesség méréséhez a KIADÁSI kód kell, olvasható nevekkel: a
+        // SIMPLE szint egészen máshogy viselkedik, mint ami a telefonra
+        // kerül.  WEB_NEVEK=1 bash tools/webepites.sh
+        boolean nevek = debug || System.getenv("WEB_NEVEK") != null;
         tool.setOptimizationLevel(debug
                 ? TeaVMOptimizationLevel.SIMPLE : TeaVMOptimizationLevel.FULL);
-        tool.setObfuscated(!debug);
+        tool.setObfuscated(!nevek);
         tool.setDebugInformationGenerated(debug);
         tool.setSourceMapsFileGenerated(false);
         // Szigorú mód nélkül a lebegőpontos műveletek gyorsabbak, de a

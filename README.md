@@ -830,6 +830,12 @@ bash tools/webteszt.sh     # egyezés-teszt: JVM vs. lefordított JavaScript
 node web/test/bongeszo.mjs # a felület próbája igazi böngészőben
 ```
 
+A böngészőben más regex-motor fut, mint a JVM-en: lassabb, és a mintákat
+másképp is érti. Erről a `web/src/com/edzo/idozito/Rx.java` szól — ő
+gyorsítótáraz, ő hagyja ki a fölösleges kereséseket, és ő kerüli meg a motor
+hibáit. Hogy a kihagyás sose veszítsen találatot, a `web/test/Szuro.java`
+minden mintát összevet minden korpusz-mondattal (több millió pár).
+
 A `web/kiadas/` mappa önmagában kitehető bárhova — nincs benne szerveroldal.
 
 ## Fejlesztői build

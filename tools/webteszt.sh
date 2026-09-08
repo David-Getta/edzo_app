@@ -29,14 +29,14 @@ if [ ! -s "$KORPUSZ" ]; then
   exit 2
 fi
 
-echo "1/3  A mag fordítása…"
+echo "1/4  A mag fordítása…"
 if ! WEBCORE_CLASSES="$WORK/classes" bash "$ROOT/tools/webepites.sh" >"$WORK/epites.log" 2>&1; then
   tail -20 "$WORK/epites.log"
   exit 1
 fi
 grep -E "^mag\.js|Classes compiled|Methods compiled" "$WORK/epites.log" | sed 's/^/     /'
 
-echo "2/3  Futtatás a JVM-en, az EREDETI forrásból…"
+echo "2/4  Futtatás a JVM-en, az EREDETI forrásból…"
 # Szándékosan nem a webes fordítás osztályait futtatjuk: azokban a
 # regex-hívások át vannak írva a gyorsítótárazó segédosztályra. Ha a JVM is
 # az átírt kódot futtatná, egy átírási hiba mindkét oldalon egyformán
@@ -60,9 +60,25 @@ fi
 java -cp "$WORK/tiszta/classes" Referencia "$KORPUSZ" "$NOW" > "$WORK/jvm.txt" 2>"$WORK/jvm.err" || {
   tail -5 "$WORK/jvm.err"; exit 1; }
 
-echo "3/3  Futtatás a lefordított JavaScripten…"
+echo "3/4  Futtatás a lefordított JavaScripten…"
 node "$ROOT/web/test/egyezes.mjs" "$ROOT/web/kiadas/mag.js" "$KORPUSZ" "$NOW" \
     > "$WORK/js.txt" 2>"$WORK/js.err" || { tail -5 "$WORK/js.err"; exit 1; }
+
+echo "4/4  A kihagyás-szűrő próbája…"
+# A webes változat nem indítja el a keresést, ha a minta kötelező szava nincs
+# a mondatban – ettől lett a felismerés a telefonon többszörösen gyorsabb. Ez
+# csak akkor helyes, ha a szűrő SOHA nem mond tévesen nemet: minden mintát
+# összevetünk minden mondattal, és ahol a szűrő kihagyna, ott a JVM saját
+# motorja sem találhat semmit.
+python3 "$ROOT/web/test/mintagyujtes.py" "$WORK/mintak.txt" > /dev/null || exit 1
+javac -nowarn -encoding UTF-8 -d "$WORK/szuro" \
+    "$ROOT/web/src/com/edzo/idozito/Rx.java" "$ROOT/web/test/Szuro.java" 2>&1 \
+    | grep -v '^Note:'
+if [ ! -f "$WORK/szuro/Szuro.class" ]; then
+  echo "A szűrő-próba fordítása nem sikerült."
+  exit 1
+fi
+java -cp "$WORK/szuro" Szuro "$WORK/mintak.txt" "$KORPUSZ" || exit 1
 
 SOROK=$(wc -l < "$KORPUSZ")
 if diff -q "$WORK/jvm.txt" "$WORK/js.txt" >/dev/null; then
