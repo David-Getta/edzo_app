@@ -54,13 +54,14 @@ jobs:
           path: web/.eszkozok
           key: teavm-0.14.1
 
-      - name: A mag fordítása JavaScriptre
-        run: bash tools/webepites.sh
-
-      - name: Egyezés az Androidos felismeréssel
+      - name: Fordítás és egyezés az Androidos felismeréssel
         # Ez a lényeg: ugyanaz a több ezer mondat fut le a JVM-en (az eredeti
         # forrásból) és a lefordított JavaScripten. A kimenetnek karakterre
         # egyeznie kell, különben a telefonos változat mást naplózna.
+        #
+        # A fordítást maga az egyezés-teszt végzi (és a web/kiadas mappát is ő
+        # tölti fel), ezért nincs külön fordítás-lépés: az négy perccel
+        # hosszabbra nyújtaná a futást, ugyanazért az eredményért.
         run: bash tools/webteszt.sh
 
       - name: A felület próbája igazi böngészőben

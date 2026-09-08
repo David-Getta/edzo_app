@@ -28,20 +28,28 @@ PKG="$WORK/src/com/edzo/idozito"
 mkdir -p "$PKG" "$OUT"
 
 # A junit a Gradle telepítésével érkezik; ha máshol van, add meg a JUNIT_JARS-ban.
-if [ -z "${JUNIT_JARS:-}" ]; then
-  JUNIT_JARS="$(ls -d /opt/gradle*/lib/junit-4*.jar 2>/dev/null | head -1)"
-  HAM="$(ls -d /opt/gradle*/lib/hamcrest-core-*.jar 2>/dev/null | head -1)"
-  [ -n "${HAM:-}" ] && JUNIT_JARS="$JUNIT_JARS:$HAM"
-fi
-if [ -z "${JUNIT_JARS:-}" ] || [ ! -e "${JUNIT_JARS%%:*}" ]; then
-  echo "Nem találom a junit jar-t. Add meg így:  JUNIT_JARS=/út/junit.jar:/út/hamcrest.jar bash $0"
-  exit 2
+#
+# A WEBCORE_OUT-os hívás csak a tiszta magot KÉRI KI (3.5), tesztet nem futtat:
+# ott a junit hiánya nem baj. A webes fordítás így egy csupasz JDK-s gépen is
+# megy – a GitHub futtatóján nincs Gradle, és ezen bukott el az első futás.
+if [ -z "${WEBCORE_OUT:-}" ]; then
+  if [ -z "${JUNIT_JARS:-}" ]; then
+    JUNIT_JARS="$(ls -d /opt/gradle*/lib/junit-4*.jar 2>/dev/null | head -1)"
+    HAM="$(ls -d /opt/gradle*/lib/hamcrest-core-*.jar 2>/dev/null | head -1)"
+    [ -n "${HAM:-}" ] && JUNIT_JARS="$JUNIT_JARS:$HAM"
+  fi
+  if [ -z "${JUNIT_JARS:-}" ] || [ ! -e "${JUNIT_JARS%%:*}" ]; then
+    echo "Nem találom a junit jar-t. Add meg így:  JUNIT_JARS=/út/junit.jar:/út/hamcrest.jar bash $0"
+    exit 2
+  fi
 fi
 
 # 0) Hiányzó import a UI-osztályokban: az Activity-k csak a CI-ben fordulnak,
 #    egy elfelejtett import ott hét percbe kerül, itt egy másodpercbe.
+#    Az ellenőrző a repó gyökeréhez képest keresi a forrást, ezért onnan
+#    indítjuk – így a szkript máshonnan hívva sem áll meg.
 if command -v python3 >/dev/null 2>&1; then
-  python3 "$(dirname "$0")/importcheck.py" || exit 1
+  (cd "$ROOT" && python3 tools/importcheck.py) || exit 1
 fi
 
 # 1) Teljesen tiszta osztályok: mehetnek egy az egyben.
