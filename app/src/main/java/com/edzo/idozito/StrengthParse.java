@@ -747,10 +747,11 @@ public final class StrengthParse {
         StringBuffer txb = new StringBuffer();
         boolean txAny = false;
         while (tx.find()) {
-            String w = java.text.Normalizer.normalize(
-                    tx.group(1).toLowerCase(),
-                    java.text.Normalizer.Form.NFD)
-                    .replaceAll("\\p{M}", "");
+            // Ékezet le, kisbetűre: erre a projektnek saját függvénye van, és
+            // mindenhol máshol azt használjuk. A java.text.Normalizer ezen az
+            // egy helyen szerepelt – a webes (iPhone-os) fordító pedig nem
+            // ismeri, így egyetlen szó kedvéért esett volna ki az egész mag.
+            String w = Foods.norm(tx.group(1));
             int n = w.startsWith("ketszer") ? 2
                     : w.startsWith("haromszor") ? 3
                     : w.startsWith("negyszer") ? 4 : 5;

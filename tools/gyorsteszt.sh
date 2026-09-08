@@ -247,6 +247,18 @@ open(dst + 'StrengthLog.java', 'w').write(
     "    " + grab(sl, 'public static String sentence(') + "\n}\n")
 PY
 
+# 3.5) A tiszta mag kiadása másnak: a webes (iPhone-os) változat UGYANEBBŐL a
+#      forrásból fordul JavaScriptre, hogy a felismerés ne csússzon el az
+#      Androidostól. A kivonatolás fent már megvolt – itt csak átadjuk.
+if [ -n "${WEBCORE_OUT:-}" ]; then
+  mkdir -p "$WEBCORE_OUT"
+  rm -f "$WEBCORE_OUT"/*.java
+  cp "$PKG"/*.java "$WEBCORE_OUT"/
+  rm -rf "$WORK"
+  echo "A tiszta mag kiírva: $WEBCORE_OUT"
+  exit 0
+fi
+
 # 4) Azok a tesztek, amiknek a fentiek elegendők.
 TESTS="ActivitiesTest ActivitiesParseTest ActivitiesIntegrationTest ActivitiesTimestampTest ActivitiesBreakdownTest ActivitiesMissedSportTest FoodsTest FoodsParseTest FoodsCompoundTest FoodsQuantityTest FoodsFitnessTest FoodsPieceTest FoodsIntegrationTest FoodsDataQualityTest ParserFuzzTest
        TimerTickTest TimerCaloriesTest TimerRunTest ProfileEnergyTest ProfileTrendTest SessionOrderTest

@@ -388,6 +388,12 @@ public class SleepTest {
                 "éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"), 0.01);
         assertEquals(4, Sleep.parse(
                 "két műszak között csak 4 órát tudtam aludni"), 0.01);
+        // A két szó közé sortörés is kerülhet – a bemásolt naplósorokban ez
+        // gyakori. A minta korábban EGYETLEN szóközt írt elő (a „\s" a Java
+        // forrásban szóköz-jelölés, nem regex), így a sortöréses alak
+        // nyomtalanul elveszett.
+        assertEquals(5, Sleep.parse(
+                "hosszú éjszaka: csak 5 órát tudtam\naludni"), 0.01);
     }
 
     @Test public void deepSleepPhaseDoesNotOverwriteTheTotal() {

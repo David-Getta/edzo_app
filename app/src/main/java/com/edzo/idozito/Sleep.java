@@ -246,7 +246,7 @@ public final class Sleep {
         s = s.replace("aludtma", "aludtam");
         // A „TUDTAM ALUDNI" is alvás: a „két műszak között csak 4 órát
         // tudtam aludni" eddig elveszett, mert az ige főnévi igenév volt.
-        s = s.replaceAll("(?:tudtam|sikerult|birtam)\s+aludni", "aludtam");
+        s = s.replaceAll("(?:tudtam|sikerult|birtam)\\s+aludni", "aludtam");
         // A PIHENTEM alvás-környezetben alvás: a „ma megint elaludtam az
         // ébresztő előtt, csak 5 órát pihentem" öt órája némán elveszett –
         // az éjszaka semmi nem került a naplóba. A kanapén töltött „5 órát

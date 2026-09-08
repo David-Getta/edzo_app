@@ -4513,7 +4513,13 @@ public final class Activities {
                     // (az edzőterem, gépterem viszont igen).
                     if (w.equals("terem") && p >= 2
                             && (s.startsWith("et", p - 2) || s.startsWith("mu", p - 2)
-                                || s.startsWith("disz", p - 4)
+                                // A saját hosszát mindegyik ág maga őrzi: a
+                                // „disz" négy betű, a p >= 2 kevés hozzá. Az
+                                // „a terem 2 km-re van tőlem" mondatban a
+                                // terem a második betűnél áll, és a −2-es
+                                // kezdet a webes változatban kivételt dobott
+                                // – ott az egész mondat felismerése elveszett.
+                                || (p >= 4 && s.startsWith("disz", p - 4))
                                 || (p >= 3 && s.startsWith("tan", p - 3))))
                         continue;
                     // A „futás UTÁN" nem futás, hanem IDŐPONT: a „futás után

@@ -133,6 +133,13 @@ function crc32(buf) {
   return (c ^ 0xffffffff) >>> 0;
 }
 
+// A rajzoló és a PNG-kódoló másnak is kell: a webes (iPhone-os) változat
+// ugyanezt a jelvényt teszi a kezdőképernyőre, hogy a két app egyformán
+// nézzen ki. Csak akkor írunk Android-ikonokat, ha közvetlenül minket
+// futtatnak – behívva a modul csendben marad.
+module.exports = { drawIcon, encodePNG };
+if (require.main !== module) return;
+
 // Android launcher icons: one ic_launcher.png per density bucket.
 const resDir = path.join(__dirname, '..', 'app', 'src', 'main', 'res');
 const buckets = [

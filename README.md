@@ -786,6 +786,52 @@ készül, így az Obtainium és az Android is frissítésként ismeri fel.
 
 > Az APK fix, saját aláírással készül, hogy a frissítés ütközés nélkül menjen.
 
+## iPhone-on (webes változat)
+
+Az APK-t iPhone-ra nem lehet telepíteni, natív iOS-apphoz pedig Apple-fiók és
+macOS kellene. Ezért a Grit **weblapként** is fut — a Safariból egy
+koppintással a kezdőképernyőre kerül, és onnantól úgy viselkedik, mint egy
+app: teljes képernyő, saját ikon, és **internet nélkül is működik**.
+
+1. Nyisd meg a lapot Safariban (a cím a repó **Pages**-oldala).
+2. **Megosztás** → **Kezdőképernyőhöz adás**.
+3. Indítsd a kezdőképernyőről.
+
+**A felismerés ugyanaz, mint az Androidon.** Nem egy kézzel átírt másolat: a
+`Foods`, `Activities`, `StrengthParse`, `BodyParse`, `Sleep`, `Kcal` és a
+többi osztály — közel húszezer sor — **ugyanabból a Java forrásból** fordul
+JavaScriptre ([TeaVM](https://teavm.org)), amit a 2000+ egységteszt őriz. Egy
+felismerés-javítás így mindkét felületen egyszerre jelenik meg.
+
+Hogy ez ne csak ígéret legyen, a CI minden változásnál lefuttat egy
+**egyezés-tesztet**: ugyanaz a több ezer valódi mondat megy át a JVM-en (az
+*eredeti* forrásból) és a lefordított JavaScripten, és a kimenetnek
+karakterre egyeznie kell.
+
+Amiben a webes változat MÁS, mint az Androidos:
+
+| | Android | iPhone (web) |
+|---|---|---|
+| Felismerés | ugyanaz | ugyanaz |
+| Napló, összesítés, példatár | ✔ | ✔ |
+| Offline | ✔ | ✔ (kiszolgáló-dolgozóval) |
+| Háttér-időzítő, értesítés, widget | ✔ | ✖ (a böngésző nem engedi) |
+| Adat helye | az app tárolója | a böngésző tárolója ezen a telefonon |
+| Mentés másik készülékre | fájlba | **Egyéb → Mentés fájlba** |
+
+> A napló csak a telefonon van; nem megy szerverre. Készülékváltásnál mentsd
+> ki fájlba, és a másikon töltsd vissza.
+
+### Webes build helyben
+
+```bash
+bash tools/webepites.sh    # Java → JavaScript, kimenet: web/kiadas/
+bash tools/webteszt.sh     # egyezés-teszt: JVM vs. lefordított JavaScript
+node web/test/bongeszo.mjs # a felület próbája igazi böngészőben
+```
+
+A `web/kiadas/` mappa önmagában kitehető bárhova — nincs benne szerveroldal.
+
 ## Fejlesztői build
 
 ```bash

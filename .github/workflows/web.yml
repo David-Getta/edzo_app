@@ -1,0 +1,89 @@
+name: Webes (iPhone-os) változat
+
+# Az iPhone nem fogad APK-t, és natív iOS-app telepítéséhez Apple-fiók meg
+# macOS kellene. A weblap viszont a Safariból egy koppintással a
+# kezdőképernyőre kerül, és onnantól appként viselkedik – offline is.
+#
+# Ez a munkafolyamat lefordítja a magyar felismerést JavaScriptre, ellenőrzi,
+# hogy UGYANAZT ismeri fel, mint az Androidos app, kipróbálja a felületet egy
+# igazi böngészőben, és közzéteszi a GitHub Pagesen.
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - 'app/src/main/java/**'
+      - 'web/**'
+      - 'tools/webepites.sh'
+      - 'tools/webteszt.sh'
+      - 'tools/regexgyorsito.py'
+      - 'tools/gyorsteszt.sh'
+      - '.github/workflows/web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: web-pages
+  cancel-in-progress: true
+
+jobs:
+  epites:
+    name: Fordítás és ellenőrzés
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: TeaVM gyorsítótár
+        # A fordító 33 MB; felesleges minden futásnál letölteni, és a Maven
+        # Central percenként korlátoz.
+        uses: actions/cache@v4
+        with:
+          path: web/.eszkozok
+          key: teavm-0.14.1
+
+      - name: A mag fordítása JavaScriptre
+        run: bash tools/webepites.sh
+
+      - name: Egyezés az Androidos felismeréssel
+        # Ez a lényeg: ugyanaz a több ezer mondat fut le a JVM-en (az eredeti
+        # forrásból) és a lefordított JavaScripten. A kimenetnek karakterre
+        # egyeznie kell, különben a telefonos változat mást naplózna.
+        run: bash tools/webteszt.sh
+
+      - name: A felület próbája igazi böngészőben
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node web/test/bongeszo.mjs web/kiadas
+
+      - name: Csomag feltöltése
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/kiadas
+
+  kozzetetel:
+    name: Közzététel
+    # Csak a fő ágról publikálunk: a munkaágak fordulnak és tesztelnek, de a
+    # telefonon lévő app nem változik tőlük.
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    needs: epites
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.kiadas.outputs.page_url }}
+    steps:
+      - id: kiadas
+        uses: actions/deploy-pages@v4

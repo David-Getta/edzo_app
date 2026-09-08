@@ -1,0 +1,17 @@
+{
+  "name": "Grit – edzés- és étkezésnapló",
+  "short_name": "Grit",
+  "description": "Írj egy magyar mondatot, és a helyére kerül: edzés, étel, mérés, alvás.",
+  "lang": "hu",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#140B0D",
+  "theme_color": "#140B0D",
+  "icons": [
+    { "src": "ikon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "ikon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "ikon-512-maszk.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

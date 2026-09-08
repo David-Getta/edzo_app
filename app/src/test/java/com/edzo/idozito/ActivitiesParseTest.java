@@ -9361,6 +9361,14 @@ public class ActivitiesParseTest {
         assertEquals(1, h.plans.size());
         assertEquals(1, h.plans.get(0).count);
         assertEquals(1, h.days);
+        // Az ÖTSZÖR ugyanígy egyetlen edzés – és nagybetűvel is. A
+        // szorzószót ékezet nélküli kisbetűs alakra hozzuk; ez a hely volt
+        // az egyetlen, ahol nem a projekt saját függvénye tette.
+        Activities.Parsed o = Activities.parse("A holtemelésem új "
+                + "csúcsa 180 kg, ÖTSZÖR húztam meg.");
+        assertEquals(1, o.plans.size());
+        assertEquals(1, o.plans.get(0).count);
+        assertEquals(1, o.days);
     }
 
     /**

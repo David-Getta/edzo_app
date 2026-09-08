@@ -1,0 +1,3352 @@
+🤾 Kézilabda
+🧘 Jóga / nyújtás / pilates
+Zsírégető HIIT
+⏱ Zsírégető HIIT
+Valami edzés
+⏱ Valami edzés
+, summary(
+7d+0 h12: 3×futas/45, 2×kondi/60
+ezen a héten háromszor voltam futni és kétszer kondizni
+1d+0 h12: 2×uszas/45
+kétszer voltam úszni
+1d+0 h12: 1×egyeb/30
+elliptikus tréner fél óra
+1d+0 h12: 1×egyeb/25
+HIIT 25 perc
+1d+0 h12: 1×munka/60
+fát vágtam
+sielni voltam egesz nap
+1d+0 h12: 1×egyeb/60
+gyerekkel játszottam a játszótéren 1 órát
+1d+0 h12: 1×kondi/60
+guggolás 4x10 50, fekvenyomás 4x10 50, bicepsz 3x12 15
+ előre töröl – ez a „nem futottam
+futni nem voltam
+kondizni nem voltam
+úszni nem mentem
+futni nem mentem
+edzeni nem voltam
+nem voltam futni
+nem mentem úszni
+futni voltam
+voltam futni
+reggel és este 30-30 perc kondi, de futni nem voltam
+3d+0: 3×futas/45, 6×kezilabda/90
+az elmúlt 3 nap alatt 3 futó edzés és 6 kézi edzés
+az elmúlt 5 napban 3 futás
+az elmúlt héten 2 úszás
+2 hét alatt 6 futás
+három kézilabda edzés az elmúlt 4 napban
+tegnap 1 kondi
+tegnapelőtt 2 kondi
+ma 2 futás
+hétfőn futottam
+kedden 2 kondi
+pénteken úsztam
+szombaton 1 túra
+a naplóban 3 futás
+2d+0: 2×futas/45
+tegnap és ma 1-1 futás
+tegnap és ma egy-egy futás
+3d+0: 3×kondi/60
+az elmúlt 3 napban 1-1 kondi
+futás 10-15 perc
+100 fekvőtámasz
+megcsináltam 100 fekvőtámaszt
+50 guggolás
+30 felülés
+2 fekvőtámasz edzés
+100 fekvőtámasz 15 perc
+cangáztam egy órát
+futkároztam fél órát
+eveztem 20 percet
+meditáltam fél órát
+nordic walking
+, „futkostam
+, Activities.parse(
+ vége az „evez
+nyomtam egy 5 km-t
+20 km bringa
+3 kör 400 m futás
+5 kör 200 métert futottam
+6-kor 5 km futás
+reggel 7 órakor 10 km-t futottam
+három hónapja kezdtem el edzeni
+két éve kezdtem futni
+1d+0: 1×futas/240
+két hete kezdtem el futni, azóta 40 km-t futottam
+1d+0: 1×kondi/45
+ma elkezdtem edzeni, 45 perc kondi
+1d+0: 1×munka/90
+kaszáltam a kertben 90 percet
+1d+0: 1×munka/180
+átrendeztem a bútorokat, 3 órát cipekedtem
+1d+0: 1×munka/40
+bepakoltam a kocsit, 40 perc
+1d+0: 1×munka/120
+metszettem a fákat 2 órát
+1d+0: 1×futas/30
+ma volt az első edzésem 3 hét után, 30 perc könnyű futás
+két hét után újra futottam 5 km-t
+reggel és este is futottam 5-5 km-t
+1d+0: 2×futas/30
+reggel és este 5-5 km futás
+1d+0: 2×kondi/30
+reggel és este 30-30 perc kondi
+reggel futottam 5 km-t
+1d+0: 1×foci/90
+18:00-19:30 foci
+18:00 - 19:30 foci
+1d+0: 1×futas/45
+6:30-7:15 futás
+1d+0: 1×kondi/90
+18:00-tól 19:30-ig kondi
+1d+0: 1×futas/65
+futás 1:05:23
+1d+0: 1×futas/55
+10 km-t futottam 5:30-as tempóval
+1.5 km futás
+fáj a térdem 2 hete, de futni tudok
+már tudok futni 30 percet
+terhesség alatt csak sétálok
+5 km-ről 10 km-re növeltem a távot
+45 percről 60 percre nőtt az edzés
+1d+0: 1×futas/60
+10 km futás
+hát nap: húzódzkodás, evezés, lehúzás
+hat nap alatt 6 edzés
+edzés alatt 7 dl izotóniás
+edzés során ittam 5 dl vizet
+20 mp sprint 40 mp séta, 12 kör
+futás 30 perc
+1d+0: 1×tura/10
+lépcsőztem 20 emeletet
+1d+0: 1×tura/8
+15 emeletet lépcsőztem
+1d+0: 1×tura/15
+30 emelet lépcsőzés
+a lépcsőházban találkoztunk
+ JELZŐ: a „hétvégi hosszú futás 18 km
+meleg volt, ezért csak 5 km-t futottam 10 helyett
+1d+0: 1×futas/40
+futottam 40 percet 60 helyett
+kondi helyett futás 30 perc
+beneveztem egy félmaratonra
+ha esik, futópadon futok
+hazafelé futottam 5 km-t
+1d+1: 1×futas/30
+ha jól emlékszem, 5 km-t futottam tegnap
+ropog a térdem guggolásnál, de nem fáj
+edzés közben fájt a bokám
+sportolás közben elpattant valami a vádlimban
+1d+0: 1×futas/20
+20 perc futás után fájt a térdem
+fájt a lábam, de azért lefutottam 5 km-t
+futottam 30 percet, utána sajgott a bokám
+ és a „hat
+ma 10000 lépés
+, „10 ezer
+3x10 fekvőtámasz
+5x20 felülés
+10x10 fekvőtámasz
+3 futás július 30-án
+december 24-én síeltem
+júliusban 10 edzés
+február 30-án futottam
+ és a „naponta
+7d+0: 7×futas/45
+a héten minden nap futottam
+7d+0: 7×egyeb/45
+minden nap edzettem a héten
+14d+0: 14×kondi/60
+2 hét alatt mindennap kondiztam
+7d+0: 3×kondi/60
+heti 3 kondi
+az első a mai mostani pillanat
+a második a tegnapi napra esik
+a hétvégén 2 túra
+hétvégén túráztunk
+hétvégén 1 túra
+5d+0: 5×futas/30
+5 futás 30 perc
+1d+0: 3×kondi/90, 2×futas/40
+3 kondi 90 perc és 2 futás 40 perc
+1d+0: 1×joga/60
+egy óra jóga
+1d+0: 2×tenisz/60
+2 tenisz 1 óra
+1d+0: 2×kezilabda/90
+2 kézilabda
+6d+0: 6×kezilabda/90
+1d+0: 1×kerekpar/60
+1d+0: 2×kondi/60
+2 konditerem
+1d+0: 1×kosarlabda/60
+1d+0: 2×tura/90
+bicigliztem 20 km
+biciglizteem 20 km
+bicóztam 20 km
+1d+0: 1×tenisz/45
+sqash 45 perc
+1d+0: 1×evezes/60
+sup-oztam 1 órát
+1d+0: 1×harcmuveszet/75
+krav maga edzés 75 perc
+1d+0: 1×futas/30, 1×kondi/20
+30 perc futás, 20 perc kondi
+30 perc futás és 20 perc kondi
+1d+0: 1×kondi/60, 1×futas/30
+1 óra kondi, 30 perc futás
+futás 30 perc, kondi 20 perc
+1d+0: 1×kondi/60, 1×futas/40
+kondi 1 óra futás 40 perc
+7d+0: 3×futas/40, 2×uszas/40
+az elmúlt héten 3 futás és 2 úszás, 40 perc
+úsztam 1 km-t, futottam 5 km-t
+reggel 5 km futás, este 8 km futás
+30 perc 
+, 20 perc 
+ 30 perc, 
+ 20 perc
+ és 20 perc 
+ 30 perc és 
+ma még megyek futni
+este megyek edzeni
+ha lesz időm, futok
+holnap kondi
+jövő héten 3 futás
+1d+0: 1×egyeb/45
+elmentem edzeni
+ szándékosan marad futás: a „három kört futok
+majd futok
+1d+0: 1×futas/30, 1×kondi/60
+30 perc futás és kondi
+1d+0: 1×futas/45, 1×kondi/30
+futás és 30 perc kondi
+holnap futok
+holnapután úszni fogok
+jövő hónapban elkezdem a kondit
+szeretnék futni
+3 futást tervezek
+, „ha lesz idő, futok egyet
+el kéne menni futni
+meg kell csinálnom a lábnapot
+ha lesz idő, futok egyet
+ha bírom, elmegyek úszni
+erősíteni akarom a bokám
+erősíteni fogom a vállam
+el akarok kezdeni futni
+holnap fogom megcsinálni a lábnapot
+le akarom futni a félmaratont
+úszni akarunk a hétvégén
+tegnap lefutottam a félmaratont
+úsztam a hétvégén
+tervezem, hogy
+el kéne mennem
+jó lenne
+remélem tudok
+elhatároztam, hogy
+muszáj lesz
+kötelező lesz
+vágyom rá, hogy
+gondolkodom rajta, hogy
+ígérem, hogy
+eldöntöttem, hogy
+futni 30 percet
+elmenni a konditerembe
+úszni egy órát
+biciklizni 20 km-t
+megcsinálni a lábnapot
+majd 30 perc kondi
+futottam, majd úsztam
+kertben dolgoztam 3 órát
+ástam a kertben egy órát
+két órát takarítottam
+havat lapátoltam egy órát
+füvet nyírtam 40 percet
+semmi értelmes szöveg
+1000 futás
+harminc futás
+1d+0: 1×kondi/60
+gyúrtam 1 órát
+1d+0: 1×egyeb/60
+sportoltam egy órát
+1d+0: 1×egyeb/30
+mozogtam 30 percet
+1d+0: 1×tenisz/60
+1d+0: 1×joga/30
+jógáztam fél órát
+1d+0: 1×tura/90
+másfél óra túra
+2 meccs kézilabda
+1d+0: 2×foci/90
+két meccs foci
+kb 5 futás
+negyvenöt perc kondi
+harminckét perc futás
+huszonöt perces jóga
+huszonöt fekvőtámasz
+tizenkét perc futás
+lefutottam a maratont
+fél maraton
+maraton 4 óra alatt
+félmaraton 19,5 km
+1000 km bringa
+ma edzettem
+tegnap edzettem 1 órát
+trx edzés
+füvet nyírtam 1 órát
+tornáztam fél órát
+csupán sétáltam
+tabata 20 perc
+lábnap volt, 1 óra
+akadálypálya 40 perc
+spartan race futam
+curling 2 óra
+padel 90 perc
+önvédelmi tréning 1 óra
+vívás edzés
+kettlebell edzés 30 perc
+parkrun szombaton
+megmásztuk a Kékestetőt
+átmozgattam magam
+hétfőn és szerdán kondi
+kedden úszás, csütörtökön futás
+30d+0: 8×uszas/45
+hetente kétszer úsztam az elmúlt hónapban
+30d+0: 4×joga/45
+hetente egyszer jóga egész hónapban
+7d+0: 2×futas/45
+hetente kétszer futottam
+az idény jól sikerült, futottam
+március óta 40 edzés
+7d+0: 7×joga/20
+napi 20 perc jóga egész héten
+1d+0: 1×futas/36
+6x1 km iramfutás
+1d+0: 1×futas/19
+intervall: 8x400 méter
+10x100 méter úszás
+10x400 métert futottam
+5x1000 métert
+40 hosszt úsztam
+leúsztam 60 hosszt
+20 hosszt a 25 méteres medencében
+30 hossz az úszómedencében
+, StrengthParse.parse(
+három negyed óra kondi
+3 negyed óra futás
+három edzés a héten
+három óra túra
+1d+0: 1×futas/75
+futás 1 óra 15 perc
+1d+0: 1×kerekpar/90
+1 óra 30 perc bringa
+1d+0: 1×tura/150
+2 óra és 30 perc túra
+kétszer úsztam
+háromszor futottam
+3-szor futottam a héten
+a héten hétszer gyúrtam
+1d+0: 1×egyeb/40
+otthoni edzés 40 perc
+7d+0: 4×egyeb/45
+a héten 4 edzés
+sífutás 2 óra
+futás 1 óra
+2 meccsen kézilabdáztam
+3 darabot futottam
+kétszer úsztam a héten
+tegnap 10 km futás 50 perc alatt
+hétfőn 1 óra 15 perc kondi
+leúsztam 1500 métert
+egy hónap alatt 10 edzés
+hétvégén 1-1 túra
+tegnap este kondi
+3 kiló fogyás után futás
+1h20 futás
+1h20m futás
+1h futás
+2h bringa
+futás 1h30
+20p futás
+2h30 kondi
+1500 m úszás
+3 héten át futottam
+2 hónap alatt futás
+45 perc futás
+nyújtottam 15 percet
+negyed órát nyújtottam
+a héten edzettem négyszer
+a héten kétszer futottam 5-5 km-t
+10 kör 30-30 mp
+születésnapi alkalomból tortát ettem
+ebből az alkalomból pezsgőt ittunk
+3 alkalom a héten
+három alkalom
+két alkalommal futottam
+, Activities.closestKind(
+futás után turmix
+úszás után szendvics
+bringázás után sör
+jóga előtt tea
+futás előtt ettem egy banánt
+60 perc futás után ittam egy turmixot
+10 km futás után szendvics
+ma futás után jóga
+edzés 45 perc
+edzettem 1 órát
+edzés után 45 perc nyújtás
+futás 5 km 24:59 tempó 5:00
+futás 5 km 24:59 tempó 5:00/km
+futás 10 km 52:30 tempó 5:15
+tempó 30 perc kondi
+futás 5 km 25 perc tempó 5:00
+hétvégén 1-1 túra és kétszer úsztam
+úsztam kétszer és futottam egyszer
+kondi helyett futás
+egy hét alatt 3 futás
+a héten kétszer edzettem
+huszonöt kilométer bringa
+tíz kilométert futottam
+két kilométer úszás
+5 km futás
+íjászat 45 perc
+sárkányhajó 1 óra
+triatlon 2 óra
+duatlon verseny
+triatlon 51,5 km
+darts a kocsmában
+10k lépés
+10 000 lépés
+12k lépés ma
+10k futás
+21k futás
+2k úszás
+10000 lépés
+30 perc futás
+ negyvenöt perces „egyéb mozgás
+hetes bérlettel kondi
+, „hónapja
+5 napja futottam utoljára
+3 napja úsztam
+két hete kondi
+1 hete futottam
+kétórás túra
+háromórás kirándulás
+félórás séta
+1 órás kondi
+ma 90 percet edzettem összesen: 30 perc kondi, 60 perc futás
+összesen 120 perc mozgás: 45 perc futás, 45 perc bringa, 30 perc kondi
+20 kettlebell swing és 10 burpee
+1d+0: 1×evezes/3, 1×kondi/15
+5 kör: 500 m evezés, 15 kettlebell swing
+elvesztettem a gyűrűmet
+kendőt vettem
+gyűrűs a kezem
+ma gyúrtam egy jót
+gyúrás 45 perc
+tai chi 40 perc
+hétfő mell és tricepsz, kedd hát és bicepsz
+push pull legs, heti 6 edzés
+hétfőn guggolás 3x5, szerdán fekvenyomás 4x8 60 kg
+hétfőn és szerdán futottam
+heti 3 edzés volt a héten
+ma 10 000 lépést mentem
+futottam 10 km-t, ebből 5 km tempó
+túra 14,8 km 3:45:00 620 m emelkedés
+bringa 45 km 2:10:00 800 m szint
+nehéz nap: 10 óra munka, semmi mozgás, este két sör
+ma semmi edzés, csak pihenés
+ma nem mozogtam semmit
+elkezdtem a couch to 5k programot
+belevágtam a 30 napos kihívásba
+elkezdtem a programot, ma 3 km futás
+elkezdtem futni
+ma reggel 5 km, délután 40 perc kondi, este 8 óra alvás
+10 km futás és 30 perc kondi
+60 perc kondi
+Nap 1: futás 5 km. Nap 2: kondi 45 perc.
+nem futottam 10 km-t, csak 3-at
+nem 45 percet kondiztam, hanem 20-at
+nem futottam ma
+hétvégén két túra: szombaton 12 km, vasárnap 18 km
+ma két futás: 5 km és 8 km
+ma sem edzettem
+ma sem futottam
+ ugyanaz: „ott se voltam a teremben
+ott se voltam a teremben
+el se mentem futni
+ma sem volt edzés, de 8000 lépést mentem
+majdnem elmentem futni
+kis híján elmentem edzeni
+majdnem 10 km-t futottam
+majdnem 2 órát edzettem
+majdnem elaludtam a moziban, de utána futottam 5 km-t
+ és az „éppen csak benéztem
+csak átöltöztem, edzés nem lett
+éppen csak benéztem a terembe
+bementem a terembe és nyomtam 3x10 fekvenyomást
+csak 3 km lett a tervezett 10 helyett
+a terv: guggolás 5x5 100 kg
+tervezek futni holnap
+azt tervezem, hogy elmegyek edzeni
+a tervem holnap futni
+ha lett volna időm, futottam volna
+a futást lefújtam az eső miatt
+jó volna futni egyet
+futás helyett bicikliztem 20 km-t
+elmaradt a foci, helyette kondi 45 perc
+ ott volt a listán, a „megnéztem
+ már szótő volt, a „leg day
+kemény leg day, 75 perc
+ma leg day volt
+pull day, 50 perc
+full body 45 perc
+push day: 4 gyakorlat
+ ugyanaz, mint a szobabicikli, az „aqua fitness
+medence: 1000 m gyorson, 30 perc
+pillangózás 200 m
+lépcsőn lefelé fájdul a térdem
+lépcsőn felfelé húz a combhajlítóm
+20 perc lépcsőzés, közben fájt a térdem
+20 emeletet lépcsőztem
+3x8 guggolás 100 kg, 3x10 fekvenyomás 70 kg, 3x12 evezés 60 kg
+2 hete futottam utoljára
+5 napja úszás 1 km
+minden este sétálok egyet
+ alakja ugyanaz, mint az „5:30-as tempóval
+sprint edzés: 10x100 m, köztük séta vissza
+sprint edzés: 10x100 m, köztük 20 perc séta
+otthon 30 perc saját testsúly
+saját testsúllyal edzettem 40 percet
+reggel 78,4 kg a testsúlyom
+ma 14 000 lépés, 9,8 km
+ma 14 000 lépés és futottam 5 km-t
+3 és fél óra futás
+hosszú nap, 11 óra munka, este 20 perc nyújtás
+2 óra utazás, aztán 30 perc futás
+kerti munka 90 perc
+munka 30 perc kondi
+2 óra tv, 30 perc séta
+8 óra ülés az irodában, este 30 perc futás
+1,5 óra meeting, aztán 25 perc futópad
+1 óra pihenés után 30 perc bringa
+vasárnapi hosszú futás: 18 km, 1:45:20, utolsó 3 km tempóban
+jégfürdő 5 perc a futás után
+a futás után nyújtottam 10 percet
+30 perc futás után fájt a térdem, mit tegyek?
+munkába biciklivel: oda 25, vissza 28 perc
+ és az „annyi
+Bringával mentem munkába oda 8 km, vissza is 8 km.
+Bringával mentem munkába oda 8 km és vissza 8 km.
+Odafelé 8 km, visszafelé 8 km bringával.
+Futottam 5 km-t oda és 5 km-t vissza.
+Gyalog mentem a boltba oda 1,5 km, vissza is annyi.
+Bringával mentem munkába, oda-vissza 16 km.
+2x45 perc foci
+gyalogtúrán voltunk, 14 km 600 m szint
+futottam 5 km-t és úsztam 1 km-t
+eddigi legtöbb lépés: 21 450
+takarítás közben 4000 lépés
+2 óra takarítás közben 4000 lépés
+beállítottam a 10000 lépéses célt
+ma 10000 lépés összejött
+az edzőteremben mértem: 78,8 kg
+teremben edzettem
+kimaradt a tegnapi bejegyzés: futottam 8 km-t
+elfelejtettem beírni: tegnapelőtt úszás 1500 m
+3 nappal ezelőtt futottam 10 km-t
+kimaradt a mai futás
+hétfőn kondi 60 perc, kedden semmi
+nyújtással zártam a 45 perces futást
+véget ért a szezon, összesen 1250 km futás idén
+a Garmin évi összesítője: 210 edzés, 9800 perc
+legjobb hónapom volt: 160 km és 14 edzés
+ma összesen 12000 lépés lett
+óránként felálltam nyújtózni pár percre
+nyújtottam 15 percet edzés után
+a hotel edzőtermében 30 perc
+szállodai medence 20 hossz
+januári futókihívás: eddig 87 km a 100-ból
+megvan a 10000 lépés 21 napja folyamatosan
+5 napja futottam 10 km-t
+uszodába mentem de zárva volt, helyette 5 km futás
+elromlott a futópad, átültem a biciklire 30 percre
+az úszásoktatás elmaradt, a gyerekkel játszottunk a babymedencében
+leállt az óra 3 km-nél, összesen kb 5 km lett
+a 42-es cipőm szorít futásnál
+a 4-es teremben volt a spinning, 45 perc
+séta 1,5h a városban
+futás 0,5h reggel
+edzés 1h 20m
+30 perc futást terveztem, de végül 50 perc lett
+holnapra 20 perc futást tervezek
+a hétvégén kétszer is voltam úszni, 1-1 km
+ új állítást nyit, az „átlag
+hajnali 5-kor keltem horgászni, az nem edzés de 6 km-t gyalogoltam a partig
+nem futottam de nem is úsztam
+az új cipőben 12 km, semmi panasz, átlag 5:40
+kéziergométer a rehab részlegen 10 perc
+sífutógép 25 perc, jó kis kardió
+futópad 5% emelkedőn 40 perc séta
+45 perc kardió a teremben
+botokkal járok, nordic walking 3 km
+kondiba járok, heti 3x
+a meccset megnyertük 3-1-re, végig játszottam
+meccset néztem a tévében este
+nagyival sétáltunk a piacig és vissza, fél-fél óra
+gyerekszülinapon ugrálóvár, én is ugráltam vagy 20 percet
+a gyerek ugrált a kanapén egész délután
+napi lépéscél 10000, ma 11200 lett
+a lépéscélt teljesítettem, 10500 lépés
+léptem vagy 14 ezret a városnézésen
+alvás 6:45, rhr 51, edzés rest day
+rest day, csak sétáltam 20 percet
+izomláz van rendesen a tegnapi lábnaptól
+izomláz után 45 perc kondi ment ma
+hátúszás 800 m bemelegítésnek
+mellúszás 800 m
+gyorsúszás 800 m
+ és az „e-bike
+országúti kör 60 km 200 watt átlaggal
+zwift edzés 45 perc, 25 km virtuálisan
+mtb túra az erdőben, 35 km
+e-bike-kal 30 km, alig fáradtam el
+defekt miatt csak 15 km lett a tervezett 40-ből
+átlagtempóm 5:20 volt a 10 kilométeren
+tempó futás 4:45-ös kilométerekkel, 8 km
+ és a „házimunka, kb 3 óra
+fát hordtam be délután fél órát
+házimunka egész délelőtt, kb 3 óra
+sok volt ma a munka, 10 óra ülés
+a hétvégén pótolom az edzést
+kimaradt a szerdai edzés, ma bepótoltam: 45 perc kondi
+elfelejtettem beírni, pótolom: tegnap 30 perc jóga
+alakformáló torna 50 perc
+box edzés 60 perc
+futás, úszás: 5 km és 1 km
+toltam a vasat 1 órát
+kivasaltam az ingeket este
+vasárnap pihentem
+warm up 5 perc, wod 20 perc, cool down 5 perc
+5 perc cool down a 40 perc futás után
+görgőn tekertem 90 percet
+görgőzés 15 perc
+elmentem falat mászni 2 órára
+felmásztam a Kékesre, 3 óra volt
+ma 12.500 lépés lett meg
+12500 lépést tettem meg
+ hat órája beleírta a „kor edzes
+ma reggel 6-kor edzés: 45 perc kerékpár
+6-kor edzés
+3 kör edzés, mindegyik 10 perc
+köredzés 40 perc
+a kutyával mentem egy nagyot, 6 km
+kutyával futottam 5 km-t
+A WOD ma: 5 kör futás 400 m és 15 kettlebell swing.
+5 kört csináltam: 400 m futás és 15 guggolás körönként.
+Az edzőteremben ma háromszor 12 lehúzás ment 50 kg-mal.
+Ma 40 percet gyalogoltam a kutyával reggel és 40-et este.
+Ma reggel 3 kör a tóparton, minden kör 1,5 km.
+Ma reggel a kutya elszaladt, 10 percet rohantam utána.
+Ma reggel rohantam a buszhoz.
+Az edzésen 5 perc kötélugrás bemelegítés, aztán 4 kör.
+Reggel 6 kor 5 km futás.
+Ha holnap jó idő lesz, futok 10-et, ma csak 20 perc szoba bringa.
+Ma 12 000 lépés helyett csak 4000 lett.
+Ma 45 perc aerobic óra a konditeremben.
+Ma 45 percet kondiztam az edzőteremben.
+Ma a boltból hazafelé cipeltem 10 kiló krumplit 1 km-en át.
+Ma 5 km-t tettem meg.
+Az edzésen 10 perc bemelegítés, 5x3 guggolás 120 kg, 10 perc levezetés.
+10 perc bemelegítés, aztán 40 perc kondi.
+Délután elmentem a kondiba, de tele volt, csak 20 percet kerékpároztam.
+Elmentem a kondiba, de tele volt, csak 20 percet edzettem.
+Garmin: Open Water 1,2 km 28:45
+nyílt vízi úszás a Balatonban 2 km
+futottam 4 kört, egyenként 400 m
+3 kör 400 m a pályán
+napi 2 edzés 4 napig
+sítábor egész héten, napi 5 óra lesiklás
+nem 45, hanem 60 perc jóga volt
+duplán ment be a futás, az egyiket vedd ki
+nem 80 kg, csak 78 kg volt a súlyom
+asztalitenisz bajnokság, 5 meccset játszottam
+5 meccset játszottam ma
+golfoztam 18 lyukat, kb 4 óra séta
+sétáltam egy órát, aztán golfoztam
+ és a „cheerleading próba 2 óra
+barre workout 50 perc
+cheerleading próba 2 óra
+pár percet nyújtottam lefekvés előtt
+kis híján egy órán át táncoltunk
+majdnem egy órát futottam
+kis híján elestem a futáson, de megvolt a 8 km
+box breathing 5 perc stressz ellen
+jóga nidra 30 perc alvás előtt
+boxoltam 30 percet a zsákon
+autogén tréning este fél óra
+ és a „sípad gép 15 perc
+ és a „ski erg
+stairmaster 20 perc, brutál volt
+sípad gép 15 perc
+ski erg 1000 m
+airbike 4 perc
+futas 5km 🏃‍♂️
+🏋️ 60 perc
+jó volt a meccs ⚽ néztük a tévében
+ és a „recovery ride 45 min
+easy run 40 min
+steps: 12000
+recovery ride 45 min z1
+swim 1500m
+walk 30 min lunch break
+brunch a lányokkal
+ EGYPERCES kondi lett, a „jóga 1 óra 15
+kondi 1ó
+jóga 1 óra 15
+séta 1,5ó
+edzés 6 órakor kezdődött, 45 perc lett
+a 18 órás spinningen voltam
+a 19 órás jógán voltam
+az este 8 órás edzésen voltam
+10 órás túra volt a Magas-Tátrában
+2 órás túrán voltam
+5 perces tempóval futottam 10 km-t
+4 perc 50-es tempóban mentem 10 km-t
+6 perc per km tempóval futottam 8 km-t
+futottam 40 percet jó tempóban
+elektromos rollerrel mentem munkába
+e-rollerrel mentem a boltba
+rollereztem a gyerekkel fél órát
+lefutottam egy tízest
+tekertem egy húszast
+vettem egy tízest a boltban
+futottam 3 mérföldet
+5 mile run reggel
+half marathon done, 1:58
+habhengerrel görgettem az izmaimat 10 percig
+mckenzie gyakorlatok reggel
+görgettem a hírfolyamot fél órán át
+c25k week 3 day 2 kész
+lefutottam egy 5k-t
+úsztam 400m-t
+activity: running, distance 10.02 km, time 55:31
+raftingoltunk a vadvízen
+sznorkeleztünk a tengerben fél órát
+nem volt kedvem, de azért lefutottam 5 km-t
+nem volt kedvem futni
+a legjobb futásom volt idén: 15 km 1:10 alatt
+60 perc lett volna a kondi, de 40-nél abbahagytam
+a 10 km-es futásból 6-nál feladtam
+lovas oktatáson voltam
+zsákoltam 6 menetet
+övvizsga volt karatéból, sikerült
+doboltam a próbateremben két órát
+paintballoztunk a csapatépítésen
+gyalogtúra helyett geocaching volt 3 órát
+kondiztam a teremben 60 percet
+három napos biciklitúra, összesen 180 km
+30 napos guggolás kihívás, ma 150 guggolás
+punccsal melegedtünk a korcsolyapályánál
+koriztam a korcsolyapályán egy órát
+bevásárlás közben 3000 lépés, este 40 perc kondi
+az uszodában 45 percet voltam, ebből kb 30 perc úszás volt, a többi jakuzzi
+18 km, ebből az utolsó 3 km tempóban
+a hétvégén túl sokat ettem, de ma visszaálltam: saláta, csirke, és 1,5 óra bringa
+tegnap futottam 10 km-t, de ma pihenek
+ma nem volt időm edzeni, de a lépcsőt választottam a lift helyett, 12 emelet
+futás helyett úsztam 1 km-t
+az edző adott egy új tervet: 3x heti kondi, de ma még csak 20 perc bicikli
+3x heti kondi a terv
+a tervezett 10 helyett 6 km lett
+a kutyát vittem ki kétszer, összesen 40 perc
+kifogyott a bringám gumija
+megjavíttattam a kerékpáromat
+a tanfolyam a teremben lesz
+tekertem 20 km-t
+20 perc futás, 10 perc levezető nyújtás
+ jelző nem tempó-érték: a „40 perc tempós gyaloglás
+40 perc tempós gyaloglás
+50 perc tempós bringa
+surfing 2 óra a Balatonon
+ ugyanaz a rövidítés: a „8,5k lépés
+ma léptem 8.5k lépést
+minden másnap futok
+minden hétvégén túrázok
+hetente kétszer úszok
+minden másnap futok, ma 5 km volt
+hasközép gyenge, plank nem megy
+futottam 5 km-t, de a plank nem megy
+20/10 tabata
+30/30 intervall 10x
+18 kör edzés
+ma csak a lépcsőt használtam a lift helyett
+lift helyett lépcső, 12 emelet
+húzódzkodás saját súllyal 3x max
+3 edzés a héten
+guggolás 4x5 úszás 40 perc
+futás: 10km; kondi: 45p; alvás: 7h
+kondi: 45p; alvás: 7h
+aludtam 8 órát, reggel futottam 5 km-t
+2 óra film után 15 perc nyújtás
+3 óra kártyázás, aztán 20 perc torna
+2 óra takarítás
+45 perc sorbanállás, aztán 30 perc kondi
+5 perc szauna, 30 perc úszás
+30 perc késés miatt rövidítettem, 20 perc futás
+200 km vezetés, semmi mozgás
+40 km autóval a hegyekbe, ott 8 km túra
+30 km-t vezettem, aztán 5 km futás
+40 km biciklivel
+a terem 2 km-re van tőlem
+a hegy teteje 700 m magasan van
+10 km-re volt a start, oda is gyalogoltam
+ bringája eltűnt a naplóból, mert a „korty
+30 perc laza bringa. 3 korty bor.
+szombaton 3 óra 20 perc túra 850 méter szintemelkedéssel
+túra 1200 m szintemelkedés
+800 métert úsztam
+fekvenyomás 5x3 100 kg
+holtemelés 5x3 140 kg
+vállnyomás 4x8 40 kg
+guggolás 5x3 140 kg
+5x5 guggolás 100 kg
+8x8 guggolás 60 kg
+1d+0: 1×kondi/12
+emom 12 perc, 10 kettlebell swing percenként
+1d+0: 1×kondi/20
+emom 20 perc, 5 fekvőtámasz percenként
+1d+0: 1×kondi/15
+amrap 15 perc: 5 húzódzkodás, 10 fekvőtámasz, 15 guggolás
+1d+0: 1×futas/50, 1×kondi/20
+10 km futás 50 perc alatt és 100 fekvőtámasz
+ és a „napi lépésszám 9842
+1d+0: 1×tura/76
+lépésszám 9842
+napi lépésszám 9842
+lépésszámom 9842
+9842 lépés
+lépéscél 10000
+ és a „15 perc hasizom
+20 perc burpee
+15 perc hasizom
+15 perc jumping jack
+ ezres tagolásnak látszott, és „5x5100 kg
+guggolás 5x5 100 kg
+holtemelés 3x3 140 kg
+leúsztam 1 500 métert
+reggel fáradt voltam, este edzettem
+ma három különböző mozgás volt
+két különböző edzés ma
+három rövid futás a héten
+1/2 óra futás
+3/4 óra kondi
+1d+0: 1×joga/15
+1/4 óra nyújtás
+1/2 km séta
+3 kör 40/20
+1d+0: 2×futas/45
+reggel és este is futottam. összesen 2 liter víz.
+1d+0: 3×tura/30
+háromszor sétáltam, összesen 90 perc
+háromszor futottam, összesen 30 km
+szombaton 25 km bringa 1 óra 5 perc, vasárnap 12 km túra 3 óra
+1d+0: 1×futas/80, 1×kondi/45
+futás 1 óra 20 perc, kondi 45 perc
+1d+0: 1×tenisz/80
+szauna 15 perc. Este 1 óra 20 perc tenisz.
+tv 15 perc. Este 80 perc tenisz.
+1d+0: 1×joga/20
+1d+0: 1×tura/30
+1d+0: 1×kondi/30
+1d+0: 1×kondi/45, 1×tura/10
+kondi 45 perc, vissza 10 perc gyaloglás
+20 perc otthoni edzés: 3 kör 10 fekvőtámasz 15 guggolás
+45 perc edzés: futás 5 km
+Ez a hónap: 12 edzés, 145 km futás, 3 kg fogyás.
+Ez a hét: 4 edzés, 30 km futás.
+Havi mérleg: 18 edzés, 200 km futás.
+Konditerem: mellkas nap, fekvenyomás 5x5 80 kg, tolódzkodás 4x10. Összesen 70 perc.
+Futás és kondi, összesen 70 perc.
+Ma a gyerekkel voltam a foci edzésen, én csak néztem a pálya széléről.
+Este a meccsen szurkoltunk a fiamnak.
+Csak néztem a telefonom, aztán futottam 5 km-t.
+30 perc futás, közben néztem a meccset a tévén.
+Bringával jártam be a melóhelyre, oda 25 perc, vissza 30 perc, kb 9 km egy út.
+Bicikli munkába, 7,5 km egy út, oda-vissza.
+Hazafelé sétáltam 3 km-t.
+Nem bírtam végigcsinálni, 20 perc után feladtam a 45 perces edzést.
+Ma megint nem sikerült elmenni edzeni, pedig terveztem 45 perc kondit.
+Terveztem 45 perc kondit, és meg is csináltam 45 percet.
+ és a „-kor
+4 kör 10 burpee, 15 guggolás.
+reggel 7 kor 5 km futás
+este 6 kor 3 km futás
+Ma 3 kört futottam a parkban, egy kör 2,5 km.
+3 kört futottam, körönként 2,5 km.
+4 kört úsztam, egy kör 400 méter.
+Ma futottam 5 km-t.
+ ugyanaz a gyakoriság, mint a „hetente háromszor
+Heti terhelés: 60 km.
+A tervem szerint ma futottam 5 km-t.
+A heti tervem szerint ma futottam 5 km-t.
+A terv: guggolás 5x5 100 kg.
+A tervem szerint holnap futok 5 km-t.
+Húsz perce jöttem meg a futásból, nagyon fájt a bal térdem.
+20 perce fejeztem be a kondit.
+20 percet futottam.
+20 perc futás.
+Reggel 5 km, délben úszás 1000 m, este jóga 30 perc.
+Bicikli 20 km, futás 5 km.
+Reggeli súlyzózás 40 perc, aztán bicajjal munkába 8 km, este vissza 8 km.
+Munkába menet 15 perc bicikli, vissza 18 perc.
+Kondi: guggolás 5x5 90 kg, fekvenyomás 5x5 70 kg, evezés 5x5 60 kg. Összesen 55 perc, RPE 8.
+Evezőgép 20 perc, guggolás 3x8 80 kg.
+Ma 2 x 45 perc foci volt, közte 15 perc szünet.
+Két kör a tó körül, egy kör 3,2 km, közben 2 perc séta.
+életszerűtlen tempó
+Ma futottam 5 km-t 20 perc alatt.
+Bringa 40 km 80 perc.
+3 kör 800 m, közte 400 m kocogás.
+10x400 m, közte 90 mp pihi, összesen 4 km.
+ők futottak 10 km-t.
+Ők edzettek, én pihentem.
+Karate edzés 90 perc, ebből 20 perc formagyakorlat.
+Karate edzés 90 perc, ebből 20 perc nyújtás.
+Úszás 45 perc, ebből 10 perc bemelegítés.
+Uszodában 45 percet voltam, ebből kb 30 perc úszás volt.
+Ma 3-szor 15 perc sétát iktattam be a munka között.
+ma 3-szor 15 perc sétát iktattam be
+4x4 perc kemény futás, közte 3 perc pihi
+Az elmúlt két hétben minden másnap futottam 5 km-t.
+Két hónapja nem futottam, ma újra: 4 km, 26 perc, kicsit nehéz volt.
+Két hét múlva verseny lesz, ma 12 km-t futottam rá készülve.
+5 napja futottam 10 km-t.
+Két hete kondi 45 perc.
+Holnap futok 5 km-t.
+Az edző szerint túl sokat futok, heti 60 km elég lenne.
+Két hónapja edzek, azóta 12 kg-ot emelkedett a fekvenyomásom.
+Futottam, de fájt a térdem, a 6. km után sétáltam haza.
+Este a haverokkal fociztunk a pályán, 2x30 perc.
+Kosárlabda edzés, 2x25 perc játék.
+Ma 3-szor 1000 métert úsztam.
+Ma 5-ször 200 métert úsztam.
+A héten 3-szor futottam.
+Futottam 5 km-t, közben 10 percet álltam.
+Vártam 10 percet a buszra, aztán 30 perc futás.
+A futásom közben megállított egy ismerős, így 10 percet álltam.
+Reggel 7-kor úszás, 1500 m, délután 5-kor kondi, 1 óra.
+Ma futás és 2 úszás, 40 perc.
+ ugyanaz, mint a „napi
+A hétvégén 2 napig túráztunk a Bükkben, naponta kb 20 km.
+2 napig túráztunk, 20 km naponta.
+Ma az egész nap ülőmunka volt, este csak 20 perc sétára futotta.
+Lefutotta a maratont.
+ma 3 kör a Margitszigeten, ez kb 16 km
+Délután 5 kor 8 km futás.
+Az orvos szerint többet kell mozognom, ma elkezdtem: 20 perc séta.
+Ma elmentem az edzőterembe, de zárva volt, így hazamentem.
+A mai foci elmaradt.
+úszodába mentem de zárva volt, helyette 5 km futás
+Az edzőterem zárva volt, így otthon nyomtam egy kört: 3 kör fekvőtámasz.
+Ma végre elmentem futni, 4 km, első alkalom 2 hónapja.
+Ma 90 percet edzettem, ebből 30 perc kardió.
+ órájának szólt, ahol a „kör
+Ma reggel az edzőteremben 20 perc futópad, aztán 40 perc súlyzó.
+reggel futottam 5 km-t, este konditeremben voltam egy órát
+Délelőtt bevásárlás, délután 1,5 óra kertimunka.
+Ma végre elértem a napi 10 000 lépést, sőt 12 300 lett!
+Két hét múlva félmaraton, ma megvolt az utolsó hosszú futás: 18 km.
+Két hét múlva félmaraton.
+Ma lefutottam a félmaratont.
+Reggel 6:30: 20 perc mobilitás és 10 perc légzőgyakorlat.
+Két kávé után végre lement az első 5 km a héten.
+A 10 km-es futásom ideje 52:30 volt, új rekord!
+A héten összesen 20 km-t futottam.
+17 óra körül futottam egy könnyed 7 km-t a folyóparton.
+Kb 2 órát bicikliztem.
+Nyári melegben csak este tudok mozogni, ma 21:30-kor futottam 6 km-t.
+Az új cipőm 42,5-es, fél mérettel nagyobb, sokkal kényelmesebb futni benne.
+A heti 4. edzésem: válogatott gyakorlatok, 55 perc, jó tempóban.
+Letudtam a heti 3. futást, 8 km.
+Heti futásom: 8 km.
+Reggel 72-es pulzussal keltem, kicsit magas, biztos a tegnapi edzés.
+A tegnapi edzés után ma könnyű nap: 20 perc séta.
+Tegnap edzettem, 45 perc kondi.
+Ma reggel az uszodában 20x50 m-es sprinteket úsztam, 15 mp pihenővel.
+6x100 m sprint a pályán.
+Végre elértem a napi 10 000 lépéses célt, sőt 12 431 lett!
+Az ebédem maradék lasagne volt tegnapról, kb 400 gramm.
+Otthoni edzés: 4x15 kitörés, 3x20 vállemelés 2x5 kg-os kézisúlyzóval, plank 3x1 perc.
+Kondi 45 perc, plank 3x45 mp a végén.
+Tegnap futottam 10 km-t.
+Beneveztünk a párommal egy 10 km-es jótékonysági futásra októberben, elkezdtünk készülni: ma 4 km.
+Reggel 6-kor 5 km, este 6-kor még 5 km, dupla nap volt.
+Beneveztem egy félmaratonra.
+reggel 5 km futás, este 5 km futás
+Sose gondoltam volna, hogy 10 km-t tudok futni, ma megtörtént!
+Ma 12 500 lépés, ebből 5 km futás volt reggel.
+A nyári táborban a gyerekek napi 3x úsznak, én is beszálltam ma délután 1000 méterre.
+Nyomtam egy 5 km-t.
+A kutyát sétáltattam háromszor: reggel 20, délben 10, este 30 perc.
+Wing chun edzés 90 perc, páros gyakorlatok.
+Futottam 20, úsztam 30 percet.
+Nem fog menni a futás, kész vagyok teljesen.
+18:30 CrossFit WOD: 21-15-9 thruster és húzódzkodás, 12:40 alatt.
+A kutyánk megbetegedett, ezért ma csak rövid séták voltak: 3x10 perc.
+Beneveztem a szeptemberi 10 km-re. Ma megvolt az első edzés: 5 km könnyű.
+Vasárnapi bringatúra a családdal: 35 km.
+Reggel meditáció 10 perc, utána 108 napüdvözlet.
+Fáj a torkom, lázas is vagyok, kihagyom a mai úszást.
+Vízisí tábor 5. napja: ma 3 futam, összesen 45 perc vízen.
+A jövő heti maratonra ma már csak 5 km lazítás volt.
+A tesómékkel wakeboardoztunk a tavon, én kétszer tudtam felállni.
+Softballoztunk a csapatépítésen vagy másfél órát.
+Kétszer úsztam ma, reggel és este.
+Úszásoktatásra irattam be magam, heti 1x60 perc, ma volt az első.
+A heti bevásárlás is 5000 lépés volt a plázában.
+Csípőfájdalom miatt a futást szüneteltetem, helyette túrázom hétvégén.
+440 kcal-t égetett a 45 perces orbitrek az óra szerint.
+Heti 3 futás volt a múlt hónapban.
+Terhesség alatt jógáztam sokat.
+A csontkovácsnál voltam, utána könnyebb lett a mozgás.
+30 perc mozgás volt ma.
+A széchenyi fürdőben áztattuk magunkat 2 órát, úszni nem úsztam.
+Az okosóra szerint a mai aktív kalóriám 612, a lépésszám 13 450.
+Reggelire rántotta, ebédre a tegnapi lecsó maradékát melegítettem meg.
+A fizioterápiás gyakorlatokat naponta 2x15 percben írták elő, ma mindkettőt megcsináltam.
+Fél órás webinar után átmozgattam magam: 15 guggolás, 15 fekvőtámasz.
+A luxus szállodában gym is volt, 40 perc futópad reggeli előtt.
+Fél órás futás volt ma.
+A lift helyett mindig lépcső: ma 14 emelet összesen.
+90 perces meccs, én a második félidőben álltam be, kb 45 perc játék.
+Dobáltam a labdát fél óráig, közben sétálgattam.
+90 perces meccset játszottunk végig.
+Tea és méz, fáj a torkom, edzés kihagyva.
+A szomszédasszony 5 km-t futott ma, én csak 2 km-t sétáltam.
+A tavaszi félmaraton edzéstervem 2. hete: ma könnyű 6 km, holnap pihenő.
+Focimeccsen voltunk, csak néztük, de 8000 lépés lett a járkálásból.
+Focimeccsen voltunk, csak néztük.
+Az úszásoktatásra kísértem a gyereket, közben lementem 30 hosszt a másik sávban.
+A kutyával a szokásos köröket róttuk, majdnem 4 km lett.
+A telefonom szerint 9800 lépés, de az órám 10 400-at írt, az órának hiszek.
+Futva róttuk a köröket a kutyával, 5 km lett.
+A smartwatch 132-es átlagpulzust mért a 35 perces edzés alatt.
+A gyerekekkel trambulinoztunk a kertben egy jó órát.
+A kollégám szerint túl gyorsan futok, de ma is 5:20-szal mentem 8 km-t.
+A lift szerviz miatt egy hete lépcsőzöm, ma is 9 emelet kétszer.
+Nyári zápor szakította félbe a tekerést 32 km-nél, beáztam rendesen.
+Az úszásoktatás díját befizettem, 8 alkalom 24 000 Ft.
+Láttam egy 5 km-nél jelzőtáblát.
+Bejárattam az új futócipőt, 3 könnyű kilométer.
+A holtemelésem új csúcsa 180 kg, háromszor húztam meg.
+Meccs előtt 30 perc bemelegítés, a meccs 2x30 perc volt.
+Az edzőterem zárva volt, így a parkban toltam le 3 kör futást, 4,5 km.
+A tegnapi 12 km után ma csak lazítottam, 20 perc görgő.
+Görgőn tekertem 40 percet.
+Tegnap 12 km-t futottam.
+A gyerek biciklijét toltam fel a dombra, közben én is gyalogoltam 2 km-t.
+Bicikliztem 20 km-t.
+Uszodában 45 perc, ebből 30 perc úszás, 15 perc vízitorna.
+Az edzőterem saját mérlege 1,5 kilót többet mutat, mint az otthoni.
+Ma 12 500 lépés, ebből 5 km futás volt.
+A hosszú hétvégén összesen 3 túra volt: 12, 18 és 9 km.
+A gyerek úszásoktatása alatt én 20 hosszt úsztam a másik medencében.
+Ma 2,5 km-t sétáltam.
+Ma is 5 emeletet mentem fel gyalog háromszor a lépcsőn.
+Az irodában lépcsőztem ebédszünetben, 6 emelet fel és le, kétszer.
+Ma 6x1 perc sprint a dombon, köztük lesétálás.
+6x2 perc sprint.
+2x25 perc intervall futás.
+Plank 3x1 perc.
+Az orvos heti három úszást javasolt, ma volt az első, 800 m.
+A napi 10 ezer lépésből ma csak 6 ezer jött össze.
+Az uszodában a gyerekekre vigyáztam, magam nem úsztam semmit.
+Ma három emelet gyalog, plusz a boltból cipeltem 10 kilót haza.
+Ma 8 emelet gyalog.
+Gyalog mentem a boltba, 20 perc.
+A tegnapi 10 km után ma is futottam, de csak 5-öt.
+Az úszásnál 1500 m volt a terv, de csak 1000 m-t úsztam.
+Ma 12 km volt a terv.
+Ma nem volt időm edzeni, csak a lépcsőt jártam meg 5-ször.
+Két sör és egy pizza volt a vacsora a meccs mellett.
+nem futottam a kondi mellett
+A tegnapi 15 km után ma csak 3 km-t kocogtam levezetésnek.
+Tegnap 15 km-t futottam.
+Reggel még futottam volna, de esett, így csak otthon nyújtottam 15 percet.
+Ha lett volna időm, futottam volna.
+A medence 50 m-es, 20 hosszt úsztam benne ma.
+45 hossz a 33-as medencében.
+3 es 4 sorozat kozott tartottam pihenot, 30 perc kondi.
+17:30-tol 19:00-ig futottam.
+Ma 90 perc foci, de csak a masodik felidoben jatszottam.
+Ma 90 perc foci, vegig jatszottam.
+Vegig jatszottam a meccset.
+Ma 60 perc kosar, vegig jatszottam.
+Este kosar meccs a haverokkal.
+Bevasaroltam, tele volt a kosar, 20 perc gyaloglas hazaig.
+Az edzesen ma csak a felsotestet vittem: mell, vall, tricepsz.
+Ma alsotest edzes, 50 perc.
+5 kor, koronkent 400 m futas.
+Az edzes: 5 kor, koronkent 400 m futas es 20 guggolas.
+Futottam 4 kort, egyenkent 400 m.
+Ma reggel 3 kor a toparton, minden kor 1,5 km.
+Ma 12 km-t bicikliztem oda a tohoz.
+Ma 500 metert usztam gyorson es 500-at mellen.
+Uszas: 400 gyors, 200 hat, 400 gyors, 200 mell
+Az esti edzes 1,5 ora volt, kondi es kardio fele-fele.
+Ma 60 perc edzes, futas es kondi 50-50.
+Ma 20 perc bicikli es 40 perc gyaloglas.
+Ma 12 500 lepes, ebbol 5 km futas volt.
+Ma 40 perc uszas: 20 hossz mell, 10 hossz hat.
+Ma reggel 40 perc uszas, 30 hossz a 25 meteres medenceben.
+45 hossz a 33-as medenceben.
+Az edzes 5 gyakorlat volt, 45 perc alatt.
+Az edzes 45 perc volt, 5 gyakorlat.
+Az edzes 5 gyakorlat volt.
+Húzódzkodás 6 db, tolódzkodás 10 db, 5 kör
+Reggel 7 kor futás 5 km
+Futás 6 km, de az utolsó 2 km-t sétáltam
+10 km futás, az utolsó 1,5 km-t sétáltam
+Bicikliztem be a munkába és haza, 2x8 km, kb 25-25 perc
+Oda-vissza gyalog, 20-20 perc
+Este 1 óra teremfoci, kb 800 kcal
+üres azonosító
+a cím nem tartalmazza a nevet
+kevés a választható mozgásforma
+Fájt a térdem
+Reggeli torna
+tegnap guggolás 3x8 60 kg
+tegnap este fekvenyomás 5x5 100 kg
+guggolás 3x8 60 kg
+ma guggolás 3x8
+az elmúlt 3 napban guggolás 3x8
+60 perc kondi bérlettel
+bérlettel 60 perc kondi
+a bérletemmel 60 perc kondi
+vettem egy bérletet
+bérletre költöttem
+bérletet vettem, aztán 60 perc kondi
+birkóztam 60 percet
+balettoztam 60 percet
+havat lapátoltam 45 percet
+ugrálókötél 15 perc
+mobilizáltam 15 percet
+január 30 perc kondi
+március 15 km futás
+július 28-án 45 perc futás
+ és a „futás a hetes buszmegállóig
+futás a hetes buszmegállóig
+a héten 3 futás
+minden reggel 20 perc jóga a héten
+minden este 30 perc séta a héten
+minden nap 20 perc jóga
+multisport kedden 60 perc kondi
+kondi és futás összesen 90 perc
+kondi és futás, 90 perc
+futóverseny 52 perc
+úszóverseny 30 perc
+10 km 5:00-es tempó
+10 km futás 1:30-as tempóval
+10 km futás 52 perc 5:30-as tempóval
+délelőtt 1 óra, délután fél óra kondi
+reggel 30 perc futás, este 45 perc futás
+reggel 30 perc futás, este 45 perc kondi
+este 45 perc kondi
+délelőtt kondi 1 óra és 30 perc futás
+1 óra és 30 perc futás
+futás 1 óra és 30 perc
+10-15 perc futás
+20-20 perc futás
+reggel és este is futottam 20-20 percet
+kosár edzés
+, nem „úszás
+futottam 30 percet
+kocogtam 30 percet
+úsztam 30 percet
+bicikliztem 30 percet
+kerékpároztam 30 percet
+gyalogoltam 30 percet
+sétáltam 30 percet
+túráztam 30 percet
+jógáztam 30 percet
+nyújtottam 30 percet
+táncoltam 30 percet
+kondiztam 30 percet
+gyúrtam 30 percet
+eveztem 30 percet
+korcsolyáztam 30 percet
+síztem 30 percet
+fociztam 30 percet
+kosaraztam 30 percet
+teniszeztem 30 percet
+röplabdáztam 30 percet
+kéziztem 30 percet
+boxoltam 30 percet
+karatéztam 30 percet
+tekéztem 30 percet
+sportoltam 30 percet
+Emma jött velem
+dilemma volt
+gamma sugárzás
+mma edzés 1 óra
+hegymászás 4 óra
+falmászás 1 óra
+vízitorna 45 perc
+strandröplabda 1 óra
+tornaterem 1 óra
+kerékpártúra 2 óra
+kenu 2 óra
+rafting 2 óra
+búvárkodás 1 óra
+szánkózás 1 óra
+parkour 1 óra
+salsa 1 óra
+barlangászat 2 óra
+via ferrata 3 óra
+taposógép 20 perc
+futás és úszás 30-30 perc
+futás és úszás 2-2 óra
+reggel és este 1-1 órát futottam
+30 perc futás majd 20 perc úszás
+az elmúlt 3 nap alatt 6 kézi edzés
+nem három napra oszlott el
+nem naponta kettő
+nem a mai napra került
+a jövőbe került
+túl messze csúszott a mostani pillanattól
+ma reggel 6-kor futottam
+tegnap 18-kor kondi
+23-kor futottam
+ma 6 kor futottam
+este 8-kor edzettem
+délután 5-kor futás
+8 korsó sört ittam és futottam
+múlt kedden futottam
+kedden futottam
+múlt hétfőn kondi
+múlt szombaton túra
+tegnap hajnalban futottam
+múlt pénteken hajnalban futás
+tegnap reggel futottam
+megállt a lánc 
+nem tartotta az időpontot (
+legalább tízezer esetet néztünk
+Leghosszabb edzés
+Leghosszabb táv
+Legtöbb lépés
+700 kcal
+Legtöbb kalória
+Leggyorsabb tempó
+, find(b, 
+ma reggel 78,4 kg
+78 kiló vagyok
+mérleg: 81,2
+testsúly 78,4 kg
+ma 80 kg voltam
+reggel 79
+85 kilo lettem
+hetvennyolc kiló vagyok
+nyolcvanöt kiló vagyok
+ma reggel hetvennyolc kiló
+száz kiló vagyok
+tizennyolc százalék testzsír
+fekvenyomás nyolcvan kiló
+kettő tojás
+18% testzsír
+testzsír 18
+78,4 kg és 18% testzsír
+fekvenyomás 80 kg
+guggolás 3x10 100 kg
+80 kg-ot nyomtam
+vettem 2 kg almát
+hoztam 5 kg krumplit
+ma 10 km futás
+húszonöt éves vagyok
+150 g csirkemell
+3x10 fekvenyomás 60 kg
+fogytam 2 kilót
+1% testzsír
+80% testzsír
+jó napom volt
+70 kg alatt vagyok
+szeretnék 70 kg lenni
+kb 80 kg vagyok
+78 kg körül vagyok
+180 cm és 80 kg vagyok
+80 kg vagyok és 180 cm
+kedden 80 kg voltam
+szombaton 79 kg
+haskörfogat 92 cm
+derék körfogat: 84
+bicepsz körfogat 36 cm
+78 kg, 18% testzsír, derék 84 cm
+derék 84 cm
+180 cm magas vagyok
+magasság 180 cm
+derék 300 cm
+combhajlítás 3x12
+bicepsz 20 kg
+comb 58 kg-os lábtolás
+comb 58 cm
+mellkas 100 cm
+mell 20 dkg csirke
+2 csirkecomb
+mérleg 1500
+zabkása 60 g
+este 45 perc jóga, aztán 78,9 kg a mérlegen
+50 perc kondi, mérleg 81,2
+45 perc jóga
+nyugalmi pulzus reggel 47, este 62
+aludtam 7 órát, éjjel 3
+78,4 kg, aludtam 7 órát
+ma reggel 78,4, aludtam 7 órát
+aludtam 7 órát, súlyom 80 kg
+beteg vagyok, 38 fokos lázam van
+38,5 fokos láz
+ma reggel 78,4 kg voltam
+egészséges sávban
+érdemes figyelni rá
+kockázati sávban
+ma reggel 79 kilóval keltem
+78 kilóval ébredtem
+reggel 80,5 kilót mértem
+78,2 kg ma reggel éhgyomorra
+79 kg zuhany után
+ma reggel 78,4 kg, aludtam 7 órát
+aludtam 8 órát, 78 kg
+80 kg-os súllyal nyomtam
+a derékbőségem 90-ről 86-ra csökkent
+haskörfogatom 92 cm-ről 88-ra
+testzsír 22-ről 18 százalékra
+82,5-ről 79,8-ra fogytam
+derék 84 cm, csípő 95 cm
+78 kg 18% zsír
+nem 80 kg vagyok, hanem 78
+nem 79 kg lettem, hanem 76,5
+80 kg vagyok
+, és ott az „alatt
+79,8 kg egy hét alatt
+79,8 kg, -1,2 kg egy hét alatt
+78 kg két hónap után
+80 kg alatt szeretnék lenni
+ eddig teljesen elveszett: a „mérés
+reggel mérés: 80,1 kg, izomtömeg 35,2 kg
+haskörfogat 92-ről 88 cm-re
+80-ról 76-ra fogytam
+reggeli mérés: 80,1 kg
+78 kg lettem, végre 80 alá mentem
+megettem egy pizzát, 79,8 kg voltam reggel
+77,7 kg, eddigi legjobb
+visszahíztam 82-re
+aug. 14. reggel 78 kg
+július 28-án 78 kg
+ma reggel: 40 perc futás, zuhany, zabkása fahéjjal, 79,1 kg
+78 kg, 18% zsír, 92 cm derék, 100 cm csípő, 38 cm comb, 34 cm kar
+esti fürdés után 79,2 kg
+végre lement a súlyom 80 alá, 79.6 kg
+vállból nyomás ma csak 40 kg ment, fáradt voltam
+evezés volt reggel, este 78 kg a mérlegen
+ és a „kg-nál tartok
+reggel éhgyomorra 68 kg pont
+82 kg-nál tartok
+derékbőség 92 cm, két hete még 95 volt
+78,4 kg ma reggel, egy hónapja 81 volt
+3 hete edzek rendszeresen, ma 78 kg volt a súlyom
+a 30. hétben vagyok, hetente 2x úszás
+78 kg voltam a héten
+az okosmérleg szerint 22,1 a testzsírom
+19 a testzsír százalékom
+ és a „83-ról indultam januárban, ma 76
+stagnál a súlyom 82 körül
+végre átléptem a 80-as határt lefelé, 79,8
+83-ról indultam januárban, ma 76
+a 10. helyről indultam a versenyen
+elértem a fehérjecélt, 140 g
+bocs, elírtam: 78,2 kg volt, nem 87,2
+78,2 kg volt, nem 87,2 kg
+ma reggel 82,3 kg de tegnap 82,9 volt
+ma reggel 82,3 kg tegnap 82,9 kg
+ma reggel 82,3 kg de 82,9 volt
+tegnap 82,9 kg volt
+), amit a „csak számok maradtak
+Ma pihenőnap volt. 78,9 kg reggel.
+Ma pihenőnap volt, csak 6200 lépést tettem meg. Ettem egy joghurtot és két szelet kenyeret sonkával. 78,9 kg reggel.
+hőemelkedésem van, 37,8
+beteg vagyok, lázam van 38,5
+Ma volt a születésnapom, 42 lettem, és 42 fekvőtámaszt csináltam.
+Betöltöttem a 42-t.
+Szülinapomon 78 kg voltam.
+Ma 78 kg vagyok.
+Ma reggel 79,2 kg, ez 0,4 kg-mal kevesebb, mint tegnap.
+Ma reggel 79,2 kg, 0,4 kg-mal kevesebb.
+Ma 80 kg vagyok.
+Reggel 79,1 kg. Cél: 75 alá szeptember végéig.
+Reggel 79,1 kg, cél a 75.
+A cél 75 kg.
+Reggeli mérlegelés: 88,8 kg. Jól állok a heti tervhez képest.
+Mérlegeltem: 78,2 kg.
+A mérleg ma reggel 84 kilót és 300 grammot mutatott.
+84 kiló 300 gramm vagyok.
+Ma reggeli súly: 90,05 kg, első alkalommal 90 fölött. :(
+70 kg alatt szeretnék lenni.
+A mérlegen 91,2, a zsírmérő szerint 24,8 százalék.
+Súlyom 80, zsír 18%.
+A spinning órát leadtam 55 percben, a pulzusátlag 148 volt.
+A recepción mérték: 78,4 kg, 17,9 százalék zsír.
+Derékbőségem 88 cm, a csípőm 102, a mellkasom 98.
+Mellkasom 98 cm.
+Súlyom 98 kg, derék 88.
+ mérése TELJESEN elveszett: a „körül
+Ma reggel 8 óra körül mértem: 81,3 kg, ez 400 grammal kevesebb mint tegnap.
+81,3 kg, ez 400 grammal kevesebb mint tegnap.
+Szeretnék 75 kg lenni.
+Kb 70 kiló vagyok már csak, 82-ről indultam
+Ma 82,9 kg – jó irány
+Ma 82,9 kg, tegnap 83,4 volt – jó irány
+Ma 82,9 kg, tegnap 83,4 volt - jó irány
+reggel 7-kor 80 kg voltam
+Reggel 81,2 kg – hétfőn még 82
+Ma 79,4 kg, a múlt héten 80,1
+Testsúly: 90,4 → 89,8 egy hét alatt
+Derékbőség 92 → 88 cm
+Ma 74,8 kg, hétfő óta -1,2
+Súly 82,3 kg (+0,4)
+Ma 78 kg, ez -3 kg január óta
+Ma 80,0 kg – először 80 alatt... na jó, pont 80
+elcsúszás a(z) 
+. napnál
+guggolás 3x10 60 kg, fekvenyomás 3x8 50 kg
+lábgép 3x12 80 kg és vádli 4x15
+arnold nyomás 3x10 16 kg, oldalemelés 3x15 8 kg
+nem forog körbe
+Mit ettél? (pl. 
+Túrós batyu
+Csirkemell (sült/grill)
+csirkemell rizzsel
+kenyér vajjal és sajttal
+rántott hús krumplipürével
+két szelet kenyér
+egy szelet torta
+három szelet sonka
+ettem egy müzliszeletet
+Rántott hús (sertés)
+bécsi szelet
+rántott szelet
+1 kg csirkemell
+0,5 kg burgonya
+1,5 kg alma
+2 kiló rizs
+50 dkg marhahús
+250 g rizs
+2 dl tej
+ (a „10 dkg
+10 kg alma
+50 kiló alma
+csokis müzliszelet
+csoki és müzliszelet
+sajtos pizza
+pizza és sajt
+zöldséges wok
+wok és zöldség
+meggyes pite
+pite és meggy
+ EGY fogás, a „csirkemell és rántott hús
+csirkemellből rántott hús
+csirkemell és rántott hús
+tojásból rántotta
+tojás és rántotta
+sonkás-sajtos melegszendvics
+sajtos szendvics
+sonkás szendvics
+szalámis szendvics
+sajtos hamburger
+szendvics és sonka
+hamburger és sajt
+sonkás gyros
+sajtos gyros
+sajtos kebab
+sajtos quesadilla
+csirkés rizottó
+tejfölös csusza
+gombás rizottó
+gyros és sajt
+marha pörkölt
+birka gulyás
+szarvashús pörkölt
+bárány pörkölt
+vadas marha
+Vadas hús
+marhahús és pörkölt
+külön mondva külön étel
+ettem marhát, meg egy pörköltet
+vacsorára omlett három tojásból, sonkával
+: kcal100=
+: prot100=
+: portion=
+ kcal fehérje 
+ kcal ételben
+: nincs szótöve
+ a macchiato közepén, a „rizs
+poke bowl
+poke tál
+sült oldalas
+oldalast ettem
+zsírszegény tej
+zsírmentes túró
+megettem az almáját
+egy sor csoki
+két sor csokoládé
+Csokoládé, Sör
+egy sor csoki és egy sör
+sört ittam
+két sor csoki
+ is elszállt volna egy „méz banánnal
+Kávé (fekete), Tej
+kave tejjel
+Kávé (fekete), Cukor
+kave cukorral
+Méz, Banán
+mez banannal
+Üdítő (cukros), Pizza
+kola pizzaval
+feta sajt
+feta sajttal
+mozzarella sajt
+parmezán sajt
+ricotta sajt
+Sonka, Sajt (trappista)
+sonka sajt
+Sajt (trappista)
+cheddar sajt
+, names(Foods.parse(all, 
+halat ettem
+Hal (fehér)
+babot ettem
+Bab (főtt)
+Kacsa / liba
+Bor (vörös/fehér)
+chia mag
+Chia / lenmag
+Tejeskávé / cappuccino
+Pite (almás/gyümölcsös)
+csirkemájat ettem
+almáját megette
+Poke bowl
+edzőteremben voltam
+ásás a kertben 1 óra
+Burgonya (főtt)
+-ban a pho, a „gnocCHIAval
+-ban a szoba, a „hagyMÁJA
+Szirup (juhar/agavé)
+Tortilla / wrap
+Szörp (hígítva)
+Kávé (fekete)
+Torma / gyömbér
+Túrós csusza
+csak a felét ettem meg a pizzából
+ a zab miatt, a „sziruphoz
+autóbusszal mentem
+buszon ettem
+süllő roston
+tilápia filé
+paprikás krumpli
+túrós csusza
+rakott krumpli
+töltött káposzta
+rántott sajt
+rántott gomba
+stefánia szelet
+paprikás csirke
+töltött paprika
+grízes tészta
+mákos tészta
+somlói galuska
+túró rudi
+szilvás gombóc
+almás pite
+hortobágyi palacsinta
+tavaszi tekercs
+fehérje szelet
+bundás kenyér
+főtt tojás
+cézár saláta
+görög saláta
+forró csoki
+zöld tea
+aszalt szilva
+, „zsemi
+álmos vagyok
+álmodtam egy jót
+álmot láttam
+kézírása szép
+jogaimat gyakorlom
+jogi kérdés
+almát ettem
+jógát csináltam
+kézilabda edzés
+150 g rizs
+Cukormentes / light
+cukormentes rágó
+kóla zero
+cukormentes kóla
+két kanál cukor
+kávé cukor nélkül
+kávé cukorral
+ egy pohár bort naplózott: a „bor
+Bors (fűszer)
+marhahús borssal
+sózva borsozva
+ittam egy pohár bort
+ tő nem található meg a „kalaccsal
+Kalács / bejgli
+palacsintával kaláccsal
+Kuszkusz (főtt)
+Rizs (főtt)
+30 g fehérjepor
+protein por
+Protein turmix
+protein turmix
+Csicseriborsó (főtt)
+darált hús
+izotóniás ital
+Rizsszelet / puffasztott rizs
+puffasztott rizs
+sajtos pogácsa
+3 tojásból rántotta
+tojásos rántotta
+rántotta és egy szelet kenyér
+, names(
+avokádós pirítós
+Hortobágyi palacsinta
+curry rizzsel
+kelkáposzta főzelék
+Mákos tészta
+Tarhonyás hús
+tarhonyás hús
+Grenadírmars (krumplis tészta)
+krumplis tészta
+Rántott zöldség
+rántott karfiol
+a rántott karfiol nem nyers karfiol
+Tészta (főtt)
+Mákos guba
+mákos guba
+Rakott kelkáposzta
+rakott kelkáposzta
+Gyümölcsturmix / smoothie
+Aszalt gyümölcs
+az aszalt szilva nem friss szilva
+Gyümölcspüré / bébiétel
+Kakaó (tejes)
+Bogyós gyümölcs
+Befőtt / kompót
+Tea (cukrozatlan)
+Szósz / mártás
+csípős szósz
+Joghurtos öntet
+sült krumpli majonézzel
+Hagymakarika (rántott)
+aszalt vörösáfonya
+Gyorséttermi menü
+sós perec
+Ropi / kréker
+sajtos tallér
+Makréla / szardínia
+Tészta carbonara
+Töltött tészta (tortellini)
+ tiszta olajnak, a „szendvicskrém
+Olajbogyó / olívabogyó
+Szendvicskrém / kence
+Magvaj (mandula/kesu/tahini)
+Párizsi / felvágott
+-ban benne a „rum
+durum tészta
+Zsírszegény tej
+sovány tej
+Light majonéz
+light majonéz
+cukkini spagetti
+Konjac / shirataki tészta
+konjac tészta
+laktózmentes tej
+ MÉZNEK számított (a „mez
+Krémtúró / túródesszert
+Camembert / brie
+Pálinka / tömény
+Koktél / long drink
+gin tonik
+aperol spritz
+Üdítő (cukros)
+jeges tea
+kakaós palacsinta
+rigó jancsi
+Muffin / brownie
+Fánk / churros
+ szóban benne van a „tea
+cékla saláta
+savanyú káposzta
+sült batáta
+Zöldség (vegyes / párolt)
+Saláta (zöld)
+kovászos uborka
+ 33 kcal-os EPERNEK számított (az „eper
+a tepertő nem eper
+Májkrém / kenőmájas
+stefánia vagdalt
+, „mcdonalds
+, Foods.parse(all, 
+zsírszegény túró
+zsírszegény sajt
+zsírban sült
+ és az egy m-es „humusszal
+egy kapucsínót ittam
+reggelire 2 tojás és egy pirítós vajjal
+ebédre gulyásleves és 2 szelet kenyér
+vacsorára túró és zöldség
+tízóraira egy alma meg egy joghurt
+ettem egy rántott sajtot rizzsel és tartárral
+ma csak egy salátát ettem ebédre és este 2 adag tésztát
+reggeli: zabkása banánnal és mézzel, ebéd: csirkemell rizzsel
+edzés után protein turmix és egy banán
+fél liter kefir és 3 db keksz
+kaja: gyros tál extra sült krumplival
+sörözés: 3 korsó sör és egy hamburger
+nassoltam egy zacskó chipset meg egy csokit
+) régóta ennyit ad, a „rántotta 3 tojásból
+vacsira rántotta 3 tojásból, paradicsommal
+Szendvics 150g
+egy szendó sonkával
+Szilvás gombóc 250g
+Káposztás tészta 330g
+káposztás cvekedli
+Húsleves 400g
+grízgaluska leves
+Ramen 500g
+ramen leves
+pho leves
+Poke bowl 400g
+Caprese saláta 250g
+caprese saláta
+risotto gombával
+ mellett a „grillcsirke fél adag
+Csirkemell (sült/grill) 75g
+grillcsirke fél adag
+Gulyásleves 800g
+gulyásleves 2 adag
+rántott hús másfél adag krumplipürével
+Gyros 175g
+fél adag gyros
+Aszalt gyümölcs 40g
+aszalt sárgabarack
+Popcorn 40g
+pattogatott kukorica
+Vattacukor 30g
+Sült gesztenye 100g
+sült gesztenye
+Keksz 40g
+Chips 50g
+Jégkása 300g
+Rizsszelet / puffasztott rizs 10g
+Gumicukor / cukorka 30g
+haribo gumicukor
+Energiaital 250g
+red bull
+Csokoládé 25g
+sport szelet
+Üdítő (cukros) 330g
+fantát ittam
+ és a „mentős
+Gulyásleves 400g
+fantasztikus vacsora volt: gulyás
+mentős barátommal ettem egy gulyást
+két tányér gulyás
+két kanál méz
+Csokoládé 100g
+egy tábla csoki
+Csokoládé 50g
+fél tábla csokoládé
+Chips 25g
+fél zacskó chips
+Kesudió 15g
+fél marék kesudió
+Pálinka / tömény 80g
+két kupica pálinka
+Rizs (főtt) 100g
+fél bögre rizs
+Hamburger 250g
+hamburger sajt nélkül
+Pizza 300g
+pizza sajt nélkül
+Csirkemell (sült/grill) 150g
+csirkemell rizs nélkül
+Gyros 350g
+gyros saláta nélkül
+ma nem ettem csokit
+ebédre gulyásleves
+Tavaszi tekercs / gyoza 150g
+Wok (zöldséges-húsos) 350g
+wok csirke
+Pad thai 350g
+pad see ew
+kimchi rizzsel
+teriyaki csirke
+Chilis bab (con carne) 400g
+chili con carne
+Taco 120g
+Sztrapacska 400g
+juhtúrós sztrapacska
+Nokedli / galuska 200g
+Zöldség (vegyes / párolt) 200g
+Tokány 300g
+borsos tokány
+hentes tokány
+Szalontüdő 350g
+Rakott kelkáposzta 400g
+kolozsvári káposzta
+Leves (átlag) 400g
+Zsíros kenyér 100g
+velős pirítós
+Marhahús 150g
+, „fagyiztunk
+Fehérjepor 30g
+whey protein 30 g
+Protein turmix 300g
+kazein turmix
+Palacsinta 150g
+protein palacsinta
+Puding 200g
+protein puding
+Gofri 100g
+protein gofri
+Étrend-kiegészítő 5g
+kreatin 5 g
+magnézium tabletta
+Sportital / izotóniás 500g
+elektrolit ital
+Növényi tej (mandula/zab) 250g
+ nem sör, a „sajtótájékoztató
+első sorban ez fontos
+sorban álltam
+borzasztó nap volt
+a laborban dolgoztam
+táborban voltunk
+vajon mi lesz
+hallottam egy jó hírt
+halkan beszélt
+paradicsomi állapotok
+narancssárga póló
+kolbászolás a városban
+rumli van otthon
+sorozatot néztem és haladtam a munkával
+borsos ár volt
+narancsbőr ellen edzek
+sörhas ellen gyúrok
+uborkaszezon van
+tejszínű ég
+almafa virágzik
+diófa asztal
+tortaformát vettem
+tejszínhab a kakaóra
+vajas kenyér
+sajtos rántotta
+bordó pulcsi
+új mezben futottam
+Szabolccsal futottam
+ sört, a „beolvasás
+ halat vitt a naplóba. A „nincs kifogás
+nincs kifogás
+a képernyőn láttam
+a hónaphoz képest
+a tetején
+a nap során
+tejet ittam
+halat sütöttem
+fél tábla étcsoki
+egy tábla étcsoki
+Csokoládé 200g
+két tábla tejcsoki
+2 tányér leves után alma
+Kávé (fekete) 200g
+Pizza 200g
+két szelet pizza
+Pizza 100g
+egy szelet pizza
+egy egész pizza
+Tepsis csirke 300g
+tepsis csirke
+egészben sült csirke
+Kalács / bejgli 80g
+mákos tekercs
+diós bejgli szelet
+Curry 300g
+csirke curry
+csirkés gyros
+nem kértem sültkrumplit a hamburger mellé
+nem ettem salátát a pizza mellett
+nem kértem sültkrumplit
+ nem határ: a „nem ettem csokit és chipset
+ma nem ettem csokit és chipset
+nem ettem semmit, de ittam kávét
+Alma 150g
+nem ittam kávét, de ettem egy almát
+nem ettem reggelit és ittam egy kávét
+csokis keksz
+háztartási keksz
+Sütemény 100g
+Ropi / kréker 30g
+Müzliszelet 30g
+unalmas nap
+fájdalmas edzés után
+nyugalmas vacsora
+zero kóla
+coke zero
+pepsi max
+diet coke
+diétás kóla
+cukormentes energiaital
+zéró cukros üdítő
+zero szörp
+ és az „ettem egy pizzát
+Sütemény 80g
+kaptam egy szelet tortát a születésnapon
+rendeltem egy pizzát
+ettem egy pizzát
+Pizza 150g
+megettem a fél pizzát
+150 g csirkemell rizzsel
+, a „kifogyott a tej
+, a „meg akarok kóstolni egy tiramisut
+, a „rendelnék egy pizzát
+ettem egy levest, majd még egy levest
+2 pogácsa
+egy túrós batyu
+két bundás kenyér
+10 datolya
+három szilva
+2 sárgarépa
+ebédre töltött káposzta volt, két adag
+gulyásleves, két tányérral
+reggelire kenyeret ettem, három szelet
+kávé, két bögrével
+kaptam egy fagyit, 2 gombócot
+sütöttem egy adag palacsintát, megettem hatot
+ettem palacsintát, hatot
+ittam egy sört, hatot
+csirkemell rizzsel, 200 g
+reggeli 400 kcal 25 g protein
+ebéd 750 kcal, 45 g protein
+150 g protein turmix
+150 g proteinszelet
+TRX sor 3x12
+kábel sor 4x10
+edzés előtt bevettem egy kreatint
+bevettem a D-vitamint
+vettem két kiló almát
+tejbegríz kakaóporral
+palacsinta porcukorral
+ittam egy kakaót
+kertépítés egész hétvégén
+izomépítés a cél
+testépítés edzés 60 perc
+húsvéti tojáskeresés a kertben
+almás pite desszertnek
+ettem 2 tojást
+vizesedik a térdem edzés után
+vizenyős a bokám
+vízretenció miatt nőtt a súlyom
+vízhajtó miatt 2 kilót estem
+ittam két pohár vizet edzés után
+eddig 3 hetet bírtam ki cukor nélkül
+lemondtam a csokiról
+böjtöltem délig
+ettem egy csokit
+cukormentes üdítő 5 dl
+nem ittam 3 kávét, csak 1-et
+nem 2 alma volt, hanem 1
+ittam 3 kávét
+, „retket
+frizbi a parkban 1 óra
+új frizurám lett
+csirke rizzsel
+a férjem pizzát evett, én salátát
+a gyerekek fagyiztak, én kihagytam
+degusztációs menü 5 fogás, kicsi adagok
+fogast ettem roston sütve
+vas tabletta reggelente, ma is bevettem
+gyerekadag spagettit ettem
+duplázott sajtburger, nagyon éhes voltam
+matcha latte zabtejjel a kávézóban
+tejmentes cappuccino kókusztejjel
+kávé és tea is volt ma
+milka csoki fél tábla
+mcdonalds happy meal a gyereknek, én egy mcflurryt
+subway ham sandwich, 15 cm
+vettem egy fagyit a sétány végén, citromos
+vettem 2 kg almát a piacon
+hóemberépítés és hógolyózás a kertben
+lubickoltam a Balatonban
+almáspite a nagyinál
+uborkasaláta ebédre
+15,8% zsír a mai mérésen
+testzsírmérő csipesz: 12 mm has, 8 mm comb
+zsíros kenyér hagymával
+gin tonik a koktélbárban, kettő is
+palacsintát sütöttem, három is lecsúszott
+olajban sült hal
+nyílt vízi úszás a Balatonban
+vizet ittam az edzés alatt
+kolagén port keverek a kávémba minden reggel
+ettem egy kocka csokit
+ettem 2 kocka csokit
+ettem egy kocka sajtot
+kockacukor a kávéba
+felszakadt a vízhólyag a sarkamon
+vizet ittam, 5 dl
+fokhagymás csirkemell 180g rizzsel
+lilahagymás rántotta
+hagymát pirítottam a lecsóba
+ettem egy gírost
+ huszonöt grammnak, az „egy harapás hamburger
+egy falat csokit ettem csak
+egy harapás hamburgert kaptam
+két falat sajttorta
+falatozóban ebédeltem, gyros tál
+fehérje 120 g, szénhidrát 180 g, zsír 60 g
+100 g zsír a rántáshoz
+buddha bowl falafellel
+leszedtük a diót a fáról
+megettem egy marék diót
+les mills bodycombat 55 perc
+csirkecombot sütöttem ebédre
+100 g rizs nyersen mérve
+60 g száraztészta főzve
+200 g főtt rizs a bowlba
+100 g nyers répa rágcsálva
+terhességi cukorteszt után ettem egy szendvicset
+kockacukrot tettem a kávéba
+az egész pizzát megettem egyedül
+túlettem magam a bográcsosból
+az egész családnak főztem vacsorát
+egy pint IPA-t ittam a kocsmában
+hat felé értem haza és ettem egy szendvicset
+virsli 2 pár mustárral
+egy pár virslit ettem
+burrito marhahússal
+a gong bao csirkét ettem
+Kínai bundás csirke
+fehérjeturmix edzés után 30 g fehérjével
+300 g fehérjeturmixot ittam
+kávézacc helyett koffein tabletta
+rizs helyett bulgurt ettem
+Bulgur (főtt)
+vizet ittam, 2 liter összejött mára
+hidratálás pipa, 3 liter
+Víz / ásványvíz
+ esszük, nem „csigán
+letolás csigán 3x12 25 kg
+Kakaós csiga
+ettem egy csigát a pékből
+zsírszegény tejföl a levesbe
+Alkoholmentes sör
+alkoholmentes sört ittam
+sört ittam a meccs alatt
+a 20 fokos vízben úsztam fél órát
+úsztam és utána ittam egy pohár vizet
+mogyoróvaj banánnal turmixolva
+banán turmixot ittam
+c-vitamin pezsgőtabletta vízben oldva
+pezsgőt ittunk szilveszterkor
+grillezett zöldségek halloumival
+bográcsoztunk a kertben
+hallottam egy jó receptet halból
+melegcsoki a hidegben
+ettem egy tábla csokit
+kaja: 2 db 300 g-os pizza
+vacsora: 2 db 30 dkg-os pizza
+3 ek oliváolaj a salátába
+2 tk cukorral ittam a kávét
+ekkora adag rizst még nem ettem
+viszcerális zsír 9
+mentes nap volt, semmi cukor
+ettem pizzát, de semmi édesség
+leturmixoltam egy banánt tejjel
+nem ettem meg az egész pizzát, csak a felét
+hosszúlépés a kertben
+mérleg 78,8 / víz 55%
+kekszes-mogyorós müzliszelet
+pringles fél doboz
+🍕 2 szelet
+☕ és egy croissant
+zsírom 18 százalék
+ittam sok vizet, kb 2,5 litert
+vacsora és táncolás hajnalig
+ittam egy kolát
+sült hús
+előre főzve: 5 doboz csirke rizzsel
+előre főzve van a csirke, ettem egy adagot
+tokaji aszú egy pohár
+zsír 18%
+nagy adag tészta
+kis adag rizs
+dupla adag gulyás
+húsos rakott tészta
+Rakott krumpli
+rakott krumpli vacsorára
+ittam egy kortynyi vizet
+két feles és egy sör
+felesleges volt az egész
+megosztottunk egy pizzát ketten
+ketten ettük meg a pizzát
+ketten voltunk a moziban, ettem egy popcornt
+porridge reggelire
+protein bar edzés után
+chicken salad
+chicken wings
+cheat day: burger és fries
+Sült krumpli
+gofri tejszínhabbal
+hosszú meccs volt, 2x30 perc kézilabda, utána 2 sör a kocsmában
+gorilla sor: 5x5 fekvenyomás 100 kg
+kivittem a szemetet
+ettem egy kivit
+a hűtőben van még sajt
+megettem a sajtot
+a gyerek nem eszi meg a levest
+sütöttem egy tortát a szülinapra
+cukormentes nap volt, semmi édesség
+cukormentes napom van
+gluténmentes kenyér 2 szelet
+ JELZŐ: a „cukormentes csoki 30 g
+ és a „bor
+sült csirkecomb bőrön sült krumplival
+boros marhapörkölt
+ittam két pohár bort
+egy szelet birsalmasajt
+egy bögre kávé tejjel
+kávét ittam tejjel
+ittam 2 dl tejet
+ a hasáb, a „fogam
+káposztás rétes
+túrós rétes
+almás rétes
+túró 200 g
+3 korty bor
+két pohár bor
+egy korsó sör
+még 2 szelet pizza belefér
+beleférne még egy sör
+a maradék kalórián megettem egy joghurtot
+megettem 2 szelet pizzát
+1/2 kg csirkemell
+1/4 kg túró
+3/4 l tej
+1/2 liter tej
+fél kiló alma
+1 liter víz reggel, 1 liter délután
+2 dl víz reggel és 3 dl víz este
+500 ml víz edzés alatt és 500 ml utána
+megittam 2 liter vizet ma
+2 dl tej és 1 liter víz
+Sok volt a stressz, csak sétáltam 25 percet. Vacsi maradék pizza, 2 szelet.
+Vacsi maradék pizza, 2 szelet
+Tegnap 2 liter vizet ittam, ma eddig csak 8 dl-t.
+1 liter víz reggel, 1 liter délután.
+Reggel 5 dl víz, délben 5 dl, este 1 liter.
+a süti amit vittek a munkahelyre, kb 3 szeletet ettem belőle
+sütit vittek a munkahelyre, 3 szeletet ettem belőle
+Vacsi maradék pizza, 2 szelet.
+ma reggel még 82 kg voltam, este már csak 81,5 – biztos a víz
+egy hét alatt 3 kilót fogytam, de szerintem ez a víz
+sok vizet ittam ma
+ittam 2 liter vizet
+reggel elfelejtettem enni, délben pótoltam: 2 szendvics
+elfelejtettem bevenni a vitaminokat
+ (a-hangrend), a bőré „bőrrel
+este megettem egy egész csirkecombot ropogós bőrrel
+kávé nélkül indult a nap, de dél után bepótoltam, 3 kávé lett
+kávé nélkül indult a nap
+proteines palacsinta
+protein turmix banánnal
+vacsira halfilé párolt zöldséggel
+lefutottam a half maratont
+Reggeli: proteines zabkása áfonyával.
+Vízilabda edzés 90 perc, utána fél liter csoki tej.
+Ettem egy tábla csokit.
+Fél bagett sajttal a vacsora.
+Ma zsírt égettem: 40 perc kardió éhgyomorra.
+Zsírral sütöttem a tojást.
+ sütije pedig a MAI naplóba – az „ettem
+Kezdő futóknak szóló tervet követek.
+Sütit sütöttem a hétvégére, de nem ettem belőle egyet sem, esküszöm!
+Szőlőt ettem uzsonnára.
+Sütit sütöttem a hétvégére, és ettem is belőle kettőt.
+A recept szerint 200 g liszt kell, én teljes kiőrlésűt használtam.
+Vacsora: túrós palacsinta lekvárral.
+Túrót ettem magában, mézzel.
+800 g marhalábszárból főztem pörköltet, én egy adagot ettem.
+Ettem 200 g pörköltet.
+220 gramm volt a steak, a felét átadtam a férjemnek.
+Nem ettem meg az egész steaket, csak a felét.
+Ma 16:8 böjtöltem, az első étkezés délben: csirkés rizs.
+Egy kétszersültet ettem sajttal.
+Fél kiló eper volt a délutáni nass, cukor nélkül.
+A szauna után kicsit dehidratáltan keltem.
+Kávé cukor nélkül.
+Egy egész csomag kekszet megettem, 200 g volt.
+Ettem egy szelet tortát, 150 g volt.
+Megettem egy csomag kekszet.
+A pilates óra után 15 perc görgőzés a comboknak.
+Sült csirkecombot ettem vacsorára.
+Két combot ettem meg.
+Úszás után 15 perc pezsgőfürdő és 10 perc gőzkabin.
+A jógastúdió új órája: yin jóga, 75 perc.
+Egy pohár pezsgőt ittam.
+Ebédre a maradék pörköltet ettem meg, kb. 250 g.
+Este 3 dl bort ittam volna, de inkább teát ittam.
+Ebédre majdnem rendeltem pizzát, de végül salátát ettem.
+Majdnem rendeltem pizzát.
+Ebédre két szelet rakott karfiol.
+Ebédre párolt karfiol csirkével.
+Vacsorára sült lazac párolt zöldséggel, kb. 200 g hal.
+Ebédre pörkölt nokedlivel, kb 250 g hús.
+Vacsorára 300 g hal párolt zöldséggel.
+Reggel ettem 2 szelet kenyeret, aztán még 3-at.
+Ma 2 nagy pohár vizet ittam reggel, aztán még 3-at napközben.
+Reggel ettem 2 szelet kenyeret, este még egyet.
+ és a „sor
+Ebédre levest ettem, de a körtét meghagytam.
+Ettem egy pizzát, a felét meghagytam.
+Ma 8 km-t futottam esoben, 45 perc, csuromvizes lettem.
+Futás után megittam két pohár vizet.
+Vacsora: gyros tál, kb 500 g az egész.
+Délben egy gyros tál, csirkés, sok zöldséggel.
+Ebédre csirkés tészta.
+Ebéd: leves, rizs, csirke.
+Ebédre rántott húst ettem rizzsel.
+Ma nem ettem semmi cukrosat, csak zöldséget és húst.
+Ebédre húst ettem.
+Vacsorára 4 db húsgombóc paradicsomszósszal és tésztával.
+ közepén ott áll az „őz hús
+Ettem egy fasírozó húsgolyót.
+Vadhús (szarvas, vaddisznó, nyúl)
+Vacsorára őz húst ettem.
+Ma 1 kiló almát vettem, de csak kettőt ettem meg.
+Ma vettem egy kiló szőlőt, csak 3 szemet ettem.
+Ma 1 kiló almát vettem, és meg is ettem.
+Ma tejterméket alig ettem, csak egy joghurtot.
+Reggelire tejet ittam, 3 dl.
+A napi vízbevitelem 2,5 liter volt.
+A vízbevitel célom 3 liter naponta.
+A vízbevitelem ma kevés volt.
+Ma este 1 pohár rozé fröccs és sajttál kettőnknek.
+Este egy pohár bor és egy fröccs is volt.
+A mai kajám: zabkása, csirke-rizs, túró.
+Túró rudi
+Vacsora: túró-rudi.
+Rakott zöldbab
+Vacsora: rakott karfiol sok sajttal.
+Ebéd: rakott cukkini darált hússal.
+Vacsora: rakott krumpli kolbásszal.
+Gulyásleves két szelet kenyérrel
+kenyérből 3 szeletet vajaztam meg
+ és a „duplán szedtem
+Ebédre kétszer szedtem a lecsóból
+Repetáztam a pörköltből
+Háromszor szedtem a gulyásból, nagyon finom volt
+Duplán szedtem a rakott krumpliból
+Hoztam a menzáról 2 fasírtot, az egyiket megettem
+Vettem két croissant-t, az egyiket megettem a buszon
+Sütöttem 20 palacsintát, ebből 3-at ettem
+Sütöttem 4 db húspogácsát, az egyiket megettem, a másikat elraktam
+Aludtam 8 óra 10 percet, egyszer felkeltem vízért
+3 szelet kenyér
+3 db alma
+2 darab alma
+3 gombóc fagyi
+3 perc alatt kész rizs
+2 dl tejjel készült rizs
+2 tojásfehérje
+2 tortilla
+2 paradicsom
+2 proteinszelet
+2 croissant
+2 korsó sör
+2 feles pálinka
+2 cappuccino
+3 dl sör
+fél liter tej
+ söre az első említésnél („sörözés
+sörözés: 3 korsó sör
+tojásos reggeli: 2 tojás
+2 adag rántott hús
+másfél adag rizs
+200 g gyros
+, „ötven gramm
+negyvenöt gramm sajt
+huszonöt dkg liszt
+ötven gramm rizs
+nyolcvan gramm zab
+harminckét dkg sajt
+ 30 grammos adag lett: a „negyed
+ pedig nem volt mértékegység (a „dkg
+negyed kiló sajt
+negyed liter tejföl
+háromnegyed liter tej
+10 deka párizsi
+5 deka sajt
+ és a „fél
+négy tojás
+fél kiló kenyér
+20 dkg sajt
+mandula, 30 g
+egy marék mandula, kb 30 g
+mandula kb. 30 g
+30 g, mandula
+mandula 30 g
+mandula: 30 g
+mandula (30 g)
+1 l akármi és mandula
+1 l akármi és 30 g mandula
+két deci tej
+másfél dl tej
+egy kiló csirkemell
+két tojás
+hat tojás
+fél alma
+csirkemell 200 g, rizs 150 g
+alma, banán, 30 g
+banán 2 db
+banán (2 db)
+2 db banán
+tojás (3 db)
+kenyér (2 szelet)
+csirkemell (150 g)
+rizs (200 g)
+banán és rizs 200 g
+negyed pizza
+negyed adag rizs
+negyed tábla csoki
+fél pizza
+háromnegyed pizza
+ két adag, a „tripla
+dupla adag rizs
+tripla adag rizs
+adag rizs
+tábla csoki
+tábla étcsoki
+szelet kenyér
+marék dió
+fél tábla csoki
+1-1 alma
+2 szelet kenyér
+3-4 dkg sajt
+100-150 g rizs
+2-3 dl tej
+2-30 alma
+a fele adag rizs
+az alma fele
+a pizza fele
+fél adag rizs
+csirkemell 150
+az alma fele és egy szelet kenyér
+100 g rizs, de csak a felét
+egy pizza, csak a negyedét
+egy kulacs víz
+fél kulacs víz
+a pizza negyede
+a pizza háromnegyede
+a szendvics harmada
+negyedévente pizza
+harmadik szelet pizza
+esti nass: néhány szem szőlő
+pár szem szőlő
+este pizza volt, én 4 szeletet ettem, plusz egy sör
+este pizza volt, én 4 szeletet ettem
+sütöttem palacsintát, én hatot ettem meg, a többit a gyerekek
+ebédre 2 szelet pizzát ettem, este még egyet
+reggel 1 tojást ettem, délben még kettőt
+ma 2 tojást ettem, meg 1 kávé
+reggel csak egy fél grapefruitot ettem
+2 grapefruit
+25 gr fehérjepor
+ és a „kávé, 4 csésze
+Kávéból ma 4 csészével ittam.
+Kávéból 4 csészét ittam.
+Kávé, 4 csésze.
+Uzsonna: egy marék mandula meg 2 szem aszalt szilva
+ egész táblaként ment be – a „fele
+Este egy tábla étcsoki fele és 2 dl tej
+Ebéd: rakott krumpli, 2 nagy szelet
+Pizza, 3 vékony szelet
+Két kis tábla csoki (2x40 g) az irodában
+3x25 g mogyoró napközben
+Egy nagy tál müzli tejjel, kb 80 g müzli
+csirkemell 150g, rizs 200 g
+), names(
+ütköző szótő: "
+ és „becsi
+" két ételnél is szerepel
+ és az „öntet
+Frankfurti leves
+frankfurti leves
+gulyás leves
+kefires öntet
+ és a „borsó
+Bundás kenyér
+Zsíros kenyér
+Növényi tej (mandula/zab)
+mandulatej müzlivel
+ tartalmazza a „sör
+vacsora sült csirkemell salátával
+tízórai: alma
+uzsonnára túró rudi
+reggelire zabpehely tejjel
+Bolognai spagetti
+bolognai spagetti
+spagetti bolognai szósszal
+rántott hús
+rantott hus
+a majd nem csirkemáj
+az iskolában nem kóla
+az uszodában nem szódavíz
+. A „dió
+, Foods.find(
+Hajdina / köles (főtt)
+Tökmag / napraforgómag
+ittam kávét, de cukrot nem kértem
+ittam kávét, de nem kértem cukrot
+ettem egy almát, aztán nem ettem semmit
+ ellentétet nyit: ami utána jön, azt megette az ember. Az „és
+nem ettem csokit de almát igen
+nem ettem csokit és chipset
+chia puding
+párizsi felvágott
+kevert süti
+Piskóta / kevert süti
+Wok (zöldséges-húsos)
+ nem „reggelied
+fal ülés
+wall sit
+holt függés
+dead hang
+hollow hold
+Izometriás tartás
+statikus guggolás
+hasi vákuum
+Holt függés
+alkartámasz 3x60
+Legnehezebb emelés
+Legjobb becsült 1RM
+Guggolás 110 kg
+Fekvőtámasz 45 db
+Plank 1:30
+4 kor 30 masodperc
+negy kor 30 masodperc
+otszor otot
+3szor 12
+haromszor tizenkettot
+0,5 perc
+fel perc
+1,5 perc
+masfel perc
+ nem hat izom, a „hetes
+hatizom 3szor 20
+hatizom haromszor husz
+hetes suly
+egykezes evezes
+, Hu.digits(
+ és a „húsz
+, „száztíz
+ nem kettő: a „-szor/-szer
+egyszeruen jo volt
+3szor a heten
+haromszor a heten
+, „tízezer
+3 kör 40 mp munka 20 mp pihenő
+5 kör 1 perc munka 30 másodperc pihenő
+6 sorozat 45 másodperc terhelés 15 másodperc szünet
+4 kör, munka 30 mp, pihenő 10 mp
+10 kör 30-30
+csináljunk egy tabatát
+tabata 6 kör
+emom 10 perc
+norvég 4x4
+norveg intervall
+norvég 4x4, 5 kör
+, IntervalParse.parse(
+négyszer negyven másodperc munka húsz másodperc pihenő
+kör 40 mp munka
+amrap 20 perc
+20 perc amrap
+amrap 12
+8 kör: 20 mp sprint, 40 mp séta
+20 mp gyors 10 mp lassú 8-szor
+kör 8, munka 30, pihenő 30
+munka 45, pihenő 15, kör 10
+kör: 6, munka: 40mp, pihenő: 20mp
+ perc bemelegítés, 
+ mp munka
+ mp pihenő
+ perc levezetés
+legalább ezer tervet néztünk
+hiit 20 perc
+a ritmus a mi javaslatunk
+fartlek fél óra
+e2mom 20 perc
+2 percenként 10 kör
+hiit 8 kör 45 mp munka 15 mp pihenő
+kimondott szám nem javaslat
+-t vagy „gyaloglás
+20 mp sprint 40 mp járás 8x
+20 mp sprint 40 mp gyaloglás 8x
+5 perc futás, 1 perc járás, 5x
+6 kör 1 perc munka 30 mp pihi
+20 mp sprint 40 mp séta 8x
+160/95 a vérnyomásom
+vérnyomás 140/90 higanymilliméter
+ nyolc órás időzítő, a „8x 22:30
+8x 60 perc
+10 kör 40 perc munka 20 perc pihenő
+4 kör 30 perc munka 5 perc pihenő
+5/3/1 ciklus 3. hete
+10 kör 30/30
+hiit 20 perc, 30/30
+15 perc, 40 mp munka 20 mp pihenő
+10 kör 1 perc munka 30 mp pihi, 3 perc bemelegítés
+fél perc munka fél perc pihenő
+, „sorozatot
+csípő mobilitás gyakorlatok 15 perc
+hengereltem a hátamat 10 percet
+5 körben 30 másodperc
+20 perc jóga és 10 perc meditáció
+1 perc gyors, 1 perc laza, felváltva 20 percig
+munka előtti úszás 6:00-6:45
+40 mp munka 20 mp pihenő 8 kör
+ nem két kör, a „korahajnali
+70-75 kg között ingadozom
+30 mp munka 15 mp pihenő, 10 kör
+tabata dupla: 16x20/10
+tabata 4 körrel
+kispályás focin játszottam 2x20 percet
+30 perc úszás, 2:10/100m tempó
+7:00 zabkása, 12:30 csirke rizzsel, 19:00 tojásrántotta
+30 perc busszal, 20 perc gyaloglás
+emom 12 perc
+ ragja nem kör: a „6:15-kor keltem
+ma reggel 6:15-kor keltem, 7,5 órát aludtam. 45 perc kondi. Este 30 perc laza bringa.
+10x400 méter 90 mp pihenővel
+6x800 méter 2 perc pihenővel
+4x1000 méter 3 perc pihenővel
+5 körönként 1 perc pihenő
+4x4 perc intervall 3 perc pihenővel
+sprint edzés: 8x200 méter, közte 90 másodperc pihi, bemelegítés 15 perc kocogás
+Súlyzós edzés 60 perc: mell, hát, váll, minden 3x10-12 között.
+Tabata 8x20-10.
+Ma reggel 5 percet sprinteltem a busz után, ez is edzés.
+1 kör 90 mp munka, 30 mp pihenő.
+Sprint edzés: 6 kör, 30 mp hajrá, 60 mp séta.
+Ma 2 órát túráztunk, közben 15 perc pihenő a csúcson.
+Reggel 7 kor hiit 20 perc
+Este 6 kor tabata 8 kör 20/10
+futás 45 perc 520 kcal
+10 km futás 50 perc alatt 700 kcal
+elégettem 400 kcal-t
+napi cél 2000 kcal
+futás 45 perc
+vacsora 650
+99999 kcal
+, Kcal.label(
+3 tojásfehérje
+100 g tojásfehérje
+túró 250 kcal 40 g fehérje
+vacsora 650 kcal
+napi cél 150 g fehérje
+reggeli futás 45 perc 520 kcal
+500 kalóriás deficitben vagyok
+ma 300 kcal többletben vagyok
+ma megettem 2 tányér levest és egy nagy adag rizst, összesen kb 900 kcal
+ma 2100 kcal-t ettem, elégettem 600-at
+ma 2200 kcalt ettem
+elégettem 750 kcalt az edzésen
+napi cél 1800 kcal, ma 1750 kcal lett
+a célom napi 2000 kcal
+polar: 55 perc, 610 kcal, átlag hr 138
+ma reggel 6 km futás, 32 perc, átlagpulzus 152, 420 kcal
+edzés után ettem 600 kcal-t
+ cél-szónak számított, az „égetés
+napi mérleg: 1900 kcal bevitel, 2400 kcal égetés
+kalóriadeficitben vagyok, kb 400 kcal
+ és a „bevitel 2000, égetés 500, nettó 1500
+az óra 300 kcal-t mutatott az edzés után
+kalóriabevitel ma 1900
+futás közben 320 kcal ment el
+bmr 1780 kcal
+1.500 kcal ma
+ettem 1.200 kcal-t
+2.200 kalt ettem
+vettem 3 kalapot
+elértem a kalóriacélt, 1900 kcal
+a fehérjecélom 140 g
+edzés 45 perc, 380 kcal
+3200 lépés, 140 kcal
+reggeli 450 kcal, edzés 45 perc
+napi összegzés: 2100 kcal bevitel 2600 kcal égetés
+bevitel: 2100 kcal, égetés: 2600 kcal
+reggeli 400kcal, ebéd 700, vacsi 600, snack 200
+reggelire 400 kcal, ebédre 700, vacsorára 600
+reggel 12000 lépés, ebéd 700 kcal
+Reggel mérés: 77,8 kg. Edzés: 45 perc kondi. Kaja: 1900 kcal.
+Futás 45 perc, 520 kcal.
+Deficitben vagyok, ma 1450 kcal, edzés 500 kcal.
+Polar: 55 perc, 610 kcal, átlag hr 138.
+Reggeli 350 kcal, ebéd 700, vacsora 600.
+A dietetikus 1600 kcal-t írt elő, ma 1550-nél zártam.
+1800 kcal-nál zártam a napot.
+A cél 2000 kcal.
+Ma a fehérje csak 80 gramm lett, kevés.
+A fehérjém ma 80 g volt.
+A fehérje kevés volt, 2100 kcal ment be.
+Ma 1 800 kcal-t ettem, 120 g fehérje
+Kalóriabevitel ma kb 2 200 kcal
+Este bringa 25 km, 1 200 kcal az óra szerint
+vegyél vissza
+a pihenőhét nem bűn
+a mai két edzés összeadódik
+140 / 150 perc
+Még 10 perc
+perccel túl
+napi húsz perc
+egy séta
+névtelen gyakorlat
+cím nélküli csoport
+Fordított tárogatás
+fordított pillangó
+Hátsó vállemelés
+Ferde padon nyomás
+Orosz csavarás
+Bolgár kitörés
+Kalapács hajlítás
+Vállból nyomás
+Bicepsz hajlítás
+Csípőemelés (híd)
+Fellépés székre
+Jumping jack
+Magas térd
+Labdás gyakorlat
+Hatvanas sorozat
+húzódzkodás széles fogással
+ nem láb, „hatvan
+Valami új
+Hát és Váll
+Hát, Váll és Kar
+) || n.equals(
+fél évig
+hétfőn és szerdán
+kettlebell swing
+russian twist
+képtelen gramm (
+12345678901234567890 g kenyér
+test test test
+1 2 3 4 5 6 7 8 9 10 kenyér
+nem a beállított hiány a különbség (tempó 
+a gyorsabb tempó nem kevesebb bevitel
+elhízás (I)
+elhízás (II+)
+növekvő ütem
+heti 1 kg-nál nem javasolunk többet
+Valami saját gyakorlat
+üres programnév
+üres a választék
+elfogyott a javaslat a 
+. alkalomnál
+nehezebb változat
+, set(10, 40))), 
+, set(10, 50), set(10, 50), set(10, 50))), 
+, set(12, 50), set(12, 50), set(9, 50))), 
+, set(12, 50), set(12, 50), set(12, 50))), 
+, set(12, 15), set(12, 15))), 
+, set(15, 20), set(8, 40), set(9, 40))), 
+, set(8, 0), set(7, 0), set(6, 0))), 
+edzés után 20 perccel 95 volt a pulzusom
+futás átlagpulzus 165
+edzés közben pulzus 150
+max pulzus 185
+bringa, pulzus 140
+ szó belsejében álló „pulzus
+átlagpulzus 132
+nyugalmi pulzus reggel 47
+pulzus este 52
+pulzus volt 50
+reggel 78,4 kg, 7 óra alvás, 54 nyugalmi
+ma reggel 47 volt a nyugalmi pulzusom
+nyugalmi pulzusom 48-ról 45-re javult egy hónap alatt
+nyugalmi pulzusom ma 52
+pihenőpulzus 55 körül mozog mostanában
+átlagpulzus 145 a futáson, max 172
+pihenőpulzus 52, edzés közben max 178
+edzés közben max 178
+reggel 52-es pulzus, délben futás 8 km, vacsora csirke rizzsel
+futás közben 165 volt a pulzusom
+a pihenőpulzusom lement 52-ről 49-re
+magas volt ma a nyugalmi, 61
+edzés utáni pulzus 130
+78,2 kg / 54 rhr / 7,5h alvás
+Reggel ébredéskor 48 volt a pulzusom, edzés után 145.
+Ébredés után 48 a pulzusom.
+Nyugalmi pulzus 48.
+ mozgásforma
+gyakorlat és gép
+ gyakorlat és gép
+ testtáj, 
+ gyógytornász-ihletésű gyakorlat**
+beépített program
+ beépített program**
+: a README nem mondja, hogy „
+legalább nyolc testtáj
+: figyelmeztetés
+: gyakorlatszám
+: adagolás
+excentrikus gyakorlat a golfkönyöknél
+, Rehab.forComplaint(
+fáj a hátam
+háton úszás 30 perc
+boka stabilitás
+bokastabilitásra szeretnék edzeni
+váll mobilizálás
+derék rehab
+gerinc mobilizálás
+nyak gyógytorna
+achilles megelőzés
+térd stabilizálás
+comb rehab
+lábszárfájás futás után
+fáj a lábszáram futás közben
+a bokám gyakran kifordul futás közben
+instabil a térdem oldalra
+rövid a combhajlítóm
+ és a „megint bejött a régi térdproblémám
+már egy hete húzza a vállam
+megint bejött a régi térdproblémám
+krónikus a vállpanaszom
+erősíteni kéne a farizmom
+nyújtani kéne a combhajlítót
+kell valami a talpamra
+hogyan erősítsem a térdem
+45 perc nyújtás
+combnyújtás 30 perc
+, Rehab.forGoal(
+váll erősítés
+boka erősítés
+vállból nyomás 3x10 20 kg
+boka 3x10
+ étel és a „vállal
+fáj a hasam a csípős kajától
+sokat vállaltam és fáj a fejem
+csípős csirkeszárny sült krumplival
+Egylábas állás – bal
+Egylábas állás – jobb
+nem sokat mozdult
+fáj a vállam 6/10
+ma 0/10, semmi panasz
+10/10 fájdalom
+fájdalom: 7
+4-es fájdalom a térdemben
+fáj a vállam
+guggolás 3x10 60 kg
+nincs fájdalom
+, Rehab.nextArea(
+, nx.matches(
+, Rehab.nextLevel(
+: nincs időtáv
+: nincs benne hét
+: nincs benne szám
+: túl hosszú vezetett sor (
+, a „szúr a derekam
+húzódzkodás 3x8
+lehúzás 4x12 50 kg
+húzódzkodás és vállból nyomás
+merev a felső hátam
+fáj a lapockám között
+görbe a hátam az ülőmunkától
+háti gerinc mobilizálás
+, a „nyak lazítás
+it-szalag rehab
+váll gyakorlatok
+mit csináljak a vállamra
+gyakorlat a derekamra
+nyak lazítás
+váll bemelegítés
+mit ajánlasz a bokámra
+2 perc bemelegítés, 6 kör 40/20
+Lábnap: guggolás, lábtolás, kitörés
+bemelegítés 10 perc
+fáj a bokám
+fáj a térdem
+fáj a térdem külső oldala
+fáj a derekam
+golfkönyök fájdalom
+fáj a csuklóm
+fáj a nyakam
+fáj a csípőm
+fáj az Achillesem
+fáj a talpam
+fáj a sípcsontom
+húzódik a combom
+gyenge a törzsizmom
+szédülés és hányinger edzés után
+megszédültem edzés közben
+fáj a mellkasom futás közben
+instabil a medencém futás közben
+core erősítés
+szeretném erősíteni a hasizmomat
+gyenge a bokám
+nem bírja a térdem a lépcsőt
+core edzés 30 perc
+hogyan javítsam a tartásomat?
+rossz a tartásom
+roskadt a tartásom a gép előtt
+tartásjavító gyakorlatok
+ alak megvolt, a jelen idejű „bemerevedik
+reggelre bemerevedik a derekam
+merevség a nyakamban
+csigolyasérvem van, mit csinálhatok?
+porckorongsérvem van
+műtét után vagyok, térdprotézis
+, a „keresztszalag szakadás után vagyok
+meniszkusz műtéten estem át
+keresztszalag szakadás után vagyok
+csigolya kopás a nyakamban
+diasztázisom van, mit csinálhatok
+lesérültem focin, boka, 2 hét kihagyás jön
+meghúzódott a hátam a 120 kg-os felhúzásnál
+megrándult a bokám a focin
+bokámat húztam meg, mikor kezdhetek
+fáj a hasizmom
+feszes a csípőhajlítóm
+feszes a combhajlítóm
+feszes a hátam
+feszül a vádlim
+Elment a kedvem az edzéstől.
+Ma 4x400 m intervall, köztük 2 perc lazítás.
+váll lazítás kéne
+Nagyon hosszú edzésnap-név ami sosem férne ki
+nincs ilyen
+Nincs ilyen
+Guggolás +4
+Teljes test
+Tolónap: fekvenyomás, vállból nyomás, tricepsz
+guggolás, fekvenyomás, felhúzás
+ma guggolás és fekvenyomás volt
+guggolás 3x10, fekvenyomás 3x8
+csak guggolás
+Reggeli: zabkása, banán, kávé
+1. guggolás 2. fekvenyomás 3. evezés
+Edzés: 3x10 fekvenyomás, 3x10 guggolás
+Karnap: bicepsz 12-10-8, tricepsz, alkar
+ gyakorlat
+ fogast (egy halat), a „levesszük
+tegnap guggolás 4x8 100 kg
+30 fekvőtámasz és 20 guggolás
+, „Futó intervall
+Zsírégető HIIT: 8 kör 40 mp munka 20 mp pihenő  (összesen 8 perc)
+Tabata: 8 kör 20 mp munka 10 mp pihenő  (összesen 4 perc)
+Futó intervall: 6 kör 2 perc munka 1 perc pihenő  (összesen 18 perc)
+Kondi kör: 10 kör 45 mp munka 15 mp pihenő  (összesen 10 perc)
+45 perc kondi
+ma 1 óra hiit edzés
+mennyi kalória van a banánban?
+mit egyek edzés előtt?
+hány kör legyen a tabata?
+ettem egy banánt
+futottam 30 percet és ettem egy banánt
+reggel 5 km futás, utána zabkása
+edzés és két tojás
+1 óra bringa, utána egy alma
+3x10 fekvenyomás 60 kg, utána protein turmix
+aludtam 8 órát, nyugalmi pulzus 52
+10 km futás, 78,5 kg a mérlegen
+aludtam 7 órát és futottam 10 km-t
+nyugalmi pulzus 50, ma 45 perc bringa
+ettem egy pizzát és aludtam 9 órát
+fáj a vállam, 78 kg vagyok
+8 kör 40 mp munka 20 mp pihenő
+mellgép 3x12
+combhajlítás 3x12 40 kg
+kettlebell swing 5x20 24 kg
+reggel 5 km futás, utána 20 fekvőtámasz
+ma 12000 lépés és 3x10 fekvenyomás 60 kg
+120 g fehérjét vittem be ma
+fehérje 95 g
+fájt a térdem, ezért csak bicikliztem 40 percet
+húzódott a combom, de végigcsináltam a 8 km-t
+fáj a térdem futás után
+merev a nyakam
+ edzés, a „8 órakor keltem
+aludtam 8 órát
+aludtam 7,5 órát
+7 óra alvás
+ma éjjel csak 6 órát aludtam... alvás: 6
+alvás: 8
+7,5 órát aludtam
+csak 4 órát aludtam
+tegnap 6 órát aludtam összesen
+kilenc órát aludtam
+hét és fél órát aludtam
+8 órát dolgoztam, 6 órát aludtam
+6 óra 30 perc alvás
+aludtam 7 órát 45 percet
+8-9 órát aludtam
+8 óra kondi
+8 órakor keltem
+dolgoztam 8 órát
+78 kg vagyok
+aludtam 20 órát
+aludtam 1 órát
+hét óra alatt
+aludtam kb 6,5 órát
+aludtam vagy 7 órát
+jól aludtam, kb 6 és fél órát
+aludtam volna nyolc órát
+bárcsak aludtam volna 9 órát
+fél 11-kor feküdtem le és 6-kor keltem
+alvás 6:30
+-mel mondjuk – az „ágyban voltam
+23:00-kor feküdtem le, 7:00-kor keltem
+edzés 6-kor és 18-kor
+reggel 7,5 órát aludtam, de 3-szor felébredtem
+aludtam 7 órát, kétszer felébredtem
+nyolcat aludtam
+kb 8-at aludtam
+hetet aludtam
+6,5-öt aludtam
+20-at aludtam
+aludtam volna nyolcat
+ és az „este 8
+8 óra alvás
+este 11-kor feküdtem, reggel 7-kor keltem
+22:30-tól 6:15-ig aludtam
+rosszul aludtam, kb 5 órát, kétszer felébredtem
+7,5 órát aludtam, de 3-szor felébredtem
+22:15 lefekvés, 5:45 ébredés
+éjfél után feküdtem, 6-kor keltem
+éjszaka 3x felébredtem a gyerek miatt, összesen talán 5 óra
+az alvásátlagom 6,8 óra a héten
+7 óra alvás, átlagpulzus 62
+ és a „kelés
+ eddig elveszett: az „ágyban
+, a „kelés
+11-kor ágyban, fél 7-kor kelés, de forgolódtam sokat
+az ágyban olvastam este, 11-kor keltem
+este tíztől reggel hatig aludtam
+tizenegy óra körül alhattam el, hatkor csörgött az óra
+csak hajnali 2-kor kerültem ágyba, 8-kor keltem
+a gyerek miatt háromszor keltem fel, összesen 6 óra lett
+sleep score 78, 7h12m
+sleep 6:45
+alvás pontszám 85
+mélyalvás 2 óra 10 perc, összesen 7 óra 30 perc alvás
+alvás 7:45, ebből mély 2:05
+aludtam 6 órát és 45 percet
+hajnali 2-ig fent voltam, 9-kor keltem
+fél 12 után alhattam el, 7 előtt ébredtem
+9 előtt keltem
+nappal aludtam, mert éjjel dolgoztam: 6 óra
+műszak után aludtam 6,5 órát
+alvás tegnap 7 óra volt
+aludtma 8 órát
+aludtam 8-at
+alutam 7 órát
+Este 10-kor lefeküdtem, de csak fél 12-kor aludtam el, 6-kor csörgött az óra.
+Este 11-kor feküdtem le, de csak éjfélkor aludtam el, reggel 7-kor keltem.
+Este 10-kor lefeküdtem, 6-kor csörgött az óra.
+Fél 12-kor aludtam el, 6-kor keltem.
+Ma megint elaludtam az ébresztő előtt, csak 5 órát pihentem.
+Ma 5 órát pihentem a kanapén.
+Éjjel rosszul aludtam a hőség miatt, talán 5 órát, ha összejött.
+Éjfél után értem haza, fél 1-től fél 7-ig aludtam.
+Éjfél után feküdtem le, 6-kor keltem.
+Éjjel 11-től reggel 7-ig aludtam, de éjfélkor felkeltem a babához.
+Este 10-kor feküdtem, reggel 6-kor keltem, éjfélkor felébredtem egyszer.
+Éjjel 11-től reggel 7-ig aludtam.
+Aludtam délután is egy órát, éjjel meg 6-ot
+Aludtam 6 órát éjjel és egy órát délután
+Éjjel 6 óra alvás, délután még 1 óra szunyókálás
+Aludtam egy órát délután
+Aludtam délután egy órát, éjjel meg hetet
+Éjjel hatot aludtam
+Aludtam 23-tól 7-ig, de csak fél óra múlva aludtam el
+Aludtam 23-tól 7-ig
+a szakasz-nevek és -azonosítók száma eltér
+Fekvenyomás 3×10/10/10@60
+Guggolás 5×5/5/5/5/5@80
+guggolás 5x5 80 kg
+Guggolás 3×8/8/8@100
+guggolás 3 × 8 100 kg
+Húzódzkodás 3×8/8/8@0
+Fekvőtámasz 1×50@0
+50 fekvőtámasz
+saját testsúly
+1) guggolás 2) fekvenyomás
+50 fekvőtámasz.
+guggolás 5x5 80 kg.
+Bicepsz 3×12/12/12@12,5
+bicepsz 3x12 12.5 kg
+fekvenyomsá 3x10
+biceps 3x12
+ és a „kellene 5x5 80 kg-ot guggolnom
+holnap guggolás 5x5 100 kg
+kellene 5x5 80 kg-ot guggolnom
+jövő héten guggolás 5x5 100 kg
+szeretnék 100 kg-ot nyomni
+Guggolás 5×5/5/5/5/5@100
+tegnap guggolás 5x5 100 kg
+Fekvenyomás 3×10/8/6@80
+Fekvenyomás 3 sorozat: 60kg x 10, 70kg x 8, 80kg x 6
+Guggolás 3×5/5/5@100
+Guggolás: 100 kg x 5, 100 kg x 5, 100 kg x 5
+fekvenyomás 60x10, 70x8, 80x6
+Guggolás 3×10/10/10@60
+Fekvőtámasz 5×10/10/10/10/10@0 | Guggolás 5×15/15/15/15/15@0 | Hasprés 5×20/20/20/20/20@0
+köredzés a parkban: 5 kör 10 fekvőtámasz 15 guggolás 20 hasizom
+Fekvőtámasz 1×20@0 | Guggolás 1×30@0
+20 fekvőtámasz 30 guggolás
+Fekvenyomás 1×1@100
+végre lement a 100 kg-os fekvenyomás
+Felhúzás 1×1@200
+sikerült a 200 kg-os holtemelés
+Guggolás 1×1@150
+megdöntöttem a rekordomat guggolásban: 150 kg
+100 kg-os fekvenyomás
+Fekvenyomás 4×1/8/8/8@100
+végre lement a 100 kg-os fekvenyomás, és utána 3x8 80 kg-mal dolgoztam
+ ugyanaz a folytatás, mint a puszta „3x8 80
+Guggolás 5×10/10/10/8/8@70
+guggolás 3x10, aztán 2x8 70 kg
+Fekvenyomás 4×10/8/8/8@70
+fekvenyomás bemelegítés 40x10, munkasorozat 3x8 70
+Fekvenyomás 3×10/10/10@0
+fekvenyomás 3x10, majd 20 perc futás
+lefekvés 23:15, ébredés 6:45
+lefeküdtem 23-kor
+Fekvenyomás 1×5@100
+nyomtam 100 kilót fekve ötöt
+Guggolás 3×8/8/8@0
+guggolás 3x8 @70%
+Fekvenyomás 5×3/3/3/3/3@0
+fekvenyomás 5x3 85%-on
+guggolás 3x8 @ 100
+Guggolás 1×1@140
+leguggoltam 140-et először életemben
+Fekvenyomás 1×1@120
+fekvenyomás 120
+Felhúzás 1×1@180
+felhúzás 180-at húztam
+nyomtam 100-at fekve
+Guggolás 1×100@0
+csináltam 100 guggolást
+Fekvőtámasz 1×100@0
+Guggolás 1×20@0
+guggolás 20
+kaptam egy húzódást a vádlimba futás közben
+fáj a vállam a tegnapi fekvenyomástól
+megrándult a bokám guggolás közben
+gyulladt a könyököm a bicepsztől
+Fekvenyomás 3×8/8/8@60
+fájt a vállam, mégis fekvenyomás 3x8 60 kg
+Guggolás 3×10/10/10@0
+guggolás 3x10, közben megrándult a térdem
+fekvenyomás 3x5 100 kg
+fekvőtámasz 3x20
+vállból nyomás 3x10 30 kg
+guggolás 999x999 9999 kg
+bicepsz 0x0
+guggolás 300 ismétlés 900 kg
+fekvenyomás 3x10 800 kg
+Hasprés 3×20/20/20@0
+hasizom 3x20
+Lábnyújtás 3×12/12/12@80
+lábgép 3x12 80 kg
+Csuklyás emelés 3×12/12/12@20
+csuklyás 3x12 20 kg
+Arnold nyomás 3×10/10/10@16
+arnold nyomás 3x10 16 kg
+Fordított tárogatás 3×15/15/15@8
+fordított tárogatás 3x15 8 kg
+Mellgép 3×12/12/12@40
+mellgép 3x12 40 kg
+Plank 3×45/45/45@0
+oldaltámasz 3x45
+Csípőemelés 3×15/15/15@40
+farizom 3x15 40 kg
+elöl guggolás 3x5 60 kg
+Román felhúzás
+román felhúzás 3x8 80 kg
+bolgár kitörés 3x10 20 kg
+Ferde fekvenyomás
+ferde fekvenyomás 3x8 60 kg
+felhúzás 3x8 120 kg
+kitörés 3x10 20 kg
+fekvenyomás 3x8 80 kg
+Lehúzás 4×12/12/12/12@55
+lat húzás 4x12 55
+Mellgép 3×12/12/12@45
+mellnyomás gépen 3x12 45 kg
+Ferde fekvenyomás 4×10/10/10/10@30
+ferde padon 4x10 30 kg
+Hátfeszítés 3×15/15/15@0
+hiperextenzió 3x15
+fekvenyomás 3x8 fél testsúllyal
+bicepsz 3x12 1,5 kg
+bicepsz 3x12 másfél kiló
+leg curl 3x12 40 kg
+leg extension 3x12 45 kg
+chest press 3x10 60 kg
+pec deck 3x12 50 kg
+shoulder press 3x10 40 kg
+cable row 3x10 55 kg
+pendlay row 5x5 70 kg
+skull crusher 3x10 25 kg
+hammer curl 3x12 14 kg
+dip 3x10
+térdemelés 3x15
+guggolás 3x10 100 kg rir 2
+felhúzás 1x1 180 kg rir 0
+guggolás 3x10 100 kg rir 7
+guggolás 3x8 60,5 kg
+guggolás: 5,5,5 @ 100
+guggolás 5x5 @ 100
+Kettlebell lendítés
+swing 4x20 24 kg
+guggolás 3x10, majd 20 perc futás
+60 kg guggolás 3x8, 50 kg fekvenyomás 3x8
+fekvenyomás max 120 kg
+húzódzkodás 3 szett maximumig
+fekvenyomás max
+3 kör 10 fekvőtámasz
+5 kör 20 guggolás
+fekvenyomás 5/5/5 80 kg
+bicepsz 12/10/8 15 kg
+fekvenyomás 5-5-5 80 kg
+guggolás 60 kg bemelegítés, aztán 3x5 100
+guggolás, majd fekvenyomás 3x8 60
+húzódzkodás 3x max
+ / „fekvőtámasz
+ / „alkarhajlítás
+, a „húztam
+eveztem 3x10 50 kg
+felültem 3x20
+kitörtem 3x12
+mellet nyomtam 3x10 60 kg
+nyomtam 3x10 60 kg
+húztam 3x10 60 kg
+toltam 3x10 60 kg
+emeltem 3x10 60 kg
+guggolás 3x10 helyett fekvenyomás 3x8
+4 sorozat 8 fekvenyomás
+négy sorozat nyolc fekvenyomás
+3 szett 12 bicepsz
+5 sorozat 5 felhúzás 100 kg
+3 sorozat 10 guggolás, 4 sorozat 8 fekvenyomás
+3 sorozat guggolás
+3 sorozat 60 kg guggolás
+3 szett maximumig fekvenyomás
+3 sorozat 2 perc pihenő guggolás
+3 sorozat 45 mp plank
+3 sorozat 1 perc plank
+Az edzésen 3 sorozat felhúzás 100 kg-mal, 5 ismétlés mindegyik.
+Ma 12 perc plank összesen, három részletben.
+Ma 12 perc plank.
+Ma 2 perc plank.
+Ma válltolás 3x10 30 kg, majd oldalemelés 3x15 8 kg.
+4 sorozat lehúzást csináltam 55 kg-mal, meg 3x10 evezést 40-nél.
+ sorozat
+legalább ezer bejegyzést néztünk
+fekvenyomás 3*10 60 kg
+fekvenyomás 3 * 10 60 kg
+guggolás 3x10 rpe 8
+kábeles keresztezés 3x12 20 kg
+arcra húzás 3x15
+kerékkel gurítás 3x10
+box ugrás 4x5
+nordic curl 3x5
+Nordic curl
+dead bug 3x10
+Holt bogár
+madár-kutya 3x8
+medvejárás 3x20
+vállgép 3x12 30 kg
+burpee 3x10
+. A „fekve
+kettlebell 16 kg 5x15
+kettlebell guggolás 3x10 20 kg
+kettlebell 24 kg
+tempó 3-1-1-0 fekvenyomás
+fekvenyomás 3-1-1-0 tempóval
+bicepsz 12-10-8 15 kg
+piramis: 10-8-6-4-2 guggolás
+evezőgép 5000 m 21:45
+úszás 1500 m 32:10
+18:00-kor fekvenyomás 3x8 60 kg
+holt emelés 1x5 140 kg
+dead lift 5x5 120 kg
+román holt emelés 3x10 80 kg
+holtemelés 3x5 150 kg
+farmerséta 40 m
+fekvenyomás 3x10, 60 kg
+franciafekvenyomás 3x12 25 kg
+tolónyomás 3x8 40 kg, oldalemelés 3x12 8 kg
+kábelhúzás 3x15
+biceps curl 12,5 kg-os kézisúlyzóval 3x12
+vállból nyomás 4x10 két 12,5-ös kézisúlyzóval
+bicepszem 38 cm lett
+bicepsz curl 3x12 a 12,5 kg-os súlyzóval
+szakítás technika üres rúddal 6x3
+emeltem a guggolás súlyát 5 kilóval, most 85
+kihúztam a hetet valahogy
+bench press 3x5 225 lbs
+tarkónyomás 4x8 40 kg
+csípőtolás 3x10 100 kg
+ és a „farmers walk
+ ágra, és a keresés az „rpe
+holtemelés 5x5 rpe 7
+guggolás 3x5 rpe 8
+fekvenyomás 3x5 60 kg rpe 7
+guggolás 5x5 rir 2
+guggolás 5x5. valami
+fekvenyomás 4x8 65 kg, guggolás 5x5. Este 30 perc laza bringa.
+1. guggolás 3x10 2. fekvenyomás 3x8
+tabata 8x20/10 fekvőtámasz
+tabata 8 kör 20/10 fekvőtámasz
+8x20/10 fekvőtámasz
+fekvenyomás 60/10
+leguggoltam 100-at súlyok nélkül
+leguggoltam 120-at rúd nélkül
+leguggoltam 140-et
+3x10 fekvenyomás 60 kg, 3x12 evezés 50 kg
+Ma 3 x 12 bicepsz 12 kg-mal, és 3 x 15 tricepsz kötélen 25 kg.
+50 guggolás 40 fekvőtámasz 30 hasizom
+Csináltam 3 sorozat plankot, egyenként 60 másodpercig.
+Ma nem volt kedvem semmihez, de azért leguggoltam 50-et és megcsináltam 30 fekvőtámaszt.
+Nem volt kedvem. Leguggoltam 50-et.
+Nem volt kedvem edzeni ma.
+Egy hete húzódik a combhajlítóm, ma próbáltam óvatosan futni.
+Két hete kezdtem el edzeni, ma guggolás 3x10 60 kg.
+3 napja fekvenyomás 5x5 80 kg.
+Combhajlítás 3x12 40 kg.
+Ma végre 100 kg fölé mentem fekvenyomásban, 102,5 kg lett.
+Fekvenyomás 3x8 60 kg, 80 kg alatt maradtam.
+Fekvő helyzetben emeltem lábat.
+45 perc erősítő otthon: kör 1 - guggolás, kör 2 - fekvőtámasz, kör 3 - plank.
+3 kör: 20 guggolás, 15 fekvőtámasz.
+A plank kihívás 12. napja: ma 2 perc 15 másodperc lett.
+Plank: 1 perc 30 másodperc.
+ eddig nyomtalanul eltűnt, mert a „kihúzás
+Súlyzós köredzés: 3 kör, körönként 12 guggolás 20 kg-mal, 10 evezés, 15 felülés.
+Az edzőm szerint jövő hónapra meglesz a 100 kg-os guggolás, ma 92,5 ment.
+Az edzőm szerint jövő hónapra meglesz a 100 kg-os guggolás.
+Vállgyakorlat 3x12 8 kg-mal.
+Fitness teszt: 12 húzódzkodás, 45 fekvőtámasz, 2:40 plank.
+Plank: 2:40, új rekord.
+Vállból nyomás ma csak 2x10 ment 30-cal, fáradt voltam.
+Az 5x5 program második napja: guggolás 92,5, fekve 72,5, evezés 67,5.
+3 szett bicepsz 12 kilóval, 12-10-8 ismétléssel
+A fizioterápiás gyakorlatokat ma is megcsináltam, 3x15 hidat.
+ ékezet nélküli „-ot
+Az edzőteremben ma léptem át először a 100 kg-ot fekvenyomásban.
+100 kg-ot fekvenyomásban.
+ bejegyzésében csak a guggolás maradt meg, „10-10-5
+Összesen 4 kör: guggolás, fekvőtámasz, húzódzkodás, körönként 10-10-5.
+5 kör, körönként 15 guggolás.
+4 kör burpee-guggolás-fekvőtámasz, körönként 10-15-20.
+Az edzés: fekvenyomás, guggolás, mindegyik 5x5.
+Ma 20 kg-mal nyomtam a mellgépen, 3x12.
+Ma 20 kilóval toltam a mellgépet, 3x12.
+Guggolás 60 kg bemelegítés, aztán 3x5 100.
+Az edzésen 40 kilóval húztam le, 4x12.
+Ma 20 húzódzkodást húztam le.
+Az edzésen 4x8 guggolás, mindegyik sorozat 100 kg-mal.
+Fekvenyomás 5x5, mindegyik 80 kg.
+Reggel 30 guggolás, este 30, napi rutin.
+Reggel 20 fekvőtámasz, délben 20, este 20.
+Guggolás 3x10, este 60 perc séta.
+Fekvenyomás 3x10, még egy szett 10-es kézisúlyzóval bicepsz.
+Guggolás 4x8 100 kg, majd 2x5 110-zel
+Holtemelés 3x5 140-nel, ráadás 1x3 150-zel
+Fekvenyomás 60 kg 3x10, aztán 70-nel egy 8-as
+Guggolás 5x5 100 kg, még egy 3-as 110 kilóval
+Vállnyomás 3x10 egy 20-as kézisúlyzóval
+Húzódzkodás 10 db, 5 sorozatban
+Húzódzkodás 10 db 5 sorozatban
+Fekvőtámasz 100 db, 5 sorozatban
+Fekvenyomás 3x8 70 kg, utolsó szett csak 6 ment
+Guggolás 5x5 100 kg, az utolsó sorozat már csak 3
+Fekvenyomás 3x10 60 kg helyett ma csak 3x8 50 kg ment
+ hasonult ragja is súly: a „végül 2x8 30-cal
+Guggolás 3x10 saját testsúllyal, majd 3x10 20 kg-os tárcsával, végül 2x8 30-cal
+ pad ferde fekvenyomás: a „döntött 3x10 25 kg-os
+Fekvenyomás 3x8 70 kg, döntött 3x10 25 kg-os kézisúlyzókkal
+Kondi: bicepsz 4x10 15, tricepsz 4x10 25, alkar 3x15 10
+egy hete kedden edzettem
+egy hete csütörtökön futottam
+egy hete
+öt hete kedden
+túl messzire tettük vissza
+tegnap este pizzát ettem
+tegnapelőtt ebédre gulyás
+3 napja ettem egy pizzát
+4 nappal ezelőtt reggel zabkása
+30 napja
+vasárnap sütöttünk
+ma este pizza
+éjjel ettem csokit
+múlt kedden pizza
+kedden pizza
+hajnalban ettem
+tegnap hajnalban ettem
+ nem éjjel, „teste
+fejjel lefelé lógás
+fájt a teste
+kereste a súlyzót
+festettem a kerítést
+estére csirke
+reggelire tojás
+éjjel ettem
+múlt héten ettem egy pizzát
+előző héten kondi
+múlt heti edzés
+ és a „fél liter
+fél 8-kor
+este fél 9-kor
+fél 12-kor ebéd
+fél liter víz
+negyed 8-kor
+háromnegyed 8-kor
+futás 45:30
+negyven perc edzés 
+ kalória
+a táv-ág önmagában ennyi lett volna
+a futást nem szabad alulbecsülni
+futótempónál nem a táv dönt (
+egy helyben mégis a távot számolta (
+ nem ugyanannyi, mint egy óra „Jóga
+Kézilabda edzés
+Esti jóga
+a kézilabda intenzívebb az átlagnál
+a jóga nyugodtabb az átlagnál
+20-10 Piramis
+20-10 Tabata
+Reggeli futás
+egy köredzés kavargása futás lett
+épp ezt kell kiszűrni
+kimaradt vagy megduplázódott egy síp
+nem csökken az ismétlés
+, munka 
+reális tartomány (
+pohárnyi lépés (
+, Weekplan.summary(
+📋  Holnap: Hát
+📋  Holnap: Láb
+📋  Holnap: Mell
