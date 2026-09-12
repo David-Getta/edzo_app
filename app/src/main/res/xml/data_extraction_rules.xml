@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adat-mentési szabályok Android 12+ (API 31+) esetén.
+  cloud-backup: a Google-fiókba mentés (új eszközön visszatöltés).
+  device-transfer: közvetlen eszközről-eszközre átvitel (pl. új telefon setup).
+  Minden adat a „edzo" SharedPreferences-ben van.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="edzo.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="edzo.xml" />
+    </device-transfer>
+</data-extraction-rules>

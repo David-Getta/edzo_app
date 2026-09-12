@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Automatikus Google-mentés szabályai (Android 11 és korábbi).
+  A teljes app-adat a „edzo" SharedPreferences-ben van (előzmények, erősítő
+  napló, saját programok, sablonok, beállítások, testmérések). Ezt mentjük a
+  felhasználó Google-fiókjába, hogy új eszközön magától visszatöltődjön.
+-->
+<full-backup-content>
+    <include domain="sharedpref" path="edzo.xml" />
+</full-backup-content>
