@@ -14,6 +14,11 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "tools"))
+
+from regexgyorsito import kod_maszk  # noqa: E402
+
 TEST_DIR = "app/src/test/java/com/edzo/idozito"
 
 # Egymás után álló, „+" jellel összefűzött Java sztringek – a tesztek így
@@ -74,7 +79,22 @@ def is_sentence(s):
     # A tesztek üzenetei („várt: …”) nem felhasználói mondatok.
     if s.strip().endswith(":") or s.startswith("A ") and s.endswith(" hibás"):
         return False
+    # A tesztek VÁRT ÉRTÉKEI sem azok: az „1d+0 h12: 1×futas/50/10.0km"
+    # nem egy naplósor, hanem a felismerés kimenete.
+    if re.match(r"^\d+d[+-]\d+", s) or re.search(r"\d+×[a-z]+/\d", s):
+        return False
     return True
+
+
+def csak_kod(src):
+    """A megjegyzések kiürítve, a hosszak megtartásával.
+
+    Egy megjegyzésbe tévedt idézőjel („a \\s" alak) különben elcsúsztatná a
+    literálok párosítását, és egész tesztfájlnyi mondat kimaradna a
+    korpuszból – csendben, mert a kimenet így is hihetőnek látszik.
+    """
+    tipus = kod_maszk(src)
+    return "".join(" " if tipus[i] == "m" else c for i, c in enumerate(src))
 
 
 def main():
@@ -85,7 +105,7 @@ def main():
     for name in sorted(os.listdir(TEST_DIR)):
         if not name.endswith(".java"):
             continue
-        text = open(os.path.join(TEST_DIR, name), encoding="utf-8").read()
+        text = csak_kod(open(os.path.join(TEST_DIR, name), encoding="utf-8").read())
         for m in LITERAL.finditer(text):
             joined = "".join(unescape(p) for p in PIECE.findall(m.group(0)))
             if is_sentence(joined) and joined not in seen:

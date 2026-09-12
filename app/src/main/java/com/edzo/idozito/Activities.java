@@ -2623,10 +2623,32 @@ public final class Activities {
             java.util.regex.Matcher fl = java.util.regex.Pattern.compile(
                     "(?<![\\d,.])(\\d{1,3})\\s?emelet(\\w*)\\s+fel\\s+es\\s+le"
                     + "(?![a-z])").matcher(s);
-            if (fl.find())
+            boolean duplazva = fl.find();
+            if (duplazva)
                 s = s.substring(0, fl.start())
                         + (2 * Integer.parseInt(fl.group(1))) + " emelet"
                         + fl.group(2) + s.substring(fl.end());
+            // Az ODA-VISSZA ugyanaz a dupla út, más szóval: a „leszaladtam a
+            // lépcsőn a 8. emeletről, aztán vissza fel" tizenhat emeletnyi
+            // lépcső – eddig nyolc lett belőle, a munka fele. A „fel és le"
+            // mellett ez a másik gyakori alak, és az ige meg a sorszám pontja
+            // is közéjük ékelődhet.
+            if (!duplazva) {
+                java.util.regex.Matcher ov = java.util.regex.Pattern.compile(
+                        "(?<![\\d,.])(\\d{1,3})\\.?\\s?emelet(\\w*)"
+                        // A közbeeső szavak közé vessző is eshet („6 emeletet
+                        // mentem fel, aztán vissza le"), de a rés EGYSZERŰ
+                        // betűsor: a szavakra bontott alak (…\p{L}{2,12}){0,4}
+                        // a böngésző motorján ötperces kereséssé fajult egy
+                        // olyan mondaton, amiben a „vissza" elő sem fordul.
+                        + "([a-z ,;]{0,30}?)"
+                        + "(?:oda[- ]?vissza|vissza\\s+(?:fel|le)(?![\\p{L}]))")
+                        .matcher(s);
+                if (ov.find())
+                    s = s.substring(0, ov.start())
+                            + (2 * Integer.parseInt(ov.group(1))) + " emelet"
+                            + ov.group(2) + ov.group(3) + s.substring(ov.end());
+            }
             // A szorzó ELTÁVOLODHAT az emeletektől: a „ma is 5 emeletet
             // mentem fel gyalog háromszor" háromszorosa három külön
             // alkalom lett, három perccel – tizenöt emelet helyett.

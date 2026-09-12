@@ -705,6 +705,20 @@ public final class StrengthParse {
                 + "(?:\\s+sorozat\\w*|\\s+szett\\w*)?\\s+"
                 + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kil[oó])\\w*",
                 " $1 kg");
+        // A SOROZATONKÉNTI szám ismétlés: a „3 sorozat fekvőtámasz,
+        // sorozatonként 20" egyetlen húszas sorozat lett – a hármas
+        // sorozatszám elveszett, és a naplóba a munka harmada került. A
+        // „3 szett guggolás, szettenként 12" ugyanígy.
+        //
+        // Csak a TAGMONDAT VÉGÉN álló, mértékegység nélküli szám: az
+        // „5 kör, körönként 10 fekvőtámasz" tízese a gyakorlaté, a
+        // „3 sorozat plank, egyenként 60 másodpercig" hatvana pedig
+        // tartás-hossz – azokhoz nem nyúlunk.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:sorozatonk[eé]nt"
+                + "|szettenk[eé]nt|k[oö]r[oö]nk[eé]nt|egyenk[eé]nt"
+                + "|mindegyikben|mindben)\\s+(\\d{1,3})(?![\\d.,-])"
+                + "\\s*(?=[,;.!?]|$)",
+                "$1 ismétlés");
         // A LISTA VÉGÉN álló sorozat MINDEGYIK gyakorlaté: a „mellgép,
         // hátgép, lábgép, 3x12" második és harmadik gépe nyomtalanul
         // elveszett – a sorozat csak az elsőhöz tapadt. Csak akkor

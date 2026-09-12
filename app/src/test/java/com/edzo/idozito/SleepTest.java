@@ -389,7 +389,7 @@ public class SleepTest {
         assertEquals(4, Sleep.parse(
                 "két műszak között csak 4 órát tudtam aludni"), 0.01);
         // A két szó közé sortörés is kerülhet – a bemásolt naplósorokban ez
-        // gyakori. A minta korábban EGYETLEN szóközt írt elő (a „\s" a Java
+        // gyakori. A minta korábban EGYETLEN szóközt írt elő (a „\s” a Java
         // forrásban szóköz-jelölés, nem regex), így a sortöréses alak
         // nyomtalanul elveszett.
         assertEquals(5, Sleep.parse(

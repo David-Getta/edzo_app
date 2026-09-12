@@ -63,6 +63,19 @@ java -cp "$WORK/tiszta/classes" Referencia "$KORPUSZ" "$NOW" > "$WORK/jvm.txt" 2
 echo "3/4  Futtatás a lefordított JavaScripten…"
 node "$ROOT/web/test/egyezes.mjs" "$ROOT/web/kiadas/mag.js" "$KORPUSZ" "$NOW" \
     > "$WORK/js.txt" 2>"$WORK/js.err" || { tail -5 "$WORK/js.err"; exit 1; }
+# A leglassabb mondat: a böngésző regex-motorja egy rosszul megírt mintán
+# ugyanazon a mondaton PERCEKIG is elszöszölhet, amit a JVM ezredmásodpercek
+# alatt elintéz. A telefonon ez nem lassúság, hanem fagyás – és a kimenet
+# ettől még betűre egyezne, vagyis a diff nem venné észre.
+LASSU=$(sed -n 's/^LEGLASSABB \([0-9]*\) .*/\1/p' "$WORK/js.err" | head -1)
+LASSU_SOR=$(sed -n 's/^LEGLASSABB [0-9]* //p' "$WORK/js.err" | head -1)
+echo "     a leglassabb mondat ${LASSU:-?} ms: ${LASSU_SOR:0:60}"
+if [ -n "$LASSU" ] && [ "$LASSU" -gt 5000 ]; then
+  echo
+  echo "TÚL LASSÚ: $LASSU ms egyetlen mondatra. A telefonon ez fagyás."
+  echo "  $LASSU_SOR"
+  exit 1
+fi
 
 echo "4/4  A kihagyás-szűrő próbája…"
 # A webes változat nem indítja el a keresést, ha a minta kötelező szava nincs

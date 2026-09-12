@@ -4050,6 +4050,34 @@ public class ActivitiesParseTest {
     }
 
     /**
+     * Az oda-vissza megtett lépcső kétszer annyi emelet.
+     *
+     * A „leszaladtam a lépcsőn a 8. emeletről, aztán vissza fel" tizenhat
+     * emeletnyi lépcső, de nyolc lett belőle – a munka fele. A „fel és le"
+     * párját már értettük; az „oda-vissza" és a „vissza fel/le" ugyanezt
+     * mondja, csak más szóval, és az ige is beékelődhet közéjük.
+     */
+    @Test public void stairsThereAndBackCountTwice() {
+        int egyszer = Activities.parse("Lépcsőn mentem fel a 8. emeletre.")
+                .plans.get(0).minutes;
+        int oda = Activities.parse("Leszaladtam a lépcsőn a 8. emeletről, "
+                + "aztán vissza fel.").plans.get(0).minutes;
+        assertEquals(2 * egyszer, oda);
+
+        int vesszos = Activities.parse("A lépcsőn 8 emeletet mentem fel, "
+                + "aztán vissza le.").plans.get(0).minutes;
+        assertEquals(2 * egyszer, vesszos);
+
+        int kotojeles = Activities.parse("Lépcsőzés: 8 emelet oda-vissza.")
+                .plans.get(0).minutes;
+        assertEquals(2 * egyszer, kotojeles);
+
+        // A ház emelete viszont nem edzés: a lakcím nem lépcsőzés.
+        assertTrue(Activities.parse("A 8. emeleten lakom, oda-vissza "
+                + "lifttel járok.").plans.isEmpty());
+    }
+
+    /**
      * Az emelkedés métere nem táv, a háztömb köre nem óraállás.
      *
      * A „ma a hegyen 900 métert emelkedtem 12 km alatt" mellé egy külön

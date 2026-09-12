@@ -1187,10 +1187,41 @@ public class StrengthParseTest {
         assertEquals(5, c.get(0).sets.size());
         assertEquals(100.0, c.get(0).sets.get(0).weight, 0.001);
 
+        // A SOROZATONKÉNTI szám ismétlés akkor is, ha nincs mellette
+        // mértékegység: a „3 sorozat fekvőtámasz, sorozatonként 20"
+        // egyetlen húszas sorozat lett – a munka harmada került a naplóba.
+        List<StrengthParse.Item> sor =
+                StrengthParse.parse("3 sorozat fekvőtámasz, sorozatonként 20");
+        assertEquals(1, sor.size());
+        assertEquals(3, sor.get(0).sets.size());
+        assertEquals(20, sor.get(0).sets.get(0).reps);
+
+        List<StrengthParse.Item> sulyos =
+                StrengthParse.parse("3 sorozat fekvenyomás 60 kilóval, sorozatonként 10");
+        assertEquals(1, sulyos.size());
+        assertEquals(3, sulyos.get(0).sets.size());
+        assertEquals(10, sulyos.get(0).sets.get(0).reps);
+        assertEquals(60.0, sulyos.get(0).sets.get(0).weight, 0.001);
+
+        List<StrengthParse.Item> szett =
+                StrengthParse.parse("Ma 3 szett guggolás, szettenként 12");
+        assertEquals(1, szett.size());
+        assertEquals(3, szett.get(0).sets.size());
+        assertEquals(12, szett.get(0).sets.get(0).reps);
+
+        // A gyakorlat neve előtt álló szám viszont a gyakorlaté, nem
+        // önálló ismétlés: az „5 kör, körönként 10 fekvőtámasz" öt
+        // tízes sorozat marad.
+        List<StrengthParse.Item> kor =
+                StrengthParse.parse("5 kör, körönként 10 fekvőtámasz");
+        assertEquals(1, kor.size());
+        assertEquals(5, kor.get(0).sets.size());
+        assertEquals(10, kor.get(0).sets.get(0).reps);
+
         // A terhelés-jelölés viszont NEM súly: a „rpe 8" nyolcasa nyolc.
         List<StrengthParse.Item> d = StrengthParse.parse("guggolás 3x10 rpe 8");
-        assertEquals(1, d.size());
-        assertEquals(0.0, d.get(0).sets.get(0).weight, 0.001);
+        assertEquals(1, sor.size());
+        assertEquals(0.0, sor.get(0).sets.get(0).weight, 0.001);
     }
 
     /**

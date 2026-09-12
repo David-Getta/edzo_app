@@ -101,9 +101,16 @@ final class Rx {
                 // emelete elveszett), a vele egyenértékű „(?:|A|AA|AAA|AAAA)"
                 // felsorolást viszont igen – és a próbálkozás sorrendje
                 // ugyanaz, vagyis a jelentés is.
+                //
+                // A felsorolás tagjait NEM fejtjük ki: bennük már nincs
+                // ismétlés, ott a {n,m} helyesen működik. Kifejtve viszont
+                // a „\p{L}{2,12}" tizenegy útjából ezer lesz, és négy tag
+                // mellett ez ezermilliárd – az „ma 3 emeletet másztam
+                // liftezés helyett" mondat két és fél PERCIG futott a
+                // böngészőben, vagyis a telefon lefagyott volna tőle.
                 if (q[0] == 2 && q[3] >= 0 && q[3] <= 6 && m.startsWith("(?:", i)
                         && test.length() <= 240 && !fogCsoportot(test)) {
-                    String mag = test.substring(2);
+                    String mag = bejar(m.substring(i + 1, z), belul).substring(2);
                     ki.append("(?:");
                     for (int r = q[2]; r <= q[3]; r++) {
                         if (r > q[2]) ki.append('|');
@@ -559,24 +566,19 @@ final class Rx {
     }
 
     /**
-     * Újrahasznált illesztők mintánként.
+     * Illesztő a mintához – MINDIG új.
      *
-     * Minden illesztő létrehozása tömböket foglal a csoportoknak, és a
-     * felismerés mondatonként több száz keresést indít. Egy szálon futunk
-     * (a webes munkás), és az illesztő a hívás végén már senkinek nem kell:
-     * elég egyszer megcsinálni, aztán csak új szöveget adni neki.
+     * Kézenfekvő volna újrahasználni őket (a létrehozás tömböket foglal a
+     * csoportoknak, és mondatonként több száz keresés indul), de a
+     * böngészőbeli motor `reset` hívása nem állítja vissza tisztára az
+     * illesztőt: hosszú naplózó menet közben a „reggel 52-es pulzus, délben
+     * futás 8 km, vacsora csirke rizzsel" mondat mellől eltűnt a pulzus –
+     * ugyanaz a mondat, egy friss illesztővel, helyesen ismerődött fel.
+     * Az egyezés-teszt találta meg, több ezer mondat után; egyesével
+     * próbálva a hiba nem is jelentkezik. Pár ezredmásodpercet nem ér meg.
      */
-    private static final Map<String, java.util.regex.Matcher> ILLESZTOK = new HashMap<>();
-
     private static java.util.regex.Matcher illeszto(String minta, String s) {
-        java.util.regex.Matcher m = ILLESZTOK.get(minta);
-        if (m == null) {
-            m = c(minta).matcher(s);
-            if (ILLESZTOK.size() >= MAX) ILLESZTOK.clear();
-            ILLESZTOK.put(minta, m);
-            return m;
-        }
-        return m.reset(s);
+        return c(minta).matcher(s);
     }
 
     static String ra(String s, String minta, String csere) {
