@@ -343,6 +343,25 @@ public class ActivitiesParseTest {
         assertEquals("1d+0: ", summary("a lépcsőházban találkoztunk"));
     }
 
+    /**
+     * A futópályán körben mérnek: „4 kör, 400 méteres kör" 1,6 km.
+     *
+     * Eddig a KÖR HOSSZA került a naplóba távként: a négy körből négyszáz
+     * méter lett 1600 helyett – a munka negyede. Az úszók hosszát rég
+     * értjük, a futók körét nem.
+     */
+    @Test public void trackLapsBecomeDistance() {
+        assertEquals(1.6, Activities.parse("Ma 4 kör futás a pályán, "
+                + "400 méteres kör.").plans.get(0).km, 0.01);
+        assertEquals(3.2, Activities.parse("8 kör a stadionban, "
+                + "400 méteres körök.").plans.get(0).km, 0.01);
+        assertEquals(2.0, Activities.parse("5 kör a 400-as pályán.")
+                .plans.get(0).km, 0.01);
+        // Kimondott körhossz nélkül nem találgatunk: a kör lehet a tó körül
+        // tett kör, a sorozat köre vagy épp időpont.
+        assertEquals("1d+0: 1×futas/45", summary("ma 3 kör futás"));
+    }
+
     @Test public void theWeekendAdjectiveIsNotAWeek() {
         // A „hétvégi" JELZŐ: a „hétvégi hosszú futás 18 km" tizennyolc
         // kilométere hét napra terült szét, és a heti statisztikában hétszer

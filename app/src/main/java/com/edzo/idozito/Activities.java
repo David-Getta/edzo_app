@@ -4399,6 +4399,8 @@ public final class Activities {
         mergeIntervalDistances(q);
         // Az úszók hosszban mérnek: „40 hosszt úsztam" ezer méter.
         mergePoolLengths(q);
+        // A futópályán körben mérnek: „4 kör, 400 méteres kör" 1,6 km.
+        mergeTrackLaps(q);
         // Gyakoriság („hetente kétszer", „kéthetente", „másnaponta"): a
         // periódus hossza napokban – az időszak-kereső előtt vesszük ki, hogy
         // a „hetente" ne váljon egyhetes időszakká a „hónapban" helyett.
@@ -7525,6 +7527,56 @@ public final class Activities {
             String rep2 = "uszoda ";
             for (int i = 0; i < 7; i++) q[mp + i] = rep2.charAt(i);
         }
+    }
+
+    /**
+     * Pályakör → méter: „4 kör a 400-as pályán" 1600 méter.
+     *
+     * A futópályán körben mérik a távot, és a kör hosszát a mondat mondja
+     * ki („400 méteres kör", „400-as pálya"). Enélkül eddig a KÖR HOSSZA
+     * került a naplóba távként: a „4 kör futás a pályán, 400 méteres kör"
+     * négyszáz méter lett 1,6 kilométer helyett – a munka negyede.
+     *
+     * A „kör" szó sokféle: a sorozat köre, a tó körüli kör, a „3-kor"
+     * időpont. Ezért CSAK akkor váltunk, ha a mondat kimondja a kör
+     * hosszát méterben – az az egyetlen egyértelmű jel.
+     */
+    private static void mergeTrackLaps(char[] q) {
+        String s = new String(q);
+        if (s.indexOf("kor") < 0) return;
+        java.util.regex.Matcher ps = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{3,4})\\s?-?(?:[oa]s|m-?es|meteres)\\s*"
+                + "(?:kor(?![a-z])|kore|korok|korre|palya\\w*|futopalya\\w*)"
+                // A FORDÍTOTT szórend ugyanaz: „a kör 400 méteres".
+                + "|(?:kor|palya|futopalya)\\w*\\s+(?:hossza\\s+)?"
+                + "(\\d{3,4})\\s?(?:m(?![a-z])|meter\\w*)").matcher(s);
+        if (!ps.find()) return;
+        int gi = ps.group(1) != null ? 1 : 2;
+        int lap;
+        try { lap = Integer.parseInt(ps.group(gi)); }
+        catch (NumberFormatException e) { return; }
+        if (lap < 100 || lap > 5000) return;
+        boolean volt = false;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![\\d,.:])(\\d{1,2})\\s?kor(?![a-z])").matcher(s);
+        while (m.find()) {
+            int n;
+            try { n = Integer.parseInt(m.group(1)); }
+            catch (NumberFormatException e) { continue; }
+            if (n < 1 || n > 99) continue;
+            // A csere a helyére kell hogy férjen: a többi olvasó
+            // karakterpozíciókra épül. A „4 kör" öt karakter, az „1600 m"
+            // hét – a szóköz nélküli alakot a táv-olvasó ugyanúgy érti.
+            String rep = (n * lap) + " m";
+            if (rep.length() > m.end() - m.start()) rep = (n * lap) + "m";
+            if (rep.length() > m.end() - m.start()) continue;
+            blank(q, m.start(), m.end());
+            for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
+            volt = true;
+        }
+        // A KÖR HOSSZA nem megtett táv: ha beszámoltuk, a számát kivesszük,
+        // különben négyszáz méteres külön futás kerülne a valódi mellé.
+        if (volt) blank(q, ps.start(gi), ps.end(gi));
     }
 
     /** A magyar uszodák alapmérete – ennyi méter egy hossz. */

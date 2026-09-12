@@ -1370,6 +1370,31 @@ public class BodyParseTest {
     }
 
     /**
+     * A névelős szórend is mérés: „88 cm a derekam".
+     *
+     * Ez a leggyakoribb magyar sorrend, és NYOMTALANUL elveszett: a
+     * mérőszalag száma mögé a felismerő közvetlenül várta a testrészt, a
+     * névelő pedig elválasztotta a kettőt. A „88 cm a derekam, 102 a
+     * mellkasom" mondatban ráadásul a vesszőn túli szám lett a derékbőség,
+     * majd – amikor a derék helyre került – TESTSÚLY: száz kiló egy
+     * mérőszalagos mondatból.
+     */
+    @Test public void theArticleBetweenNumberAndBodyPart() {
+        assertEquals(88.0, BodyParse.parse("88 cm a derekam.").cm[0], 0.01);
+        assertEquals(95.0, BodyParse.parse("95 cm a csípőm.").cm[1], 0.01);
+        assertEquals(40.0, BodyParse.parse("40 cm a bicepszem.").cm[4], 0.01);
+
+        BodyParse.Body b = BodyParse.parse("Ma 88 cm a derekam, 102 a mellkasom.");
+        assertEquals(88.0, b.cm[0], 0.01);
+        assertEquals(102.0, b.cm[2], 0.01);
+        assertEquals(0.0, b.kg, 0.01);
+
+        // A mértékegység nélküli alak MAGÁBAN nem mérés: centi nélkül a
+        // „102 a mellkasom" túl bizonytalan, csak a felsorolásban olvassuk.
+        assertTrue(BodyParse.parse("102 a mellkasom.").isEmpty());
+    }
+
+    /**
      * A mérés IDEJE és az előző naphoz hasonlítás nem tiltószó.
      *
      * A „ma reggel 8 óra körül mértem: 81,3 kg, ez 400 grammal kevesebb

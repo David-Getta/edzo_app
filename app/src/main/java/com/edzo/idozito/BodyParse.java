@@ -1008,7 +1008,11 @@ public final class BodyParse {
      */
     private static double[] circumferences(String s) {
         double[] out = new double[PART_KEYS.length];
-        boolean numberFirst = styleCount(s, PART_BEFORE) > styleCount(s, PART_AFTER);
+        // Döntetlennél a SZÁMMAL KEZDŐ alak nyer: abban ott a mértékegység
+        // a szám mellett, a másikban nem kötelező. A „88 cm a derekam, 102 a
+        // mellkasom" mondatban mindkét alak illeszkedett a derékra, és a
+        // vesszőn túli 102 került be derékbőségnek – nyolcvannyolc helyett.
+        boolean numberFirst = styleCount(s, PART_BEFORE) >= styleCount(s, PART_AFTER);
         for (int i = 0; i < PART_STEMS.length; i++)
             for (int j = 0; j < PART_STEMS[i].length; j++) {
                 if (out[i] > 0) break;
@@ -1024,6 +1028,19 @@ public final class BodyParse {
                         ? PART_AFTER[i][j].matcher(s) : PART_BEFORE[i][j].matcher(s);
                 if (m.find()) out[i] = inRange(num(m.group(1)));
             }
+        // A FELSOROLÁS második tagja elhagyja a mértékegységet: a „88 cm a
+        // derekam, 102 a mellkasom" százkettesét a testsúly-olvasó vitte el,
+        // és a mérleg-naplóba száz kiló került egy mérőszalagos mondatból.
+        // Csak akkor olvassuk így, ha a mondatban MÁR van centis mérés: a
+        // magában álló „102 a mellkasom" túl bizonytalan.
+        boolean vanCentis = false;
+        for (int i = 0; i < out.length; i++) if (out[i] > 0) vanCentis = true;
+        if (vanCentis)
+            for (int i = 0; i < PART_STEMS.length; i++)
+                for (int j = 0; j < PART_STEMS[i].length && out[i] <= 0; j++) {
+                    java.util.regex.Matcher m = PART_NEVELOS[i][j].matcher(s);
+                    if (m.find()) out[i] = inRange(num(m.group(1)));
+                }
         return out;
     }
 
@@ -1034,7 +1051,21 @@ public final class BodyParse {
      * reguláris kifejezést fordítani karakterenként fölösleges munka.
      */
     private static final java.util.regex.Pattern[][] PART_AFTER = compile(true),
-            PART_BEFORE = compile(false);
+            PART_BEFORE = compile(false), PART_NEVELOS = nevelos();
+
+    /** „102 a mellkasom": mértékegység nélkül, de névelővel. */
+    private static java.util.regex.Pattern[][] nevelos() {
+        java.util.regex.Pattern[][] out = new java.util.regex.Pattern[PART_STEMS.length][];
+        for (int i = 0; i < PART_STEMS.length; i++) {
+            out[i] = new java.util.regex.Pattern[PART_STEMS[i].length];
+            for (int j = 0; j < PART_STEMS[i].length; j++) {
+                out[i][j] = java.util.regex.Pattern.compile(
+                        "(\\d{1,3}([.,]\\d)?)\\s+az?\\s+(?<![a-z])"
+                        + PART_STEMS[i][j] + "(?![a-z])");
+            }
+        }
+        return out;
+    }
 
     private static java.util.regex.Pattern[][] compile(boolean after) {
         java.util.regex.Pattern[][] out = new java.util.regex.Pattern[PART_STEMS.length][];
@@ -1068,7 +1099,11 @@ public final class BodyParse {
                                 + "|\\s?m(?![a-z])|\\s?km|\\s?m[eé]ter"
                                 + "|\\s?-?[oae]sek)"
                                 + "\\s?(cm|centi\\w*)?"
-                        : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?"
+                        // A NÉVELŐ közéjük fér: a „88 cm a derekam" és a
+                        // „40 cm a bicepszem" mérése nyomtalanul elveszett,
+                        // pedig ez a leggyakoribb magyar szórend. A „derekam
+                        // 88 cm" fordítottja rég megvolt.
+                        : "(\\d{1,3}([.,]\\d)?)\\s?(cm|centi\\w*)\\s?(?:az?\\s+)?"
                                 + "(?<![a-z])" + stem + "(?![a-z])");
             }
         }
