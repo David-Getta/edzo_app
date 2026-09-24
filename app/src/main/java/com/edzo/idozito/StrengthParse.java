@@ -18,6 +18,19 @@ public final class StrengthParse {
 
     private StrengthParse() {}
 
+
+    /**
+     * A szétosztó szó: „mind", „mindegyik", „mindkettő", „mindkét".
+     *
+     * Ezek mind ugyanazt mondják ki – a mögöttük álló sorozat MINDEGYIK
+     * felsorolt gyakorlaté –, csak a felsorolás hosszától függ, melyiket
+     * mondja az ember.
+     */
+    private static final String MIND = "(?:mind(?:egyik|h[a\u00e1]rom"
+            + "|h[a\u00e1]romn[a\u00e1]l|egyikn[e\u00e9]l)?"
+            // A rag ÉKEZETES is lehet („mindkettőből"), ezért betű-osztály:
+            // a \\w az ékezetes betűt nem fogadja el.
+            + "|mindk[e\u00e9]t|mindkett[o\u0151]\\p{L}*)";
     /** Egy sorozat: ismétlés + súly (0 = saját testsúly). */
     public static final class Set {
         public final int reps;
@@ -728,9 +741,15 @@ public final class StrengthParse {
         // fekvenyomás, evezés, lehúzás, mind 4x10" második és harmadik
         // gyakorlata elveszett – az evezésből ráadásul egy félórás
         // EVEZŐGÉPES kardió-bejegyzés lett a napló mozgás-oldalán.
+        // A KÉT gyakorlat „és"-sel is lista: a „bicepsz és tricepsz nap:
+        // 4x12 mindkettő" és a „guggolás és fekvenyomás, mindkettő 3x8"
+        // második gyakorlata nyomtalanul elveszett – a felsorolást csak a
+        // vessző tagolta, a „mindkettő" szót pedig nem ismertük.
         java.util.regex.Matcher tl = java.util.regex.Pattern.compile(
-                "(?iu),\\s*(?:mind(?:egyik|h[aá]rom|h[aá]romn[aá]l"
-                + "|egyikn[eé]l)?\\s+)?(\\d{1,2}\\s?[x×]\\s?\\d{1,3})"
+                "(?iu)(?:[,:]\\s*|\\s+)(?:" + MIND + "\\s+)?"
+                + "(\\d{1,2}\\s?[x×]\\s?\\d{1,3})"
+                // Az adagoló szó a sorozat MÖGÉ is kerülhet: „4x12 mindkettő".
+                + "(?:\\s+" + MIND + ")?"
                 + "\\s*[.!]?\\s*$")
                 .matcher(text);
         if (tl.find()) {
@@ -739,7 +758,11 @@ public final class StrengthParse {
             // A KETTŐSPONT is tagmondat-határ: a „3 gépen mentem körbe:
             // mellgép, hátgép…" első gépe a fejlécben álló szám miatt
             // esett ki a szétosztásból.
-            String[] cl = head.split("[,:]");
+            // Az „és" ugyanúgy tagol, mint a vessző: két gyakorlatnál ez a
+            // természetes magyar kötőszó. A számot tartalmazó rész úgyis
+            // kiesik alább, tehát a „fekvenyomás 80 kg és evezés 3x10"
+            // nem olvad össze.
+            String[] cl = head.split("[,:]|\\s+(?:[eé]s|meg)\\s+");
             StringBuilder nb = new StringBuilder();
             int named = 0;
             for (String c : cl) {
@@ -992,6 +1015,22 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\p{L}])padon\\s+"
                 + "((?:\\p{L}+\\s+|\\d+\\s+){0,3}?)nyomt(?:am|unk|a)"
                 + "(?![\\p{L}])", "padon nyomas $1");
+        // A FORDÍTOTT szórend ugyanaz: a „nyomtam 4 szettet a padon,
+        // 10-8-8-6" mondatból SEMMI nem lett – az ige állt elöl, a hely
+        // hátul –, pedig a magyar mondat mindkét sorrendet megengedi.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])nyomt(?:am|unk|a)\\s+"
+                + "((?:\\p{L}+\\s+|\\d+\\s+){0,3}?)a\\s+padon"
+                + "(?![\\p{L}])", "padon nyomas $1");
+        // A RÚDON HÚZÁS húzódzkodás: a „húztam 3 szettet a rúdon, 8-6-5"
+        // mondatból sem lett semmi. A rúd és a húzás együtt egyetlen
+        // gyakorlatot jelent – külön-külön egyik sem az (a rúdról le is
+        // lehet emelni, és húzni a szánkót is húzzuk).
+        text = text.replaceAll("(?iu)(?<![\\p{L}])h[uú]zt(?:am|unk|a)\\s+"
+                + "((?:\\p{L}+\\s+|\\d+\\s+){0,3}?)a\\s+r[uú]don"
+                + "(?![\\p{L}])", "huzodzkodas $1");
+        text = text.replaceAll("(?iu)(?<![\\p{L}])r[uú]don\\s+"
+                + "((?:\\p{L}+\\s+|\\d+\\s+){0,3}?)h[uú]zt(?:am|unk|a)"
+                + "(?![\\p{L}])", "huzodzkodas $1");
         // A HELYETT a MEGVALÓSULT sorozatot vezeti be: az „edzésen ma nem
         // bírtam a súlyt, 3x5 helyett csak 3x3 ment 100 kg-mal" NYOMTALANUL
         // eltűnt – a tervezett sorozat mellett a valódi is elveszett. A

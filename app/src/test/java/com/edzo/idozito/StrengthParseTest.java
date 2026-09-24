@@ -1160,6 +1160,60 @@ public class StrengthParseTest {
     }
 
     /**
+     * Két gyakorlat „és"-sel is felsorolás: „mindkettő 4x12".
+     *
+     * A „bicepsz és tricepsz nap: 4x12 mindkettő" második gyakorlata
+     * nyomtalanul elveszett – a felsorolást csak a vessző tagolta, a
+     * „mindkettő" szót pedig nem ismertük. A három tételes lista („mind
+     * 4x10") rég megvolt, a kettő tételes nem.
+     */
+    @Test public void twoExercisesJoinedByAnd() {
+        List<StrengthParse.Item> a =
+                StrengthParse.parse("Ma bicepsz és tricepsz nap: 4x12 mindkettő");
+        assertEquals(2, a.size());
+        assertEquals(4, a.get(0).sets.size());
+        assertEquals(12, a.get(0).sets.get(0).reps);
+        assertEquals(4, a.get(1).sets.size());
+
+        List<StrengthParse.Item> b =
+                StrengthParse.parse("Guggolás és fekvenyomás, mindkettő 3x8");
+        assertEquals(2, b.size());
+        assertEquals(3, b.get(0).sets.size());
+        assertEquals(3, b.get(1).sets.size());
+
+        // A saját számmal írt tétel viszi a magáét: a „fekvenyomás 80 kg és
+        // evezés 3x10" nem olvad össze egyetlen sorozat-sémává.
+        List<StrengthParse.Item> c =
+                StrengthParse.parse("fekvenyomás 80 kg 5x5 és evezés 3x10");
+        assertEquals(2, c.size());
+        assertEquals(5, c.get(0).sets.size());
+        assertEquals(3, c.get(1).sets.size());
+    }
+
+    /**
+     * A hely a mondat VÉGÉN is a gyakorlatot nevezi meg.
+     *
+     * A „húztam 3 szettet a rúdon, 8-6-5" és a „nyomtam 4 szettet a padon,
+     * 10-8-8-6" mondatból SEMMI nem lett: az ige elöl állt, a hely hátul,
+     * és a gyakorlat neve így sehol nem szerepelt egyben. A fordított
+     * sorrendet („a padon 4 sorozatot nyomtam") már értettük.
+     */
+    @Test public void thePlaceAtTheEndNamesTheExercise() {
+        List<StrengthParse.Item> a =
+                StrengthParse.parse("Húztam 3 szettet a rúdon, 8-6-5");
+        assertEquals(1, a.size());
+        assertEquals("Húzódzkodás", a.get(0).name);
+        assertEquals(3, a.get(0).sets.size());
+        assertEquals(8, a.get(0).sets.get(0).reps);
+
+        List<StrengthParse.Item> b =
+                StrengthParse.parse("Nyomtam 4 szettet a padon, 10-8-8-6");
+        assertEquals(1, b.size());
+        assertEquals("Fekvenyomás", b.get(0).name);
+        assertEquals(4, b.get(0).sets.size());
+    }
+
+    /**
      * Ahogy a teremben tényleg leírják: kötőjellel, tagolva, hátul a súllyal.
      *
      * Három valódi alak veszett el eddig. A „3-szor 10-et" hármasa
