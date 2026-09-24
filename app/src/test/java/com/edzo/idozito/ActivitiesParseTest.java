@@ -368,6 +368,51 @@ public class ActivitiesParseTest {
      * pedig elveszett: az alapértelmezett negyvenöt perc került a naplóba
      * a hetvenöt helyett.
      */
+    /**
+     * Az összehasonlítás időszaka nem a bejegyzésé.
+     *
+     * A „ma 3 perccel gyorsabb voltam 5 km-en, MINT MÚLT HÉTEN" öt
+     * kilométere hét napra szóródott szét – pedig a mondat kimondja, hogy
+     * ma volt, a múlt hét csak a viszonyítási pont. A heti összegzés így
+     * hét külön napra írt be egy-egy hetedrésznyi futást.
+     */
+    /**
+     * A számolt gyakorlat nagy száma ismétlés, a hétvégi ház meg hely.
+     *
+     * A „300 ugrókötelezés reggel" ÖTVEN külön edzéssé vált, ötven napra
+     * szétszórva – egyetlen reggeli körözésből. A „ma 40 perc favágás a
+     * hétvégi házban" bejegyzése pedig a hétvégére csúszott, pedig a
+     * mondat első szava mondja ki, hogy ma volt.
+     */
+    @Test public void bigRepCountsAndTheWeekendHouse() {
+        Activities.Parsed u = Activities.parse("300 ugrókötelezés reggel.");
+        assertEquals(1, u.days);
+        assertEquals(1, u.plans.get(0).count);
+
+        Activities.Parsed f = Activities.parse("Ma 40 perc favágás a "
+                + "hétvégi házban.");
+        assertEquals(0, f.offset);
+        assertEquals(1, f.days);
+        assertEquals(40, f.plans.get(0).minutes);
+
+        // A valódi hétvégi esemény viszont a hétvégén volt.
+        assertEquals(1, Activities.parse("A hétvégi túrán 22 km-t mentünk.")
+                .days);
+    }
+
+    @Test public void aComparisonPeriodIsNotTheEntrysPeriod() {
+        Activities.Parsed a = Activities.parse("Ma 3 perccel gyorsabb "
+                + "voltam 5 km-en, mint múlt héten.");
+        assertEquals(1, a.days);
+        assertEquals(5.0, a.plans.get(0).km, 0.01);
+
+        assertEquals(1, Activities.parse("Ma 5 km futás, gyorsabb "
+                + "mint múlt héten.").days);
+
+        // Hasonlítás nélkül az időszak időszak marad.
+        assertEquals(7, Activities.parse("Múlt héten 3-szor futottam.").days);
+    }
+
     @Test public void repeatedDayWordWholeWeekAndSpelledClockRange() {
         assertEquals(2, Activities.parse("Ma reggel és ma este is edzettem.")
                 .plans.get(0).count);

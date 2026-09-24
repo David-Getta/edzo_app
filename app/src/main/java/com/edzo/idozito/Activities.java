@@ -4437,6 +4437,19 @@ public final class Activities {
             }
         }
         int[] span = findSpan(q, now);
+        // Az ÖSSZEHASONLÍTÁS időszaka nem a bejegyzésé: a „ma 3 perccel
+        // gyorsabb voltam 5 km-en, MINT MÚLT HÉTEN" öt kilométere hét napra
+        // szóródott szét – pedig a mondat kimondja, hogy ma volt, és a múlt
+        // hét csak a viszonyítási pont. A „ma" szónak a hasonlítás előtt
+        // kell állnia: a „múlt héten háromszor futottam" időszak marad.
+        if (span != null) {
+            String elotte = new String(q, 0, span[0]);
+            if (elotte.matches("(?s).*(?<![a-z])ma(?![a-z]).*")
+                    && elotte.matches("(?s).*(?<![a-z])(mint|kepest)(?![a-z])[^.;]*")) {
+                blank(q, span[0], span[1]);
+                span = null;
+            }
+        }
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
             // Konkrét dátum hónapnévvel: „július 28-án".
@@ -7055,7 +7068,13 @@ public final class Activities {
                 // kondi került be egyetlen EMOM-ból. A burpee ugyanígy, és
                 // a „10x25 sprintekkel" huszonöte is ismétlés, nem
                 // huszonöt futás.
-                "kettlebell", "burpee", "swing", "sprint"})
+                "kettlebell", "burpee", "swing", "sprint",
+                // A „300 ugrókötelezés reggel" ÖTVEN külön edzéssé vált,
+                // ötven napra szétszórva – egyetlen reggeli körözésből. A
+                // számolt gyakorlatok nagy száma mindig ismétlés.
+                "ugrokotelez", "ugrokotel", "kotelugras", "atlepes",
+                "hasizom", "haspres", "labemeles", "kitores", "szokdeles",
+                "jumping jack", "mountain climber", "haskorlat"})
             if (w.startsWith(r)) return true;
         return false;
     }
@@ -8107,6 +8126,13 @@ public final class Activities {
         if (p > 0 && Character.isLetter(s.charAt(p - 1))) return null;
         int end = p + 6;
         while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
+        // A HÉTVÉGI HÁZ nem hétvége, hanem hely: a „ma 40 perc favágás a
+        // hétvégi házban" bejegyzése a hétvégére csúszott – pedig a mondat
+        // első szava mondja ki, hogy ma volt. A nyaraló és a telek ugyanez.
+        if (s.substring(p, Math.min(s.length(), end + 24))
+                .matches("(?s)hetvegi\\s+(?:haz|telek|telk|nyaralo|hazikó"
+                    + "|hazik)\\p{L}*.*"))
+            return null;
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.setTimeInMillis(now);
         int dow = cal.get(java.util.Calendar.DAY_OF_WEEK);   // vasárnap=1 … szombat=7
