@@ -141,6 +141,11 @@ lépcsőztem 20 emeletet
 15 emeletet lépcsőztem
 30 emelet lépcsőzés
 a lépcsőházban találkoztunk
+Ma három alkalommal ettem csirkét.
+Ma háromszor ettem, mind a három alkalommal csirkét.
+Ma három alkalommal nassoltam.
+Ma három alkalommal edzettem.
+Ma három alkalommal futottam.
 Ma 4 kör futás a pályán, 400 méteres kör.
 8 kör a stadionban, 400 méteres körök.
 5 kör a 400-as pályán.
@@ -5128,6 +5133,11 @@ sleep score 78, 7h12m
 sleep 6:45
 alvás pontszám 85
 aluttam 8 órát
+Az éjszakám 6 óra 20 perc volt.
+Az éjszakám 7 óra volt.
+Rövid éjszaka: 5 óra.
+Az éjjelem 6 óra lett.
+Éjszaka futottam a parkban.
 éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem
 két műszak között csak 4 órát tudtam aludni
 mélyalvás 2 óra 10 perc, összesen 7 óra 30 perc alvás

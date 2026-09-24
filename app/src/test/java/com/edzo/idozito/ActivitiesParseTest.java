@@ -350,6 +350,28 @@ public class ActivitiesParseTest {
      * méter lett 1600 helyett – a munka negyede. Az úszók hosszát rég
      * értjük, a futók körét nem.
      */
+    /**
+     * Az „alkalom" az étkezésé is, nem csak az edzésé.
+     *
+     * A „ma három alkalommal ettem csirkét" mondatból HÁROM negyvenöt
+     * perces mozgás lett – abból, hogy valaki napi háromszor evett. A
+     * számjegyes alak („3 alkalommal") eddig is kimaradt, a kiírt számnév
+     * viszont átcsúszott a szűrőn.
+     */
+    @Test public void occasionsOfEatingAreNotWorkouts() {
+        assertTrue(Activities.parse("Ma három alkalommal ettem csirkét.")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Ma háromszor ettem, mind a három "
+                + "alkalommal csirkét.").plans.isEmpty());
+        assertTrue(Activities.parse("Ma három alkalommal nassoltam.")
+                .plans.isEmpty());
+        // Az edzés alkalma viszont alkalom marad.
+        assertEquals(3, Activities.parse("Ma három alkalommal edzettem.")
+                .plans.get(0).count);
+        assertEquals(3, Activities.parse("Ma három alkalommal futottam.")
+                .plans.get(0).count);
+    }
+
     @Test public void trackLapsBecomeDistance() {
         assertEquals(1.6, Activities.parse("Ma 4 kör futás a pályán, "
                 + "400 méteres kör.").plans.get(0).km, 0.01);

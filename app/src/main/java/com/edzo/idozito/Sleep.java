@@ -271,6 +271,16 @@ public final class Sleep {
             }
             if (nb.length() > 0) s = nb.toString();
         }
+        // Az ÉJSZAKA MINT FŐNÉV maga az alvás: az „az éjszakám 6 óra 20 perc
+        // volt" és a „rövid éjszaka: 5 óra" mondatból SEMMI nem lett, pedig
+        // mindkettő pont az éjszakai alvás hosszát mondja ki. A birtokos
+        // alak félreérthetetlen; a puszta „éjszaka" viszont határozó is
+        // („éjszaka futottam"), ezért ott kimondott órahossznak kell
+        // következnie.
+        s = s.replaceAll("(?<![a-z])(?:az\\s+)?"
+                + "(?:ejszakam|ejszakank|ejjelem|ejjelunk)(?![a-z])", "alvas");
+        s = s.replaceAll("(?<![a-z])(?:az\\s+)?ejszaka(?![a-z])\\s*:?\\s*"
+                + "(?=\\d{1,2}(?:[.,]\\d)?\\s?ora(?![a-z]))", "alvas ");
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");

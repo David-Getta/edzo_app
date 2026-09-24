@@ -381,6 +381,22 @@ public class SleepTest {
         assertEquals(8, Sleep.parse("aluttam 8 órát"), 0.01);
     }
 
+    /**
+     * Az éjszaka mint FŐNÉV maga az alvás.
+     *
+     * Az „az éjszakám 6 óra 20 perc volt" és a „rövid éjszaka: 5 óra"
+     * mondatból semmi nem lett, pedig mindkettő pont az éjszakai alvás
+     * hosszát mondja ki – csak épp az „alszom" igéje nélkül.
+     */
+    @Test public void theNightAsANounIsSleep() {
+        assertEquals(6.3, Sleep.parse("Az éjszakám 6 óra 20 perc volt."), 0.01);
+        assertEquals(7.0, Sleep.parse("Az éjszakám 7 óra volt."), 0.01);
+        assertEquals(5.0, Sleep.parse("Rövid éjszaka: 5 óra."), 0.01);
+        assertEquals(6.0, Sleep.parse("Az éjjelem 6 óra lett."), 0.01);
+        // A puszta „éjszaka" határozó is: óra nélkül nem alvás-hossz.
+        assertTrue(Sleep.parse("Éjszaka futottam a parkban.") <= 0);
+    }
+
     @Test public void shiftWorkersDaytimeSleepCounts() {
         // Az „éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"
         // hét óra nappali alvás; a „csak 4 órát tudtam aludni" négy.

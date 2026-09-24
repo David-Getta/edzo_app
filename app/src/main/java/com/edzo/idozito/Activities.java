@@ -5398,6 +5398,24 @@ public final class Activities {
                 // veszett mellőle.
                 if (w.equals("alkalom") && n <= 1 && numberBefore(s, p, NUM_REACH) == null)
                     continue;
+                // Az ALKALOM az ÉTKEZÉSÉ is: a „ma három alkalommal ettem
+                // csirkét" mondatból HÁROM negyvenöt perces mozgás lett –
+                // abból, hogy valaki napi háromszor evett. A számjegyes alak
+                // („3 alkalommal ettem") eddig is kimaradt, a kiírt számnév
+                // viszont átcsúszott a szűrőn.
+                if (w.equals("alkalom")) {
+                    // Az evés igéje mindkét oldalon állhat: a „ma háromszor
+                    // ettem, mind a három alkalommal csirkét" mondatban a
+                    // tagmondat ELEJÉN. (Ha a mondatban edzés-szó is van, a
+                    // fenti szavak egyike előbb talál, és ide el sem jutunk.)
+                    int a = Math.max(0, p - 40);
+                    int b = Math.min(beforeBlank.length(), p + w.length() + 40);
+                    String kornyek = beforeBlank.substring(a, b);
+                    // Szóhatárral: az „edzettem" vége is „ettem".
+                    if (kornyek.matches("(?s).*(?<![a-z])(ettem|ettunk|ettek"
+                            + "|evett|evunk|etkez\\w*|nassol\\w*|falatoz\\w*"
+                            + "|ittam|ittunk).*")) continue;
+                }
                 // A kimondott időtartam itt is számít („otthoni edzés 40 perc").
                 if (other != null) out.add(new Plan(other, n,
                         minutesFor(mins, p, p, -1, Integer.MAX_VALUE,
