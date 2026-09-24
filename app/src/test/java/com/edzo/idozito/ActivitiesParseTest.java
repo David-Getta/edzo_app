@@ -392,6 +392,29 @@ public class ActivitiesParseTest {
      * „5 rounds for time" pedig egyáltalán nem volt kör: a crossfitesek
      * angolul írják le a WOD-ot, és a négyszáz méter ott is ötször van meg.
      */
+    /**
+     * A meg nem történt terv nem edzés.
+     *
+     * A „terveztem egy 5 km-es futást, de esett" és a „terveztem 10 km-t,
+     * de nem ment" öt-, majd tíz kilométeres futást írt a naplóba – olyan
+     * edzést, ami el sem kezdődött. A heti táv, a széria és a kalória is
+     * ettől nőtt.
+     */
+    @Test public void aPlanThatDidNotHappenIsNotAWorkout() {
+        assertTrue(Activities.parse("Terveztem egy 5 km-es futást, de esett.")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Terveztem 10 km-t, de nem ment.")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Volt egy 5 km-es futás a tervben, "
+                + "de kihagytam.").plans.isEmpty());
+        // A megvalósult terv viszont edzés.
+        assertEquals(5.0, Activities.parse("Terveztem egy 5 km-es futást, "
+                + "és meg is lett.").plans.get(0).km, 0.01);
+        // A „de csak N" folytatás megtörtént teljesítményt mond ki.
+        assertEquals(1.0, Activities.parse("Úszásnál 1500 m volt a terv, "
+                + "de csak 1000 m-t úsztam.").plans.get(0).km, 0.01);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

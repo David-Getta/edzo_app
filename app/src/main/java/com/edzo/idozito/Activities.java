@@ -1893,6 +1893,18 @@ public final class Activities {
             s = s.replaceAll("(?<![a-z])\\d{1,4}(?:[.,]\\d{1,2})?\\s?"
                     + "(?:m|km|perc\\w*|hossz\\w*)\\s+volt\\s+a\\s+terv"
                     + "(?![a-z])[^,;.]*", " ");
+        // A MEG NEM TÖRTÉNT TERV nem edzés: a „terveztem egy 5 km-es
+        // futást, de esett" és a „terveztem 10 km-t, de nem ment" öt-, majd
+        // tíz kilométeres futást írt a naplóba – olyan edzést, ami el sem
+        // kezdődött. A „de csak 1000 m-t úsztam" fajta folytatás viszont
+        // megtörtént teljesítményt mond ki, ezért ott számnak kell állnia.
+        if (s.matches("(?s).*(?<![a-z])(?:terveztem|terveztuk|tervben"
+                + "|tervem|tervezve)(?![a-z]).*")
+                && s.matches("(?s).*(?<![a-z])(?:de|viszont|sajnos|vegul)\\s+"
+                    + "[^,;.\\d]*(?:esett|elmaradt|kihagytam|kihagytuk"
+                    + "|lemondtam|nem\\s+(?:ment|lett|sikerult|birtam"
+                    + "|jott\\s+ossze|volt\\s+ido))(?![a-z]).*"))
+            return " ";
         // A MECCS MELLETT elfogyasztott vacsora a tévé előtt készült: a
         // „két sör és egy pizza volt a vacsora a meccs mellett"
         // negyvenöt perces egyéb mozgást írt a naplóba. A „kondi
