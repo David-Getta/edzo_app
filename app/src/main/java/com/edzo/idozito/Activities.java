@@ -1854,20 +1854,34 @@ public final class Activities {
         // méteres futást írt a naplóba – az ezerkétszáz helyett. A
         // sorozatokat a súlyzós olvasó már így számolja.
         {
+            // A CROSSFIT angolul mondja: az „5 rounds for time" ugyanaz az
+            // öt kör – a magyar terem is így írja le a WOD-ot.
             java.util.regex.Matcher kk = java.util.regex.Pattern.compile(
-                    "(?<![\\dx,.])(\\d{1,2})\\s?kor\\s*[:,]").matcher(s);
+                    "(?<![\\dx,.])(\\d{1,2})\\s?(?:kor|rounds?)"
+                    + "(?:\\s+for\\s+time)?\\s*[:,]").matcher(s);
             if (kk.find()) {
                 int rounds = Integer.parseInt(kk.group(1));
                 if (rounds >= 2 && rounds <= 20) {
+                    // A körben megtett táv nem csak FUTÁS lehet: a „3 kör:
+                    // 15 guggolás, 300 m evezés" háromszáz métere maradt
+                    // háromszáz, pedig kilencszáz volt. És a kör TÖBB
+                    // táv-tételt is tartalmazhat – mindegyik szorzódik.
                     java.util.regex.Matcher dm = java.util.regex.Pattern.compile(
                             "(?<![\\dx,.])(\\d{2,4})\\s?m(?![a-z])"
-                            + "(?=[^,;.]{0,12}fut)").matcher(s);
-                    if (dm.find() && dm.start() > kk.end()) {
-                        int tot = rounds * Integer.parseInt(dm.group(1));
-                        if (tot <= 60000)
-                            s = s.substring(0, dm.start()) + tot + " m"
-                                    + s.substring(dm.end());
+                            + "(?=[^,;.]{0,12}(?:fut|evez|usz|bicik|kerekpar"
+                            + "|bring|seta|gyalog|kocog))").matcher(s);
+                    StringBuffer db = new StringBuffer();
+                    boolean volt = false;
+                    while (dm.find()) {
+                        if (dm.start() <= kk.end()) continue;
+                        int tot;
+                        try { tot = rounds * Integer.parseInt(dm.group(1)); }
+                        catch (NumberFormatException e) { continue; }
+                        if (tot > 60000) continue;
+                        dm.appendReplacement(db, tot + " m");
+                        volt = true;
                     }
+                    if (volt) { dm.appendTail(db); s = db.toString(); }
                 }
             }
         }

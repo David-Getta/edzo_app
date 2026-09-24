@@ -384,6 +384,29 @@ public class ActivitiesParseTest {
      * hétvégi házban" bejegyzése pedig a hétvégére csúszott, pedig a
      * mondat első szava mondja ki, hogy ma volt.
      */
+    /**
+     * A kör minden megtett távját szorozza, és angolul is kör.
+     *
+     * A „3 kör: 15 guggolás, 300 m evezés" háromszáz métere maradt
+     * háromszáz, pedig kilencszáz volt – a szorzó csak a FUTÁSRA élt. Az
+     * „5 rounds for time" pedig egyáltalán nem volt kör: a crossfitesek
+     * angolul írják le a WOD-ot, és a négyszáz méter ott is ötször van meg.
+     */
+    @Test public void everyDistanceInARoundIsMultiplied() {
+        assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
+                + "300 m evezés.").plans.get(1).km, 0.01);
+
+        java.util.List<Activities.Plan> r = Activities.parse("Ma 5 rounds "
+                + "for time: 20 burpee, 400 m futás.").plans;
+        double km = 0;
+        for (Activities.Plan p : r) km = Math.max(km, p.km);
+        assertEquals(2.0, km, 0.01);
+
+        // Kör nélkül a táv a kimondott táv marad.
+        assertEquals(0.4, Activities.parse("Ma 400 m futás.")
+                .plans.get(0).km, 0.01);
+    }
+
     @Test public void bigRepCountsAndTheWeekendHouse() {
         Activities.Parsed u = Activities.parse("300 ugrókötelezés reggel.");
         assertEquals(1, u.days);
@@ -2016,8 +2039,9 @@ public class ActivitiesParseTest {
         assertEquals(1, p.days);
         // A kettlebell ismétlés-szó lett: az öt kör hetvenöt lendítése
         // ismétlésből becsült időt kap (negyedóra), nem az alapértelmezett
-        // hatvan percet.
-        assertEquals("1d+0: 1×evezes/3, 1×kondi/15",
+        // hatvan percet. Az öt kör ÖTSZÖRÖS evezőtávot jelent: 2500 méter,
+        // nem ötszáz – korábban a körszorzó csak a futásra élt.
+        assertEquals("1d+0: 1×evezes/13, 1×kondi/15",
                 summary("5 kör: 500 m evezés, 15 kettlebell swing"));
         // A kimondott alkalom megvédi magát: ott a szám után az edzés szó áll.
         assertEquals(2, Activities.parse("2 fekvőtámasz edzés").plans.get(0).count);
