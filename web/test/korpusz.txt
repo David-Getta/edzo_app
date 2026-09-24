@@ -2515,6 +2515,11 @@ nem forog körbe
 Mit ettél? (pl. 
 Túrós batyu
 Csirkemell (sült/grill)
+2 szelet pulykamell felvágott
+3 szelet sonkás felvágottat
+5 dkg csirkemell sonka
+Párizsi / felvágott
+2 szelet felvágott
 csirkemell rizzsel
 kenyér vajjal és sajttal
 rántott hús krumplipürével
@@ -2795,7 +2800,6 @@ két és fél deci tej müzlivel
 Olajbogyó / olívabogyó
 Szendvicskrém / kence
 Magvaj (mandula/kesu/tahini)
-Párizsi / felvágott
 napraforgó olaj
 durum tészta
 Zsírszegény tej

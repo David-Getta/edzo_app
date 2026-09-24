@@ -72,6 +72,21 @@ public class FoodsCompoundTest {
         assertEquals("Csirkemell (sült/grill)", names(hits("csirkemellsaláta")));
     }
 
+    /**
+     * A hidegtál neve egyetlen tétel, nem hús + felvágott.
+     *
+     * A „2 szelet pulykamell felvágott" mellé egy külön ötdekás párizsi is
+     * bekerült a naplóba – ugyanarról a szeletről, kétszer. A „sonkás
+     * felvágott" és a „csirkemell sonka" ugyanígy kettőzött.
+     */
+    @Test public void aColdCutNameIsOneItem() {
+        assertEquals("Pulykamell", names(hits("2 szelet pulykamell felvágott")));
+        assertEquals("Sonka", names(hits("3 szelet sonkás felvágottat")));
+        assertEquals("Csirkemell (sült/grill)", names(hits("5 dkg csirkemell sonka")));
+        // A magában álló felvágott marad a maga tétele.
+        assertEquals("Párizsi / felvágott", names(hits("2 szelet felvágott")));
+    }
+
     @Test public void separateWordsAreStillSeparateFoods() {
         // A szabály csak a szón BELÜL köt ki egy ételt: a köret nem tűnhet el.
         assertEquals(2, hits("csirkemell rizzsel").size());

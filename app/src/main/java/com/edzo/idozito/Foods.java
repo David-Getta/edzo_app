@@ -60,13 +60,22 @@ public final class Foods {
                 // „csirkefalat" a nuggeté.)
                 "csirkecsik", "csirke csik", "kfc csirke"),
         new Food("Csirkemell (sült/grill)", 165, 31, 150, "csirkemell", "csirke mell", "csirke",
+                // A CSIRKEMELL SONKA egyetlen termék: a „5 dkg csirkemell
+                // sonka" mellé egy külön ötdekás sonka is bekerült a
+                // naplóba – ugyanarról a szeletről.
+                "csirkemell sonka", "csirke sonka", "csirkemell felvagott",
                 "grillcsirke", "teriyaki"),
         new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb", "csirkeszarny"),
         // Egészben sült csirke: a bőrrel-csonttal tálalt adag zsírosabb, mint
         // a grillezett mell, és a tepsiben sült zöldség zsírja is rámegy.
         new Food("Tepsis csirke", 200, 20, 300, "tepsis csirke", "tepsiben sult csirke",
                 "egeszben sult csirke"),
-        new Food("Pulykamell", 105, 23, 150, "pulyka"),
+        // A FELVÁGOTT itt jelző, nem külön tétel: a „2 szelet pulykamell
+        // felvágott" mellé egy ötdekás párizsi is bekerült a naplóba –
+        // ugyanarról a szeletről. A hosszabb szótő elnyeli a rövidebbet.
+        new Food("Pulykamell", 105, 23, 150, "pulyka",
+                "pulykamell felvagott", "pulyka felvagott",
+                "pulykamell sonka", "pulyka sonka"),
         new Food("Sertéskaraj", 240, 27, 150, "karaj", "sertes", "tarja",
                 "naturszelet", "natur szelet", "szuzerme", "szuzpecsenye", "flekken",
                 // A HIDEGSÜLT is sült hús: a „hideg sült egy szelet
@@ -101,7 +110,9 @@ public final class Foods {
         // A „bécsi virsli" NEM bécsi szelet: a hosszabb szótő menti meg a
         // rántott hústól (320 kcal helyett 250).
         new Food("Virsli", 250, 10, 100, "virsli", "becsi virsli", "frankfurti virsli"),
-        new Food("Sonka", 120, 18, 50, "sonka"),
+        new Food("Sonka", 120, 18, 50, "sonka",
+                // A „sonkás felvágott" egyetlen tétel, nem sonka + párizsi.
+                "sonkas felvagott", "sonka felvagott"),
         new Food("Szalámi", 400, 22, 30, "szalami"),
         new Food("Bacon", 500, 13, 30, "bacon", "szalonna"),
         // Az EGYBEÍRT „halfilé" is hal: a „hal" tő szóhatárt vár (a
