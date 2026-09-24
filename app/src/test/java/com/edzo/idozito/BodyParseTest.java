@@ -1379,6 +1379,24 @@ public class BodyParseTest {
      * majd – amikor a derék helyre került – TESTSÚLY: száz kiló egy
      * mérőszalagos mondatból.
      */
+    /**
+     * Az emelt súly nem a mérlegé.
+     *
+     * A „régen 100 kg-ot nyomtam, most 80-at" nyolcvanasa TESTSÚLYKÉNT ment
+     * a trendbe, a „régen 90 kilót toltam, most 110-et" pedig száztíz kilós
+     * testsúlyt írt be. A „két mérés egy napon" szabálya vitte el: az első
+     * szám után álló „most N" alakot méréssé írta át – az emelés igéjét
+     * viszont nem nézte.
+     */
+    @Test public void aLiftedWeightIsNotTheScale() {
+        assertTrue(BodyParse.parse("Régen 100 kg-ot nyomtam, most 80-at.").isEmpty());
+        assertTrue(BodyParse.parse("Régen 90 kilót toltam, most 110-et.").isEmpty());
+        // A nap két valódi mérése közül a későbbi marad.
+        assertEquals(79.2, BodyParse.parse("Ma reggel még 79,8 volt, "
+                + "este már 79,2.").kg, 0.01);
+        assertEquals(80.0, BodyParse.parse("Tavaly 95 kg voltam, most 80.").kg, 0.01);
+    }
+
     @Test public void theArticleBetweenNumberAndBodyPart() {
         assertEquals(88.0, BodyParse.parse("88 cm a derekam.").cm[0], 0.01);
         assertEquals(95.0, BodyParse.parse("95 cm a csípőm.").cm[1], 0.01);

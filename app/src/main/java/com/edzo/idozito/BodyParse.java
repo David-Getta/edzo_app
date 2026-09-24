@@ -182,6 +182,13 @@ public final class BodyParse {
         return s.matches("(?s).*\\d\\s?-?\\s?(?:kg|kilo)\\s?-?(?:os|s)(?![a-z]).*");
     }
 
+    /** Az emelés igéi: utánuk a kiló a rúdon van, nem a mérlegen. */
+    private static final String[] EMELO_IGE = {
+            "nyomtam", "nyomok", "nyomott", "nyomta", "kinyomtam", "kinyomta",
+            "megnyomtam", "emeltem", "emelt", "felemeltem", "huztam", "huzott",
+            "felhuztam", "kihuztam", "toltam", "tolt", "guggoltam", "leguggoltam",
+            "guggolt", "leguggolt", "szakitottam", "loktem"};
+
     /**
      * Szavak, amelyektől a mondat biztosan NEM mérés – a súly másé.
      *
@@ -587,9 +594,19 @@ public final class BodyParse {
                     + "[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])"
                     + "(?!\\s?-?(?:rol|bol|tol))")
                     .matcher(s);
-            if (tm.find())
-                s = s.substring(0, tm.start()) + "sulyom " + tm.group(2)
-                        + s.substring(tm.end());
+            if (tm.find()) {
+                // Az EMELT súly nem a mérlegé: a „régen 100 kg-ot nyomtam,
+                // most 80-at" nyolcvanasa TESTSÚLYKÉNT ment a trendbe, a
+                // „régen 90 kilót toltam, most 110-et" pedig SZÁZTÍZ kilós
+                // testsúlyt írt be. A két szám közti ige mondja meg, miről
+                // van szó – a két mérés szabálya csak mérlegre való.
+                boolean emel = false;
+                String kozott = s.substring(tm.start(), tm.end());
+                for (String v : EMELO_IGE) if (word(kozott, v)) { emel = true; break; }
+                if (!emel)
+                    s = s.substring(0, tm.start()) + "sulyom " + tm.group(2)
+                            + s.substring(tm.end());
+            }
         }
         // A PLATÓ fordulatai is mérések: a „78-on állok", a „beálltam
         // 78-ra" és a „tartom a 78-at" eddig üresen jött vissza.
@@ -664,11 +681,21 @@ public final class BodyParse {
         String pre = s;
         boolean anyBlocked = adjectiveKg(s) || liftStem(s);
         for (String n : NOT_BODY) if (word(s, n)) { anyBlocked = true; break; }
+        boolean emelesVolt = liftStem(pre);
         if (anyBlocked) {
             StringBuilder keepB = new StringBuilder();
             for (String cl : s.split("[,;.](?!\\d)")) {
                 boolean bad = adjectiveKg(cl) || liftStem(cl);
                 for (String n : NOT_BODY) if (word(cl, n)) { bad = true; break; }
+                // Az EMELÉS IGÉJE is gyakorlatot nevez meg, nem csak a
+                // gyakorlat neve: a „régen 100 kg-ot nyomtam, most 80-at"
+                // nyolcvanasa TESTSÚLYKÉNT ment a trendbe – a tiltott
+                // tagmondatban ott volt a „nyomtam", a folytatásban viszont
+                // már csak a szám állt. A „régen 90 kilót toltam, most
+                // 110-et" így SZÁZTÍZ KILÓS testsúlyt írt be.
+                if (bad) {
+                    for (String v : EMELO_IGE) if (word(cl, v)) { emelesVolt = true; break; }
+                }
                 if (bad) continue;
                 if (keepB.length() > 0) keepB.append(", ");
                 keepB.append(cl.trim());
@@ -680,7 +707,7 @@ public final class BodyParse {
             // túlélte a tiltást, és nyolcvan kilós testsúly lett belőle.
             // Ha a tiltott tagmondat gyakorlatot nevezett meg, a maradék
             // csak akkor mérés, ha ki is mondja.
-            if (liftStem(pre) && !s.matches("(?s).*(?<![a-z])(?:vagyok|voltam"
+            if (emelesVolt && !s.matches("(?s).*(?<![a-z])(?:vagyok|voltam"
                     + "|lettem|nyomok|sulyom|suly|testsuly\\w*|merleg\\w*|mertem"
                     + "|megmertem|meres\\w*|fogytam|hiztam|leadtam)(?![a-z]).*"))
                 return new Body(0, 0);
