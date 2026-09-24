@@ -1167,6 +1167,37 @@ public class StrengthParseTest {
      * „mindkettő" szót pedig nem ismertük. A három tételes lista („mind
      * 4x10") rég megvolt, a kettő tételes nem.
      */
+    /**
+     * A bemelegítés száma súly, és a „minden szett" is mindegyik.
+     *
+     * A „fekvenyomás: bemelegítés 40, aztán 3x8 70 kg" sorozatlistájába
+     * „40-8-8-8" került: a negyvenkilós üres rúdból NEGYVEN ISMÉTLÉSES
+     * sorozat lett, és a rekordok közé is az ment be. A „guggolás 5x5,
+     * minden szett 100 kg" száz kilója pedig elveszett – saját testsúlyos
+     * guggolás került a helyére.
+     */
+    @Test public void warmupNumberAndEverySetWeight() {
+        List<StrengthParse.Item> a = StrengthParse.parse(
+                "Fekvenyomás: bemelegítés 40, aztán 3x8 70 kg");
+        assertEquals(1, a.size());
+        assertEquals(3, a.get(0).sets.size());
+        assertEquals(8, a.get(0).sets.get(0).reps);
+        assertEquals(70.0, a.get(0).sets.get(0).weight, 0.001);
+
+        List<StrengthParse.Item> b = StrengthParse.parse(
+                "Guggolás 5x5, minden szett 100 kg");
+        assertEquals(1, b.size());
+        assertEquals(5, b.get(0).sets.size());
+        assertEquals(100.0, b.get(0).sets.get(0).weight, 0.001);
+
+        // A kimondott sorozatú bemelegítés marad sorozat.
+        List<StrengthParse.Item> c = StrengthParse.parse(
+                "Fekvenyomás bemelegítés 2x10 40 kg, aztán 3x8 70 kg");
+        assertEquals(1, c.size());
+        assertTrue("a bemelegítő sorozatok is bekerülnek: "
+                + c.get(0).sets.size(), c.get(0).sets.size() >= 3);
+    }
+
     @Test public void twoExercisesJoinedByAnd() {
         List<StrengthParse.Item> a =
                 StrengthParse.parse("Ma bicepsz és tricepsz nap: 4x12 mindkettő");

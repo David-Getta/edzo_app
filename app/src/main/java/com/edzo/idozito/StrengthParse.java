@@ -714,10 +714,21 @@ public final class StrengthParse {
         // guggolás, mindegyik sorozat 100 kg-mal" száz kilója elveszett,
         // és saját testsúlyos guggolás került a rekordok közé. A súly a
         // vessző elhagyásával az előző tagmondathoz olvad.
-        text = text.replaceAll("(?iu)[,;]\\s*mindegyik"
+        // A MINDEN ugyanazt mondja, mint a MINDEGYIK: a „guggolás 5x5,
+        // minden szett 100 kg" súlya elveszett, és saját testsúlyos
+        // guggolás került a rekordok közé – száz kiló helyett nulla.
+        text = text.replaceAll("(?iu)[,;]\\s*mind(?:egyik|en)"
                 + "(?:\\s+sorozat\\w*|\\s+szett\\w*)?\\s+"
                 + "(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kil[oó])\\w*",
                 " $1 kg");
+        // A BEMELEGÍTÉS puszta száma SÚLY, nem ismétlés: a „fekvenyomás:
+        // bemelegítés 40, aztán 3x8 70 kg" sorozatlistájába „40-8-8-8"
+        // került – a negyvenkilós üres rúdból negyven ismétléses sorozat
+        // lett, és a rekordok közé is az ment be. A kimondott sorozatú
+        // bemelegítés („bemelegítés 3x10") marad sorozat.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])(?:bemeleg[ií]t[eé]s"
+                + "|felvezet[eé]s)\\p{L}*\\s+\\d{1,3}(?:[.,]\\d)?"
+                + "\\s*(?=[,;.]|$)", " ");
         // A SOROZATONKÉNTI szám ismétlés: a „3 sorozat fekvőtámasz,
         // sorozatonként 20" egyetlen húszas sorozat lett – a hármas
         // sorozatszám elveszett, és a naplóba a munka harmada került. A
