@@ -358,6 +358,32 @@ public class ActivitiesParseTest {
      * számjegyes alak („3 alkalommal") eddig is kimaradt, a kiírt számnév
      * viszont átcsúszott a szűrőn.
      */
+    /**
+     * A megismételt napszó, a hét minden napja és a szavakkal mondott óra.
+     *
+     * A „ma reggel és MA este is edzettem" egyetlen bejegyzés lett – a nap
+     * fele eltűnt –, mert a kötőszó után nem közvetlenül a napszak állt. A
+     * „hét minden napján edzettem" szintén egyetlen alkalom volt hét
+     * helyett. Az „edzés 18 órakor kezdődött és 19:15-ig tartott" hossza
+     * pedig elveszett: az alapértelmezett negyvenöt perc került a naplóba
+     * a hetvenöt helyett.
+     */
+    @Test public void repeatedDayWordWholeWeekAndSpelledClockRange() {
+        assertEquals(2, Activities.parse("Ma reggel és ma este is edzettem.")
+                .plans.get(0).count);
+        assertEquals(2, Activities.parse("Reggel és ma este is futottam.")
+                .plans.get(0).count);
+
+        Activities.Parsed h = Activities.parse("A hét minden napján edzettem.");
+        assertEquals(7, h.days);
+        assertEquals(7, h.plans.get(0).count);
+
+        Activities.Parsed o = Activities.parse("Az edzés 18 órakor "
+                + "kezdődött és 19:15-ig tartott.");
+        assertEquals(75, o.plans.get(0).minutes);
+        assertEquals(18, o.hour);
+    }
+
     @Test public void occasionsOfEatingAreNotWorkouts() {
         assertTrue(Activities.parse("Ma három alkalommal ettem csirkét.")
                 .plans.isEmpty());

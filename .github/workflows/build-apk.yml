@@ -23,6 +23,13 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # Az action alapból a RÉGI „tools" csomagot telepítené, amit az
+          # Android SDK tárolója már nem kínál – a build így másodpercek
+          # alatt elszállt („Failed to find package 'tools'"), a kódtól
+          # függetlenül. Amire szükségünk van, azt a következő lépés úgyis
+          # pontosan felsorolja.
+          packages: ''
 
       - name: Install SDK packages
         run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
@@ -129,7 +136,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           make_latest: true
           body: |
-            Grit automatikus build (v120.47, build ${{ github.run_number }}).
+            Grit automatikus build (v120.48, build ${{ github.run_number }}).
 
             **Mi változott:** ${{ env.COMMIT_SUBJECT }}
 

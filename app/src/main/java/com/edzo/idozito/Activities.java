@@ -4419,6 +4419,23 @@ public final class Activities {
             if (pre.contains("kivetel") || pre.contains("kiveve"))
                 for (int[] w : findWeekdays(q, now)) blank(q, w[0], w[1]);
         }
+        // „A HÉT MINDEN NAPJÁN" hét nap, hét alkalom: a „hét minden napján
+        // edzettem" EGYETLEN negyvenöt perces bejegyzés lett, pedig a mondat
+        // egy egész hetet mond ki. A „minden nap … a héten" alakot rég
+        // értjük, csak ezt a szórendet nem.
+        {
+            java.util.regex.Matcher hm = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:a\\s+)?het\\s+minden\\s+napjan(?![a-z])")
+                    .matcher(new String(q));
+            if (hm.find()) {
+                String rep = "minden nap heten";
+                if (rep.length() <= hm.end() - hm.start()) {
+                    blank(q, hm.start(), hm.end());
+                    for (int i = 0; i < rep.length(); i++)
+                        q[hm.start() + i] = rep.charAt(i);
+                }
+            }
+        }
         int[] span = findSpan(q, now);
         if (span != null) { days = span[2]; blank(q, span[0], span[1]); }
         else {
@@ -6972,8 +6989,11 @@ public final class Activities {
      */
     private static boolean bothDayParts(String s) {
         String dp = "(?:reggel|delelott|delben|delutan|este|ejjel|hajnalban)";
+        // A NAPSZÓ megismételhető: a „ma reggel és MA este is edzettem"
+        // egyetlen bejegyzés lett – a nap fele eltűnt –, mert a kötőszó után
+        // nem közvetlenül a napszak állt.
         return s.matches("(?s).*(?<![a-z])" + dp + "\\s+(?:is\\s+)?(?:es|meg)\\s+"
-                + dp + "\\s+is(?![a-z]).*");
+                + "(?:ma\\s+|tegnap\\s+)?" + dp + "\\s+is(?![a-z]).*");
     }
 
     /**
@@ -9441,6 +9461,33 @@ public final class Activities {
             if (rep.length() > m.end() - m.start()) continue;
             blank(q, m.start(), m.end());
             for (int i = 0; i < rep.length(); i++) q[m.start() + i] = rep.charAt(i);
+        }
+        // A KEZDET és a VÉG szavakkal is tartomány: az „az edzés 18 órakor
+        // kezdődött és 19:15-ig tartott" hossza nyomtalanul elveszett, és az
+        // alapértelmezett negyvenöt perc került a naplóba a hetvenöt helyett.
+        java.util.regex.Matcher km = java.util.regex.Pattern.compile(
+                "(?<![\\d:])(\\d{1,2})(?::(\\d{2}))?\\s?ora(?:kor)?\\s+"
+                + "(?:kezdodott|kezdodik|kezdtem|kezdtuk|kezdtek)"
+                + "[^\\d]{0,20}?(\\d{1,2})(?::(\\d{2}))?\\s?"
+                + "(?:-?ig|orai?g)(?![\\d:])").matcher(new String(q));
+        while (km.find()) {
+            int h1, m1, h2, m2;
+            try {
+                h1 = Integer.parseInt(km.group(1));
+                m1 = km.group(2) == null ? 0 : Integer.parseInt(km.group(2));
+                h2 = Integer.parseInt(km.group(3));
+                m2 = km.group(4) == null ? 0 : Integer.parseInt(km.group(4));
+            } catch (NumberFormatException e) { continue; }
+            if (h1 > 23 || h2 > 23 || m1 > 59 || m2 > 59) continue;
+            int mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (mins < 0) mins += 24 * 60;
+            if (mins < 5 || mins > 600) continue;
+            // A KEZDÉS ÓRÁJA marad: az edzés időpontja a naplóban is
+            // számít, és a tartomány elejét épp az mondja ki.
+            String rep = h1 + " orakor " + mins + " perc";
+            if (rep.length() > km.end() - km.start()) continue;
+            blank(q, km.start(), km.end());
+            for (int i = 0; i < rep.length(); i++) q[km.start() + i] = rep.charAt(i);
         }
     }
 
