@@ -339,6 +339,16 @@ public final class BodyParse {
         // A „NA JÓ, PONT 80" a kimondott mérés megerősítése: a „ma 80,0 kg
         // – először 80 alatt... na jó, pont 80" méréséből semmi nem lett.
         // A töltelék és a „pont" elmarad; a maradék szám a mérés maga.
+        // A KÜSZÖB ALATTI MAI SZÁM a mérés: a „végre 80 kg alatt, 79,6
+        // reggel" méréséből semmi nem lett – az „alatt" a kerek nyolcvanast
+        // céllá tette, a valódi hetvenkilenc egész hat pedig kiló nélkül
+        // állt, és senki nem vette fel. A küszöb kiesik, a mai szám kapja
+        // a kilót.
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{2,3}(?:[.,]\\d)?\\s?(?:kg|kil[oó]\\p{L}*)"
+                + "\\s+(?:alatt|felett|f[oö]l[oö]tt)(?![\\p{L}])\\s*[,;!:]?\\s*"
+                + "(?:vagyok\\s+|megint\\s+|v[eé]gre\\s+)?(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "(?![\\d,.])(?!\\s?(?:cm|%|perc|km|kcal|l[eé]p[eé]s|sz[aá]zal))",
+                "$1 kg");
         if (q.matches("(?s).*\\d\\s?(?:kg|kil[oó]).*"))
             q = q.replaceAll("(?iu)(?<![\\p{L}])(?:na\\s+j[oó]|sz[oó]val|pont|kereken"
                     + "|el[oő]sz[oö]r|v[eé]gre|v[eé]gre-valah[aá]ra)"

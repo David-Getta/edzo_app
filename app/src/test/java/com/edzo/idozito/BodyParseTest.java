@@ -1388,6 +1388,19 @@ public class BodyParseTest {
      * szám után álló „most N" alakot méréssé írta át – az emelés igéjét
      * viszont nem nézte.
      */
+    /**
+     * A küszöb alatti mai szám a mérés.
+     *
+     * A „végre 80 kg alatt, 79,6 reggel" méréséből semmi nem lett: az
+     * „alatt" céllá tette a nyolcvanast, a valódi szám kiló nélkül állt.
+     */
+    @Test public void theNumberBelowTheThresholdIsTheReading() {
+        assertEquals(79.6, BodyParse.parse("Végre 80 kg alatt, 79,6 reggel").kg, 0.01);
+        assertEquals(80.4, BodyParse.parse("Ma 80 kg felett, 80,4").kg, 0.01);
+        // A puszta küszöb továbbra sem mérés.
+        assertTrue(BodyParse.parse("80 kg alatt vagyok").kg <= 0);
+    }
+
     @Test public void aLiftedWeightIsNotTheScale() {
         assertTrue(BodyParse.parse("Régen 100 kg-ot nyomtam, most 80-at.").isEmpty());
         assertTrue(BodyParse.parse("Régen 90 kilót toltam, most 110-et.").isEmpty());

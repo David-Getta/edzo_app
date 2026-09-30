@@ -1910,6 +1910,15 @@ public final class Activities {
                     + "|lemondtam|nem\\s+(?:ment|lett|sikerult|birtam"
                     + "|jott\\s+ossze|volt\\s+ido))(?![a-z]).*"))
             return " ";
+        // A „NEM VOLT IDŐ" szám nélkül nem edzés: a „kedvenc edzésem a
+        // bicikli, de ma nem volt idő" egyórás kerékpározást írt a naplóba
+        // – abból, hogy valaki elmondta, MIÉRT nem mozgott. Kimondott
+        // számmal a mondat más: a „futottam 5 km-t, de nem volt időm
+        // nyújtani" futása megtörtént.
+        if (!s.matches("(?s).*\\d.*") && s.matches("(?s).*(?<![a-z])nem\\s+volt"
+                + "\\s+(?:ra\\s+|hozza\\s+)?(?:ido|idom|idonk|kedvem|kedvunk"
+                + "|energiam|erom)(?![a-z]).*"))
+            return " ";
         // A HASONLÍTÁS SZÁMA a múlté: a „ma jobb volt a tempóm, mint a múlt
         // heti 10 km-en" tíz kilométeres futást írt a MAI napra, ráadásul
         // hét napra szórva – a mondat a múlt heti futáshoz méri a mait, a
@@ -2465,6 +2474,14 @@ public final class Activities {
                 + "(?:\\p{L}{1,12}\\s*)?[,!]?\\s*"
                 + "sot\\s+(\\d[\\d ]{0,6}\\d)(?:\\s?lepes\\w*)?\\s+lett",
                 "$2 lepes");
+        // A CÉL MELLETT A MAI SZÁM: a „10 000 lépés a napi célom, ma 6500
+        // lett" bejegyzéséből SEMMI nem lett – a cél szava az egészet
+        // elnémította, pedig a mondat vége kimondja a mai lépésszámot.
+        s = s.replaceAll("(?<![\\d,.])\\d[\\d ]{0,6}\\d\\s?lepes\\w*\\s+(?:a\\s+)?"
+                + "(?:napi\\s+)?cel\\w*\\s*(?:megvan|meglett|teljesult|megvolt)?"
+                + "\\s*[,;]?\\s*(?:ma|de|es|viszont|sajnos"
+                + "|csak|eddig|\\s)*\\s*(\\d[\\d ]{0,6}\\d)(?:\\s?lepes\\w*)?\\s+lett",
+                "$1 lepes");
         // A KÉPESSÉG főnévi igeneve nem edzés: a „csak este tudok mozogni,
         // ma 21:30-kor futottam 6 km-t" mondatban a „mozogni" egy külön
         // negyvenöt perces bejegyzést szült a valódi futás mellé. Az ige
@@ -7390,6 +7407,9 @@ public final class Activities {
                 "szerettem volna", "kellett volna", "mentem volna",
                 "akartam volna", "terveztem volna", "tervben volt",
                 "lemondtam", "neztem", "neztuk", "vegignez", "vegigneztem",
+                // A JELEN IDEJŰ nézés is nézés: a „nézem a focimeccset a
+                // tévében, sört iszom" kilencven perc focit írt a naplóba.
+                "nezem", "nezzuk", "nezunk",
                 "rendeltem", "vettem", "berlet",
                 // A MEGnéztem is nézés: a „megnéztem a maratont a tv-ben"
                 // negyvenkét kilométeres futás lett a naplóban. Az OLVASÁS és

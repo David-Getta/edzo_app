@@ -596,6 +596,32 @@ public class ActivitiesParseTest {
                 .plans.get(0).minutes);
     }
 
+    /**
+     * A „nem volt idő" szám nélkül nem edzés, a nézett meccs nem játék.
+     *
+     * A „kedvenc edzésem a bicikli, de ma nem volt idő" egyórás
+     * kerékpározást írt a naplóba, a „nézem a focimeccset a tévében"
+     * kilencven perc focit. A „10 000 lépés a napi célom, ma 6500 lett"
+     * bejegyzéséből viszont semmi nem lett – a cél szava elnémította.
+     */
+    @Test public void noTimeAndWatchingAreNotWorkoutsButTheStepsAre() {
+        assertTrue(Activities.parse("Kedvenc edzésem a bicikli, de ma nem "
+                + "volt idő").plans.isEmpty());
+        assertTrue(Activities.parse("Nézem a focimeccset a tévében, sört "
+                + "iszom").plans.isEmpty());
+        assertTrue(Activities.parse("Nézzük a meccset, közben chips")
+                .plans.isEmpty());
+        // Kimondott számmal a futás megtörtént.
+        assertEquals(5.0, Activities.parse("Futottam 5 km-t, de nem volt "
+                + "időm nyújtani").plans.get(0).km, 0.01);
+        assertEquals(90, Activities.parse("Fociztam 90 percet, aztán néztem "
+                + "a meccset a tévében").plans.get(0).minutes);
+        assertEquals(6500, Activities.parse("10 000 lépés a napi célom, "
+                + "ma 6500 lett").plans.get(0).steps);
+        assertEquals(9200, Activities.parse("A napi 8000 lépéses célom "
+                + "megvan, 9200 lett").plans.get(0).steps);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
