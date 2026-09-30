@@ -583,6 +583,65 @@ public final class StrengthParse {
                 + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(\\d{1,2})\\s?-?"
                 + "(?:[aeo\u00f6]s|ism[eé]tl[eé]ses)\\s+szett(?:et)?"
                 + "(?![\\p{L}])", " 1x$1 ");
+        // A SÚLYLISTA ÉS AZ ISMÉTLÉSLISTA párban: a „fekvenyomás: 60, 70, 80
+        // kg, 8-8-6" hatvan-hetven-nyolcvan ISMÉTLÉST írt hetven kilóval, a
+        // „felhúzás 5x3, 140-150-160-160-160" pedig súly nélkül maradt. A két
+        // lista elemenként tartozik össze; a „60x8, 70x8, 80x6" alakot a
+        // folytatás-olvasó rég érti, ezért azzá írjuk át.
+        {
+            java.util.regex.Matcher wl = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\d,.x×])(\\d{2,3}(?:\\s*,\\s*\\d{2,3}){1,7})\\s?"
+                    + "(?:kg|kil[oó]\\p{L}*)\\s*[,;:]?\\s*"
+                    + "(\\d{1,2}(?:\\s*-\\s*\\d{1,2}){1,7})(?![\\d,.x×-])"
+                    + "(?!\\s?(?:kg|kil[oó]|perc|mp))").matcher(text);
+            StringBuffer wb = new StringBuffer();
+            while (wl.find()) {
+                String[] ws = wl.group(1).split("\\s*,\\s*");
+                String[] rs = wl.group(2).split("\\s*-\\s*");
+                if (ws.length != rs.length) { wl.appendReplacement(wb,
+                        java.util.regex.Matcher.quoteReplacement(wl.group())); continue; }
+                StringBuilder rep = new StringBuilder();
+                for (int i = 0; i < ws.length; i++) {
+                    if (i > 0) rep.append(", ");
+                    rep.append(ws[i]).append('x').append(rs[i]);
+                }
+                wl.appendReplacement(wb, java.util.regex.Matcher.quoteReplacement(rep.toString()));
+            }
+            wl.appendTail(wb);
+            text = wb.toString();
+            java.util.regex.Matcher sw = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s?(\\d{1,2})\\s*[,;:]?\\s*"
+                    + "(\\d{2,3}(?:\\s*-\\s*\\d{2,3}){1,7})(?![\\d,.x×-])"
+                    + "(?!\\s?(?:perc|mp|m(?![\\p{L}])))").matcher(text);
+            wb = new StringBuffer();
+            while (sw.find()) {
+                String[] ws = sw.group(3).split("\\s*-\\s*");
+                int sets = Integer.parseInt(sw.group(1));
+                if (ws.length != sets) { sw.appendReplacement(wb,
+                        java.util.regex.Matcher.quoteReplacement(sw.group())); continue; }
+                StringBuilder rep = new StringBuilder();
+                for (int i = 0; i < ws.length; i++) {
+                    if (i > 0) rep.append(", ");
+                    rep.append(ws[i]).append('x').append(sw.group(2));
+                }
+                sw.appendReplacement(wb, java.util.regex.Matcher.quoteReplacement(rep.toString()));
+            }
+            sw.appendTail(wb);
+            text = wb.toString();
+        }
+        // A KÉT KÉZISÚLYZÓ nem két sorozat: a „vállnyomás kézisúlyzóval 3x12,
+        // 2x14 kg" kettő darab tizennégy kilós súlyzót mond, mégis két egyes
+        // sorozat lett belőle négy kilóval. Kézisúlyzó mellett a „2x N kg"
+        // a súly.
+        if (text.matches("(?iu)(?s).*(?:k[eé]zis[uú]lyz[oó]|dumbbell|kettlebell).*"))
+            text = text.replaceAll("(?iu)(?<![\\d,.x×])2\\s?[x×]\\s?(\\d{1,2}(?:[.,]\\d)?)"
+                    + "\\s?(?=kg|kil[oó])", "$1 ");
+        // A RAGOS SÚLY a puszta sorozatszám mellett is súly: a „3 szett
+        // guggolás 60-nal" bejegyzéséből SEMMI nem lett – a „-nal" ragos
+        // szám csak az ismétléses alakok mellett számított kilónak.
+        text = text.replaceAll("(?iu)(?<![\\d,.:])([2-9]\\d|[1-4]\\d{2})\\s?-\\s?"
+                + "(?:nal|nel|val|vel|mal|zal|zel|szal|szel|tal|tel|cal|cel|gyel)"
+                + "(?![\\p{L}])", "$1 kg");
         // Az „1x 150 KG" egyetlen ismétlés a kimondott súllyal, nem
         // százötven ismétlés: a „guggolás 1x 150 kg, utána 3x5 120 kg"
         // bejegyzése „15-5-5-5 × 150 kg" torzó lett, a „felhúzás 140 kg

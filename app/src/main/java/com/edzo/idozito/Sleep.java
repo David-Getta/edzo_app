@@ -153,9 +153,11 @@ public final class Sleep {
             // A TEGNAPI ÉJSZAKA után a „ma N" a mai: a „tegnap 7 óra alvás,
             // ma 6,5" hét órát írt a mai napra a hat és fél helyett – a
             // mai szám mellett nem állt „óra", és a tegnapi nyert.
+            // Az IDŐPONT nem óraszám: a „tegnap 10-kor ágyban, ma 6-kor
+            // ébresztő" hatosa a kelés ideje, nem hat óra alvás.
             n = n.replaceAll("(?<![a-z])tegnap[^,;.]*?\\d[^,;.]*[,;]\\s*ma\\s+"
-                    + "(\\d{1,2}(?:[.,]\\d)?)(?![\\d,.])"
-                    + "(?!\\s?(?:perc|km|kg|kilo|lepes))", "ma $1 orat aludtam");
+                    + "(\\d{1,2}(?:[.,]\\d)?)(?![\\d,.:])"
+                    + "(?!\\s?(?:perc|km|kg|kilo|lepes|-?kor|-?ig|-?tol))", "ma $1 orat aludtam");
             java.util.regex.Matcher nm = java.util.regex.Pattern.compile(
                     "(?<![a-z])(?:(?:delutan|delben|delelott|napkozben|ebed utan)"
                     + "\\s+(?:is\\s+|meg\\s+)?(?:aludtam\\s+)?(\\d{1,2}(?:[.,]\\d)?)"
@@ -269,8 +271,12 @@ public final class Sleep {
         // említő tagmondat időpontja nem határolja az alvást.
         if (s.matches("(?s).*(?:alud\\w*|alvas\\w*|fekud\\w*).*")) {
             StringBuilder nb = new StringBuilder();
+            // A TÓL–IG mellett bármely felkelés csak megszakítás: az „aludtam
+            // 23-tól 7-ig, de 3-kor felkeltem a gyerekhez" négy óra lett – a
+            // hármas vitte el az ébredés szerepét a hetestől.
+            boolean range = s.matches("(?s).*\\d\\s?-?\\s?tol(?![a-z]).*\\d\\s?-?\\s?ig(?![a-z]).*");
             for (String part : s.split("(?=[,;])")) {
-                if (part.matches("(?s).*(?:ejfel|hajnal)\\w*.*")
+                if ((range || part.matches("(?s).*(?:ejfel|hajnal)\\w*.*"))
                         && part.matches("(?s).*(?:felkelt|felebredt"
                             + "|felriadt|felkeltem|felebredtem)\\w*.*"))
                     continue;
@@ -288,6 +294,13 @@ public final class Sleep {
                 + "(?:ejszakam|ejszakank|ejjelem|ejjelunk)(?![a-z])", "alvas");
         s = s.replaceAll("(?<![a-z])(?:az\\s+)?ejszaka(?![a-z])\\s*:?\\s*"
                 + "(?=\\d{1,2}(?:[.,]\\d)?\\s?ora(?![a-z]))", "alvas ");
+        // Az ÁGYBAN és az ÉBRESZTŐ is a két időpont: a „11-kor ágyban, 6:45
+        // ébresztő" éjszakájából semmi nem lett – a lefekvés és a kelés
+        // igéje nélkül a két időpont gazdátlan maradt.
+        s = s.replaceAll("(?<![a-z])(\\d{1,2}(?::\\d{2})?)\\s?-?kor\\s+(?:az\\s+)?agyban"
+                + "(?![a-z])", "$1-kor lefekudtem");
+        s = s.replaceAll("(?<![a-z])(\\d{1,2}(?::\\d{2})?)\\s?-?(?:kor\\s+)?"
+                + "(?:az\\s+)?ebreszto(?![a-z])", "$1-kor keltem");
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");

@@ -2905,4 +2905,25 @@ public class StrengthParseTest {
                 5, 20, 0);
         assertSets("Guggolás 60 db 3 sorozatban", "Guggolás", 3, 20, 0);
     }
+
+    /**
+     * A súlylista és az ismétléslista elemenként tartozik össze.
+     *
+     * A „fekvenyomás: 60, 70, 80 kg, 8-8-6" hatvan-hetven-nyolcvan
+     * ISMÉTLÉST írt hetven kilóval, a „felhúzás 5x3, 140-150-160-160-160"
+     * súly nélkül maradt. A két kézisúlyzó („2x14 kg") nem két sorozat, és
+     * a „3 szett guggolás 60-nal" ragos súlya is súly.
+     */
+    @Test public void weightListsAndRepListsPairUp() {
+        assertEquals("Fekvenyomás 3×8/8/6@80",
+                sum("Fekvenyomás: 60, 70, 80 kg, 8-8-6"));
+        List<StrengthParse.Item> a = StrengthParse.parse("Felhúzás 5x3, 140-150-160-160-160");
+        assertEquals(1, a.size());
+        assertEquals(5, a.get(0).sets.size());
+        assertEquals(140.0, a.get(0).sets.get(0).weight, 0.01);
+        assertEquals(160.0, a.get(0).topWeight(), 0.01);
+        assertSets("Vállnyomás kézisúlyzóval 3x12, 2x14 kg", "Vállból nyomás", 3, 12, 14);
+        assertSets("Ma csak bemelegítés és 3 szett guggolás 60-nal", "Guggolás", 3, 1, 60);
+        assertSets("Ma 3x8 guggolás 80-nal, 5 perc szünetekkel", "Guggolás", 3, 8, 80);
+    }
 }

@@ -412,6 +412,21 @@ public class SleepTest {
         assertEquals(9.0, Sleep.parse("Aludtam kb 9 órát."), 0.01);
     }
 
+    /**
+     * Az „ágyban" és az „ébresztő" a két időpont, a felkelés csak megszakítás.
+     *
+     * A „11-kor ágyban, 6:45 ébresztő" éjszakájából semmi nem lett; az
+     * „aludtam 23-tól 7-ig, de 3-kor felkeltem a gyerekhez" négy óra lett,
+     * mert a hármas vitte el az ébredés szerepét.
+     */
+    @Test public void inBedAndAlarmAreTheTwoTimes() {
+        assertEquals(7.8, Sleep.parse("11-kor ágyban, 6:45 ébresztő"), 0.01);
+        assertEquals(8.0, Sleep.parse("23:00 ágyban, 7:00 ébresztő"), 0.01);
+        assertEquals(8.0, Sleep.parse("Tegnap 10-kor ágyban, ma 6-kor ébresztő"), 0.01);
+        assertEquals(8.0, Sleep.parse("Aludtam 23-tól 7-ig, de 3-kor felkeltem "
+                + "a gyerekhez"), 0.01);
+    }
+
     @Test public void shiftWorkersDaytimeSleepCounts() {
         // Az „éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"
         // hét óra nappali alvás; a „csak 4 órát tudtam aludni" négy.

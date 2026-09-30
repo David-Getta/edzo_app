@@ -339,6 +339,15 @@ public final class BodyParse {
         // A „NA JÓ, PONT 80" a kimondott mérés megerősítése: a „ma 80,0 kg
         // – először 80 alatt... na jó, pont 80" méréséből semmi nem lett.
         // A töltelék és a „pont" elmarad; a maradék szám a mérés maga.
+        // A SÚLYSOROZAT nem testsúly: a „fekvenyomás: 60, 70, 80 kg, 8-8-6"
+        // nyolcvan kilós mérést írt a trendbe – a kilós szám a gyakorlat
+        // nevétől vesszővel elválasztott tagmondatban állt, és a saját
+        // tagmondatában semmi nem mondta, hogy a rúdon van. Vesszős
+        // számsor végén a kiló csak a rúd súlya lehet: a mérleget senki
+        // nem írja így.
+        // (A vessző után szóköz kell: a „90,05 kg" tizedes, nem sorozat.)
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{2,3}(?:\\s*,\\s+\\d{2,3})+\\s?"
+                + "(?:kg|kil[oó]\\p{L}*)(?![\\p{L}])", " ");
         // A KÜSZÖB ALATTI MAI SZÁM a mérés: a „végre 80 kg alatt, 79,6
         // reggel" méréséből semmi nem lett – az „alatt" a kerek nyolcvanast
         // céllá tette, a valódi hetvenkilenc egész hat pedig kiló nélkül

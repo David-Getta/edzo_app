@@ -2527,6 +2527,7 @@ Súlyom 98 kg, derék 88.
 Végre 80 kg alatt, 79,6 reggel
 Ma 80 kg felett, 80,4
 80 kg alatt vagyok
+Fekvenyomás: 60, 70, 80 kg, 8-8-6
 Régen 100 kg-ot nyomtam, most 80-at.
 Régen 90 kilót toltam, most 110-et.
 Ma reggel még 79,8 volt, este már 79,2.
@@ -5228,6 +5229,10 @@ Aludtam egy jót, kb 9 órát.
 Aludtam egy nagyot, 8 órát.
 Végre aludtam egy rendeset, vagy 8 órát.
 Aludtam kb 9 órát.
+11-kor ágyban, 6:45 ébresztő
+23:00 ágyban, 7:00 ébresztő
+Tegnap 10-kor ágyban, ma 6-kor ébresztő
+Aludtam 23-tól 7-ig, de 3-kor felkeltem a gyerekhez
 éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem
 két műszak között csak 4 órát tudtam aludni
 mélyalvás 2 óra 10 perc, összesen 7 óra 30 perc alvás
@@ -5775,6 +5780,11 @@ Vállnyomás 3x8 30-cal, majd 2x6 35-tel
 Fekvőtámasz 100 db összesen, 5 sorozatban
 Fekvőtámasz összesen 100, 5 szettben
 Guggolás 60 db 3 sorozatban
+Fekvenyomás 3×8/8/6@80
+Felhúzás 5x3, 140-150-160-160-160
+Vállnyomás kézisúlyzóval 3x12, 2x14 kg
+Ma csak bemelegítés és 3 szett guggolás 60-nal
+Ma 3x8 guggolás 80-nal, 5 perc szünetekkel
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam

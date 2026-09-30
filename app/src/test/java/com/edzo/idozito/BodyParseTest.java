@@ -1399,6 +1399,8 @@ public class BodyParseTest {
         assertEquals(80.4, BodyParse.parse("Ma 80 kg felett, 80,4").kg, 0.01);
         // A puszta küszöb továbbra sem mérés.
         assertTrue(BodyParse.parse("80 kg alatt vagyok").kg <= 0);
+        // A vesszős súlysorozat a rúdé, nem a mérlegé.
+        assertTrue(BodyParse.parse("Fekvenyomás: 60, 70, 80 kg, 8-8-6").kg <= 0);
     }
 
     @Test public void aLiftedWeightIsNotTheScale() {
