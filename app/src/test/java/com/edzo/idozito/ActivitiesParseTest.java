@@ -551,6 +551,51 @@ public class ActivitiesParseTest {
                 + "Ma el is kezdtem, 40 perc", wed).offset);
     }
 
+    /**
+     * Az izomcsoport-pár a terem nyelvén súlyzós edzés.
+     *
+     * A „ma edzettem, mell és hát, 1 óra 15" és az „edzés: váll és
+     * tricepsz, 40 perc" egyéb mozgásként ment a naplóba. A puszta „hát"
+     * magában más szó is lehet (hat nap), ezért csak két izomcsoport
+     * együtt számít.
+     */
+    @Test public void aPairOfMuscleGroupsIsAGymSession() {
+        assertEquals("kondi", Activities.parse("Ma edzettem, mell és hát, "
+                + "1 óra 15").plans.get(0).kind.id);
+        assertEquals(75, Activities.parse("Ma edzettem, mell és hát, "
+                + "1 óra 15").plans.get(0).minutes);
+        assertEquals("kondi", Activities.parse("Edzés: váll és tricepsz, "
+                + "40 perc").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("Mell-hát nap, 1 óra")
+                .plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("Kar nap: bicepsz-tricepsz, "
+                + "45 perc").plans.get(0).kind.id);
+        // A „hat nap" hat nap, a fájó láb és hát nem kondi.
+        assertEquals(6, Activities.parse("Hat nap alatt 3 futás").days);
+        assertEquals("futas", Activities.parse("Ma 6 km futás, fáj a lábam "
+                + "és a hátam").plans.get(0).kind.id);
+    }
+
+    /**
+     * Az „N és fél km" távja: a „hat és fél km futás" és a „6 és fél km"
+     * kilométere nyomtalanul elveszett, pedig az órás alakot rég értjük.
+     */
+    @Test public void aNumberAndAHalfKilometres() {
+        assertEquals(6.5, Activities.parse("Hat és fél km futás")
+                .plans.get(0).km, 0.01);
+        assertEquals(6.5, Activities.parse("6 és fél km futás")
+                .plans.get(0).km, 0.01);
+        assertEquals(6.5, Activities.parse("Futottam hat és fél kilométert")
+                .plans.get(0).km, 0.01);
+        assertEquals(2.5, Activities.parse("Két és fél km séta")
+                .plans.get(0).km, 0.01);
+        assertEquals(1.5, Activities.parse("Úszás egy és fél km")
+                .plans.get(0).km, 0.01);
+        // Az órás alak nem sérül.
+        assertEquals(210, Activities.parse("Három és fél óra túra")
+                .plans.get(0).minutes);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

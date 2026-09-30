@@ -1936,6 +1936,40 @@ public final class Activities {
                 + "heten(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:mult|elozo)\\s+heten(?![a-z])"
                     + "[^,;.!?]*[,;]?", " ");
+        // AZ IZOMCSOPORT-PÁR a terem nyelvén súlyzós edzés: a „ma edzettem,
+        // mell és hát, 1 óra 15" és az „edzés: váll és tricepsz, 40 perc"
+        // egyéb mozgásként ment a naplóba, pedig aki mellet és hátat
+        // edz, az vasat tol. A puszta „hát"/„has"/„kar" magában más szó is
+        // lehet (hat nap, has), ezért csak KÉT izomcsoport együtt számít,
+        // kötőjellel, vesszővel vagy „és"-sel összefogva.
+        // Az ÚSZÁSNÁL a mell és a hát úszásnem („20 hossz mell, 10 hossz
+        // hát"), nem izomcsoport – ott a szabály nem él.
+        if (!s.matches("(?s).*(?:usz|medenc|hossz).*")) {
+            String izom = "(?:mell|hat|lab|vall|kar|bicepsz|tricepsz|has|core"
+                    + "|torzs|comb|farizom|far|vadli)";
+            s = s.replaceAll("(?<![a-z])" + izom + "(?:\\s*[-/,]\\s*|\\s+(?:es|meg)\\s+)"
+                    + izom + "(?:(?:\\s*[-/,]\\s*|\\s+(?:es|meg)\\s+)" + izom + ")*"
+                    + "(?![a-z])(?:\\s+nap(?![a-z]))?", "kondi");
+        }
+        // AZ „N ÉS FÉL KM" távja: a „hat és fél km futás" és a „6 és fél km"
+        // kilométere nyomtalanul elveszett – a fél külön félkilométerként
+        // állt, az egész szám pedig darabszámnak látszott. Az óránál ezt a
+        // szórendet rég értjük; a távnál a számot tizedessé írjuk.
+        {
+            java.util.regex.Matcher hm = java.util.regex.Pattern.compile(
+                    "(?<![a-z\\d,.])(\\d{1,2}|egy|ket|harom|negy|ot|hat|het|nyolc"
+                    + "|kilenc|tiz)\\s+es\\s+fel(?=\\s?(?:km|kilomet\\w*|meter\\w*)(?![a-z])"
+                    + "|\\s?m(?![a-z]))").matcher(s);
+            StringBuffer hb = new StringBuffer();
+            while (hm.find()) {
+                String w = hm.group(1), d = null;
+                if (w.matches("\\d+")) d = w;
+                else for (String[] nw : NUM_WORDS) if (nw[0].equals(w)) { d = nw[1]; break; }
+                hm.appendReplacement(hb, d == null ? hm.group() : d + ",5");
+            }
+            hm.appendTail(hb);
+            s = hb.toString();
+        }
         // A MECCS MELLETT elfogyasztott vacsora a tévé előtt készült: a
         // „két sör és egy pizza volt a vacsora a meccs mellett"
         // negyvenöt perces egyéb mozgást írt a naplóba. A „kondi
