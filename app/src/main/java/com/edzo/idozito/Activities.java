@@ -1921,6 +1921,16 @@ public final class Activities {
                     + "(?![a-z])[^,;.!?]*?(?:hez|hoz|nal|nel)\\s+kepest"
                     + "(?![a-z])", " ");
         }
+        // A MÚLT HÉT az idei hét mellett csak viszonyítás: a „múlt héten 3x
+        // futottam, ezen a héten még csak egyszer, 6 km" HÁROM hatkilométeres
+        // futást írt a hétre, a „múlt héten 20 km volt, ezen a héten eddig
+        // 12 km" pedig harminckét kilométert – a múlt hét adata rég a
+        // naplóban van, a mondat a mostani hetet méri hozzá. Ha a mondat az
+        // idei hetet is megnevezi, a múlt hét tagmondata kiesik.
+        if (s.matches("(?s).*(?<![a-z])(?:ezen a|az idei|a mostani|a|az idei)\\s+"
+                + "heten(?![a-z]).*"))
+            s = s.replaceAll("(?<![a-z])(?:a\\s+)?(?:mult|elozo)\\s+heten(?![a-z])"
+                    + "[^,;.!?]*[,;]?", " ");
         // A MECCS MELLETT elfogyasztott vacsora a tévé előtt készült: a
         // „két sör és egy pizza volt a vacsora a meccs mellett"
         // negyvenöt perces egyéb mozgást írt a naplóba. A „kondi
@@ -4456,7 +4466,7 @@ public final class Activities {
         // 1) Időszak: „elmúlt 3 nap”, „3 nap alatt”, „a héten”. A megtalált részt
         //    kitakarjuk, hogy a benne lévő szám ne számítson edzés-darabszámnak.
         int days = 1, offset = 0;
-        java.util.List<int[]> wdBacks = null;
+        java.util.List<int[]> wdBacks = null, relBacks = null;
         // „Vasárnap KIVÉTELÉVEL minden nap": a megnevezett nap itt épp az,
         // amelyiken NEM volt edzés. A napnevet ilyenkor kitakarjuk, hogy ne
         // arra a napra kerüljön a bejegyzés – a kizárt nap kibontását nem
@@ -4504,11 +4514,24 @@ public final class Activities {
             if (md != null) { offset = md[2]; blank(q, md[0], md[1]); }
             else {
             // A „tegnap és ma" két nap: mától visszafelé oszlik el.
-            int[] tm = findYesterdayAndToday(q);
-            if (tm != null) {
-                days = 2;
-                blank(q, tm[0], tm[0] + 6);
-                blank(q, tm[1], tm[1] + 2);
+            // A TÉTELEK A SAJÁT NAPJUKRA: a „tegnap 7 km futás, ma 5 km"
+            // mindkét futása MÁRA került, a „tegnapelőtt 7 km, ma 5 km"
+            // mindkettő tegnapelőttre – az egyenletes elosztás tervenként
+            // számol, és egy-egy alkalmas tervnél mindig az időszak elejét
+            // adja. A megnevezett napok („hétfőn és szerdán") párosítása
+            // rég megvan; a tegnapelőtt/tegnap/ma ugyanolyan megnevezett
+            // nap, ezért ugyanoda kerül – ha a tervek száma egyezik velük.
+            java.util.List<int[]> rel = findRelativeDays(q);
+            if (rel != null) {
+                int minB = Integer.MAX_VALUE, maxB = 0;
+                for (int[] r : rel) {
+                    minB = Math.min(minB, r[2]);
+                    maxB = Math.max(maxB, r[2]);
+                    blank(q, r[0], r[1]);
+                }
+                days = maxB - minB + 1;
+                offset = minB;
+                relBacks = rel;
             } else {
                 // A „hétvégén" a legutóbbi szombat–vasárnap, nem a mai nap.
                 int[] we = findWeekend(q, now);
@@ -5665,6 +5688,24 @@ public final class Activities {
                     p0.km > 0 ? Math.round(p0.km / c * 100) / 100.0 : 0,
                     p0.steps / c));
         }
+        // A tegnapelőtt/tegnap/ma sor csak párosítva: egyetlen tervnél az
+        // egyenletes elosztás marad („tegnap és ma 1-1 futás").
+        if (wdBacks == null && relBacks != null && !out.isEmpty()) {
+            java.util.List<int[]> active = new java.util.ArrayList<>();
+            for (int[] r : relBacks) if (r[3] == 0) active.add(r);
+            if (out.size() >= 2 && out.size() == relBacks.size())
+                wdBacks = relBacks;
+            else if (out.size() >= 2 && out.size() == active.size())
+                wdBacks = active;
+            // A „TEGNAP ÉS MA futottam 5 km-t" mindkét napon egy: a
+            // kötőszóval összefogott két nap egy-egy alkalom. A „tegnap
+            // este edzettem, ma izomláz" nem ez – ott a ma nem kap edzést.
+            else if (out.size() == 1 && out.get(0).count == 1
+                    && active.size() >= 2
+                    && rawText.matches("(?s).*(?<![a-z])tegnap(?:elott)?"
+                        + "(?:\\s+is)?\\s+(?:es|meg)\\s+ma(?![a-z]).*"))
+                wdBacks = active;
+        }
         // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.
         if (wdBacks != null && !out.isEmpty()) {
             int n = wdBacks.size();
@@ -6554,6 +6595,34 @@ public final class Activities {
         int back = Days.between(cal.getTimeInMillis(), now);
         if (back < 0 || back > 365) return null;
         return new int[]{p, k, back};
+    }
+
+    /**
+     * A tegnapelőtt/tegnap/ma szavak a szöveg sorrendjében: {kezdet, vég,
+     * hány napja}. Null, ha nincs legalább két KÜLÖNBÖZŐ nap köztük – az
+     * egyetlen napot a findSingleDay kezeli.
+     */
+    private static java.util.List<int[]> findRelativeDays(char[] q) {
+        String s = new String(q);
+        java.util.List<int[]> out = new java.util.ArrayList<>();
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(?<![a-z])(tegnapelott|tegnap|ma)(?![a-z])").matcher(s);
+        boolean distinct = false;
+        while (m.find()) {
+            int back = m.group(1).equals("ma") ? 0
+                    : m.group(1).equals("tegnap") ? 1 : 2;
+            for (int[] o : out) if (o[2] != back) distinct = true;
+            // A PIHENŐNAP tagmondata nem kap tételt: a „tegnapelőtt 7 km,
+            // tegnap pihenő, ma 5 km" tegnapja csak azt mondja, hogy akkor
+            // nem volt semmi – a párosításból kimarad.
+            int e = m.end();
+            while (e < s.length() && ",;.".indexOf(s.charAt(e)) < 0) e++;
+            String clause = s.substring(m.end(), e);
+            int rest = clause.matches("(?s).*(?<![a-z])(?:pihen\\w*|kihagy\\w*"
+                    + "|semmi|nem\\s+\\p{L}+|izomlaz\\w*)(?![a-z]).*") ? 1 : 0;
+            out.add(new int[]{m.start(), m.end(), back, rest});
+        }
+        return distinct ? out : null;
     }
 
     /**

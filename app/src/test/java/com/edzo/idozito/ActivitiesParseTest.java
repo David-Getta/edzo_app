@@ -1,5 +1,6 @@
 package com.edzo.idozito;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -459,6 +460,62 @@ public class ActivitiesParseTest {
                 + "nélkül maradtam, de 8000 lépés meglett.").plans;
         assertEquals(1, r.size());
         assertEquals(8000, r.get(0).steps);
+    }
+
+    /**
+     * A tegnapelőtt/tegnap/ma tételei a saját napjukra kerülnek.
+     *
+     * A „tegnap 7 km futás, ma 5 km" mindkét futása MÁRA került, a
+     * „tegnapelőtt 7 km, ma 5 km" mindkettő tegnapelőttre: az egyenletes
+     * elosztás tervenként számol, és egy-egy alkalmas tervnél mindig az
+     * időszak elejét adta. A pihenőnap tagmondata nem kap tételt, a
+     * „tegnap és ma futottam" pedig mindkét napon egy.
+     */
+    @Test public void eachEntryOnItsOwnRelativeDay() {
+        long now = System.currentTimeMillis();
+        assertArrayEquals(new int[]{1, 0},
+                Activities.parse("Tegnap 7 km futás, ma 5 km").exactDays);
+        assertArrayEquals(new int[]{2, 0},
+                Activities.parse("Tegnapelőtt 7 km futás, ma 5 km").exactDays);
+        assertArrayEquals(new int[]{2, 0}, Activities.parse("Tegnapelőtt 7 km "
+                + "futás, tegnap pihenő, ma 5 km").exactDays);
+        assertArrayEquals(new int[]{1, 0},
+                Activities.parse("Tegnap úszás, ma futás 5 km").exactDays);
+        Activities.Parsed p = Activities.parse("Tegnap és ma futottam 5 km-t");
+        assertEquals(2, p.total());
+        assertArrayEquals(new int[]{1, 0}, p.exactDays);
+        long[] ts = Activities.timestamps(p, now);
+        assertTrue(now - ts[0] > 11L * 3600 * 1000);
+        assertTrue(now - ts[1] < 60_000);
+        // A tegnapi edzés mai panasza nem mai edzés.
+        p = Activities.parse("Tegnap este 1,5 óra foci, ma izomláz");
+        assertEquals(1, p.total());
+        assertEquals(1, p.offset);
+        // Az osztó számnév továbbra is naponta egy, nem négy.
+        assertEquals(2, Activities.parse("tegnap és ma 1-1 futás").total());
+    }
+
+    /**
+     * Az idei hét mellett a múlt hét csak viszonyítás.
+     *
+     * A „múlt héten 3x futottam, ezen a héten még csak egyszer, 6 km"
+     * három hatkilométeres futást írt a hétre, a „múlt héten 20 km volt,
+     * ezen a héten eddig 12 km" pedig harminckét kilométert.
+     */
+    @Test public void lastWeekBesideThisWeekIsOnlyAYardstick() {
+        Activities.Parsed p = Activities.parse("Múlt héten 3x futottam, "
+                + "ezen a héten még csak egyszer, 6 km");
+        assertEquals(1, p.total());
+        assertEquals(6.0, p.plans.get(0).km, 0.01);
+        assertEquals(7, p.days);
+        p = Activities.parse("Múlt héten 20 km volt, ezen a héten eddig "
+                + "12 km futás");
+        assertEquals(1, p.plans.size());
+        assertEquals(12.0, p.plans.get(0).km, 0.01);
+        assertEquals(4, Activities.parse("Múlt héten csak 2x, a héten már "
+                + "4x edzettem").total());
+        // Magában a múlt hét a múlt hét.
+        assertEquals(3, Activities.parse("Múlt héten 3x futottam").total());
     }
 
     @Test public void everyDistanceInARoundIsMultiplied() {
@@ -2199,9 +2256,11 @@ public class ActivitiesParseTest {
         assertEquals(8.0, p.plans.get(1).km, 0.001);
         assertEquals(3.0, p.plans.get(2).km, 0.001);
         // A napok is szétnyílnak: három napról szól, nem háromszor
-        // tegnapelőttről.
+        // tegnapelőttről. Az időszak MA ér véget (offset = a legfrissebb
+        // nap), és mindegyik tétel a saját napjára kerül.
         assertEquals(3, p.days);
-        assertEquals(2, p.offset);
+        assertEquals(0, p.offset);
+        assertArrayEquals(new int[]{2, 1, 0}, p.exactDays);
         assertEquals(2, Activities.parse("futottam 5 km-t és 8 km-t").plans.size());
         // A RÉSZLET nem külön edzés: az „ebből" bontás, nem felsorolás.
         assertEquals(1, Activities.parse("futottam 10 km-t, ebből 5 km tempó")
