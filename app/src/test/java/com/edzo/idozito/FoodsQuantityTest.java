@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -525,6 +526,30 @@ public class FoodsQuantityTest {
         for (Foods.Hit h : hits)
             if (h.food.name.startsWith("Palacsinta")) palacsinta = h.grams;
         assertEquals(180.0, palacsinta, 0.01);
+    }
+
+    /**
+     * A puszta „-t" rag is darabszám, és a szám utáni kísérő nem viszi el.
+     *
+     * A „fánk, 2-t ettem" kettője nem volt szám: egy adag ment be. A
+     * „palacsintát ettem, 5-öt nutellával" ötje pedig a NUTELLÁRA ugrott
+     * – százötven gramm mogyorókrém került a naplóba, a palacsinta meg
+     * egy adag maradt.
+     */
+    @Test public void theBareAccusativeCountAndTheCompanionAfterIt() {
+        assertEquals(120.0, grams("fánk, 2-t ettem"), 0.01);
+        assertEquals(120.0, grams("fánkot ettem, 2-t"), 0.01);
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "palacsintát ettem, "
+                + "5-öt nutellával");
+        double palacsinta = 0, nutella = 0;
+        for (Foods.Hit h : hits) {
+            if (h.food.name.startsWith("Palacsinta")) palacsinta = h.grams;
+            if (h.food.name.startsWith("Nutella")) nutella = h.grams;
+        }
+        assertEquals(300.0, palacsinta, 0.01);
+        // A nutella marad az alapadag (0 = nincs kimondott mennyiség).
+        assertTrue("nutella: " + nutella, nutella < 150);
     }
 
     /**

@@ -5444,6 +5444,12 @@ public final class Activities {
                     if (t2.startsWith("melle") || t2.startsWith("mellett")
                             || t2.startsWith("nezese")
                             || t2.startsWith("kozvetites")) continue;
+                    // Az „EDZÉS NÉLKÜL" tagadás: a „ma edzés nélkül, holnap
+                    // futok" és a „mozgás nélkül telt a nap" negyvenöt perc
+                    // egyéb mozgást írt a naplóba – abból, hogy valaki
+                    // kimondta: NEM mozgott. A sport-tövek után ugyanez a
+                    // „nélkül" rég kizáró, a tartalék ág nem nézte.
+                    if (t2.startsWith("nelkul")) continue;
                     // A „MECCSEN" helyhatározó a nézőé, ha nincs mellette
                     // se játék, se időtartam: a „két hot dog és egy nagy
                     // kóla a meccsen" negyvenöt perc egyéb mozgást írt a

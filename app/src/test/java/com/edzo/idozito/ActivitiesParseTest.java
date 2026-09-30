@@ -446,6 +446,21 @@ public class ActivitiesParseTest {
                 + "hónapban.").days);
     }
 
+    @Test public void withoutAWorkoutIsNoWorkout() {
+        // Az „edzés nélkül" tagadás a tartalék ágon is: nem egyéb mozgás.
+        assertTrue(Activities.parse("Ma edzés nélkül, holnap futok 8 km-t.")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Mozgás nélkül telt a nap.")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Edzés nélküli nap volt.")
+                .plans.isEmpty());
+        // A lépés a tagadás mellett is megmarad.
+        java.util.List<Activities.Plan> r = Activities.parse("Ma edzés "
+                + "nélkül maradtam, de 8000 lépés meglett.").plans;
+        assertEquals(1, r.size());
+        assertEquals(8000, r.get(0).steps);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

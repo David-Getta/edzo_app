@@ -2839,7 +2839,7 @@ public final class Foods {
                 {"nyolcat", "nyolc"}, {"kilencet", "kilenc"}, {"tizet", "tiz"},
                 {"ketto", "ket"}, {"harom", "harom"}, {"negy", "negy"}};
         for (String[] r : map) if (r[0].equals(t)) return r[1];
-        String d = t.replaceAll("-?(?:ot|et|at)$", "");
+        String d = t.replaceAll("-?(?:ot|et|at|t)$", "");
         return d.matches("\\d{1,2}") ? d : null;
     }
 
@@ -2960,18 +2960,25 @@ public final class Foods {
             // szórenddel – eddig csak az elöl álló igés alak működött.
             // Az alanyesetű szám az „is" nyomatékkal is darabszám: a „gin
             // tonik a bárban, kettő is" két pohár – eddig egy ment be.
+            // A PUSZTA „-t" RAG is tárgyrag: a „fánk, 2-t ettem" kettője
+            // eddig nem volt szám – egy adag ment be kettő helyett. A szám
+            // utáni „…VAL/VEL" kísérő (nutellával, lekvárral) pedig nem
+            // zárja le a tagmondatot: a „palacsintát ettem, 5-öt nutellával"
+            // öt palacsintája eltűnt, sőt az öt a NUTELLÁRA ugrott – százötven
+            // gramm mogyorókrém ment be. A kísérőt érintetlenül visszafűzzük.
             java.util.regex.Matcher c = java.util.regex.Pattern.compile(
                     "[,;]\\s*(?:(?:en|mi|mar|csak|viszont)\\s+)?"
                             + "(?:megettem|ettem|megittam|ittam)?\\s*"
-                            + "(\\d{1,2}(?:-?(?:ot|et|at))?|egyet|kettot|harmat|negyet|"
+                            + "(\\d{1,2}(?:-?(?:ot|et|at|t))?|egyet|kettot|harmat|negyet|"
                             + "otot|hatot|hetet|nyolcat|kilencet|tizet"
                             + "|ketto|harom|negy)(?:\\s+is)?"
                             + "(?:\\s+(?:megettem|ettem meg|ettem|megittam|ittam meg|"
                             + "ittam|elfogyasztottam|lecsuszott|lement))?"
+                            + "(\\s+[a-z]{3,}(?:val|vel))?"
                             + "[\\s.!?]*(?=[,;]|$)").matcher(s);
             if (!c.find()) return query;
             head = s.substring(0, c.start());
-            rest = s.substring(c.end());
+            rest = (c.group(2) == null ? "" : "," + c.group(2)) + s.substring(c.end());
             amount = plainNumber(c.group(1));
             if (amount == null) return query;
         }

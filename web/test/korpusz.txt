@@ -153,6 +153,10 @@ Ma jobb volt a tempóm, mint a múlt heti 10 km-en.
 Ma 8 km futás, a múlt heti 10 km-hez képest lassabban.
 Ma 5 km futás, gyorsabb volt, mint a múlt heti 5 km, 27 perc.
 Heti 3 futás az elmúlt hónapban.
+Ma edzés nélkül, holnap futok 8 km-t.
+Mozgás nélkül telt a nap.
+Edzés nélküli nap volt.
+Ma edzés nélkül maradtam, de 8000 lépés meglett.
 Ma 3 kör: 15 guggolás, 300 m evezés.
 Ma 5 rounds for time: 20 burpee, 400 m futás.
 Ma 400 m futás.
@@ -4060,6 +4064,9 @@ sütöttem palacsintát, én hatot ettem meg, a többit a gyerekek
 este 8 után már nem ettem semmit, csak vizet ittam, kb 1,5 litert
 csak vizet ittam, kb 1,5 litert
 ebédre levest ettem, utána palacsintát, 3 db-ot
+fánk, 2-t ettem
+fánkot ettem, 2-t
+palacsintát ettem, 5-öt nutellával
 ebédre 2 szelet pizzát ettem, este még egyet
 reggel 1 tojást ettem, délben még kettőt
 ma 2 tojást ettem, meg 1 kávé
