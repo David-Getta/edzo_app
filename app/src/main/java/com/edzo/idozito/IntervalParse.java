@@ -537,6 +537,11 @@ public final class IntervalParse {
      */
     private static Plan timedForm(String s, int rounds) {
         int work = 0, rest = 0;
+        // Az OLVASOTT vagy NÉZETT HIIT nem edzés: az „elolvastam egy cikket a
+        // HIIT edzésről" tízkörös intervallt írt a naplóba – találgatott
+        // ritmussal, egy cikkből. A videó alapján VÉGZETT edzés marad.
+        if (s.matches("(?s).*(?<![a-z])(?:cikk\\w*|olvas\\w*|podcast\\w*|konyv\\w*"
+                + "|hallgat\\w*|nezt\\w*|nezem|neztem)(?![a-z]).*")) return null;
         if (s.contains("hiit")) { work = 30; rest = 30; }
         else if (s.contains("fartlek")) { work = 60; rest = 60; }
         else {

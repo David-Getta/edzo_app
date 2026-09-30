@@ -622,6 +622,17 @@ public class ActivitiesParseTest {
                 + "megvan, 9200 lett").plans.get(0).steps);
     }
 
+    @Test public void theInLawsWalkIsNotMine() {
+        // Az „az anyósom 5 km-t sétál naponta, én meg semmit" öt kilométere
+        // a naplómba került.
+        assertTrue(Activities.parse("Az anyósom 5 km-t sétál naponta, én meg "
+                + "semmit").plans.isEmpty());
+        assertTrue(Activities.parse("Az apósom biciklizett 30 km-t")
+                .plans.isEmpty());
+        assertEquals(5.0, Activities.parse("A párommal futottunk 5 km-t")
+                .plans.get(0).km, 0.01);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

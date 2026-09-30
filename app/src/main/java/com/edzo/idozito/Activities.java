@@ -9854,6 +9854,10 @@ public final class Activities {
             // A becézett gyerek is gyerek: a „kisfiam első focimeccse
             // volt" kilencven perc focit írt az apa naplójába.
             "kisfiam", "kislanyom",
+            // A HÁZASTÁRS ROKONSÁGA is alany: az „az anyósom 5 km-t sétál
+            // naponta, én meg semmit" öt kilométere a naplómba került.
+            "anyosom", "aposom", "sogorom", "sogornom", "menyem", "vejem",
+            "unokahugom", "unokaocsem", "keresztfiam", "keresztlanyom",
             // A becézett szülő-nevek is alanyok: az „apu 10 km-t
             // biciklizett" az apa túrája volt, mégis a naplómba került.
             // A teljes alak (anya, apa, nagypapa) szándékosan nincs itt:

@@ -1065,4 +1065,18 @@ public class IntervalParseTest {
         assertEquals(8, IntervalParse.parse("Este 6 kor tabata 8 kör 20/10")
                 .rounds);
     }
+
+    /**
+     * Az olvasott vagy nézett HIIT nem edzés.
+     *
+     * Az „elolvastam egy cikket a HIIT edzésről" tízkörös intervallt írt a
+     * naplóba, találgatott ritmussal – egy cikkből.
+     */
+    @Test public void aReadOrWatchedHiitIsNotAWorkout() {
+        assertNull(IntervalParse.parse("Elolvastam egy cikket a HIIT edzésről"));
+        assertNull(IntervalParse.parse("Néztem egy HIIT videót"));
+        // A videó alapján VÉGZETT edzés marad.
+        assertNotNull(IntervalParse.parse("HIIT videó alapján edzettem 20 percet"));
+        assertNotNull(IntervalParse.parse("20 perc HIIT"));
+    }
 }
