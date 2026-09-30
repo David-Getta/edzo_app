@@ -1337,9 +1337,14 @@ public final class Activities {
         // A „-TÓL" napnév kezdőpont, nem a bejegyzés napja: a „hétfőtől új
         // életmód: napi séta. Ma el is kezdtem, 40 perc" sétája HÉTFŐRE
         // került, pedig a mondat kimondja, hogy MA volt.
+        // A TÓL–IG PÁR viszont időszak: a „hétfőtől péntekig futottam, ma
+        // pihenő" hétfője eddig eltűnt, és az öt futásból egyetlen pénteki
+        // maradt.
         if (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:hetfo|kedd|szerda|csutortok"
-                    + "|pentek|szombat|vasarnap)\\w{0,4}tol(?![a-z])", " ");
+                    + "|pentek|szombat|vasarnap)\\w{0,4}tol(?![a-z])"
+                    + "(?!\\s+(?:hetfo|kedd|szerda|csutortok|pentek|szombat"
+                    + "|vasarnap)\\w{0,4}ig(?![a-z]))", " ");
         // A HITETLENKEDÉS kerete nem terv: a „sose gondoltam volna, hogy 10
         // km-t tudok futni, ma megtörtént!" bejegyzéséből SEMMI nem lett –
         // a „volna" és a „tudok futni" együtt jövőnek minősítette, pedig a
@@ -4523,6 +4528,14 @@ public final class Activities {
             // nap, ezért ugyanoda kerül – ha a tervek száma egyezik velük.
             java.util.List<int[]> rel = findRelativeDays(q);
             if (rel != null) {
+                // A NAPNÉV is közéjük tartozik: a „kedden úszás, tegnap futás
+                // 5 km, ma kondi" keddje nélkül a három tétel két napot
+                // kapott – és párosítás híján mind a mára került.
+                for (int[] w : findWeekdays(q, now))
+                    rel.add(new int[]{w[0], w[1], w[2], 0});
+                java.util.Collections.sort(rel, new java.util.Comparator<int[]>() {
+                    @Override public int compare(int[] a, int[] b) { return a[0] - b[0]; }
+                });
                 int minB = Integer.MAX_VALUE, maxB = 0;
                 for (int[] r : rel) {
                     minB = Math.min(minB, r[2]);
@@ -4539,6 +4552,24 @@ public final class Activities {
                 else {
                     // Több napnév egy mondatban: „hétfőn és szerdán kondi".
                     java.util.List<int[]> wds = findWeekdays(q, now);
+                    // A NAPNÉV MELLETT a „ma"/„tegnap" is megnevezett nap: a
+                    // „hétfőn 5 km, szerdán 8 km, ma 10 km futás" mindhárom
+                    // futása MÁRA került – a két napnév mellé a harmadik
+                    // tétel nem talált napot. A pihenőnap szava („ma
+                    // izomláz") itt sem kap tételt.
+                    if (!wds.isEmpty()) {
+                        java.util.List<int[]> rel2 = findRelativeDays(q, false);
+                        if (rel2 != null) {
+                            for (int[] r : rel2)
+                                if (r[3] == 0) wds.add(new int[]{r[0], r[1], r[2]});
+                            java.util.Collections.sort(wds,
+                                    new java.util.Comparator<int[]>() {
+                                        @Override public int compare(int[] a, int[] b) {
+                                            return a[0] - b[0];
+                                        }
+                                    });
+                        }
+                    }
                     if (wds.size() >= 2) {
                         for (int[] w : wds) blank(q, w[0], w[1]);
                         wdBacks = wds;
@@ -4547,6 +4578,13 @@ public final class Activities {
                         // futás lett belőle öt helyett.
                         if (wds.size() == 2 && rawText.matches(".*\\b\\w+tol\\b.*\\b\\w+ig\\b.*")) {
                             int b1 = wds.get(0)[2], b2 = wds.get(1)[2];
+                            // A KEZDŐNAP a záró nap ELŐTT van: ha a „hétfőtől
+                            // péntekig" hétfője közelebbi, mint a péntek
+                            // (szerdán írva: hétfő 2 napja, péntek 5), a
+                            // hétfő a MÚLT hété – eddig a mai hét hétfőjétől
+                            // a múlt hét péntekjéig „négy napot" számolt,
+                            // köztük a holnapot is.
+                            if (b1 < b2) b1 += 7;
                             int lo = Math.min(b1, b2), hi = Math.max(b1, b2);
                             if (hi - lo >= 1 && hi - lo <= 6) {
                                 java.util.List<int[]> all = new java.util.ArrayList<>();
@@ -6603,6 +6641,10 @@ public final class Activities {
      * egyetlen napot a findSingleDay kezeli.
      */
     private static java.util.List<int[]> findRelativeDays(char[] q) {
+        return findRelativeDays(q, true);
+    }
+
+    private static java.util.List<int[]> findRelativeDays(char[] q, boolean needTwo) {
         String s = new String(q);
         java.util.List<int[]> out = new java.util.ArrayList<>();
         java.util.regex.Matcher m = java.util.regex.Pattern
@@ -6622,7 +6664,7 @@ public final class Activities {
                     + "|semmi|nem\\s+\\p{L}+|izomlaz\\w*)(?![a-z]).*") ? 1 : 0;
             out.add(new int[]{m.start(), m.end(), back, rest});
         }
-        return distinct ? out : null;
+        return distinct || (!needTwo && !out.isEmpty()) ? out : null;
     }
 
     /**

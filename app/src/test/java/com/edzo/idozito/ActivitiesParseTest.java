@@ -518,6 +518,39 @@ public class ActivitiesParseTest {
         assertEquals(3, Activities.parse("Múlt héten 3x futottam").total());
     }
 
+    /**
+     * A napnév és a „ma"/„tegnap" egy mondatban: mindegyik tétel a magáéra.
+     *
+     * A „hétfőn 5 km, szerdán 8 km, ma 10 km futás" mindhárom futása MÁRA
+     * került: a két napnév mellé a harmadik tétel nem talált napot. A
+     * „hétfőtől péntekig futottam, ma pihenő" hétfőjét pedig az „új
+     * életmód" szabálya törölte, és az öt futásból egyetlen pénteki
+     * maradt. Szerdán írva a hétfő–péntek a MÚLT hété: nem a mai hét
+     * hétfőjétől a múlt hét péntekjéig „négy nap", a holnapot is beleértve.
+     */
+    @Test public void weekdayNamesAndRelativeDaysTogether() {
+        // 2026. szeptember 30., szerda dél.
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.SEPTEMBER, 30, 12, 0, 0);
+        long wed = c.getTimeInMillis();
+        assertArrayEquals(new int[]{2, 0, 0}, Activities.parse(
+                "Hétfőn 5 km, szerdán 8 km, ma 10 km futás", wed).exactDays);
+        assertArrayEquals(new int[]{1, 1, 0}, Activities.parse(
+                "Kedden úszás, tegnap futás 5 km, ma kondi", wed).exactDays);
+        assertArrayEquals(new int[]{2, 1, 0}, Activities.parse(
+                "Hétfőn és kedden kondi, ma is", wed).exactDays);
+        assertArrayEquals(new int[]{2, 1}, Activities.parse(
+                "Hétfőn és kedden futottam, ma pihenő", wed).exactDays);
+        assertArrayEquals(new int[]{9, 8, 7, 6, 5}, Activities.parse(
+                "Hétfőtől péntekig futottam, ma pihenő", wed).exactDays);
+        assertArrayEquals(new int[]{9, 8, 7, 6, 5}, Activities.parse(
+                "Hétfőtől péntekig futottam", wed).exactDays);
+        // Az „új életmód" hétfője továbbra is csak kezdőpont.
+        assertEquals(0, Activities.parse("Hétfőtől új életmód: napi séta. "
+                + "Ma el is kezdtem, 40 perc", wed).offset);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
