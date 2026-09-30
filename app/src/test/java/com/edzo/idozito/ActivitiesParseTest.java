@@ -415,6 +415,37 @@ public class ActivitiesParseTest {
                 + "de csak 1000 m-t úsztam.").plans.get(0).km, 0.01);
     }
 
+    @Test public void theSpelledOutCalorieIsNotMinutes() {
+        // „620 kalória" nem 620 perc: a szó is kalória, nem csak a „kcal".
+        Activities.Plan p = Activities.parse("A mai edzés 620 kalória volt.")
+                .plans.get(0);
+        assertTrue("perc: " + p.minutes, p.minutes < 120);
+        assertEquals(620, Kcal.burned("A mai edzés 620 kalória volt."));
+        assertTrue(Activities.parse("Az edzés 450 kalóriát égetett.")
+                .plans.get(0).minutes < 120);
+        // A puszta szám a sportszó után továbbra is perc.
+        assertEquals(40, Activities.parse("Kondi 40.").plans.get(0).minutes);
+    }
+
+    @Test public void lastWeeksDistanceIsTheYardstickNotTheEntry() {
+        // A „múlt heti 10 km" a viszonyítási pont: nem mai futás, és nem
+        // heti gyakoriság.
+        assertTrue(Activities.parse("Ma jobb volt a tempóm, mint a múlt "
+                + "heti 10 km-en.").plans.isEmpty());
+        Activities.Parsed r = Activities.parse("Ma 8 km futás, a múlt heti "
+                + "10 km-hez képest lassabban.");
+        assertEquals(1, r.plans.size());
+        assertEquals(8.0, r.plans.get(0).km, 0.01);
+        assertEquals(1, r.days);
+        r = Activities.parse("Ma 5 km futás, gyorsabb volt, mint a múlt "
+                + "heti 5 km, 27 perc.");
+        assertEquals(1, r.plans.size());
+        assertEquals(27, r.plans.get(0).minutes);
+        // A puszta „heti N" gyakoriság marad.
+        assertEquals(30, Activities.parse("Heti 3 futás az elmúlt "
+                + "hónapban.").days);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

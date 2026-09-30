@@ -1905,6 +1905,22 @@ public final class Activities {
                     + "|lemondtam|nem\\s+(?:ment|lett|sikerult|birtam"
                     + "|jott\\s+ossze|volt\\s+ido))(?![a-z]).*"))
             return " ";
+        // A HASONLÍTÁS SZÁMA a múlté: a „ma jobb volt a tempóm, mint a múlt
+        // heti 10 km-en" tíz kilométeres futást írt a MAI napra, ráadásul
+        // hét napra szórva – a mondat a múlt heti futáshoz méri a mait, a
+        // tíz kilométer nem a mai teljesítmény. Ugyanígy a „múlt heti 10
+        // km-hez képest" a viszonyítási pont, nem a napló tétele. A hasonlító
+        // tagmondat egésze esik ki; a mai adat a saját tagmondatában marad.
+        {
+            String mult = "(?:mult|elozo|legutobbi|tavalyi)\\s+(?:heti|havi"
+                    + "|hetvegi|hetfoi|keddi|szerdai|csutortoki|penteki"
+                    + "|szombati|vasarnapi|evi)";
+            s = s.replaceAll("(?<![a-z])mint\\s+(?:az?\\s+)?" + mult
+                    + "(?![a-z])[^,;.!?]*", " ");
+            s = s.replaceAll("(?<![a-z])(?:az?\\s+)?" + mult
+                    + "(?![a-z])[^,;.!?]*?(?:hez|hoz|nal|nel)\\s+kepest"
+                    + "(?![a-z])", " ");
+        }
         // A MECCS MELLETT elfogyasztott vacsora a tévé előtt készült: a
         // „két sör és egy pizza volt a vacsora a meccs mellett"
         // negyvenöt perces egyéb mozgást írt a naplóba. A „kondi
@@ -3850,7 +3866,12 @@ public final class Activities {
                 + "|hiit|edzes|gyuras|foci|kezilabda|kosarlabda|roplabda"
                 + "|tenisz|squash|tollas|pingpong|boksz|karate|judo|zumba"
                 + "|aerobik|crossfit|tabata)\\s+(\\d{1,3})"
-                + "(?!\\d)(?![.,]\\d)(?![:%-])(?!\\s?(?:perc|ora|km|kg|kcal|mp|lepes|x|kor"
+                // A KIÍRT KALÓRIA sem perc: az „a mai edzés 620 kalória
+                // volt" HATSZÁZHÚSZ PERCES mozgást írt a naplóba – tíz és
+                // fél órát egyetlen edzésből, a heti percbe és az XP-be is.
+                // A rövidítést („kcal") a lista rég ismerte, a szót nem.
+                + "(?!\\d)(?![.,]\\d)(?![:%-])(?!\\s?(?:perc|ora|km|kg|kcal|kalori|kal(?![a-z])"
+                + "|mp|lepes|x|kor"
                 + "|nap|het(?:ig|en|re)|es(?![a-z])|as(?![a-z])|os(?![a-z])|m(?![a-z])|h(?![a-z])"
                 + "|p(?![a-z])))", "$1 $2 perc");
         // Az „EDDIG … A 100-BÓL" halmozott összeg, nem mai edzés: a
@@ -6355,7 +6376,11 @@ public final class Activities {
                 // A SORSZÁM nem gyakoriság: az „a heti 4. edzésem: 55 perc"
                 // hét napra terült szét, pedig a hét NEGYEDIK edzéséről
                 // szól – a pont a szám után sorszámot jelöl.
-                .compile("(?<![a-z])(heti|havi)\\s+(?=\\d)"
+                // A „MÚLT HETI 10 km" sem gyakoriság: a „múlt" utáni
+                // „heti" jelző, a szám a múlt hét távja – a „ma jobb volt
+                // a tempóm, mint a múlt heti 10 km-en" hét napra terült.
+                .compile("(?<![a-z])(?<!mult\\s)(?<!jovo\\s)(?<!elozo\\s)"
+                        + "(heti|havi)\\s+(?=\\d)"
                         + "(?!\\d{1,2}\\.(?!\\d))").matcher(s);
         // A „MA VOLT AZ ELSŐ" egyetlen mai alkalom: az „úszásoktatásra
         // iratkoztam be, heti 1x60 perc, ma volt az első" hét napra terült
