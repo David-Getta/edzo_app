@@ -2872,4 +2872,37 @@ public class StrengthParseTest {
         assertEquals("Alkarhajlítás", it.get(2).name);
         assertEquals(10.0, it.get(2).topWeight(), 0.01);
     }
+
+    /**
+     * Az „1x 150 kg" egyetlen ismétlés a kimondott súllyal, nem százötven.
+     *
+     * A „guggolás 1x 150 kg, utána 3x5 120 kg" bejegyzése torzó lett
+     * („15-5-5-5"), a „felhúzás 140 kg 1x, aztán 3x5 120-szal" egyese pedig
+     * eltűnt – pedig épp a nehéz egyesre büszke az ember. A „-szal" rag
+     * (százhússzal) sem volt a folytatás-olvasó listáján.
+     */
+    @Test public void aHeavySingleWithItsWeight() {
+        assertEquals("Guggolás 4×1/5/5/5@150",
+                sum("Guggolás 1x 150 kg, utána 3x5 120 kg"));
+        assertEquals("Felhúzás 4×1/5/5/5@140",
+                sum("Felhúzás 140 kg 1x, aztán 3x5 120-szal"));
+        assertEquals("Fekvenyomás 6×5/5/5/5/5/1@100",
+                sum("Fekvenyomás 5x5 80 kg, végén 1x 100 kg"));
+        assertEquals("Vállból nyomás 5×8/8/8/6/6@35",
+                sum("Vállnyomás 3x8 30-cal, majd 2x6 35-tel"));
+    }
+
+    /**
+     * Az „összesen" a db és a sorozatszám között, vagy a db helyett.
+     *
+     * A „fekvőtámasz 100 db összesen, 5 sorozatban" százasa egyetlen
+     * százas sorozat lett – a szó a két szám közé ékelődött.
+     */
+    @Test public void theTotalSplitsIntoTheSeries() {
+        assertSets("Fekvőtámasz 100 db összesen, 5 sorozatban", "Fekvőtámasz",
+                5, 20, 0);
+        assertSets("Fekvőtámasz összesen 100, 5 szettben", "Fekvőtámasz",
+                5, 20, 0);
+        assertSets("Guggolás 60 db 3 sorozatban", "Guggolás", 3, 20, 0);
+    }
 }

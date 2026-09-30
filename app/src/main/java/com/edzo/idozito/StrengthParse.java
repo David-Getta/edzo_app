@@ -351,6 +351,16 @@ public final class StrengthParse {
         // öt KILÓS húzódzkodás. Az osztható összeg itt is az összes
         // ismétlés („100 db, 5 sorozatban" = 5x20), a kicsi szám
         // sorozatonkénti (10 db, 5 sorozatban = 5x10).
+        // Az „ÖSSZESEN" mindkét helyen ugyanezt mondja: a „fekvőtámasz 100
+        // db összesen, 5 sorozatban" és az „összesen 100, 5 szettben"
+        // százasa egyetlen százas sorozat lett – a szó a db és a sorozatszám
+        // közé ékelődött, vagy a db helyett állt.
+        s = s.replaceAll("(?<![a-z])osszesen\\s+(\\d{1,3})(?:\\s?db(?![a-z]))?"
+                + "(?=,?\\s+\\d{1,2}\\s?(?:sorozatban|szettben|szeriaban|koreben))",
+                "$1 db");
+        s = s.replaceAll("(\\d{1,3}\\s?db)\\s+osszesen"
+                + "(?=,?\\s+\\d{1,2}\\s?(?:sorozatban|szettben|szeriaban|koreben))",
+                "$1");
         {
             java.util.regex.Matcher dbs = java.util.regex.Pattern.compile(
                     "(?<![\\dx,.])(\\d{1,3})\\s?db(?![a-z]),?\\s+(\\d{1,2})"
@@ -573,6 +583,18 @@ public final class StrengthParse {
                 + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(\\d{1,2})\\s?-?"
                 + "(?:[aeo\u00f6]s|ism[eé]tl[eé]ses)\\s+szett(?:et)?"
                 + "(?![\\p{L}])", " 1x$1 ");
+        // Az „1x 150 KG" egyetlen ismétlés a kimondott súllyal, nem
+        // százötven ismétlés: a „guggolás 1x 150 kg, utána 3x5 120 kg"
+        // bejegyzése „15-5-5-5 × 150 kg" torzó lett, a „felhúzás 140 kg
+        // 1x, aztán 3x5 120-szal" egyese pedig nyomtalanul eltűnt – pedig
+        // épp a nehéz egyesre büszke az ember. Csak az EGYES szorzó: a
+        // „3x 100 kg" háromja sorozatszám is lehet, azt nem bántjuk.
+        text = text.replaceAll("(?iu)(?<![\\d,.x])1\\s?[x×]\\s+(\\d{2,3}"
+                + "(?:[.,]\\d{1,2})?)\\s?-?(?:kg|kil[oó]\\p{L}*|[nv][ae]l|mal|zal|zel)"
+                + "(?![\\p{L}])", " 1x1 $1 kg ");
+        text = text.replaceAll("(?iu)(?<![\\d,.x])(\\d{2,3}(?:[.,]\\d{1,2})?)"
+                + "\\s?-?(?:kg|kil[oó]\\p{L}*)\\s+1\\s?[x×](?![\\d\\p{L}])",
+                " 1x1 $1 kg ");
         // A SÚLLYAL mondott egyes sorozat is sorozat: a „fekvenyomás 60 kg
         // 3x10, aztán 70-nel egy 8-as" hetvenes nyolcasa nyomtalanul
         // eltűnt – a „szett" szó nélkül a fenti szabály nem ismerte fel.
@@ -1310,12 +1332,17 @@ public final class StrengthParse {
         t = t.replaceAll("(?<=\\d)\\s?(?:kg|kilo)\\s?-?(?:os|as|s)\\s+"
                 + "(?:tarcsa|kezisulyzo|sulyzo|kettlebell|rud|golyo|lemez"
                 + "|korong)\\w*$", " kg");
-        t = t.replaceAll("-?(?:mal|vel|nal|nel|zal|zel|tal|tel|cal|cel)$", "");
+        // A „120-SZAL" és az „1-GYEL" is ugyanaz a rag (százhússzal,
+        // eggyel): a „felhúzás 2x3 140 kg, aztán 3x5 120-szal" folytatása
+        // eddig elveszett – a lista az „sz"-es és „gy"-s hasonulást nem
+        // ismerte, és a „120-s" csonk már nem volt sorozat.
+        t = t.replaceAll("-?(?:mal|val|vel|nal|nel|zal|zel|szal|szel|gyel|tal|tel"
+                + "|cal|cel)$", "");
         // A SÚLY A SOROZAT ELŐTT is állhat: az „aztán 70 kg-mal még 2x6"
         // folytatása eddig elveszett – a súly és a sorozat sorrendje
         // fordított, a „még" meg közéjük ékelődött.
         t = t.replaceAll("^(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo\\w*)?-?"
-                + "(?:mal|val|vel|nal|nel|zal|zel|tal|tel|cal|cel)?\\s+"
+                + "(?:mal|val|vel|nal|nel|zal|zel|szal|szel|gyel|tal|tel|cal|cel)?\\s+"
                 + "(?:meg\\s+|es\\s+|aztan\\s+)?(\\d{1,2}\\s?[x\u00d7]\\s?\\d{1,3})$",
                 "$2 $1 kg");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
@@ -2164,7 +2191,7 @@ public final class StrengthParse {
         // „60-al". Enélkül a „guggoltam 100-zal ötször ötöt" száz ismétlésnek
         // olvasódott – onnantól a rekordok és az 1RM is hazudtak volna.
         m = java.util.regex.Pattern
-                .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?-?\\s?(zal|val|vel|nal|nel|lal|lel|al|el)\\b")
+                .compile("(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?-?\\s?(szal|szel|gyel|zal|val|vel|nal|nel|lal|lel|al|el)\\b")
                 .matcher(s);
         if (m.find()) {
             try {
@@ -2210,7 +2237,7 @@ public final class StrengthParse {
     /** A súlyt jelölő eszközragos szám („100-zal") ne legyen ismétlésszám. */
     private static boolean isWeightSuffixed(String s, int end) {
         String rest = s.substring(end);
-        return rest.matches("^\\s?-?\\s?(zal|val|vel|nal|nel|lal|lel|al|el)\\b.*");
+        return rest.matches("^\\s?-?\\s?(szal|szel|gyel|zal|val|vel|nal|nel|lal|lel|al|el)\\b.*");
     }
 
     /**

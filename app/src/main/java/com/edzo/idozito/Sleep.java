@@ -247,6 +247,13 @@ public final class Sleep {
         // A „TUDTAM ALUDNI" is alvás: a „két műszak között csak 4 órát
         // tudtam aludni" eddig elveszett, mert az ige főnévi igenév volt.
         s = s.replaceAll("(?:tudtam|sikerult|birtam)\\s+aludni", "aludtam");
+        // Az „ALUDTAM EGY JÓT" egyese nem óra: a számnév-fordító után
+        // „aludtam 1 jot, kb 9 orat" – az egyes minden minta elé állt, és
+        // az „aludtam egy jót, kb 9 órát" kilenc órája elveszett (vessző
+        // és „9" között a „kb" a tagmondat-végi mintát is elrontotta). A
+        // nyomatékos „egy jót/nagyot/rendeset" kiesik, a „kb" beférhet.
+        s = s.replaceAll("(?<![a-z\\d])(?:1|egy)\\s+(?:jot|nagyot|rendeset"
+                + "|kiadosat|hatalmasat|joizut|jo nagyot)(?![a-z])", "");
         // A PIHENTEM alvás-környezetben alvás: a „ma megint elaludtam az
         // ébresztő előtt, csak 5 órát pihentem" öt órája némán elveszett –
         // az éjszaka semmi nem került a naplóba. A kanapén töltött „5 órát
@@ -398,7 +405,9 @@ public final class Sleep {
             // a szám két tagmondattal odébb áll az igétől.
             if (s.matches(".*alud\\w*.*")) {
                 java.util.regex.Matcher vm = java.util.regex.Pattern
-                        .compile("(?<!\\d)[:,]\\s?(\\d{1,2}(?:[.,]\\d)?)"
+                        .compile("(?<!\\d)[:,]\\s?(?:(?:kb|kabe|cirka|vagy|talan"
+                                + "|olyan|majdnem|kozel|nagyjabol)\\.?\\s+)?"
+                                + "(\\d{1,2}(?:[.,]\\d)?)"
                                 + "\\s?ora\\w*\\s*$").matcher(s);
                 if (vm.find()) {
                     double v = Double.parseDouble(vm.group(1).replace(',', '.'));

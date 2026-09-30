@@ -397,6 +397,21 @@ public class SleepTest {
         assertTrue(Sleep.parse("Éjszaka futottam a parkban.") <= 0);
     }
 
+    /**
+     * Az „aludtam egy jót" egyese nem óra, és a „kb" beférhet a szám elé.
+     *
+     * Az „aludtam egy jót, kb 9 órát" kilenc órája elveszett: a
+     * számnév-fordító egyese minden minta elé állt, a vessző utáni „kb"
+     * pedig a tagmondat-végi mintát rontotta el.
+     */
+    @Test public void aGoodSleepIsNotOneHour() {
+        assertEquals(9.0, Sleep.parse("Aludtam egy jót, kb 9 órát."), 0.01);
+        assertEquals(8.0, Sleep.parse("Aludtam egy nagyot, 8 órát."), 0.01);
+        assertEquals(8.0, Sleep.parse("Végre aludtam egy rendeset, "
+                + "vagy 8 órát."), 0.01);
+        assertEquals(9.0, Sleep.parse("Aludtam kb 9 órát."), 0.01);
+    }
+
     @Test public void shiftWorkersDaytimeSleepCounts() {
         // Az „éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"
         // hét óra nappali alvás; a „csak 4 órát tudtam aludni" négy.
