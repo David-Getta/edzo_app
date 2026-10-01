@@ -217,6 +217,13 @@ public final class IntervalParse {
         // 0) AMRAP: „amrap 20 perc” – annyi kör, amennyi belefér. Az időzítőnek
         //    ez EGY hosszú szakasz, nem több rövid; körszámot adni neki éppen
         //    azt venné el, amiről az AMRAP szól.
+        // Az UTOLSÓ SZETT AMRAP-ja ismétlésszám, nem időzítő: a „felhúzás
+        // 3x5 140 kg, az utolsó AMRAP 8 lett" nyolcperces AMRAP-tervet írt.
+        if (s.matches("(?s).*(?:utolso|utolsot)\\s+(?:szett\\s+|sorozat\\s+)?amrap.*")
+                || s.matches("(?s).*amrap\\s+\\d{1,2}\\s+(?:lett|ment|ismetles\\w*)(?![a-z]).*")) {
+            // Az amrap szava itt ismétlés: kiesik, a többi időzítő-forma dönt.
+            s = s.replaceAll("amrap\\s+\\d{1,2}(?:\\s+(?:lett|ment|ismetles\\w*))?", " ");
+        }
         if (s.contains("amrap")) {
             int min = numberAfter(s, "amrap");
             // „20 perc amrap”: a szám a név ELŐTT, mértékegységgel.

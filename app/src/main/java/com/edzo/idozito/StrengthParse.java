@@ -673,6 +673,17 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s+(plank|deszka|fal\\s?-?[uü]l[eé]s"
                 + "|wall\\s?sit|hollow)\\p{L}*\\s+(\\d{1,3})\\s?(mp|m[aá]sodperc|perc)(?![\\p{L}])",
                 "$2 $1x$3 $4");
+        // Az „1RM" a maximum NEVE: a „guggolás 3x8 80% 1RM" egy kilós
+        // guggolásként ment be – az egyes a sorozat-jelölés harmadik
+        // tagjának, vagyis súlynak látszott. A százalék és a maximum
+        // kimondott értéke („1RM 140") sem sorozat.
+        text = text.replaceAll("(?iu)(?:@?\\s?\\d{1,3}\\s?%\\s*(?:-?[aáeéoó]?n|-?[aá]val)?\\s*)?"
+                + "(?<![\\p{L}\\d])\\d{0,2}\\s?rm(?![\\p{L}])(?:\\s*:?\\s*\\d{2,3}(?:[.,]\\d)?"
+                + "\\s?(?:kg|kil[oó]\\p{L}*)?)?", " ");
+        // A „21-ESEK" huszonegy ismétlés sorozatonként (7 alsó, 7 felső, 7
+        // teljes): a „bicepsz 21-esek 3 sorozat 20 kg" 3x7 lett 3x21 helyett.
+        text = text.replaceAll("(?iu)(?<![\\d,.])21\\s?-?es(?:ek|eket|ekkel|t)?(?![\\p{L}])"
+                + "\\s*,?\\s*(\\d{1,2})\\s?(?:sorozat|szett|k[oö]r)\\p{L}*", "$1x21");
         // Az „1x 150 KG" egyetlen ismétlés a kimondott súllyal, nem
         // százötven ismétlés: a „guggolás 1x 150 kg, utána 3x5 120 kg"
         // bejegyzése „15-5-5-5 × 150 kg" torzó lett, a „felhúzás 140 kg
@@ -1360,16 +1371,22 @@ public final class StrengthParse {
         // „fekvenyomás 3x8 70 kg, utolsó szett csak 6 ment" nyolc-nyolc-
         // nyolcként ment be a nyolc-nyolc-hat helyett. Csak lefelé: a
         // „csak" épp a kudarcot mondja, több ismétlést nem.
+        // Az AMRAP UTOLSÓ szett FELFELÉ is: a „felhúzás 3x5 140 kg, az
+        // utolsó AMRAP 8 lett" nyolc ismétlése elveszett – az „AMRAP" szó a
+        // szám elé ékelődött, és a „csak lefelé" szabály a többet nem
+        // engedte. Az AMRAP épp azt jelenti, hogy annyit, amennyit bír.
         java.util.regex.Matcher ls = java.util.regex.Pattern.compile(
                 "(?iu)(?<![\\p{L}])(?:az?\\s+)?utols[oó](?:\\s+(?:szett|sorozat"
-                + "|sz[eé]ria))?\\p{L}*\\s+(?:m[aá]r\\s+)?(?:csak\\s+)?(\\d{1,2})"
+                + "|sz[eé]ria))?\\p{L}*\\s+(?:m[aá]r\\s+)?(?:csak\\s+)?(amrap\\s+|max\\s+"
+                + "|maxra\\s+|kifut[aá]sig\\s+)?(\\d{1,2})"
                 + "(?![\\d,.])(?!\\s?[x×])(?!\\s?-?(?:kg|kil))").matcher(text);
         if (ls.find() && !merged.isEmpty()) {
             Item last = merged.get(merged.size() - 1);
-            int n = Integer.parseInt(ls.group(1));
+            int n = Integer.parseInt(ls.group(2));
+            boolean amrap = ls.group(1) != null;
             if (!last.sets.isEmpty()) {
                 Set old = last.sets.get(last.sets.size() - 1);
-                if (n >= 1 && n < old.reps)
+                if (n >= 1 && (n < old.reps || (amrap && n <= 50)))
                     last.sets.set(last.sets.size() - 1, new Set(n, old.weight));
             }
         }
@@ -1410,6 +1427,9 @@ public final class StrengthParse {
         // bármi MÁS szó azt jelenti, hogy nem sorozatról van szó.
         String t = trimPunct(s).trim();
         t = t.replaceAll("^(?:es\\s+|majd\\s+|aztan\\s+|utana\\s+|azutan\\s+|meg\\s+|"
+                // A TOP SET után a BACKOFF a könnyebb folytatás: a „top set
+                // 100 kg x 3, backoff 3x5 85 kg" backoff-sorozatai elvesztek.
+                + "back\\s?-?off\\s+|lefele\\s+|visszaterhelve\\s+|"
                 + "munkasorozat\\s+|munkaszett\\s+|munkasuly\\s+|bemelegites\\s+|"
                 + "vegen\\s+|vegul\\s+|zarasnak\\s+|zaraskent\\s+|raadasnak\\s+|"
                 + "raadaskent\\s+|raadas\\s+|plusz\\s+|"
@@ -2284,6 +2304,9 @@ public final class StrengthParse {
 
     /** Súly kilóban: „60 kg”, „60kg”, „60 kilóval”, „60-nal”. 0 = nincs. */
     private static double weightIn(String s) {
+        // Az „1RM" a maximum NEVE, nem egy kiló: a „guggolás 3x8 80% 1RM"
+        // egy kilós guggolásként ment be.
+        s = s.replaceAll("(?<![a-z\\d])\\d{0,2}\\s?rm(?![a-z])", " ");
         // Az RPE száma nem súly: a „guggolás 3x8 8-as rpe" nyolcasa a
         // nehézség-jelölés, nem a rúdon lévő súly – nyolc kilós guggolásként
         // került a naplóba, és a rekordot is elrontotta volna. (Az RPE-t a

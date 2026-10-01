@@ -1,6 +1,7 @@
 package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -2970,5 +2971,27 @@ public class StrengthParseTest {
                 "Fekvenyomás", 3, 8, 60);
         assertSets("A terv 5x5 volt guggolásból 100 kg-mal, megvolt",
                 "Guggolás", 5, 5, 100);
+    }
+
+    /**
+     * Haladó jelölések: AMRAP utolsó szett, 1RM, backoff, 21-esek.
+     *
+     * Az „utolsó AMRAP 8 lett" nyolcperces időzítőt írt és a nyolc
+     * ismétlés elveszett; a „80% 1RM" egy kilós guggolás lett; a „top set
+     * 100 kg x 3, backoff 3x5 85 kg" backoff-sorozatai elvesztek; a
+     * „21-esek 3 sorozat" 3x7 lett.
+     */
+    @Test public void advancedNotations() {
+        assertEquals("Felhúzás 3×5/5/8@140", sum("Felhúzás 3x5 140 kg, az utolsó AMRAP 8 lett"));
+        assertNull(IntervalParse.parse("Felhúzás 3x5 140 kg, az utolsó AMRAP 8 lett"));
+        List<StrengthParse.Item> a = StrengthParse.parse("Guggolás 3x8 80% 1RM");
+        assertEquals(1, a.size());
+        assertEquals(0, a.get(0).topWeight(), 0.01);
+        a = StrengthParse.parse("Fekvenyomás top set 100 kg x 3, backoff 3x5 85 kg");
+        assertEquals(4, a.get(0).sets.size());
+        assertEquals(85, a.get(0).sets.get(3).weight, 0.01);
+        assertSets("Bicepsz 21-esek 3 sorozat 20 kg", "Bicepsz", 3, 21, 20);
+        // A valódi AMRAP-időzítő marad.
+        assertNotNull(IntervalParse.parse("AMRAP 20 perc: 5 húzódzkodás, 10 fekvőtámasz"));
     }
 }
