@@ -137,7 +137,12 @@ public final class StrengthParse {
                     // A TARKÓNYOMÁS a nyak mögötti nyomás rövid neve.
                     "tarkonyomas", "tarko nyomas"},
             {"Evezés", "evezes", "evezo", "rowing", "evezt", "evezni", "evezek",
-                    "cable row", "pendlay"},
+                    "cable row", "pendlay",
+                    // A DÖNTÖTT TÖRZS az evezésé: az „evezés döntött
+                    // törzzsel 4x10 50 kg" ferde fekvenyomás lett, mert a
+                    // „döntött" tő hosszabb volt az „evezés"-nél.
+                    "dontott torz", "elodontott torz", "dontott evez",
+                    "bent over row", "barbell row"},
             // Az angol „biceps curl" z nélkül írja a bicepszet – eddig a
             // sor teljesen elveszett. A puszta „curl" nem tő: a leg curl
             // combhajlítás.

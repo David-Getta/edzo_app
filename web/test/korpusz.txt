@@ -2075,9 +2075,14 @@ Az edzes 45 perc volt, 5 gyakorlat.
 Az edzes 5 gyakorlat volt.
 Fél marathon volt ma, 1:58 lett
 Lefutottam a marathont 4 óra alatt
+Tabata 8 kör 20/10
+Tabata 2x8 kör 20/10
+HIIT 10 kör 40/20
+Kerékpár HIIT 6x30/30
+HIIT 20 perc 40/20
+Este 6 kor tabata 8 kör 20/10
 Tabata 8 kör 20/10, utána 10 perc nyújtás
 8 kör 30/15 intervall
-Este 6 kor tabata 8 kör 20/10
 Ma 10 000 lépés felett, pontosan 11 340
 Két hot dog és egy nagy kóla a meccsen
 A meccsen 60 percet játszottam, aztán lecseréltek
@@ -3496,6 +3501,11 @@ a férjem pizzát evett, én salátát
 a gyerekek fagyiztak, én kihagytam
 a férjemmel pizzát ettünk
 a párom főzött gulyást, két tányérral ettem
+Kávé cukor nélkül, kis tejjel
+Tea édesítővel
+Cappuccino cukor nélkül
+Cukor nélkül
+Kávé és egy cukormentes kóla
 cukorbeteg vagyok, figyelem a szénhidrátot
 egy teáskanál cukor a kávéba
 vasárnapi meal prep: 4 adag csirkés rizs a hétre
@@ -5152,6 +5162,9 @@ nem fáj már a vállam
 10 km-t bicikliztem
 1 óra jóga
 4 sorozat 8 fekvenyomás
+letoltam egy tabatát, 8 kör 20/10
+ma megcsináltam a HIIT-et: 10 kör 40/20
+tabata 8 kör 20/10
 ma nem edzettem
 holnap majd
 köszönöm szépen
@@ -5918,6 +5931,10 @@ Guggolás 3x8 80% 1RM
 Fekvenyomás top set 100 kg x 3, backoff 3x5 85 kg
 Bicepsz 21-esek 3 sorozat 20 kg
 AMRAP 20 perc: 5 húzódzkodás, 10 fekvőtámasz
+Evezés döntött törzzsel 4x10 50 kg
+Döntött törzsű evezés 4x10 50 kg
+Bent over row 3x10 60 kg
+Döntött 3x10 25 kg-os kézisúlyzókkal
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam

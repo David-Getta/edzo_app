@@ -2994,4 +2994,16 @@ public class StrengthParseTest {
         // A valódi AMRAP-időzítő marad.
         assertNotNull(IntervalParse.parse("AMRAP 20 perc: 5 húzódzkodás, 10 fekvőtámasz"));
     }
+
+    /**
+     * A döntött törzs az evezésé, a döntött pad a ferde nyomásé.
+     *
+     * Az „evezés döntött törzzsel 4x10 50 kg" ferde fekvenyomás lett.
+     */
+    @Test public void aBentOverTorsoIsARow() {
+        assertSets("Evezés döntött törzzsel 4x10 50 kg", "Evezés", 4, 10, 50);
+        assertSets("Döntött törzsű evezés 4x10 50 kg", "Evezés", 4, 10, 50);
+        assertSets("Bent over row 3x10 60 kg", "Evezés", 3, 10, 60);
+        assertSets("Döntött 3x10 25 kg-os kézisúlyzókkal", "Ferde fekvenyomás", 3, 10, 25);
+    }
 }

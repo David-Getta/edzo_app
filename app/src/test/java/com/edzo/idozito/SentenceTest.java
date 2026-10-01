@@ -41,6 +41,10 @@ public class SentenceTest {
                 {"emom 10 perc", "INTERVAL"},
                 {"20 perc alatt 40/20", "INTERVAL"},
                 {"1:30 munka 0:30 pihenő 6 kör", "INTERVAL"},
+                // A múlt idejű beszámoló napló, nem beállítandó terv.
+                {"letoltam egy tabatát, 8 kör 20/10", "WORKOUT"},
+                {"ma megcsináltam a HIIT-et: 10 kör 40/20", "WORKOUT"},
+                {"tabata 8 kör 20/10", "INTERVAL"},
                 {"rántott hús rizzsel", "MEAL"},
                 {"2 tojás", "MEAL"},
                 {"150 g csirkemell 200 g rizs", "MEAL"},

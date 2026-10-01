@@ -80,7 +80,10 @@ public final class Sentence {
         // kivétel a megosztott sablonok miatt kell – azok nevében gyakran ott
         // egy sportszó („Zsírégető HIIT", „Kondi kör"), és attól a mondat
         // megtörtént edzésnek látszott.
-        if (iv != null && !iv.guessed && iv.rest > 0 && iv.rounds >= 2) return Kind.INTERVAL;
+        // A MÚLT IDEJŰ beszámoló viszont napló: a „letoltam egy tabatát, 8
+        // kör 20/10" megtörtént edzés, nem beállítandó terv.
+        if (iv != null && !iv.guessed && iv.rest > 0 && iv.rounds >= 2
+                && !Activities.reportsDone(q)) return Kind.INTERVAL;
         // Edzésnap-lista (sorozatok NÉLKÜL felsorolt gyakorlatok, névvel):
         // ez az edzés-felismerő elé kell, mert a nap neve gyakran maga is
         // sportszó („Lábnap", „Tolónap") – attól megtörtént edzésnek látszana.

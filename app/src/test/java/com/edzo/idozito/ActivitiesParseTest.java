@@ -11169,6 +11169,30 @@ public class ActivitiesParseTest {
      * munka/pihenő pár addigra kikerült a mondatból, és a „8 kor" magára
      * maradva időpontnak látszott.
      */
+    /**
+     * A körszám és a munka/pihenő pár együtt az edzés hossza.
+     *
+     * A „tabata 8 kör 20/10" egy órás kondi, a „hiit 10 kör 40/20"
+     * háromnegyed órás egyéb mozgás lett, a „kerékpár hiit 6x30/30"
+     * hatosából pedig hat külön edzés.
+     */
+    @Test public void roundsTimesWorkAndRestIsTheDuration() {
+        assertEquals(4, Activities.parse("Tabata 8 k\u00f6r 20/10").plans.get(0).minutes);
+        assertEquals(4, Activities.parse("20/10 tabata").plans.get(0).minutes);
+        assertEquals(8, Activities.parse("Tabata 2x8 k\u00f6r 20/10").plans.get(0).minutes);
+        assertEquals(10, Activities.parse("HIIT 10 k\u00f6r 40/20").plans.get(0).minutes);
+        assertEquals(10, Activities.parse("30/30 intervall 10x").plans.get(0).minutes);
+        Activities.Parsed p = Activities.parse("Ker\u00e9kp\u00e1r HIIT 6x30/30");
+        assertEquals(1, p.plans.size());
+        assertEquals(1, p.plans.get(0).count);
+        assertEquals(6, p.plans.get(0).minutes);
+        // A kimondott időtartam marad.
+        assertEquals(20, Activities.parse("HIIT 20 perc 40/20").plans.get(0).minutes);
+        // A napszakos óra nem kör.
+        assertEquals(4, Activities.parse("Este 6 kor tabata 8 k\u00f6r 20/10")
+                .plans.get(0).minutes);
+    }
+
     @Test public void tabataRoundsAreNotAClockHour() {
         assertEquals(12, Activities.parse("Tabata 8 kör 20/10, utána 10 perc "
                 + "nyújtás").hour);

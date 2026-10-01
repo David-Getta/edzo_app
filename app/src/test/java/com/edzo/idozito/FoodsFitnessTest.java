@@ -49,7 +49,8 @@ public class FoodsFitnessTest {
     @Test public void withoutSugarIsNotSugar() {
         // A leggyakoribb magyar alak – és eddig 40 kcal cukrot adott hozzá,
         // vagyis pont az ellenkezőjét annak, amit a felhasználó írt.
-        assertEquals("Kávé (fekete) + Cukormentes / light", names("kávé cukor nélkül"));
+        // A jelző a kávéé: nem kerül mellé egy light üdítő sem.
+        assertEquals("Kávé (fekete)", names("kávé cukor nélkül"));
         assertTrue("a cukormentes kávé nem lehet 40 kcal: " + kcal("kávé cukor nélkül"),
                 kcal("kávé cukor nélkül") < 10);
         assertEquals("Cukormentes / light", names("cukrozatlan"));

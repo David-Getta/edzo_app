@@ -506,6 +506,25 @@ public class FoodsParseTest {
                 + "két tányérral ettem").get(0).food.name);
     }
 
+    /**
+     * A „cukor nélkül" a kávé jelzője, a vessző utáni „kis tejjel" a kávéé.
+     *
+     * A „kávé cukor nélkül, kis tejjel" mellé egy 330 ml-es light üdítő és
+     * két deci tej került a naplóba.
+     */
+    @Test public void sugarFreeAndASplashOfMilkBelongToTheCoffee() {
+        List<Foods.Hit> h = hits("Kávé cukor nélkül, kis tejjel");
+        assertEquals(2, h.size());
+        assertEquals("Kávé (fekete)", h.get(0).food.name);
+        assertEquals("Tej", h.get(1).food.name);
+        assertEquals(30.0, h.get(1).grams, 0.01);
+        assertEquals(1, hits("Tea édesítővel").size());
+        assertEquals(1, hits("Cappuccino cukor nélkül").size());
+        // Magában, vagy üdítő mellett a light ital marad.
+        assertEquals("Cukormentes / light", hits("Cukor nélkül").get(0).food.name);
+        assertEquals(2, hits("Kávé és egy cukormentes kóla").size());
+    }
+
     /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
     @Test public void aDiabeticIsNotSugar() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
@@ -2478,8 +2497,8 @@ public class FoodsParseTest {
         assertEquals("Eper", e.get(0).food.name);
         assertTrue(Foods.parse(all, "A szauna után kicsit dehidratáltan "
                 + "keltem.").isEmpty());
-        // A kávé cukor nélkül marad a cukormentes jelöléssel.
-        assertEquals(2, Foods.parse(all, "Kávé cukor nélkül.").size());
+        // A kávé cukor nélkül egy kávé: a jelző nem külön light üdítő.
+        assertEquals(1, Foods.parse(all, "Kávé cukor nélkül.").size());
     }
 
     /**

@@ -3028,6 +3028,7 @@ public final class Activities {
                 {"34", "0,75"}, {"13", "0,33"}, {"23", "0,67"}})
             s = s.replaceAll("(?<![\\d,.])" + fr[0].charAt(0) + "\\s?/\\s?"
                     + fr[0].charAt(1) + "(?![\\d,.])(?=\\s?[a-z])", fr[1]);
+        s = intervalMinutes(s);
         s = s.replaceAll("(?<![\\d,.:])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.:])", " ");
         // A TERVEZETT és a MEGLETT: a „10 km-t terveztem, 12 lett belőle"
         // tizenkét kilométer – eddig a tervezett tíz ment be, vagyis épp a
@@ -6646,6 +6647,70 @@ public final class Activities {
         for (int[] f : future) blank(q, f[0], f[1]);
     }
 
+
+    /**
+     * Megtörtént edzésről szól-e a mondat (múlt idejű ige vagy „ma + szám").
+     *
+     * A mondat-osztályozónak kell: a „letoltam egy tabatát, 8 kör 20/10"
+     * pihenőt is kimondó, többköros alakja időzítő-tervnek látszott, és a
+     * beszámolóból beállítás lett napló helyett.
+     */
+    public static boolean reportsDone(String text) {
+        return text != null && pastTense(Foods.norm(text));
+    }
+
+    /**
+     * A munka/pihenő pár és a körszám együtt időtartam.
+     *
+     * A „tabata 8 kör 20/10" négy perce, a „hiit 10 kör 40/20" tíz perce
+     * eddig a mozgásforma szokásos hosszát kapta (egy órát, háromnegyed
+     * órát), a „kerékpár hiit 6x30/30" hatosából pedig hat külön edzés
+     * lett. Ha a mondat maga nem mond időtartamot, a körök és a pár
+     * szorzata az: a tabata körszám nélkül nyolc kör. A pár másodperc.
+     */
+    private static String intervalMinutes(String s) {
+        if (s.matches("(?s).*(?<![a-z])\\d{1,3}(?:[.,]\\d)?\\s?(?:perc\\w*|p|ora\\w*"
+                + "|h|min\\w*|mp|masodperc\\w*)(?![a-z]).*")) return s;
+        java.util.regex.Matcher wr = java.util.regex.Pattern.compile(
+                "(?<![\\d,.:x])(?:(\\d{1,2})\\s?x\\s?)?(\\d{1,3})\\s?/\\s?(\\d{1,3})"
+                + "(?![\\d,.:])(?!\\s?(?:km|m(?![a-z])|kg))").matcher(s);
+        if (!wr.find()) return s;
+        int w = Integer.parseInt(wr.group(2)), r = Integer.parseInt(wr.group(3));
+        int rounds = wr.group(1) != null ? Integer.parseInt(wr.group(1)) : 0;
+        // A forma neve kell: a „3x10/8" ismétlés-tartomány is lehet.
+        boolean ctx = s.matches("(?s).*(?<![a-z])(?:tabata\\w*|hiit"
+                + "|intervall\\w*|koredzes\\w*|emom|sprint\\w*)(?![a-z]).*");
+        if (!ctx || w < 5 || w > 300 || r > 300) return s;
+        int rs = -1, re = -1;
+        if (rounds == 0) {
+            java.util.regex.Matcher rm = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.x])(?:(\\d)\\s?x\\s?)?(\\d{1,2})\\s?(?:kor\\w*|x(?!\\d)"
+                    + "|round\\w*|alkalom\\w*)(?![a-z])").matcher(s);
+            while (rm.find()) {
+                if (rm.start() < wr.end() && rm.end() > wr.start()) continue;
+                // A napszak utáni „6 kor" óra, nem kör: az „este 6 kor
+                // tabata 8 kör" ékezet nélkül két egyforma „kor".
+                if (s.substring(0, rm.start()).matches("(?s).*(?<![a-z])(?:reggel"
+                        + "|delelott|delben|delutan|este|ejjel|hajnal|ejszaka)\\w*"
+                        + "\\s*$")) continue;
+                rounds = Integer.parseInt(rm.group(2))
+                        * (rm.group(1) != null ? Integer.parseInt(rm.group(1)) : 1);
+                rs = rm.start();
+                re = rm.end();
+                break;
+            }
+            if (rounds == 0 && s.matches("(?s).*(?<![a-z])tabata\\w*.*")) rounds = 8;
+        }
+        if (rounds < 2 || rounds > 60) return s;
+        int min = Math.max(1, Math.round(rounds * (w + r) / 60f));
+        String t = s.substring(0, wr.start()) + " " + min + " perc " + s.substring(wr.end());
+        if (rs >= 0) {
+            // A kör szövege a pár előtt vagy után áll; a csere hossza eltolja.
+            int shift = rs > wr.start() ? t.length() - s.length() : 0;
+            t = t.substring(0, rs + shift) + " " + t.substring(re + shift);
+        }
+        return t;
+    }
 
     /**
      * Van-e a mondatban MÚLT idejű, első személyű ige?

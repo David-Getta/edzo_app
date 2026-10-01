@@ -3357,6 +3357,13 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(k[aá]v[eé]\\p{L}*|tea\\p{L}*|"
                 + "kaka[oó]\\p{L}*)([^,;.]{0,14}?)\\s+tejjel(?!\\p{L})",
                 "$1$2, 30 g tej");
+        // A vessző utáni „kis tejjel" is a kávéé: a „kávé cukor nélkül, kis
+        // tejjel" két deci tejet írt – a jelzők a kávét a tejtől vesszővel
+        // választották el.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(k[aá]v[eé]\\p{L}*|tea\\p{L}*|"
+                + "kaka[oó]\\p{L}*)([^.;\\d]{0,30}?),\\s*(?:egy\\s+)?(?:kis|kev[eé]s"
+                + "|kev[eé]ske|pici|picit|csepp|cseppnyi|leheletnyi)\\s+tejjel(?!\\p{L})",
+                "$1$2, 30 g tej");
         query = query.replaceAll("(?iu)(?<!\\p{L})tejes\\s+k[aá]v[eé](\\p{L}*)",
                 "tejeskave$1");
         // A SZÜRET nem étkezés: a „krumplit szedtem 3 órát" és a „szőlőt
@@ -3400,6 +3407,18 @@ public final class Foods {
                 + "s[uü]tem[eé]ny|joghurt|lekv[aá]r|dzsem|puding|fagyi|fagylalt|"
                 + "m[uü]zli|kaka[oó]|kompo?[oó]t|torta|palacsinta|zabk[aá]sa|"
                 + "m[aá]rt[aá]s|ketchup|mogyor[oó]kr[eé]m|szelet)\\p{L}*)", " ");
+        // A „CUKOR NÉLKÜL" a megnevezett ital jelzője is: a „kávé cukor
+        // nélkül, kis tejjel" mellé egy háromszázharminc milliliteres light
+        // üdítő is bement. Ha kávé, tea, kakaó vagy más ital-étel áll a
+        // mondatban, a jelző csak róla szól; magában (vagy üdítő előtt)
+        // marad a nulla kalóriás tétel.
+        if (norm(query).matches("(?s).*(?<![a-z])(?:kave|kavet|tea|teat|kakao\\w*"
+                + "|capp?uccino\\w*|kapucsino\\w*|latte\\w*|espresso\\w*"
+                + "|eszpresszo\\w*|presszo\\w*|zabkas\\w*|joghurt\\w*|limonad\\w*"
+                + "|turmix\\w*|smoothie\\w*)(?![a-z]).*"))
+            query = query.replaceAll("(?iu)(?<![\\p{L}])(?:cukor\\s+n[eé]lk[uü]l[i]?"
+                    + "|cukrozatlan(?:ul)?|[eé]des[ií]t[oő]\\p{L}*)"
+                    + "(?!\\s+(?:[uü]d[ií]t|k[oó]l|ital|cola|coke))", " ");
         // A GYEREKADAG fél adag, a DUPLÁZOTT kettő: a „gyerekadag spagetti"
         // teljes adagként, a „duplázott sajtburger" szimplaként ment be.
         // A FŐZÉS ALAPANYAGÁNAK grammja nem a megevett adag: a „800 g
