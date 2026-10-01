@@ -403,6 +403,11 @@ public final class Foods {
         new Food("Pisztácia", 580, 20, 30, "pisztaci"),
         new Food("Mézeskalács", 400, 5, 60, "mezeskalacs"),
         new Food("Szaloncukor", 450, 3, 15, "szaloncukor", "szaloncukr"),
+        // A BONBON eddig semmi volt: a „nassoltam: 3 szem bonbon" és az
+        // „egy doboz bonbon" üresen jött vissza. Egy szem nagyjából
+        // tizenkét gramm.
+        new Food("Bonbon / praliné", 520, 5, 12, "bonbon", "praline", "konfekt",
+                "raffaello", "ferrero rocher", "ferrero", "merci csoki", "mozartgoly"),
         new Food("Nutella", 540, 6, 30, "nutella", "mogyorokrem"),
         // A gyümölcsnév+lekvár összetétel hosszabb töve veri a lé-tövet: a
         // „baracklekvár" barackle-kezdete fél liter GYÜMÖLCSLÉT írt be.
@@ -2204,6 +2209,10 @@ public final class Foods {
             // reggeli klasszikusából semmi.
             {"Grapefruit", "250"},
             {"Mangó", "200"}, {"Datolyaszilva", "150"},
+            // Egy AVOKÁDÓ húsa bő száznegyven gramm: az „1 avokádó" eddig a
+            // fél avokádónyi adag (70 g) lett.
+            {"Avokádó", "140"},
+            {"Bonbon / praliné", "12"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
             {"Bagett", "250"},
             {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
@@ -2434,7 +2443,13 @@ public final class Foods {
      */
     private static final String[] SIZE_WORDS =
             {"nagy", "kis", "kicsi", "kozepes", "szep", "hatalmas", "apro",
-             "egesz", "teljes"};
+             "egesz", "teljes",
+             // Az ELKÉSZÍTÉS jelzője sem szakítja el a darabszámot: a „3 főtt
+             // tojás" és a „4 sült kolbász" egyetlen adag lett, a három és a
+             // négy elveszett.
+             "fott", "kemeny", "lagy", "sult", "grillezett", "parolt",
+             "piritott", "nyers", "hideg", "meleg", "friss", "hazi", "fozott",
+             "buggyantott", "olajban"};
 
     /**
      * Ennél kisebb darabszámmal nem számolunk. A negyed pizza valódi mennyiség

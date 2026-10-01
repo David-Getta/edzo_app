@@ -1396,6 +1396,23 @@ public class FoodsParseTest {
         assertEquals(15, hits("3 teáskanál zabpehely").get(0).grams, 0.01);
     }
 
+    /**
+     * Az elkészítés jelzője nem szakítja el a darabszámot.
+     *
+     * A „3 főtt tojás" és a „4 sült kolbász" egyetlen adag lett; az „1
+     * avokádó" fél avokádónyi; a bonbon pedig semmi.
+     */
+    @Test public void aPreparationAdjectiveKeepsTheCount() {
+        assertEquals(165, hits("3 főtt tojás").get(0).grams, 0.01);
+        assertEquals(165, hits("3 kemény tojás").get(0).grams, 0.01);
+        assertEquals(165, hits("3 friss zsemle").get(0).grams, 0.01);
+        assertEquals(140, hits("1 avokádó").get(0).grams, 0.01);
+        assertEquals(70, hits("fél avokádó").get(0).grams, 0.01);
+        List<Foods.Hit> b = hits("Nassoltam: 3 szem bonbon");
+        assertEquals("Bonbon / praliné", b.get(0).food.name);
+        assertEquals(36, b.get(0).grams, 0.01);
+    }
+
     @Test public void ekkoraIsNotASpoon() {
         assertTrue(hits("ekkora adag rizst m\u00e9g nem ettem").isEmpty());
     }
