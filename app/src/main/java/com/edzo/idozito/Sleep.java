@@ -158,6 +158,20 @@ public final class Sleep {
                     "0-tol $1-ig");
             n = n.replaceAll("(?<![a-z])(\\d{1,2})\\s+es\\s+(\\d{1,2})\\s+kozott"
                     + "(?=\\s+(?:aludtam|alvas))", "$1-tol $2-ig");
+            // A KÖTŐJELES óra-pár az alvás szava után lefekvés–kelés: az
+            // „alvás: 23-7" és az „alvás 22:30-6:15" üresen jött vissza. Az
+            // első szám esti vagy éjféli óra kell legyen, a második reggeli
+            // – a „alvás 6-7 óra" az alvás hossza, az marad.
+            java.util.regex.Matcher dp = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(alvas\\w*|aludtam)\\s*:?\\s*(\\d{1,2})((?::\\d{2})?)"
+                    + "\\s?-\\s?(\\d{1,2})((?::\\d{2})?)(?!\\d|[,.:]\\d)"
+                    + "(?!\\s?-?(?:ora|h(?![a-z])|tol|ig|kor))").matcher(n);
+            if (dp.find()) {
+                int a = Integer.parseInt(dp.group(2)), b = Integer.parseInt(dp.group(4));
+                if ((a >= 19 && a <= 23 || a <= 3) && b >= 4 && b <= 12)
+                    n = n.substring(0, dp.start()) + "aludtam " + dp.group(2) + dp.group(3)
+                            + "-tol " + dp.group(4) + dp.group(5) + "-ig" + n.substring(dp.end());
+            }
             // A TEGNAPI ÉJSZAKA után a „ma N" a mai: a „tegnap 7 óra alvás,
             // ma 6,5" hét órát írt a mai napra a hat és fél helyett – a
             // mai szám mellett nem állt „óra", és a tegnapi nyert.
@@ -332,9 +346,13 @@ public final class Sleep {
         // Az ALVÁSFÁZIS nem a teljes éjszaka: a „mélyalvás 2 óra 10 perc,
         // összesen 7 óra 30 perc alvás" két óra husz percként ment be. A
         // kimondott összesen mellől a fázis-sor kiesik.
-        if (s.contains("osszes"))
+        // A TÓL–IG tartomány is a teljes éjszaka: az „alvás: 23-7, mély
+        // alvás 1,5 óra" üresen jött vissza – a fázis tizedes órája a
+        // tartomány mellett ellentmondásnak látszott.
+        if (s.contains("osszes") || s.matches("(?s).*\\d\\s?-?tol(?![a-z]).*"
+                + "\\d\\s?-?ig(?![a-z]).*"))
             s = s.replaceAll("(?:melyalvas|mely alvas|konnyu alvas"
-                    + "|rem(?: fazis)?)\\s?:?\\s?\\d{1,2}(?::\\d{2})?\\s?"
+                    + "|rem(?: fazis)?)\\s?:?\\s?\\d{1,2}(?:[.,]\\d)?(?::\\d{2})?\\s?"
                     + "(?:ora\\w*)?\\s?(?:\\d{1,2}\\s?perc)?", "");
         // A feltételes mód pont az ellenkezőjét jelenti: az „aludtam volna
         // nyolc órát" egy rossz éjszaka panasza, nem nyolc óra alvás.

@@ -3264,7 +3264,7 @@ public final class Activities {
             java.util.regex.Matcher pk = java.util.regex.Pattern.compile(
                     "(?<![\\d,.])\\d{1,3}(?: ?\\d{3})?\\s?(lepes\\w*)\\s+"
                     + "(?:felett|folott|fole|alatt|ala)(?![a-z])[^,;.]*?[,;]?"
-                    + "\\s*pontosan\\s+(\\d{1,3}(?: ?\\d{3})?)(?![\\d,.])")
+                    + "\\s*pontosan\\s+(\\d{1,3}(?: ?\\d{3})?)(?!\\d|[,.]\\d)")
                     .matcher(s);
             if (pk.find())
                 s = s.substring(0, pk.start()) + pk.group(2).replace(" ", "")

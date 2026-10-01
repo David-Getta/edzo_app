@@ -324,6 +324,11 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // Az „Ő 80 kg, én 72" az én hetvenkét kilóm.
         q = Hu.contrastMine(q);
+        // A GYAKORLAT SÚLYÁNAK emelése nem mérés: az „emeltem a guggolás
+        // súlyát 5 kilóval, most 85" nyolcvanöt kilós testsúlyt írt a
+        // trendbe – a rúdon lévő súlyt.
+        if (Foods.norm(q).matches("(?s).*(?<![a-z])sulyat(?![a-z]).*")
+                && StrengthParse.nameIn(q) != null) return new Body(0, 0);
         // Az „ADTAM LE" ugyanaz, mint a „leadtam": az „egy hónap alatt 3
         // kilót adtam le, ma 77 kg" hetvenhét kilója elveszett – a szétvált
         // igekötős alak nem volt mérés-ige, a három kiló viszont mérésnek
@@ -339,7 +344,7 @@ public final class BodyParse {
         // A PULZUS SZÁMA nem a mérlegé: az „RHR 51" ötvenegy kilós mérést
         // írt a trendbe a pulzus mellé.
         q = q.replaceAll("(?iu)(?<![\\p{L}])(?:rhr|hr|bpm|hrv|pulzus\\p{L}*|sz[ií]vver[eé]s\\p{L}*)"
-                + "\\s*:?\\s*\\d{2,3}(?![\\d,.])(?!\\s?(?:kg|kil[oó]))", " ");
+                + "\\s*:?\\s*\\d{2,3}(?!\\d|[,.]\\d)(?!\\s?(?:kg|kil[oó]))", " ");
         q = q.replaceAll("(?iu)(?<![\\d,.])\\d{2,3}\\s?(?:bpm|/\\s?perc)(?![\\p{L}])", " ");
         // Az ANGOL „weight 78.2 kg" is mérés: eddig üresen jött vissza.
         q = q.replaceAll("(?iu)(?<![\\p{L}])(?:body\\s?)?weight(?![\\p{L}])", "súly");
@@ -409,9 +414,13 @@ public final class BodyParse {
         // állt, és senki nem vette fel. A küszöb kiesik, a mai szám kapja
         // a kilót.
         q = q.replaceAll("(?iu)(?<![\\d,.])\\d{2,3}(?:[.,]\\d)?\\s?(?:kg|kil[oó]\\p{L}*)"
-                + "\\s+(?:alatt|felett|f[oö]l[oö]tt)(?![\\p{L}])\\s*[,;!:]?\\s*"
+                + "\\s+(?:alatt|felett|f[oö]l[oö]tt)(?![\\p{L}])"
+                // Az ÁLLÍTMÁNY a küszöb után is állhat: „80 kg alatt
+                // vagyok, 79,6".
+                + "(?:\\s+(?:vagyok|lettem|vagyunk|megint|v[eé]gre|m[aá]r)(?![\\p{L}]))?"
+                + "\\s*[,;!:]?\\s*"
                 + "(?:vagyok\\s+|megint\\s+|v[eé]gre\\s+)?(\\d{2,3}(?:[.,]\\d{1,2})?)"
-                + "(?![\\d,.])(?!\\s?(?:cm|%|perc|km|kcal|l[eé]p[eé]s|sz[aá]zal))",
+                + "(?!\\d|[,.]\\d)(?!\\s?(?:cm|%|perc|km|kcal|l[eé]p[eé]s|sz[aá]zal))",
                 "$1 kg");
         if (q.matches("(?s).*\\d\\s?(?:kg|kil[oó]).*"))
             q = q.replaceAll("(?iu)(?<![\\p{L}])(?:na\\s+j[oó]|sz[oó]val|pont|kereken"
@@ -431,12 +440,12 @@ public final class BodyParse {
         // kilós mérés mellett hagyjuk el.
         if (q.matches("(?s).*\\d\\s?(?:kg|kil[oó]).*"))
             q = q.replaceAll("(?<![\\d,.\\p{L}])[\u2212\u2013+-]\\d{1,2}(?:[.,]\\d{1,2})?"
-                    + "(?:\\s?(?:kg|kil[oó]\\p{L}*))?(?![\\d,.])", " ");
+                    + "(?:\\s?(?:kg|kil[oó]\\p{L}*))?(?!\\d|[,.]\\d)", " ");
         // A NYÍL a -ról/-ra pár: a „testsúly: 90,4 → 89,8 egy hét alatt"
         // a RÉGI számot vette – a nyíl bal oldalát –, pedig a jobb oldal
         // a mai. Ugyanígy a „->" és a „=>".
         q = q.replaceAll("(?<![\\d,.])(\\d{2,3}(?:[.,]\\d{1,2})?)\\s*"
-                + "(?:\u2192|->|=>|\u21d2)\\s*(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])",
+                + "(?:\u2192|->|=>|\u21d2)\\s*(\\d{2,3}(?:[.,]\\d{1,2})?)(?!\\d|[,.]\\d)",
                 "$1-r\u00f3l $2-ra");
         // A SOROZAT UTÁNI súlylista a gyakorlaté, egyben: a „fekvenyomás
         // 3x8 (70, 75, 80 kg)" utolsó kilója önálló tagmondatként túlélte
@@ -476,7 +485,7 @@ public final class BodyParse {
         q = q.replaceAll("(?iu)\\d{2,3}\\s?-?[eo]?s?\\s?"
                 + "v[eé]rcuko?r\\p{L}*", " ");
         q = q.replaceAll("(?iu)v[eé]rcuko?r\\p{L}*\\s?:?\\s?"
-                + "\\d{2,3}(?![\\d,.])", " ");
+                + "\\d{2,3}(?!\\d|[,.]\\d)", " ");
         // Az ESZKÖZHATÁROZÓS kiló a VÁLTOZÁS mértéke, nem mérés: a „ma reggel
         // 79,2 kg, ez 0,4 kg-mal kevesebb, mint tegnap" hetvenkilenc egész
         // két tizede némán elveszett – a különbség száma mellett a mondat
@@ -541,7 +550,7 @@ public final class BodyParse {
         // súlytrendben – az utolsó tagjából. A testsúlyt senki nem írja le
         // két másik szám mögé perjellel.
         q = q.replaceAll("(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}\\s?/\\s?"
-                + "\\d{1,3}(?![\\d,.])", " ");
+                + "\\d{1,3}(?!\\d|[,.]\\d)", " ");
         // A HELYESBÍTÉS tagadott száma nem mérés, de nem is némítja el a
         // mondatot: a „78,2 kg volt, nem 87,2" hetvennyolc kilója az igazi –
         // eddig az egész bejegyzés elveszett, vagyis a nap mérése kimaradt
@@ -646,7 +655,7 @@ public final class BodyParse {
         // A MUNKA/PIHENŐ számpár nem testsúly: a „Reggeli rutin: 4 kör
         // 45/15" negyvenöt kilós méréssé vált a rutin-fejléc miatt. (A
         // vérnyomás 160/95-e ugyanígy kiesik.)
-        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.])",
+        s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?!\\d|[,.]\\d)",
                 " ");
         // A KÜSZÖB száma kiesik, ha valódi mérés is áll mellette: a
         // „mérleg megint 80 fölött, 80,3" nyolcvanhármadából semmi nem
@@ -665,7 +674,7 @@ public final class BodyParse {
                     // későbbi mérés: a „70 kiló vagyok már, 82-ről
                     // indultam" hetvenese eddig teljesen elveszett – a
                     // „már … 82" párost esti mérésnek nézte a szabály.
-                    + "[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)(?![\\d,.])"
+                    + "[^0-9]{0,12}?(\\d{2,3}(?:[.,]\\d{1,2})?)(?!\\d|[,.]\\d)"
                     + "(?!\\s?-?(?:rol|bol|tol))")
                     .matcher(s);
             if (tm.find()) {

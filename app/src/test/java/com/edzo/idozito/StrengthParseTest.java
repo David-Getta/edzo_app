@@ -3006,4 +3006,22 @@ public class StrengthParseTest {
         assertSets("Bent over row 3x10 60 kg", "Evezés", 3, 10, 60);
         assertSets("Döntött 3x10 25 kg-os kézisúlyzókkal", "Ferde fekvenyomás", 3, 10, 25);
     }
+
+    /**
+     * A súllyal kezdődő második blokk saját sorozat.
+     *
+     * A „fekvenyomás 60kg 3x10, 70kg 2x8" második blokkja az elsőbe olvadt,
+     * és a két nyolcas sorozat hetven kilóval elveszett.
+     */
+    @Test public void aWeightFirstSecondBlockIsItsOwnSets() {
+        List<StrengthParse.Item> it = StrengthParse.parse("Fekvenyomás 60kg 3x10, 70kg 2x8");
+        assertEquals(1, it.size());
+        assertEquals(5, it.get(0).sets.size());
+        assertEquals(70.0, it.get(0).sets.get(4).weight, 0.01);
+        assertEquals(8, it.get(0).sets.get(4).reps);
+        assertEquals(6, StrengthParse.parse("Fekvenyomás: 60 kg 3x10, 70 kg 2x8, "
+                + "75 kg 1x6").get(0).sets.size());
+        // A puszta súly továbbra is az előző sorozaté.
+        assertSets("Guggolás 3x5, 100 kg", "Guggolás", 3, 5, 100);
+    }
 }

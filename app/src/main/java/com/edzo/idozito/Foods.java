@@ -3075,7 +3075,7 @@ public final class Foods {
         String head = s.substring(0, m.start());
         if (matches(list, head).size() != 1) return query;
         java.util.regex.Matcher n = java.util.regex.Pattern.compile(
-                "(?<![\\d,.])(\\d{1,2})(?![\\d,.])").matcher(head);
+                "(?<![\\d,.])(\\d{1,2})(?!\\d|[,.]\\d)").matcher(head);
         int start = -1, end = -1, first = 0, seen = 0;
         while (n.find()) {
             seen++;
@@ -3333,7 +3333,7 @@ public final class Foods {
                 {"3/4", "0,75"}, {"1/3", "0,33"}, {"2/3", "0,67"},
                 {"1/8", "0,125"}})
             query = query.replaceAll("(?<![\\d,.])" + fr[0].charAt(0) + "\\s?/\\s?"
-                    + fr[0].charAt(2) + "(?![\\d,.])(?=\\s?\\p{L})", fr[1]);
+                    + fr[0].charAt(2) + "(?!\\d|[,.]\\d)(?=\\s?\\p{L})", fr[1]);
         // A MAKRÓ-FEJLÉC nem étel: a „fehérje/szénhidrát/zsír 180/220/70"
         // sorból tíz gramm OLAJ került az étkezésnaplóba – a „zsír" szava a
         // tápérték neve itt, nem a serpenyőben lévő zsiradék. Csak a
@@ -3520,7 +3520,7 @@ public final class Foods {
         // A VISZCERÁLIS zsír az okosmérleg rovata, nem kanál zsír: a
         // „viszcerális zsír 9" kilenc adag sertészsírként ment volna be.
         query = query.replaceAll("(?iu)(?:viszcer[aá]lis|zsigeri)\\s+"
-                + "zs[ií]r\\w*\\s?:?\\s?(?:\\d{1,2}(?![\\d,.]))?", "");
+                + "zs[ií]r\\w*\\s?:?\\s?(?:\\d{1,2}(?!\\d|[,.]\\d))?", "");
         // Az ÚSZÁS VIZE nem ital: a „20 fokos vízben úsztam fél órát"
         // mellé egy pohár ásványvíz került a naplóba.
         if (query.matches("(?iu).*(usz[ot]|[uú]szni|[uú]sztam|[uú]sztunk"

@@ -398,7 +398,7 @@ public final class StrengthParse {
         // nyolcvan\u00f6t ism\u00e9tl\u00e9s lett bel\u0151le, s\u00faly n\u00e9lk\u00fcl.
         if (s.contains("sulyat") || s.contains("sulyt"))
             s = s.replaceAll("(?<![a-z])most (\\d{1,3}(?:[.,]\\d)?)"
-                    + "(?!\\s?(?:kg|kilo|x|:))(?![\\d,.])", "most $1 kg");
+                    + "(?!\\s?(?:kg|kilo|x|:))(?!\\d|[,.]\\d)", "most $1 kg");
         // Az \u00dcRES R\u00daD is s\u00faly: a szabv\u00e1ny olimpiai r\u00fad h\u00fasz kil\u00f3 \u2013 eddig
         // saj\u00e1t tests\u00falyos szak\u00edt\u00e1s lett a technik\u00e1z\u00e1sb\u00f3l.
         s = s.replaceAll("ures rud", "20 kg rud");
@@ -515,7 +515,7 @@ public final class StrengthParse {
                     "(?iu)(?<![\\dx,.])(\\d{1,3})\\s?db(?![\\p{L}])"
                     + "(?:\\s+(?:egy\\s+nap\\s+alatt|egy\\s+nap|[oö]sszesen"
                     + "|ma|napk[oö]zben))?\\s*[,;:]?\\s*"
-                    + "(?=(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?![\\d,.]))").matcher(text);
+                    + "(?=(\\d{1,2})\\s?[x×]\\s?(\\d{1,3})(?!\\d|[,.]\\d))").matcher(text);
             StringBuffer tbb = new StringBuffer();
             while (tb.find()) {
                 int total = Integer.parseInt(tb.group(1));
@@ -539,7 +539,7 @@ public final class StrengthParse {
         // akkor, ha a sorozat mellett nem áll saját súly.
         text = text.replaceAll("(?iu)(\\d{1,3}(?:[.,]\\d{1,2})?\\s?-?"
                 + "(?:kg|kil[oó]t|kil[oó]val|kil[oó])(?:\\s+\\p{L}{2,12})?)"
-                + "\\s*[,;]\\s*(?=\\d{1,2}\\s?[x×]\\s?\\d{1,3}(?![\\d,.])"
+                + "\\s*[,;]\\s*(?=\\d{1,2}\\s?[x×]\\s?\\d{1,3}(?!\\d|[,.]\\d)"
                 + "\\s*(?:[,;.!?]|$|(?:[eé]s|majd|azt[aá]n|ut[aá]na)(?![\\p{L}])))",
                 "$1 ");
         // A PERC ÉS MÁSODPERC együtt egyetlen idő: a „plank kihívás 12.
@@ -1083,7 +1083,7 @@ public final class StrengthParse {
         // és pihenő. A kör × munka/pihenő hármas az intervallum-felismerőé,
         // ő ugyanebből a mondatból helyes tervet ad; itt csak kárt tennénk.
         // A körszám NÉLKÜLI perjel marad a piramisé („fekvenyomás 60/10").
-        if (nrm.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?![\\d,.]).*")
+        if (nrm.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}(?!\\d|[,.]\\d).*")
                 && nrm.matches("(?s).*(?<![a-z])(tabata|emom|amrap|interval)"
                         + "\\w*.*")) return out;
         // A PILLANGÓ az uszodában úszásnem, a teremben mellgép: a „pillangó
@@ -1138,7 +1138,7 @@ public final class StrengthParse {
         // tízese ott sem súly. A tétel megmarad (nyolcszor húsz), csak a
         // pihenő másodperce nem lesz belőle kiló.
         text = text.replaceAll("(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s?/\\s?"
-                + "\\d{1,3}(?![\\d,.])", "$1");
+                + "\\d{1,3}(?!\\d|[,.]\\d)", "$1");
         // A puszta „FRANCIA" a teremben francia nyomás: a „kondi: fekve
         // 4x8 70 kg, tolódzás 3x12, francia 3x12 25 kg" harmadik tétele
         // NYOMTALANUL eltűnt. Csak sorozat-adat előtt: a franciasaláta és
@@ -1384,7 +1384,7 @@ public final class StrengthParse {
                 "(?iu)(?<![\\p{L}])(?:az?\\s+)?utols[oó](?:\\s+(?:szett|sorozat"
                 + "|sz[eé]ria))?\\p{L}*\\s+(?:m[aá]r\\s+)?(?:csak\\s+)?(amrap\\s+|max\\s+"
                 + "|maxra\\s+|kifut[aá]sig\\s+)?(\\d{1,2})"
-                + "(?![\\d,.])(?!\\s?[x×])(?!\\s?-?(?:kg|kil))").matcher(text);
+                + "(?!\\d|[,.]\\d)(?!\\s?[x×])(?!\\s?-?(?:kg|kil))").matcher(text);
         if (ls.find() && !merged.isEmpty()) {
             Item last = merged.get(merged.size() - 1);
             int n = Integer.parseInt(ls.group(2));
@@ -1536,7 +1536,14 @@ public final class StrengthParse {
             // másodpercig" egyetlen hatvan másodperces plankot írt a naplóba
             // három helyett. Az „egyenként" nélkül a „guggolás 3x10, 30 mp
             // pihenő" harminca a tartás hosszává válna.
-            if (!out.isEmpty() && moveIn(p) == null && (p.matches(
+            // A SAJÁT sorozat-jelölésű darab viszont új blokk: a
+            // „fekvenyomás 60kg 3x10, 70kg 2x8" második blokkja az elsőbe
+            // olvadt, és a két nyolcas sorozat hetven kilóval elveszett.
+            // Ha az előző darabnak is van sorozat-jelölése, ez folytatás.
+            boolean ownSets = p.matches("(?s).*\\d\\s?[x×]\\s?\\d.*")
+                    && !out.isEmpty() && out.get(out.size() - 1)
+                            .matches("(?s).*\\d\\s?[x×]\\s?\\d.*");
+            if (!out.isEmpty() && !ownSets && moveIn(p) == null && (p.matches(
                     "^(?:egyenkent|mindegyik|mindegyikben|darabonkent|soronkent|"
                     + "sorozatonkent|szettenkent|azaz|plusz)?\\s*"
                     + "\\d{1,3}([.,]\\d{1,2})?\\s?(sorozat|szett|set|ismetles|ism|kg|kilo)\\b.*")
@@ -1910,7 +1917,7 @@ public final class StrengthParse {
         // 4) Puszta darabszám gyakorlatnév mellett: „50 fekvőtámasz”.
         if (sets.isEmpty()) {
             java.util.regex.Matcher bare = java.util.regex.Pattern
-                    .compile("(?<![\\d,.])(\\d{1,3})(?![\\d,.])").matcher(s);
+                    .compile("(?<![\\d,.])(\\d{1,3})(?!\\d|[,.]\\d)").matcher(s);
             // A VESSZŐ NÉLKÜLI felsorolásban a KÖZVETLENÜL a név előtt álló
             // szám a gyakorlaté: a „15 burpee 20 guggolás 10 fekvőtámasz"
             // guggolása a TIZENÖTÖT kapta – a burpee számát –, mert a
@@ -1919,7 +1926,7 @@ public final class StrengthParse {
             if (nameAt > 0) {
                 int best = -1;
                 java.util.regex.Matcher pre = java.util.regex.Pattern
-                        .compile("(?<![\\d,.])(\\d{1,3})(?![\\d,.])")
+                        .compile("(?<![\\d,.])(\\d{1,3})(?!\\d|[,.]\\d)")
                         .matcher(s);
                 while (pre.find())
                     if (pre.end() <= nameAt && nameAt - pre.end() <= 3)
@@ -2395,7 +2402,7 @@ public final class StrengthParse {
         int q = p;
         while (q > 0 && s.charAt(q - 1) == ' ') q--;
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile("(?<![\\dx×,.])(\\d{1,3})(?![\\d,.])").matcher(s);
+                .compile("(?<![\\dx×,.])(\\d{1,3})(?!\\d|[,.]\\d)").matcher(s);
         int best = 0;
         while (m.find()) {
             if (m.end() >= q) break;

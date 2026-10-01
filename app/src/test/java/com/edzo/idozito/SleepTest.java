@@ -691,4 +691,18 @@ public class SleepTest {
                 + "aludtam el"), 0.01);
         assertEquals(8, Sleep.parse("Aludtam 23-tól 7-ig"), 0.01);
     }
+    /**
+     * Az alvás szava utáni kötőjeles óra-pár lefekvés–kelés.
+     *
+     * Az „alvás: 23-7" és az „alvás 22:30-6:15" üresen jött vissza; a
+     * mellé írt mélyalvás-fázis pedig az egészet elnémította.
+     */
+    @Test public void aDashedBedtimeWakePairAfterTheSleepWord() {
+        assertEquals(8, Sleep.parse("Alvás: 23-7"), 0.01);
+        assertEquals(7.8, Sleep.parse("Alvás 22:30-6:15"), 0.05);
+        assertEquals(8, Sleep.parse("Alvás: 23-7, mély alvás 1,5 óra"), 0.01);
+        assertEquals(8, Sleep.parse("Alvás: 23-7, REM 1 óra 40 perc"), 0.01);
+        // Az óraszám-tartomány az alvás hossza marad.
+        assertEquals(6.5, Sleep.parse("Alvás 6-7 óra"), 0.01);
+    }
 }

@@ -299,7 +299,7 @@ public final class Hu {
         // A terv, amiből MÁS LETT: „terv: 8 km, lett belőle 10".
         s = s.replaceAll("(?iu)^\\s*(?:a\\s+)?(?:mai\\s+)?terv(?:em)?\\s*:?\\s*\\d{1,3}(?:[.,]\\d)?\\s?"
                 + "(km|perc|k[oö]r|l[eé]p[eé]s)(\\s+\\p{L}+)?\\s*,\\s*(?:de\\s+|v[eé]g[uü]l\\s+)?"
-                + "lett\\s+(?:bel[oő]le\\s+)?(\\d{1,3}(?:[.,]\\d)?)(?![\\d,.])", "$3 $1$2");
+                + "lett\\s+(?:bel[oő]le\\s+)?(\\d{1,3}(?:[.,]\\d)?)(?!\\d|[,.]\\d)", "$3 $1$2");
         return s;
     }
 

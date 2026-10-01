@@ -126,7 +126,7 @@ public final class IntervalParse {
         // pihenő pár KÉT számból áll; ahol három van egymás után perjellel,
         // ott arányról van szó, nem szakaszokról.
         if (s.matches("(?s).*(?<![\\d,.])\\d{1,3}\\s?/\\s?\\d{1,3}\\s?/\\s?"
-                + "\\d{1,3}(?![\\d,.]).*")) return null;
+                + "\\d{1,3}(?!\\d|[,.]\\d).*")) return null;
         // Az ÉTKEZÉSI IDŐPONTOK sora sem ritmus: a „7:00 zabkása, 12:30
         // csirke rizzsel" órajelei munka/pihenő párnak látszottak, és
         // időzítő-tervet ajánlott rájuk az app.

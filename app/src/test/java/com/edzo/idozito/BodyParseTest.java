@@ -2,6 +2,7 @@ package com.edzo.idozito;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -1354,6 +1355,26 @@ public class BodyParseTest {
                 + "cs\u00edp\u0151 100").cm[2], 0.01);
         assertEquals(98.0, BodyParse.parse("\u00dasz\u00e1s 1 km, mell 98 cm")
                 .cm[2], 0.01);
+    }
+
+    /**
+     * A szám utáni felsoroló vessző nem tizedesjel.
+     *
+     * A „vércukor 105, súly 82,1" száztöt kilót, a „testsúly: 90,4 → 89,8,
+     * jó" a régi számot írta; a „ma 74,8 kg, hétfő óta -1,2, szuper" és a
+     * „80 kg alatt vagyok, 79,6, végre" üresen jött vissza. A kitakaró
+     * szabályok a szám után álló vesszőt tizedesnek nézték.
+     */
+    @Test public void aListCommaAfterANumberIsNotADecimal() {
+        assertEquals(82.1, BodyParse.parse("Vércukor 105, súly 82,1").kg, 0.01);
+        assertEquals(89.8, BodyParse.parse("Testsúly: 90,4 \u2192 89,8, jó").kg, 0.01);
+        assertEquals(74.8, BodyParse.parse("Ma 74,8 kg, hétfő óta -1,2, szuper").kg, 0.01);
+        assertEquals(79.6, BodyParse.parse("80 kg alatt vagyok, 79,6, végre").kg, 0.01);
+        assertEquals(78.0, BodyParse.parse("Makró 180/220/70, súly 78").kg, 0.01);
+        assertNull(IntervalParse.parse("Makró 180/220/70, súly 78"));
+        // A gyakorlat súlyának emelése nem mérés.
+        assertTrue(BodyParse.parse("Emeltem a guggolás súlyát 5 kilóval, most 85, "
+                + "nehéz volt").isEmpty());
     }
 
     @Test public void aSwimLapCountIsNotAWeight() {

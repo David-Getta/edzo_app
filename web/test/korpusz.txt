@@ -2581,6 +2581,12 @@ A célom 80 kg karácsonyig.
 Az uszodában 1500 m gyors, 500 m mell, 200 m hát.
 Mellbőségem 100 cm.
 Úszás 1 km, mell 98 cm
+Vércukor 105, súly 82,1
+Testsúly: 90,4 → 89,8, jó
+Ma 74,8 kg, hétfő óta -1,2, szuper
+80 kg alatt vagyok, 79,6, végre
+Makró 180/220/70, súly 78
+Emeltem a guggolás súlyát 5 kilóval, most 85, nehéz volt
 Lementem 30 hosszt a másik sávban.
 Lementem 78 kilóra.
 Derékbőségem 88 cm, a csípőm 102, a mellkasom 98.
@@ -5410,6 +5416,11 @@ Aludtam délután egy órát, éjjel meg hetet
 Éjjel hatot aludtam
 Aludtam 23-tól 7-ig, de csak fél óra múlva aludtam el
 Aludtam 23-tól 7-ig
+Alvás: 23-7
+Alvás 22:30-6:15
+Alvás: 23-7, mély alvás 1,5 óra
+Alvás: 23-7, REM 1 óra 40 perc
+Alvás 6-7 óra
 a szakasz-nevek és -azonosítók száma eltér
 Fekvenyomás 3×10/10/10@60
 Guggolás 5×5/5/5/5/5@80
@@ -5935,6 +5946,9 @@ Evezés döntött törzzsel 4x10 50 kg
 Döntött törzsű evezés 4x10 50 kg
 Bent over row 3x10 60 kg
 Döntött 3x10 25 kg-os kézisúlyzókkal
+Fekvenyomás 60kg 3x10, 70kg 2x8
+Fekvenyomás: 60 kg 3x10, 70 kg 2x8, 75 kg 1x6
+Guggolás 3x5, 100 kg
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam
