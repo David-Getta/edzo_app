@@ -732,4 +732,13 @@ public class KcalTest {
         assertEquals(450, Kcal.burned("Futás 5 km 27:30, utána 450 kcal"));
         assertEquals(1800, Kcal.burned("Bringa 3 óra, 1800 kcal az óra szerint"));
     }
+
+    @Test public void afterTheWorkoutIsWhenNotWhat() {
+        // Az „edzés után fehérjeturmix, 35 g fehérje, 180 kcal" száznyolcvana
+        // elégetett kalória lett.
+        assertEquals(180, Kcal.stated("Edzés után fehérjeturmix, 35 g fehérje, 180 kcal"));
+        assertEquals(-1, Kcal.burned("Edzés után fehérjeturmix, 35 g fehérje, 180 kcal"));
+        // A valódi edzés kalóriája égetés marad.
+        assertEquals(400, Kcal.burned("Edzés 45 perc, 400 kcal"));
+    }
 }

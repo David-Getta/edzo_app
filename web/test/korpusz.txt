@@ -4560,6 +4560,8 @@ Este bringa 25 km, 1 200 kcal az óra szerint
 Edzés 600 kcal, kaja 2100 kcal
 Futás 5 km 27:30, utána 450 kcal
 Bringa 3 óra, 1800 kcal az óra szerint
+Edzés után fehérjeturmix, 35 g fehérje, 180 kcal
+Edzés 45 perc, 400 kcal
 a küszöb pontosan ezt a szintet adja
 egy XP-vel a küszöb alatt még az előző szint
 a következő szint mindig többe kerül

@@ -219,7 +219,7 @@ public final class Kcal {
     /** Óra- vagy alkalmazás-export-e a mondat, evés-ige nélkül? */
     private static boolean fromWatch(String q) {
         if (q == null) return false;
-        String s = Hu.digits(Foods.norm(q));
+        String s = afterWorkoutIsATime(Hu.digits(Foods.norm(q)));
         for (Pattern w : EATEN_P) if (w.matcher(s).find()) return false;
         for (String w : new String[]{"polar", "garmin", "suunto", "fitbit",
                 "strava", "apple watch", "coros", "aktiv kalori", "atlag hr",
@@ -266,6 +266,16 @@ public final class Kcal {
             if (sport) sportSeen = true;
         }
         return alonePre;
+    }
+
+    /**
+     * Az „EDZÉS UTÁN" időpont, nem edzés: az „edzés után fehérjeturmix, 35 g
+     * fehérje, 180 kcal" száznyolcvana ELÉGETETT kalória lett – a turmixé
+     * a bevitelhez tartozik, az edzés szava csak azt mondja, mikor itta.
+     */
+    private static String afterWorkoutIsATime(String s) {
+        return s.replaceAll("(?<![a-z])edzes\\w*\\s+(?:utan|elott|utani|elotti"
+                + "|kozben|kozbeni)(?![a-z])", "akkor");
     }
 
     /** Mozgás-szó nélküli tagmondat ezerötszáz fölötti kalóriával. */
@@ -324,7 +334,7 @@ public final class Kcal {
         // mérleg mindkét oldala elmozdult egyetlen reggelitől. Égetés csak
         // akkor, ha a mondat mozgást, órát vagy égetés-szót mond.
         if (q != null) {
-            String s = Hu.digits(Foods.norm(q));
+            String s = afterWorkoutIsATime(Hu.digits(Foods.norm(q)));
             boolean sportCue = sportWordIn(s), strongCue = false;
             for (Pattern w : NOT_EATEN_P)
                 if (w.matcher(s).find()) { strongCue = true; break; }
