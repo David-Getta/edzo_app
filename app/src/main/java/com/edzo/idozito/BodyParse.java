@@ -322,6 +322,8 @@ public final class BodyParse {
     /** A mondatban rejlő mérés, vagy egy üres Body. */
     public static Body parse(String q) {
         if (q == null) return new Body(0, 0);
+        // Az „Ő 80 kg, én 72" az én hetvenkét kilóm.
+        q = Hu.contrastMine(q);
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A
         // mérleget sokan hangosan olvassák fel, és úgy is írják le.
         // A maskTimeUnder a SZÁMNÉV-fordítás előtt fut: az „egy hét alatt"

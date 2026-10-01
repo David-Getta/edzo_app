@@ -768,6 +768,28 @@ public class ActivitiesParseTest {
         assertEquals(4.8, p.plans.get(0).km, 0.01);
     }
 
+    /**
+     * Az „ő …, én N" szembeállítás második fele az én adatom.
+     *
+     * Az „Ő 10 km-t futott, én 5-öt", „a párom úszott 2 km-t, én 1-et",
+     * „ő 80 kg, én 72", „ő 8 órát aludt, én csak 5-öt" mondatokból eddig
+     * semmi nem lett: a másik alany kiesett, a saját szám pedig
+     * mértékegység nélkül maradt.
+     */
+    @Test public void myHalfOfAContrastIsMine() {
+        Activities.Parsed p = Activities.parse("Ő 10 km-t futott, én 5-öt");
+        assertEquals(1, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        assertEquals(1.0, Activities.parse("A párom úszott 2 km-t, én 1-et")
+                .plans.get(0).km, 0.01);
+        assertEquals(15.0, Activities.parse("A barátom 20 km-t tekert, én 15-öt")
+                .plans.get(0).km, 0.01);
+        assertEquals(72.0, BodyParse.parse("Ő 80 kg, én 72").kg, 0.01);
+        assertEquals(5.0, Sleep.parse("Ő 8 órát aludt, én csak 5-öt"), 0.01);
+        // A puszta más-alanyú mondat továbbra sem az enyém.
+        assertTrue(Activities.parse("A párom úszott 2 km-t").plans.isEmpty());
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

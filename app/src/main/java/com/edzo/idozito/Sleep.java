@@ -118,6 +118,8 @@ public final class Sleep {
      * a közvetlenül a szám után álló „és fél" hozzáadódik.
      */
     public static double parse(String q) {
+        // Az „Ő 8 órát aludt, én csak 5-öt" az én öt órám.
+        q = Hu.contrastMine(q);
         // A DÉLUTÁNI SZUNYÓKÁLÁS hozzáadódik az éjszakához: az „aludtam
         // délután is egy órát, éjjel meg 6-ot" mondatból semmi nem lett –
         // az egy óra az alsó küszöb alatt volt, a hatos mellett meg nem

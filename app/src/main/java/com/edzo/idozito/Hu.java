@@ -248,6 +248,50 @@ public final class Hu {
     }
 
     /**
+     * Az „Ő 10 km-t futott, én 5-öt" második fele az ÉN adatom.
+     *
+     * A szembeállító mondat a saját számát a másik tagmondat igéjével és
+     * mértékegységével mondja ki, kihagyásosan: „ő 8 órát aludt, én csak
+     * 5-öt", „a párom úszott 2 km-t, én 1-et", „ő 80 kg, én 72". Eddig
+     * egyikből sem lett semmi – a másik ember adatát a más-alany szűrő
+     * kiszórta, a saját szám pedig mértékegység nélkül maradt. A mondatot
+     * az én változatomra írjuk át: a másik alany kiesik, a szám az enyém,
+     * a múlt idejű ige első személyű lesz.
+     */
+    public static String contrastMine(String s) {
+        if (s == null) return null;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?iu)^\\s*(?:ő|ők|a\\s+\\p{L}+(?:om|em|öm|am|ám|ém|im|unk|ünk))\\s+"
+                + "([^,;.\\d]*?)(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                + "(\\s?(?:km|kg|kil[oó]\\p{L}*|[oó]r[aá]\\p{L}*|perc\\p{L}*|m|m[eé]ter\\p{L}*"
+                + "|l[eé]p[eé]s\\p{L}*)(?:-?[eaoö]?t)?)(?![\\p{L}])([^,;.\\d]*),\\s*"
+                + "(?:de\\s+|viszont\\s+)?[eé]n\\s+(?:pedig\\s+|csak\\s+|meg\\s+|is\\s+)?"
+                + "(\\d{1,3}(?:[.,]\\d{1,2})?)(?:\\s?-?(?:[eaoöá]?t|[eaoö]t))?\\s*[.!]?\\s*$")
+                .matcher(s);
+        if (!m.find()) return s;
+        String head = firstPerson(m.group(1)), tail = firstPerson(m.group(4));
+        return (head + m.group(5) + m.group(3) + tail).trim();
+    }
+
+    /** A múlt idejű harmadik személyű igét első személyűre írja („futott" → „futottam"). */
+    private static String firstPerson(String part) {
+        java.util.regex.Matcher v = java.util.regex.Pattern
+                .compile("(?iu)(?<![\\p{L}])(\\p{L}{2,}t)(?![\\p{L}])").matcher(part);
+        StringBuffer b = new StringBuffer();
+        while (v.find()) {
+            String w = v.group(1);
+            String low = w.toLowerCase();
+            char last = 'a';
+            for (int i = low.length() - 1; i >= 0; i--)
+                if ("aáeéiíoóöőuúüű".indexOf(low.charAt(i)) >= 0) { last = low.charAt(i); break; }
+            String suf = "eéiíöőüű".indexOf(last) >= 0 ? "em" : "am";
+            v.appendReplacement(b, java.util.regex.Matcher.quoteReplacement(w + suf));
+        }
+        v.appendTail(b);
+        return b.toString();
+    }
+
+    /**
      * A HELYESBÍTÉS második száma az igazi: „nem aludtam 8 órát, csak 5-öt".
      *
      * A magyar így javít: kimondja, ami nem igaz, aztán utána azt, ami igen.

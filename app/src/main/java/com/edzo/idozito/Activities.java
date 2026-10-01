@@ -4428,6 +4428,8 @@ public final class Activities {
     static Parsed parse(String text, long now) {
         List<Plan> out = new ArrayList<>();
         if (text == null) return new Parsed(out, 1, 0, 12);
+        // Az „Ő 10 km-t futott, én 5-öt" az én öt kilométerem.
+        text = Hu.contrastMine(text);
         // A LISTA sorszáma nem darabszám: az „1. 5 km futás / 2. 30 perc
         // kondi" kettese a felsorolás második pontja, és eddig KÉT
         // kondi-edzés lett belőle. A sor eleje csak a normalizálás ELŐTT
