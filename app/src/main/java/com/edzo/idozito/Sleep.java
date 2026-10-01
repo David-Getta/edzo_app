@@ -120,6 +120,12 @@ public final class Sleep {
     public static double parse(String q) {
         // Az „Ő 8 órát aludt, én csak 5-öt" az én öt órám.
         q = Hu.contrastMine(q);
+        // Az ANGOL alvás-sor is alvás: a „slept 7.5 hours" üresen jött
+        // vissza, pedig az angol futás- és edzés-szavakat rég értjük.
+        if (q != null && q.matches("(?isu).*(?<![\\p{L}])(?:slept|sleep)(?![\\p{L}]).*"))
+            q = q.replaceAll("(?iu)(?<![\\p{L}])slept(?![\\p{L}])", "aludtam")
+                    .replaceAll("(?iu)(?<![\\p{L}])sleep(?![\\p{L}])", "alvás")
+                    .replaceAll("(?iu)(\\d)\\s?(?:hours?|hrs?)(?![\\p{L}])", "$1 óra");
         // A DÉLUTÁNI SZUNYÓKÁLÁS hozzáadódik az éjszakához: az „aludtam
         // délután is egy órát, éjjel meg 6-ot" mondatból semmi nem lett –
         // az egy óra az alsó küszöb alatt volt, a hatos mellett meg nem

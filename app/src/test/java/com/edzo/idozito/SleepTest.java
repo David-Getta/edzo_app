@@ -435,6 +435,13 @@ public class SleepTest {
         assertEquals(7.0, Sleep.parse("Aludtam 6 órát + 1 óra délutáni szundi"), 0.01);
     }
 
+    @Test public void englishSleepAndWeightLines() {
+        // A „slept 7.5 hours" és a „weight 78.2 kg" üresen jött vissza.
+        assertEquals(7.5, Sleep.parse("Slept 7.5 hours"), 0.01);
+        assertEquals(8.0, Sleep.parse("sleep 8h"), 0.01);
+        assertEquals(78.2, BodyParse.parse("Weight 78.2 kg").kg, 0.01);
+    }
+
     @Test public void shiftWorkersDaytimeSleepCounts() {
         // Az „éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"
         // hét óra nappali alvás; a „csak 4 órát tudtam aludni" négy.
