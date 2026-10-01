@@ -4606,7 +4606,14 @@ public final class Foods {
             // de csak a felét" fele annyi. A puszta „a felét" viszont kevés –
             // abból nem derül ki, hogy megette vagy meghagyta.
             java.util.regex.Matcher o = ONLY_FRACTION.matcher(q);
-            if (!o.find()) return 0;
+            // A MONDATVÉGI hányad a naplósor tárgya: az „egy tábla csoki
+            // negyedét" egy egész táblaként ment be – a bejegyzés maga
+            // mondja, mennyit evett meg belőle (az ige elmaradt).
+            if (!o.find()) {
+                o = END_FRACTION.matcher(q);
+                if (!o.find() || q.matches("(?s).*(?<![a-z])(?:hagy|otthagy|meghagy"
+                        + "|atad|odaad|nem)\\w*.*")) return 0;
+            }
             String g = o.group(1);
             return g.startsWith("felet") ? 0.5
                     : g.startsWith("ketharmad") ? 2 / 3.0
@@ -4621,6 +4628,12 @@ public final class Foods {
                 || m.group(2).startsWith("odaad") || m.group(2).startsWith("atenged");
         return left ? 1 - f : f;
     }
+
+    /** „… csoki negyedét" – a mondat végén, a főnévhez tapadó hányad (a
+     *  vesszős „…, a felét" kevés: megette vagy meghagyta?). */
+    private static final java.util.regex.Pattern END_FRACTION =
+            java.util.regex.Pattern.compile(
+                    "[a-z]{3,}\\s+(felet|harmadat|ketharmadat|negyedet)\\s*[.!]?\\s*$");
 
     /** „csak a felét" – a „csak" maga mondja meg, hogy kevesebb lett. */
     private static final java.util.regex.Pattern ONLY_FRACTION =
@@ -4922,6 +4935,12 @@ public final class Foods {
         for (Match m : ms) {
             if (m.food.name.equals("Olaj") && q.startsWith("olaj", m.pos)
                     && q.regionMatches(m.pos + 4, "os", 0, 2)) continue;
+            // A SZEZÁMOS bunda nem egy marék mag: a „szezámos csirke
+            // rizzsel" mellé harminc gramm mag is bement. A jelzős alak
+            // (szezámos, szezámmagos) a fogás bundája.
+            if (q.startsWith("szezam", m.pos)
+                    && q.substring(m.pos).matches("(?s)szezam(?:mag)?os\\s+\\p{L}{3,}.*"))
+                continue;
             // A VÍZTAPOSÁS nem ivás: a „tapostam a vizet 10 percig" mellé
             // egy pohár ásványvíz került. A kimondott ivás felment: a
             // „vizet ittam a taposás után" valódi pohár.

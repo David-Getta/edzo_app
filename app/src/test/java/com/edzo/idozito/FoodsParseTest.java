@@ -1562,6 +1562,20 @@ public class FoodsParseTest {
         assertEquals("Tonhalsaláta", hits("Tonhalas saláta").get(0).food.name);
     }
 
+    /** A szezámos bunda nem egy marék mag. */
+    @Test public void aSesameCoatingIsNotAHandfulOfSeeds() {
+        assertEquals(2, hits("Kínai: szezámos csirke rizzsel").size());
+        assertEquals(1, hits("Szezámmagos zsemle").size());
+        assertEquals(1, hits("1 evőkanál szezámmag").size());
+    }
+
+    /** A mondatvégi hányad a megevett rész: „egy tábla csoki negyedét". */
+    @Test public void aTrailingFractionIsWhatWasEaten() {
+        assertEquals(25, hits("Egy tábla csoki negyedét").get(0).grams, 0.01);
+        assertEquals(25, hits("Egy csomag chips felét").get(0).grams, 0.01);
+        assertEquals(50, hits("Egy tábla csoki felét").get(0).grams, 0.01);
+    }
+
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
         List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
         assertEquals(40, h.get(0).grams, 0.01);
