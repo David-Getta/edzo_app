@@ -560,6 +560,22 @@ public class FoodsQuantityTest {
         assertEquals(3, hits.size());
     }
 
+    /**
+     * A tizedes liter vesszője nem tagmondat-határ.
+     *
+     * Az „egy üveg sör, 0,5 l" ÖT LITER sör lett: a tagmondat-olvasók a
+     * „0,5" vesszőjénél vágtak, és az „5 l" maradt.
+     */
+    @Test public void aDecimalLitreIsNotTwoClauses() {
+        assertEquals(500, grams("Egy üveg sör, 0,5 l"), 0.01);
+        assertEquals(500, grams("Sör, 0,5 l"), 0.01);
+        assertEquals(1500, grams("Egy üveg víz, 1,5 l"), 0.01);
+        assertEquals(660, grams("Két üveg sör, 0,33 l"), 0.01);
+        assertEquals(300, grams("Két pohár bor, 1,5 dl"), 0.01);
+        assertEquals(1500, grams("3 doboz sör, 0,5 l"), 0.01);
+        assertEquals(1500, grams("1,5 l víz"), 0.01);
+    }
+
     @Test public void theBareAccusativeCountAndTheCompanionAfterIt() {
         assertEquals(120.0, grams("fánk, 2-t ettem"), 0.01);
         assertEquals(120.0, grams("fánkot ettem, 2-t"), 0.01);

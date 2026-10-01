@@ -3141,6 +3141,51 @@ public final class Foods {
         // 1-et" mondatból eddig semmi nem lett – a tagadás elvitte az egészet,
         // pedig az egy szelet megvolt.
         query = Hu.correction(query);
+        // A TIZEDES LITER vesszője nem tagmondat-határ: az „egy üveg sör, 0,5
+        // l" ÖT LITER sör lett – a tagmondat-olvasók a „0,5" vesszőjénél
+        // vágtak, és az „5 l" maradt. A tizedes litert milliliterré írjuk,
+        // ahol nincs vessző.
+        {
+            java.util.regex.Matcher lm = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\d,.])(\\d{1,2})[.,](\\d{1,2})\\s?"
+                    + "(l|liter\\p{L}*|dl|deci\\p{L}*|cl)(?![\\p{L}])")
+                    .matcher(query);
+            StringBuffer lb = new StringBuffer();
+            while (lm.find()) {
+                int whole = Integer.parseInt(lm.group(1));
+                String fr = lm.group(2), u = lm.group(3).toLowerCase();
+                int factor = u.startsWith("l") ? 1000 : u.startsWith("d") ? 100 : 10;
+                int ml = (int) Math.round((whole + Integer.parseInt(fr)
+                        / (fr.length() == 1 ? 10.0 : 100.0)) * factor);
+                lm.appendReplacement(lb, ml + " ml");
+            }
+            lm.appendTail(lb);
+            query = lb.toString();
+        }
+        // A DARABSZÁM ÉS A TÉRFOGAT szorzódik: a „két üveg sör, 0,33 l" két
+        // üveg, egyenként három deci – eddig a térfogat nyert, és egyetlen
+        // üveg ment be. A szorzatot írjuk a név elé.
+        {
+            java.util.regex.Matcher bm = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}\\d])(\\d|k[eé]t|h[aá]rom|n[eé]gy|[oö]t|hat)\\s+"
+                    + "(?:[uü]veg|poh[aá]r|doboz|kors[oó]|cs[eé]sze|b[oö]gre|flakon)\\p{L}*\\s+"
+                    + "(\\p{L}+)\\s*,\\s*(\\d{2,4})\\s?(ml|dl|cl)(?![\\p{L}])")
+                    .matcher(query);
+            StringBuffer bb = new StringBuffer();
+            while (bm.find()) {
+                String w = Foods.norm(bm.group(1));
+                int n = w.matches("\\d") ? Integer.parseInt(w)
+                        : w.equals("ket") ? 2 : w.equals("harom") ? 3
+                        : w.equals("negy") ? 4 : w.equals("ot") ? 5 : 6;
+                int vol = Integer.parseInt(bm.group(3));
+                String unit = bm.group(4).toLowerCase();
+                int ml = unit.equals("dl") ? vol * 100 : unit.equals("cl") ? vol * 10 : vol;
+                bm.appendReplacement(bb, java.util.regex.Matcher.quoteReplacement(
+                        (n * ml) + " ml " + bm.group(2)));
+            }
+            bm.appendTail(bb);
+            query = bb.toString();
+        }
         // A „néhány szem" és a „pár szem" kis maréknyi, nem EGYETLEN szem: a
         // „néhány szem szőlő" öt grammként ment be – egyetlen szőlőszemként.
         query = query.replaceAll("(?iu)(?<!\\p{L})(n[eé]h[aá]ny|p[aá]r)"
