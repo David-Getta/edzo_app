@@ -8411,7 +8411,15 @@ public final class Activities {
                 return h;
             }
         }
-        String[][] tod = {{"hajnal", "5"}, {"reggel", "8"}, {"delelott", "10"},
+        // A KÖRÜLÍRT napszak is napszak: a „munka után kondi" és a „késő
+        // este nyújtás" délre, illetve hétre került, az „éjfélkor futottam"
+        // délre. A pontosabb (hosszabb) kifejezés áll elöl.
+        String[][] tod = {{"kora reggel", "6"}, {"keso este", "21"},
+                {"munka utan", "17"}, {"munkaido utan", "17"}, {"melo utan", "17"},
+                {"lefekves elott", "21"}, {"ejfelkor", "0"}, {"reggeli utan", "9"},
+                {"ebed utan", "13"}, {"ebedszunet", "12"}, {"vacsora elott", "18"},
+                {"vacsora utan", "20"},
+                {"hajnal", "5"}, {"reggel", "8"}, {"delelott", "10"},
                 {"delutan", "16"},
                 {"este", "19"}, {"esti", "19"}, {"ejszaka", "22"}, {"ejjel", "22"}};
         for (String[] w : tod) {

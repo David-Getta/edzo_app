@@ -930,6 +930,18 @@ public class ActivitiesParseTest {
         assertEquals(45, Activities.parse("Run 45 minutes").plans.get(0).minutes);
     }
 
+    /** A körülírt napszak is napszak: munka után, késő este, éjfélkor. */
+    @Test public void aDescribedTimeOfDayIsAnHour() {
+        assertEquals(17, Activities.parse("Munka után kondi 1 óra").hour);
+        assertEquals(21, Activities.parse("Késő este 20 perc nyújtás").hour);
+        assertEquals(21, Activities.parse("Lefekvés előtt 15 perc jóga").hour);
+        assertEquals(6, Activities.parse("Kora reggel futás 5 km").hour);
+        assertEquals(0, Activities.parse("Éjfélkor futottam 3 km-t").hour);
+        assertEquals(13, Activities.parse("Ebéd után 30 perc séta").hour);
+        // A kimondott óra továbbra is nyer.
+        assertEquals(17, Activities.parse("Délután 5-kor futottam 5 km-t").hour);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

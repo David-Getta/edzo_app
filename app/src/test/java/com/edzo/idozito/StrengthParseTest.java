@@ -3053,4 +3053,19 @@ public class StrengthParseTest {
                 sum("Fekvenyomás 80 kg 8x, 90 kg 5x, 100 kg 3x"));
         assertEquals(1, Activities.parse("Fekvenyomás 100 kg 5x").plans.get(0).count);
     }
+
+    /**
+     * A mérés melletti sorozat is edzés.
+     *
+     * A „combom 58 cm, guggolás 3x10" guggolása elveszett – a mérőszalag
+     * tagmondata az egész mondatot elnémította.
+     */
+    @Test public void setsBesideAGirthMeasurementCount() {
+        assertSets("Combom 58 cm, guggolás 3x10", "Guggolás", 3, 10, 0);
+        assertSets("Derekam 80 cm, guggolás 3x10 60 kg", "Guggolás", 3, 10, 60);
+        assertSets("Comb 60 cm, vádli 40 cm, bicepsz 3x12 15 kg", "Bicepsz", 3, 12, 15);
+        // A puszta mérés továbbra sem edzés.
+        assertTrue(StrengthParse.parse("Combom 58 cm, vádli 38").isEmpty());
+        assertTrue(StrengthParse.parse("Bicepszem 38 cm lett").isEmpty());
+    }
 }

@@ -1059,7 +1059,26 @@ public final class StrengthParse {
         // fekvőtámaszt" eddig bekerült az erősítő naplóba – és onnantól a
         // progresszió-javaslat is arra épült.
         if (Activities.someoneElsesDoing(text)) return out;
-        if (looksLikeMeasurement(Foods.norm(text))) return out;
+        if (looksLikeMeasurement(Foods.norm(text))) {
+            // A MÉRÉS MELLETTI sorozat viszont edzés: a „combom 58 cm,
+            // guggolás 3x10" guggolása is elveszett – a mérőszalag
+            // tagmondata az egész mondatot elnémította. Csak a mérés
+            // tagmondatai esnek ki, ha a maradékban névvel együtt kimondott
+            // sorozat áll.
+            StringBuilder keep = new StringBuilder();
+            boolean setLeft = false;
+            for (String cl : text.split("(?<=[,;.])")) {
+                String n = Foods.norm(cl);
+                if (looksLikeMeasurement(n) || n.matches("(?s)\\s*(?:a\\s+)?(?:comb|derek"
+                        + "|csipo|mellkas|vadli|felkar|has|nyak)\\w*\\s*:?\\s*\\d{2,3}"
+                        + "(?:[.,]\\d)?\\s*(?:cm)?\\s*[,;.]?\\s*")) continue;
+                if (n.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*") && moveIn(n) != null)
+                    setLeft = true;
+                keep.append(cl);
+            }
+            if (!setLeft) return out;
+            text = keep.toString();
+        }
         // A FEJLŐDÉS beszámolója nem sorozat: a „két hónapja edzek, azóta 12
         // kg-ot emelkedett a fekvenyomásom" tizenkét kilós fekvenyomást írt
         // a rekordok közé – abból a számból, amennyit JAVULT. Kimondott
