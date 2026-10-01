@@ -1340,6 +1340,15 @@ public final class StrengthParse {
                 rounds = numberBefore(whole, kw);
                 if (rounds <= 0) rounds = numberBefore(raw, kw);
             }
+            // A MONDATVÉGI, vessző utáni „3x" is körszám: az „1 perc plank,
+            // 30 mp pihenő, 3x" és a „guggolás 15, 4x" egyetlen sorozat
+            // maradt. Vessző kell elé: a „guggolás 100 kg 5x" ötöse ismétlés.
+            if (rounds <= 0) {
+                java.util.regex.Matcher tailX = java.util.regex.Pattern.compile(
+                        "[,;]\\s*(\\d{1,2})\\s?(?:[x×]|-?szor|-?szer|-?sor)"
+                        + "\\s*[.!]?\\s*$").matcher(raw);
+                if (tailX.find()) rounds = Integer.parseInt(tailX.group(1));
+            }
             // Az első gyakorlat gyakran MÁR megkapta a kör-számot (vele egy
             // tagmondatban áll), a többi nem. Akkor bővítünk, ha minden tétel
             // vagy egy sorozatos, vagy pont ennyi sorozatos – így a saját

@@ -3521,7 +3521,8 @@ public final class Foods {
                 + "\\d{1,2}(?:[.,]\\d{1,2})?\\s?%", "");
         // A VISZCERÁLIS zsír az okosmérleg rovata, nem kanál zsír: a
         // „viszcerális zsír 9" kilenc adag sertészsírként ment volna be.
-        query = query.replaceAll("(?iu)(?:viszcer[aá]lis|zsigeri)\\s+"
+        // A „VISCERÁLIS" (c-vel, angolosan) ugyanaz a rovat.
+        query = query.replaceAll("(?iu)(?:vis[cz]?[cz]er[aá]l\\p{L}*|zsigeri)\\s+"
                 + "zs[ií]r\\w*\\s?:?\\s?(?:\\d{1,2}(?!\\d|[,.]\\d))?", "");
         // Az ÚSZÁS VIZE nem ital: a „20 fokos vízben úsztam fél órát"
         // mellé egy pohár ásványvíz került a naplóba.

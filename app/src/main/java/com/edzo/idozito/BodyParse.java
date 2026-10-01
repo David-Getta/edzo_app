@@ -422,6 +422,15 @@ public final class BodyParse {
                 + "(?:vagyok\\s+|megint\\s+|v[eé]gre\\s+)?(\\d{2,3}(?:[.,]\\d{1,2})?)"
                 + "(?!\\d|[,.]\\d)(?!\\s?(?:cm|%|perc|km|kcal|l[eé]p[eé]s|sz[aá]zal))",
                 "$1 kg");
+        // A JELZŐS küszöb sem mérés: a „80-as súly alá kerültem: 79,9!"
+        // nyolcvanat írt a trendbe – a küszöb nyert a valódi szám ellen.
+        // Csak akkor esik ki, ha mellette másik mérés-szám is áll.
+        if (q.matches("(?s).*\\d{2,3}[.,]\\d.*"))
+            q = q.replaceAll("(?iu)(?<![\\d,.])\\d{2,3}\\s?-?[aeoö]s\\s+(s[uú]ly)\\p{L}*\\s+"
+                    + "(?:al[aá]|f[oö]l[eé]|alatt|felett|f[oö]l[oö]tt)(?![\\p{L}])", " $1 ")
+                    .replaceAll("(?iu)(?<![\\d,.])\\d{2,3}\\s?-?[aeoö]s\\s+(?:kil[oó]\\p{L}*\\s+"
+                    + "|h[aá]t[aá]r\\p{L}*\\s+)?(?:al[aá]|f[oö]l[eé]|alatt"
+                    + "|felett|f[oö]l[oö]tt)(?![\\p{L}])", " ");
         if (q.matches("(?s).*\\d\\s?(?:kg|kil[oó]).*"))
             q = q.replaceAll("(?iu)(?<![\\p{L}])(?:na\\s+j[oó]|sz[oó]val|pont|kereken"
                     + "|el[oő]sz[oö]r|v[eé]gre|v[eé]gre-valah[aá]ra)"
@@ -1085,7 +1094,10 @@ public final class BodyParse {
             // kilós méréssé vált a súlytrendben – nyolcvan helyett.
             String head = s.substring(0, m.start());
             boolean other = false;
+            // A puszta „IZOM" is a mérleg izom-sora: a „testzsír 22%, izom
+            // 35 kg, víz 55%" harmincöt kilós testsúlyt írt.
             for (String w : new String[]{"izomtomeg", "izom tomeg", "izomsuly",
+                    "izom", "izmok", "izomzat",
                     "csonttomeg", "csont tomeg", "zsirtomeg", "zsir tomeg",
                     "zsigeri", "vizmennyiseg", "testviz"}) {
                 int p = head.lastIndexOf(w);

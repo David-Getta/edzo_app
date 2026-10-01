@@ -1377,6 +1377,24 @@ public class BodyParseTest {
                 + "nehéz volt").isEmpty());
     }
 
+    /**
+     * Az izom-sor, a jelzős küszöb és a c-s viscerális zsír nem testsúly.
+     *
+     * A „testzsír 22%, izom 35 kg, víz 55%" harmincöt kilós mérést, a
+     * „80-as súly alá kerültem: 79,9!" nyolcvanat írt, a „visceralis zsír
+     * 9" pedig olaj lett az étrendben.
+     */
+    @Test public void theMuscleRowAndAnAdjectiveThresholdAreNotTheWeight() {
+        BodyParse.Body b = BodyParse.parse("Testzsír 22%, izom 35 kg, víz 55%");
+        assertEquals(0.0, b.kg, 0.01);
+        assertEquals(22.0, b.fatPct, 0.01);
+        assertEquals(80.0, BodyParse.parse("Izom 35 kg, súly 80 kg").kg, 0.01);
+        assertEquals(79.9, BodyParse.parse("80-as súly alá kerültem: 79,9!").kg, 0.01);
+        assertEquals(90.3, BodyParse.parse("90-es határ fölé mentem, 90,3").kg, 0.01);
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Visceralis zsír 9, testzsír 21%").isEmpty());
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

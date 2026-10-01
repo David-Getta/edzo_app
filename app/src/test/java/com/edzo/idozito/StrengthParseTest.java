@@ -3024,4 +3024,19 @@ public class StrengthParseTest {
         // A puszta súly továbbra is az előző sorozaté.
         assertSets("Guggolás 3x5, 100 kg", "Guggolás", 3, 5, 100);
     }
+
+    /**
+     * A mondatvégi, vessző utáni „3x" körszám.
+     *
+     * Az „1 perc plank, 30 mp pihenő, 3x" és a „guggolás 15, 4x" egyetlen
+     * sorozat maradt.
+     */
+    @Test public void aTrailingTimesAfterACommaIsTheRounds() {
+        assertEquals(3, StrengthParse.parse("1 perc plank, 30 mp pihenő, 3x")
+                .get(0).sets.size());
+        assertSets("Guggolás 15, 4x", "Guggolás", 4, 15, 0);
+        assertSets("Fekvőtámasz 20, 1 perc pihenő, 3x", "Fekvőtámasz", 3, 20, 0);
+        // A saját sorozatszám marad.
+        assertSets("Fekvenyomás 3x10 60 kg, 2x", "Fekvenyomás", 3, 10, 60);
+    }
 }
