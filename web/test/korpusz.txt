@@ -259,6 +259,9 @@ Mell 102, derék 84, csípő 100
 Tekertem 50 kilcsit
 Ma 7 kilcsi futás
 Bicikliztem 20 kilót
+Cycling 25 km 1 hour
+Walk 2 hours
+Run 45 minutes
 Ma 3 kör: 15 guggolás, 300 m evezés.
 Ma 5 rounds for time: 20 burpee, 400 m futás.
 Ma 400 m futás.

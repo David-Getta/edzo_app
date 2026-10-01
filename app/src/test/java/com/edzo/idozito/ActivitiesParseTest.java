@@ -923,6 +923,13 @@ public class ActivitiesParseTest {
         assertEquals(20.0, Activities.parse("Bicikliztem 20 kilót").plans.get(0).km, 0.01);
     }
 
+    /** Az angol „hour" és „minutes" is időtartam. */
+    @Test public void englishHoursAndMinutes() {
+        assertEquals(60, Activities.parse("Cycling 25 km 1 hour").plans.get(0).minutes);
+        assertEquals(120, Activities.parse("Walk 2 hours").plans.get(0).minutes);
+        assertEquals(45, Activities.parse("Run 45 minutes").plans.get(0).minutes);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

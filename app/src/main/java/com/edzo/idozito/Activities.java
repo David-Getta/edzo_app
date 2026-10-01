@@ -3797,6 +3797,9 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])steps(?![a-z])", "lepes");
         s = s.replaceAll("(?<![a-z])stretching(?![a-z])", "nyujtas");
         s = s.replaceAll("(\\d)\\s?min(?![a-z])", "$1 perc");
+        // Az ANGOL óra is óra: a „cycling 25 km 1 hour" hossza becslés lett.
+        s = s.replaceAll("(\\d)\\s?(?:hours?|hrs?)(?![a-z])", "$1 ora")
+                .replaceAll("(\\d)\\s?(?:mins|minutes?)(?![a-z])", "$1 perc");
         // A LÉPÉSCÉL -ből ragos beszámolója: a „lépéscél teljesítve:
         // 10 000-ből 12 340" tizenkétezres eredménye eddig elveszett. A
         // szóközös ezres tagolás itt még nincs összevonva, ezért a minta
