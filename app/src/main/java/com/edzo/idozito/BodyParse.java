@@ -339,6 +339,23 @@ public final class BodyParse {
         // A „NA JÓ, PONT 80" a kimondott mérés megerősítése: a „ma 80,0 kg
         // – először 80 alatt... na jó, pont 80" méréséből semmi nem lett.
         // A töltelék és a „pont" elmarad; a maradék szám a mérés maga.
+        // A ZÁRÓJELES VÁLTOZÁS nem mérés: a „reggel 81,0 kg (+0,6 a
+        // tegnapihoz képest)" méréséből SEMMI nem lett – a hasonlítás szava
+        // az egész mondatot elvitte. A plusz-mínuszos zárójel csak a
+        // különbséget mondja, kiesik.
+        q = q.replaceAll("\\(\\s*[+\\-\u2212\u2013]\\s?\\d{1,2}(?:[.,]\\d{1,2})?[^)]*\\)", " ");
+        // A NYAK körmérete nincs a naplóban, de nem is a deréké: a „nyak 40
+        // cm, derék 90 cm, csípő 100 cm" negyvenese derékként, kilencvene
+        // csípőként ment be – minden egy hellyel elcsúszott.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])nyak\\p{L}*\\s*:?\\s*\\d{2,3}(?:[.,]\\d)?"
+                + "\\s?(?:cm|centi\\p{L}*)?(?![\\p{L}\\d])", " ");
+        // A BAL ÉS A JOBB oldal ugyanaz a testrész: a „felkar 38 cm bal,
+        // 38,5 jobb" harmincnyolc és felese TESTSÚLY lett a trendben. A
+        // második oldal száma a kar másik mérete, nem a mérleg; az első
+        // marad.
+        q = q.replaceAll("(?iu)(\\d{2,3}(?:[.,]\\d)?\\s?(?:cm|centi\\p{L}*))\\s+"
+                + "(?:bal|jobb)(?![\\p{L}])\\s*,?\\s*(?:[eé]s\\s+)?\\d{2,3}(?:[.,]\\d)?"
+                + "\\s?(?:cm\\s+|centi\\p{L}*\\s+)?(?:bal|jobb)(?![\\p{L}])", "$1");
         // A SÚLYSOROZAT nem testsúly: a „fekvenyomás: 60, 70, 80 kg, 8-8-6"
         // nyolcvan kilós mérést írt a trendbe – a kilós szám a gyakorlat
         // nevétől vesszővel elválasztott tagmondatban állt, és a saját

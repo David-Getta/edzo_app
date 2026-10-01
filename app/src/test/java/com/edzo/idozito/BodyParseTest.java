@@ -1403,6 +1403,25 @@ public class BodyParseTest {
         assertTrue(BodyParse.parse("Fekvenyomás: 60, 70, 80 kg, 8-8-6").kg <= 0);
     }
 
+    /**
+     * A zárójeles változás, a nyak és a másik oldal nem mérés.
+     *
+     * A „reggel 81,0 kg (+0,6 a tegnapihoz képest)" méréséből semmi nem
+     * lett; a „nyak 40 cm, derék 90 cm, csípő 100 cm" egy hellyel
+     * elcsúszott; a „felkar 38 cm bal, 38,5 jobb" fele testsúly lett.
+     */
+    @Test public void theDiffTheNeckAndTheOtherSideAreNotReadings() {
+        assertEquals(81.0, BodyParse.parse("Reggel 81,0 kg (+0,6 a tegnapihoz "
+                + "képest)").kg, 0.01);
+        assertEquals(76.8, BodyParse.parse("Súly 76,8 (-0,4)").kg, 0.01);
+        BodyParse.Body b = BodyParse.parse("Nyak 40 cm, derék 90 cm, csípő 100 cm");
+        assertEquals(90.0, b.cm[0], 0.01);
+        assertEquals(100.0, b.cm[1], 0.01);
+        b = BodyParse.parse("Felkar 38 cm bal, 38,5 jobb");
+        assertTrue(b.kg <= 0);
+        assertEquals(38.0, b.cm[4], 0.01);
+    }
+
     @Test public void aLiftedWeightIsNotTheScale() {
         assertTrue(BodyParse.parse("Régen 100 kg-ot nyomtam, most 80-at.").isEmpty());
         assertTrue(BodyParse.parse("Régen 90 kilót toltam, most 110-et.").isEmpty());
