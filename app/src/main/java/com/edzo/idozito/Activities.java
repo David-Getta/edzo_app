@@ -3794,8 +3794,15 @@ public final class Activities {
         // négy órája külön túraként állt a golf mellett – kétszer ugyanaz
         // a délután. Csak az „óra séta" leíró alakra él: a golf ELŐTTI
         // önálló séta („sétáltam egy órát, aztán golfoztam") külön edzés.
-        if (s.contains("golf"))
+        if (s.contains("golf")) {
             s = s.replaceAll("ora seta\\w*", "ora");
+            // A „GYALOG" a golf módja, nem külön séta: a „golf 18 lyuk,
+            // gyalog, kb 4 óra" két négyórás bejegyzést írt – golfot és
+            // gyaloglást ugyanarra a délutánra. A golfkocsi ellentéte.
+            // A saját igéjével („gyalog mentem a pályára") valódi séta marad.
+            s = s.replaceAll("(?<![a-z])gyalog(?:osan)?(?![a-z])(?!\\s+(?:ment|jott"
+                    + "|indul|setal|mentunk|jottunk)\\w*)", " ");
+        }
         // A JAVÍTÁS rossz száma nem adat: a „nem 45, hanem 60 perc jóga
         // volt" negyvenöt-hatvanasából ötven(!) jóga-alkalom lett. A rossz
         // szám kiesik, a helyes marad.
@@ -4774,6 +4781,11 @@ public final class Activities {
                     // a tő a hosszabb szó belsejében ült. A korpusz szavainak
                     // egyenkénti végigfuttatása hozta ki.
                     if (w.equals("torna") && p >= 4 && s.startsWith("moni", p - 4)) continue;
+                    // A GOLFPÁLYÁRA menni út, nem játék: a „gyalog mentem a
+                    // golfpályára 20 perc, aztán golf 3 óra" húsz perce külön
+                    // golfként állt a séta helyett. Az irányrag a helyé.
+                    if (w.equals("golf") && s.substring(p, wEnd).matches(
+                            "golfpaly\\w*(?:ra|re|hoz|ba|rol|tol|ig)")) continue;
                     if (w.equals("core") && p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
                     // A „terem” az ÉTterem és a MŰterem belsejében nem kondi
                     // (az edzőterem, gépterem viszont igen).

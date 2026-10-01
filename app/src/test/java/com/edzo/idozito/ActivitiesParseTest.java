@@ -733,6 +733,17 @@ public class ActivitiesParseTest {
         assertEquals("kondi", p.plans.get(0).kind.id);
     }
 
+    @Test public void walkingTheGolfCourseIsTheGolf() {
+        // A „golf 18 lyuk, gyalog, kb 4 óra" golfot ÉS gyaloglást írt.
+        Activities.Parsed p = Activities.parse("Golf 18 lyuk, gyalog, kb 4 óra");
+        assertEquals(1, p.plans.size());
+        assertEquals(240, p.plans.get(0).minutes);
+        // A saját igéjű séta a golf előtt külön alkalom marad.
+        p = Activities.parse("Gyalog mentem a golfpályára 20 perc, aztán golf 3 óra");
+        assertEquals(2, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")
