@@ -628,7 +628,8 @@ public final class Foods {
         // A reszelt kókusz sűrű, mint a magvak: egy evőkanálnyi is számít.
         new Food("Kókuszreszelék", 660, 7, 20, "kokuszreszelek", "reszelt kokusz",
                 "kokuszreszel", "kokuszliszt"),
-        new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "cezar salata", "cezar", "caesar"),
+        new Food("Csirkés saláta", 130, 12, 300, "csirkes salata", "csirkesalata",
+                "cezar salata", "cezar", "caesar"),
         new Food("Sushi", 150, 6, 250, "sushi", "maki", "nigiri", "sashimi",
                 "sushi tekercs"),
         // Éttermi kör: egy 57 neves próbából 18-at egyáltalán nem ismert az
@@ -640,7 +641,8 @@ public final class Foods {
         new Food("Hortobágyi palacsinta", 160, 10, 250,
                 "hortobagyi palacsinta", "hortobagyi"),
         new Food("Görög saláta", 90, 4, 250, "gorog salata"),
-        new Food("Tonhalsaláta", 150, 14, 250, "tonhalsalata", "tonhal salata"),
+        new Food("Tonhalsaláta", 150, 14, 250, "tonhalsalata", "tonhal salata",
+                "tonhalas salata"),
         new Food("Curry", 150, 10, 300, "curry", "tikka masala", "masala"),
         new Food("Ramen", 120, 6, 500, "ramen", "ramen leves", "pho leves", "pho"),
         new Food("Pad thai", 170, 8, 350, "pad thai", "padthai", "pad see"),
@@ -5272,7 +5274,14 @@ public final class Foods {
                     "Rizses hús", "Csirkepaprikás", "Chilis bab (con carne)", "Rizottó",
                     // A töltve érkező tekercs is: a „wrap csirkével" egy
                     // wrap, nem wrap PLUSZ egy csirkemell.
-                    "Tortilla / wrap"},
+                    "Tortilla / wrap",
+                    // A CSIRKÉS SZENDVICS egy szendvics: eddig mellé egy egész
+                    // csirkemell is bement.
+                    "Szendvics"},
+            // A tonhalas és a tojásos szendvics ugyanígy: a töltelék a
+            // szendvics adagjában van.
+            {"Tonhal", "Szendvics"},
+            {"Tojás", "Szendvics"},
             // A burrito és a taco töltve érkezik: a „burrito marhahússal"
             // egy burrito, nem burrito PLUSZ egy szelet marha.
             {"Marhahús", "Burrito", "Taco", "Quesadilla"},

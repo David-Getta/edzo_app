@@ -1549,6 +1549,19 @@ public class FoodsParseTest {
         assertEquals(1000, hits("2 palack sör").get(0).grams, 0.01);
     }
 
+    /** A szendvics töltelékje a szendvicsben van; a csirkesaláta egy tétel. */
+    @Test public void aSandwichFillingIsInsideTheSandwich() {
+        for (String q : new String[]{"Tonhalas szendvics", "Csirkés szendvics",
+                "Tojásos szendvics"}) {
+            List<Foods.Hit> h = hits(q);
+            assertEquals(q, 1, h.size());
+            assertEquals(q, "Szendvics", h.get(0).food.name);
+        }
+        assertEquals(2, hits("Szendvics és egy tonhal konzerv").size());
+        assertEquals("Csirkés saláta", hits("Vacsi: csirkesaláta, 1 zsemle").get(0).food.name);
+        assertEquals("Tonhalsaláta", hits("Tonhalas saláta").get(0).food.name);
+    }
+
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
         List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
         assertEquals(40, h.get(0).grams, 0.01);
