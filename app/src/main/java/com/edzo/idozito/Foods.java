@@ -3208,6 +3208,32 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?:(?<=[,;])\\s*(?:ma|most|csak|[eé]n)\\s+)?"
                 + "(\\d{1,4})\\s?(g|gramm|dkg|deka)-?(?:ot|et|at|t)?\\s+(?:meg)?ettem"
                 + "(?:\\s+(?:bel[oő]le|abb[oó]l))?(?![\\p{L}])", " $1 $2");
+        // A DINNYE TÖRTJE az egész dinnye törtje: a „negyed dinnye" hetvenöt
+        // grammként ment be – az ADAG negyedeként, holott egy negyed
+        // görögdinnye bő fél kiló. Az ehető rész: görögdinnye ~2,5 kg,
+        // sárgadinnye ~600 g.
+        {
+            java.util.regex.Matcher dm = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}])(f[eé]l|negyed|harmad|hatod|nyolcad)\\s+"
+                    + "((?:g[oö]r[oö]g|s[aá]rga)?\\s?dinny\\p{L}*)").matcher(query);
+            StringBuffer db = new StringBuffer();
+            while (dm.find()) {
+                String f = norm(dm.group(1));
+                // (A „fél görögdinnye" az „1 görögdinnye" adagjának fele marad:
+                // az egész dinnye nem adag, és a fél–egy arány megmarad.)
+                if (f.equals("fel") && !norm(dm.group(2)).startsWith("sarga")) {
+                    dm.appendReplacement(db, java.util.regex.Matcher.quoteReplacement(dm.group()));
+                    continue;
+                }
+                double frac = f.equals("fel") ? 0.5 : f.equals("negyed") ? 0.25
+                        : f.equals("harmad") ? 1 / 3.0 : f.equals("hatod") ? 1 / 6.0 : 0.125;
+                double whole = norm(dm.group(2)).startsWith("sarga") ? 600 : 2500;
+                dm.appendReplacement(db, java.util.regex.Matcher.quoteReplacement(
+                        Math.round(whole * frac) + " g " + dm.group(2)));
+            }
+            dm.appendTail(db);
+            query = db.toString();
+        }
         // A ZÁRÓJELES TÁPÉRTÉK megjegyzés, nem mennyiség: a „1 adag
         // fehérjepor (24 g fehérje)" huszonnégy gramm port írt egy adag (30 g)
         // helyett.

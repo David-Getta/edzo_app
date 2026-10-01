@@ -566,6 +566,14 @@ public class FoodsQuantityTest {
      * Az „egy üveg sör, 0,5 l" ÖT LITER sör lett: a tagmondat-olvasók a
      * „0,5" vesszőjénél vágtak, és az „5 l" maradt.
      */
+    @Test public void aFractionOfAMelonIsAFractionOfTheMelon() {
+        // A „negyed dinnye" hetvenöt gramm lett – az adag negyede.
+        assertEquals(625, grams("Negyed dinnye"), 0.01);
+        assertEquals(300, grams("Fél sárgadinnye"), 0.01);
+        // Az egy szelet marad az adag.
+        assertEquals(300, grams("Egy szelet görögdinnye"), 0.01);
+    }
+
     @Test public void aDecimalLitreIsNotTwoClauses() {
         assertEquals(500, grams("Egy üveg sör, 0,5 l"), 0.01);
         assertEquals(500, grams("Sör, 0,5 l"), 0.01);
