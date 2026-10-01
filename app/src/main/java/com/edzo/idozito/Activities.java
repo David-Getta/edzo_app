@@ -6267,6 +6267,41 @@ public final class Activities {
             }
             if (!kept.isEmpty()) out = kept;
         }
+        // AZ EGYETLEN KIMONDOTT IDŐ az egész köré: a „3 kör: 10 guggolás, 10
+        // felülés, 10 fekvőtámasz, 15 perc alatt" KÉT kondit írt a naplóba –
+        // egy tizennyolc perces becslést a gyakorlatokból, és egy tizenöt
+        // perceset az időből. Ha a mondat egyetlen időt mond ki, és azt az
+        // egyik kondi viseli, a többi, ismétlésből becsült kondi beleolvad.
+        if (out.size() > 1 && mins.size() == 1) {
+            int said = mins.get(0)[1];
+            Plan carrier = null;
+            int gyms = 0;
+            for (Plan p : out)
+                if ("kondi".equals(p.kind.id) && p.km <= 0 && p.steps <= 0) {
+                    gyms++;
+                    if (p.minutes == said) carrier = p;
+                }
+            if (carrier != null && gyms > 1) {
+                List<Plan> kept = new ArrayList<>();
+                for (Plan p : out)
+                    if (p == carrier || !"kondi".equals(p.kind.id)
+                            || p.km > 0 || p.steps > 0) kept.add(p);
+                out = kept;
+            }
+        }
+        // A FEJLÉC IDEJE a részek összege: az „edzőterem 1 óra: 30 perc
+        // súlyzó, 30 perc futópad" hatvan perc kondit írt a két félóra
+        // MELLÉ – két óra egy egyórás edzésből. Ha a kettőspont előtti
+        // fejléc ideje pontosan a részek összege, a fejléc csak cím.
+        if (out.size() > 2 && rawText.matches("(?s)^[^:,;.]*(?:\\d{1,3}\\s?perc"
+                + "|\\d\\s?ora|(?:egy|ket|masfel|fel)\\s?ora)[^:,;.]*:.*")) {
+            Plan head = out.get(0);
+            int rest = 0;
+            for (int i = 1; i < out.size(); i++) rest += out.get(i).minutes;
+            if (head.km <= 0 && head.steps <= 0 && head.count == 1
+                    && head.minutes == rest)
+                out = new ArrayList<>(out.subList(1, out.size()));
+        }
         // A GYAKORLAT-FELSOROLÁS tagja nem külön kardió: az „edzőteremben
         // ma a hátam volt soron: húzódzkodás, evezés, lehúzás" evezése a
         // gépsor egyik gyakorlata, mégis egy külön félórás evezőgépezés

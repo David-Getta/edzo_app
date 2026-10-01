@@ -646,6 +646,26 @@ public class ActivitiesParseTest {
         assertEquals(15, p.plans.get(0).minutes);
     }
 
+    /**
+     * Az egyetlen kimondott idő az egész köré, a fejléc ideje a részek összege.
+     *
+     * A „3 kör: 10 guggolás, 10 felülés, 10 fekvőtámasz, 15 perc alatt"
+     * két kondit írt a naplóba; az „edzőterem 1 óra: 30 perc súlyzó, 30
+     * perc futópad" a két félóra mellé a fejléc óráját is.
+     */
+    @Test public void oneStatedTimeCoversTheWholeCircuit() {
+        Activities.Parsed p = Activities.parse("3 kör: 10 guggolás, 10 felülés, "
+                + "10 fekvőtámasz, 15 perc alatt");
+        assertEquals(1, p.plans.size());
+        assertEquals(15, p.plans.get(0).minutes);
+        p = Activities.parse("Edzőterem 1 óra: 30 perc súlyzó, 30 perc futópad");
+        assertEquals(2, p.plans.size());
+        assertEquals(60, p.plans.get(0).minutes + p.plans.get(1).minutes);
+        // A két külön alkalom marad kettő.
+        assertEquals(2, Activities.parse("Reggel kondi 60 perc, este 30 perc "
+                + "futás és 30 perc séta").plans.size() - 1);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")
