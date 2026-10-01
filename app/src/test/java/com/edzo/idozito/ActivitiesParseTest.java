@@ -843,6 +843,12 @@ public class ActivitiesParseTest {
         p = Activities.parse("Ma 10 km futás, szeptemberben ez volt a leghosszabb", oct1);
         assertEquals(1, p.days);
         assertEquals(0, p.offset);
+        // A hónap nélküli nap a folyó vagy az előző hónapé.
+        assertEquals(4, Activities.parse("27-én futottam 5 km-t", oct1).offset);
+        assertEquals(0, Activities.parse("1-jén úszás 1 km", oct1).offset);
+        assertEquals(28, Activities.parse("3-án 10 km", oct1).offset);
+        // Ékezet nélkül a „-en" létszám is lehet.
+        assertEquals(0, Activities.parse("5-en futottunk 10 km-t", oct1).offset);
         // A jövőbeli verseny hónapja nem időszak.
         assertEquals(0, Activities.parse("Novemberben lesz a verseny, ma 5 km", oct1).offset);
     }

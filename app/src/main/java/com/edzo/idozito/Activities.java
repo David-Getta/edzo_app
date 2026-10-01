@@ -4674,6 +4674,13 @@ public final class Activities {
             int[] mp = findMonthPeriod(q, now);
             if (mp != null) { days = mp[3]; offset = mp[2]; blank(q, mp[0], mp[1]); }
             else {
+            // A HÓNAP NÉLKÜLI nap a folyó (vagy az előző) hónapé: a „27-én
+            // futottam 5 km-t" futása MÁRA került. Ékezet nélkül a „-en"
+            // létszám is lehet („5-en futottunk"), ezért a nyers szövegben
+            // ékezetes „-án/-én" vagy „-jén/-ján" alak kell.
+            int[] dm = findBareMonthDay(q, text, now);
+            if (dm != null) { offset = dm[2]; blank(q, dm[0], dm[1]); }
+            else {
             // A „tegnap és ma" két nap: mától visszafelé oszlik el.
             // A TÉTELEK A SAJÁT NAPJUKRA: a „tegnap 7 km futás, ma 5 km"
             // mindkét futása MÁRA került, a „tegnapelőtt 7 km, ma 5 km"
@@ -4754,6 +4761,7 @@ public final class Activities {
                         if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
                     }
                 }
+            }
             }
             }
             }
@@ -6837,6 +6845,39 @@ public final class Activities {
             return new int[]{m.start(), m.end(), back};
         }
         return null;
+    }
+
+    /**
+     * Hónap nélküli nap: „27-én" → {kezdet, vég, hány napja}, vagy null.
+     * A folyó hónap napja, ha már elmúlt; különben az előző hónapé.
+     */
+    private static int[] findBareMonthDay(char[] q, String raw, long now) {
+        if (raw == null) return null;
+        java.util.regex.Matcher r = java.util.regex.Pattern.compile(
+                "(?iu)(?<![\\d.,/:\\p{L}])(\\d{1,2})\\.?\\s?-?(?:j?[áé]n|j[ae]n)(?![\\p{L}])")
+                .matcher(raw);
+        if (!r.find()) return null;
+        int d = Integer.parseInt(r.group(1));
+        if (d < 1 || d > 31) return null;
+        String s = new String(q);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![\\d.,/:a-z])" + d + "\\.?\\s?-?j?[ae]n(?![a-z])").matcher(s);
+        if (!m.find()) return null;
+        // A hónapnév előtte a dátum-olvasóé („szeptember 27-én").
+        String before = s.substring(0, m.start()).trim();
+        for (String mo : MONTHS) if (before.endsWith(mo)) return null;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(now);
+        int today = cal.get(java.util.Calendar.DAY_OF_MONTH);
+        if (d > today) {
+            cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+            cal.add(java.util.Calendar.MONTH, -1);
+            if (d > cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) return null;
+        }
+        cal.set(java.util.Calendar.DAY_OF_MONTH, d);
+        int back = Days.between(cal.getTimeInMillis(), now);
+        if (back < 0 || back > 31) return null;
+        return new int[]{m.start(), m.end(), back};
     }
 
     /**
