@@ -2923,6 +2923,9 @@ public final class Foods {
                 // kiteszi magát („a pizzából én 4 szeletet ettem"), és eddig
                 // ez az egyetlen „én" ütötte el a négy szeletet.
                 "[,;]\\s*(?:(?:en|mi|mar|csak|viszont)\\s+)?"
+                        // Az EVÉS IGÉJE elöl is állhat: a „főztem gulyást,
+                        // ettem belőle 2 tányérral" kettője eddig elveszett.
+                        + "(?:(?:megettem|ettem|ettunk)\\s+(?:belole\\s+|abbol\\s+)?)?"
                         + "(?:kb\\.?|korulbelul|nagyjabol|talan|olyan)?\\s*"
                         // A LITER is mértékegység, és tizedes is lehet: a
                         // „csak vizet ittam, kb 1,5 litert" másfél litere
@@ -3176,6 +3179,25 @@ public final class Foods {
         if (query.matches("(?isu).*(?<![\\p{L}])én(?![\\p{L}]).*"))
             query = query.replaceAll("(?iu)(?:^|(?<=[:,;.]))\\s*(?:ő|ők)(?:\\s+pedig)?"
                     + "(?![\\p{L}])[^,;.:]*", " ");
+        // A KÉSZÍTETT mennyiség nem a megevett: a „sütöttem 2 kg csirkét a
+        // hétre, ma 300 g-ot ettem" két kilót írt a naplóba, a „meal prep: 5
+        // doboz csirke rizzsel, ma egyet megettem" öt adagot. Ha a mondat
+        // később kimondja, mennyit ETTEM, a főzés mennyisége kiesik.
+        if (query.matches("(?isu).*(?<![\\p{L}])(?:meg)?ett(?:em|ünk)(?![\\p{L}]).*")
+                && query.matches("(?isu).*[,;:][^,;:]*\\d[^,;]*(?:meg)?ett(?:em|ünk).*"
+                        + "|.*[,;:][^,;:]*(?:egyet|kett[oő]t|h[aá]rmat)\\s+(?:meg)?ett(?:em|ünk).*"))
+            query = query.replaceAll("(?iu)((?<![\\p{L}])(?:s[uü]t[oö]ttem|f[oő]ztem|k[eé]sz[ií]tettem"
+                    + "|csin[aá]ltam|el[oő]f[oő]ztem|meal\\s?prep)\\s*:?\\s*(?:egy\\s+)?)"
+                    + "(?:\\d{1,3}(?:[.,]\\d{1,2})?\\s?(?:kg|kil[oó]\\p{L}*|g|gramm\\p{L}*|dkg|l"
+                    + "|liter\\p{L}*|adag\\p{L}*|doboz\\p{L}*|db|darab\\p{L}*|t[aá]l\\p{L}*)"
+                    + "|(?:nagy\\s+)?faz[eé]k\\p{L}*|(?:nagy\\s+)?l[aá]bas\\p{L}*|tepsi\\p{L}*)\\s*", "$1");
+        // A „300 G-OT ETTEM" ugyanaz, mint a záró „300 g": a „sütöttem
+        // csirkét a hétre, ma 300 g-ot ettem" háromszáz grammja eddig
+        // elveszett – a tárgyrag és az ige a záró súlyt nem engedte vissza
+        // az ételhez.
+        query = query.replaceAll("(?iu)(?:(?<=[,;])\\s*(?:ma|most|csak|[eé]n)\\s+)?"
+                + "(\\d{1,4})\\s?(g|gramm|dkg|deka)-?(?:ot|et|at|t)?\\s+(?:meg)?ettem"
+                + "(?:\\s+(?:bel[oő]le|abb[oó]l))?(?![\\p{L}])", " $1 $2");
         // A ZÁRÓJELES TÁPÉRTÉK megjegyzés, nem mennyiség: a „1 adag
         // fehérjepor (24 g fehérje)" huszonnégy gramm port írt egy adag (30 g)
         // helyett.
@@ -5310,6 +5332,17 @@ public final class Foods {
         // ettem belőle egyet sem" sütije a MAI naplóba került – az „ettem"
         // szava a tagadással együtt is evésnek számított.
         s = s.replaceAll("(?<![a-z])nem\\s+(?:is\\s+)?ettem[^,;.]*", " ");
+        // A MÁSNAK főzött étel nem az enyém: a „gyereknek főztem tésztát, én
+        // nem ettem" tésztája a naplómba került. Saját evés-ige nélkül a
+        // másnak készített étel nem bejegyzés.
+        if (s.matches("(?s).*(?<![a-z])(?:gyereknek|gyerekeknek|gyereknek|fiamnak|lanyomnak"
+                + "|ferjemnek|felesegemnek|paromnak|csaladnak|vendegeknek|kollegaknak"
+                + "|anyunak|apunak|nagyinak)(?![a-z]).*")
+                && s.matches("(?s).*(?<![a-z])(?:foztem|sutottem|keszitettem|csomagoltam"
+                + "|csinaltam|rendeltem|vettem)(?![a-z]).*")
+                && !s.matches("(?s).*(?<![a-z])(?:ettem|megettem|ettunk|megettunk|ittam"
+                + "|megittam|kostoltam|ettem belole)(?![a-z]).*"))
+            return true;
         // A PÓTLÁS felmenti a felejtést: a „reggel elfelejtettem enni, délben
         // pótoltam: 2 szendvics" ebédje MEGEVETT ebéd – eddig az egész
         // bejegyzés elveszett a felejtés szavától, a szendvicsekkel együtt.

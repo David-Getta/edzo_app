@@ -3438,6 +3438,37 @@ public class FoodsParseTest {
                 "Úsztam 1 km-t a mélyvízben").isEmpty());
     }
 
+    /**
+     * A főzött mennyiség nem a megevett, a másnak főzött étel nem az enyém.
+     *
+     * A „sütöttem 2 kg csirkét a hétre, ma 300 g-ot ettem" két kilót, a
+     * „meal prep: 5 doboz csirke, ma egyet megettem" öt adagot, a
+     * „gyereknek főztem tésztát, én nem ettem" tésztát írt a naplóba; a
+     * „főztem gulyást, ettem belőle 2 tányérral" egyetlen tányért.
+     */
+    @Test public void cookedIsNotEatenAndCookedForOthersIsNotMine() {
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        double g = 0;
+        for (Foods.Hit h : Foods.parse(all, "Sütöttem 2 kg csirkét a hétre, ma 300 g-ot ettem"))
+            if (h.food.name.startsWith("Csirkemell")) g = h.grams;
+        assertEquals(300, g, 0.01);
+        g = 0;
+        for (Foods.Hit h : Foods.parse(all, "Meal prep: 5 doboz csirke rizzsel, ma egyet megettem"))
+            if (h.food.name.startsWith("Csirkemell")) g = h.grams;
+        // Egy adag (a 0 az alapadag jele), nem öt.
+        assertTrue("gramm: " + g, g == 0 || g == 150);
+        assertTrue(Foods.parse(all, "A gyereknek főztem tésztát, én nem ettem").isEmpty());
+        g = 0;
+        for (Foods.Hit h : Foods.parse(all, "Főztem egy nagy fazék gulyást, ettem belőle 2 tányérral"))
+            if (h.food.name.startsWith("Gulyás")) g = h.grams;
+        assertEquals(800, g, 0.01);
+        // Evés nélkül a sütött mennyiség marad.
+        g = 0;
+        for (Foods.Hit h : Foods.parse(all, "Sütöttem 2 kg csirkét"))
+            if (h.food.name.startsWith("Csirkemell")) g = h.grams;
+        assertEquals(2000, g, 0.01);
+    }
+
     @Test public void theShakeIsThePowdersDrink() {
         // A „fehérjeshake: 30 g fehérjepor 3 dl tejjel" turmixot és port is
         // írt, összecserélt mennyiségekkel.
