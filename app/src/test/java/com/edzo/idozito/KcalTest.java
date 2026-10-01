@@ -712,4 +712,24 @@ public class KcalTest {
         assertEquals(1200, Kcal.burned("Este bringa 25 km, 1 200 kcal az óra "
                 + "szerint"));
     }
+
+    /**
+     * A napi lista kalóriája bevitel, a mozgás tagmondatáé égetés.
+     *
+     * A „ma: 10 000 lépés, 30 perc jóga, 1800 kcal" ezernyolcszáza
+     * elégetett kalória lett fél óra jógából; az „edzés 600 kcal, kaja 2100
+     * kcal" kétezer-hétszáz megevett kalória; a „kcal 2100" és a „kcal:
+     * 1750" fordított szórendje pedig elveszett.
+     */
+    @Test public void theDailyListIsIntakeAndTheWorkoutClauseIsBurn() {
+        assertEquals(1800, Kcal.stated("Ma:\n• 10 000 lépés\n• 30 perc jóga\n• 1800 kcal"));
+        assertEquals(-1, Kcal.burned("Ma:\n• 10 000 lépés\n• 30 perc jóga\n• 1800 kcal"));
+        assertEquals(2100, Kcal.stated("Edzés 600 kcal, kaja 2100 kcal"));
+        assertEquals(600, Kcal.burned("Edzés 600 kcal, kaja 2100 kcal"));
+        assertEquals(2100, Kcal.stated("Alvás 7h20m, lépés 8432, kcal 2100"));
+        assertEquals(1750, Kcal.stated("Kcal: 1750, lépés: 9000"));
+        // A mozgás mellé írt kis szám továbbra is égetés.
+        assertEquals(450, Kcal.burned("Futás 5 km 27:30, utána 450 kcal"));
+        assertEquals(1800, Kcal.burned("Bringa 3 óra, 1800 kcal az óra szerint"));
+    }
 }

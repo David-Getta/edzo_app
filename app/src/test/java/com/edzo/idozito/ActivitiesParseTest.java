@@ -666,6 +666,16 @@ public class ActivitiesParseTest {
                 + "futás és 30 perc séta").plans.size() - 1);
     }
 
+    @Test public void stepsAndPulseWithTheWordFirst() {
+        // Az „alvás 7h20m, lépés 8432, kcal 2100" lépése elveszett; a „7:30
+        // alvás, 54 pulzus" pulzusa is.
+        assertEquals(8432, Activities.parse("Alvás 7h20m, lépés 8432, kcal 2100")
+                .plans.get(0).steps);
+        assertEquals(9000, Activities.parse("Kcal: 1750, lépés: 9000")
+                .plans.get(0).steps);
+        assertEquals(54, Pulse.parse("7:30 alvás, 54 pulzus, 79,8 kg"));
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

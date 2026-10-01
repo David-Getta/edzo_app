@@ -202,6 +202,9 @@ Bicikli a munkába, 20 perc oda és 25 vissza
 3 kör: 10 guggolás, 10 felülés, 10 fekvőtámasz, 15 perc alatt
 Edzőterem 1 óra: 30 perc súlyzó, 30 perc futópad
 Reggel kondi 60 perc, este 30 perc futás és 30 perc séta
+Alvás 7h20m, lépés 8432, kcal 2100
+Kcal: 1750, lépés: 9000
+7:30 alvás, 54 pulzus, 79,8 kg
 SUP 45 perc a Balatonon
 SUP-oztunk 1 órát
 Ma 3 kör: 15 guggolás, 300 m evezés.
@@ -4529,6 +4532,9 @@ Ebéd 650 kcal, aztán 1 óra foci
 Ma 1 800 kcal-t ettem, 120 g fehérje
 Kalóriabevitel ma kb 2 200 kcal
 Este bringa 25 km, 1 200 kcal az óra szerint
+Edzés 600 kcal, kaja 2100 kcal
+Futás 5 km 27:30, utána 450 kcal
+Bringa 3 óra, 1800 kcal az óra szerint
 a küszöb pontosan ezt a szintet adja
 egy XP-vel a küszöb alatt még az előző szint
 a következő szint mindig többe kerül

@@ -159,6 +159,12 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
+        // A FORDÍTOTT SZÓREND is bevitel: az „alvás 7h20m, lépés 8432, kcal
+        // 2100" kalóriája eddig elveszett – a mértékegység a szám ELŐTT
+        // állt, a szám meg egység nélkül maradt.
+        if (q != null)
+            q = q.replaceAll("(?iu)(?<![\\p{L}])(?:kcal|kal[oó]ria)\\s*:?\\s*"
+                    + "(\\d{3,4})(?!\\d|[.,]\\d)(?!\\s?(?:kcal|kal))", "$1 kcal");
         // A SZÓKÖZÖS EZRES egy szám: a „ma 1 800 kcal-t ettem" nyolcszáz
         // kalória lett – az ezres levált. A mozgás-oldal régóta összevonja.
         if (q != null)
@@ -184,7 +190,30 @@ public final class Kcal {
         // evés-ige is van a mondatban, az erősebb: az „edzés után ettem
         // 600 kcal-t" valódi bevitel.
         if (fromWatch(q)) return -1;
-        return amount(q, NOT_EATEN_P, EATEN_P);
+        return amount(nonExerciseClausesOnly(q), NOT_EATEN_P, EATEN_P);
+    }
+
+    /**
+     * A MOZGÁS tagmondatának kalóriája nem bevitel: az „edzés 600 kcal, kaja
+     * 2100 kcal" kétezer-hétszáz megevett kalória lett – a hatszáz égetett
+     * is a bevitelhez adódott. Ha a mozgás tagmondata SAJÁT kalóriát mond,
+     * és van mozgás nélküli tagmondat is kalóriával, csak az utóbbi bevitel.
+     */
+    private static String nonExerciseClausesOnly(String q) {
+        if (q == null) return null;
+        String s = Hu.digits(Foods.norm(q));
+        StringBuilder rest = new StringBuilder();
+        boolean sportKc = false;
+        for (String cl : s.split("\\s*(?:[,;.\\n•]|\\s-\\s)\\s*")) {
+            boolean kc = cl.matches("(?s).*\\d\\s?(?:kcal|kalor\\w*|cal)(?![a-z]).*");
+            boolean eat = false;
+            for (Pattern w : EATEN_P) if (w.matcher(cl).find()) { eat = true; break; }
+            if (sportWordIn(cl) && kc && !eat) { sportKc = true; continue; }
+            rest.append(rest.length() > 0 ? ", " : "").append(cl);
+        }
+        if (!sportKc || !rest.toString().matches("(?s).*\\d\\s?(?:kcal|kalor\\w*|cal)"
+                + "(?![a-z]).*")) return q;
+        return rest.toString();
     }
 
     /** Óra- vagy alkalmazás-export-e a mondat, evés-ige nélkül? */
@@ -212,6 +241,9 @@ public final class Kcal {
         // BEVITELHEZ adódott – egy edzésből lett négyszázharminc megevett
         // kalória, vagyis a mérleg mindkét oldala rossz irányba mozdult.
         if (dietListFirst(s)) return false;
+        // A NAPI ÖSSZEG a mozgás tételei UTÁN is bevitel: a „ma: 10 000
+        // lépés, 30 perc jóga, 1800 kcal" ezernyolcszáza sehova nem került.
+        if (bigLoneKcal(s)) return false;
         return sportWordIn(s);
     }
 
@@ -225,7 +257,7 @@ public final class Kcal {
      */
     private static boolean dietListFirst(String s) {
         boolean sportSeen = false, alonePre = false;
-        for (String cl : s.split("\\s*[,;.]\\s*")) {
+        for (String cl : s.split("\\s*(?:[,;.\\n•]|\\s-\\s)\\s*")) {
             boolean sport = sportWordIn(cl);
             boolean kc = cl.matches("(?s).*\\d\\s?(?:kcal|kalor\\w*|cal)"
                     + "(?![a-z]).*");
@@ -234,6 +266,24 @@ public final class Kcal {
             if (sport) sportSeen = true;
         }
         return alonePre;
+    }
+
+    /** Mozgás-szó nélküli tagmondat ezerötszáz fölötti kalóriával. */
+    private static boolean bigLoneKcal(String s) {
+        // Ha a mozgás tagmondata SAJÁT kalóriát mond („edzés 600 kcal, kaja
+        // 2100 kcal"), az égetés megvan, a nagy szám meg a bevitel – nem
+        // ez a szabály dönt.
+        for (String cl : s.split("\\s*(?:[,;.\\n•]|\\s-\\s)\\s*"))
+            if (sportWordIn(cl) && cl.matches("(?s).*\\d\\s?(?:kcal|kalor\\w*|cal)"
+                    + "(?![a-z]).*")) return false;
+        for (String cl : s.split("\\s*(?:[,;.\\n•]|\\s-\\s)\\s*")) {
+            if (sportWordIn(cl)) continue;
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("(?<![\\d,.])(\\d{4})\\s?(?:kcal|kalor\\w*|cal)(?![a-z])")
+                    .matcher(cl);
+            if (m.find() && Integer.parseInt(m.group(1)) >= 1500) return true;
+        }
+        return false;
     }
 
     /** Mozgás-szó a mondatban – az égetés iránya e nélkül nem hihető. */
@@ -288,6 +338,12 @@ public final class Kcal {
             // dietListFirst) – a puszta mozgás-szó nem fordítja meg. A
             // kimondott égetés-ige vagy az óra márkaneve viszont igen.
             if (!strongCue && dietListFirst(s)) return -1;
+            // A NAPI ÖSSZEG nem égetés: a „ma: 10 000 lépés, 30 perc jóga,
+            // 1800 kcal" ezernyolcszáza a nap bevitele, mégis elégetett
+            // kalóriaként ment be – fél óra jógából. A saját tagmondatában
+            // álló, mozgás-szó nélküli, ezerötszáz fölötti szám bevitel,
+            // hacsak nem az óra vagy az égetés igéje mondja ki.
+            if (!strongCue && bigLoneKcal(s)) return -1;
         }
         return amount(exerciseClausesOnly(q), EATEN_P, NOT_EATEN_P);
     }
@@ -307,7 +363,7 @@ public final class Kcal {
         if (countNums(s) < 2) return q;
         StringBuilder only = new StringBuilder();
         boolean plain = false;
-        for (String cl : s.split("\\s*[,;.]\\s*")) {
+        for (String cl : s.split("\\s*(?:[,;.\\n•]|\\s-\\s)\\s*")) {
             if (cl.matches("(?s).*(?<![a-z])(edzes\\w*|edzettem|futas\\w*"
                     + "|futottam|kondi\\w*|uszas\\w*|usztam|bicikli\\w*"
                     + "|kerekpar\\w*|seta\\w*|setaltam|tura\\w*|aktiv"

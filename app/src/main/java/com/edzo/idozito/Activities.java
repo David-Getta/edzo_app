@@ -1325,6 +1325,10 @@ public final class Activities {
         // sétája nyomtalanul elveszett, pedig az „a lépésszám 9800" jó
         // volt. Csak időhatározó fér be, más szó nem: attól a szám már
         // máshoz tartozhatna.
+        // A FORDÍTOTT SZÓREND is lépésszám: az „alvás 7h20m, lépés 8432,
+        // kcal 2100" lépése eddig elveszett – a szó a szám ELŐTT állt.
+        s = s.replaceAll("(?<![a-z])lepes(?:ek)?\\s*:?\\s*(\\d{4,5})(?!\\d|[.,]\\d)"
+                + "(?!\\s?(?:perc|ora|km|kg|kcal|m(?![a-z])|%))", "$1 lepes");
         s = s.replaceAll("(?<![a-z])lepesszam\\w*\\s*:?\\s*"
                 + "(?:(?:ma|mai|tegnap|tegnapi|eddig|idaig|reggelig"
                 + "|estig|delig|osszesen)\\s+){0,2}"

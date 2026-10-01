@@ -92,6 +92,11 @@ public final class Pulse {
                     "(?<![a-z])(?:ebredeskor|ebredes utan|felebredve|"
                             + "felkeleskor|kelesnel)[^0-9]{0,14}?(\\d{2,3})"
                             + "[^0-9]{0,16}?pulzus"),
+            // A PUSZTA SZÁM a szó előtt is pulzus: a „7:30 alvás, 54
+            // pulzus, 79,8 kg" pulzusa eddig elveszett – csak a „-es"
+            // ragos alak (54-es pulzus) volt minta.
+            java.util.regex.Pattern.compile(
+                    "(?<![\\d,.:])(\\d{2,3})\\s+pulzus(?![a-z])"),
     };
 
     /**
