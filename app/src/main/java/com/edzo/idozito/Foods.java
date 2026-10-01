@@ -3147,6 +3147,16 @@ public final class Foods {
         // egy pizzát" és a „vettem két kiló almát" ugyanúgy tartalmaz ételt
         // és mennyiséget, mint egy bejegyzés – csak épp egyikből sem lett
         // falat. Eddig mindkettő bement, háromszáz, illetve ezer kalóriával.
+        // A JÖVŐ MONDATA csak önmagát viszi: a „pihenőnap. Csak 6000 lépés, 2
+        // kávé, este pizza 3 szelet. Holnap láb." kávéja és pizzája
+        // nyomtalanul elveszett – a záró „holnap" az egész bejegyzést
+        // szándéknak minősítette. Több mondatnál a jövőt mondó mondat
+        // kiesik, a többi a nap naplója.
+        if (query != null && query.matches("(?s).*[.!?]\\s+\\S.*")) {
+            String kept = query.replaceAll("(?iu)(?:^|(?<=[.!?]))[^.!?]*(?<![\\p{L}])(?:holnap\\p{L}*"
+                    + "|majd|fogok|fogom|j[oö]v[oő]\\s+h[eé]t\\p{L}*|holnaput[aá]n)(?![\\p{L}])[^.!?]*[.!?]?", " ");
+            if (!kept.trim().isEmpty() && kept.matches("(?s).*\\p{L}.*")) query = kept;
+        }
         if (looksUneaten(query)) return new ArrayList<>();
         // A HELYESBÍTÉS második száma az igazi: a „nem ettem 3 szeletet, csak
         // 1-et" mondatból eddig semmi nem lett – a tagadás elvitte az egészet,
@@ -5486,6 +5496,15 @@ public final class Foods {
                 for (String w : new String[]{"eszem", "eszek", "eszunk", "megeszem",
                         "iszom", "megiszom", "bekapok", "rendelek"})
                     if (wholeWord(s, w)) return true;
+        // A HOLNAP a jelen idejű evés-igével jövő: a „holnap pizzát eszem"
+        // háromszáz gramm pizzát írt a MAI naplóba – a jelen idejű ige az
+        // alábbi kivétel-listán felmentette. Múlt idejű evés mellett
+        // („tegnap ettem pizzát, holnap salátát eszem") nem dönt itt.
+        if (wholeWord(s, "holnap") || wholeWord(s, "holnaputan"))
+            for (String w : new String[]{"eszem", "eszek", "eszunk", "megeszem",
+                    "iszom", "megiszom", "bekapok", "rendelek", "fozok", "sutok"})
+                if (wholeWord(s, w) && !s.matches("(?s).*(?<![a-z])(?:meg)?(?:ettem|ittam"
+                        + "|ettunk|ittunk)(?![a-z]).*")) return true;
         // A MOSTANTÓL jövő idő: a „mostantól minden nap iszom 2 liter vizet"
         // két liter vizet írt a MAI naplóba – egy fogadalomból. A jelen idejű
         // ige miatt az alábbi kivétel-lista különben felmentené, ezért – a

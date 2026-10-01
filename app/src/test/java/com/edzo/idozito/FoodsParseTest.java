@@ -3446,6 +3446,24 @@ public class FoodsParseTest {
      * „gyereknek főztem tésztát, én nem ettem" tésztát írt a naplóba; a
      * „főztem gulyást, ettem belőle 2 tányérral" egyetlen tányért.
      */
+    @Test public void aSentenceAboutTomorrowOnlyTakesItself() {
+        // A „Pihenőnap. Csak 6000 lépés, 2 kávé, este pizza 3 szelet. Holnap
+        // láb." kávéja és pizzája elveszett.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.List<Foods.Hit> h = Foods.parse(all, "Pihenőnap. Csak 6000 lépés, "
+                + "2 kávé, este pizza 3 szelet. Holnap láb.");
+        boolean pizza = false, coffee = false;
+        for (Foods.Hit x : h) {
+            if (x.food.name.startsWith("Pizza")) pizza = true;
+            if (x.food.name.startsWith("Kávé")) coffee = true;
+        }
+        assertTrue(pizza);
+        assertTrue(coffee);
+        // A „holnap pizzát eszem" jövő, nem mai vacsora.
+        assertTrue(Foods.parse(all, "Holnap pizzát eszem").isEmpty());
+        assertFalse(Foods.parse(all, "Tegnap ettem pizzát, holnap salátát eszem").isEmpty());
+    }
+
     @Test public void cookedIsNotEatenAndCookedForOthersIsNotMine() {
         java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
         double g = 0;
