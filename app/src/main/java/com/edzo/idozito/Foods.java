@@ -1131,6 +1131,9 @@ public final class Foods {
             "sajtotaj", "borzaszt", "labor", "tabor", "borult", "borus",
             "borotva", "borit", "borzalm", "sorban", "sorba", "sorra",
             "sorozat", "sorol", "sorren", "paradicsomi", "narancssarga",
+            // A CSÖRGŐ óra nem sör: a „6:30-kor csörgött az óra" fél liter
+            // sört írt a reggelihez – a „sör" betűsor a csörgés belsejében.
+            "csorg", "csorog", "csorren", "csorgo",
             "kolbaszol", "rumli",
             // Átvitt értelmű és összetett álca-szavak: a „narancsbőr" nem bor,
             // a „sörhas" nem sör, a „kávészünet" nem kávé.

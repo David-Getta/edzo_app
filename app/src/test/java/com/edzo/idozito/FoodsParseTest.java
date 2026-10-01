@@ -3428,4 +3428,12 @@ public class FoodsParseTest {
         assertEquals(3, hits("Saláta joghurtos öntettel és egy joghurt desszertnek")
                 .size());
     }
+
+    @Test public void theAlarmClockRingingIsNotBeer() {
+        // A „6:30-kor csörgött az óra" fél liter sört írt a reggelihez.
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Éjfél után 1-kor aludtam el, 6:30-kor csörgött az óra").isEmpty());
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Csörgött a telefon").isEmpty());
+    }
 }

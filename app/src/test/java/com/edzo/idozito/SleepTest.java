@@ -427,6 +427,14 @@ public class SleepTest {
                 + "a gyerekhez"), 0.01);
     }
 
+    @Test public void aNapWithItsOwnVerbStillLeavesTheNight() {
+        // A „délután szundítottam egy órát, éjjel 6-ot" éjszakája elveszett;
+        // az „aludtam 6 órát + 1 óra délutáni szundi" szundija nem adódott
+        // hozzá.
+        assertEquals(7.0, Sleep.parse("Délután szundítottam egy órát, éjjel 6-ot"), 0.01);
+        assertEquals(7.0, Sleep.parse("Aludtam 6 órát + 1 óra délutáni szundi"), 0.01);
+    }
+
     @Test public void shiftWorkersDaytimeSleepCounts() {
         // Az „éjjeli műszakból jöttem, délben feküdtem és 19-kor keltem"
         // hét óra nappali alvás; a „csak 4 órát tudtam aludni" négy.

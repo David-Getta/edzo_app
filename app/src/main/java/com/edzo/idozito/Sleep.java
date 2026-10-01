@@ -159,14 +159,19 @@ public final class Sleep {
                     + "(\\d{1,2}(?:[.,]\\d)?)(?![\\d,.:])"
                     + "(?!\\s?(?:perc|km|kg|kilo|lepes|-?kor|-?ig|-?tol))", "ma $1 orat aludtam");
             java.util.regex.Matcher nm = java.util.regex.Pattern.compile(
+                    // A SZUNDÍTÁS igéje is szundi: a „délután szundítottam egy
+                    // órát, éjjel 6-ot" éjszakájából semmi nem lett. A „+ 1
+                    // óra délutáni szundi" jelzője sem szakítja el az órát a
+                    // szunditól.
                     "(?<![a-z])(?:(?:delutan|delben|delelott|napkozben|ebed utan)"
-                    + "\\s+(?:is\\s+|meg\\s+)?(?:aludtam\\s+)?(\\d{1,2}(?:[.,]\\d)?)"
+                    + "\\s+(?:is\\s+|meg\\s+)?(?:(?:aludtam|szundit\\w*|szunyokal\\w*"
+                    + "|szundiz\\w*)\\s+)?(\\d{1,2}(?:[.,]\\d)?)"
                     + "\\s?ora\\w*(?:\\s+(?:szundi\\w*|szunyokal\\w*))?"
                     + "|(\\d{1,2}(?:[.,]\\d)?)\\s?ora\\w*\\s+(?:szundi\\w*"
                     + "|szunyokal\\w*|alvas\\w*|aludtam)?\\s*(?:delutan|delben"
                     + "|napkozben)(?![a-z])"
-                    + "|(\\d{1,2}(?:[.,]\\d)?)\\s?ora\\w*\\s+(?:szundi\\w*"
-                    + "|szunyokal\\w*))").matcher(n);
+                    + "|(\\d{1,2}(?:[.,]\\d)?)\\s?ora\\w*\\s+(?:delutani\\s+|deli\\s+)?"
+                    + "(?:szundi\\w*|szunyokal\\w*))").matcher(n);
             if (nm.find()) {
                 String g = nm.group(1) != null ? nm.group(1)
                         : nm.group(2) != null ? nm.group(2) : nm.group(3);
@@ -174,6 +179,13 @@ public final class Sleep {
                 catch (NumberFormatException e) { napH = 0; }
                 if (napH > 0 && napH <= 3) {
                     n = n.substring(0, nm.start()) + " " + n.substring(nm.end());
+                    // A SZUNDI IGÉJE vitte az egyetlen alvás-igét: a „délután
+                    // szundítottam egy órát, éjjel 6-ot" éjszakája ige nélkül
+                    // maradt, és elveszett. Az éjjeli szám mellé az alvás
+                    // igéje kerül.
+                    if (!n.matches("(?s).*(?:alud|alvas|alsz|fekud|keltem).*"))
+                        n = n.replaceFirst("(?<![a-z])(ejjel|ejszaka)\\s+(?=\\d)",
+                                "$1 aludtam ");
                     hq = n;
                 } else {
                     napH = 0;
