@@ -1310,6 +1310,41 @@ public final class Activities {
         // tagmondatban állt az úszáséval, és mindkettőt elvitte. (A „+10 kg"
         // súlyjelölésben nincs szóköz, az marad.)
         s = s.replaceAll("\\s\\+\\s", ", ");
+        // A HÁTRAVETETT szorzó ugyanaz, mint az elöl álló: a „futás 5 km x2"
+        // öt kilométer lett tíz helyett, a „bicikli 10 km x 3" tíz.
+        s = s.replaceAll("(?<![\\d,.x])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(km|m(?![a-z])"
+                + "|meter\\w*)\\s?x\\s?([2-9]|1\\d)(?!\\d|[,.]\\d)"
+                + "(?!\\s?(?:kg|kilo|perc|p(?![a-z])|mp|ora))", "$3x$1 $2");
+        // A PÁLYA KÖRE négyszáz méter, a MARGITSZIGETI futókör bő öt
+        // kilométer: a „futottam 10 kört a pályán" és a „3 kör a
+        // Margitszigeten" táv nélküli, becsült háromnegyed órás futás lett,
+        // a „12 kör a stadionban" pedig semmi.
+        {
+            java.util.regex.Matcher lp = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,2})\\s?kor\\w*\\s+(?:a\\s+|az\\s+)?(?:(?:atletikai|"
+                    + "rekortan|futo)\\s?)?(palyan|stadionban|rekortanon|margitszigeten"
+                    + "|margitszigeti\\s+futokorben|szigeten)(?![a-z])"
+                    + "|(?<![a-z])(?:(?:atletikai|rekortan)\\s+)?(palyan|stadionban"
+                    + "|rekortanon|margitsziget\\w*)\\s*:?\\s*(\\d{1,2})\\s?kor\\w*").matcher(s);
+            StringBuffer lb = new StringBuffer();
+            boolean any = false;
+            while (lp.find()) {
+                String place = lp.group(2) != null ? lp.group(2) : lp.group(3);
+                int n = Integer.parseInt(lp.group(1) != null ? lp.group(1) : lp.group(4));
+                double per = place.startsWith("margitsziget") || place.equals("szigeten")
+                        ? 5.3 : 0.4;
+                if (place.equals("szigeten") && !s.contains("margit")) continue;
+                double km = Math.round(n * per * 10) / 10.0;
+                String kms = String.valueOf(km).replace('.', ',').replaceAll(",0$", "");
+                lp.appendReplacement(lb, " " + kms + " km ");
+                any = true;
+            }
+            if (any) {
+                lp.appendTail(lb);
+                s = lb.toString();
+                if (kindByText(s) == null) s = "futas " + s;
+            }
+        }
         // A SÚLY SZÁMA nem táv: a „ma reggel súly 77,9, este futás 5 km"
         // bejegyzésébe egy hetvenhét kilométeres, hétórás futás is került –
         // a mérleg kiló nélkül írt száma a kilométer-olvasóhoz esett. A súly

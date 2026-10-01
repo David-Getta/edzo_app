@@ -942,6 +942,23 @@ public class ActivitiesParseTest {
         assertEquals(17, Activities.parse("Délután 5-kor futottam 5 km-t").hour);
     }
 
+    /**
+     * A pálya köre négyszáz méter, a margitszigeti kör bő öt kilométer, a
+     * hátravetett „x2" szorzó.
+     */
+    @Test public void trackLapsIslandLapsAndATrailingTimes() {
+        Activities.Plan p = Activities.parse("Futottam 10 kört a pályán").plans.get(0);
+        assertEquals("futas", p.kind.id);
+        assertEquals(4.0, p.km, 0.01);
+        assertEquals(4.8, Activities.parse("12 kör a stadionban").plans.get(0).km, 0.01);
+        assertEquals(15.9, Activities.parse("Futás: 3 kör a Margitszigeten")
+                .plans.get(0).km, 0.01);
+        assertEquals("tura", Activities.parse("Sétáltam 2 kört a Margitszigeten")
+                .plans.get(0).kind.id);
+        assertEquals(10.0, Activities.parse("Futás 5 km x2").plans.get(0).km, 0.01);
+        assertEquals(30.0, Activities.parse("Bicikli 10 km x 3").plans.get(0).km, 0.01);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

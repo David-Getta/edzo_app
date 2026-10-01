@@ -311,7 +311,11 @@ public final class Kcal {
     /** Mozgás-szó a mondatban – az égetés iránya e nélkül nem hihető. */
     private static boolean sportWordIn(String s) {
         return s.matches("(?s).*(?<![a-z])(edzes\\w*|edzettem|futas\\w*|futottam"
-                + "|lepes\\w*|lepest|setal\\w*|bringa\\w*|kerekpar\\w*|uszas\\w*"
+                // A SÉTA főnév is mozgás: az „ebéd 650 kcal, utána 30 perc
+                // séta 120 kcal" hétszázhetven kalóriát írt bevitelnek, a
+                // „séta 1 óra (250 kcal)" kétszázötvenet.
+                + "|lepes\\w*|lepest|setal\\w*|seta\\w*|kutyaseta\\w*|gyalog\\w*"
+                + "|bringa\\w*|kerekpar\\w*|uszas\\w*"
                 + "|usztam|kondi\\w*|jogaztam|turaztam|spinning|kardio\\w*"
                 + "|intervall\\w*|tabata"
                 + "|elliptikus|crosstrainer|szobabicikli|evezogep|futopad"

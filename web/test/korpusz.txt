@@ -269,6 +269,12 @@ Kora reggel futás 5 km
 Éjfélkor futottam 3 km-t
 Ebéd után 30 perc séta
 Délután 5-kor futottam 5 km-t
+Futottam 10 kört a pályán
+12 kör a stadionban
+Futás: 3 kör a Margitszigeten
+Sétáltam 2 kört a Margitszigeten
+Futás 5 km x2
+Bicikli 10 km x 3
 Ma 3 kör: 15 guggolás, 300 m evezés.
 Ma 5 rounds for time: 20 burpee, 400 m futás.
 Ma 400 m futás.
@@ -4685,6 +4691,8 @@ Kalóriakeret 1800, ettem 1650
 Kalóriakeretem 2000 kcal, ma 2150 lett
 Kalóriacél 1900, bevittem 1850 kcal
 Kalóriakeretem 1800 kcal
+Séta 1 óra (250 kcal)
+Ebéd 650 kcal, utána 30 perc séta 120 kcal
 a küszöb pontosan ezt a szintet adja
 egy XP-vel a küszöb alatt még az előző szint
 a következő szint mindig többe kerül

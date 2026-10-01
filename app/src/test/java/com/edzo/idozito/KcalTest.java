@@ -762,4 +762,12 @@ public class KcalTest {
         assertEquals(1850, Kcal.stated("Kalóriacél 1900, bevittem 1850 kcal"));
         assertEquals(-1, Kcal.stated("Kalóriakeretem 1800 kcal"));
     }
+
+    /** A séta mellé írt kalória égetés, nem bevitel. */
+    @Test public void aWalksCaloriesAreBurned() {
+        assertEquals(-1, Kcal.stated("Séta 1 óra (250 kcal)"));
+        assertEquals(250, Kcal.burned("Séta 1 óra (250 kcal)"));
+        assertEquals(650, Kcal.stated("Ebéd 650 kcal, utána 30 perc séta 120 kcal"));
+        assertEquals(120, Kcal.burned("Ebéd 650 kcal, utána 30 perc séta 120 kcal"));
+    }
 }
