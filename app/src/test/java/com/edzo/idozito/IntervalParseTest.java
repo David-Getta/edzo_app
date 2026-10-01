@@ -1090,4 +1090,27 @@ public class IntervalParseTest {
         // A puszta szám továbbra is körszám.
         assertEquals(8, IntervalParse.parse("kör: 8, munka 30, pihenő 30").rounds);
     }
+
+    /**
+     * A blokkok körei összeszorzódnak, a puszta visszaszámlálás egy kör.
+     *
+     * A „tabata 2x8 kör 20/10" nyolc kört állított be tizenhat helyett, az
+     * „időzítő 20 percre" és az „5 perces időzítő" üresen jött vissza.
+     */
+    @Test public void blocksMultiplyAndACountdownIsOneRound() {
+        IntervalParse.Plan p = IntervalParse.parse("Tabata 2x8 kör 20/10");
+        assertEquals(16, p.rounds);
+        assertEquals(20, p.work);
+        p = IntervalParse.parse("3 blokk, blokkonként 6 kör 40/20");
+        assertEquals(18, p.rounds);
+        p = IntervalParse.parse("Időzítő 20 percre");
+        assertEquals(1, p.rounds);
+        assertEquals(1200, p.work);
+        assertEquals(0, p.rest);
+        assertEquals(300, IntervalParse.parse("Állíts be egy 5 perces időzítőt").work);
+        assertEquals(30, IntervalParse.parse("30 mp-es visszaszámlálás").work);
+        assertEquals(45, IntervalParse.parse("Stopper 45 mp").work);
+        // A megtörtént edzés hossza nem visszaszámlálás.
+        assertNull(IntervalParse.parse("Futás 1 óra 45 perc"));
+    }
 }

@@ -4510,6 +4510,12 @@ HIIT videó alapján edzettem 20 percet
 20 perc HIIT
 Kell egy 30 perces kör: 45 mp munka, 15 mp szünet
 kör: 8, munka 30, pihenő 30
+3 blokk, blokkonként 6 kör 40/20
+Időzítő 20 percre
+Állíts be egy 5 perces időzítőt
+30 mp-es visszaszámlálás
+Stopper 45 mp
+Futás 1 óra 45 perc
 vacsora 650 kcal
 energiaszelet 220 kcal
 müzliszelet 180 kalória
@@ -4650,6 +4656,10 @@ Fehérje ma 140 g, cél 150
 Aktív kalória 650
 A keretem 1800 kcal
 Fehérjecélom 150 g
+Kalóriakeret 1800, ettem 1650
+Kalóriakeretem 2000 kcal, ma 2150 lett
+Kalóriacél 1900, bevittem 1850 kcal
+Kalóriakeretem 1800 kcal
 a küszöb pontosan ezt a szintet adja
 egy XP-vel a küszöb alatt még az előző szint
 a következő szint mindig többe kerül

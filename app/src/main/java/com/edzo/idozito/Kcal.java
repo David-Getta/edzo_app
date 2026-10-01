@@ -93,6 +93,10 @@ public final class Kcal {
             // bevitelként ÉS égetésként is beszámoltuk.
             "kaloriadeficit", "kaloriadeficitben", "kaloriadeficittel",
             "kaloriatobblet", "kaloriatobbletben",
+            // A KALÓRIAKERET is keret: a „kalóriakeret 1800, ettem 1650"
+            // a keretet írta bevitelnek a megevett ezerhatszázötven helyett.
+            "kaloriakeret", "kaloriakeretem", "kaloriakeretet", "kaloriakeretbe",
+            "kaloriacel", "kaloriacelom", "kaloriacelt", "kalorialimit",
             // A BMR az alapanyagcsere, nem a mai bevitel: a „bmr 1780
             // kcal" a napi keret fele-kétharmada, mégis étkezés lett.
             "bmr", "alapanyagcsere", "tdee",
@@ -519,6 +523,9 @@ public final class Kcal {
                 // terv, hanem beszámoló, hiába kezdődik „napi"-val.
                 Pattern[] strong = want == EATEN_P ? EATEN_P : NOT_EATEN_STRONG_P;
                 if (bad) for (Pattern w : strong) if (w.matcher(cl).find()) bad = false;
+                // A TELJESÜLT cél beszámoló: az „elértem a kalóriacélt, 1900
+                // kcal" tagmondata maga mondja ki, hogy megtörtént.
+                if (bad && achieved(cl)) bad = false;
                 if (!bad) keep.append(keep.length() > 0 ? ", " : "").append(cl);
             }
             s = keep.toString();

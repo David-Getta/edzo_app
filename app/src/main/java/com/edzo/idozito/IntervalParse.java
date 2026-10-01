@@ -213,6 +213,20 @@ public final class IntervalParse {
         s = s.replace('(', ' ').replace(')', ' ');
         // A csillag ugyanaz a szorzójel, mint az x: „8*20/10".
         s = s.replaceAll("(\\d)\\s?\\*\\s?(\\d)", "$1x$2");
+        // A BLOKKOK körei összeszorzódnak: a „tabata 2x8 kör 20/10" és a „3
+        // blokk, blokkonként 6 kör 40/20" nyolc, illetve hat kört állított
+        // be – a második (harmadik) blokk elveszett.
+        {
+            java.util.regex.Matcher bk = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d)\\s?(?:[x×]\\s?|blokk\\w*[^0-9]{0,30}?"
+                    + "(?:blokkonkent|szettenkent|korben)\\s+)(\\d{1,2})\\s?kor"
+                    + "(?![a-z])").matcher(s);
+            if (bk.find()) {
+                int total = Integer.parseInt(bk.group(1)) * Integer.parseInt(bk.group(2));
+                if (total >= 2 && total <= MAX_ROUNDS)
+                    s = s.substring(0, bk.start()) + total + " kor" + s.substring(bk.end());
+            }
+        }
 
         // 0) AMRAP: „amrap 20 perc” – annyi kör, amennyi belefér. Az időzítőnek
         //    ez EGY hosszú szakasz, nem több rövid; körszámot adni neki éppen
@@ -233,6 +247,25 @@ public final class IntervalParse {
             }
             if (min >= 1 && min <= 60)
                 return new Plan(1, min * 60, 0, warmIn(s), coolIn(s));
+        }
+
+        // A PUSZTA VISSZASZÁMLÁLÁS egy kör: az „időzítő 20 percre" és a
+        // „stopper 45 mp" üresen jött vissza, pedig ez a legegyszerűbb
+        // időzítő-kérés. Kör és pihenő nélkül egyetlen munkaszakasz.
+        {
+            java.util.regex.Matcher cd = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:idozito\\w*|visszaszaml\\w*|timer|stopper\\w*)"
+                    + "\\s*:?\\s*(?:beallit\\w*\\s+)?(\\d{1,3})\\s?(perc|mp|masodperc)\\w*"
+                    // A JELZŐS alak ugyanaz: „állíts be egy 5 perces időzítőt".
+                    + "|(?<![\\d,.])(\\d{1,3})\\s?-?(perc|mp|masodperc)-?\\w*\\s+"
+                    + "(?:idozito|visszaszaml|timer|stopper)\\w*")
+                    .matcher(s);
+            if (cd.find() && !s.matches("(?s).*(?<![a-z])(?:kor|x|pihen\\w*)(?![a-z]).*")) {
+                boolean first = cd.group(1) != null;
+                int v = Integer.parseInt(first ? cd.group(1) : cd.group(3));
+                int sec = (first ? cd.group(2) : cd.group(4)).equals("perc") ? v * 60 : v;
+                if (sec >= MIN_SEC && sec <= MAX_SEC) return new Plan(1, sec, 0);
+            }
         }
 
         // 1) Ismert forma név szerint. A kimondott körszám felülírja az alapot:

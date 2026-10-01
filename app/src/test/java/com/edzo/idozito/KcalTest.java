@@ -754,4 +754,12 @@ public class KcalTest {
         assertEquals(-1, Kcal.stated("A keretem 1800 kcal"));
         assertEquals(-1, Kcal.protein("Fehérjecélom 150 g"));
     }
+
+    /** Az összetett „kalóriakeret" is keret: a megevett szám a bevitel. */
+    @Test public void theCalorieBudgetCompoundIsAGoal() {
+        assertEquals(1650, Kcal.stated("Kalóriakeret 1800, ettem 1650"));
+        assertEquals(2150, Kcal.stated("Kalóriakeretem 2000 kcal, ma 2150 lett"));
+        assertEquals(1850, Kcal.stated("Kalóriacél 1900, bevittem 1850 kcal"));
+        assertEquals(-1, Kcal.stated("Kalóriakeretem 1800 kcal"));
+    }
 }
