@@ -629,6 +629,15 @@ public final class StrengthParse {
             sw.appendTail(wb);
             text = wb.toString();
         }
+        // A PERCES KÖR nem sorozat: az „5x5 perc evezés 2 perc pihenővel" öt
+        // ötperces evezőgépes szakasz, mégis „5x5 evezés" került az
+        // erőnaplóba. A percre menő „AxB perc" az intervall-olvasóé.
+        // (A tartásos gyakorlatnál – plank 3x1 perc – a perc a tartás hossza.)
+        if (!text.matches("(?iu)(?s).*(?:plank|deszka|t[aá]masz|fal\\s?-?[uü]l[eé]s"
+                + "|wall\\s?sit|f[uü]gg[eé]s|dead\\s?hang|hollow|izometri|statikus"
+                + "|v[aá]kuum|tart[aá]s).*"))
+            text = text.replaceAll("(?iu)(?<![\\d,.])\\d{1,2}\\s?[x×]\\s?\\d{1,3}\\s?"
+                    + "(?:perc|min)(?![\\p{L}])", " ");
         // A KÉT KÉZISÚLYZÓ nem két sorozat: a „vállnyomás kézisúlyzóval 3x12,
         // 2x14 kg" kettő darab tizennégy kilós súlyzót mond, mégis két egyes
         // sorozat lett belőle négy kilóval. Kézisúlyzó mellett a „2x N kg"
@@ -1743,17 +1752,34 @@ public final class StrengthParse {
         // ütközik semmivel a súlyzós mondatban. A VESSZŐ szándékosan nem
         // szerepel: a „10,8" tizedes szám is lehet („60,5 kg"), és egy
         // félreolvasott súly rosszabb, mint egy fel nem ismert sorozatlista.
+        // A LISTA HOSSZABB is lehet ötnél: a „piramis: 1-2-3-4-5-4-3-2-1
+        // húzódzkodás" kilenc sorozatából eddig öt maradt meg – a minta öt
+        // tagnál elfogyott, és a lefelé tartó fél elveszett.
         if (sets.isEmpty()) {
+            // (A csoport ismétlése – {1,11} vagy + – a webes fordításban
+            // kevesebbet illeszt; a lista farkát ezért kódból, karakterenként
+            // olvassuk tovább, az mindkét helyen ugyanazt adja.)
             m = java.util.regex.Pattern
-                    .compile("(\\d{1,3})[-/](\\d{1,3})(?:[-/](\\d{1,3}))?"
-                            + "(?:[-/](\\d{1,3}))?(?:[-/](\\d{1,3}))?")
+                    .compile("(?<![\\d.,])\\d{1,3}[-/]\\d{1,3}(?![\\d.,])")
                     .matcher(s);
+            String lista = null;
             if (m.find()) {
+                int e = m.end();
+                while (e + 1 < s.length() && (s.charAt(e) == '-' || s.charAt(e) == '/')
+                        && Character.isDigit(s.charAt(e + 1))) {
+                    int d = e + 1;
+                    while (d < s.length() && Character.isDigit(s.charAt(d))) d++;
+                    if (d - e - 1 > 3 || (d < s.length()
+                            && (s.charAt(d) == '.' || s.charAt(d) == ','))) break;
+                    e = d;
+                }
+                lista = s.substring(m.start(), e);
+            }
+            if (lista != null && lista.split("[-/]").length <= 12) {
                 List<Set> tmp = new ArrayList<>();
                 boolean ok = true;
-                for (int g = 1; g <= m.groupCount(); g++) {
-                    if (m.group(g) == null) continue;
-                    int r = Integer.parseInt(m.group(g));
+                for (String g : lista.split("[-/]")) {
+                    int r = Integer.parseInt(g);
                     if (r < 1 || r > maxRep) { ok = false; break; }
                     tmp.add(new Set(r, weight));
                 }

@@ -2926,4 +2926,22 @@ public class StrengthParseTest {
         assertSets("Ma csak bemelegítés és 3 szett guggolás 60-nal", "Guggolás", 3, 1, 60);
         assertSets("Ma 3x8 guggolás 80-nal, 5 perc szünetekkel", "Guggolás", 3, 8, 80);
     }
+
+    /**
+     * A piramis kilenc sorozata mind megmarad, a perces kör nem sorozat.
+     *
+     * A „piramis: 1-2-3-4-5-4-3-2-1 húzódzkodás" listája öt tagnál
+     * elfogyott; az „5x5 perc evezés 2 perc pihenővel" öt ötperces
+     * evezőgépes szakasza „5x5 evezés" lett az erőnaplóban.
+     */
+    @Test public void aLongPyramidAndMinuteRounds() {
+        List<StrengthParse.Item> a = StrengthParse.parse(
+                "Piramis: 1-2-3-4-5-4-3-2-1 húzódzkodás");
+        assertEquals(1, a.size());
+        assertEquals(9, a.get(0).sets.size());
+        assertEquals(1, a.get(0).sets.get(8).reps);
+        assertTrue(StrengthParse.parse("5x5 perc evezés 2 perc pihenővel").isEmpty());
+        // A tartás perce a tartás hossza marad.
+        assertEquals("Plank 3×60/60/60@0", sum("Plank 3x1 perc"));
+    }
 }

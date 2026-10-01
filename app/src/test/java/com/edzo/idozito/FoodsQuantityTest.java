@@ -536,6 +536,30 @@ public class FoodsQuantityTest {
      * – százötven gramm mogyorókrém került a naplóba, a palacsinta meg
      * egy adag maradt.
      */
+    /**
+     * A számon átnyúló étel nem dobhat kivételt.
+     *
+     * Az „ebéd: csirkés saláta. Vacsora: rántotta 3 tojásból" bejegyzése
+     * StringIndexOutOfBounds kivétellel szállt el: a tojásrántotta töve a
+     * hármas mögé is elért, és a köztes szöveg kivágása fordított
+     * tartományt kapott.
+     */
+    @Test public void aFoodSpanningTheNumberDoesNotCrash() {
+        List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        List<Foods.Hit> hits = Foods.parse(all, "Ebéd: csirkés saláta. "
+                + "Vacsora: rántotta 3 tojásból.");
+        boolean salad = false, eggs = false;
+        for (Foods.Hit h : hits) {
+            if (h.food.name.startsWith("Csirkés saláta")) salad = true;
+            if (h.food.name.startsWith("Rántotta")) eggs = true;
+        }
+        assertTrue(salad);
+        assertTrue(eggs);
+        hits = Foods.parse(all, "Reggeli: zabkása. Ebéd: csirkés saláta. "
+                + "Vacsora: tojásrántotta 3 tojásból.");
+        assertEquals(3, hits.size());
+    }
+
     @Test public void theBareAccusativeCountAndTheCompanionAfterIt() {
         assertEquals(120.0, grams("fánk, 2-t ettem"), 0.01);
         assertEquals(120.0, grams("fánkot ettem, 2-t"), 0.01);

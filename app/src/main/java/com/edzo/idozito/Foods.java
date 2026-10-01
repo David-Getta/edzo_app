@@ -4297,6 +4297,11 @@ public final class Foods {
                 // Csak az étel és a szám KÖZÖTT álló írásjelek engedettek:
                 // a „banán (2 db)" zárójele nem szakítja el, egy közbeékelt
                 // másik szó viszont igen.
+                // A SZÁMON ÁTNYÚLÓ étel nem előtte áll: az „ebéd: csirkés
+                // saláta. Vacsora: rántotta 3 tojásból" tojásrántottája a
+                // hármas mögé is elért, és a köztes szöveg kivágása
+                // KIVÉTELT dobott – az egész bejegyzés elszállt.
+                if (foodPos.get(k) + foodLen.get(k) > numStart) continue;
                 if (!onlyPunctBetween(q, foodPos.get(k) + foodLen.get(k), numStart)) {
                     // Az étel saját ragja és az evés-ige beékelődhet: a
                     // „pizzából ettem 2 szeletet" és a „kenyérből 3 szeletet"
@@ -5753,6 +5758,12 @@ public final class Foods {
             boolean all = true;
             for (int i = 1; i < combo.length; i++) {
                 int p = q.indexOf(combo[i]);
+                // A RÁNTOTTA nem rántott: az „ebéd: csirkés saláta. Vacsora:
+                // rántotta 3 tojásból" két fogásából egyetlen rántott
+                // csirkemell lett – a „rántott" tő a rántotta elején ült, a
+                // „csirke" a csirkés salátában.
+                while (p >= 0 && combo[i].equals("rantott") && q.startsWith("rantotta", p))
+                    p = q.indexOf(combo[i], p + 1);
                 if (p < 0) { all = false; break; }
                 from = Math.min(from, p);
                 to = Math.max(to, p + combo[i].length());
@@ -5760,9 +5771,11 @@ public final class Foods {
             if (!all) continue;
             // Kötőszóval FELSOROLVA két külön étel: a „csirkemellből rántott
             // hús" egy fogás, a „csirkemell ÉS rántott hús" viszont kettő –
-            // eddig az utóbbiból is egy lett, vagyis eltűnt egy adag.
+            // eddig az utóbbiból is egy lett, vagyis eltűnt egy adag. A
+            // MONDATHATÁR és a kettőspont ugyanígy elválaszt.
             String between = q.substring(from, Math.min(to, q.length()));
             if (between.contains(",") || between.contains(";")
+                    || between.contains(".") || between.contains(":")
                     || between.contains(" es ") || between.contains(" meg ")
                     || between.contains(" plusz ")) continue;
             Food target = null;
