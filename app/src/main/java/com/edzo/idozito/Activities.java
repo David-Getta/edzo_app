@@ -4726,8 +4726,9 @@ public final class Activities {
                 // A NAPNÉV is közéjük tartozik: a „kedden úszás, tegnap futás
                 // 5 km, ma kondi" keddje nélkül a három tétel két napot
                 // kapott – és párosítás híján mind a mára került.
+                String rq = new String(q);
                 for (int[] w : findWeekdays(q, now))
-                    rel.add(new int[]{w[0], w[1], w[2], 0});
+                    rel.add(new int[]{w[0], w[1], w[2], restAfter(rq, w[1])});
                 java.util.Collections.sort(rel, new java.util.Comparator<int[]>() {
                     @Override public int compare(int[] a, int[] b) { return a[0] - b[0]; }
                 });
@@ -4747,6 +4748,19 @@ public final class Activities {
                 else {
                     // Több napnév egy mondatban: „hétfőn és szerdán kondi".
                     java.util.List<int[]> wds = findWeekdays(q, now);
+                    // A PIHENŐNAP napneve nem kap tételt: a „szerdán 8 km
+                    // futás, csütörtökön pihenő, pénteken 10 km" két futása
+                    // három napnévvel párosítatlan maradt, és mindkettő
+                    // MÁRA került.
+                    {
+                        String wq = new String(q);
+                        java.util.List<int[]> restWd = new java.util.ArrayList<>();
+                        for (int[] w : wds) if (restAfter(wq, w[1]) == 1) restWd.add(w);
+                        if (!restWd.isEmpty() && restWd.size() < wds.size()) {
+                            wds.removeAll(restWd);
+                            for (int[] w : restWd) blank(q, w[0], w[1]);
+                        }
+                    }
                     // A NAPNÉV MELLETT a „ma"/„tegnap" is megnevezett nap: a
                     // „hétfőn 5 km, szerdán 8 km, ma 10 km futás" mindhárom
                     // futása MÁRA került – a két napnév mellé a harmadik
@@ -5947,6 +5961,11 @@ public final class Activities {
                 wdBacks = relBacks;
             else if (out.size() >= 2 && out.size() == active.size())
                 wdBacks = active;
+            // EGYETLEN edzésnap a pihenőnap mellett: a „tegnap 5 km futás,
+            // ma pihenő" futása MÁRA került – a pihenő ma is napnak
+            // számított, és az időszak eleje nyert.
+            else if (out.size() == 1 && active.size() == 1 && relBacks.size() >= 2)
+                wdBacks = active;
             // A „TEGNAP ÉS MA futottam 5 km-t" mindkét napon egy: a
             // kötőszóval összefogott két nap egy-egy alkalom. A „tegnap
             // este edzettem, ma izomláz" nem ez – ott a ma nem kap edzést.
@@ -7094,14 +7113,25 @@ public final class Activities {
             // A PIHENŐNAP tagmondata nem kap tételt: a „tegnapelőtt 7 km,
             // tegnap pihenő, ma 5 km" tegnapja csak azt mondja, hogy akkor
             // nem volt semmi – a párosításból kimarad.
-            int e = m.end();
-            while (e < s.length() && ",;.".indexOf(s.charAt(e)) < 0) e++;
-            String clause = s.substring(m.end(), e);
-            int rest = clause.matches("(?s).*(?<![a-z])(?:pihen\\w*|kihagy\\w*"
-                    + "|semmi|nem\\s+\\p{L}+|izomlaz\\w*)(?![a-z]).*") ? 1 : 0;
-            out.add(new int[]{m.start(), m.end(), back, rest});
+            out.add(new int[]{m.start(), m.end(), back, restAfter(s, m.end())});
         }
         return distinct || (!needTwo && !out.isEmpty()) ? out : null;
+    }
+
+    /**
+     * Pihenőnapot mond-e a nap szava utáni tagmondat (1), vagy edzést (0).
+     *
+     * A „csütörtökön pihenő", a „tegnap semmi" és a „kedden nem edzettem"
+     * napja nem kap tételt. Számot tartalmazó tagmondat nem pihenő: a „ma
+     * pihenő után 5 km futás" napja a futásé.
+     */
+    private static int restAfter(String s, int from) {
+        int e = from;
+        while (e < s.length() && ",;.".indexOf(s.charAt(e)) < 0) e++;
+        String clause = s.substring(from, e);
+        if (clause.matches("(?s).*\\d.*")) return 0;
+        return clause.matches("(?s).*(?<![a-z])(?:pihen\\w*|kihagy\\w*"
+                + "|semmi|nem\\s+\\p{L}+|izomlaz\\w*)(?![a-z]).*") ? 1 : 0;
     }
 
     /**

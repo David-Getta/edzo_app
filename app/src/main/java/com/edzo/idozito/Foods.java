@@ -2421,7 +2421,8 @@ public final class Foods {
     private static final String[] PORTION_WORDS =
             {"tanyer", "tanyernyi", "bogre", "bogrenyi", "talka", "talkanyi",
              "kanal", "kanalnyi", "evokanal", "evokanalnyi", "teaskanal",
-             "teaskanalnyi", "marek", "mareknyi", "csomag", "zacsko", "tal"};
+             "teaskanalnyi", "kaveskanal", "kaveskanalnyi", "marek", "mareknyi",
+             "csomag", "zacsko", "tal"};
 
     /**
      * Méret-jelzők: nem mérőszavak, csak közéállnak („2 nagy alma").
@@ -2679,7 +2680,8 @@ public final class Foods {
     private static boolean isSpoon(String w) {
         return w.equals("kanal") || w.equals("kanalnyi") || w.equals("evokanal")
                 || w.equals("evokanalnyi") || w.equals("teaskanal")
-                || w.equals("teaskanalnyi") || w.equals("kaveskanal");
+                || w.equals("teaskanalnyi") || w.equals("kaveskanal")
+                || w.equals("kaveskanalnyi");
     }
 
     /** Egy darab hány gramm, vagy 0, ha ezt az ételt nem darabra számoljuk. */
@@ -4626,6 +4628,11 @@ public final class Foods {
         // kisebb mérték – a „3 evőkanál zabpehely" eddig három ADAGOT, vagyis
         // százötven grammot jelentett, ötszáz kalóriát egy százas helyett.
         if (isSpoon(unit) && f.portion >= 40) return unit.startsWith("teas") ? 5 : 15;
+        // A KENCÉK teáskanala sem az adag: az „egy teáskanál méz a teába"
+        // húsz grammja egy evőkanálnyi. A teáskanál öt-hét gramm, a
+        // kávéskanál még kisebb; az evőkanál marad az adag.
+        if (unit.startsWith("teas")) return Math.min(f.portion, 6);
+        if (unit.startsWith("kaves")) return Math.min(f.portion, 4);
         if (unit.startsWith("adag") || unit.equals("porcio") || isPortionWord(unit))
             return f.portion;
         return pieceGrams(f);

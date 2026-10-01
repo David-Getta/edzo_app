@@ -129,7 +129,7 @@ public class FoodsIntegrationTest {
         assertEquals("Pálinka / tömény 80g", summary("két kupica pálinka"));
         assertEquals("Rizs (főtt) 100g", summary("fél bögre rizs"));
         // A „teáskanál" nem egy csésze tea.
-        assertEquals("Cukor 10g", summary("egy teáskanál cukor"));
+        assertEquals("Cukor 6g", summary("egy teáskanál cukor"));
         // A poharak száma a víznél is szorez – ebből lesz a vízcél-jóváírás.
         assertEquals("Víz / ásványvíz 750g", summary("ittam 3 pohár vizet"));
         assertEquals("Víz / ásványvíz 2000g", summary("reggel óta 8 pohár víz"));

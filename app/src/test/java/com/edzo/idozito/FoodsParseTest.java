@@ -1379,7 +1379,21 @@ public class FoodsParseTest {
     @Test public void teaspoonAbbreviationIsATeaspoon() {
         List<Foods.Hit> h = hits("2 tk cukorral ittam a k\u00e1v\u00e9t");
         assertEquals("Cukor", h.get(0).food.name);
-        assertEquals(20, h.get(0).grams, 0.01);
+        // Egy teáskanál cukor öt-hat gramm, nem egy tízgrammos adag.
+        assertEquals(12, h.get(0).grams, 0.01);
+    }
+
+    /**
+     * A kencék teáskanala nem az adag.
+     *
+     * Az „egy teáskanál méz a teába" húsz grammja egy evőkanálnyi volt, a
+     * kávéskanál cukor pedig egy egész adagnyi.
+     */
+    @Test public void aTeaspoonOfASpreadIsAFewGrams() {
+        assertEquals(6, hits("Egy teáskanál méz a teába").get(0).grams, 0.01);
+        assertEquals(20, hits("1 evőkanál méz").get(0).grams, 0.01);
+        assertEquals(4, hits("Egy kávéskanál cukor").get(0).grams, 0.01);
+        assertEquals(15, hits("3 teáskanál zabpehely").get(0).grams, 0.01);
     }
 
     @Test public void ekkoraIsNotASpoon() {

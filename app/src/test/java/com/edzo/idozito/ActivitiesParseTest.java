@@ -700,6 +700,31 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("Múlt héten 3x futottam", wed).days);
     }
 
+    /**
+     * A pihenőnap neve nem kap tételt.
+     *
+     * A „szerdán 8 km futás, csütörtökön pihenő, pénteken 10 km" két
+     * futása MÁRA került, a „tegnap 5 km futás, ma pihenő" futása szintén –
+     * a pihenőnap is napnak számított, és a párosítás elmaradt.
+     */
+    @Test public void aRestDayTakesNoEntry() {
+        // 2026. október 1., csütörtök dél.
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.OCTOBER, 1, 12, 0, 0);
+        long thu = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse("Szerdán 8 km futás, csütörtökön "
+                + "pihenő, pénteken 10 km", thu);
+        assertArrayEquals(new int[]{1, 6}, p.exactDays);
+        p = Activities.parse("Hétfőn 8 km futás, kedden pihenő, szerdán 10 km", thu);
+        assertArrayEquals(new int[]{3, 1}, p.exactDays);
+        p = Activities.parse("Tegnap 5 km futás, ma pihenő", thu);
+        assertEquals(1, p.offset);
+        assertEquals(1, p.days);
+        assertEquals(0, Activities.parse("Tegnap pihenő, ma 40 perc kondi", thu).offset);
+        assertEquals(1, Activities.parse("Kedden pihenő, szerdán 6 km", thu).offset);
+    }
+
     @Test public void theMonitorAndTheScoreAreNotSports() {
         // A „monitornál" tornája jóga, a „score" core-ja kondi lett.
         assertTrue(Activities.parse("Egész nap a monitornál ültem").plans.isEmpty());
