@@ -698,9 +698,12 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\d,.x])1\\s?[x×]\\s+(\\d{2,3}"
                 + "(?:[.,]\\d{1,2})?)\\s?-?(?:kg|kil[oó]\\p{L}*|[nv][ae]l|mal|zal|zel)"
                 + "(?![\\p{L}])", " 1x1 $1 kg ");
+        // Az „ÖTSZÖR" ugyanígy egy sorozat ismétlésszáma: a „fekvenyomás
+        // 100 kg 5x" öt külön kondi-edzés lett, sorozat nélkül, a „80 kg 8x,
+        // 90 kg 5x, 100 kg 3x" piramisa pedig értelmetlen „8×9".
         text = text.replaceAll("(?iu)(?<![\\d,.x])(\\d{2,3}(?:[.,]\\d{1,2})?)"
-                + "\\s?-?(?:kg|kil[oó]\\p{L}*)\\s+1\\s?[x×](?![\\d\\p{L}])",
-                " 1x1 $1 kg ");
+                + "\\s?-?(?:kg|kil[oó]\\p{L}*|kilcsi\\p{L}*)\\s+([1-9]|[12]\\d)\\s?[x×](?![\\d\\p{L}])",
+                " 1x$2 $1 kg ");
         // A SÚLLYAL mondott egyes sorozat is sorozat: a „fekvenyomás 60 kg
         // 3x10, aztán 70-nel egy 8-as" hetvenes nyolcasa nyomtalanul
         // eltűnt – a „szett" szó nélkül a fenti szabály nem ismerte fel.

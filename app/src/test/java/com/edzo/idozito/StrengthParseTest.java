@@ -3039,4 +3039,18 @@ public class StrengthParseTest {
         // A saját sorozatszám marad.
         assertSets("Fekvenyomás 3x10 60 kg, 2x", "Fekvenyomás", 3, 10, 60);
     }
+
+    /**
+     * A súly utáni „5x" egy sorozat ismétlésszáma.
+     *
+     * A „fekvenyomás 100 kg 5x" öt külön kondi-edzés lett sorozat nélkül, a
+     * „80 kg 8x, 90 kg 5x, 100 kg 3x" piramisa pedig értelmetlen „8×9".
+     */
+    @Test public void timesAfterAWeightIsTheReps() {
+        assertSets("Fekvenyomás 100 kg 5x", "Fekvenyomás", 1, 5, 100);
+        assertSets("Fekvenyomás 100 kilcsi 5x", "Fekvenyomás", 1, 5, 100);
+        assertEquals("Fekvenyomás 3×8/5/3@100",
+                sum("Fekvenyomás 80 kg 8x, 90 kg 5x, 100 kg 3x"));
+        assertEquals(1, Activities.parse("Fekvenyomás 100 kg 5x").plans.get(0).count);
+    }
 }

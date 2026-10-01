@@ -3972,12 +3972,14 @@ public final class Activities {
         // futás lett. Csak mozgás-ige mellett írjuk át, és csak akkor, ha
         // a mondat nem a testsúlyról beszél – a „3 kilót fogytam" marad
         // kiló.
-        if (s.matches("(?s).*(?<![a-z])(?:fut|szalad|kocog|teker|bringaz"
-                    + "|gyalogol|setal|usz|megy|lefut|vegigfut)\\w*.*")
+        // A „KILCSI" ugyanez a szleng: a „tekertem 50 kilcsit" táv nélküli
+        // órás tekerés lett. A bringa és a bicikli is mozgás-szó.
+        if (s.matches("(?s).*(?<![a-z])(?:fut|szalad|kocog|teker|bringa"
+                    + "|bicikl|gyalogol|setal|usz|megy|lefut|vegigfut)\\w*.*")
                 && !s.matches("(?s).*(?<![a-z])(?:fogy\\w*|hiz\\w*|merleg\\w*"
                     + "|sulyom|sulyod|nyomok|vagyok|lettem|leadt\\w*"
                     + "|felszedt\\w*)(?![a-z]).*"))
-            s = s.replaceAll("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d)?)\\s?kilot?"
+            s = s.replaceAll("(?<![\\d,.])(\\d{1,3}(?:[.,]\\d)?)\\s?(?:kilot?|kilcsi\\w*)"
                     + "(?![a-z])", "$1 km");
         // A TÁRGYAS kör igéje sem választja el a szorzót a távtól: az
         // „5 kört csináltam: 400 m futás és 15 guggolás körönként"

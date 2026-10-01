@@ -916,6 +916,13 @@ public class ActivitiesParseTest {
                 .isEmpty());
     }
 
+    /** A „kilcsi" a futók és bringások kilométere. */
+    @Test public void kilcsiIsAKilometre() {
+        assertEquals(50.0, Activities.parse("Tekertem 50 kilcsit").plans.get(0).km, 0.01);
+        assertEquals(7.0, Activities.parse("Ma 7 kilcsi futás").plans.get(0).km, 0.01);
+        assertEquals(20.0, Activities.parse("Bicikliztem 20 kilót").plans.get(0).km, 0.01);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
