@@ -3438,6 +3438,21 @@ public class FoodsParseTest {
                 "Úsztam 1 km-t a mélyvízben").isEmpty());
     }
 
+    @Test public void aGelDuringTheRaceIsAnEnergyGel() {
+        // A „maratonon 4 gél" és az „edzés közben 2 zselé" gélje elveszett.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        double g = 0;
+        for (Foods.Hit h : Foods.parse(all, "Maratonon 4 gél, 2 liter víz, 42,2 km"))
+            if (h.food.name.startsWith("Energiagél")) g = h.grams;
+        assertEquals(128, g, 0.01);
+        g = 0;
+        for (Foods.Hit h : Foods.parse(all, "Edzés közben 2 zselé és 1 liter izotóniás ital"))
+            if (h.food.name.startsWith("Energiagél")) g = h.grams;
+        assertEquals(64, g, 0.01);
+        // A hajzselé nem étel.
+        assertTrue(Foods.parse(all, "Vettem 2 zselét a hajamra").isEmpty());
+    }
+
     @Test public void theAlarmClockRingingIsNotBeer() {
         // A „6:30-kor csörgött az óra" fél liter sört írt a reggelihez.
         assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),

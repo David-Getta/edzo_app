@@ -3170,6 +3170,14 @@ public final class Foods {
             lm.appendTail(lb);
             query = lb.toString();
         }
+        // A SPORTBAN a puszta „gél" és „zselé" energiagél: a „maratonon 4 gél,
+        // 2 liter víz" és az „edzés közben 2 zselé" négy, illetve két gélje
+        // nyomtalanul elveszett – csak az „energiagél" szó volt tő. Csak
+        // darabszámmal és mozgás-környezetben: a hajzselé nem étel.
+        if (norm(query).matches("(?s).*(?:edzes|futas|futott|maraton|verseny|tura"
+                + "|bring|kerekpar|teker|triatlon|ultra|\\d\\s?km).*"))
+            query = query.replaceAll("(?iu)(?<![\\p{L}])(\\d{1,2}|egy|k[eé]t|h[aá]rom|n[eé]gy"
+                    + "|[oö]t|hat)\\s+(?:db\\s+)?(?:g[eé]l|zsel[eé])\\p{L}*", "$1 energiagél");
         // A DARABSZÁM ÉS A TÉRFOGAT szorzódik: a „két üveg sör, 0,33 l" két
         // üveg, egyenként három deci – eddig a térfogat nyert, és egyetlen
         // üveg ment be. A szorzatot írjuk a név elé.
