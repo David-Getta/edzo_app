@@ -2944,4 +2944,13 @@ public class StrengthParseTest {
         // A tartás perce a tartás hossza marad.
         assertEquals("Plank 3×60/60/60@0", sum("Plank 3x1 perc"));
     }
+
+    @Test public void gymSlangNamesTheExercise() {
+        // A „3x10 guggi 80-nal" és a „húzódzó 3x8" nem talált nevet.
+        assertSets("edzés volt, 3x10 guggi 80-nal", "Guggolás", 3, 10, 80);
+        assertEquals("Fekvenyomás 3×8/8/8@90 | Guggolás 3×5/5/5@110",
+                sum("fekve 3x8 90, guggi 3x5 110"));
+        assertEquals("Húzódzkodás 3×8/8/8@0 | Tolódzkodás 3×10/10/10@0",
+                sum("húzódzó 3x8, dip 3x10"));
+    }
 }

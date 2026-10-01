@@ -262,6 +262,9 @@ public final class Activities {
                     "toltuk a vasat", "nyomtam a vasat", "vasaztam",
                     "koredzes", "kor edzes",
                     "guggolas", "felules", "huzodzkodas", "plank", "tabata",
+                    // A TERMI SZLENG is edzés: a „3x10 guggi 80-nal" és a
+                    // „húzódzó 3x8" egyéb mozgásként ment a naplóba.
+                    "guggi", "huzodzo",
                     // A HÁROM NAGY gyakorlat neve eddig hiányzott, pedig a
                     // guggolás rég itt van: a „fekvenyomás 5x3 100 kg" és a
                     // „holtemelés 5x3 140 kg" bekerült ugyan az erőnaplóba,

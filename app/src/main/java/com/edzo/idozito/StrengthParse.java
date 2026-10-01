@@ -90,7 +90,9 @@ public final class StrengthParse {
             // belőle.
             // A „goblet" magában is goblet-guggolás: a „3 kör: 15 swing,
             // 10 goblet, 5 fekvő" goblet-sora eddig kimaradt.
-            {"Guggolás", "guggol", "gugol", "szkvot", "squat", "goblet"},
+            // A TERMI SZLENG is a gyakorlat: a „3x10 guggi 80-nal" és a
+            // „húzódzó 3x8" eddig nem talált nevet, és a sorozat elveszett.
+            {"Guggolás", "guggol", "gugol", "szkvot", "squat", "goblet", "guggi"},
             // A „fekve" magában is fekvenyomás: a magyar terem fordított
             // szórenddel is mondja („nyomtam 100 kilót fekve ötöt"), és a
             // fekvőtámasz szótöve más, tehát nem ütközik vele.
@@ -120,6 +122,7 @@ public final class StrengthParse {
             {"Felhúzás", "felhuzas", "holtemel", "holt emel", "kihuzas",
                     "deadlift", "dead lift", "felhuztam"},
             {"Húzódzkodás", "huzodzkod", "pull up", "pullup", "huzodzk", "chin up", "chinup",
+                    "huzodzo",
                     "allhuzodzkodas", "all fole huzas"},
             {"Vállból nyomás", "vallbol nyom", "vallnyom", "vallbol", "ohp", "mellrol nyom",
                     "vallgep",
