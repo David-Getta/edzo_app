@@ -196,6 +196,13 @@ public final class Activities {
                     "kutyaval setal", "kutyaval korbe", "kutyazas"),
             new Kind("evezes", "🚣", "Evezés / evezőgép", 7.0, true, 30,
                     "evezes", "evezo", "evezt", "kajak", "sup deszka", "kenu", "kenuz",
+                    // A SUP magában is evezés: a „SUP 45 perc a Balatonon"
+                    // üresen jött vissza – csak a képzett alakok voltak tövek.
+                    // A puszta „sup" betűsor szó belsejében is állhat
+                    // (support, superset), ezért a kereső csak egész szóként
+                    // fogadja el.
+                    "sup", "sup tura", "sup-tura", "paddle board", "stand up paddle",
+                    "standup paddle",
                     "raftin", "sarkanyhajo", "sarkany hajo",
                     // A „kajak túra" egyben tő, hogy a fej-szó szabály ne a
                     // gyalogtúrának adja: az a túra a vízen történt.
@@ -3210,7 +3217,9 @@ public final class Activities {
         // csak az egyik irány maradt.
         {
             java.util.regex.Matcher ov = java.util.regex.Pattern
-                    .compile("(\\d{1,3})\\s?perc\\s+oda\\s+(?:es|meg)\\s+"
+                    // A VESSZŐS alak ugyanaz: a „munkába gyalog, 25 perc oda,
+                    // 25 vissza" ötven perce eddig huszonöt maradt.
+                    .compile("(\\d{1,3})\\s?perc\\s+oda\\s*,?\\s*(?:(?:es|meg)\\s+)?"
                             + "(\\d{1,3})\\s?(?:perc\\s+)?vissza").matcher(s);
             if (ov.find()) {
                 int t = Integer.parseInt(ov.group(1))
@@ -4721,6 +4730,10 @@ public final class Activities {
                     // nélkül" nem negyvenöt perc úszás.
                     int wEnd = p + w.length();
                     while (wEnd < s.length() && Character.isLetter(s.charAt(wEnd))) wEnd++;
+                    // A „SUP" csak egész szóként: a „support csapat" és a
+                    // „superset" nem állóevezés.
+                    if (w.equals("sup") && ((p > 0 && Character.isLetter(s.charAt(p - 1)))
+                            || s.substring(p + 3, wEnd).matches("^(?:er|po|pr|pl|re).*"))) continue;
                     if (s.startsWith(" nelkul", wEnd)) continue;
                     // A „terem” az ÉTterem és a MŰterem belsejében nem kondi
                     // (az edzőterem, gépterem viszont igen).
@@ -7915,6 +7928,12 @@ public final class Activities {
             // futás, 15 fekvőtámasz" hajnali ötre került a naplóban.
             // Időpont után kettőspont nem áll – az már perc lenne.
             if (spaced && s.substring(m.end()).matches("(?s)\\s*:.*")) continue;
+            // A KÖR UTÁN KIMONDOTT IDŐTARTAM is körökről beszél: a „3 kör 15
+            // perc alatt: 10 fekvőtámasz…" hajnali háromra került – óraállás
+            // után nem áll közvetlenül perc.
+            // (A percet a gyűjtő addigra kifehérítheti; az „alatt" marad.)
+            if (spaced && s.substring(m.end()).matches("(?s)\\s*(?:\\d{1,3}\\s?perc"
+                    + "|alatt(?![a-z])).*")) continue;
             // A KÖRÖNKÉNT szava kimondja, hogy körökről van szó: a „súlyzós
             // edzés otthon: 3 kör, körönként 15 guggolás" hajnali háromra
             // tette a bejegyzést, mert ékezet nélkül a „kör" és a „-kor"

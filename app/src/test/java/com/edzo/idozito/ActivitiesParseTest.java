@@ -633,6 +633,29 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    @Test public void thereAndBackWithACommaAndRoundsBeforeMinutes() {
+        // A „munkába gyalog, 25 perc oda, 25 vissza" ötven perce huszonöt
+        // maradt; a „3 kör 15 perc alatt" hajnali háromra került.
+        assertEquals(50, Activities.parse("Munkába gyalog, 25 perc oda, "
+                + "25 vissza").plans.get(0).minutes);
+        assertEquals(45, Activities.parse("Bicikli a munkába, 20 perc oda "
+                + "és 25 vissza").plans.get(0).minutes);
+        Activities.Parsed p = Activities.parse("3 kör 15 perc alatt: "
+                + "10 fekvőtámasz, 10 guggolás");
+        assertEquals(12, p.hour);
+        assertEquals(15, p.plans.get(0).minutes);
+    }
+
+    @Test public void supIsPaddling() {
+        // A „SUP 45 perc a Balatonon" üresen jött vissza.
+        assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")
+                .plans.get(0).kind.id);
+        assertEquals(45, Activities.parse("SUP 45 perc a Balatonon")
+                .plans.get(0).minutes);
+        assertEquals("evezes", Activities.parse("SUP-oztunk 1 órát")
+                .plans.get(0).kind.id);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
