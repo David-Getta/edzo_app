@@ -1305,6 +1305,13 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A SÚLY SZÁMA nem táv: a „ma reggel súly 77,9, este futás 5 km"
+        // bejegyzésébe egy hetvenhét kilométeres, hétórás futás is került –
+        // a mérleg kiló nélkül írt száma a kilométer-olvasóhoz esett. A súly
+        // szava utáni szám a mérlegé, a mozgás-olvasó nem látja.
+        s = s.replaceAll("(?<![a-z])(?:suly|sulyom|sulya|testsuly|testsulyom)"
+                + "\\s*:?\\s*(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo\\w*)?"
+                + "(?!\\d|[.,]\\d)(?!\\s?(?:km|perc|ora|lepes|m(?![a-z])))", " ");
         // A naGYMama közepén a „gym" ül, ezért a szó a sport-maszkra került
         // – csakhogy a maszk az ALANYT is eltünteti, és a „nagymamám
         // mindennap tornázik 20 percet" húsz perc jóga lett a MI naplónkban.
@@ -1993,6 +2000,11 @@ public final class Activities {
             hm.appendTail(hb);
             s = hb.toString();
         }
+        // A KUTYÁVAL LEMENNI séta: a „vacsora után még lementünk a kutyával
+        // 25 percre" huszonöt perce nyomtalanul elveszett – az ige nem
+        // mozgás-szó, a kutya sem.
+        s = s.replaceAll("(?<![a-z])(?:le|ki|el)?ment(?:em|unk)\\s+(?:meg\\s+)?(?:a\\s+)?"
+                + "(?:kuty\\w*|kutyus\\w*|ebbel)(?![a-z])", "setaltam a kutyaval");
         // A MECCS MELLETT elfogyasztott vacsora a tévé előtt készült: a
         // „két sör és egy pizza volt a vacsora a meccs mellett"
         // negyvenöt perces egyéb mozgást írt a naplóba. A „kondi

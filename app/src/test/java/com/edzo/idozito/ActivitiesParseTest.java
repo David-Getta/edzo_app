@@ -709,6 +709,23 @@ public class ActivitiesParseTest {
         assertEquals("kondi", Activities.parse("Core edzés 20 perc").plans.get(0).kind.id);
     }
 
+    @Test public void theScaleNumberIsNotADistanceAndTheDogWalkCounts() {
+        // A „ma reggel súly 77,9, este futás 5 km" bejegyzésébe egy
+        // hetvenhét kilométeres futás is került; a „lementünk a kutyával
+        // 25 percre" huszonöt perce elveszett; a „pulzusom 58 volt reggel"
+        // pulzusa a séta szava miatt eltűnt.
+        Activities.Parsed p = Activities.parse("Ma reggel súly 77,9, este futás "
+                + "5 km, vacsora rántott hal");
+        assertEquals(1, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        p = Activities.parse("Vacsora után még lementünk a kutyával 25 percre");
+        assertEquals(1, p.plans.size());
+        assertEquals("tura", p.plans.get(0).kind.id);
+        assertEquals(25, p.plans.get(0).minutes);
+        assertEquals(58, Pulse.parse("Pulzusom 58 volt reggel, aludtam 7 és fél "
+                + "órát, és 8000 lépést sétáltam"));
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

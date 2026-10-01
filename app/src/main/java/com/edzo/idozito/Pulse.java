@@ -154,7 +154,11 @@ public final class Pulse {
                 // ébredéskor mér, az a nyugalmi értékét méri.
                 && !s.matches(".*(?<![a-z])(?:ebredtem|felebredtem|keltem)"
                         + "(?![a-z]).*")
-                && !s.matches(".*(?<![a-z])reggeli?\\s[^,;.]{0,10}?pulzus.*"))
+                && !s.matches(".*(?<![a-z])reggeli?\\s[^,;.]{0,10}?pulzus.*")
+                // A REGGEL a szám MÖGÖTT is reggeli mérés: a „pulzusom 58
+                // volt reggel, … 8000 lépést sétáltam" ötvennyolca a séta
+                // szava miatt elveszett.
+                && !s.matches(".*pulzus\\w*\\s[^,;.]{0,12}?reggel.*"))
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})
                 if (s.contains(g)) return -1;
