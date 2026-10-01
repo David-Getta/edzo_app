@@ -700,6 +700,15 @@ public class ActivitiesParseTest {
         assertEquals(7, Activities.parse("Múlt héten 3x futottam", wed).days);
     }
 
+    @Test public void theMonitorAndTheScoreAreNotSports() {
+        // A „monitornál" tornája jóga, a „score" core-ja kondi lett.
+        assertTrue(Activities.parse("Egész nap a monitornál ültem").plans.isEmpty());
+        assertTrue(Activities.parse("A score-om 120 pont lett").plans.isEmpty());
+        // A valódi összetételek maradnak.
+        assertEquals("joga", Activities.parse("Gerinctorna 30 perc").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("Core edzés 20 perc").plans.get(0).kind.id);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

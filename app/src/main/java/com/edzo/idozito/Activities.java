@@ -4742,6 +4742,12 @@ public final class Activities {
                     if (w.equals("sup") && ((p > 0 && Character.isLetter(s.charAt(p - 1)))
                             || s.substring(p + 3, wEnd).matches("^(?:er|po|pr|pl|re).*"))) continue;
                     if (s.startsWith(" nelkul", wEnd)) continue;
+                    // A MONITORNÁL tornája és a SCORE core-ja: a „monitornál
+                    // görnyedtem" jógát, a „score 120" kondit írt a naplóba –
+                    // a tő a hosszabb szó belsejében ült. A korpusz szavainak
+                    // egyenkénti végigfuttatása hozta ki.
+                    if (w.equals("torna") && p >= 4 && s.startsWith("moni", p - 4)) continue;
+                    if (w.equals("core") && p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
                     // A „terem” az ÉTterem és a MŰterem belsejében nem kondi
                     // (az edzőterem, gépterem viszont igen).
                     if (w.equals("terem") && p >= 2
