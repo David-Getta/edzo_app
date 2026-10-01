@@ -3170,6 +3170,12 @@ public final class Foods {
             lm.appendTail(lb);
             query = lb.toString();
         }
+        // AZ „Ő …, ÉN …" SZEMBEÁLLÍTÁS: a „párommal vacsiztunk: ő lazacot, én
+        // steaket krumplival" lazaca is a naplómba került. Ha a mondat
+        // kimondja az „én"-t, az „ő"/„ők" tagmondata a másiké.
+        if (query.matches("(?isu).*(?<![\\p{L}])én(?![\\p{L}]).*"))
+            query = query.replaceAll("(?iu)(?:^|(?<=[:,;.]))\\s*(?:ő|ők)(?:\\s+pedig)?"
+                    + "(?![\\p{L}])[^,;.:]*", " ");
         // A SPORTBAN a puszta „gél" és „zselé" energiagél: a „maratonon 4 gél,
         // 2 liter víz" és az „edzés közben 2 zselé" négy, illetve két gélje
         // nyomtalanul elveszett – csak az „energiagél" szó volt tő. Csak

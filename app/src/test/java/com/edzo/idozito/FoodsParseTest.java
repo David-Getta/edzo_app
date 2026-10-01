@@ -3438,6 +3438,20 @@ public class FoodsParseTest {
                 "Úsztam 1 km-t a mélyvízben").isEmpty());
     }
 
+    @Test public void hisPlateAgainstMinePlateIsNotMine() {
+        // A „párommal vacsiztunk: ő lazacot, én steaket krumplival" lazaca a
+        // naplómba került.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        boolean salmon = false, beef = false;
+        for (Foods.Hit h : Foods.parse(all, "Ma este a párommal vacsiztunk: ő "
+                + "lazacot, én steaket krumplival")) {
+            if (h.food.name.startsWith("Lazac")) salmon = true;
+            if (h.food.name.startsWith("Marha")) beef = true;
+        }
+        assertFalse(salmon);
+        assertTrue(beef);
+    }
+
     @Test public void aGelDuringTheRaceIsAnEnergyGel() {
         // A „maratonon 4 gél" és az „edzés közben 2 zselé" gélje elveszett.
         java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
