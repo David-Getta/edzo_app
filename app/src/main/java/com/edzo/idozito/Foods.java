@@ -1134,6 +1134,11 @@ public final class Foods {
             // A CSÖRGŐ óra nem sör: a „6:30-kor csörgött az óra" fél liter
             // sört írt a reggelihez – a „sör" betűsor a csörgés belsejében.
             "csorg", "csorog", "csorren", "csorgo",
+            // A MILLIMÉTER lime-ja és a MÉLYVÍZ vize: a „120/80
+            // higanymilliméter" citromlevet, az „úsztam a mélyvízben" egy
+            // pohár vizet írt a naplóba – a tő a hosszabb szó belsejében.
+            "millimeter", "milimeter", "higanymillimeter", "higanymilimeter",
+            "melyviz", "melyvizben", "melyvizes",
             "kolbaszol", "rumli",
             // Átvitt értelmű és összetett álca-szavak: a „narancsbőr" nem bor,
             // a „sörhas" nem sör, a „kávészünet" nem kávé.

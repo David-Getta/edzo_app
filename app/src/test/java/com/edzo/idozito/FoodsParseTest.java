@@ -3429,6 +3429,15 @@ public class FoodsParseTest {
                 .size());
     }
 
+    @Test public void theMillimetreAndTheDeepWaterAreNotDrinks() {
+        // A „120/80 higanymilliméter" citromlevet, az „úsztam a mélyvízben"
+        // egy pohár vizet írt a naplóba.
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Vérnyomás 120/80 higanymilliméter").isEmpty());
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Úsztam 1 km-t a mélyvízben").isEmpty());
+    }
+
     @Test public void theAlarmClockRingingIsNotBeer() {
         // A „6:30-kor csörgött az óra" fél liter sört írt a reggelihez.
         assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
