@@ -654,6 +654,25 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\d,.:])([2-9]\\d|[1-4]\\d{2})\\s?-\\s?"
                 + "(?:nal|nel|val|vel|mal|zal|zel|szal|szel|tal|tel|cal|cel|gyel)"
                 + "(?![\\p{L}])", "$1 kg");
+        // A SOROZATSZÁM ELÖL, AZ ISMÉTLÉS HÁTUL: a „2x fekvőtámasz 20, 3x
+        // guggolás 15" egyetlen húszas és egyetlen tizenötös sorozat lett –
+        // a „2x" és a „3x" gazdátlanul maradt a név előtt. A „név NxR"
+        // alakot rég értjük, ezért azzá írjuk át; a súlyos és a perces
+        // szám nem ismétlés.
+        text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s+(\\p{L}{3,}(?:\\s+\\p{L}{4,})?)"
+                + "\\s+(\\d{1,3})(?!\\d|[.,]\\d|[x×:-])(?!\\s?(?:kg|kil[oó]|perc|mp|m[aá]sodperc"
+                + "|km|m(?![\\p{L}])|%|-?[aeoö]s|-?t[oó]l|-?ig|-?kor|-?[nv][ae]l|-?[mz][ae]l))",
+                "$2 $1x$3");
+        // Ugyanez SÚLLYAL, ismétlés nélkül: a „3x fekvenyomás 80 kg" három
+        // sorozat nyolcvan kilóval – az ismétlés ismeretlen, ahogy a „3 szett
+        // guggolás 60 kg" alaknál is.
+        text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s+(\\p{L}{3,}(?:\\s+\\p{L}{4,})?)"
+                + "\\s+(\\d{2,3}(?:[.,]\\d)?)\\s?(kg|kil[oó]\\p{L}*)(?![\\p{L}])",
+                "$2 $1x1 $3 $4");
+        // A TARTÁSNÁL a szám másodperc: a „3x plank 60 mp" három egyperces.
+        text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s+(plank|deszka|fal\\s?-?[uü]l[eé]s"
+                + "|wall\\s?sit|hollow)\\p{L}*\\s+(\\d{1,3})\\s?(mp|m[aá]sodperc|perc)(?![\\p{L}])",
+                "$2 $1x$3 $4");
         // Az „1x 150 KG" egyetlen ismétlés a kimondott súllyal, nem
         // százötven ismétlés: a „guggolás 1x 150 kg, utána 3x5 120 kg"
         // bejegyzése „15-5-5-5 × 150 kg" torzó lett, a „felhúzás 140 kg

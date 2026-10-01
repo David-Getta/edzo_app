@@ -726,6 +726,13 @@ public class ActivitiesParseTest {
                 + "órát, és 8000 lépést sétáltam"));
     }
 
+    @Test public void setsBeforeTheExerciseAreNotSessions() {
+        // A „2x fekvőtámasz 20, 3x guggolás 15" két kondi-alkalom lett.
+        Activities.Parsed p = Activities.parse("2x fekvotamasz 20, 3x guggolas 15");
+        assertEquals(1, p.total());
+        assertEquals("kondi", p.plans.get(0).kind.id);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

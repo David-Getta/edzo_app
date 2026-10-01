@@ -1312,6 +1312,21 @@ public final class Activities {
         s = s.replaceAll("(?<![a-z])(?:suly|sulyom|sulya|testsuly|testsulyom)"
                 + "\\s*:?\\s*(\\d{2,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo\\w*)?"
                 + "(?!\\d|[.,]\\d)(?!\\s?(?:km|perc|ora|lepes|m(?![a-z])))", " ");
+        // A SOROZATSZÁM ELÖL, AZ ISMÉTLÉS HÁTUL: a „2x fekvőtámasz 20, 3x
+        // guggolás 15" KÉT kondi-alkalom lett – a „2x" alkalomszámnak
+        // látszott. A „név NxR" alak egy alkalom, azzá írjuk át.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2})\\s?x\\s+(fekvotamasz|guggolas|felules"
+                + "|huzodzkodas|burpee|kitores|hasizom|haspres|plank|tolodzkodas"
+                + "|hasprest|labemeles|hidazas|lunge|squat)\\w*\\s+(\\d{1,3})"
+                + "(?!\\d|[.,]\\d|[x:-])(?!\\s?(?:kg|kilo|perc|mp|km|m(?![a-z])|%))", "$1x$3 $2");
+        // SÚLLYAL is egy alkalom: a „3x fekvenyomás 80 kg" három sorozat.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2})\\s?x\\s+(fekvenyomas|guggolas|felhuzas"
+                + "|holtemeles|vallnyomas|evezes|kitores|labtolas|vallbol)\\w*\\s+"
+                + "(\\d{2,3}(?:[.,]\\d)?)\\s?(kg|kilo\\w*)(?![a-z])", "$2 $1x1 $3 $4");
+        // A TARTÁSNÁL a szám másodperc, de a „3x plank 60 mp" ugyanúgy egy
+        // alkalom, nem három.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2})\\s?x\\s+(plank|deszka|fal ules|falules)"
+                + "\\w*\\s+(\\d{1,3})\\s?(mp|masodperc|perc)(?![a-z])", "$2 $1x$3 $4");
         // A naGYMama közepén a „gym" ül, ezért a szó a sport-maszkra került
         // – csakhogy a maszk az ALANYT is eltünteti, és a „nagymamám
         // mindennap tornázik 20 percet" húsz perc jóga lett a MI naplónkban.

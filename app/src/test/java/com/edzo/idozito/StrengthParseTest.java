@@ -2953,4 +2953,13 @@ public class StrengthParseTest {
         assertEquals("Húzódzkodás 3×8/8/8@0 | Tolódzkodás 3×10/10/10@0",
                 sum("húzódzó 3x8, dip 3x10"));
     }
+
+    @Test public void setsBeforeTheNameAndRepsAfterIt() {
+        // A „2x fekvőtámasz 20, 3x guggolás 15" egyetlen húszas és egyetlen
+        // tizenötös sorozat lett.
+        assertEquals("Fekvőtámasz 2×20/20@0 | Guggolás 3×15/15/15@0",
+                sum("2x fekvotamasz 20, 3x guggolas 15"));
+        // A súly nem ismétlés.
+        assertSets("3x fekvenyomás 80 kg", "Fekvenyomás", 3, 1, 80);
+    }
 }
