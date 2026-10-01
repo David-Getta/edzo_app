@@ -5828,6 +5828,12 @@ public final class Activities {
                 // „Kedden úszás, csütörtökön futás": sorrendben párosítva.
                 for (int i = 0; i < n; i++)
                     for (int k = 0; k < out.get(i).count; k++) ex.add(wdBacks.get(i)[2]);
+            } else if (totalCount(out) == n) {
+                // „Kedden és csütörtökön 5-5 km, szombaton 12 km": az
+                // alkalmak száma egyezik a napokéval, alkalmanként egy nap –
+                // eddig mind a legutóbbi napra, vagyis mára került.
+                for (int i = 0, d = 0; i < out.size(); i++)
+                    for (int k = 0; k < out.get(i).count; k++) ex.add(wdBacks.get(d++)[2]);
             } else {
                 // Nem egyértelmű párosítás: minden a legutóbbi megnevezett napra.
                 int minB = Integer.MAX_VALUE;
@@ -6432,6 +6438,20 @@ public final class Activities {
         // sorozat-száma tizenkét naposra tágította az időszakot, pedig egy
         // mozgás sem került bele. Az üres eredmény mindig egyetlen nap.
         if (out.isEmpty()) return new Parsed(out, 1, offset, findHour(s));
+        // A HÉT KERETÉBEN megnevezett nap az övé: az „ezen a héten még csak
+        // 1x, tegnap 40 perc kondi" kondija MÁRA került – a hét időszaka
+        // elvitte a tegnapot. Egyetlen alkalom megnevezett nappal arra a
+        // napra megy, a hét csak keret.
+        if (days > 1 && out.size() == 1 && out.get(0).count == 1) {
+            java.util.List<int[]> rel = findRelativeDays(q, false);
+            if (rel != null && rel.size() == 1 && rel.get(0)[2] > 0 && rel.get(0)[3] == 0)
+                return new Parsed(out, 1, rel.get(0)[2], findHour(s));
+            // A „MÚLT HÉTEN KEDDEN futottam" keddje ugyanígy: a hét csak
+            // keret, a nap a keddé – a „múlt" miatt az előző hét keddje.
+            java.util.List<int[]> wd = rel == null ? findWeekdays(q, now) : null;
+            if (wd != null && wd.size() == 1)
+                return new Parsed(out, 1, wd.get(0)[2], findHour(s));
+        }
         return new Parsed(out, days, offset, findHour(s));
     }
 
@@ -6603,13 +6623,25 @@ public final class Activities {
      * A jelzőnek a napnév ELŐTT kell állnia, különben a „kedden futottam,
      * múlt heti tempóval" keddje is elcsúszna.
      */
-    private static int lastWeekShift(String s, int dayPos, int back) {
+    private static int lastWeekShift(String s, int dayPos, int back, int todayIdx) {
         int b = Math.max(0, dayPos - 14);
         String head = s.substring(b, dayPos);
         // TELJES szó: a „multisport kedden" nem múlt heti kedd.
         java.util.regex.Matcher m = java.util.regex.Pattern
                 .compile("(?<![a-z])mult(?![a-z])").matcher(head);
-        return m.find() ? back + 7 : back;
+        if (!m.find()) return back;
+        // A „MÚLT SZOMBATON" csütörtökön írva a legutóbbi szombat: az a MÚLT
+        // héten volt, nincs mit visszaléptetni – eddig tizenkét napja lett
+        // belőle öt helyett. Csak akkor lép vissza egy hetet, ha a nap
+        // legutóbbi előfordulása még erre a hétre esik (hétfőtől máig).
+        return back <= todayIdx ? back + 7 : back;
+    }
+
+    /** A tervek alkalmainak összege. */
+    private static int totalCount(List<Plan> ps) {
+        int n = 0;
+        for (Plan p : ps) n += p.count;
+        return n;
     }
 
     /** Minden megnevezett hétköznap: {kezdet, vég, hány napja} a szöveg sorrendjében. */
@@ -6630,7 +6662,8 @@ public final class Activities {
                 if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
                 int end = p + w[0].length();
                 while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
-                int back = lastWeekShift(s, p, (today - Integer.parseInt(w[1]) + 7) % 7);
+                int back = lastWeekShift(s, p, (today - Integer.parseInt(w[1]) + 7) % 7,
+                        (today + 5) % 7);
                 out.add(new int[]{p, end, back});
             }
         }
@@ -8512,7 +8545,7 @@ public final class Activities {
             if (p > 0 && Character.isLetter(s.charAt(p - 1))) continue;
             int end = p + w[0].length();
             while (end < s.length() && Character.isLetter(s.charAt(end))) end++;
-            int back = lastWeekShift(s, p, (today - Integer.parseInt(w[1]) + 7) % 7);
+            int back = lastWeekShift(s, p, (today - Integer.parseInt(w[1]) + 7) % 7, (today + 5) % 7);
             return new int[]{p, end, back};
         }
         return null;

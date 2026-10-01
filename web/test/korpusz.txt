@@ -205,6 +205,8 @@ Reggel kondi 60 perc, este 30 perc futás és 30 perc séta
 Alvás 7h20m, lépés 8432, kcal 2100
 Kcal: 1750, lépés: 9000
 7:30 alvás, 54 pulzus, 79,8 kg
+Ezen a héten még csak 1x, tegnap 40 perc kondi
+Múlt héten kedden futottam
 SUP 45 perc a Balatonon
 SUP-oztunk 1 órát
 Ma 3 kör: 15 guggolás, 300 m evezés.
@@ -2235,6 +2237,7 @@ múlt kedden futottam
 kedden futottam
 múlt hétfőn kondi
 múlt szombaton túra
+múlt vasárnap túra
 tegnap hajnalban futottam
 múlt pénteken hajnalban futás
 megállt a lánc 

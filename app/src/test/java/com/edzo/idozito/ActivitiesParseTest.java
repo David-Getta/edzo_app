@@ -676,6 +676,30 @@ public class ActivitiesParseTest {
         assertEquals(54, Pulse.parse("7:30 alvás, 54 pulzus, 79,8 kg"));
     }
 
+    /**
+     * A hét csak keret: a benne megnevezett nap az övé.
+     *
+     * Az „ezen a héten még csak 1x, tegnap 40 perc kondi" kondija MÁRA
+     * került, a „múlt héten kedden futottam" futása szintén – a hét
+     * időszaka elvitte a napot.
+     */
+    @Test public void theNamedDayInsideTheWeekFrameWins() {
+        // 2026. szeptember 30., szerda dél.
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.SEPTEMBER, 30, 12, 0, 0);
+        long wed = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse("Ezen a héten még csak 1x, "
+                + "tegnap 40 perc kondi", wed);
+        assertEquals(1, p.days);
+        assertEquals(1, p.offset);
+        p = Activities.parse("Múlt héten kedden futottam", wed);
+        assertEquals(1, p.days);
+        assertEquals(8, p.offset);
+        // A heti összesítő több alkalma marad a héten.
+        assertEquals(7, Activities.parse("Múlt héten 3x futottam", wed).days);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

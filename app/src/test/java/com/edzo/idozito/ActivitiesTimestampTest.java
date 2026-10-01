@@ -165,7 +165,10 @@ public class ActivitiesTimestampTest {
         assertEquals(8, Activities.parse("múlt kedden futottam", WED_NOON).offset);
         assertEquals(1, Activities.parse("kedden futottam", WED_NOON).offset);
         assertEquals(9, Activities.parse("múlt hétfőn kondi", WED_NOON).offset);
-        assertEquals(11, Activities.parse("múlt szombaton túra", WED_NOON).offset);
+        // A SZOMBAT szerdán írva már a múlt héten volt: a „múlt szombaton" a
+        // legutóbbi szombat (négy napja), nem a tizenegy napja volt.
+        assertEquals(4, Activities.parse("múlt szombaton túra", WED_NOON).offset);
+        assertEquals(3, Activities.parse("múlt vasárnap túra", WED_NOON).offset);
     }
 
     @Test public void dawnIsItsOwnPartOfTheDay() {
