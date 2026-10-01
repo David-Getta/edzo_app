@@ -2015,6 +2015,23 @@ public final class Activities {
             hm.appendTail(hb);
             s = hb.toString();
         }
+        // A SPORTHELY MELLETTI hely nem sport: az „uszoda melletti
+        // kávézóban ültem 1 órát" negyvenöt perc úszást írt a naplóba. A
+        // helyhatározó csak megmondja, hol volt a kávézó.
+        s = s.replaceAll("(?<![a-z])(?:az?\\s+)?(?:uszoda|strand|konditerem|edzoterem"
+                + "|sportcsarnok|tornaterem|futopalya|focipalya|teniszpalya|stadion"
+                + "|jegpalya|sipalya|golfpalya|palya)\\w*\\s+(?:melletti|mellett|elotti"
+                + "|elott|mogotti|mogott|szemkozti|szemben|kozeleben|kozeli|felett"
+                + "|feletti|alatti)(?![a-z])", " ");
+        // A MÁSNAK TARTOTT edzés nem az enyém: az „edzőként tartottam 2 órás
+        // edzést, nem mozogtam sokat" kétórás mozgást írt a naplóba. Az
+        // edző saját mozgása (futottam velük) a maga igéjével marad.
+        s = s.replaceAll("(?<![a-z])(?:\\d{1,3}\\s?(?:oras|perces)\\s+)?(?:egy\\s+)?"
+                + "(?:edzest|orat|foglalkozast|treninget|orakat|edzeseket)\\s+"
+                + "(?:tartottam|tartottunk|vezettem|vezettunk)(?![a-z])", " tartottam");
+        s = s.replaceAll("(?<![a-z])(?:tartottam|tartottunk|vezettem|vezettunk)\\s+"
+                + "(?:egy\\s+)?(?:\\d{1,3}\\s?(?:oras|perces)\\s+)?"
+                + "(?:edzest|orat|foglalkozast|treninget)(?![a-z])", " tartottam");
         // A KUTYÁVAL LEMENNI séta: a „vacsora után még lementünk a kutyával
         // 25 percre" huszonöt perce nyomtalanul elveszett – az ige nem
         // mozgás-szó, a kutya sem.

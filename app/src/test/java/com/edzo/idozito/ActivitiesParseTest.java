@@ -744,6 +744,22 @@ public class ActivitiesParseTest {
         assertEquals("tura", p.plans.get(0).kind.id);
     }
 
+    @Test public void besideTheVenueAndCoachingOthersAreNotMine() {
+        // Az „uszoda melletti kávézóban ültem 1 órát" úszás, az „edzőként
+        // tartottam 2 órás edzést" kétórás mozgás lett.
+        assertTrue(Activities.parse("Az uszoda melletti kávézóban ültem 1 órát")
+                .plans.isEmpty());
+        assertTrue(Activities.parse("Edzőként tartottam 2 órás edzést, nem "
+                + "mozogtam sokat").plans.isEmpty());
+        // Az edző saját futása marad.
+        Activities.Parsed p = Activities.parse("Edzést tartottam a csapatnak, én "
+                + "is futottam velük 5 km-t");
+        assertEquals(1, p.plans.size());
+        assertEquals(5.0, p.plans.get(0).km, 0.01);
+        // Az uszodában úszott hossz úszás marad.
+        assertEquals("uszas", Activities.parse("Az uszodában 1 km").plans.get(0).kind.id);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")
