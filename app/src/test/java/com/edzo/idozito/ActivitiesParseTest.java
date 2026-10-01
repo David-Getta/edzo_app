@@ -760,6 +760,14 @@ public class ActivitiesParseTest {
         assertEquals("uszas", Activities.parse("Az uszodában 1 km").plans.get(0).kind.id);
     }
 
+    @Test public void aFastSlowPairTimesTheRepeats() {
+        // A „400 m gyors, 200 m lassú, 8 ismétlés" négyszáz méter lett.
+        Activities.Parsed p = Activities.parse("Futóintervall: 400 m gyors, "
+                + "200 m lassú, 8 ismétlés");
+        assertEquals(1, p.plans.size());
+        assertEquals(4.8, p.plans.get(0).km, 0.01);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

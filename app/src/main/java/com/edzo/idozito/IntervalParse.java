@@ -1068,8 +1068,13 @@ public final class IntervalParse {
      * „kör 40 mp munka” negyvene munkaidő, nem negyven kör.
      */
     private static int numberAfterColon(String s, String word) {
+        // A MÉRTÉKEGYSÉGES szám nem körszám: a „30 perces kör: 45 mp munka,
+        // 15 mp szünet" negyvenöt KÖRT kapott – a kettőspont utáni első szám
+        // a munka ideje volt.
         java.util.regex.Matcher m = java.util.regex.Pattern
-                .compile(word + "\\w*\\s?:\\s?(\\d{1,3})").matcher(s);
+                .compile(word + "\\w*\\s?:\\s?(\\d{1,3})(?![\\d.,])"
+                        + "(?!\\s?(?:mp|masodperc|perc|sec|min|s(?![a-z])|m(?![a-z])"
+                        + "|km|ora|kg))").matcher(s);
         if (m.find()) {
             try {
                 int v = Integer.parseInt(m.group(1));

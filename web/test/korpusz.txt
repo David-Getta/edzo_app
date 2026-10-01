@@ -221,6 +221,7 @@ Az uszoda melletti kávézóban ültem 1 órát
 Edzőként tartottam 2 órás edzést, nem mozogtam sokat
 Edzést tartottam a csapatnak, én is futottam velük 5 km-t
 Az uszodában 1 km
+Futóintervall: 400 m gyors, 200 m lassú, 8 ismétlés
 SUP 45 perc a Balatonon
 SUP-oztunk 1 órát
 Ma 3 kör: 15 guggolás, 300 m evezés.
@@ -4437,6 +4438,8 @@ Elolvastam egy cikket a HIIT edzésről
 Néztem egy HIIT videót
 HIIT videó alapján edzettem 20 percet
 20 perc HIIT
+Kell egy 30 perces kör: 45 mp munka, 15 mp szünet
+kör: 8, munka 30, pihenő 30
 vacsora 650 kcal
 energiaszelet 220 kcal
 müzliszelet 180 kalória

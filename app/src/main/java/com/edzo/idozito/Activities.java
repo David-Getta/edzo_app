@@ -2015,6 +2015,25 @@ public final class Activities {
             hm.appendTail(hb);
             s = hb.toString();
         }
+        // A GYORS–LASSÚ PÁR ismétlése a teljes táv: a „futóintervall: 400 m
+        // gyors, 200 m lassú, 8 ismétlés" négyszáz méteres futás lett – a
+        // két szakasz és a szorzó elveszett. Nyolcszor hatszáz méter 4,8 km.
+        {
+            java.util.regex.Matcher gl = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{2,4})\\s?m(?:eter\\w*)?\\s+(?:gyors|tempo\\w*|sprint\\w*"
+                    + "|iram\\w*)\\s*,?\\s*(?:(?:es|meg|majd)\\s+)?(\\d{2,4})\\s?m(?:eter\\w*)?\\s+"
+                    + "(?:lassu\\w*|laza\\w*|kocog\\w*|seta\\w*|setal\\w*|pihen\\w*)\\s*,?\\s*"
+                    + "(?:x\\s*)?(\\d{1,2})\\s?(?:x|ismetles\\w*|kor\\w*|szor|szer|alkalom)?(?![a-z\\d])")
+                    .matcher(s);
+            if (gl.find()) {
+                int a = Integer.parseInt(gl.group(1)), b = Integer.parseInt(gl.group(2));
+                int n = Integer.parseInt(gl.group(3));
+                if (n >= 2 && n <= 40 && (a + b) * n <= 60000) {
+                    String km = String.valueOf((a + b) * n / 1000.0).replace('.', ',');
+                    s = s.substring(0, gl.start()) + km + " km futas" + s.substring(gl.end());
+                }
+            }
+        }
         // A SPORTHELY MELLETTI hely nem sport: az „uszoda melletti
         // kávézóban ültem 1 órát" negyvenöt perc úszást írt a naplóba. A
         // helyhatározó csak megmondja, hol volt a kávézó.

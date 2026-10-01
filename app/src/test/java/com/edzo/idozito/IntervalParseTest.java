@@ -1079,4 +1079,15 @@ public class IntervalParseTest {
         assertNotNull(IntervalParse.parse("HIIT videó alapján edzettem 20 percet"));
         assertNotNull(IntervalParse.parse("20 perc HIIT"));
     }
+
+    @Test public void aTimedNumberAfterTheColonIsNotTheRoundCount() {
+        // A „30 perces kör: 45 mp munka, 15 mp szünet" negyvenöt kört kapott.
+        IntervalParse.Plan p = IntervalParse.parse("Kell egy 30 perces kör: 45 mp "
+                + "munka, 15 mp szünet");
+        assertEquals(30, p.rounds);
+        assertEquals(45, p.work);
+        assertEquals(15, p.rest);
+        // A puszta szám továbbra is körszám.
+        assertEquals(8, IntervalParse.parse("kör: 8, munka 30, pihenő 30").rounds);
+    }
 }
