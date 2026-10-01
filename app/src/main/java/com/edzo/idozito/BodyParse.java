@@ -324,6 +324,18 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // Az „Ő 80 kg, én 72" az én hetvenkét kilóm.
         q = Hu.contrastMine(q);
+        // Az „ADTAM LE" ugyanaz, mint a „leadtam": az „egy hónap alatt 3
+        // kilót adtam le, ma 77 kg" hetvenhét kilója elveszett – a szétvált
+        // igekötős alak nem volt mérés-ige, a három kiló viszont mérésnek
+        // látszott, és a kettő kioltotta egymást.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])adtam\\s+le(?![\\p{L}])", "leadtam")
+                .replaceAll("(?iu)(?<![\\p{L}])szedtem\\s+fel(?![\\p{L}])", "hiztam");
+        // Az ÁTLAG nem mai mérés: az „elmúlt héten átlagosan 79,5 kg voltam"
+        // mai mérésként ment a trendbe – a hét összefoglalója.
+        q = q.replaceAll("(?iu)[^,;.]*(?<![\\p{L}])[aá]tlag\\p{L}*[^,;.]*", " ");
+        // A „7-ESSEL KEZDŐDIK" a számjegy, nem mérés: a „végre 7-essel
+        // kezdődik: 79,8" méréséből semmi nem lett – a hetes elnémította.
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?-?[aeoö]?ss?[aeo]l\\s+kezd\\p{L}*", " ");
         // Az ANGOL „weight 78.2 kg" is mérés: eddig üresen jött vissza.
         q = q.replaceAll("(?iu)(?<![\\p{L}])(?:body\\s?)?weight(?![\\p{L}])", "súly");
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A

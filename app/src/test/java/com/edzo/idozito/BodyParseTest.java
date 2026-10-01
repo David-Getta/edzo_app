@@ -1422,6 +1422,15 @@ public class BodyParseTest {
         assertEquals(38.0, b.cm[4], 0.01);
     }
 
+    @Test public void lossVerbsAveragesAndTheLeadingDigit() {
+        // Az „egy hónap alatt 3 kilót adtam le, ma 77 kg" üres maradt, az
+        // „elmúlt héten átlagosan 79,5" mai mérés lett, a „végre 7-essel
+        // kezdődik: 79,8" üres maradt.
+        assertEquals(77.0, BodyParse.parse("Egy hónap alatt 3 kilót adtam le, ma 77 kg").kg, 0.01);
+        assertTrue(BodyParse.parse("Az elmúlt héten átlagosan 79,5 kg voltam").kg <= 0);
+        assertEquals(79.8, BodyParse.parse("Végre 7-essel kezdődik: 79,8").kg, 0.01);
+    }
+
     @Test public void aLiftedWeightIsNotTheScale() {
         assertTrue(BodyParse.parse("Régen 100 kg-ot nyomtam, most 80-at.").isEmpty());
         assertTrue(BodyParse.parse("Régen 90 kilót toltam, most 110-et.").isEmpty());
