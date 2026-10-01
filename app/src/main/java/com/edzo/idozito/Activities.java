@@ -1305,6 +1305,11 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A SZÓKÖZÖS „+" tagmondat-határ: az „úszás 30 perc + 10 perc szauna"
+        // úszása NEGYVENÖT perc lett – a szauna mozdulatlan perce egy
+        // tagmondatban állt az úszáséval, és mindkettőt elvitte. (A „+10 kg"
+        // súlyjelölésben nincs szóköz, az marad.)
+        s = s.replaceAll("\\s\\+\\s", ", ");
         // A SÚLY SZÁMA nem táv: a „ma reggel súly 77,9, este futás 5 km"
         // bejegyzésébe egy hetvenhét kilométeres, hétórás futás is került –
         // a mérleg kiló nélkül írt száma a kilométer-olvasóhoz esett. A súly
@@ -1705,6 +1710,28 @@ public final class Activities {
                     + "|szombaton|vasarnap|hetfon|kedden|szerdan"
                     + "|csutortokon|penteken)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])megy(?:ek|unk)(?![a-z])", "mentem");
+        // Az ÚSZÁSNEM UTÁN ÁLLÓ szám ugyanaz a szakasz: az „úszás: gyors
+        // 500, hát 300, mell 200" ezer métere ötszázra olvadt – csak az
+        // „500 gyors" szórendet ismertük. Két úszásnemes pár (legalább az
+        // egyik nem a mell, amely testrész is) már úszóedzés, akkor is, ha
+        // az úszás szava hiányzik. Körfogat-szavak mellett ez mérés marad.
+        String strokeNum = "(?<![a-z])(gyors|hat|mell|pillango|vegyes)\\s?:?\\s?"
+                + "(\\d{2,4})(?:\\s?(?:m|meter\\w*)(?![a-z]))?"
+                + "(?!\\d|[,.]\\d|x|\\s?(?:kg|km|cm|perc|p(?![a-z])|mp|ora|db|x))";
+        java.util.regex.Matcher spn = java.util.regex.Pattern.compile(strokeNum)
+                .matcher(s);
+        int strokePairs = 0;
+        boolean strokeNotChest = false;
+        while (spn.find()) {
+            strokePairs++;
+            if (!spn.group(1).equals("mell")) strokeNotChest = true;
+        }
+        if (strokePairs >= 2 && strokeNotChest
+                && !s.matches("(?s).*(?<![a-z])(?:derek\\w*|csipo\\w*"
+                    + "|comb\\w*|cm|centi\\w*|korfogat\\w*)(?![a-z]).*")) {
+            s = s.replaceAll(strokeNum, "$2 m $1");
+            if (!s.matches("(?s).*(?<![a-z])usz\\w*.*")) s = "uszas " + s;
+        }
         // Az ÚSZÁSNEMEK szakaszai egy edzés részei: az „úszásom 1000 m
         // volt gyorson, 400 m mellen, 200 m háton" ezerhatszáz métere
         // KÉT bejegyzésre esett szét, és a kétszáz méter el is veszett.
@@ -2274,7 +2301,11 @@ public final class Activities {
                     // A címkétlen köztes sorozat („…, 6x400 m, …") is
                     // szakasz: a tagmondat-határ előtt állva ugyanabba az
                     // edzésbe tartozik.
-                    + "(?=bemelegites|levezetes|tempo|gyors|lassu|iram"
+                    // A SPRINT és az úszásnem is szakasz-címke: az „uszoda:
+                    // bemelegítés 200 m, 8x50 m sprint, levezetés 200 m"
+                    // nyolcszor ötvenese kimaradt az összegből.
+                    + "(?=bemelegites|levezetes|tempo|gyors|lassu|iram|sprint"
+                    + "|vegyes|mell(?![a-z])|hat(?![a-z])|haton|pillango|laza"
                     + "|\\s*[,;.]|\\s*$)").matcher(s);
             double sum = 0;
             int n = 0, first = -1, firstEnd = -1;
@@ -8039,7 +8070,9 @@ public final class Activities {
         // 1485 helyett.
         int pool = POOL_M;
         java.util.regex.Matcher ps = java.util.regex.Pattern.compile(
-                "(?<![\\d,.])(\\d{2})\\s?-?(?:[oa]s|m-?es|meteres)\\s?"
+                // Az „50-ES" is: a „40 hossz a 50-es medencében" eddig a
+                // huszonötös alapértékkel számolt, és a táv fele lett.
+                "(?<![\\d,.])(\\d{2})\\s?-?(?:[oae]s|m-?es|meteres)\\s?"
                 + "medence"
                 // A FORDÍTOTT szórend ugyanaz a hossz: az „a medence 33
                 // méteres, 30 hosszt úsztam" a huszonötös alapértékkel
@@ -8083,7 +8116,7 @@ public final class Activities {
         if (!done) return;
         java.util.regex.Matcher pm = java.util.regex.Pattern
                 .compile("(?<![\\d,.])\\d{1,3}\\s?meteres(?![a-z])"
-                        + "|(?<![\\d,.])\\d{2}\\s?-?[oa]s(?=\\s?medence)")
+                        + "|(?<![\\d,.])\\d{2}\\s?-?[oae]s(?=\\s?medence)")
                 .matcher(new String(q));
         while (pm.find()) blank(q, pm.start(), pm.end());
         // A PUSZTA „medence" szándékosan nem úszás-tő (a medence testrész

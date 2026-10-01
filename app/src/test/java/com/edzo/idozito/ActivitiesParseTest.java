@@ -863,6 +863,34 @@ public class ActivitiesParseTest {
                 .plans.get(0).kind.id);
     }
 
+    /**
+     * Az úszásnem utáni szám is szakasz.
+     *
+     * Az „úszás: gyors 500, hát 300, mell 200" ezer métere ötszázra
+     * olvadt, a „40 hossz a 50-es medencében" a huszonötös alapértékkel
+     * számolt, az uszodai sprint-sorozat kimaradt az összegből, a „+ 10
+     * perc szauna" pedig az úszás perceihez adódott.
+     */
+    @Test public void strokeFirstListsAndPoolSizesAddUp() {
+        assertEquals(1.0, Activities.parse("\u00dasz\u00e1s: gyors 500, "
+                + "h\u00e1t 300, mell 200").plans.get(0).km, 0.01);
+        Activities.Plan p = Activities.parse("Gyors 500, h\u00e1t 300, mell 200")
+                .plans.get(0);
+        assertEquals("uszas", p.kind.id);
+        assertEquals(1.0, p.km, 0.01);
+        assertEquals(1.0, Activities.parse("Uszod\u00e1ban voltam: gyors 500 m, "
+                + "h\u00e1t 300 m, mell 200 m").plans.get(0).km, 0.01);
+        assertEquals(2.0, Activities.parse("40 hossz a 50-es medenc\u00e9ben")
+                .plans.get(0).km, 0.01);
+        assertEquals(0.8, Activities.parse("Uszoda: bemeleg\u00edt\u00e9s 200 m, "
+                + "8x50 m sprint, levezet\u00e9s 200 m").plans.get(0).km, 0.01);
+        assertEquals(30, Activities.parse("\u00dasz\u00e1s 30 perc + 10 perc "
+                + "szauna").plans.get(0).minutes);
+        // A mérés-felsorolás nem úszás.
+        assertTrue(Activities.parse("Mell 102, der\u00e9k 84, cs\u00edp\u0151 100")
+                .isEmpty());
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

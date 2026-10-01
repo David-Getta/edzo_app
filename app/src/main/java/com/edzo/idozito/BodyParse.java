@@ -370,6 +370,23 @@ public final class BodyParse {
         // csípőként ment be – minden egy hellyel elcsúszott.
         q = q.replaceAll("(?iu)(?<![\\p{L}])nyak\\p{L}*\\s*:?\\s*\\d{2,3}(?:[.,]\\d)?"
                 + "\\s?(?:cm|centi\\p{L}*)?(?![\\p{L}\\d])", " ");
+        // Az ÚSZÁSNEM száma táv, nem mérés: az „úszás: gyors 500, hát 300,
+        // mell 200" kétszáz centis mellbőséget, a „gyors 500 m, hát 300 m,
+        // mell 200 m" kétszáz kilós testsúlyt írt a trendbe. Úszás-szó
+        // vagy két úszásnemes pár mellett a pár kiesik; a centis vagy
+        // kilós szám mérés marad.
+        String strokeTail = "\\s?:?\\s?\\d{2,4}(?!\\d|[,.]\\d|\\s?(?:cm|centi|kg|kil[oó]))"
+                + "(?:\\s?(?:m|m[eé]ter\\p{L}*)(?![\\p{L}]))?";
+        String stroke = "(?<![\\p{L}])(?:gyors|h[aá]t|mell|pillang[oó]|vegyes)";
+        java.util.regex.Matcher sw = java.util.regex.Pattern
+                .compile("(?iu)" + stroke + strokeTail).matcher(q);
+        int swPairs = 0;
+        while (sw.find()) swPairs++;
+        if (swPairs >= 2 || (swPairs == 1
+                && q.matches("(?isu).*(?<![\\p{L}])(?:[uú]sz|uszod)\\p{L}*.*")))
+            q = q.replaceAll("(?iu)" + stroke + strokeTail, " ")
+                    .replaceAll("(?iu)(?<![\\d,.])\\d{2,4}\\s?(?:m|m[eé]ter\\p{L}*)?\\s+"
+                            + "(?:gyors|h[aá]t|mell|pillang[oó]|vegyes)(?![\\p{L}])", " ");
         // A BAL ÉS A JOBB oldal ugyanaz a testrész: a „felkar 38 cm bal,
         // 38,5 jobb" harmincnyolc és felese TESTSÚLY lett a trendben. A
         // második oldal száma a kar másik mérete, nem a mérleg; az első

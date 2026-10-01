@@ -1341,6 +1341,21 @@ public class BodyParseTest {
                 .cm[2], 0.01);
     }
 
+    @Test public void aStrokeFirstSwimListIsNoMeasurement() {
+        // Az „úszás: gyors 500, hát 300, mell 200" kétszáz centis
+        // mellbőséget, a méteres változata kétszáz kilós testsúlyt írt.
+        assertTrue(BodyParse.parse("\u00dasz\u00e1s: gyors 500, h\u00e1t 300, "
+                + "mell 200").isEmpty());
+        assertTrue(BodyParse.parse("Gyors 500, h\u00e1t 300, mell 200").isEmpty());
+        assertTrue(BodyParse.parse("Uszod\u00e1ban voltam: gyors 500 m, "
+                + "h\u00e1t 300 m, mell 200 m").isEmpty());
+        // A mérés-felsorolás mellje és az úszás melletti centis mell marad.
+        assertEquals(102.0, BodyParse.parse("Mell 102, der\u00e9k 84, "
+                + "cs\u00edp\u0151 100").cm[2], 0.01);
+        assertEquals(98.0, BodyParse.parse("\u00dasz\u00e1s 1 km, mell 98 cm")
+                .cm[2], 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);
