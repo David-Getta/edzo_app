@@ -84,7 +84,8 @@ public class FoodsPieceTest {
         assertEquals(2 * 500, one("2 korsó sör").grams, 0.01);
         assertEquals(2 * 500, one("2 sör").grams, 0.01);
         assertEquals(2 * 150, one("két pohár bor").grams, 0.01);
-        assertEquals(2 * 40, one("2 feles pálinka").grams, 0.01);
+        // A feles fél deci, a pohár tömény négy centi.
+        assertEquals(2 * 50, one("2 feles pálinka").grams, 0.01);
         assertEquals(3 * 200, one("3 kávé").grams, 0.01);
         assertEquals(2 * 250, one("2 cappuccino").grams, 0.01);
         // A mért mennyiség erősebb a darabnál.

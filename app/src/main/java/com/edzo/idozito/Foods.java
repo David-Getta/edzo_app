@@ -2365,6 +2365,8 @@ public final class Foods {
              "szeletet", "szelettel",
              "gombóc", "gomboc", "pohar", "pohár",
              "korso", "korsó", "feles", "felespohar", "felespohár",
+             // A PALACK is darab: az „egy palack pezsgő" egy pohárnyi lett.
+             "palack", "palackot",
              // Az eszköz- és tárgyragos alak is a név UTÁN áll: a
              // „kávéból 4 csészével ittam" négy csészéje eddig elveszett.
              // A TÁNYÉR is: az „ebédre gulyás 2 tányérral" kettője eddig
@@ -2410,7 +2412,7 @@ public final class Foods {
      */
     static final String[][] WATER_ML = {
             {"korty", "40"}, {"kortyot", "40"}, {"kortynyi", "40"},
-            {"uveg", "500"}, {"üveg", "500"},
+            {"uveg", "500"}, {"üveg", "500"}, {"palack", "500"}, {"palackot", "500"},
             // A kulacs az edzőtermi alapfelszerelés – fél literrel számolunk.
             {"kulacs", "500"}, {"kulaccsal", "500"},
             {"kancso", "1000"}, {"kancsó", "1000"},
@@ -3494,8 +3496,12 @@ public final class Foods {
         // A RAGTALAN „feles" is pálinka: a „két feles és egy sör" pálinkája
         // eddig elveszett – a ragos alakok (felest, felesek) régóta megvannak,
         // de a puszta szótő nem lehet étel-tő: a FELESLEGES is így kezdődik.
+        // A feles MÉRTÉK is marad (fél deci): a „3 feles pálinka" eddig
+        // „3 pálinka pálinka" lett, és a négycentis adaggal számolt.
         query = query.replaceAll("(?iu)((?:\\d{1,2}|egy|k[eé]t|h[aá]rom|n[eé]gy"
-                + "|[oö]t|hat)\\s+)feles(?!\\p{L})", "$1pálinka");
+                + "|[oö]t|hat)\\s+)feles(?!\\p{L})(?!\\s+(?:p[aá]link|t[oö]m[eé]ny"
+                + "|vodk|whisk|rum|gin|tequil|konyak|j[aá]germeister|unicum))",
+                "$1feles pálinka");
         // A KÖVETKEZŐ tagmondat litere a vízé: az „ittam sok vizet, kb
         // 2,5 litert" két és fél deci lett a két és fél liter helyett.
         query = query.replaceAll("(?iu)vizet,?\\s*(?:kb\\.?\\s*)?"
@@ -3985,6 +3991,16 @@ public final class Foods {
         // kettéosztás bevett alakja – a „ketten" szabálya érti.
         query = query.replaceAll("(?iu)(?<!\\p{L})felesben(?!\\p{L})",
                 "ketten");
+        // A MONDATVÉGI „ketten" ige nélkül is osztozás: az „egy üveg bor
+        // ketten" egész palackként ment be. Csak a rövid, „egy …" kezdetű
+        // mondatban: a „ketten voltunk a moziban, ettem egy popcornt"
+        // popcornja az enyém.
+        query = query.replaceAll("(?iu)^\\s*(?:egy|1)\\s+((?:\\p{L}+\\s+){0,2}?\\p{L}+)"
+                + "\\s+ketten\\s*[.!]?\\s*$", "fél $1")
+                .replaceAll("(?iu)^\\s*(?:egy|1)\\s+((?:\\p{L}+\\s+){0,2}?\\p{L}+)"
+                + "\\s+h[aá]rman\\s*[.!]?\\s*$", "harmad $1")
+                .replaceAll("(?iu)^\\s*(?:egy|1)\\s+((?:\\p{L}+\\s+){0,2}?\\p{L}+)"
+                + "\\s+n[eé]gyen\\s*[.!]?\\s*$", "negyed $1");
         // A MEGOSZTOTT fogás fejenként a töredéke: a „megosztottunk egy
         // pizzát ketten" és a „ketten ettük meg a pizzát" egész pizzaként
         // ment be – kétszer annyi kalóriával, mint amennyi megvolt.
@@ -4638,6 +4654,12 @@ public final class Foods {
         // mondja, hogy alig ivott belőle. Egy korty nagyjából két és fél
         // centi.
         if (unit.startsWith("korty")) return 25;
+        // A BOR ÜVEGE palack, háromnegyed liter: a „fél üveg vörösbor"
+        // hetvenöt milliliter lett – egy pohár fele. A FELES fél deci, nem
+        // a pultos négy centi.
+        if ((unit.equals("uveg") || unit.startsWith("palack"))
+                && (f.name.startsWith("Bor") || f.name.startsWith("Pezsg"))) return 750;
+        if (unit.equals("feles") && f.name.startsWith("Pálinka")) return 50;
         if (unit.startsWith("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
         // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
         // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a

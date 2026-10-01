@@ -1525,7 +1525,8 @@ public class FoodsParseTest {
         List<Foods.Hit> h = hits("k\u00e9t feles \u00e9s egy s\u00f6r");
         assertEquals(2, h.size());
         assertEquals("P\u00e1linka / t\u00f6m\u00e9ny", h.get(0).food.name);
-        assertEquals(80, h.get(0).grams, 0.01);
+        // A feles fél deci: két feles egy deci.
+        assertEquals(100, h.get(0).grams, 0.01);
         assertTrue(hits("felesleges volt az eg\u00e9sz").isEmpty());
     }
 
@@ -1534,6 +1535,18 @@ public class FoodsParseTest {
         assertEquals(1, h.size());
         assertEquals(150, h.get(0).grams, 0.01);
         assertEquals(150, hits("ketten ett\u00fck meg a pizz\u00e1t").get(0).grams, 0.01);
+    }
+
+    /**
+     * A bor palackja háromnegyed liter, a feles fél deci, a mondatvégi
+     * „ketten" osztozás.
+     */
+    @Test public void aWineBottleAShotAndATrailingShare() {
+        assertEquals(375, hits("Fél üveg vörösbor").get(0).grams, 0.01);
+        assertEquals(750, hits("Egy palack pezsgő").get(0).grams, 0.01);
+        assertEquals(150, hits("3 feles pálinka").get(0).grams, 0.01);
+        assertEquals(375, hits("Egy üveg bor ketten").get(0).grams, 0.01);
+        assertEquals(1000, hits("2 palack sör").get(0).grams, 0.01);
     }
 
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
