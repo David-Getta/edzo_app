@@ -134,7 +134,19 @@ public final class Sleep {
         double napH = 0;
         String hq = q;
         if (q != null) {
-            String n = Hu.digits(Foods.norm(q));
+            String n = Foods.norm(q);
+            // Az ÁGYBA és a záró FEL ugyanez tömören: a „11-kor ágyba, 7-kor fel"
+            // üresen jött vissza. (A „fel" csak a „-kor" UTÁN kelés: elöl a
+            // „fél 7-kor" fele.)
+            n = n.replaceAll("(?<![a-z])(\\d{1,2}(?::\\d{2})?)\\s?-?kor\\s+(?:az\\s+)?agyba"
+                    + "(?![a-z])", "$1-kor lefekudtem")
+                    .replaceAll("(?<![a-z])agyba\\s+(\\d{1,2}(?::\\d{2})?)\\s?-?kor(?![a-z])",
+                            "$1-kor lefekudtem");
+            if (n.contains("lefekudtem"))
+                n = n.replaceAll("(?<![a-z])(\\d{1,2}(?::\\d{2})?)\\s?-?kor\\s+fel"
+                        + "(?=\\s*(?:[,;.!]|$))", "$1-kor keltem");
+            // (A számnév-fordító ELŐTT: a „fel" különben „0,5" lesz.)
+            n = Hu.digits(n);
             // A számnév-fordító a „hetet"-ből puszta „7"-et csinál, ezért a
             // tagmondat végén álló csupasz szám is óra.
             n = n.replaceAll("(?<![a-z])(ejjel|ejszaka)\\s+(?:meg\\s+|pedig\\s+)?"
@@ -335,6 +347,8 @@ public final class Sleep {
                 + "(?![a-z])", "$1-kor lefekudtem");
         s = s.replaceAll("(?<![a-z])(\\d{1,2}(?::\\d{2})?)\\s?-?(?:kor\\s+)?"
                 + "(?:az\\s+)?ebreszto(?![a-z])", "$1-kor keltem");
+        // A TIZEDES tárgyragos óra is óra: az „aludtam 7,5-öt" hét lett.
+        s = s.replaceAll("(?<![\\d,.])(\\d{1,2}[.,]\\d)\\s?-?[aeo]?t(?![a-z])", "$1 orat");
         // A DÉLBEN is időpont: az „éjjeli műszakból jöttem, délben
         // feküdtem és 19-kor keltem" hét óra nappali alvás.
         s = s.replaceAll("(?<![a-z])delben(?![a-z])", "12-kor");

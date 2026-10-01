@@ -705,4 +705,10 @@ public class SleepTest {
         // Az óraszám-tartomány az alvás hossza marad.
         assertEquals(6.5, Sleep.parse("Alvás 6-7 óra"), 0.01);
     }
+    /** A tömör „11-kor ágyba, 7-kor fel" és a tizedes „7,5-öt" is alvás. */
+    @Test public void aTerseBedAndUpAndADecimalAccusative() {
+        assertEquals(8, Sleep.parse("11-kor ágyba, 7-kor fel"), 0.01);
+        assertEquals(7, Sleep.parse("Fél 12-kor ágyba, fél 7-kor fel"), 0.01);
+        assertEquals(7.5, Sleep.parse("Aludtam 7,5-öt"), 0.01);
+    }
 }

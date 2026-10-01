@@ -5496,6 +5496,9 @@ Alvás 22:30-6:15
 Alvás: 23-7, mély alvás 1,5 óra
 Alvás: 23-7, REM 1 óra 40 perc
 Alvás 6-7 óra
+11-kor ágyba, 7-kor fel
+Fél 12-kor ágyba, fél 7-kor fel
+Aludtam 7,5-öt
 a szakasz-nevek és -azonosítók száma eltér
 Fekvenyomás 3×10/10/10@60
 Guggolás 5×5/5/5/5/5@80
