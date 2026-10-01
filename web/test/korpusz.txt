@@ -227,6 +227,14 @@ A párom úszott 2 km-t, én 1-et
 A barátom 20 km-t tekert, én 15-öt
 Ő 8 órát aludt, én csak 5-öt
 A párom úszott 2 km-t
+Terv: 8 km, lett belőle 10
+Terv: 10 km futás, megvolt
+A terv 10 km volt, de csak 6 lett
+Terv: holnap 10 km
+A mai terv: 30 perc kondi
+Cél: heti 3 futás. Ma megvolt az első, 5 km
+Cél: heti 3 futás.
+A mai cél 10 000 lépés volt, 11 200 lett
 SUP 45 perc a Balatonon
 SUP-oztunk 1 órát
 Ma 3 kör: 15 guggolás, 300 m evezés.
@@ -5858,6 +5866,8 @@ Húzódzkodás 3×8/8/8@0 | Tolódzkodás 3×10/10/10@0
 húzódzó 3x8, dip 3x10
 Fekvőtámasz 2×20/20@0 | Guggolás 3×15/15/15@0
 3x fekvenyomás 80 kg
+Az edzőm 3x10-et írt, de csak 3x8 ment fekvenyomásból 60 kg-mal
+A terv 5x5 volt guggolásból 100 kg-mal, megvolt
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam

@@ -2551,6 +2551,11 @@ public final class Activities {
                 + "(?:\\p{L}{1,12}\\s*)?[,!]?\\s*"
                 + "sot\\s+(\\d[\\d ]{0,6}\\d)(?:\\s?lepes\\w*)?\\s+lett",
                 "$2 lepes");
+        // A CÉL SZÁMA ELŐL: „a mai cél 10 000 lépés volt, 11 200 lett" – a
+        // tízezres cél került a naplóba a valódi tizenegyezer-kétszáz helyett.
+        s = s.replaceAll("(?<![a-z])cel\\w*\\s+(?:\\w+\\s+){0,2}?\\d[\\d ]{0,6}\\d\\s?lepes\\w*"
+                + "\\s+volt\\s*,?\\s*(?:de\\s+|es\\s+|vegul\\s+)?(?:csak\\s+)?(\\d[\\d ]{0,6}\\d)"
+                + "(?:\\s?lepes\\w*)?\\s+lett", "$1 lepes");
         // A CÉL MELLETT A MAI SZÁM: a „10 000 lépés a napi célom, ma 6500
         // lett" bejegyzéséből SEMMI nem lett – a cél szava az egészet
         // elnémította, pedig a mondat vége kimondja a mai lépésszámot.
@@ -3849,8 +3854,11 @@ public final class Activities {
         // terv-szava eddig az EGÉSZET jövőnek minősítette, és a lefutott
         // hat kilométer is elveszett. Csak a terv saját mondatát dobjuk el,
         // és csak ha utána még áll valami.
+        // A CÉL-MONDAT ugyanígy: a „Cél: heti 3 futás. Ma megvolt az első,
+        // 5 km" öt kilométere a cél szava miatt elveszett.
         java.util.regex.Matcher hterv = java.util.regex.Pattern
-                .compile("(?:heti|napi|havi) terv\\s?:?[^.!?;]*[.!?;]").matcher(s);
+                .compile("(?:(?:heti|napi|havi) terv\\s?:?|(?<![a-z])(?:(?:heti|napi|havi)\\s+)?"
+                        + "cel(?:om|unk|ja)?\\s?:)[^.!?;]*[.!?;]").matcher(s);
         if (hterv.find() && hterv.end() < s.trim().length())
             s = s.substring(0, hterv.start()) + s.substring(hterv.end());
         // A PULZUSZÓNA száma nem darabszám: a „zóna 2 futás 40 perc" KÉT
@@ -4430,6 +4438,8 @@ public final class Activities {
         if (text == null) return new Parsed(out, 1, 0, 12);
         // Az „Ő 10 km-t futott, én 5-öt" az én öt kilométerem.
         text = Hu.contrastMine(text);
+        // A teljesült vagy módosult terv a megtörtént adat.
+        text = Hu.fulfilledPlan(text);
         // A LISTA sorszáma nem darabszám: az „1. 5 km futás / 2. 30 perc
         // kondi" kettese a felsorolás második pontja, és eddig KÉT
         // kondi-edzés lett belőle. A sor eleje csak a normalizálás ELŐTT

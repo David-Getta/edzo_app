@@ -790,6 +790,31 @@ public class ActivitiesParseTest {
         assertTrue(Activities.parse("A párom úszott 2 km-t").plans.isEmpty());
     }
 
+    /**
+     * A teljesült vagy módosult terv a megtörtént adat.
+     *
+     * A „terv: 8 km, lett belőle 10", a „terv: 10 km futás, megvolt" és a
+     * „terv 10 km volt, de csak 6 lett" a terv szava miatt üres maradt.
+     */
+    @Test public void aPlanThatHappenedIsTheEntry() {
+        assertEquals(10.0, Activities.parse("Terv: 8 km, lett belőle 10")
+                .plans.get(0).km, 0.01);
+        assertEquals(10.0, Activities.parse("Terv: 10 km futás, megvolt")
+                .plans.get(0).km, 0.01);
+        assertEquals(6.0, Activities.parse("A terv 10 km volt, de csak 6 lett")
+                .plans.get(0).km, 0.01);
+        // A puszta terv továbbra is terv.
+        assertTrue(Activities.parse("Terv: holnap 10 km").plans.isEmpty());
+        assertTrue(Activities.parse("A mai terv: 30 perc kondi").plans.isEmpty());
+        // A cél-mondat utáni napló a napló.
+        assertEquals(5.0, Activities.parse("Cél: heti 3 futás. Ma megvolt az "
+                + "első, 5 km").plans.get(0).km, 0.01);
+        assertTrue(Activities.parse("Cél: heti 3 futás.").plans.isEmpty());
+        // A lépés-cél után a valódi szám.
+        assertEquals(11200, Activities.parse("A mai cél 10 000 lépés volt, 11 200 lett")
+                .plans.get(0).steps);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")

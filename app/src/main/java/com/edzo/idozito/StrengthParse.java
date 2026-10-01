@@ -1024,6 +1024,10 @@ public final class StrengthParse {
                     + "(?:j[oö]v[oő]\\s+h[eé]ten|j[oö]v[oő]\\s+h[oó]napban"
                     + "|j[oö]v[oő]re|holnap\\w*|legk[oö]zelebb)"
                     + "(?![\\p{L}])[^,;.!]*", " ");
+        // A TELJESÜLT terv és az edző előírása mellett a megtörtént sorozat:
+        // „a terv 5x5 volt guggolásból 100 kg-mal, megvolt", „az edzőm
+        // 3x10-et írt, de csak 3x8 ment".
+        text = Hu.fulfilledPlan(text);
         if (Activities.looksLikeFuture(text)) return out;
         // A HETI BEOSZTÁS sem napló: a „hétfő mell és tricepsz, kedd hát és
         // bicepsz" azt írja le, mikor mit edz az ember – sorozatszám nincs

@@ -273,6 +273,36 @@ public final class Hu {
         return (head + m.group(5) + m.group(3) + tail).trim();
     }
 
+    /**
+     * A TELJESÜLT vagy MÓDOSULT terv a megtörtént adat.
+     *
+     * Az „az edzőm 3x10-et írt, de csak 3x8 ment fekvenyomásból 60 kg-mal"
+     * erőnaplója üres maradt – az edző tagmondata más alanynak látszott; „a
+     * terv 5x5 volt guggolásból 100 kg-mal, megvolt" és a „terv: 8 km, lett
+     * belőle 10" pedig a terv szava miatt jövőnek. Az előírás és a terv
+     * tagmondata kiesik, a megtörtént adat marad.
+     */
+    public static String fulfilledPlan(String s) {
+        if (s == null) return null;
+        // „A terv 10 km volt, de csak 6 lett."
+        s = s.replaceAll("(?iu)^\\s*(?:a\\s+)?(?:mai\\s+)?terv(?:em)?\\s*:?\\s*\\d{1,3}(?:[.,]\\d)?\\s?"
+                + "(km|perc|k[oö]r|l[eé]p[eé]s)(\\s+\\p{L}+)?\\s+volt\\s*,\\s*(?:de\\s+|v[eé]g[uü]l\\s+)?"
+                + "(?:csak\\s+|m[aá]r\\s+)?(\\d{1,3}(?:[.,]\\d)?)\\s+lett(?![\\p{L}])", "$3 $1$2");
+        // Az előírás tagmondata, „de" után a valóság.
+        s = s.replaceAll("(?iu)^[^,;.]*(?:edz[oő]m|tr[eé]nerem|a\\s+terv|tervem|programom"
+                + "|az\\s+app|az\\s+alkalmaz[aá]s)[^,;.]*?(?:[ií]rt|el[oő][ií]rt|adott|mondott"
+                + "|mondta|k[eé]rt|volt)(?![\\p{L}])[^,;.]*,\\s*(?:de|viszont|v[eé]g[uü]l)\\s+", "");
+        // A terv, ami MEGVOLT.
+        s = s.replaceAll("(?iu)^\\s*(?:a\\s+)?(?:mai\\s+)?terv(?:em)?\\s*:?\\s*([^,;]*?\\d[^,;]*?)\\s*,"
+                + "\\s*(?:(?:[eé]s\\s+)?(?:meg\\s+is\\s+)?(?:megvolt|meglett|megcsin[aá]ltam"
+                + "|siker[uü]lt|teljes[uü]lt|hoztam|letoltam|lenyomtam))\\s*[.!]*\\s*$", "$1");
+        // A terv, amiből MÁS LETT: „terv: 8 km, lett belőle 10".
+        s = s.replaceAll("(?iu)^\\s*(?:a\\s+)?(?:mai\\s+)?terv(?:em)?\\s*:?\\s*\\d{1,3}(?:[.,]\\d)?\\s?"
+                + "(km|perc|k[oö]r|l[eé]p[eé]s)(\\s+\\p{L}+)?\\s*,\\s*(?:de\\s+|v[eé]g[uü]l\\s+)?"
+                + "lett\\s+(?:bel[oő]le\\s+)?(\\d{1,3}(?:[.,]\\d)?)(?![\\d,.])", "$3 $1$2");
+        return s;
+    }
+
     /** A múlt idejű harmadik személyű igét első személyűre írja („futott" → „futottam"). */
     private static String firstPerson(String part) {
         java.util.regex.Matcher v = java.util.regex.Pattern

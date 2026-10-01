@@ -2962,4 +2962,13 @@ public class StrengthParseTest {
         // A súly nem ismétlés.
         assertSets("3x fekvenyomás 80 kg", "Fekvenyomás", 3, 1, 80);
     }
+
+    @Test public void thePrescribedAndThePlannedSetsGiveWayToTheDoneOnes() {
+        // Az „az edzőm 3x10-et írt, de csak 3x8 ment" és „a terv 5x5 volt
+        // guggolásból 100 kg-mal, megvolt" erőnaplója üres maradt.
+        assertSets("Az edzőm 3x10-et írt, de csak 3x8 ment fekvenyomásból 60 kg-mal",
+                "Fekvenyomás", 3, 8, 60);
+        assertSets("A terv 5x5 volt guggolásból 100 kg-mal, megvolt",
+                "Guggolás", 5, 5, 100);
+    }
 }
