@@ -3438,6 +3438,25 @@ public class FoodsParseTest {
                 "Úsztam 1 km-t a mélyvízben").isEmpty());
     }
 
+    @Test public void theShakeIsThePowdersDrink() {
+        // A „fehérjeshake: 30 g fehérjepor 3 dl tejjel" turmixot és port is
+        // írt, összecserélt mennyiségekkel.
+        java.util.List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
+        java.util.List<Foods.Hit> h = Foods.parse(all, "Fehérjeshake: 30 g fehérjepor 3 dl tejjel");
+        assertEquals(2, h.size());
+        double powder = 0, milk = 0;
+        for (Foods.Hit x : h) {
+            if (x.food.name.startsWith("Fehérjepor")) powder = x.grams;
+            if (x.food.name.startsWith("Tej")) milk = x.grams;
+        }
+        assertEquals(30, powder, 0.01);
+        assertEquals(300, milk, 0.01);
+        // A zárójeles tápérték nem a por grammja.
+        h = Foods.parse(all, "Shake: 1 adag fehérjepor (24 g fehérje) tejjel");
+        for (Foods.Hit x : h)
+            if (x.food.name.startsWith("Fehérjepor")) assertEquals(30, x.grams, 0.01);
+    }
+
     @Test public void hisPlateAgainstMinePlateIsNotMine() {
         // A „párommal vacsiztunk: ő lazacot, én steaket krumplival" lazaca a
         // naplómba került.

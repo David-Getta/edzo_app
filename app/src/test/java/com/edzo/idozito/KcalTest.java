@@ -741,4 +741,17 @@ public class KcalTest {
         // A valódi edzés kalóriája égetés marad.
         assertEquals(400, Kcal.burned("Edzés 45 perc, 400 kcal"));
     }
+
+    @Test public void theBudgetAndTheGoalOnlyTakeTheirOwnClause() {
+        // A „napi keretem 1800, de 2300 lett" üres maradt; a „fehérje ma
+        // 140 g, cél 150" száznegyvene elveszett; az „aktív kalória 650"
+        // bevitelként is bekerült.
+        assertEquals(2300, Kcal.stated("A napi keretem 1800, de 2300 lett"));
+        assertEquals(140, Kcal.protein("Fehérje ma 140 g, cél 150"));
+        assertEquals(-1, Kcal.stated("Aktív kalória 650"));
+        assertEquals(650, Kcal.burned("Aktív kalória 650"));
+        // A puszta keret és cél továbbra sem bevitel.
+        assertEquals(-1, Kcal.stated("A keretem 1800 kcal"));
+        assertEquals(-1, Kcal.protein("Fehérjecélom 150 g"));
+    }
 }

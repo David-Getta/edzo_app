@@ -162,9 +162,17 @@ public final class Kcal {
         // A FORDÍTOTT SZÓREND is bevitel: az „alvás 7h20m, lépés 8432, kcal
         // 2100" kalóriája eddig elveszett – a mértékegység a szám ELŐTT
         // állt, a szám meg egység nélkül maradt.
+        // (Az „AKTÍV kalória 650" az óra égetése: azt nem írjuk át, különben
+        // az óra-szó eltűnne, és a hatszázötven bevitelként is bekerülne.)
         if (q != null)
-            q = q.replaceAll("(?iu)(?<![\\p{L}])(?:kcal|kal[oó]ria)\\s*:?\\s*"
+            q = q.replaceAll("(?iu)(?<![\\p{L}])(?<!akt[ií]v\\s)(?:kcal|kal[oó]ria)\\s*:?\\s*"
                     + "(\\d{3,4})(?!\\d|[.,]\\d)(?!\\s?(?:kcal|kal))", "$1 kcal");
+        // A KERET száma kalória: a „napi keretem 1800, de 2300 lett" üres
+        // maradt – mértékegység sehol, a valódi szám így gazdátlan volt. A
+        // keret mértékegysége a lett-szám mellé is átjön.
+        if (q != null)
+            q = q.replaceAll("(?iu)(keret\\p{L}*)\\s*:?\\s*(\\d{3,4})(?!\\d|[.,]\\d)"
+                    + "(?!\\s?(?:kcal|kal))", "$1 $2 kcal");
         // A SZÓKÖZÖS EZRES egy szám: a „ma 1 800 kcal-t ettem" nyolcszáz
         // kalória lett – az ezres levált. A mozgás-oldal régóta összevonja.
         if (q != null)
@@ -638,6 +646,24 @@ public final class Kcal {
     public static int protein(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // A CÉL csak a saját tagmondatát viszi el: a „fehérje ma 140 g, cél
+        // 150" száznegyvene elveszett – a cél szava az egész mondatot
+        // elnémította. Ha más tagmondat is mond számot, a cél tagmondata
+        // kiesik.
+        {
+            String[] cls = s.split("(?<=[,;])");
+            if (cls.length > 1) {
+                StringBuilder kept = new StringBuilder();
+                boolean dropped = false;
+                for (String cl : cls) {
+                    boolean goal = false;
+                    for (Pattern w : GOAL_P) if (w.matcher(cl).find()) { goal = true; break; }
+                    if (goal && cl.matches("(?s).*\\d.*")) { dropped = true; continue; }
+                    kept.append(cl);
+                }
+                if (dropped && kept.toString().matches("(?s).*\\d.*")) s = kept.toString();
+            }
+        }
         // A TELJESÍTETT cél már adat: az „elértem a fehérjecélt, 140 g"
         // eddig üresen jött vissza – a cél szava elnémította, pedig épp
         // arról szól, hogy megvan.

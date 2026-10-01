@@ -3176,6 +3176,20 @@ public final class Foods {
         if (query.matches("(?isu).*(?<![\\p{L}])én(?![\\p{L}]).*"))
             query = query.replaceAll("(?iu)(?:^|(?<=[:,;.]))\\s*(?:ő|ők)(?:\\s+pedig)?"
                     + "(?![\\p{L}])[^,;.:]*", " ");
+        // A ZÁRÓJELES TÁPÉRTÉK megjegyzés, nem mennyiség: a „1 adag
+        // fehérjepor (24 g fehérje)" huszonnégy gramm port írt egy adag (30 g)
+        // helyett.
+        query = query.replaceAll("(?iu)\\(\\s*\\d{1,3}(?:[.,]\\d)?\\s?g\\s+(?:feh[eé]rj[eé]"
+                + "|protein|sz[eé]nhidr[aá]t|ch|zs[ií]r|rost|cukor)\\s*\\)", " ");
+        // A SHAKE a fehérjepor itala: a „shake: 1 adag fehérjepor tejjel" és
+        // a „fehérjeshake: 30 g fehérjepor 3 dl tejjel" egy kész turmixot ÉS
+        // port is írt – kétszer ugyanazt –, a mennyiségek ráadásul
+        // összecserélődtek. Ha a por meg van nevezve, a shake szava csak az
+        // ital neve: a por és a folyadék a tétel.
+        // (Csak a kimondott POR vált ki: a „whey turmix" maga a turmix neve.)
+        if (query.matches("(?isu).*(?:feh[eé]rje\\s?por|protein\\s?por|whey\\s?por|kazein\\s?por).*"))
+            query = query.replaceAll("(?iu)(?<![\\p{L}])(?:(?:protein|feh[eé]rje)\\s?)?"
+                    + "(?:shake|turmix)\\p{L}*", " ");
         // A SPORTBAN a puszta „gél" és „zselé" energiagél: a „maratonon 4 gél,
         // 2 liter víz" és az „edzés közben 2 zselé" négy, illetve két gélje
         // nyomtalanul elveszett – csak az „energiagél" szó volt tő. Csak
