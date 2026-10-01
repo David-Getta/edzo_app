@@ -591,6 +591,11 @@ public final class StrengthParse {
                 + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(\\d{1,2})\\s?-?"
                 + "(?:[aeo\u00f6]s|ism[eé]tl[eé]ses)\\s+szett(?:et)?"
                 + "(?![\\p{L}])", " 1x$1 ");
+        // A súllyal mondott „FEKVŐ" a terem fekvenyomása: a „fekvő 3x10 70"
+        // hetven kilós fekvőtámasz lett. Súly nélkül marad fekvőtámasz.
+        text = text.replaceAll("(?iu)(?<![\\p{L}])fekv[oő](?![\\p{L}])(?=[^,;.]*?(?:\\d\\s?[x×]\\s?"
+                + "\\d{1,3}\\s+\\d{2,3}(?:[.,]\\d)?(?![\\d\\p{L}])|\\d{2,3}(?:[.,]\\d)?\\s?"
+                + "(?:kg|kil[oó])))", "fekvenyomás");
         // A SÚLYLISTA ÉS AZ ISMÉTLÉSLISTA párban: a „fekvenyomás: 60, 70, 80
         // kg, 8-8-6" hatvan-hetven-nyolcvan ISMÉTLÉST írt hetven kilóval, a
         // „felhúzás 5x3, 140-150-160-160-160" pedig súly nélkül maradt. A két
@@ -598,15 +603,21 @@ public final class StrengthParse {
         // folytatás-olvasó rég érti, ezért azzá írjuk át.
         {
             java.util.regex.Matcher wl = java.util.regex.Pattern.compile(
-                    "(?iu)(?<![\\d,.x×])(\\d{2,3}(?:\\s*,\\s*\\d{2,3}){1,7})\\s?"
+                    // A KÖTŐJELES súlysor ugyanez: „guggolás 60-80-100 kg 10-8-5".
+                    "(?iu)(?<![\\d,.x×-])(\\d{2,3}(?:\\s*,\\s*\\d{2,3}){1,7}"
+                    + "|\\d{2,3}(?:\\s*-\\s*\\d{2,3}){1,7})\\s?"
                     + "(?:kg|kil[oó]\\p{L}*)\\s*[,;:]?\\s*"
                     + "(\\d{1,2}(?:\\s*-\\s*\\d{1,2}){1,7})(?![\\d,.x×-])"
                     + "(?!\\s?(?:kg|kil[oó]|perc|mp))").matcher(text);
             StringBuffer wb = new StringBuffer();
             while (wl.find()) {
-                String[] ws = wl.group(1).split("\\s*,\\s*");
+                String[] ws = wl.group(1).split("\\s*[,-]\\s*");
                 String[] rs = wl.group(2).split("\\s*-\\s*");
-                if (ws.length != rs.length) { wl.appendReplacement(wb,
+                // Az „ismétlés" szóval zárt kötőjeles párt a rámpa-olvasó
+                // érti („60-70-80 kg, 8-6-4 ismétlés").
+                boolean dashed = wl.group(1).contains("-")
+                        && text.substring(wl.end()).matches("(?s)\\s*ism.*");
+                if (ws.length != rs.length || dashed) { wl.appendReplacement(wb,
                         java.util.regex.Matcher.quoteReplacement(wl.group())); continue; }
                 StringBuilder rep = new StringBuilder();
                 for (int i = 0; i < ws.length; i++) {

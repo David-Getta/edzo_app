@@ -3068,4 +3068,15 @@ public class StrengthParseTest {
         assertTrue(StrengthParse.parse("Combom 58 cm, vádli 38").isEmpty());
         assertTrue(StrengthParse.parse("Bicepszem 38 cm lett").isEmpty());
     }
+
+    /** A súllyal mondott „fekvő" fekvenyomás; a kötőjeles súlysor párosul. */
+    @Test public void aWeightedFekvoIsABenchAndADashedWeightListPairs() {
+        assertSets("Fekvő 3x10 70", "Fekvenyomás", 3, 10, 70);
+        assertSets("Fekvő 3x20", "Fekvőtámasz", 3, 20, 0);
+        List<StrengthParse.Item> it = StrengthParse.parse("Guggolás 60-80-100 kg 10-8-5");
+        assertEquals(60.0, it.get(0).sets.get(0).weight, 0.01);
+        assertEquals(10, it.get(0).sets.get(0).reps);
+        assertEquals(100.0, it.get(0).sets.get(2).weight, 0.01);
+        assertEquals(5, it.get(0).sets.get(2).reps);
+    }
 }
