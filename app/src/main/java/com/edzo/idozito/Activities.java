@@ -4667,6 +4667,13 @@ public final class Activities {
             int[] md = findMonthDay(q, now);
             if (md != null) { offset = md[2]; blank(q, md[0], md[1]); }
             else {
+            // A NAP NÉLKÜLI hónapnév egy időszak: az „augusztusban 120 km-t
+            // futottam" egyetlen MAI százhúsz kilométeres futás lett – a
+            // havi összeg a mai napra, a heti és a napi statisztikába. A
+            // hónap (vagy a vége/eleje/közepe) az időszak.
+            int[] mp = findMonthPeriod(q, now);
+            if (mp != null) { days = mp[3]; offset = mp[2]; blank(q, mp[0], mp[1]); }
+            else {
             // A „tegnap és ma" két nap: mától visszafelé oszlik el.
             // A TÉTELEK A SAJÁT NAPJUKRA: a „tegnap 7 km futás, ma 5 km"
             // mindkét futása MÁRA került, a „tegnapelőtt 7 km, ma 5 km"
@@ -4747,6 +4754,7 @@ public final class Activities {
                         if (one != null) { offset = one[2]; blank(q, one[0], one[1]); }
                     }
                 }
+            }
             }
             }
         }
@@ -6831,6 +6839,66 @@ public final class Activities {
         return null;
     }
 
+    /**
+     * Nap nélküli hónapnév időszakként: „augusztusban", „szeptember végén",
+     * „a hónap elején". {kezdet, vég, hány napja ér véget, hány nap}, vagy
+     * null. A jövőbeli hónap nem napló – azt a tavalyinak vesszük, ahogy a
+     * dátumnál is.
+     */
+    private static int[] findMonthPeriod(char[] q, long now) {
+        String s = new String(q);
+        // A „MA" erősebb: a „ma 10 km futás, szeptemberben ez volt a
+        // leghosszabb" hónapja csak a viszonyítás.
+        if (s.matches("(?s).*(?<![a-z])ma(?![a-z]).*")) return null;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                "(?<![a-z])(?:(januar|februar|marcius|aprilis|majus|junius|julius|augusztus"
+                + "|szeptember|oktober|november|december)(ban|ben|i)?|(?:a\\s+)?(?:(mult|elozo)"
+                + "\\s+)?(honap))(?:\\s+(elejen|vegen|kozepen|elso\\s+feleben|masodik\\s+feleben))?"
+                + "(?![a-z])").matcher(s);
+        while (m.find()) {
+            boolean named = m.group(1) != null;
+            String part = m.group(5);
+            // A puszta hónapnév rag nélkül („július" magában, „júliusi")
+            // nem időszak; a „hónap" csak a vége/eleje/közepe szóval az.
+            if (named && m.group(2) == null && part == null) continue;
+            if (named && "i".equals(m.group(2))) continue;
+            if (!named && part == null) continue;
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTimeInMillis(now);
+            int curMonth = cal.get(java.util.Calendar.MONTH);
+            int mi;
+            if (named) {
+                mi = java.util.Arrays.asList(MONTHS).indexOf(m.group(1));
+            } else {
+                mi = curMonth - (m.group(3) != null ? 1 : 0);
+            }
+            java.util.Calendar start = java.util.Calendar.getInstance();
+            start.setTimeInMillis(now);
+            start.set(java.util.Calendar.DAY_OF_MONTH, 1);
+            if (mi < 0) { mi += 12; start.add(java.util.Calendar.YEAR, -1); }
+            start.set(java.util.Calendar.MONTH, mi);
+            if (start.getTimeInMillis() > now) start.add(java.util.Calendar.YEAR, -1);
+            int len = start.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+            int from = 1, to = len;
+            if ("elejen".equals(part)) to = Math.min(len, 7);
+            else if ("vegen".equals(part)) from = len - 6;
+            else if ("kozepen".equals(part)) { from = 11; to = 20; }
+            else if (part != null && part.startsWith("elso")) to = 15;
+            else if (part != null && part.startsWith("masodik")) from = 16;
+            java.util.Calendar a = (java.util.Calendar) start.clone();
+            a.set(java.util.Calendar.DAY_OF_MONTH, from);
+            java.util.Calendar b = (java.util.Calendar) start.clone();
+            b.set(java.util.Calendar.DAY_OF_MONTH, to);
+            int backFrom = Days.between(a.getTimeInMillis(), now);
+            int backTo = Days.between(b.getTimeInMillis(), now);
+            if (backFrom < 0) continue;
+            if (backTo < 0) backTo = 0;
+            if (backFrom > 400) continue;
+            return new int[]{m.start(), m.end(), backTo, backFrom - backTo + 1};
+        }
+        return null;
+    }
+
     private static int[] monthDayAt(String s, String name, int mi, long now) {
         int p = s.indexOf(name);
         if (p < 0) return null;
@@ -8251,6 +8319,11 @@ public final class Activities {
                 if (cal.getTimeInMillis() > now) cal.add(java.util.Calendar.YEAR, -1);
                 int len = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
                 int back = Days.between(cal.getTimeInMillis(), now);
+                // A LEZÁRT hónap nem ma ér véget: az „augusztusban 12x
+                // futottam, összesen 120 km" tizenkét futása a mai naptól
+                // visszafelé terült szét – szeptember közepébe. Azt a
+                // hónap-időszak olvasó helyezi el, eltolással.
+                if (back + 1 > len) continue;
                 int days = Math.min(len, back + 1);
                 if (days >= 1) return new int[]{hm.start(), hm.end(), days};
             }

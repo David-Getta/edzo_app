@@ -815,6 +815,38 @@ public class ActivitiesParseTest {
                 .plans.get(0).steps);
     }
 
+    /**
+     * A nap nélküli hónapnév időszak, a maga helyén.
+     *
+     * Az „augusztusban 120 km-t futottam" egyetlen MAI százhúsz kilométeres
+     * futás lett, a „szeptember végén 3x futottam" három mai futás, az
+     * „augusztusban 12x futottam, összesen 120 km" pedig a mai naptól
+     * visszafelé terült szét.
+     */
+    @Test public void aMonthWithoutADayIsAPeriodInItsPlace() {
+        // 2026. október 1., csütörtök dél.
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.OCTOBER, 1, 12, 0, 0);
+        long oct1 = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse("Augusztusban 120 km-t futottam", oct1);
+        assertEquals(31, p.days);
+        assertEquals(31, p.offset);
+        p = Activities.parse("Augusztusban 12x futottam, összesen 120 km", oct1);
+        assertEquals(31, p.days);
+        assertEquals(31, p.offset);
+        assertEquals(12, p.total());
+        p = Activities.parse("Szeptember végén 3x futottam", oct1);
+        assertEquals(7, p.days);
+        assertEquals(1, p.offset);
+        // A „ma" erősebb a hónapnévnél.
+        p = Activities.parse("Ma 10 km futás, szeptemberben ez volt a leghosszabb", oct1);
+        assertEquals(1, p.days);
+        assertEquals(0, p.offset);
+        // A jövőbeli verseny hónapja nem időszak.
+        assertEquals(0, Activities.parse("Novemberben lesz a verseny, ma 5 km", oct1).offset);
+    }
+
     @Test public void supIsPaddling() {
         // A „SUP 45 perc a Balatonon" üresen jött vissza.
         assertEquals("evezes", Activities.parse("SUP 45 perc a Balatonon")
