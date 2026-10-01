@@ -287,4 +287,20 @@ public class PulseTest {
                 + "\u00e1tlagpulzusom."));
     }
 
+    /**
+     * A szívverés, a puszta HR és bpm, a változás mértéke mellett is.
+     *
+     * A „szívverés reggel 60/perc", a „HR 58 reggel", a „80 kg, 55 bpm" és
+     * a „nyugalmi pulzusom 3-mal alacsonyabb, 54" üresen jött vissza; az
+     * „RHR 51" ötvenegy kilós mérést is írt a trendbe.
+     */
+    @Test public void heartbeatHrBpmAndTheChange() {
+        assertEquals(60, Pulse.parse("Szívverés reggel 60/perc"));
+        assertEquals(58, Pulse.parse("HR 58 reggel"));
+        assertEquals(55, Pulse.parse("80 kg, 55 bpm"));
+        assertEquals(54, Pulse.parse("Ma a nyugalmi pulzusom 3-mal alacsonyabb, 54"));
+        assertTrue(BodyParse.parse("RHR 51").kg <= 0);
+        // Az edzés közbeni HR nem nyugalmi.
+        assertEquals(-1, Pulse.parse("Futás 8 km, átlag HR 152"));
+    }
 }

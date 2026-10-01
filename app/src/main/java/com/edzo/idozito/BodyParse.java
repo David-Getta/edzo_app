@@ -336,6 +336,11 @@ public final class BodyParse {
         // A „7-ESSEL KEZDŐDIK" a számjegy, nem mérés: a „végre 7-essel
         // kezdődik: 79,8" méréséből semmi nem lett – a hetes elnémította.
         q = q.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}\\s?-?[aeoö]?ss?[aeo]l\\s+kezd\\p{L}*", " ");
+        // A PULZUS SZÁMA nem a mérlegé: az „RHR 51" ötvenegy kilós mérést
+        // írt a trendbe a pulzus mellé.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])(?:rhr|hr|bpm|hrv|pulzus\\p{L}*|sz[ií]vver[eé]s\\p{L}*)"
+                + "\\s*:?\\s*\\d{2,3}(?![\\d,.])(?!\\s?(?:kg|kil[oó]))", " ");
+        q = q.replaceAll("(?iu)(?<![\\d,.])\\d{2,3}\\s?(?:bpm|/\\s?perc)(?![\\p{L}])", " ");
         // Az ANGOL „weight 78.2 kg" is mérés: eddig üresen jött vissza.
         q = q.replaceAll("(?iu)(?<![\\p{L}])(?:body\\s?)?weight(?![\\p{L}])", "súly");
         // A kiírt számnév ugyanolyan mérés: „hetvennyolc kiló vagyok". A

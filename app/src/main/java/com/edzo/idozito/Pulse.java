@@ -108,6 +108,19 @@ public final class Pulse {
     public static int parse(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // A SZÍVVERÉS és a puszta HR is pulzus: a „szívverés reggel 60/perc"
+        // és a „HR 58 reggel" üresen jött vissza. (Az edzés közbeni „átlag
+        // HR 145"-öt az alábbi sport-szűrő úgyis kiszórja.)
+        s = s.replaceAll("(?<![a-z])(?:szivveres|szivritmus|szivfrekvencia)\\w*", "pulzus");
+        s = s.replaceAll("(?<![a-z])hr(?=\\s?:?\\s?\\d)", "pulzus");
+        s = s.replaceAll("(?<![\\d,.])(\\d{2,3})\\s?/\\s?perc(?![a-z])", "$1");
+        // A VÁLTOZÁS mértéke nem a mérés: a „nyugalmi pulzusom 3-mal
+        // alacsonyabb, 54" ötvennégye elveszett – a hármas állt a minta
+        // útjában.
+        s = s.replaceAll("\\s*(?<![\\d,.])\\d{1,2}\\s?-?(?:[mv][ae]l|tal|tel|cal|cel|zal|zel)\\s+"
+                + "(?:alacsonyabb|magasabb|kevesebb|tobb|lejjebb|feljebb|lentebb)(?![a-z])\\s*,?\\s*", " ");
+        // A puszta „55 BPM" is pulzus: a „80 kg, 55 bpm" pulzusa elveszett.
+        s = s.replaceAll("(?<![\\d,.])(\\d{2,3})\\s?bpm(?![a-z])", "pulzus $1");
         // A VÁLTOZÁS mondatában a MÁSODIK szám a mai érték: a „nyugalmi
         // pulzusom 48-ról 45-re javult" mai értéke negyvenöt – eddig a régi
         // került a trendbe, vagyis a javulás napján egy romlás.
