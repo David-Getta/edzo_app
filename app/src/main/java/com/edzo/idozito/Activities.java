@@ -1310,6 +1310,50 @@ public final class Activities {
         // tagmondatban állt az úszáséval, és mindkettőt elvitte. (A „+10 kg"
         // súlyjelölésben nincs szóköz, az marad.)
         s = s.replaceAll("\\s\\+\\s", ", ");
+        // A ZÁRÓ SPORTSZÓ a felsorolás minden azonos mértékű tételéé: a
+        // „tegnapelőtt 7 km, ma 5 km futás" öt kilométere került
+        // tegnapelőttre – a sportszó melletti táv lett az első terv, a
+        // puszta táv a második, és a napok sorrendje felcserélődött. A
+        // sportszó nélküli tagmondat megkapja a záróét, ha ugyanazt a
+        // mértéket (távot vagy időt) mondja.
+        {
+            java.util.regex.Matcher tl = java.util.regex.Pattern.compile(
+                    "\\d\\s?(km|m(?![a-z])|meter\\w*|perc\\w*|ora\\w*)\\s+([a-z]+)\\s*[.!]?\\s*$")
+                    .matcher(s);
+            if (tl.find() && kindByText(tl.group(2)) != null) {
+                boolean dist = !tl.group(1).startsWith("perc") && !tl.group(1).startsWith("ora");
+                String unitRe = dist ? "(?:km|m(?![a-z])|meter\\w*)" : "(?:perc\\w*|ora\\w*)";
+                String sport = tl.group(2);
+                String head = s.substring(0, tl.start());
+                String[] parts = head.split("(?<=[,;])");
+                if (parts.length >= 2) {
+                    StringBuilder nb = new StringBuilder();
+                    for (String part : parts) {
+                        if (kindByText(part) == null
+                                && !part.matches("(?s).*(?<![a-z])(?:bemeleg|levezet|pihen"
+                                    + "|szunet|nyujt|lazit)\\w*.*")
+                                && part.matches("(?s).*\\d\\s?" + unitRe
+                                + "\\s*[,;]\\s*$"))
+                            part = part.replaceAll("(\\d\\s?" + unitRe + ")(\\s*[,;]\\s*)$",
+                                    "$1 " + sport + "$2");
+                        nb.append(part);
+                    }
+                    s = nb + s.substring(tl.start());
+                }
+            }
+        }
+        // A PUSZTA NAPNÉV a szám előtt határozó: a „hétvégén szombat 10 km,
+        // vasárnap 15 km" mindkét futása vasárnapra került, a „hétfő: futás
+        // 5 km" listája ugyanígy. A ragtalan alak szám vagy kettőspont
+        // előtt a nap határozója.
+        {
+            String[][] wd = {{"hetfo", "hetfon"}, {"kedd", "kedden"},
+                    {"szerda", "szerdan"}, {"csutortok", "csutortokon"},
+                    {"pentek", "penteken"}, {"szombat", "szombaton"}};
+            for (String[] w : wd)
+                s = s.replaceAll("(?<![a-z])" + w[0] + "\\s*(?::\\s*|\\s(?=\\d))",
+                        w[1] + " ");
+        }
         // A HÁTRAVETETT szorzó ugyanaz, mint az elöl álló: a „futás 5 km x2"
         // öt kilométer lett tíz helyett, a „bicikli 10 km x 3" tíz.
         s = s.replaceAll("(?<![\\d,.x])(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(km|m(?![a-z])"
@@ -4784,6 +4828,13 @@ public final class Activities {
             } else {
                 // A „hétvégén" a legutóbbi szombat–vasárnap, nem a mai nap.
                 int[] we = findWeekend(q, now);
+                // A HÉTVÉGÉN BELÜL megnevezett napok a sajátjuk: a „hétvégén
+                // szombaton 10 km, vasárnap 15 km" mindkét futása vasárnapra
+                // került. A hétvége szava ilyenkor csak keret.
+                if (we != null && findWeekdays(q, now).size() >= 2) {
+                    blank(q, we[0], we[1]);
+                    we = null;
+                }
                 if (we != null) { offset = we[2]; days = we[3]; blank(q, we[0], we[1]); }
                 else {
                     // Több napnév egy mondatban: „hétfőn és szerdán kondi".
@@ -5971,8 +6022,17 @@ public final class Activities {
         // perc" öt darab NÉGYÓRÁS edzést írt a naplóba – húsz óra
         // mozgást négyből. A mérleg-, összesítés- és összegzés-szó
         // ugyanazt mondja ki, mint az „összesen".
+        // Az IDŐSZAKOS mondat külön tagmondatba írt mennyisége is összeg: a
+        // „múlt hónapban 12 futás, 98 km" tizenkét kilencvennyolc
+        // kilométeres futás lett. (Egyetlen napon a „ma 2 edzés, 100 perc"
+        // alkalmankénti marad.) Az alkalmankénti szó („mindegyik 10 km")
+        // mellett a mennyiség egy alkalomé.
+        boolean periodTotal = days > 1 && rawText.matches("(?s).*(?<![\\d,.x])\\d{1,2}\\s+[a-z]+\\s*[,;]\\s*"
+                    + "\\d{1,4}(?:[.,]\\d{1,2})?\\s?(?:km|perc|ora)(?![a-z]).*")
+                && !rawText.matches("(?s).*(?<![a-z])(?:mindegyik\\w*|egyenkent"
+                    + "|alkalmankent|futasonkent|edzesenkent)(?![a-z]).*");
         if (out.size() == 1 && out.get(0).count > 1
-                && (rawText.contains("osszesen")
+                && (rawText.contains("osszesen") || periodTotal
                     || rawText.contains("osszessegeben")
                     || rawText.matches("(?s).*(?<![a-z])(?:merleg|osszesites"
                         + "|osszegzes|osszesito|kimutatas)\\w*.*"))) {
@@ -6009,10 +6069,13 @@ public final class Activities {
             // A „TEGNAP ÉS MA futottam 5 km-t" mindkét napon egy: a
             // kötőszóval összefogott két nap egy-egy alkalom. A „tegnap
             // este edzettem, ma izomláz" nem ez – ott a ma nem kap edzést.
+            // A „TEGNAPELŐTT ÉS TEGNAP" ugyanígy két nap: a „tegnapelőtt és
+            // tegnap is futottam 5-5 km-t" egyetlen futás lett.
             else if (out.size() == 1 && out.get(0).count == 1
                     && active.size() >= 2
-                    && rawText.matches("(?s).*(?<![a-z])tegnap(?:elott)?"
-                        + "(?:\\s+is)?\\s+(?:es|meg)\\s+ma(?![a-z]).*"))
+                    && rawText.matches("(?s).*(?<![a-z])(?:tegnap(?:elott)?|ma)"
+                        + "(?:\\s+is)?\\s+(?:es|meg)\\s+(?:tegnap(?:elott)?|ma)"
+                        + "(?![a-z]).*"))
                 wdBacks = active;
         }
         // Megnevezett napok: a bejegyzések pontosan azokra kerülnek.

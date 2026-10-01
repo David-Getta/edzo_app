@@ -725,6 +725,37 @@ public class ActivitiesParseTest {
         assertEquals(1, Activities.parse("Kedden pihenő, szerdán 6 km", thu).offset);
     }
 
+    /**
+     * A napok a saját tételüket kapják, a havi összeg oszlik.
+     *
+     * A „tegnapelőtt 7 km, ma 5 km futás" öt kilométere került
+     * tegnapelőttre, a „hétvégén szombat 10 km, vasárnap 15 km" mindkét
+     * futása vasárnapra, a „tegnapelőtt és tegnap is 5-5 km" egyetlen futás
+     * lett, a „múlt hónapban 12 futás, 98 km" pedig tizenkét
+     * kilencvennyolc kilométeres futás.
+     */
+    @Test public void eachDayGetsItsOwnEntryAndAMonthTotalSplits() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.OCTOBER, 1, 12, 0, 0);
+        long thu = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse("Tegnapelőtt 7 km, ma 5 km futás", thu);
+        assertEquals(7.0, p.plans.get(0).km, 0.01);
+        assertArrayEquals(new int[]{2, 0}, p.exactDays);
+        p = Activities.parse("A hétvégén szombat 10 km, vasárnap 15 km futás", thu);
+        assertEquals(10.0, p.plans.get(0).km, 0.01);
+        assertArrayEquals(new int[]{5, 4}, p.exactDays);
+        p = Activities.parse("Tegnapelőtt és tegnap is futottam 5-5 km-t", thu);
+        assertArrayEquals(new int[]{2, 1}, p.exactDays);
+        p = Activities.parse("Hétfő: futás 5 km. Kedd: kondi 1 óra.", thu);
+        assertArrayEquals(new int[]{3, 2}, p.exactDays);
+        p = Activities.parse("Múlt hónapban 12 futás, 98 km", thu);
+        assertEquals(12, p.plans.get(0).count);
+        assertEquals(8.17, p.plans.get(0).km, 0.01);
+        assertEquals(10.0, Activities.parse("Múlt héten 3 futás, mindegyik 10 km", thu)
+                .plans.get(0).km, 0.01);
+    }
+
     @Test public void theMonitorAndTheScoreAreNotSports() {
         // A „monitornál" tornája jóga, a „score" core-ja kondi lett.
         assertTrue(Activities.parse("Egész nap a monitornál ültem").plans.isEmpty());
