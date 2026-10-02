@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<!-- viewport-fit=cover: enélkül az iPhone bevágása alatt fehér sáv marad. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grit</title>
+<meta name="description" content="Edzés- és étkezésnapló egyetlen magyar mondatból.">
+<meta name="theme-color" content="#140B0D">
+<!-- iOS a kezdőképernyős indításhoz ezeket nézi, nem a manifestet. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grit">
+<link rel="apple-touch-icon" href="ikon-180.png">
+<link rel="icon" href="ikon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="stilus.css">
+</head>
+<body>
+
+<header class="fejlec">
+  <h1>Grit</h1>
+  <button id="sugoGomb" class="ikongomb" type="button" aria-label="Súgó és példák">?</button>
+</header>
+
+<main>
+  <!-- MA -->
+  <section id="lap-ma" class="lap" aria-labelledby="cim-ma">
+    <h2 id="cim-ma" class="rejtett">Ma</h2>
+
+    <form id="urlap" class="beviteli" autocomplete="off">
+      <label class="rejtett" for="mondat">Mit csináltál, mit ettél?</label>
+      <textarea id="mondat" rows="2" enterkeyhint="done"
+                placeholder="Pl. reggel 5 km futás 28 perc, utána két tojás"></textarea>
+      <div id="elonezet" class="elonezet" aria-live="polite"></div>
+      <button id="mentes" class="fogomb" type="submit" disabled>Mentés</button>
+    </form>
+
+    <div id="osszegzo" class="racs"></div>
+    <h3 class="szakaszcim">Mai bejegyzések</h3>
+    <ul id="mai-lista" class="lista"></ul>
+  </section>
+
+  <!-- NAPLÓ -->
+  <section id="lap-naplo" class="lap rejtve" aria-labelledby="cim-naplo">
+    <h2 id="cim-naplo" class="szakaszcim">Napló</h2>
+    <div id="naplo"></div>
+  </section>
+
+  <!-- BEÁLLÍTÁSOK -->
+  <section id="lap-egyeb" class="lap rejtve" aria-labelledby="cim-egyeb">
+    <h2 id="cim-egyeb" class="szakaszcim">Beállítások</h2>
+
+    <div class="kartya">
+      <h3>Testsúly és cél</h3>
+      <div class="mezopar">
+        <label for="magassag">Magasság (cm)</label>
+        <input id="magassag" type="number" inputmode="numeric" min="120" max="230" step="1">
+      </div>
+      <div class="mezopar">
+        <label for="celsuly">Célsúly (kg)</label>
+        <input id="celsuly" type="number" inputmode="decimal" min="35" max="250" step="0.1">
+      </div>
+      <p class="halvany">A napi kalóriakeretet ebből és a mozgásból becsüljük.</p>
+    </div>
+
+    <div class="kartya">
+      <h3>Adatok</h3>
+      <p class="halvany">A napló csak ezen a telefonon, a böngészőben tárolódik.
+        Nem megy sehova. Ha új készülékre váltasz, mentsd ki innen.</p>
+      <div class="gombsor">
+        <button id="kiment" class="gomb" type="button">Mentés fájlba</button>
+        <label class="gomb" for="behoz">Visszatöltés</label>
+        <input id="behoz" type="file" accept="application/json" class="rejtett">
+      </div>
+      <p id="adatallapot" class="halvany"></p>
+    </div>
+
+    <div class="kartya" id="telepites-kartya">
+      <h3>Kezdőképernyőre</h3>
+      <p class="halvany">Safariban: <b>Megosztás</b> → <b>Kezdőképernyőhöz adás</b>.
+        Onnantól teljes képernyőn indul, és internet nélkül is működik.</p>
+    </div>
+
+    <p class="halvany kicsi" id="verzio"></p>
+  </section>
+
+  <!-- PÉLDÁK -->
+  <section id="lap-peldak" class="lap rejtve" aria-labelledby="cim-peldak">
+    <h2 id="cim-peldak" class="szakaszcim">Mit írhatsz?</h2>
+    <p class="halvany">Koppints bármelyikre, és beírja a mezőbe.</p>
+    <div id="peldak"></div>
+  </section>
+</main>
+
+<nav class="also" role="tablist">
+  <button class="ful aktiv" data-lap="ma" role="tab" aria-selected="true">Ma</button>
+  <button class="ful" data-lap="naplo" role="tab" aria-selected="false">Napló</button>
+  <button class="ful" data-lap="peldak" role="tab" aria-selected="false">Példák</button>
+  <button class="ful" data-lap="egyeb" role="tab" aria-selected="false">Egyéb</button>
+</nav>
+
+<div id="pirito" class="pirito" role="status" aria-live="polite"></div>
+
+<!-- A magot (a felismerést) a munkás szál tölti be, nem ez a lap: így a
+     másfél megabájt nem a fő szálon dolgozódik fel, és a gépelés sima marad. -->
+<script src="app.js"></script>
+</body>
+</html>
