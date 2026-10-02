@@ -990,6 +990,22 @@ public class ActivitiesParseTest {
         assertEquals(30.0, Activities.parse("Bicikli 10 km x 3").plans.get(0).km, 0.01);
     }
 
+    /** A golf lyukszáma az idő: 18 lyuk bő négy óra, 9 a fele. */
+    @Test public void golfHolesAreTheDuration() {
+        assertEquals(240, Activities.parse("Golf 18 lyuk").plans.get(0).minutes);
+        assertEquals(120, Activities.parse("Golfoztam 9 lyukat").plans.get(0).minutes);
+        assertEquals(120, Activities.parse("Golf 9 lyuk 2 óra").plans.get(0).minutes);
+    }
+
+    /** Az ugrásszám és a másodperces sorozat is időtartam. */
+    @Test public void jumpsAndSecondSetsAreMinutes() {
+        assertEquals(5, Activities.parse("Ugrókötél 500 ugrás").plans.get(0).minutes);
+        assertEquals(3, Activities.parse("Battle rope 5x30 mp").plans.get(0).minutes);
+        // Kimondott perc és erőgyakorlat-lista mellett marad a régi.
+        assertEquals(10, Activities.parse("Ugrókötél 10 perc 1000 ugrás").plans.get(0).minutes);
+        assertEquals(60, Activities.parse("Guggolás 3x10, plank 3x60 mp").plans.get(0).minutes);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

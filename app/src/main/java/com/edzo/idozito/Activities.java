@@ -1342,6 +1342,41 @@ public final class Activities {
                 }
             }
         }
+        // Az UGRÓKÖTÉL ugrásszáma és a MÁSODPERCES sorozat is idő: az
+        // „ugrókötél 500 ugrás" és a „battle rope 5x30 mp" háromnegyed órás
+        // egyéb mozgás lett, pedig öt, illetve két és fél perc. Kimondott
+        // perc mellett, és erőgyakorlat-listában (ott az edzés egésze
+        // számít) nem nyúlunk hozzá.
+        if (!s.matches("(?s).*\\d\\s?(?:perc|ora|p(?![a-z])|h(?![a-z]))\\w*.*")) {
+            java.util.regex.Matcher jr = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{2,4})\\s+(?:ugras\\w*|ugrast)(?![a-z])").matcher(s);
+            if (s.contains("ugrokotel") && jr.find()) {
+                int min = Math.max(1, Math.round(Integer.parseInt(jr.group(1)) / 100f));
+                s = s.substring(0, jr.start()) + min + " perc" + s.substring(jr.end());
+            }
+            java.util.regex.Matcher sx = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.x])(\\d{1,2})\\s?x\\s?(\\d{1,3})\\s?(?:mp|masodperc\\w*|sec)"
+                    + "(?![a-z])").matcher(s);
+            if (sx.find() && StrengthParse.nameIn(s) == null) {
+                int sec = Integer.parseInt(sx.group(1)) * Integer.parseInt(sx.group(2));
+                int min = Math.max(1, Math.round(sec / 60f));
+                s = s.substring(0, sx.start()) + min + " perc" + s.substring(sx.end());
+            }
+        }
+        // A GOLF LYUKSZÁMA az idő: a „golf 18 lyuk" háromnegyed órás
+        // bejegyzés lett, pedig egy teljes kör bő négy óra gyalog (kilenc
+        // lyuk a fele). Kimondott időtartam mellett a lyuk csak adat.
+        if (s.matches("(?s).*(?<![a-z])golf\\w*.*")
+                && !s.matches("(?s).*\\d\\s?(?:perc|ora|h(?![a-z]))\\w*.*")) {
+            java.util.regex.Matcher gl = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,2})\\s?-?(?:es\\s+)?(?:lyuk\\w*|holes?)(?![a-z])").matcher(s);
+            if (gl.find()) {
+                int holes = Integer.parseInt(gl.group(1));
+                if (holes >= 3 && holes <= 36)
+                    s = s.substring(0, gl.start()) + Math.round(holes * 40 / 3f) + " perc"
+                            + s.substring(gl.end());
+            }
+        }
         // A PUSZTA NAPNÉV a szám előtt határozó: a „hétvégén szombat 10 km,
         // vasárnap 15 km" mindkét futása vasárnapra került, a „hétfő: futás
         // 5 km" listája ugyanígy. A ragtalan alak szám vagy kettőspont
