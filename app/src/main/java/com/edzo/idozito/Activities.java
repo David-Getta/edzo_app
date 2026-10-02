@@ -221,6 +221,9 @@ public final class Activities {
                     // A „core" a törzsizom edzése – konditermi szó, magyarul
                     // is így mondják.
                     "core edzes", "core-edzes", "coretrening",
+                    // A SZÁNTOLÁS termi gyakorlat: a „sled push 6x20 m" futás
+                    // lett.
+                    "sled push", "sled pull", "szantolas", "prowler",
                     // A „tornaterem" egyben fedi a „torna" (jóga) és a „terem"
                     // (kondi) tövet is – a hosszabb tő nyer, így egy találat lesz.
                     "crossfit", "kroszfit", "trx", "erosit", "fekvotamasz", "tornaterem", "wod",

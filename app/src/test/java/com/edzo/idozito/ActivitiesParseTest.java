@@ -1006,6 +1006,12 @@ public class ActivitiesParseTest {
         assertEquals(60, Activities.parse("Guggolás 3x10, plank 3x60 mp").plans.get(0).minutes);
     }
 
+    /** A szántolás termi gyakorlat, nem futás. */
+    @Test public void aSledPushIsAGymSession() {
+        assertEquals("kondi", Activities.parse("Sled push 6x20 m").plans.get(0).kind.id);
+        assertEquals("kondi", Activities.parse("Szántolás 5x15 m").plans.get(0).kind.id);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
