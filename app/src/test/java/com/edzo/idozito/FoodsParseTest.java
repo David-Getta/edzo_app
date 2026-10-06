@@ -1576,6 +1576,16 @@ public class FoodsParseTest {
         assertEquals(50, hits("Egy tábla csoki felét").get(0).grams, 0.01);
     }
 
+    /** A péksütemény-táska és a sós csiga péksütemény; a mignon egy falat. */
+    @Test public void bakeryPastriesAndSmallCakes() {
+        assertEquals("Péksütemény", hits("Egy túrós táska").get(0).food.name);
+        List<Foods.Hit> c = hits("Pizzás csiga");
+        assertEquals(1, c.size());
+        assertEquals("Péksütemény", c.get(0).food.name);
+        assertEquals(80, hits("Mignon 2 db").get(0).grams, 0.01);
+        assertEquals(80, hits("Zserbó 2 kocka").get(0).grams, 0.01);
+    }
+
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
         List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
         assertEquals(40, h.get(0).grams, 0.01);

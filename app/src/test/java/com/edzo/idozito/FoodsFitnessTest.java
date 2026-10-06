@@ -508,9 +508,9 @@ public class FoodsFitnessTest {
         // A „kakaós palacsinta" egy bögre tejes kakaót is számolt a kanálnyi
         // töltelék helyett; a klasszikus cukrászsütik fele hiányzott.
         assertEquals("Palacsinta", names("kakaós palacsinta"));
-        assertEquals("Sütemény", names("zserbó"));
+        assertEquals("Mignon / zserbó", names("zserbó"));
         assertEquals("Sütemény", names("rigó jancsi"));
-        assertEquals("Sütemény", names("mignon"));
+        assertEquals("Mignon / zserbó", names("mignon"));
         assertEquals("Keksz", names("linzer"));
         assertEquals("Muffin / brownie", names("muffin"));
         assertEquals("Muffin / brownie", names("brownie"));

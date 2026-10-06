@@ -3010,6 +3010,7 @@ aperol spritz
 Üdítő (cukros)
 jeges tea
 kakaós palacsinta
+Mignon / zserbó
 rigó jancsi
 Muffin / brownie
 tofu steak
@@ -3807,6 +3808,10 @@ Szezámmagos zsemle
 Egy tábla csoki negyedét
 Egy csomag chips felét
 Egy tábla csoki felét
+Egy túrós táska
+Pizzás csiga
+Mignon 2 db
+Zserbó 2 kocka
 ketten voltunk a moziban, ettem egy popcornt
 porridge reggelire
 protein bar edzés után

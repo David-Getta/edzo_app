@@ -161,7 +161,12 @@ public final class Foods {
         new Food("Zsemle", 280, 9, 55, "zsemle", "zsemi"),
         new Food("Kifli", 290, 8, 55, "kifli"),
         new Food("Péksütemény", 350, 7, 80, "peksutemenny", "peksutemeny", "croissant",
-                "brios", "molnark", "bagel"),
+                "brios", "molnark", "bagel",
+                // A PÉKSÉGI TÁSKA és a sós csiga is péksütemény: a „túrós
+                // táska" száz gramm túró lett, a „pizzás csiga" egy egész
+                // pizza és mellé egy kakaós csiga.
+                "turos taska", "kakaos taska", "lekvaros taska", "pizzas csiga",
+                "sajtos csiga", "sonkas csiga", "sajtos rud", "sajtosrud"),
         new Food("Zabpehely", 370, 13, 50, "zab", "kasa", "feherjes zabkasa",
                 "protein zabkasa", "overnight oats", "oats",
                 // Az angol zabkása-nevek a magyar naplóban is előfordulnak.
@@ -373,9 +378,13 @@ public final class Foods {
                 // tételként, kétszeres kalóriával került a naplóba.
                 "zabpelyhes keksz", "csokis keksz", "csokis kekssz",
                 "haztartasi keksz"),
+        // A KOCKASÜTEMÉNY egy falatnyi: a „mignon 2 db" és a „zserbó 2 kocka"
+        // kétszáz gramm sütemény lett – egy szem negyven gramm körül van.
+        new Food("Mignon / zserbó", 420, 4, 40, "mignon", "zserbo", "isler",
+                "puncsszelet", "macaron"),
         new Food("Sütemény", 400, 5, 100, "sutemenny", "sutemeny", "torta", "baklava",
-                "zserbo", "rigo jancsi", "isler", "puncsszelet", "mignon",
-                "flodni", "macaron", "suti", "eszterhazy", "dobostorta",
+                "rigo jancsi",
+                "flodni", "suti", "eszterhazy", "dobostorta",
                 "dobos torta", "somloi kocka", "eclair", "ekler", "profiterol",
                 "rakoczi turos", "rakoczi"),
         new Food("Muffin / brownie", 380, 5, 80, "muffin", "cupcake", "brownie"),
@@ -2215,6 +2224,7 @@ public final class Foods {
             // fél avokádónyi adag (70 g) lett.
             {"Avokádó", "140"},
             {"Bonbon / praliné", "12"},
+            {"Mignon / zserbó", "40"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
             {"Bagett", "250"},
             {"Túró rudi", "51"}, {"Müzliszelet", "30"}, {"Palacsinta", "60"},
