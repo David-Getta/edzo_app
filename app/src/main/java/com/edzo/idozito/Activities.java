@@ -1366,6 +1366,30 @@ public final class Activities {
                 s = s.substring(0, sx.start()) + min + " perc" + s.substring(sx.end());
             }
         }
+        // A SEBESSÉG és az idő együtt táv: a „30 perc futópad 8-as
+        // tempóval" (8 km/h) és a „bicikli 1 óra 25 km/h átlaggal" táv
+        // nélkül maradt. A futópad „N-es tempója" km/h; máshol csak a
+        // kimondott km/h. Kimondott táv mellett nem nyúlunk hozzá.
+        if (!s.matches("(?s).*\\d\\s?(?:km|kilometer\\w*|m(?![a-z/])|meter\\w*)(?![a-z/]).*")) {
+            boolean tread = s.matches("(?s).*(?<![a-z])(?:futopad\\w*|treadmill|taposomalom)"
+                    + "(?![a-z]).*");
+            java.util.regex.Matcher sp = java.util.regex.Pattern.compile(
+                    "(?<![\\d:,.])(\\d{1,2}(?:[.,]\\d)?)\\s?(?:km/h|km/ora|kmh|kph"
+                    + (tread ? "|-?[aeo]s\\s+(?:tempo|sebesseg)\\w*" : "") + ")(?![a-z])").matcher(s);
+            java.util.regex.Matcher tm = java.util.regex.Pattern.compile(
+                    "(?<![\\d:,.])(\\d{1,3}(?:[.,]\\d)?)\\s?(perc|ora)\\w*").matcher(s);
+            if (sp.find() && tm.find()) {
+                double v = Double.parseDouble(sp.group(1).replace(',', '.'));
+                double t = Double.parseDouble(tm.group(1).replace(',', '.'))
+                        * (tm.group(2).equals("ora") ? 60 : 1);
+                if (v >= 3 && v <= 60 && t >= 5 && t <= 600) {
+                    double km = Math.round(v * t / 60 * 10) / 10.0;
+                    s = s.substring(0, sp.start()) + " "
+                            + String.valueOf(km).replace('.', ',').replaceAll(",0$", "")
+                            + " km " + s.substring(sp.end());
+                }
+            }
+        }
         // A GOLF LYUKSZÁMA az idő: a „golf 18 lyuk" háromnegyed órás
         // bejegyzés lett, pedig egy teljes kör bő négy óra gyalog (kilenc
         // lyuk a fele). Kimondott időtartam mellett a lyuk csak adat.
@@ -9374,8 +9398,10 @@ public final class Activities {
         java.util.regex.Matcher m = java.util.regex.Pattern
                 // A „4:55-ös ÁTLAGtempó" ugyanaz a szám: az összetett szó
                 // miatt eddig a mozgásforma átlagával számolt a becslés.
+                // Az „ÁTLAGGAL" magában is tempó: a „futás 10 km 4:50-es
+                // átlaggal" a mozgásforma hat perces átlagával számolt.
                 .compile("(\\d{1,2}):([0-5]\\d) ?"
-                        + "(?:-?[a-z]{0,3} ?(?:atlag)?tempo|/ ?km|per km)")
+                        + "(?:-?[a-z]{0,3} ?(?:(?:atlag)?tempo|atlag\\w*)|/ ?km|per km)")
                 .matcher(s);
         if (m.find()) {
             double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;
@@ -9719,6 +9745,9 @@ public final class Activities {
                     // a „24:59 tempó 5:00" első száma a valódi idő, a tempó a
                     // KÖVETKEZŐ számhoz tartozik.
                     || (first < 10 && s.regionMatches(m.end(), " tempo", 0, 6))
+                    // Az utána álló „ÁTLAG" is: a „5 km 5:00 átlag" öt órás
+                    // futás lett.
+                    || (first < 10 && s.regionMatches(m.end(), " atlag", 0, 6))
                     // A tágabb ablak CSAK tempó-tartományú számra él (10 perc
                     // alatti perc:mp). Enélkül a „futás 5 km 24:59 tempó 5:00"
                     // huszonöt perce is kiesett – pedig az a valódi idő, és a

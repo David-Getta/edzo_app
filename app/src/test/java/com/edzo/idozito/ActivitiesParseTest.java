@@ -1012,6 +1012,18 @@ public class ActivitiesParseTest {
         assertEquals("kondi", Activities.parse("Szántolás 5x15 m").plans.get(0).kind.id);
     }
 
+    /** A sebesség és az idő együtt táv; az „átlaggal" is tempó. */
+    @Test public void speedTimesTimeAndAnAveragePace() {
+        assertEquals(4.0, Activities.parse("Reggel 30 perc futópad 8-as tempóval")
+                .plans.get(0).km, 0.01);
+        assertEquals(25.0, Activities.parse("Bicikli 1 óra 25 km/h átlaggal")
+                .plans.get(0).km, 0.01);
+        assertEquals(3.0, Activities.parse("Futópad 20 perc, 3 km, 9-es tempó")
+                .plans.get(0).km, 0.01);
+        assertEquals(48, Activities.parse("Futás 10 km 4:50-es átlaggal").plans.get(0).minutes);
+        assertEquals(25, Activities.parse("Futás 5 km 5:00 átlag").plans.get(0).minutes);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
