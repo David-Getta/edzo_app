@@ -3327,8 +3327,11 @@ public final class Foods {
         // mégis százötven gramm CSIRKECOMB került mellé az étkezésnaplóba.
         // A centi a döntő – a tányéron lévő csirkecombot senki nem méri
         // mérőszalaggal.
+        // A BAL/JOBB oldal is beékelődhet: „comb bal 58, jobb 57,5 cm".
         query = query.replaceAll("(?iu)(?<!\\p{L})(comb|mell|kar|has|d[eé]r[eé]k|"
                 + "cs[ií]p[oő]|v[aá]dli|bicepsz|lapocka|nyak)\\p{L}*\\s*:?\\s*"
+                + "(?:(?:bal|jobb)\\s*:?\\s*\\d{1,3}(?:[.,]\\d)?\\s*(?:cm)?\\s*,?\\s*(?:[eé]s\\s+)?"
+                + "(?:bal|jobb)\\s*:?\\s*)?"
                 + "\\d{1,3}(?:[.,]\\d)?\\s?cm(?![\\p{L}])", " ");
         query = query.replaceAll("(?iu)(?<![\\d,.])\\d{1,3}(?:[.,]\\d)?\\s?cm\\s+"
                 + "(comb|mell|kar|has|d[eé]r[eé]k|cs[ií]p[oő]|v[aá]dli|bicepsz|"

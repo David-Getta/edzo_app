@@ -392,6 +392,17 @@ public final class BodyParse {
             q = q.replaceAll("(?iu)" + stroke + strokeTail, " ")
                     .replaceAll("(?iu)(?<![\\d,.])\\d{2,4}\\s?(?:m|m[eé]ter\\p{L}*)?\\s+"
                             + "(?:gyors|h[aá]t|mell|pillang[oó]|vegyes)(?![\\p{L}])", " ");
+        // A testrész UTÁN álló bal/jobb pár ugyanez: a „comb bal 58, jobb
+        // 57,5 cm" csirkecomb lett az étrendben. Az első oldal a mérés.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])(comb|felkar|kar|v[aá]dli|bicepsz|alkar)\\p{L}*\\s+"
+                + "bal\\s*:?\\s*(\\d{2,3}(?:[.,]\\d)?)\\s*(?:cm)?\\s*,?\\s*(?:[eé]s\\s+)?jobb"
+                + "\\s*:?\\s*\\d{2,3}(?:[.,]\\d)?\\s*(?:cm)?(?![\\p{L}\\d])", "$1 $2 cm");
+        // A VÁLTOZÁS után a „most N" a mérés: a „derekam 2 cm-t ment le,
+        // most 86" üresen jött vissza. A változás mértéke kiesik.
+        q = q.replaceAll("(?iu)(?<![\\p{L}])(der[eé]k|cs[ií]p[oő]|has|comb|mellkas|felkar|kar)"
+                + "(\\p{L}*)\\s+\\d{1,2}(?:[.,]\\d)?\\s?cm(?:-?(?:t|rel|el))?\\s+[^,;.\\d]{2,30}?[,;]\\s*"
+                + "(?:most|m[aá]r|ma)\\s+(\\d{2,3}(?:[.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg)",
+                "$1$2 $3 cm");
         // A BAL ÉS A JOBB oldal ugyanaz a testrész: a „felkar 38 cm bal,
         // 38,5 jobb" harmincnyolc és felese TESTSÚLY lett a trendben. A
         // második oldal száma a kar másik mérete, nem a mérleg; az első

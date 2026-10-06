@@ -1395,6 +1395,15 @@ public class BodyParseTest {
                 "Visceralis zsír 9, testzsír 21%").isEmpty());
     }
 
+    /** A változás utáni „most N" és a testrész utáni bal/jobb pár is mérés. */
+    @Test public void aChangeThenNowAndALeftRightPair() {
+        assertEquals(86.0, BodyParse.parse("Derekam 2 cm-t ment le, most 86").cm[0], 0.01);
+        assertEquals(92.0, BodyParse.parse("Hasam 3 cm-rel kisebb lett, már 92").cm[0], 0.01);
+        assertEquals(58.0, BodyParse.parse("Comb bal 58, jobb 57,5 cm").cm[3], 0.01);
+        assertTrue(Foods.parse(java.util.Arrays.asList(Foods.ALL),
+                "Comb bal 58, jobb 57,5 cm").isEmpty());
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);
