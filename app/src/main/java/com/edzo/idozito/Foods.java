@@ -3441,6 +3441,12 @@ public final class Foods {
                 + "s[uü]tem[eé]ny|joghurt|lekv[aá]r|dzsem|puding|fagyi|fagylalt|"
                 + "m[uü]zli|kaka[oó]|kompo?[oó]t|torta|palacsinta|zabk[aá]sa|"
                 + "m[aá]rt[aá]s|ketchup|mogyor[oó]kr[eé]m|szelet)\\p{L}*)", " ");
+        // A VÍZZEL készült étel vize nem ivás: a „zabkása 50 g zabpehelyből
+        // vízzel" mellé negyed liter ásványvíz került a vízszámlálóba. A
+        // kása és a leves vize a fogásé (az ital vize viszont megivott
+        // folyadék, az marad).
+        query = query.replaceAll("(?iu)((?:zabk[aá]s|k[aá]s[aá]|zabpehely|porridge|leves)"
+                + "\\p{L}*[^,;.]{0,30}?)\\s+v[ií]zzel(?![\\p{L}])", "$1");
         // A „CUKOR NÉLKÜL" a megnevezett ital jelzője is: a „kávé cukor
         // nélkül, kis tejjel" mellé egy háromszázharminc milliliteres light
         // üdítő is bement. Ha kávé, tea, kakaó vagy más ital-étel áll a

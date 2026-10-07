@@ -1586,6 +1586,13 @@ public class FoodsParseTest {
         assertEquals(80, hits("Zserbó 2 kocka").get(0).grams, 0.01);
     }
 
+    /** A kása főzővize nem ivás. */
+    @Test public void porridgeWaterIsNotDrunk() {
+        List<Foods.Hit> h = hits("Zabkása 50 g zabpehelyből vízzel");
+        assertEquals(1, h.size());
+        assertEquals("Zabpehely", h.get(0).food.name);
+    }
+
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
         List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
         assertEquals(40, h.get(0).grams, 0.01);
