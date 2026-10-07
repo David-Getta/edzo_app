@@ -593,7 +593,7 @@ sem talált, tehát ha talál, az tényleg ott van.
   „csináltam 100 guggolást" darabszám marad) – akár több
   gyakorlat egy mondatban,
   kötőszó nélkül is; a mondat időpontot is mondhat („tegnap húzódzkodás 4x8").
-  51 gyakorlat és gép, a jelzős változatokkal
+  52 gyakorlat és gép, a jelzős változatokkal
   („kábeles tricepsz", „elöl guggolás") és a termi anglicizmusokkal
   („leg curl", „chest press", „skull crusher", „hammer curl"). Ahol a súly nagyságrendben más, ott
   külön gyakorlat: a „román felhúzás", a „bolgár kitörés" és a „ferde

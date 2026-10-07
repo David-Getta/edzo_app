@@ -208,6 +208,7 @@ public final class Programs {
                     + "amíg a törzsed vonalba ér – ne feszítsd hátra.";
             case "Hátizom gép": return "Mellkas a párnán, a könyököd húzd hátra a bordáid mellé, lapockák össze.";
             case "Mellgép": return "Könyök vállmagasságban, a mellkas nyomjon – ne a váll elülső része. Ne engedd túl hátra a kart.";
+            case "Thruster": return "Elölguggolásból egy mozdulattal fej fölé: a lábból jövő lendület nyomja fel a rudat, a könyök a guggolásban elöl marad.";
             case "Kettlebell lendítés": return "Csípőből indul, nem a vállból: told hátra a feneked, majd lökd előre. A súly a lendülettől emelkedik, vállmagasságig elég.";
             case "Lábtávolítás": return "Egyenes hát, a térd ne dőljön befelé. Kifelé nyomj erővel, vissza lassan – a lendítés itt semmit nem ad.";
             case "Lábközelítés": return "Csípőből zárj, ne a térddel. A végén egy pillanat megállás, és kontrollálva engedd szét.";

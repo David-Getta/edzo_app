@@ -8554,6 +8554,11 @@ public final class Activities {
                         // hajnali háromra került.
                         || StrengthParse.nameIn(s.substring(0, m.start())) != null))
                 continue;
+            // A TESTTÁJ vagy gyakorlat-csoport utáni kör is kör: a „kardió
+            // 20 perc + has 3 kör" hajnali háromra került.
+            if (spaced && s.substring(0, m.start()).matches("(?s).*(?<![a-z])(?:has|hasizom"
+                    + "|core|torzs|kar|lab|plank|nyujtas|mobilizalas|kardio|tricepsz"
+                    + "|bicepsz|vall|mell|hat)\\w*\\s*:?\\s*$")) continue;
             if (spaced && s.matches("(?s).*(?<![a-z])(?:tabata|hiit|emom"
                     + "|amrap|intervall\\w*|koredzes\\w*)(?![a-z]).*")
                     && !s.substring(0, m.start()).matches("(?s).*(?<![a-z])"

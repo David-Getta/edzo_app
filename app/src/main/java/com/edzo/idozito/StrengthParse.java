@@ -109,6 +109,7 @@ public final class StrengthParse {
             {"Román felhúzás", "roman felhuzas", "roman holtemel", "roman holt emel",
                     "roman huzas", "rdl"},
             {"Bolgár kitörés", "bolgar kitores", "bolgar guggolas", "bolgar split",
+                    "bulgarian split", "bulgar split", "split squat",
                     "bolgar szplit"},
             {"Ferde fekvenyomás", "ferde fekvenyom", "ferde pad", "ferde nyomas",
                     // Az egybeírt „ferdepad 3x10" eddig kimaradt, ahogy a
@@ -220,6 +221,9 @@ public final class StrengthParse {
             {"Hátfeszítés", "hiperextenzi", "hiperextension", "hyperextension", "hatfeszit",
                     "back extension"},
             // A „kettlebell" magában nem elég: a kettlebell-guggolás guggolás.
+            // A THRUSTER (elölguggolás + nyomás) a CrossFit alapja: a „21-15-9
+            // thruster és húzódzkodás" thrusterje eddig ismeretlen volt.
+            {"Thruster", "thruster"},
             {"Kettlebell lendítés", "kettlebell swing", "kettlebell lendit", "kb swing",
                     "swing"},
             {"Lábtávolítás", "labtavolit", "combtavolit", "abduktor"},
@@ -591,6 +595,21 @@ public final class StrengthParse {
                 + "|k[eé]nt)?|m[eé]g)\\s+){1,2}egy\\s+(\\d{1,2})\\s?-?"
                 + "(?:[aeo\u00f6]s|ism[eé]tl[eé]ses)\\s+szett(?:et)?"
                 + "(?![\\p{L}])", " 1x$1 ");
+        // Az ELÖL ÁLLÓ ismétlés-séma minden felsorolt gyakorlaté: a „21-15-9
+        // thruster és húzódzkodás" (a CrossFit „Fran") egyetlen sorozatot
+        // sem írt – a séma a két gyakorlatnév előtt állt.
+        {
+            java.util.regex.Matcher rs = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\d,.x×-])(\\d{1,2}(?:\\s?-\\s?\\d{1,2}){1,5})\\s+"
+                    + "(\\p{L}+(?:\\s\\p{L}+)?)\\s*(?:,|\\+|\\s[eé]s|\\smeg)\\s+"
+                    + "(\\p{L}+(?:\\s\\p{L}+)?)(?=\\s*(?:[,;.!]|$))").matcher(text);
+            if (rs.find() && moveIn(Foods.norm(rs.group(2))) != null
+                    && moveIn(Foods.norm(rs.group(3))) != null) {
+                String sch = rs.group(1).replaceAll("\\s", "");
+                text = text.substring(0, rs.start()) + rs.group(2) + " " + sch + ", "
+                        + rs.group(3) + " " + sch + text.substring(rs.end());
+            }
+        }
         // A súllyal mondott „FEKVŐ" a terem fekvenyomása: a „fekvő 3x10 70"
         // hetven kilós fekvőtámasz lett. Súly nélkül marad fekvőtámasz.
         text = text.replaceAll("(?iu)(?<![\\p{L}])fekv[oő](?![\\p{L}])(?=[^,;.]*?(?:\\d\\s?[x×]\\s?"
@@ -1607,13 +1626,23 @@ public final class StrengthParse {
      */
     private static List<String> splitByMoves(String s) {
         List<Integer> cuts = new ArrayList<>();
+        List<int[]> spans = new ArrayList<>();
         for (String[] row : MOVES) {
             int best = -1, bestLen = 0;
             for (int i = 1; i < row.length; i++) {
                 int p = s.indexOf(row[i]);
+                if (p >= 0) spans.add(new int[]{p, p + row[i].length()});
                 if (p >= 0 && row[i].length() > bestLen) { best = p; bestLen = row[i].length(); }
             }
             if (best >= 0) cuts.add(best);
+        }
+        // A MÁSIK NÉV BELSEJÉBE eső vágás nem új gyakorlat: a „bulgarian
+        // split squat 3x10" „squat"-ja a „split squat" része – eddig két
+        // darabra vágta, és guggolás lett a bolgár kitörésből.
+        for (int i = cuts.size() - 1; i >= 0; i--) {
+            int c = cuts.get(i);
+            for (int[] sp : spans)
+                if (sp[0] < c && c < sp[1] && sp[1] - sp[0] > 0) { cuts.remove(i); break; }
         }
         List<String> out = new ArrayList<>();
         if (cuts.size() < 2) { out.add(s); return out; }

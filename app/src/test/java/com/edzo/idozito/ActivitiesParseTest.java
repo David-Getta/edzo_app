@@ -1024,6 +1024,11 @@ public class ActivitiesParseTest {
         assertEquals(25, Activities.parse("Futás 5 km 5:00 átlag").plans.get(0).minutes);
     }
 
+    /** A testtáj utáni „3 kör" kör, nem hajnali három. */
+    @Test public void roundsAfterABodyPartAreNotAnHour() {
+        assertEquals(12, Activities.parse("Kardió 20 perc + has 3 kör").hour);
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

@@ -3079,4 +3079,21 @@ public class StrengthParseTest {
         assertEquals(100.0, it.get(0).sets.get(2).weight, 0.01);
         assertEquals(5, it.get(0).sets.get(2).reps);
     }
+
+    /**
+     * Az elöl álló séma minden gyakorlaté; a „split squat" bolgár kitörés.
+     *
+     * A „21-15-9 thruster és húzódzkodás" egyetlen sorozatot sem írt, a
+     * „bulgarian split squat" pedig guggolás lett.
+     */
+    @Test public void aLeadingSchemeAndASplitSquat() {
+        List<StrengthParse.Item> it = StrengthParse.parse(
+                "Crossfit WOD: 21-15-9 thruster és húzódzkodás");
+        assertEquals(2, it.size());
+        assertEquals("Thruster", it.get(0).name);
+        assertEquals(45, it.get(0).totalReps());
+        assertEquals(45, it.get(1).totalReps());
+        assertSets("Bulgarian split squat 3x10", "Bolgár kitörés", 3, 10, 0);
+        assertSets("Bolgár split squat 3x10", "Bolgár kitörés", 3, 10, 0);
+    }
 }

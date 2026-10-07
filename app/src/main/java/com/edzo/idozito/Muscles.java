@@ -38,6 +38,8 @@ public final class Muscles {
                     "kettlebell", "swing",
                     // A súlyemelő fogások és a farmerjárás is csípőből mennek.
                     "good morning", "gudmorning", "szakitas", "snatch", "lokes",
+                    // A thruster guggolásból indul – a láb viszi a súlyt.
+                    "thruster",
                     "clean and jerk", "farmerjaras", "farmer jaras", "farmers walk",
                     // A robbanékony és a comb hátulját terhelő gyakorlatok is
                     // láb-munkák: a ládaugrás és a nordic curl.
