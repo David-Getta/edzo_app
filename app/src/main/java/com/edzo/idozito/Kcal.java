@@ -657,6 +657,16 @@ public final class Kcal {
     public static int protein(String q) {
         if (q == null) return -1;
         String s = Hu.digits(Foods.norm(q));
+        // Az ÖSSZETETT „fehérjebevitel" és a makró-RÖVIDÍTÉS is fehérje: a
+        // „fehérjebevitel: 135g", a „makrók: F 150 / SZH 200 / Zs 60" és a
+        // „P: 150, C: 220, F: 70" üresen jött vissza. A magyar sorban (SZH,
+        // Zs mellett) az F a fehérje, az angolban (C mellett) a P.
+        s = s.replaceAll("(?<![a-z])(?:feherje|protein)\\s?bevitel\\w*\\s*:?\\s*"
+                + "(\\d{2,3})\\s?(?:g|gr|gramm)?(?![a-z\\d])", "$1 g feherje");
+        if (s.matches("(?s).*(?<![a-z])(?:szh|zs)\\s*:?\\s*\\d.*"))
+            s = s.replaceAll("(?<![a-z])f\\s*:?\\s*(\\d{2,3})(?!\\d|[,.]\\d)", "$1 g feherje");
+        else if (s.matches("(?s).*(?<![a-z])c\\s*:?\\s*\\d.*"))
+            s = s.replaceAll("(?<![a-z])p\\s*:?\\s*(\\d{2,3})(?!\\d|[,.]\\d)", "$1 g feherje");
         // A CÉL csak a saját tagmondatát viszi el: a „fehérje ma 140 g, cél
         // 150" száznegyvene elveszett – a cél szava az egész mondatot
         // elnémította. Ha más tagmondat is mond számot, a cél tagmondata
@@ -672,7 +682,14 @@ public final class Kcal {
                     if (goal && cl.matches("(?s).*\\d.*")) { dropped = true; continue; }
                     kept.append(cl);
                 }
-                if (dropped && kept.toString().matches("(?s).*\\d.*")) s = kept.toString();
+                // A cél fehérje-egysége a „ma 120 lett" számához is átjön: a
+                // „napi 140 g fehérje a cél, ma 120 lett" üres maradt.
+                if (dropped && kept.toString().matches("(?s).*\\d.*")) {
+                    s = kept.toString();
+                    if (!s.matches("(?s).*(?:feherj|protein).*"))
+                        s = s.replaceAll("(?<![\\d,.])(\\d{2,3})(?=\\s+(?:lett|volt|megvolt"
+                                + "|jott ossze))", "$1 g feherje");
+                }
             }
         }
         // A TELJESÍTETT cél már adat: az „elértem a fehérjecélt, 140 g"

@@ -770,4 +770,14 @@ public class KcalTest {
         assertEquals(650, Kcal.stated("Ebéd 650 kcal, utána 30 perc séta 120 kcal"));
         assertEquals(120, Kcal.burned("Ebéd 650 kcal, utána 30 perc séta 120 kcal"));
     }
+
+    /** A „fehérjebevitel", a makró-rövidítés és a cél utáni „ma N lett". */
+    @Test public void proteinIntakeAbbreviationsAndTheGoalsUnit() {
+        assertEquals(135, Kcal.protein("Fehérjebevitel: 135g"));
+        assertEquals(150, Kcal.protein("Mai makrók: F 150 / SZH 200 / Zs 60"));
+        assertEquals(150, Kcal.protein("P: 150, C: 220, F: 70"));
+        assertEquals(120, Kcal.protein("Napi 140 g fehérje a cél, ma 120 lett"));
+        // A puszta cél továbbra sem bevitel.
+        assertEquals(-1, Kcal.protein("Napi 140 g fehérje a cél"));
+    }
 }
