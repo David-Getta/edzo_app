@@ -10551,6 +10551,11 @@ public final class Activities {
             // alanynak látszott. Az „ők" mellett magyarul ott az ige is –
             // ige nélkül a két betű nem alany.
             if (w.equals("ok") && !hasOtherVerb(t)) continue;
+            // A „CSAPAT EDZÉS" jelzős összetétel, nem alany: a „csapat
+            // edzés 2 óra" üresen jött vissza – a csapat szava harmadik
+            // személynek látszott, pedig az edzés az enyém.
+            if (w.equals("csapat") && t.matches("(?s).* csapat (?:edzes|meccs|jatek"
+                    + "|sport|foci|kosar|futas|tura)\\w* .*") && !hasOtherVerb(t)) continue;
             return true;
         }
         // A TÖBBES SZÁM HARMADIK SZEMÉLY magától is elárulja magát: az „ők

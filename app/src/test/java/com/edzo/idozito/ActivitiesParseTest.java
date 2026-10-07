@@ -1029,6 +1029,12 @@ public class ActivitiesParseTest {
         assertEquals(12, Activities.parse("Kardió 20 perc + has 3 kör").hour);
     }
 
+    /** A „csapat edzés" az én edzésem; a „csapat edzett" nem. */
+    @Test public void aTeamTrainingIsMine() {
+        assertEquals("kosarlabda", Activities.parse("Csapat edzés 2 óra kosár").plans.get(0).kind.id);
+        assertTrue(Activities.parse("A csapat futott 5 km-t").plans.isEmpty());
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);
