@@ -756,6 +756,19 @@ public class ActivitiesParseTest {
                 .plans.get(0).km, 0.01);
     }
 
+    /** A hónapnév utáni pontos szám a hónap napja, nem sorszám. */
+    @Test public void aMonthNameThenADottedDayIsADate() {
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.OCTOBER, 8, 12, 0, 0);
+        long thu = c.getTimeInMillis();
+        assertEquals(5, Activities.parse("október 3. futás 8 km", thu).offset);
+        assertEquals(5, Activities.parse("Okt. 3. úszás 1 km", thu).offset);
+        assertEquals(8, Activities.parse("Szeptember 30. futás 8 km", thu).offset);
+        // A sorszám továbbra sem darabszám.
+        assertEquals(1, Activities.parse("Letudtam a heti 3. futást", thu).plans.get(0).count);
+    }
+
     @Test public void theMonitorAndTheScoreAreNotSports() {
         // A „monitornál" tornája jóga, a „score" core-ja kondi lett.
         assertTrue(Activities.parse("Egész nap a monitornál ültem").plans.isEmpty());
@@ -1033,6 +1046,15 @@ public class ActivitiesParseTest {
     @Test public void aTeamTrainingIsMine() {
         assertEquals("kosarlabda", Activities.parse("Csapat edzés 2 óra kosár").plans.get(0).kind.id);
         assertTrue(Activities.parse("A csapat futott 5 km-t").plans.isEmpty());
+    }
+
+    /** A tizedes ezres lépésszám: „6,5 ezer" és „7.5 ezer" (nem dátum). */
+    @Test public void decimalThousandsOfSteps() {
+        Activities.Parsed p = Activities.parse("Ma 6,5 ezer lépés");
+        assertEquals(6500, p.plans.get(0).steps);
+        p = Activities.parse("7.5 ezer lépés");
+        assertEquals(7500, p.plans.get(0).steps);
+        assertEquals(0, p.offset);
     }
 
     @Test public void everyDistanceInARoundIsMultiplied() {

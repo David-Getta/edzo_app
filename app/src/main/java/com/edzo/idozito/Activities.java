@@ -1308,6 +1308,9 @@ public final class Activities {
      * egyszerűen két számnak látszott, és a mondat mindkettőt eldobta.
      */
     private static String shortForms(String s) {
+        // A PONTOS tizedes ezres nem dátum: a „7.5 ezer lépés" július
+        // ötödikére került, ezer lépéssel.
+        s = s.replaceAll("(?<![\\d.])(\\d{1,2})\\.(\\d)\\s?(ezer|k)(?![a-z])", "$1,$2 $3");
         // A SZÓKÖZÖS „+" tagmondat-határ: az „úszás 30 perc + 10 perc szauna"
         // úszása NEGYVENÖT perc lett – a szauna mozdulatlan perce egy
         // tagmondatban állt az úszáséval, és mindkettőt elvitte. (A „+10 kg"
@@ -7424,9 +7427,18 @@ public final class Activities {
         }
         int numStart = numEnd;
         while (numStart > 0 && Character.isDigit(s.charAt(numStart - 1))) numStart--;
+        // A TIZEDES ezres is ezres: a „ma 6,5 ezer lépés" ötezer lett – csak
+        // a vessző utáni ötös számított.
+        if (mult == 1000 && numStart < numEnd && numStart >= 2
+                && (s.charAt(numStart - 1) == ',' || s.charAt(numStart - 1) == '.')
+                && Character.isDigit(s.charAt(numStart - 2))) {
+            int a = numStart - 1;
+            while (a > 0 && Character.isDigit(s.charAt(a - 1))) a--;
+            numStart = a;
+        }
         double val;
         if (numStart < numEnd) {
-            try { val = Double.parseDouble(s.substring(numStart, numEnd)); }
+            try { val = Double.parseDouble(s.substring(numStart, numEnd).replace(',', '.')); }
             catch (NumberFormatException e) { return null; }
         } else if (mult == 1000) {
             // Kiírt számnév egyben: „tízezer" (a norm után: tizezer).
@@ -10118,8 +10130,18 @@ public final class Activities {
                 // kizárja a sorszám-olvasatot.
                 .compile("(?<![\\d.,])(?<!\\dx)(?<!\\d×)(\\d{1,2})\\.(?=\\s?\\p{L})"
                         + "(?!\\s?(?:km(?![\\p{L}])|emelet))").matcher(text);
-        while (m.find())
+        while (m.find()) {
+            // A HÓNAPNÉV utáni pontos szám a hónap napja: az „október 3.
+            // futás 8 km" futása mára került – a nap száma sorszámnak
+            // látszott.
+            String before = Foods.norm(text.substring(0, m.start(1))).trim();
+            boolean monthDay = false;
+            for (String mo : MONTHS) if (before.endsWith(mo)) monthDay = true;
+            for (String mo : MONTH_ABBR)
+                if (before.endsWith(mo) || before.endsWith(mo + ".")) monthDay = true;
+            if (monthDay) continue;
             for (int i = m.start(1); i < m.end(1) + 1; i++) sb.setCharAt(i, ' ');
+        }
         return sb.toString();
     }
 
