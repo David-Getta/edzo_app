@@ -115,6 +115,26 @@ public final class IntervalParse {
         if (text == null) return null;
         String s = digits(Foods.norm(text).replace('\n', ' '));
         if (s.trim().isEmpty()) return null;
+        // A „BE" és a „KI" a munka és a pihenő: az „1 perc be, 30 mp ki,
+        // 12x" pihenője elveszett. Csak idő után állva szakasz-név.
+        s = s.replaceAll("(\\d\\s?(?:mp|masodperc|mperc|perc|sec|s)\\w*)\\s+be(?![a-z])",
+                        "$1 munka")
+                .replaceAll("(\\d\\s?(?:mp|masodperc|mperc|perc|sec|s)\\w*)\\s+ki(?![a-z])",
+                        "$1 piheno");
+        // A „TABATA KÉTSZER" két blokk, tizenhat kör: eddig két kör lett.
+        {
+            java.util.regex.Matcher tb = java.util.regex.Pattern.compile(
+                    "tabata\\w*\\s+(?:(\\d)\\s?-?(?:szor|szer|sor|x|\\s?korr)|(ketszer|haromszor"
+                    + "|negyszer))(?![a-z])").matcher(s);
+            if (tb.find()) {
+                int n = tb.group(1) != null ? Integer.parseInt(tb.group(1))
+                        : tb.group(2).startsWith("ket") ? 2
+                        : tb.group(2).startsWith("harom") ? 3 : 4;
+                if (n >= 2 && n <= 6)
+                    s = s.substring(0, tb.start()) + "tabata " + (8 * n) + " kor"
+                            + s.substring(tb.end());
+            }
+        }
         // A VÉRNYOMÁS nem ritmus: a „160/95 a vérnyomásom" ugyanúgy néz ki,
         // mint egy munka/pihenő pár, és eddig időzítő-tervet ajánlott rá az
         // app – száznegyven másodperc munka, kilencvenöt pihenő.

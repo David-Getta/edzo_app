@@ -1113,4 +1113,15 @@ public class IntervalParseTest {
         // A megtörtént edzés hossza nem visszaszámlálás.
         assertNull(IntervalParse.parse("Futás 1 óra 45 perc"));
     }
+
+    /** A „be/ki" munka és pihenő; a „tabata kétszer" két blokk. */
+    @Test public void onOffWordsAndATabataTwice() {
+        IntervalParse.Plan p = IntervalParse.parse("1 perc be, 30 mp ki, 12x");
+        assertEquals(12, p.rounds);
+        assertEquals(60, p.work);
+        assertEquals(30, p.rest);
+        assertEquals(16, IntervalParse.parse("Tabata kétszer").rounds);
+        assertEquals(24, IntervalParse.parse("Tabata 3x").rounds);
+        assertEquals(8, IntervalParse.parse("Tabata").rounds);
+    }
 }
