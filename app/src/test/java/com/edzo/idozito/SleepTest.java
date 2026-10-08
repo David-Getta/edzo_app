@@ -711,4 +711,10 @@ public class SleepTest {
         assertEquals(7, Sleep.parse("Fél 12-kor ágyba, fél 7-kor fel"), 0.01);
         assertEquals(7.5, Sleep.parse("Aludtam 7,5-öt"), 0.01);
     }
+    /** A „fél 8 órát" hét és fél óra; a „7 ó 20 p" és a „vagy 9-et" is óra. */
+    @Test public void halfBeforeTheHourShortUnitsAndApproximately() {
+        assertEquals(7.5, Sleep.parse("Kb. fél 8 órát aludtam"), 0.01);
+        assertEquals(7.3, Sleep.parse("Alvás: 7 ó 20 p"), 0.05);
+        assertEquals(9, Sleep.parse("Aludtam vagy 9-et"), 0.01);
+    }
 }

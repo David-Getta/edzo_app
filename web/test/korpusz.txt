@@ -2647,6 +2647,8 @@ Visceralis zsír 9, testzsír 21%
 Derekam 2 cm-t ment le, most 86
 Hasam 3 cm-rel kisebb lett, már 92
 Comb bal 58, jobb 57,5 cm
+Súly: 78 kiló 30 deka
+78 kg 50 dkg
 Lementem 30 hosszt a másik sávban.
 Lementem 78 kilóra.
 Derékbőségem 88 cm, a csípőm 102, a mellkasom 98.
@@ -5537,6 +5539,9 @@ Alvás 6-7 óra
 11-kor ágyba, 7-kor fel
 Fél 12-kor ágyba, fél 7-kor fel
 Aludtam 7,5-öt
+Kb. fél 8 órát aludtam
+Alvás: 7 ó 20 p
+Aludtam vagy 9-et
 a szakasz-nevek és -azonosítók száma eltér
 Fekvenyomás 3×10/10/10@60
 Guggolás 5×5/5/5/5/5@80

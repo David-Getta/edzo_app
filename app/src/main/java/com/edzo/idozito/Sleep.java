@@ -145,6 +145,23 @@ public final class Sleep {
             if (n.contains("lefekudtem"))
                 n = n.replaceAll("(?<![a-z])(\\d{1,2}(?::\\d{2})?)\\s?-?kor\\s+fel"
                         + "(?=\\s*(?:[,;.!]|$))", "$1-kor keltem");
+            // A „FÉL 8 ÓRÁT" hét és fél óra, nem nyolc: a „fél" itt a
+            // következő egész előtti fél (mint az órán a fél nyolc). A rövid
+            // „7 ó 20 p" és a közelítő „vagy 9-et" is óra.
+            {
+                java.util.regex.Matcher fo = java.util.regex.Pattern.compile(
+                        "(?<![a-z])fel\\s+(\\d{1,2})\\s?(?=ora\\w*)").matcher(n);
+                StringBuffer fb = new StringBuffer();
+                while (fo.find()) {
+                    int h = Integer.parseInt(fo.group(1));
+                    fo.appendReplacement(fb, h >= 2 ? (h - 1) + ",5 " : fo.group());
+                }
+                fo.appendTail(fb);
+                n = fb.toString();
+            }
+            n = n.replaceAll("(?<![\\d,.])(\\d{1,2})\\s?o\\s+(\\d{1,2})\\s?p(?![a-z])", "$1 ora $2 perc")
+                    .replaceAll("(?<![a-z])(aludtam|alvas)\\s+(?:vagy|kb\\.?|korulbelul|nagyjabol)\\s+(?=\\d)",
+                            "$1 ");
             // (A számnév-fordító ELŐTT: a „fel" különben „0,5" lesz.)
             n = Hu.digits(n);
             // A számnév-fordító a „hetet"-ből puszta „7"-et csinál, ezért a

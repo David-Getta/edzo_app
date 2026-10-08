@@ -1404,6 +1404,12 @@ public class BodyParseTest {
                 "Comb bal 58, jobb 57,5 cm").isEmpty());
     }
 
+    /** A kiló és a deka egy mérés. */
+    @Test public void kilosAndDekasAreOneReading() {
+        assertEquals(78.3, BodyParse.parse("Súly: 78 kiló 30 deka").kg, 0.01);
+        assertEquals(78.5, BodyParse.parse("78 kg 50 dkg").kg, 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

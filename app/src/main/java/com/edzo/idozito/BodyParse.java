@@ -324,6 +324,19 @@ public final class BodyParse {
         if (q == null) return new Body(0, 0);
         // Az „Ő 80 kg, én 72" az én hetvenkét kilóm.
         q = Hu.contrastMine(q);
+        // A KILÓ ÉS DEKA egy mérés: a „súly: 78 kiló 30 deka" hetvennyolc
+        // lett, a „78 kg 50 dkg" semmi.
+        {
+            java.util.regex.Matcher kd = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\d,.])(\\d{2,3})\\s?(?:kg|kil[oó]\\p{L}*)\\s+(\\d{1,2})\\s?"
+                    + "(?:dkg|deka\\p{L}*|dekagramm\\p{L}*)(?![\\p{L}])").matcher(q);
+            if (kd.find()) {
+                int dk = Integer.parseInt(kd.group(2));
+                if (dk < 100)
+                    q = q.substring(0, kd.start()) + kd.group(1) + ","
+                            + (dk < 10 ? "0" + dk : String.valueOf(dk)) + " kg" + q.substring(kd.end());
+            }
+        }
         // A GYAKORLAT SÚLYÁNAK emelése nem mérés: az „emeltem a guggolás
         // súlyát 5 kilóval, most 85" nyolcvanöt kilós testsúlyt írt a
         // trendbe – a rúdon lévő súlyt.
