@@ -65,7 +65,12 @@ public final class Foods {
                 // naplóba – ugyanarról a szeletről.
                 "csirkemell sonka", "csirke sonka", "csirkemell felvagott",
                 "grillcsirke", "teriyaki"),
-        new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb", "csirkeszarny"),
+        new Food("Csirkecomb", 210, 26, 150, "csirkecomb", "comb"),
+        // A SZÁRNY külön tétel: egy darab ötven gramm körül van, nem egy
+        // combnyi – a „csirkeszárny 4 db" hatszáz gramm lett. A puszta
+        // „szárny" is az: a „KFC 6 csípős szárny" üres volt.
+        new Food("Csirkeszárny", 240, 20, 150, "csirkeszarny", "szarny", "chicken wings",
+                "wings"),
         // Egészben sült csirke: a bőrrel-csonttal tálalt adag zsírosabb, mint
         // a grillezett mell, és a tepsiben sült zöldség zsírja is rámegy.
         new Food("Tepsis csirke", 200, 20, 300, "tepsis csirke", "tepsiben sult csirke",
@@ -189,13 +194,20 @@ public final class Foods {
         new Food("Pizza", 260, 11, 300, "pizza", "calzone", "quattro formaggi",
                 "quattro stagioni"),
         new Food("Hamburger", 280, 13, 250, "hamburger", "burger", "big mac", "bigmac",
-                "whopper", "cheeseburger", "hambi"),
+                "whopper", "cheeseburger", "hambi",
+                // A gyorséttermi burgernevek is burgerek: a „McChicken és kis
+                // krumpli" burgere eddig ismeretlen volt.
+                "mcchick", "mcroyal", "mcdouble", "zinger", "twister"),
         new Food("Gyorséttermi menü", 220, 8, 500, "gyorsettermi menu", "mcmenu", "happy meal",
                 // Ahogy a magyar mondja: „mekis kaja", „kfc kosár". A puszta
                 // márkanév is menüt jelent – aki csak a helyet írja le, az a
                 // szokásos tálcára gondol.
                 "mekis menu", "mekis kaja", "mcdonalds", "mcdonald's", "meki",
-                "kfc kosar", "kfc menu", "burger king menu"),
+                "kfc kosar", "kfc menu", "burger king menu",
+                // A BURGER MENÜ a krumplival és az itallal együtt egy tálca: a
+                // „Big Mac menü" eddig csak a burgert írta.
+                "big mac menu", "bigmac menu", "whopper menu", "burger menu",
+                "hamburger menu", "cheeseburger menu", "mcchicken menu"),
         // A „gíros" gyakori elgépelés (a görög ejtés szerint írva).
         new Food("Gyros", 220, 15, 350, "gyros", "giros", "souvlaki"),
         new Food("Lángos", 320, 7, 200, "langos"),
@@ -2227,6 +2239,7 @@ public final class Foods {
             // fél avokádónyi adag (70 g) lett.
             {"Avokádó", "140"},
             {"Bonbon / praliné", "12"},
+            {"Csirkeszárny", "50"},
             {"Mignon / zserbó", "40"},
             {"Zsemle", "55"}, {"Kifli", "55"}, {"Kenyér", "35"},
             {"Bagett", "250"},
@@ -2466,6 +2479,7 @@ public final class Foods {
              // négy elveszett.
              "fott", "kemeny", "lagy", "sult", "grillezett", "parolt",
              "piritott", "nyers", "hideg", "meleg", "friss", "hazi", "fozott",
+             "csipos", "ropogos", "panirozott", "fuszeres",
              "buggyantott", "olajban"};
 
     /**
@@ -3451,6 +3465,11 @@ public final class Foods {
                 + "s[uü]tem[eé]ny|joghurt|lekv[aá]r|dzsem|puding|fagyi|fagylalt|"
                 + "m[uü]zli|kaka[oó]|kompo?[oó]t|torta|palacsinta|zabk[aá]sa|"
                 + "m[aá]rt[aá]s|ketchup|mogyor[oó]kr[eé]m|szelet)\\p{L}*)", " ");
+        // A GYORSÉTTERMI KRUMPLI sült krumpli: a „McChicken és kis krumpli"
+        // krumplija főtt burgonya lett.
+        if (query.matches("(?isu).*(?:mc\\p{L}*|burger|meki|kfc|whopper|big\\s?mac).*"))
+            query = query.replaceAll("(?iu)(?<![\\p{L}])(kis|k[oö]zepes|nagy|egy)\\s+krumpli\\p{L}*",
+                    "$1 sült krumpli");
         // A „FALATOT ETTEM A TORTÁBÓL" a falat a tortáé: egy egész adag
         // sütemény került a naplóba egyetlen falatból.
         query = query.replaceAll("(?iu)(?<![\\p{L}])(egy|k[eé]t|h[aá]rom|p[aá]r|\\d{1,2})\\s+"
@@ -5316,7 +5335,8 @@ public final class Foods {
             {"Gomba", "Pizza"},
             // A lazacos sushi lazaca a szettben van, a lecsó paprikája a
             // lábosban – egyik sem külön adag a tál mellé.
-            {"Lazac", "Sushi"},
+            {"Lazac", "Sushi", "Poke bowl"},
+            {"Tonhal", "Poke bowl"},
             {"Paprika", "Lecsó"},
             // A „citromOS" fagyi íze citrom, nem egy pohár citromlé mellé.
             {"Citromlé", "Fagylalt", "Sütemény", "Palacsinta", "Limonádé"},

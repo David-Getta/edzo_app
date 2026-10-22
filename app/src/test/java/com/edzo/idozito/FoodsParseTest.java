@@ -1617,6 +1617,17 @@ public class FoodsParseTest {
         assertEquals(2, hits("Rántott hús rizzsel").size());
     }
 
+    /** Gyorsétterem: burgermenü, McChicken, szárny darabra, poke a hallal. */
+    @Test public void fastFoodNamesAndWingsByThePiece() {
+        assertEquals("Gyorséttermi menü", hits("Big Mac menü").get(0).food.name);
+        List<Foods.Hit> m = hits("McChicken és kis krumpli");
+        assertEquals("Hamburger", m.get(0).food.name);
+        assertEquals("Sült krumpli", m.get(1).food.name);
+        assertEquals(300, hits("KFC 6 csípős szárny").get(0).grams, 0.01);
+        assertEquals(200, hits("Csirkeszárny 4 db").get(0).grams, 0.01);
+        assertEquals(1, hits("Poke bowl lazaccal").size());
+    }
+
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
         List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
         assertEquals(40, h.get(0).grams, 0.01);
@@ -1626,7 +1637,7 @@ public class FoodsParseTest {
         assertEquals("Zabpehely", hits("porridge reggelire").get(0).food.name);
         assertEquals("Proteinszelet", hits("protein bar edz\u00e9s ut\u00e1n").get(0).food.name);
         assertEquals("Csirkemell (s\u00fclt/grill)", hits("chicken salad").get(0).food.name);
-        assertEquals("Csirkecomb", hits("chicken wings").get(0).food.name);
+        assertEquals("Csirkeszárny", hits("chicken wings").get(0).food.name);
     }
 
     @Test public void friesIsSideOrderNotPartOfGofri() {

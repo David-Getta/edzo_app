@@ -583,7 +583,7 @@ public class FoodsFitnessTest {
         assertEquals("Fasírt", names("stefánia vagdalt"));
         assertEquals("Sertéskaraj", names("tarja"));
         assertEquals("Marhahús", names("bélszín"));
-        assertEquals("Csirkecomb", names("csirkeszárny"));
+        assertEquals("Csirkeszárny", names("csirkeszárny"));
         // A szomszédok élnek: az eper eper, a sajt sajt, a máj máj.
         assertEquals("Eper", names("eper"));
         assertEquals("Sajt (trappista)", names("sajt"));
