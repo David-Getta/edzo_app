@@ -1593,6 +1593,30 @@ public class FoodsParseTest {
         assertEquals("Zabpehely", h.get(0).food.name);
     }
 
+    /**
+     * A „se/sem" tagadás, a falat a fogásból, és a terv, ami végül más lett.
+     */
+    @Test public void neitherNorABiteOfAndAChangedPlan() {
+        List<Foods.Hit> h = hits("Ma se cukor, se fehér liszt, csak 2 tojás és saláta");
+        assertEquals(2, h.size());
+        assertEquals("Tojás", h.get(0).food.name);
+        assertTrue(hits("Kenyeret sem ettem").isEmpty());
+        assertTrue(hits("Csokit se ettem ma").isEmpty());
+        List<Foods.Hit> k = hits("Se tejet, se cukrot nem tettem a kávéba");
+        assertEquals(1, k.size());
+        assertEquals("Kávé (fekete)", k.get(0).food.name);
+        assertEquals(15, hits("Csak egy falatot ettem a tortából").get(0).grams, 0.01);
+        assertEquals("Tészta (főtt)",
+                hits("Ebédre terveztem rizst, végül tészta lett").get(0).food.name);
+    }
+
+    /** A disznóhús a sertés, a különírt „hús leves" a húsleves. */
+    @Test public void porkByItsFolkNameAndASplitSoup() {
+        assertEquals("Sertéskaraj", hits("Disznóhús rizzsel").get(0).food.name);
+        assertEquals("Húsleves", hits("Hús leves").get(0).food.name);
+        assertEquals(2, hits("Rántott hús rizzsel").size());
+    }
+
     @Test public void beingTwoAtTheCinemaDoesNotHalveThePopcorn() {
         List<Foods.Hit> h = hits("ketten voltunk a moziban, ettem egy popcornt");
         assertEquals(40, h.get(0).grams, 0.01);

@@ -82,7 +82,10 @@ public final class Foods {
                 // kenyérrel" húsa eddig elveszett, csak a kenyér maradt.
                 // A „sült hús" a vasárnapi ebéd gyűjtőneve: eddig üresen
                 // jött vissza, csak a köret került a naplóba.
-                "hidegsult", "hideg sult", "sult hus", "sulthus"),
+                "hidegsult", "hideg sult", "sult hus", "sulthus",
+                // A DISZNÓHÚS a sertés népi neve: a „disznóhús rizzsel" csak
+                // rizs lett.
+                "disznohus", "diszno hus", "disznosult", "malachus"),
         // A „steak" szóban benne van a „tea": a hosszabb tő nyeli el, így a
         // „tofu steak" nem naplóz egy csésze teát is.
         // Vad és bárány: a magyar konyha rendszeres vendégei, de eddig
@@ -473,7 +476,7 @@ public final class Foods {
                 "meggy leves", "barackleves", "eperleves"),
         new Food("Paradicsomos káposzta", 55, 2, 400,
                 "paradicsomos kaposzta", "paradicsomoskaposzta"),
-        new Food("Húsleves", 40, 3, 400, "husleves", "csigateszta leves", "csigateszta",
+        new Food("Húsleves", 40, 3, 400, "husleves", "hus leves", "csigateszta leves", "csigateszta",
                 "grizgaluska leves", "grizgaluskaleves", "grizgaluska", "majgomboc",
                 // A teljes alak szótő, különben a „csirke" tő vinné el a
                 // levest sült csirkemellnek.
@@ -3188,6 +3191,13 @@ public final class Foods {
                     + "|majd|fogok|fogom|j[oö]v[oő]\\s+h[eé]t\\p{L}*|holnaput[aá]n)(?![\\p{L}])[^.!?]*[.!?]?", " ");
             if (!kept.trim().isEmpty() && kept.matches("(?s).*\\p{L}.*")) query = kept;
         }
+        // A TERV, ami végül másképp lett: az „ebédre terveztem rizst, végül
+        // tészta lett" üresen jött vissza – a terv szava az egész mondatot
+        // elnémította. A terv tagmondata kiesik, a „végül …" a valódi étel.
+        if (query != null)
+            query = query.replaceAll("(?iu)[^,;.]*(?<![\\p{L}])(?:terveztem|akartam|szerettem\\s+volna"
+                + "|kellett\\s+volna)(?![\\p{L}])[^,;.]*[,;]\\s*(?:de\\s+)?(?:v[eé]g[uü]l|helyette"
+                + "|v[eé]g[uü]l\\s+is)\\s+", " ");
         if (looksUneaten(query)) return new ArrayList<>();
         // A HELYESBÍTÉS második száma az igazi: a „nem ettem 3 szeletet, csak
         // 1-et" mondatból eddig semmi nem lett – a tagadás elvitte az egészet,
@@ -3441,6 +3451,21 @@ public final class Foods {
                 + "s[uü]tem[eé]ny|joghurt|lekv[aá]r|dzsem|puding|fagyi|fagylalt|"
                 + "m[uü]zli|kaka[oó]|kompo?[oó]t|torta|palacsinta|zabk[aá]sa|"
                 + "m[aá]rt[aá]s|ketchup|mogyor[oó]kr[eé]m|szelet)\\p{L}*)", " ");
+        // A „FALATOT ETTEM A TORTÁBÓL" a falat a tortáé: egy egész adag
+        // sütemény került a naplóba egyetlen falatból.
+        query = query.replaceAll("(?iu)(?<![\\p{L}])(egy|k[eé]t|h[aá]rom|p[aá]r|\\d{1,2})\\s+"
+                + "(falat|harap[aá]s|kanal|kan[aá]l|korty)\\p{L}*\\s+(?:\\p{L}+\\s+)?"
+                + "(?:ettem|ettem\\s+meg|k[oó]stoltam|ittam)\\s+(?:a|az|egy)\\s+"
+                + "(\\p{L}+?)(?:b[oó]l|b[oő]l)(?![\\p{L}])", "$1 $2 $3");
+        // A „SE/SEM" tagadás: a „ma se cukor, se fehér liszt, csak 2 tojás"
+        // cukrot és lisztet írt a naplóba, a „kenyeret sem ettem" kenyeret,
+        // a „se tejet, se cukrot nem tettem a kávéba" tejet. A tagadott
+        // tétel kiesik; a mellette álló „csak …" és a kávé marad.
+        query = query.replaceAll("(?iu)(?<![\\p{L}])\\p{L}+\\s+s(?:e|em)\\s+(?:ettem|ettunk|ittam"
+                + "|ittunk|kertem|tettem|eszem|eszunk|iszom|iszunk|fogyasztottam)(?![\\p{L}])", " ")
+                .replaceAll("(?iu)(?<![\\p{L}])s(?:e|em)\\s+\\p{L}+(?=\\s+nem\\s+\\p{L})", " ")
+                .replaceAll("(?iu)(?<![\\p{L}])s(?:e|em)\\s+\\p{L}+(?:\\s+\\p{L}+)?(?=\\s*(?:[,;.]|$))",
+                        " ");
         // A VÍZZEL készült étel vize nem ivás: a „zabkása 50 g zabpehelyből
         // vízzel" mellé negyed liter ásványvíz került a vízszámlálóba. A
         // kása és a leves vize a fogásé (az ital vize viszont megivott
