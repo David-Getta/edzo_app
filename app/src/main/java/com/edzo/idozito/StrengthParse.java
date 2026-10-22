@@ -708,6 +708,23 @@ public final class StrengthParse {
         text = text.replaceAll("(?iu)(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s+(plank|deszka|fal\\s?-?[uü]l[eé]s"
                 + "|wall\\s?sit|hollow)\\p{L}*\\s+(\\d{1,3})\\s?(mp|m[aá]sodperc|perc)(?![\\p{L}])",
                 "$2 $1x$3 $4");
+        // A „PR:" és a „MAX" a mai csúcs: a „fekvenyomás PR: 105 kg" üresen
+        // jött vissza, a „max fekve 90" kilencven ISMÉTLÉS lett. A szóhoz
+        // tartozó szám egyetlen ismétlés súlya. (A sorozat utáni „3x max"
+        // az ismétlésig menést mondja – az marad.)
+        {
+            java.util.regex.Matcher mx = java.util.regex.Pattern.compile(
+                    "(?iu)(?<![\\p{L}])(?:max(?:imum|om|imumom)?|pr)(?![\\p{L}])\\s*:?\\s*"
+                    + "((?:\\p{L}+\\s+){0,2}?)(\\d{2,3}(?:[.,]\\d)?)(?!\\d|[.,]\\d|\\s?(?:x|×|ism|db"
+                    + "|darab|perc|mp|-?[aeoö]s))(\\s?(?:kg|kil[oó]\\p{L}*))?").matcher(text);
+            if (mx.find()) {
+                String before = text.substring(0, mx.start());
+                boolean amrap = before.matches("(?isu).*(?:\\d\\s?[x×]|utols[oó]|szett|sorozat)\\s*$");
+                if (!amrap)
+                    text = before + "pr " + mx.group(1) + mx.group(2) + " kg"
+                            + text.substring(mx.end());
+            }
+        }
         // Az „1RM" a maximum NEVE: a „guggolás 3x8 80% 1RM" egy kilós
         // guggolásként ment be – az egyes a sorozat-jelölés harmadik
         // tagjának, vagyis súlynak látszott. A százalék és a maximum

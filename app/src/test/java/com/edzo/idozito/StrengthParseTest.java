@@ -3104,4 +3104,13 @@ public class StrengthParseTest {
         // A kilós sorozat mögötti magányos szám nem ismétlés.
         assertSets("Fekvenyomás 3x10 60 kg, 70", "Fekvenyomás", 3, 10, 60);
     }
+
+    /** A „PR:" és a „max" a mai csúcs: egy ismétlés a kimondott súllyal. */
+    @Test public void aPrOrMaxIsOneRepAtThatWeight() {
+        assertSets("Fekvenyomás PR: 105 kg", "Fekvenyomás", 1, 1, 105);
+        assertSets("Max fekve 90", "Fekvenyomás", 1, 1, 90);
+        assertSets("PR guggolás 150", "Guggolás", 1, 1, 150);
+        // A sorozat utáni „max" az ismétlésig menés marad.
+        assertEquals("Húzódzkodás 3×8/7/6@0", sum("Húzódzkodás 3x max (8, 7, 6)"));
+    }
 }
