@@ -337,6 +337,19 @@ public final class BodyParse {
                             + (dk < 10 ? "0" + dk : String.valueOf(dk)) + " kg" + q.substring(kd.end());
             }
         }
+        // A PULZUS-MONDAT száma nem testsúly: a „reggeli pulzus 62, tegnap 58
+        // volt" ötvennyolc kilós mérést, a „pulzus 55-60" hatvanat írt a
+        // trendbe. Pulzus-szó mellett, kiló- vagy súly-szó nélkül nincs
+        // mérlegmérés.
+        {
+            String pn = Foods.norm(q);
+            if (pn.matches("(?s).*(?<![a-z])(?:pulzus\\w*|rhr|hrv|bpm|szivverés\\w*|szivveres\\w*)(?![a-z]).*")
+                    && !pn.matches("(?s).*(?<![a-z])(?:kg|kilo\\w*|suly\\w*|testsuly\\w*|merleg\\w*"
+                        + "|zsir\\w*|testzsir\\w*|derek\\w*|csipo\\w*|cm)(?![a-z]).*")
+                    // A TIZEDES szám a mérlegé: a „pulzus 55, 79,1" mérés marad.
+                    && !pn.matches("(?s).*(?<![\\d,.])\\d{2,3}[.,]\\d(?!\\d).*"))
+                return new Body(0, 0);
+        }
         // A GYAKORLAT SÚLYÁNAK emelése nem mérés: az „emeltem a guggolás
         // súlyát 5 kilóval, most 85" nyolcvanöt kilós testsúlyt írt a
         // trendbe – a rúdon lévő súlyt.

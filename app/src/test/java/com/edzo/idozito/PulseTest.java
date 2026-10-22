@@ -303,4 +303,14 @@ public class PulseTest {
         // Az edzés közbeni HR nem nyugalmi.
         assertEquals(-1, Pulse.parse("Futás 8 km, átlag HR 152"));
     }
+
+    /** A „csak" beékelődhet, és a pulzus-mondat száma nem testsúly. */
+    @Test public void onlyInsideAndThePulseSentenceIsNoWeighIn() {
+        assertEquals(49, Pulse.parse("Pulzusom ma reggel csak 49!"));
+        assertTrue(BodyParse.parse("Reggeli pulzus 62, tegnap 58 volt").isEmpty());
+        assertTrue(BodyParse.parse("Pulzus 55-60").isEmpty());
+        // A kimondott vagy tizedes mérés marad.
+        assertEquals(78.4, BodyParse.parse("Pulzus 52, súly 78,4").kg, 0.01);
+        assertEquals(79.1, BodyParse.parse("Pulzus 55, 79,1").kg, 0.01);
+    }
 }

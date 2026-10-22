@@ -42,7 +42,9 @@ public final class Pulse {
                             // „a vérem 130/85, a pulzusom nyugalomban 58"
                             // ötvennyolca némán elveszett.
                             + "nyugalomban|pihenoben|nyugalmi allapotban|"
-                            + "felment|javult|romlott)\\s){0,2}(\\d{2,3})"),
+                            // A „CSAK" és a „MÁR" is beékelődhet: a „pulzusom
+                            // ma reggel csak 49!" negyvenkilence elveszett.
+                            + "felment|javult|romlott|csak|mar|mindossze|kb)\\s){0,3}(\\d{2,3})"),
             // „52-es pulzus", „48 as nyugalmi pulzus"
             // Az Ö HANGRENDŰ toldalék is ugyanez: az „55-ös pulzussal
             // ébredtem" és a „reggel 55-ös pulzus" némán elveszett, mert a
