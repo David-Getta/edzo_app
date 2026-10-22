@@ -525,6 +525,18 @@ public class FoodsParseTest {
         assertEquals(2, hits("Kávé és egy cukormentes kóla").size());
     }
 
+    /** A kávéba öntött zabtej is löttyintés, nem egy teljes pohár zabital. */
+    @Test public void aSplashOfOatMilkInCoffeeIsNotAGlass() {
+        List<Foods.Hit> h = hits("Kávé zabtejjel és egy croissant");
+        assertEquals(3, h.size());
+        assertEquals("Növényi tej (mandula/zab)", h.get(1).food.name);
+        assertEquals(30.0, h.get(1).grams, 0.01);
+        assertEquals(30.0, hits("Egy bögre tea mandulatejjel").get(1).grams, 0.01);
+        assertEquals(30.0, hits("2 kávé zabitallal").get(1).grams, 0.01);
+        // Magában a pohár zabtej pohár marad.
+        assertEquals(250.0, hits("Egy pohár zabtej").get(0).grams, 0.01);
+    }
+
     /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
     @Test public void aDiabeticIsNotSugar() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

@@ -1715,7 +1715,11 @@ public final class StrengthParse {
                 .replaceAll("(\\d{1,2})\\s?-?\\s?(?:szor|szer)\\s+(\\d{1,3})", "$1x$2")
                 // „3 kör 10 fekvőtámasz”: a kör itt sorozatot jelent. A szám a
                 // két oldalon köti a mintát, így a „korcsolya" nem kör.
-                .replaceAll("(\\d{1,2})\\s?kor\\s+(\\d{1,3})", "$1x$2");
+                // A kör utáni SÚLY nem ismétlés: a „guggolás 5 ismétlés 3 kör
+                // 100 kg" a száz kiló első két jegyéből tízes sorozatokat
+                // csinált, az ötös ismétlés elveszett.
+                .replaceAll("(?<![\\d,.])(\\d{1,2})\\s?kor\\s+(\\d{1,3})"
+                        + "(?!\\d|[,.]\\d|\\s?(?:kg|kilo))", "$1x$2");
     }
 
     /**
@@ -1984,8 +1988,10 @@ public final class StrengthParse {
             // a „korcsolya" ne legyen kör.
             int series = 0;
             String seriesWord = null;
+            // A tagmondat VÉGÉN álló kör is kör: a „guggolás 8 ismétlés 4 kör"
+            // egyetlen nyolcas sorozat lett, mert a szó után nem állt szóköz.
             for (String w : new String[]{"sorozat", "szett", "set", "kor ", "kor:"}) {
-                series = numberBefore(s, w);
+                series = numberBefore(w.equals("kor ") ? s + " " : s, w);
                 if (series > 0) { seriesWord = w; break; }
             }
             // „4 sorozat 8 fekvenyomás”: az „ismétlés" szó kimarad – a teremben

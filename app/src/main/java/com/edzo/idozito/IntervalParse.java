@@ -790,6 +790,7 @@ public final class IntervalParse {
         for (String w : words) {
             int p = s.indexOf(w);
             while (p >= 0) {
+                if (walkVerb(s, p, w)) { p = s.indexOf(w, p + 1); continue; }
                 // A tagmondathatár számít: a „munka 30 mp, pihenő 10 mp”
                 // mondatban a pihenő elé eső 30 a MÁSIK szakaszé.
                 int from = Math.max(0, p - 22);
@@ -818,6 +819,17 @@ public final class IntervalParse {
     }
 
     /**
+     * A „sétáltam" ige, nem a pihenő szakasz: a „sétáltam 30 percet, utána
+     * plank 3x60 mp" fél órás sétája a körök közti pihenő lett – egy
+     * harmincperces szünetű, háromkörös időzítő egy sétából és egy plankből.
+     */
+    private static boolean walkVerb(String s, int p, String w) {
+        return w.equals("seta") && (s.startsWith("setalt", p) || s.startsWith("setalok", p)
+                || s.startsWith("setalunk", p) || s.startsWith("setalni", p)
+                || s.startsWith("setalgat", p));
+    }
+
+    /**
      * Mértékegység nélküli szám a szakasz-szó előtt: „45 mp munka 15 pihenő”.
      *
      * A mértékegységet a mondatban ELSŐKÉNT kimondott időtől örökli, mert így
@@ -830,6 +842,7 @@ public final class IntervalParse {
         for (String w : words) {
             int p = s.indexOf(w);
             while (p >= 0) {
+                if (walkVerb(s, p, w)) { p = s.indexOf(w, p + 1); continue; }
                 java.util.regex.Matcher m =
                         pat.matcher(s.substring(Math.max(0, p - 5), p));
                 if (m.find()) {

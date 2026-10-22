@@ -303,6 +303,22 @@ Csapat edzés 2 óra kosár
 A csapat futott 5 km-t
 Ma 6,5 ezer lépés
 7.5 ezer lépés
+Guggolás 100 kg 5 ismétlés 3 kör
+Fekvőtámasz 20 ismétlés 3 kör
+Délután 5 kor guggolás 3x10 80 kg
+Kitörés sétálva 3x20 lépés 2x10 kg
+kondi/12 
+Sétáló kitörés 3x20
+tura/30 kondi/7 
+Sétáltam 30 percet, utána kitörés 3x12
+futas/30 kondi/60 
+Futottam 5 km-t, majd lábtolás 3x10 100 kg
+uszas/25 kondi/60 
+Úszás 1000 m, utána bicepsz 3x12 10 kg
+tura/30 kondi/60 
+Sétáltam 30 percet, utána plank 3x60 mp
+uszas/25 
+Úsztam 10x100 m-t
 Ma 3 kör: 15 guggolás, 300 m evezés.
 Ma 5 rounds for time: 20 burpee, 400 m futás.
 Ma 400 m futás.
@@ -3575,6 +3591,10 @@ Tea édesítővel
 Cappuccino cukor nélkül
 Cukor nélkül
 Kávé és egy cukormentes kóla
+Kávé zabtejjel és egy croissant
+Egy bögre tea mandulatejjel
+2 kávé zabitallal
+Egy pohár zabtej
 cukorbeteg vagyok, figyelem a szénhidrátot
 egy teáskanál cukor a kávéba
 vasárnapi meal prep: 4 adag csirkés rizs a hétre
@@ -4620,6 +4640,7 @@ Futás 1 óra 45 perc
 1 perc be, 30 mp ki, 12x
 Tabata kétszer
 Tabata 3x
+Intervall: 1 perc futás, 2 perc sétálás, 6 kör
 vacsora 650 kcal
 energiaszelet 220 kcal
 müzliszelet 180 kalória
@@ -6117,6 +6138,12 @@ Max fekve 90
 PR guggolás 150
 Húzódzkodás 3×8/7/6@0
 Húzódzkodás 3x max (8, 7, 6)
+Guggolás 5 ismétlés 3 kör 100 kg
+Guggolás 4×8/8/8/8@0
+Guggolás 8 ismétlés 4 kör
+Fekvőtámasz 3×20/20/20@0
+Fekvőtámasz 3 kör 20
+Guggolás 3 kör 100 kg
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam

@@ -3113,4 +3113,15 @@ public class StrengthParseTest {
         // A sorozat utáni „max" az ismétlésig menés marad.
         assertEquals("Húzódzkodás 3×8/7/6@0", sum("Húzódzkodás 3x max (8, 7, 6)"));
     }
+
+    /** Az ismétlés utáni kör a sorozatok száma – a mondat végén és a súly előtt is. */
+    @Test public void roundsAfterRepsAreSets() {
+        assertEquals("Guggolás 3×5/5/5@100", sum("Guggolás 100 kg 5 ismétlés 3 kör"));
+        assertEquals("Guggolás 3×5/5/5@100", sum("Guggolás 5 ismétlés 3 kör 100 kg"));
+        assertEquals("Guggolás 4×8/8/8/8@0", sum("Guggolás 8 ismétlés 4 kör"));
+        // A kör utáni puszta szám továbbra is az ismétlés.
+        assertEquals("Fekvőtámasz 3×20/20/20@0", sum("Fekvőtámasz 3 kör 20"));
+        // Ismétlés nélkül nem találunk ki tízes sorozatot a súlyból.
+        assertEquals("", sum("Guggolás 3 kör 100 kg"));
+    }
 }

@@ -1124,4 +1124,12 @@ public class IntervalParseTest {
         assertEquals(24, IntervalParse.parse("Tabata 3x").rounds);
         assertEquals(8, IntervalParse.parse("Tabata").rounds);
     }
+
+    /** A „sétáltam" ige, nem a körök közti pihenő. */
+    @Test public void aPastWalkIsNotTheRest() {
+        IntervalParse.Plan p = IntervalParse.parse("Sétáltam 30 percet, utána plank 3x60 mp");
+        assertTrue(p == null || p.rest < 600);
+        assertEquals(120, IntervalParse.parse("Intervall: 1 perc futás, 2 perc sétálás, 6 kör").rest);
+        assertEquals(40, IntervalParse.parse("8 kör: 20 mp sprint, 40 mp séta").rest);
+    }
 }

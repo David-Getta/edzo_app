@@ -1057,6 +1057,36 @@ public class ActivitiesParseTest {
         assertEquals(0, p.offset);
     }
 
+    /** Az ismétlés utáni „3 kör" sorozatszám, nem hajnali három óra. */
+    @Test public void roundsAfterRepsAreNotAnHour() {
+        assertEquals(12, Activities.parse("Guggolás 100 kg 5 ismétlés 3 kör").hour);
+        assertEquals(12, Activities.parse("Fekvőtámasz 20 ismétlés 3 kör").hour);
+        // A napszakkal kimondott óra óra marad.
+        assertEquals(17, Activities.parse("Délután 5 kor guggolás 3x10 80 kg").hour);
+    }
+
+    /** A sétáló kitörés kitörés: nem lesz mellé másfél órás gyaloglás. */
+    @Test public void aWalkingLungeIsNotAWalk() {
+        assertEquals("1d+0: 1×kondi/60",
+                summary("Kitörés sétálva 3x20 lépés 2x10 kg"));
+        assertEquals("kondi/12 ", dump(Activities.parse("Sétáló kitörés 3x20").plans));
+        assertEquals("tura/30 kondi/7 ", dump(Activities.parse(
+                "Sétáltam 30 percet, utána kitörés 3x12").plans));
+    }
+
+    /** A kardió utáni sorozat is edzés, akármelyik gyakorlat a neve. */
+    @Test public void setsAfterCardioAreAWorkoutToo() {
+        assertEquals("futas/30 kondi/60 ", dump(Activities.parse(
+                "Futottam 5 km-t, majd lábtolás 3x10 100 kg").plans));
+        assertEquals("uszas/25 kondi/60 ", dump(Activities.parse(
+                "Úszás 1000 m, utána bicepsz 3x12 10 kg").plans));
+        // A séta a plank mellett is megmarad.
+        assertEquals("tura/30 kondi/60 ", dump(Activities.parse(
+                "Sétáltam 30 percet, utána plank 3x60 mp").plans));
+        // A puszta úszó- és evezős sorozat nem súlyzós edzés.
+        assertEquals("uszas/25 ", dump(Activities.parse("Úsztam 10x100 m-t").plans));
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

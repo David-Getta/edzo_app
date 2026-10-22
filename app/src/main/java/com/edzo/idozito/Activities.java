@@ -3117,6 +3117,12 @@ public final class Activities {
         // túra, se futás – erőgyakorlat, aminek nincs saját sora.
         s = s.replaceAll("[^,;.]*(?<![a-z])farmers?[- ]?(?:seta|setat|walk|jaras)"
                 + "\\w*[^,;.]*", " ");
+        // A SÉTÁLÓ KITÖRÉS a kitörés egyik fajtája: a „kitörés sétálva 3x20"
+        // mellé egy másfél órás gyaloglás is bekerült a naplóba.
+        s = s.replaceAll("(?<![a-z])(?:setalva|setalo|setalos|walking)\\s+"
+                + "(?=kitor|lunge)", " ");
+        s = s.replaceAll("(?<![a-z])(kitor\\w*|lunge\\w*)\\s+(?:setalva|setalo"
+                + "|setalos|walking)(?![a-z])", "$1 ");
         // A LÁDAUGRÁS nem boksz, a NORDIC CURL nem nordic walking: a „box
         // jump 4x5" harcművészet-bejegyzést, a „nordic curl 3x5" túrát
         // csinált – mindkettő erőgyakorlat, a saját nevében hordva egy
@@ -5550,11 +5556,20 @@ public final class Activities {
         // guggoltam 5x5-öt, este 8 km-t futottam" reggeli terme nyomtalanul
         // eltűnt a naptárból – a sorozat bekerült az erőnaplóba, edzés
         // viszont nem lett belőle, mert az esti futás elvitte a helyét.
+        // A KARDIÓ UTÁNI sorozat is külön edzés: a „futottam 5 km-t, utána
+        // kitörés 3x12" és a „sétáltam fél órát, aztán lábtolás 3x10 80 kg"
+        // erőrésze bekerült az erőnaplóba, edzés viszont nem lett belőle –
+        // csak annál a néhány gyakorlatnál, aminek a neve szótő is (guggolás,
+        // fekvőtámasz). Távos mozgásforma mellett a sorozat nem a sportágé.
         boolean liftApart = false;
-        if (!out.isEmpty() && partsDiffer(s)) {
-            boolean hasGym = false;
-            for (Plan p : out) if ("kondi".equals(p.kind.id)) hasGym = true;
-            liftApart = !hasGym && !StrengthParse.parse(rawText).isEmpty();
+        if (!out.isEmpty()) {
+            boolean hasGym = false, cardio = true;
+            for (Plan p : out) {
+                if ("kondi".equals(p.kind.id)) hasGym = true;
+                if (!p.kind.distance) cardio = false;
+            }
+            if (!hasGym && (cardio || partsDiffer(s)))
+                liftApart = !StrengthParse.parse(rawText).isEmpty();
         }
         if (out.isEmpty() || liftApart) {
             List<StrengthParse.Item> lifted = StrengthParse.parse(rawText);
@@ -8510,6 +8525,11 @@ public final class Activities {
             // futás, 15 fekvőtámasz" hajnali ötre került a naplóban.
             // Időpont után kettőspont nem áll – az már perc lenne.
             if (spaced && s.substring(m.end()).matches("(?s)\\s*:.*")) continue;
+            // Az ISMÉTLÉS után álló kör a sorozatok száma: a „guggolás 100 kg
+            // 5 ismétlés 3 kör" hajnali háromra került. Időpont elé nem
+            // mondunk ismétlést vagy darabszámot.
+            if (spaced && s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                    + "(?:ismetles\\w*|ism|db|darab\\w*)\\s*$")) continue;
             // A KÖR UTÁN KIMONDOTT IDŐTARTAM is körökről beszél: a „3 kör 15
             // perc alatt: 10 fekvőtámasz…" hajnali háromra került – óraállás
             // után nem áll közvetlenül perc.

@@ -3415,6 +3415,12 @@ public final class Foods {
         query = query.replaceAll("(?iu)(?<!\\p{L})(k[aá]v[eé]\\p{L}*|tea\\p{L}*|"
                 + "kaka[oó]\\p{L}*)([^,;.]{0,14}?)\\s+tejjel(?!\\p{L})",
                 "$1$2, 30 g tej");
+        // A növényi tej ugyanígy löttyintés: a „kávé zabtejjel" mellé eddig
+        // egy teljes, két és fél decis pohár zabital került a naplóba.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(k[aá]v[eé]\\p{L}*|tea\\p{L}*|"
+                + "kaka[oó]\\p{L}*)([^,;.\\d]{0,14}?)\\s+(zab|mandula|rizs|sz[oó]ja)"
+                + "(?:tej|ital)l?(?:al|el|jal|jel)(?!\\p{L})",
+                "$1$2, 30 g $3tej");
         // A vessző utáni „kis tejjel" is a kávéé: a „kávé cukor nélkül, kis
         // tejjel" két deci tejet írt – a jelzők a kávét a tejtől vesszővel
         // választották el.
