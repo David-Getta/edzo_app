@@ -1525,6 +1525,25 @@ public final class StrengthParse {
                 + "(?:mal|val|vel|nal|nel|zal|zel|szal|szel|gyel|tal|tel|cal|cel)?\\s+"
                 + "(?:meg\\s+|es\\s+|aztan\\s+)?(\\d{1,2}\\s?[x\u00d7]\\s?\\d{1,3})$",
                 "$2 $1 kg");
+        // A PUSZTA SZÁM a saját testsúlyos tétel újabb adagja: a „reggel 20
+        // fekvőtámasz, este még 30" és a „fekvőtámasz 20, aztán 30" harminca
+        // elveszett. Csak súly nélküli előző tételnél – a kilós sorozat
+        // mögött a magányos szám lehet súly is.
+        if (prev.topWeight() <= 0) {
+            java.util.regex.Matcher bn = java.util.regex.Pattern.compile(
+                    "^(?:(?:reggel|delelott|delben|delutan|este|ejjel|napkozben|kesobb"
+                    + "|utana|aztan|majd|meg|plusz|es)\\s+)*(\\d{1,3})(?:\\s+(?:db|darab"
+                    + "|ismetles\\w*|ism))?(?:\\s+(?:reggel|delben|delutan|este|ejjel|meg|is))*$")
+                    .matcher(t);
+            if (bn.matches()) {
+                int n = Integer.parseInt(bn.group(1));
+                if (n >= 2 && n <= 200) {
+                    List<Set> one = new ArrayList<>();
+                    one.add(new Set(n, 0));
+                    return one;
+                }
+            }
+        }
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                 "^(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?[x×]\\s?(\\d{1,3})"
                         + "(?:\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)\\s?(?:kg|kilo)?)?$")

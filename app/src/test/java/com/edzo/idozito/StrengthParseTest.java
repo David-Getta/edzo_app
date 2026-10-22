@@ -3096,4 +3096,12 @@ public class StrengthParseTest {
         assertSets("Bulgarian split squat 3x10", "Bolgár kitörés", 3, 10, 0);
         assertSets("Bolgár split squat 3x10", "Bolgár kitörés", 3, 10, 0);
     }
+
+    /** A saját testsúlyos tétel mögötti puszta szám újabb sorozat. */
+    @Test public void aBareNumberAfterABodyweightMoveIsAnotherSet() {
+        assertEquals("Fekvőtámasz 2×20/30@0", sum("Reggel 20 fekvőtámasz, este még 30"));
+        assertEquals("Fekvőtámasz 2×20/30@0", sum("Fekvőtámasz 20, aztán 30"));
+        // A kilós sorozat mögötti magányos szám nem ismétlés.
+        assertSets("Fekvenyomás 3x10 60 kg, 70", "Fekvenyomás", 3, 10, 60);
+    }
 }
