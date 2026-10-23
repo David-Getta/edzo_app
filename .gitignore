@@ -1,0 +1,12 @@
+# Fordítási eredmény és letöltött eszközök – ezek a forrásból újraállnak.
+web/kiadas/
+web/.eszkozok/
+web/app/mag.js
+# Csak a Gradle kimenete – a web/build/ a webes fordító FORRÁSA, az kell.
+/build/
+/app/build/
+.gradle/
+__pycache__/
+*.iml
+local.properties
+node_modules/
