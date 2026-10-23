@@ -537,6 +537,31 @@ public class FoodsParseTest {
         assertEquals(250.0, hits("Egy pohár zabtej").get(0).grams, 0.01);
     }
 
+    /** A bolti zacskó nasi a zacskó tartalma, nem egy marék. */
+    @Test public void aBagOfSnacksIsTheWholeBag() {
+        assertEquals(100.0, hits("Egy zacskó gumicukor").get(0).grams, 0.01);
+        assertEquals(70.0, hits("Egy zacskó chips").get(0).grams, 0.01);
+        assertEquals(35.0, hits("Fél zacskó chips").get(0).grams, 0.01);
+        assertEquals(165.0, hits("Egy doboz Pringles").get(0).grams, 0.01);
+        assertEquals(150.0, hits("Egy csomag keksz").get(0).grams, 0.01);
+        assertEquals("Tökmag / napraforgómag", hits("Egy zacskó szotyi").get(0).food.name);
+        // A kis zacskó a gyerekadag.
+        assertEquals(30.0, hits("Egy kis zacskó gumicukor").get(0).grams, 0.01);
+        // A müzli zacskója a bolti csomag, abból egy adag a reggeli.
+        assertEquals(60.0, hits("Egy zacskó müzli").get(0).grams, 0.01);
+    }
+
+    /** A mérőszalag combja nem csirkecomb – a deka és a darab viszont az. */
+    @Test public void aMeasuredThighIsNotChicken() {
+        assertTrue(hits("Csípő 102, derék 86, comb 58").isEmpty());
+        assertTrue(hits("Combkörfogat 58").isEmpty());
+        assertTrue(hits("Comb 58").isEmpty());
+        assertEquals("Csirkecomb", hits("Ebédre comb rizzsel").get(0).food.name);
+        assertEquals(600.0, hits("Sült comb 60 dkg").get(0).grams, 0.01);
+        assertEquals(300.0, hits("Comb 2 db").get(0).grams, 0.01);
+        assertEquals(150.0, hits("Csirkecomb 150 g").get(0).grams, 0.01);
+    }
+
     /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
     @Test public void aDiabeticIsNotSugar() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
@@ -1584,7 +1609,7 @@ public class FoodsParseTest {
     /** A mondatvégi hányad a megevett rész: „egy tábla csoki negyedét". */
     @Test public void aTrailingFractionIsWhatWasEaten() {
         assertEquals(25, hits("Egy tábla csoki negyedét").get(0).grams, 0.01);
-        assertEquals(25, hits("Egy csomag chips felét").get(0).grams, 0.01);
+        assertEquals(35, hits("Egy csomag chips felét").get(0).grams, 0.01);
         assertEquals(50, hits("Egy tábla csoki felét").get(0).grams, 0.01);
     }
 
@@ -2741,8 +2766,8 @@ public class FoodsParseTest {
                 + "megettem, 200 g volt.").get(0).grams, 0.01);
         assertEquals(150.0, Foods.parse(all, "Ettem egy szelet tortát, "
                 + "150 g volt.").get(0).grams, 0.01);
-        // Mennyiség nélkül marad az alapadag.
-        assertEquals(40.0, Foods.parse(all, "Megettem egy csomag "
+        // Mennyiség nélkül a csomag a bolti csomag.
+        assertEquals(150.0, Foods.parse(all, "Megettem egy csomag "
                 + "kekszet.").get(0).grams, 0.01);
     }
 

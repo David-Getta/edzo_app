@@ -49,7 +49,7 @@ public class FoodsIntegrationTest {
                 summary("kaja: gyros tál extra sült krumplival"));
         assertEquals("Sör 1500g + Hamburger 250g",
                 summary("sörözés: 3 korsó sör és egy hamburger"));
-        assertEquals("Chips 50g + Csokoládé 25g",
+        assertEquals("Chips 70g + Csokoládé 25g",
                 summary("nassoltam egy zacskó chipset meg egy csokit"));
         // Három tojás három darab: a fordított szórend („3 tojásból
         // rántotta") régóta ennyit ad, a „rántotta 3 tojásból" viszont a
@@ -124,7 +124,7 @@ public class FoodsIntegrationTest {
         assertEquals("Méz 40g", summary("két kanál méz"));
         assertEquals("Csokoládé 100g", summary("egy tábla csoki"));
         assertEquals("Csokoládé 50g", summary("fél tábla csokoládé"));
-        assertEquals("Chips 25g", summary("fél zacskó chips"));
+        assertEquals("Chips 35g", summary("fél zacskó chips"));
         assertEquals("Kesudió 15g", summary("fél marék kesudió"));
         assertEquals("Pálinka / tömény 80g", summary("két kupica pálinka"));
         assertEquals("Rizs (főtt) 100g", summary("fél bögre rizs"));

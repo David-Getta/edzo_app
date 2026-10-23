@@ -1410,6 +1410,23 @@ public class BodyParseTest {
         assertEquals(78.5, BodyParse.parse("78 kg 50 dkg").kg, 0.01);
     }
 
+    /** A m\u00e9r\u0151szalag combja nem csirkecomb, a m\u00e9r\u00e9slista bicepsze a kar. */
+    @Test public void aTapeListWithoutCentimetresIsStillATapeList() {
+        BodyParse.Body b = BodyParse.parse("Cs\u00edp\u0151 102, der\u00e9k 86, comb 58");
+        assertEquals(86.0, b.cm[0], 0.01);
+        assertEquals(102.0, b.cm[1], 0.01);
+        assertEquals(58.0, b.cm[3], 0.01);
+        assertEquals(58.0, BodyParse.parse("Combk\u00f6rfogat 58").cm[3], 0.01);
+        b = BodyParse.parse("Der\u00e9k 84, bicepsz 38, v\u00e1dli 39");
+        assertEquals(84.0, b.cm[0], 0.01);
+        assertEquals(38.0, b.cm[4], 0.01);
+        assertEquals(38.0, BodyParse.parse("Bicepszem 38").cm[4], 0.01);
+        // A deka a m\u00e9rleg\u00e9, nem a szalag\u00e9.
+        assertEquals(0.0, BodyParse.parse("S\u00fclt comb 60 dkg").cm[3], 0.01);
+        // A sorozat mellett a bicepsz gyakorlat marad.
+        assertEquals(0.0, BodyParse.parse("Der\u00e9k 84, bicepsz 3x12 15 kg").cm[4], 0.01);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

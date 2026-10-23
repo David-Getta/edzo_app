@@ -3124,4 +3124,14 @@ public class StrengthParseTest {
         // Ismétlés nélkül nem találunk ki tízes sorozatot a súlyból.
         assertEquals("", sum("Guggolás 3 kör 100 kg"));
     }
+
+    /** A birtokos testrész és a méréslista a mérőszalagé, nem gyakorlat. */
+    @Test public void aTapeListIsNotASet() {
+        assertEquals("", sum("Bicepszem 38"));
+        assertEquals("", sum("Vádlim 38"));
+        assertEquals("", sum("Derék 84, bicepsz 38, vádli 39"));
+        // A sorozatjel mellett a gyakorlat marad.
+        assertEquals("Guggolás 3×5/5/5@100", sum("Derék 84, guggolás 3x5 100"));
+        assertEquals("Vádliemelés 1×50@0", sum("Vádliemelés 50"));
+    }
 }

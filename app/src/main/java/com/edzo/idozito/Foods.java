@@ -820,7 +820,10 @@ public final class Foods {
                 // Százhuszonnyolc további fogást átnézve ez a kettő hiányzott
                 // a magvak közül. (A „mák" szándékosan marad ki: három betű,
                 // és a makaróniban is ott van.)
-                "szezammag", "szezam"),
+                "szezammag", "szezam",
+                // A SZOTYI a napraforgómag beszélt neve: az „egy zacskó szotyi"
+                // üresen jött vissza.
+                "szotyi", "szotyol"),
         new Food("Chia / lenmag", 490, 17, 15, "chia", "lenmag", "lenmagliszt"),
         new Food("Kesudió", 580, 18, 30, "kesudio", "kesu"),
         // A „kebab” szóban benne van a „bab”: eddig 200 g főtt bab lett belőle.
@@ -1579,6 +1582,17 @@ public final class Foods {
                 "(?<![\\p{L}])tejtermek\\p{L}*").matcher(q);
         while (tt.find())
             for (int k = tt.start(); k < tt.end(); k++) sb.setCharAt(k, ' ');
+        // A MÉRŐSZALAG combja nem csirkecomb: a „csípő 102, derék 86, comb 58"
+        // és a „combkörfogat 58" egy adag csirkecomb lett az étrendben, a
+        // mérés pedig elveszett. A puszta comb mellett álló, mértékegység
+        // nélküli harminc-kilencven a körfogat – a grammot kiírják.
+        java.util.regex.Matcher gc = java.util.regex.Pattern.compile(
+                "(?<![\\p{L}])comb(?:korfogat\\p{L}*|bosege?m?|om|ja)?(?=\\s*:?\\s*"
+                + "(?:[3-8]\\d|90)(?:[.,]\\d)?(?!\\d|[.,]\\d|\\s?(?:g|gr|gramm|dkg|dk|deka"
+                + "|db|darab|szelet)(?![a-z])))"
+                + "|(?<![\\p{L}])combkorfogat\\p{L}*").matcher(q);
+        while (gc.find())
+            for (int k = gc.start(); k < gc.end(); k++) sb.setCharAt(k, ' ');
         // A MAGÁBAN ÁLLÓ JELZŐ a fogást írja le, nem külön étel: a
         // „délben egy gyros tál, csirkés, sok zöldséggel" csirkés szava a
         // tál fajtáját mondja meg – a naplóba mégis egy külön adag
@@ -2695,6 +2709,28 @@ public final class Foods {
         return 0;
     }
 
+    /**
+     * Egy bolti zacskó vagy csomag nasi: az „egy zacskó gumicukor" és az
+     * „egy zacskó chips" eddig egy marékként (30-50 g) ment be, pedig a
+     * polcon a legkisebb zacskó is ennek két-háromszorosa. Aki a zacskót
+     * írja, az épp azt mondja, hogy az egészet megette.
+     */
+    private static final String[][] BAG_GRAMS = {
+            {"Chips", "70"}, {"Gumicukor / cukorka", "100"}, {"Popcorn", "90"},
+            {"Mogyoró", "100"}, {"Pisztácia", "100"}, {"Kesudió", "100"},
+            {"Mandula", "100"}, {"Aszalt gyümölcs", "100"}, {"Keksz", "150"},
+            // A szotyi zacskójának fele héj.
+            {"Tökmag / napraforgómag", "60"},
+    };
+
+    private static int bagGrams(Food f, String unit) {
+        // A HENGERES doboz (Pringles) nagyobb a zacskónál.
+        if (unit.startsWith("doboz")) return f.name.equals("Chips") ? 165 : 0;
+        if (!unit.startsWith("zacsk") && !unit.startsWith("csomag")) return 0;
+        for (String[] p : BAG_GRAMS) if (p[0].equals(f.name)) return Integer.parseInt(p[1]);
+        return 0;
+    }
+
     /** A szöveg első szava (betűk és számjegyek), vagy üres. */
     private static String firstWord(String s) {
         int i = 0;
@@ -3430,6 +3466,10 @@ public final class Foods {
                 "$1$2, 30 g tej");
         query = query.replaceAll("(?iu)(?<!\\p{L})tejes\\s+k[aá]v[eé](\\p{L}*)",
                 "tejeskave$1");
+        // A KIS ZACSKÓ a nasi egy adagja, nem a bolti zacskó: az „egy kis
+        // zacskó gumicukor" a gyerekeknek csomagolt harminc gramm.
+        query = query.replaceAll("(?iu)(?<!\\p{L})(?:kis|kicsi|mini)\\s+(?:zacsk[oó]|csomag)"
+                + "(?:ot|nyi)?(?!\\p{L})", "adag");
         // A SZÜRET nem étkezés: a „krumplit szedtem 3 órát" és a „szőlőt
         // szedtünk egész nap" kerti munka – a termés neve mellé eddig egy
         // adag főtt burgonya, illetve fél kiló szőlő került a naplóba. A
@@ -4745,6 +4785,7 @@ public final class Foods {
                 && (f.name.startsWith("Bor") || f.name.startsWith("Pezsg"))) return 750;
         if (unit.equals("feles") && f.name.startsWith("Pálinka")) return 50;
         if (unit.startsWith("szelet") && sliceGrams(f) > 0) return sliceGrams(f);
+        if (bagGrams(f, unit) > 0) return bagGrams(f, unit);
         // A KANÁL csak a kencéknél egy adag: a méz, a mogyoróvaj és a tejföl
         // adagja eleve kanálnyi. A nagyobb adagú ételeknél viszont a kanál a
         // kisebb mérték – a „3 evőkanál zabpehely" eddig három ADAGOT, vagyis

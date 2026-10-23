@@ -2665,6 +2665,12 @@ Hasam 3 cm-rel kisebb lett, már 92
 Comb bal 58, jobb 57,5 cm
 Súly: 78 kiló 30 deka
 78 kg 50 dkg
+Csípő 102, derék 86, comb 58
+Combkörfogat 58
+Derék 84, bicepsz 38, vádli 39
+Bicepszem 38
+Sült comb 60 dkg
+Derék 84, bicepsz 3x12 15 kg
 Lementem 30 hosszt a másik sávban.
 Lementem 78 kilóra.
 Derékbőségem 88 cm, a csípőm 102, a mellkasom 98.
@@ -3139,7 +3145,7 @@ Csokoládé 100g
 egy tábla csoki
 Csokoládé 50g
 fél tábla csokoládé
-Chips 25g
+Chips 35g
 fél zacskó chips
 Kesudió 15g
 fél marék kesudió
@@ -3595,6 +3601,18 @@ Kávé zabtejjel és egy croissant
 Egy bögre tea mandulatejjel
 2 kávé zabitallal
 Egy pohár zabtej
+Egy zacskó gumicukor
+Egy zacskó chips
+Fél zacskó chips
+Egy doboz Pringles
+Egy csomag keksz
+Tökmag / napraforgómag
+Egy zacskó szotyi
+Egy kis zacskó gumicukor
+Egy zacskó müzli
+Ebédre comb rizzsel
+Comb 2 db
+Csirkecomb 150 g
 cukorbeteg vagyok, figyelem a szénhidrátot
 egy teáskanál cukor a kávéba
 vasárnapi meal prep: 4 adag csirkés rizs a hétre
@@ -4399,7 +4417,6 @@ az uszodában nem szódavíz
 borig aztam
 borig azott
 Hajdina / köles (főtt)
-Tökmag / napraforgómag
 megkínáltak tortával, de nem kértem
 hoztak sütit, nem kértem
 kínáltak pizzával, visszautasítottam
@@ -6144,6 +6161,10 @@ Guggolás 8 ismétlés 4 kör
 Fekvőtámasz 3×20/20/20@0
 Fekvőtámasz 3 kör 20
 Guggolás 3 kör 100 kg
+Vádlim 38
+Derék 84, guggolás 3x5 100
+Vádliemelés 1×50@0
+Vádliemelés 50
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam

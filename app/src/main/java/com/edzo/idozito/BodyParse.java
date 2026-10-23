@@ -624,6 +624,26 @@ public final class BodyParse {
                     + "(?!\\s?(?:kg|kil[oó]|%|sz[aá]zal|perc|km|[oó]ra"
                     + "|l[eé]p[eé]s|kcal|kalori|cm|m(?![\\p{L}])))",
                     "most $1 kg");
+        // A MÉRÉSLISTA bicepsze a kar, a vádlija pedig nem tárolt testrész: a
+        // „derék 84, bicepsz 38, vádli 39" egészéből semmi nem lett – a
+        // bicepsz és a vádli gyakorlatnévnek látszott, és a derék is
+        // elveszett velük. Sorozatjel és kiló nélkül a szám a szalagé.
+        {
+            String qn = Foods.norm(q);
+            boolean tape = qn.matches("(?s).*(?<![a-z])(?:bicepszem|vadlim)\\s*:?\\s*\\d{2}"
+                    + "(?:[.,]\\d)?(?!\\d|\\s?(?:x|kg|kilo|ism|db)).*")
+                    || (qn.matches("(?s).*(?<![a-z])(?:derek|csipo|mellkas|nyak|comb"
+                        + "|korfogat)(?:am|om|em|e|a|boseg\\p{L}*|\\s?korfogat\\p{L}*)?"
+                        + "(?![a-z])\\s*:?\\s*\\d{2,3}(?:[.,]\\d)?(?!\\d|[.,]\\d"
+                        + "|\\s?(?:x|kg|kilo|perc|mp|ism|db)).*")
+                        && !qn.matches("(?s).*\\d\\s?[x×]\\s?\\d.*")
+                        && !qn.matches("(?s).*\\d\\s?(?:kg|kilo).*"));
+            if (tape)
+                q = q.replaceAll("(?iu)(?<![\\p{L}])bicepsz(?:em)?(?=\\s*:?\\s*\\d{2}"
+                        + "(?:[.,]\\d)?(?!\\d|\\s?(?:x|kg|kil|ism|db)))", "kar")
+                        .replaceAll("(?iu)(?<![\\p{L}])v[aá]dli\\p{L}*\\s*:?\\s*\\d{2}"
+                        + "(?:[.,]\\d)?\\s*(?:cm)?", " ");
+        }
         String s = keepTheNewValue(dropOtherLogs(
                 Hu.digits(maskTimeUnder(Hu.correction(
                         dropOthersWeight(Foods.norm(q)))))));
@@ -1256,7 +1276,10 @@ public final class BodyParse {
                         // méteres szám távot mond, nem mérőszalagot.
                                 + "(\\d{1,3}([.,]\\d)?)(?!\\d|[.,]\\d|\\s?kg"
                                 + "|\\s?m(?![a-z])|\\s?km|\\s?m[eé]ter"
-                                + "|\\s?-?[oae]sek)"
+                                + "|\\s?-?[oae]sek"
+                        // A DEKA és a GRAMM a mérlegé: a „sült comb 60 dkg"
+                        // hatvan centis combkörfogat lett a mérés-naplóban.
+                                + "|\\s?(?:dkg|dk|deka|g|gr|gramm)(?![a-z]))"
                                 + "\\s?(cm|centi\\w*)?"
                         // A NÉVELŐ közéjük fér: a „88 cm a derekam" és a
                         // „40 cm a bicepszem" mérése nyomtalanul elveszett,

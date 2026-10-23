@@ -1117,7 +1117,7 @@ public final class StrengthParse {
             for (String cl : text.split("(?<=[,;.])")) {
                 String n = Foods.norm(cl);
                 if (looksLikeMeasurement(n) || n.matches("(?s)\\s*(?:a\\s+)?(?:comb|derek"
-                        + "|csipo|mellkas|vadli|felkar|has|nyak)\\w*\\s*:?\\s*\\d{2,3}"
+                        + "|csipo|mellkas|vadli|felkar|has|nyak|bicepsz|kar)\\w*\\s*:?\\s*\\d{2,3}"
                         + "(?:[.,]\\d)?\\s*(?:cm)?\\s*[,;.]?\\s*")) continue;
                 if (n.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*") && moveIn(n) != null)
                     setLeft = true;
@@ -2331,6 +2331,21 @@ public final class StrengthParse {
      * egyértelmű: ilyen mondatot senki nem edzésnek szán.
      */
     private static boolean looksLikeMeasurement(String s) {
+        // A BIRTOKOS testrész a mérőszalagé: a „bicepszem 38" és a „vádlim
+        // 38" harmincnyolc ismétléses gyakorlat lett – a saját karját senki
+        // nem „bicepszem"-nek hívja edzés közben.
+        if (s.matches("(?s).*(?<![a-z])(?:bicepszem|vadlim|karom|felkarom|combom"
+                + "|derekam|csipom|mellkasom)\\s*:?\\s*\\d{2}(?:[.,]\\d)?"
+                + "(?!\\d|\\s?(?:x|kg|kilo|ism|db)).*")) return true;
+        // A MÉRÉSLISTA centi nélkül is mérés: a „derék 84, bicepsz 38, vádli
+        // 39" két gyakorlatot írt az erőnaplóba, a derék pedig elveszett. A
+        // derék, a csípő és a mellkas nem gyakorlat – ha ezek egyike számmal
+        // áll, és sorozatjel nincs a mondatban, a többi szám is a szalagé.
+        if (s.matches("(?s).*(?<![a-z])(?:derek|csipo|mellkas|nyak|korfogat)"
+                + "(?:am|om|em|e|a|boseg\\p{L}*|\\s?korfogat\\p{L}*)?(?![a-z])"
+                + "\\s*:?\\s*\\d{2,3}(?:[.,]\\d)?(?!\\d|[.,]\\d|\\s?(?:x|kg|kilo|perc"
+                + "|mp|ism|db)).*")
+                && !s.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*")) return true;
         if (!s.matches(".*\\d\\s?-?(?:cm|centi)\\b.*")) return false;
         // A bicepsz is testrész: a „bicepszem 38 cm lett" mérőszalag, nem
         // harmincnyolc ismétléses bicepszgyakorlat.
