@@ -2966,8 +2966,29 @@ public final class Activities {
                 + "(?![a-z])", "$1 $2 orakor");
         // Az ÚSZÓ-TEMPÓ száz métere nem táv: a „30 perc úszás, 2:10/100m
         // tempó" száz méteres úszást írt be fél óra alatt.
-        s = s.replaceAll("(?<![\\d])\\d{1,2}:\\d{2}\\s?/\\s?100\\s?m"
-                + "(?![a-z])", " ");
+        // A TEMPÓ maga viszont az úszás hossza: az „úszás 2 km, 100-as
+        // átlag 1:55" ötven percet kapott az úszás átlagából, holott húszszor
+        // egy perc ötvenöt az harmincnyolc perc. Kilométeres tempóvá írjuk
+        // át, azt a hossz-becslés már érti.
+        {
+            java.util.regex.Matcher sw = java.util.regex.Pattern.compile(
+                    "(?<![\\d:])(\\d{1,2}):([0-5]\\d)\\s?/\\s?100\\s?m(?:eter\\w*)?(?![a-z])"
+                    + "|(?<![\\d,.])100\\s?-?(?:as|m-?es|meteres|m)\\s+(?:atlag\\w*|tempo\\w*"
+                    + "|ido\\w*)\\s*:?\\s*(\\d{1,2}):([0-5]\\d)(?![\\d:])").matcher(s);
+            StringBuffer sb = new StringBuffer();
+            while (sw.find()) {
+                String mm = sw.group(1) != null ? sw.group(1) : sw.group(3);
+                String ss = sw.group(1) != null ? sw.group(2) : sw.group(4);
+                int sec = (Integer.parseInt(mm) * 60 + Integer.parseInt(ss)) * 10;
+                String rep = sec >= 60 * 8 && sec <= 60 * 59
+                        ? " " + (sec / 60) + ":" + (sec % 60 < 10 ? "0" : "") + (sec % 60)
+                            + "/km "
+                        : " ";
+                sw.appendReplacement(sb, rep);
+            }
+            sw.appendTail(sb);
+            s = sb.toString();
+        }
         // A TEMPÓ perce nem az edzés hossza: az „5 perces tempóval
         // futottam 10 km-t" ötven perc futás, nem öt. A kiírt tempót
         // kettőspontos alakra írjuk át – azt a percszámítás már jól érti,
@@ -4653,6 +4674,9 @@ public final class Activities {
         // egyik tagja már kifehérítve áll a munkapéldányban – így csak a
         // maradék szám látszik, az osztó jelentés nem.
         final String rawText = new String(q);
+        // A szakaszos táv („6x400 m") a rövidítések feloldása után már
+        // összeszorozva áll; a szakaszok hosszához az eredeti alak kell.
+        final String repText = Foods.norm(text);
         // A KÉRDÉS nem napló: a „terhes vagyok, milyen mozgás ajánlott?"
         // mozgás szavából eddig negyvenöt perces „egyéb mozgás" került a
         // naplóba – egy olyan mondatból, ami épp azt kérdezi, hogy mit
@@ -5552,7 +5576,9 @@ public final class Activities {
                 minutes = reps > 0
                         ? Math.max(5, Math.min(60, estReps / 5))
                         : kmOf[i] > 0
-                        ? Math.max(1, (int) Math.round(kmOf[i] * pace(beforeBlank, kind)))
+                        ? (repeatsMinutes(repText, kind, kmOf[i]) > 0
+                            ? repeatsMinutes(repText, kind, kmOf[i])
+                            : Math.max(1, (int) Math.round(kmOf[i] * pace(beforeBlank, kind))))
                         : kind.defaultMin;
             // A távból becsült hossz is maradjon egy napon belül (100 km úszás
             // tempóból számolva 41 óra lenne).
@@ -5696,10 +5722,13 @@ public final class Activities {
             double km0 = kms.get(0)[1];
             // A kimondott idő itt is erősebb a tempó-becslésnél: az „5 km
             // 22:30" fél percre pontos, a hat perc/km csak közelítés.
-            int est = Math.min(24 * 60,
-                    Math.max(1, (int) Math.round(km0 * pace(beforeBlank, run))));
+            int rep0 = repeatsMinutes(repText, run, km0);
+            int est = Math.min(24 * 60, rep0 > 0 ? rep0
+                    : Math.max(1, (int) Math.round(km0 * pace(beforeBlank, run))));
             int said = minutesFor(mins, (int) kms.get(0)[0], (int) kms.get(0)[2],
                     -1, Integer.MAX_VALUE, 0);
+            // A szakaszos táv pihenője nem a teljes idő.
+            if (rep0 > 0 && said > 0 && said < rep0) said = 0;
             out.add(new Plan(run, 1, said > 0 ? said : est, km0));
         }
 
@@ -6466,7 +6495,11 @@ public final class Activities {
             double kmh = p.km / (p.minutes / 60.0);
             double max = "kerekpar".equals(p.kind.id) || "si".equals(p.kind.id) ? 60 : 30;
             if (kmh <= max) continue;
-            int est = Math.max(1, (int) Math.round(p.km * pace(beforeBlank, p.kind)));
+            // A SZAKASZOS táv pihenője tapadt oda: a szakaszokból és a
+            // pihenőkből számolt hossz a pontos.
+            int rep = repeatsMinutes(repText, p.kind, p.km);
+            int est = rep > 0 ? rep
+                    : Math.max(1, (int) Math.round(p.km * pace(beforeBlank, p.kind)));
             out.set(i, new Plan(p.kind, p.count, Math.min(24 * 60, est), p.km, p.steps));
         }
         // A LÉPÉS és a TÁV ugyanaz a séta, ha a mondat egyetlen futás-szót
@@ -7923,6 +7956,62 @@ public final class Activities {
         if (s.matches("(?s).*\\d{1,3}\\s?(?:perc|ora)\\w*[^:.;]{0,20}?"
                 + "(?:edzes|edzest|kor|korkepzes|blokk)\\w*\\s*:.*")) return true;
         return s.matches("(?s).*(?<![a-z])(emom|e2mom|amrap)\\w*.*");
+    }
+
+    /**
+     * A SZAKASZOS táv teljes hossza: szakaszok × szakaszidő + a pihenők.
+     *
+     * A „6x400 m 1:45-ös idővel, 90 mp pihenő" a mozgásforma átlagtempójával
+     * kapott tizennégy percet, holott hatszor egy perc negyvenöt és öt
+     * másfél perces pihenő tizennyolc perc. A „3x1 km 4:30-as tempóban,
+     * közte 2 perc kocogás" pihenői ugyanígy kimaradtak. A kocogott vagy
+     * sétált pihenő-táv a mozgásforma tempójával számít.
+     *
+     * @return a teljes perc, vagy 0, ha a mondat nem szakaszos táv
+     */
+    private static int repeatsMinutes(String s, Kind kind, double km) {
+        if (kind == null || !kind.distance) return 0;
+        java.util.regex.Matcher r = java.util.regex.Pattern.compile(
+                "(?<![\\d,.])(\\d{1,2})\\s?[x×]\\s?(\\d{1,4}(?:[.,]\\d{1,2})?)\\s?"
+                + "(km|kilometer\\w*|m(?![a-z])|meter\\w*)").matcher(s);
+        if (!r.find()) return 0;
+        int n = Integer.parseInt(r.group(1));
+        double seg = Double.parseDouble(r.group(2).replace(',', '.'));
+        if (!r.group(3).startsWith("k")) seg /= 1000.0;
+        if (n < 2 || seg <= 0 || Math.abs(n * seg - km) > 0.01) return 0;
+        String tail = s.substring(r.end());
+        // A szakaszidő („1:45-ös idővel", „3:40-re") – a „4:30-as tempó" és a
+        // „5:00/km" viszont kilométeres tempó, azt a pace() érti.
+        double work = -1;
+        java.util.regex.Matcher t = java.util.regex.Pattern.compile(
+                "^[^,;.]{0,12}?(?<![\\d:])(\\d{1,2}):([0-5]\\d)(?![\\d:])\\s?-?"
+                + "(?:[oae]s|re|ra|en|on|alatt)?\\s*(\\S*)").matcher(tail);
+        if (t.find() && !t.group(3).matches("(?:/\\s?km|tempo|atlag|per)\\w*.*"))
+            work = Integer.parseInt(t.group(1)) + Integer.parseInt(t.group(2)) / 60.0;
+        boolean saidRepTime = work > 0;
+        if (work <= 0) work = seg * pace(s, kind);
+        double rest = 0;
+        java.util.regex.Matcher pm = java.util.regex.Pattern.compile(
+                "(?<![\\d,.:])(\\d{1,3})\\s?(mp|masodperc|perc)\\w*\\s+(?:a\\s+)?(?:pihen|kocog|seta"
+                + "|setal|jaras|szunet|lazit|regener|gyalog)"
+                + "|(?:pihen\\w*|szunet\\w*|kozte|kozotte|kozben)\\s*:?\\s*(\\d{1,3})\\s?"
+                + "(mp|masodperc|perc)(?![a-z])").matcher(tail);
+        if (pm.find()) {
+            int v = Integer.parseInt(pm.group(1) != null ? pm.group(1) : pm.group(3));
+            String u = pm.group(1) != null ? pm.group(2) : pm.group(4);
+            rest = u.equals("perc") ? v : v / 60.0;
+        } else {
+            java.util.regex.Matcher dm = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.x])(\\d{2,4})\\s?m(?:-es|eter\\w*)?\\s+(?:kocog|seta|setal|jaras"
+                    + "|gyalog|laza|lassu)").matcher(tail);
+            if (dm.find()) rest = Integer.parseInt(dm.group(1)) / 1000.0 * minPerKm(kind);
+        }
+        // A HOSSZÚ „pihenő" külön mozgás: a „10x100 m, köztük 20 perc séta"
+        // húsz perce egy saját sétabejegyzés, nem kilencszer húsz perc szünet.
+        if (rest > 6) rest = 0;
+        if (!saidRepTime && rest <= 0) return 0;      // nincs mit hozzátenni
+        int tot = (int) Math.round(n * work + (n - 1) * rest);
+        return tot >= 1 && tot <= 24 * 60 ? tot : 0;
     }
 
     /**
@@ -9529,7 +9618,9 @@ public final class Activities {
                 .matcher(s);
         if (m.find()) {
             double p = Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2)) / 60.0;
-            if (p >= 2 && p <= 20) return p;
+            // Az úszó kilométere lassú: a száz méteres 2:30 huszonöt perc.
+            double max = kind != null && "uszas".equals(kind.id) ? 59 : 20;
+            if (p >= 2 && p <= max) return p;
         }
         // A futó-appok kukacos alakja ugyanazt mondja: „10 km @ 5:30".
         m = java.util.regex.Pattern.compile("@\\s?(\\d{1,2}):([0-5]\\d)").matcher(s);

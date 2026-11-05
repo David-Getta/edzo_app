@@ -1172,6 +1172,34 @@ public class ActivitiesParseTest {
         assertEquals("2×futas/45", summaryOf(p));
     }
 
+    /** Az úszó száz méteres tempója az úszás hosszát adja. */
+    @Test public void aSwimPacePerHundredGivesTheDuration() {
+        assertEquals("uszas/38 ", dump(Activities.parse("Úszás 2 km, 100-as átlag 1:55").plans));
+        assertEquals("uszas/33 ", dump(Activities.parse(
+                "Úsztam 1500 métert, 2:10/100m tempóval").plans));
+        assertEquals("uszas/25 ", dump(Activities.parse("Úszás 1 km 100 m-es átlag 2:30").plans));
+        // A kimondott idő és a tempó nélküli táv marad, ahogy volt.
+        assertEquals("uszas/30 ", dump(Activities.parse("30 perc úszás, 2:10/100m tempó").plans));
+        assertEquals(0.0, Activities.parse("30 perc úszás, 2:10/100m tempó").plans.get(0).km, 0.01);
+        assertEquals("uszas/50 ", dump(Activities.parse("Úszás 2 km").plans));
+    }
+
+    /** A szakaszos táv hossza a szakaszokból és a pihenőkből jön, nem az átlagtempóból. */
+    @Test public void repeatsTakeTheirRepTimesAndRests() {
+        assertEquals("futas/18 ", dump(Activities.parse(
+                "6x400 m 1:45-ös idővel, 90 mp pihenő").plans));
+        assertEquals("futas/18 ", dump(Activities.parse(
+                "Ma 3x1 km 4:30-as tempóban, közte 2 perc kocogás").plans));
+        assertEquals("futas/42 ", dump(Activities.parse("5x1000 m, 3 perc pihenő").plans));
+        assertEquals("futas/22 ", dump(Activities.parse(
+                "4x800 m 3:40-re, közte 400 m kocogás").plans));
+        assertEquals("uszas/28 ", dump(Activities.parse("Úszás 10x100 m, 20 mp pihenő").plans));
+        // Pihenő nélkül marad a tempóból becsült hossz; a hosszú séta külön tétel.
+        assertEquals("futas/6 ", dump(Activities.parse("10x100 m sprint").plans));
+        assertEquals("futas/6 tura/20 ", dump(Activities.parse(
+                "sprint edzés: 10x100 m, köztük 20 perc séta").plans));
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

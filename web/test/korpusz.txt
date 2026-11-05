@@ -344,6 +344,28 @@ Kondi 45 perc: guggolás 5x5 100 kg
 Hétfő óta minden nap 10 ezer lépés
 Kedd óta mindennap 30 perc séta
 Tegnap óta 2 futás
+uszas/38 
+Úszás 2 km, 100-as átlag 1:55
+uszas/33 
+Úsztam 1500 métert, 2:10/100m tempóval
+Úszás 1 km 100 m-es átlag 2:30
+uszas/30 
+30 perc úszás, 2:10/100m tempó
+uszas/50 
+Úszás 2 km
+futas/18 
+6x400 m 1:45-ös idővel, 90 mp pihenő
+Ma 3x1 km 4:30-as tempóban, közte 2 perc kocogás
+futas/42 
+5x1000 m, 3 perc pihenő
+futas/22 
+4x800 m 3:40-re, közte 400 m kocogás
+uszas/28 
+Úszás 10x100 m, 20 mp pihenő
+futas/6 
+10x100 m sprint
+futas/6 tura/20 
+sprint edzés: 10x100 m, köztük 20 perc séta
 Ma 3 kör: 15 guggolás, 300 m evezés.
 Ma 5 rounds for time: 20 burpee, 400 m futás.
 Ma 400 m futás.
@@ -943,7 +965,6 @@ minden reggel 10 perc nyújtás, már 2 hete
 minden este sétálok egyet
 futás 10 km @ 5:30/km
 sprint edzés: 10x100 m, köztük séta vissza
-sprint edzés: 10x100 m, köztük 20 perc séta
 akartam futni, de esett
 elfelejtettem elmenni edzeni
 az edzőterem zárva volt
@@ -1411,7 +1432,6 @@ streetball a téren
 wim hof légzés 15 perc
 90' foci
 45' futás
-30 perc úszás, 2:10/100m tempó
 bepótoltam a tegnapi futást, 8 km
 körbefutottam a margitszigetet
 körbetekertem a balatont
