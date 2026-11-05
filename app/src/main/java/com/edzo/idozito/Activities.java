@@ -5495,6 +5495,15 @@ public final class Activities {
             }
             int next = nextHit;
             int minutes = minsOf[i] > 0 ? minsOf[i] : loneAfterAll;
+            // A SOROZAT UTÁNI kiegészítő perce hozzáadódik, nem helyettesít:
+            // a „guggolás 5x5 100 kg, aztán 15 perc core" edzése tizenöt
+            // perces lett – a rúd alatt töltött órát a core negyedórája
+            // elvitte. A megterhelt sorozat a szokásos hosszt kapja, a
+            // kiegészítő rájön.
+            if ("kondi".equals(kind.id) && minutes > 0 && loadedSetIn(rawText)) {
+                int addon = addonMinutes(s, mins, minutes);
+                if (addon > 0) minutes = kind.defaultMin + addon;
+            }
             // Ismétlés-alapú tételnél a mondat TÁVOLI (más mozgáshoz írt)
             // időtartama nem érvényes: a „10 km futás 50 perc alatt és 100
             // fekvőtámasz" fekvőtámasza nem 50 perc – az ismétlésből becsülünk.
@@ -7911,6 +7920,24 @@ public final class Activities {
         if (s.matches("(?s).*\\d{1,3}\\s?(?:perc|ora)\\w*[^:.;]{0,20}?"
                 + "(?:edzes|edzest|kor|korkepzes|blokk)\\w*\\s*:.*")) return true;
         return s.matches("(?s).*(?<![a-z])(emom|e2mom|amrap)\\w*.*");
+    }
+
+    /**
+     * A megterhelt sorozat MELLÉ írt kiegészítő (core, hasizom, plank) perce,
+     * ha a mondat egyetlen ideje az, és a saját tagmondatában nincs sorozat
+     * vagy kiló; különben 0.
+     */
+    private static int addonMinutes(String s, List<int[]> mins, int minutes) {
+        if (mins.size() != 1 || mins.get(0)[1] != minutes) return 0;
+        int p = Math.min(mins.get(0)[0], s.length());
+        int a = p, b = p;
+        while (a > 0 && ",;.".indexOf(s.charAt(a - 1)) < 0) a--;
+        while (b < s.length() && ",;.".indexOf(s.charAt(b)) < 0) b++;
+        if (a == 0) return 0;                       // nincs előtte sorozat-tagmondat
+        String cl = s.substring(a, b);
+        if (cl.matches("(?s).*(?:\\d\\s?[x×]\\s?\\d|\\d\\s?(?:kg|kilo)).*")) return 0;
+        return cl.matches("(?s).*(?<![a-z])(?:core|hasizom|haspres|has|plank|torzs\\w*"
+                + "|labemeles|felules)(?![a-z]).*") ? minutes : 0;
     }
 
     /** Van-e a mondatban kilóval terhelt sorozat (rúd, kézisúlyzó, gép). */

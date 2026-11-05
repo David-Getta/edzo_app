@@ -3145,4 +3145,13 @@ public class StrengthParseTest {
         assertEquals("Fekvenyomás 3×8/8/8@80", sum("Fekvenyomás 3x8 70, 75, 80 kg"));
         assertEquals("Fekvenyomás 3×8/8/8@80", sum("Fekvenyomás 3x8 (70, 75, 80 kg)"));
     }
+
+    /** A plusz a ráakasztott súly: a „+10 kg" tíz kiló. */
+    @Test public void aPlusSignMarksTheAddedWeight() {
+        assertEquals("Húzódzkodás 5×6/6/6/6/6@10", sum("Húzódzkodás 5x6 +10 kg"));
+        assertEquals("Húzódzkodás 5×6/6/6/6/6@10",
+                sum("Húzódzkodás 5 sorozat 6 ismétlés, +10 kg"));
+        assertEquals("Tolódzkodás 5×10/10/10/8/8@15",
+                sum("Dips 3x10 saját testsúly, aztán 2x8 +15 kg"));
+    }
 }

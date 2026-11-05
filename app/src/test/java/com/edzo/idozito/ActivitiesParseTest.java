@@ -1138,6 +1138,19 @@ public class ActivitiesParseTest {
         return sb.toString();
     }
 
+    /** A megterhelt sorozat utáni kiegészítő perce hozzáadódik a szokásos hosszhoz. */
+    @Test public void aCoreAddonAfterLoadedSetsExtendsTheSession() {
+        assertEquals("kondi/75 ", dump(Activities.parse(
+                "Guggolás 5x5 100 kg, aztán 15 perc core").plans));
+        assertEquals("kondi/70 ", dump(Activities.parse(
+                "Deadlift 5x3 150 kg, utána 10 perc core").plans));
+        assertEquals("kondi/70 ", dump(Activities.parse(
+                "Fekvenyomás 3x10 60 kg, aztán 10 perc hasizom").plans));
+        // A kimondott teljes idő marad az edzés hossza.
+        assertEquals("kondi/45 ", dump(Activities.parse("Guggolás 5x5 100 kg, 45 perc").plans));
+        assertEquals("kondi/45 ", dump(Activities.parse("Kondi 45 perc: guggolás 5x5 100 kg").plans));
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

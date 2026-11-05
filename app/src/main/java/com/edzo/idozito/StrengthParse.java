@@ -521,6 +521,11 @@ public final class StrengthParse {
             text = wb.toString();
         }
         text = text.replaceAll("\\(|(?<!\\d)\\)", ", ");
+        // A PLUSZ a ráakasztott súly: a „húzódzkodás 5x6, +10 kg" és a
+        // „dips 3x10 saját testsúly, aztán 2x8 +15 kg" plusz tíz-tizenöt
+        // kilója eddig elveszett – a plusz jel miatt a szám nem volt kiló.
+        text = text.replaceAll("(?<![\\d,.])\\+\\s?(\\d{1,3}(?:[.,]\\d{1,2})?)"
+                + "(?=\\s?(?:kg|kil[oó]))", "$1");
         // Az ÖSSZEG ÉS A BONTÁSA egy adag: a „fekvőtámasz 100 db egy nap
         // alatt, 10x10" száz darabja mellé még tíz tízes sorozat is
         // bekerült – kétszáz fekvőtámasz száz helyett. Ha a bontás
