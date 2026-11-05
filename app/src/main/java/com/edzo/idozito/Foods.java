@@ -2555,6 +2555,17 @@ public final class Foods {
         // az ugyanaz a szó – vagyis a szám közvetlenül az ételhez tartozik.
         String raw = q.substring(numEnd, foodPos);
         if (raw.matches("^\\s?[a-z0-9]+$")) return "";
+        // A JELZŐ sem szakítja el a számot az ételtől: a „3 sajtos szendvics",
+        // a „2 sós perec" és a „3 piros alma" darabszáma eddig elveszett,
+        // mert a jelző nem volt a méret-jelzők listáján – egy adag ment be
+        // három helyett. A képzett alak (-s, -i, -ú, -tt) árulja el, hogy
+        // jelző; a saját szótővel bíró étel („2 tojás rántotta") nem az.
+        // A MÉRTÉK szava nem jelző: a „fél deci tej müzlivel" decije i-re
+        // végződik, és fél adag müzlit írt a naplóba.
+        if (between.matches("(?=[a-z]{3,}$)[a-z]*(?:[aeiou]s|u|i|tt|lt)")
+                && !between.matches("deci|centi|milli|kilo|deka|liter|literes|decis"
+                    + "|kilos|dekas|grammos|poharnyi|kanalnyi|mareknyi|csipetnyi")
+                && !isFoodStem(between)) return "";
         // A KÉTSZAVAS jelző is beférhet a mérőszó és az étel közé: a „3 db
         // teljes kiőrlésű kifli" egyetlen kiflit írt a naplóba – a hármas
         // elveszett, mert az alábbi szabály csak EGY szónyi jelzőt tűrt el.
@@ -2743,6 +2754,36 @@ public final class Foods {
     private static boolean isCountWord(String w) {
         for (String c : COUNT_WORDS) if (norm(c).equals(w)) return true;
         return false;
+    }
+
+    /** Pontosan egy étel szótöve-e a szó („tojas" igen, „sajtos" nem). */
+    private static boolean isFoodStem(String w) {
+        for (Food f : ALL) for (String ns : f.nstems) if (ns.equals(w)) return true;
+        return false;
+    }
+
+    /**
+     * A jelzővé ragozott étel („tonhalAS", „lazacOS") után közvetlenül álló
+     * másik étel sorszáma, vagy -1. A „2 db tonhalas tortilla" kettője a
+     * tonhalé lett – kétszáz gramm hal –, a tortilla meg egy maradt: a
+     * darabszám a fogásé, a töltelék csak jelző.
+     */
+    private static int adjectiveHead(String q, List<Integer> foodPos, List<Integer> foodLen,
+                                     int k) {
+        int e = foodPos.get(k) + foodLen.get(k);
+        int we = e;
+        while (we < q.length() && Character.isLetter(q.charAt(we))) we++;
+        if (!q.substring(e, we).matches("[aeou]?s")) return -1;
+        int n = we;
+        while (n < q.length() && q.charAt(n) == ' ') n++;
+        if (n == we || n >= q.length()) return -1;
+        for (int k2 = 0; k2 < foodPos.size(); k2++) {
+            if (k2 == k || foodPos.get(k2) < n) continue;
+            int ws = foodPos.get(k2);
+            while (ws > 0 && Character.isLetter(q.charAt(ws - 1))) ws--;
+            if (ws == n) return k2;
+        }
+        return -1;
     }
 
     /** Csak írásjel és szóköz áll a két pozíció között? */
@@ -3466,6 +3507,10 @@ public final class Foods {
                 "$1$2, 30 g tej");
         query = query.replaceAll("(?iu)(?<!\\p{L})tejes\\s+k[aá]v[eé](\\p{L}*)",
                 "tejeskave$1");
+        // A NÉGY SAJTOS pizza egy pizza, a négyes a neve: amióta a jelző nem
+        // szakítja el a darabszámot az ételtől, négy pizza lett belőle.
+        query = query.replaceAll("(?iu)(?<![\\p{L}\\d])(?:n[eé]gy|4)\\s?-?\\s?sajtos"
+                + "(?=\\s+pizz)", "quattro formaggi");
         // A KIS ZACSKÓ a nasi egy adagja, nem a bolti zacskó: az „egy kis
         // zacskó gumicukor" a gyerekeknek csomagolt harminc gramm.
         query = query.replaceAll("(?iu)(?<!\\p{L})(?:kis|kicsi|mini)\\s+(?:zacsk[oó]|csomag)"
@@ -4489,6 +4534,9 @@ public final class Foods {
             if (percentAfter(q, numEnd)) continue;
             for (int k = 0; k < foods.size(); k++) {
                 if (grams[k] > 0 || foodPos.get(k) < 0) continue;
+                // A TÖLTELÉK jelzője nem kapja a darabszámot: a „2 db
+                // tonhalas tortilla" kettője a tortilláé.
+                if (adjectiveHead(q, foodPos, foodLen, k) >= 0) continue;
                 String between = countWordAt(q, numEnd, foodPos.get(k));
                 // A darabszám egy KÉSŐBBI előfordulás előtt is állhat
                 // („sörözés: 3 korsó sör" – az étel tárolt pozíciója az első
@@ -4518,6 +4566,21 @@ public final class Foods {
                 // Az „adag" bármely ételre megy: egy adag a tipikus adag.
                 // A „fél adag gyros" így 175 gramm, a „2 adag gulyás" dupla.
                 double piece = pieceFor(foods.get(k), between);
+                // A TÖLTÖTT tekercs egy adag, nem egy üres lap: a „2 db
+                // tonhalas tortilla" darabja a kétszáz grammos wrap, nem a
+                // hatvan grammos lap. A töltelék jelzője mondja meg – maga a
+                // töltelék addigra már kiesett a tekercs mellől.
+                if (foods.get(k).name.startsWith("Tortilla") && (between.isEmpty()
+                        || between.startsWith("db") || between.startsWith("darab"))) {
+                    int ws = foodPos.get(k);
+                    while (ws > 0 && Character.isLetter(q.charAt(ws - 1))) ws--;
+                    int pe = ws;
+                    while (pe > 0 && q.charAt(pe - 1) == ' ') pe--;
+                    int ps = pe;
+                    while (ps > 0 && Character.isLetter(q.charAt(ps - 1))) ps--;
+                    if (q.substring(ps, pe).matches("[a-z]{3,}[aeiou]s"))
+                        piece = Math.max(piece, foods.get(k).portion);
+                }
                 // Aminek nincs természetes darabmérete, ott a tipikus adag a
                 // darab: a „két kebab" eddig egyetlen kebabnak számított, mert
                 // a számláló egyszerűen elveszett. Ez 267 ételt érintett.
@@ -5368,21 +5431,24 @@ public final class Foods {
             // rétes" mellé eddig másfél deka nyers káposzta is bekerült, a
             // „túrós rétes" mellé egy adag túró.
             {"Káposzta", "Rétes", "Töltött káposzta"},
-            {"Túró", "Rétes", "Túrós csusza", "Túrógombóc"},
+            {"Túró", "Rétes", "Túrós csusza", "Túrógombóc", "Pogácsa"},
             // A szendvics és a hamburger adagja is a feltéttel együtt értendő:
             // a „sonkás-sajtos melegszendvics" egy szendvics, nem szendvics
             // PLUSZ egy adag sonka PLUSZ egy adag sajt – az együtt már két
             // szendvicsnyi kalória.
             // A gyros és a kebab kész tál: a hús, a lepény és az öntet együtt
             // van benne. A quesadilla neve maga jelenti a sajtot.
-            {"Sajt (trappista)", "Pizza", "Szendvics", "Hamburger", "Gyros", "Kebab",
+            // A sajtos pogi és a sajtos croissant sajtja a tésztában sül.
+            {"Sajt (trappista)", "Pogácsa", "Péksütemény", "Pizza", "Szendvics", "Hamburger", "Gyros", "Kebab",
                     "Quesadilla"},
             {"Sonka", "Pizza", "Szendvics", "Gyros", "Kebab"},
             {"Szalámi", "Pizza", "Szendvics"},
             {"Gomba", "Pizza"},
             // A lazacos sushi lazaca a szettben van, a lecsó paprikája a
             // lábosban – egyik sem külön adag a tál mellé.
-            {"Lazac", "Sushi", "Poke bowl"},
+            // A lazacos bagel lazaca a bagelen van: a „2 lazacos bagel"
+            // mellé eddig háromszáz gramm lazac is bekerült.
+            {"Lazac", "Sushi", "Poke bowl", "Szendvics", "Péksütemény"},
             {"Tonhal", "Poke bowl"},
             {"Paprika", "Lecsó"},
             // A „citromOS" fagyi íze citrom, nem egy pohár citromlé mellé.
@@ -5410,7 +5476,8 @@ public final class Foods {
                     "Szendvics"},
             // A tonhalas és a tojásos szendvics ugyanígy: a töltelék a
             // szendvics adagjában van.
-            {"Tonhal", "Szendvics"},
+            // A tonhalas tortilla tölteléke is a tekercsben van.
+            {"Tonhal", "Szendvics", "Tortilla / wrap"},
             {"Tojás", "Szendvics"},
             // A burrito és a taco töltve érkezik: a „burrito marhahússal"
             // egy burrito, nem burrito PLUSZ egy szelet marha.

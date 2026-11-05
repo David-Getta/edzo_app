@@ -562,6 +562,30 @@ public class FoodsParseTest {
         assertEquals(150.0, hits("Csirkecomb 150 g").get(0).grams, 0.01);
     }
 
+    /** A jelző nem szakítja el a darabszámot az ételtől, és a töltelék jelzője a fogásé. */
+    @Test public void anAdjectiveKeepsTheCountOnTheDish() {
+        assertEquals(450.0, hits("3 sajtos szendvics").get(0).grams, 0.01);
+        assertEquals(300.0, hits("2 sonkás szendvics").get(0).grams, 0.01);
+        assertEquals(100.0, hits("2 sós perec").get(0).grams, 0.01);
+        assertEquals(450.0, hits("3 piros alma").get(0).grams, 0.01);
+        assertEquals(400.0, hits("2 reggeli kávé").get(0).grams, 0.01);
+        // A töltelék jelzője a tekercsé: két töltött wrap, nem kétszáz gramm hal.
+        List<Foods.Hit> h = hits("Vacsorára 2 db tonhalas tortilla");
+        assertEquals(1, h.size());
+        assertEquals("Tortilla / wrap", h.get(0).food.name);
+        assertEquals(400.0, h.get(0).grams, 0.01);
+        assertEquals(120.0, hits("2 lazacos bagel").get(0).grams, 0.01);
+        assertEquals(1, hits("2 lazacos bagel").size());
+        assertEquals(1, hits("3 túrós pogácsa").size());
+        assertEquals(1, hits("2 sajtos croissant").size());
+        // A tojásos rántotta tojásszáma marad tojás, nem két rántotta.
+        assertEquals(110.0, hits("2 tojás rántotta").get(0).grams, 0.01);
+        assertEquals(165.0, hits("3 tojásos omlett sajttal").get(0).grams, 0.01);
+        // Az üres lap marad hatvan gramm, a felsorolt sajt külön tétel.
+        assertEquals(120.0, hits("2 tortilla").get(0).grams, 0.01);
+        assertEquals(2, hits("Sajt és pogácsa").size());
+    }
+
     /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
     @Test public void aDiabeticIsNotSugar() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);
