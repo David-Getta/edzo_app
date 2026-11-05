@@ -1427,6 +1427,19 @@ public class BodyParseTest {
         assertEquals(0.0, BodyParse.parse("Der\u00e9k 84, bicepsz 3x12 15 kg").cm[4], 0.01);
     }
 
+    /** A reggeli m\u00e9r\u00e9s a m\u00e9rleg m\u00e9r\u00e9se: az esti \u00e9s a tegnap esti sz\u00e1m kiesik. */
+    @Test public void theMorningWeightWinsOverTheEvening() {
+        kg("Reggel 81,2 kg, este 82,5", 81.2);
+        kg("Reggel 81,2 kg voltam, este m\u00e1r 82,5", 81.2);
+        kg("Reggel 81,2, este 82,5 kg", 81.2);
+        kg("Este 82,5 kg, reggel 81,2 volt", 81.2);
+        kg("Ma reggel \u00e9hgyomorra 79,4, tegnap este 80,8 volt", 79.4);
+        // Reggeli m\u00e9r\u00e9s n\u00e9lk\u00fcl az esti marad; a reggeli fut\u00e1s nem m\u00e9r\u00e9s.
+        kg("Este 82,5 kg", 82.5);
+        kg("Reggel 30 perc fut\u00e1s, este 82,5 kg", 82.5);
+        kg("Reggel 80 kg, este 90 perc kondi", 80.0);
+    }
+
     @Test public void aSwimLapCountIsNotAWeight() {
         assertEquals(0.0, BodyParse.parse("Lementem 30 hosszt a m\u00e1sik "
                 + "s\u00e1vban.").kg, 0.01);

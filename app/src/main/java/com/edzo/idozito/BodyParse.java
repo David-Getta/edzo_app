@@ -247,6 +247,22 @@ public final class BodyParse {
      * belőle. A régi értéket kivágjuk, a mai marad a helyén.
      */
     private static String keepTheNewValue(String s) {
+        // A REGGELI mérés a mérleg mérése: a „reggel 81,2 kg, este 82,5"
+        // estéje a napközbeni ingadozás – mégis az került a trendbe, és a
+        // „ma reggel 79,4, tegnap este 80,8 volt" tegnapi estéje is. Ha a
+        // reggel mellett súlynak látszó szám áll, az esti (déli, délutáni)
+        // szám kiesik; a mértékegysége marad, hogy a reggeli értse. A
+        // „reggel MÉG 79,8 volt, este már 79,2" kivétel: ott a reggeli a
+        // kiindulópont, és a későbbi szám a mai – arról külön teszt szól.
+        if (!s.matches("(?s).*(?<![a-z])reggel\\w*\\s+meg(?![a-z]).*")
+                && s.matches("(?s).*(?<![a-z])reggel\\w*(?![a-z])[^,;.\\d]{0,20}?"
+                + "(?:[3-9]\\d|1\\d\\d|2[0-4]\\d)(?:[.,]\\d{1,2})?(?!\\d|[.,]\\d|:"
+                + "|\\s?(?:-?kor|orakor|perc|ora|km|m(?![a-z])|lepes|kcal|pohar|db|x)).*"))
+            s = s.replaceAll("(?<![a-z])(?:este|estere|estefele|delben|delutan|ejjel)"
+                    + "(?![a-z])[^,;.\\d]{0,16}?(?:[3-9]\\d|1\\d\\d|2[0-4]\\d)"
+                    + "(?:[.,]\\d{1,2})?(?!\\d|[.,]\\d|:|\\s?(?:-?kor|orakor|perc|ora"
+                    + "|km|m(?![a-z])|lepes|kcal|pohar|db|darab|dl|ml|cm|centi|%|szazalek|x))"
+                    + "(\\s?(?:kg|kilo)\\w*)?(?:\\s?(?:volt|voltam|lettem|vagyok))?", "$1");
         // A KÖRMÉRET változása centiben értendő: a „derékbőség lement
         // 90-ről 86-ra" egyik számán sincs cm, így a maradó új érték sem
         // volt körméretnek olvasható – a mértékegységet visszaírjuk.
@@ -293,7 +309,10 @@ public final class BodyParse {
         // hónapokban mért múltat ismerte, pedig a mérleget naponta nézik.
         // Csak akkor vágunk, ha a tegnapi szám ELŐTT áll egy mai mérés –
         // a magában álló „tegnap 82,9 kg volt" mondat marad, ami volt.
-        if (s.matches("(?s).*\\d\\s?(?:kg|kilo|cm|centi|%|szazalek).*"
+        // A TIZEDES szám is mai mérés: a „ma reggel éhgyomorra 79,4,
+        // tegnap este 80,8 volt" hetvenkilence kiló nélkül állt, és a
+        // tegnapi maradt a trendben.
+        if (s.matches("(?s).*(?:\\d\\s?(?:kg|kilo|cm|centi|%|szazalek)|\\d[.,]\\d(?!\\d)).*"
                 + "(?<![a-z])(?:tegnap|tegnapelott|multkor)(?![a-z]).*"))
             s = s.replaceAll("(?<![a-z])(?:tegnapelott|tegnap|multkor)(?![a-z])"
                     + "[^,;.\\d]{0,12}?\\d{1,3}(?:[.,]\\d{1,2})?\\s?"
