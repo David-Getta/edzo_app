@@ -3134,4 +3134,15 @@ public class StrengthParseTest {
         assertEquals("Guggolás 3×5/5/5@100", sum("Derék 84, guggolás 3x5 100"));
         assertEquals("Vádliemelés 1×50@0", sum("Vádliemelés 50"));
     }
+
+    /** A másik tagmondat perce nem súlylista, a mondatvégi pont nem lista-jel. */
+    @Test public void theNextClauseDoesNotStealTheWeight() {
+        assertEquals("Guggolás 3×10/10/10@50", sum("Guggolás 3x10 50, 15 perc kocogás"));
+        assertEquals("Guggolás 3×10/10/10@50", sum("Guggolás 3x10 50. Utána 15 perc kocogás"));
+        assertEquals("Guggolás 3×10/10/10@50 | Fekvenyomás 3×8/8/8@60",
+                sum("Guggolás 3x10 50. Fekvenyomás 3x8 60"));
+        // A valódi súlylista marad piramis.
+        assertEquals("Fekvenyomás 3×8/8/8@80", sum("Fekvenyomás 3x8 70, 75, 80 kg"));
+        assertEquals("Fekvenyomás 3×8/8/8@80", sum("Fekvenyomás 3x8 (70, 75, 80 kg)"));
+    }
 }

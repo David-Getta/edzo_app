@@ -1087,6 +1087,24 @@ public class ActivitiesParseTest {
         assertEquals("uszas/25 ", dump(Activities.parse("Úsztam 10x100 m-t").plans));
     }
 
+    /** A sorozat utáni puszta súly nem örökli a lista percét. */
+    @Test public void theWeightAfterASetDoesNotInheritMinutes() {
+        assertEquals("kondi/60 futas/15 ", dump(Activities.parse(
+                "Guggolás 3x10 50, aztán 15 perc kocogás").plans));
+        assertEquals("kondi/60 tura/15 ", dump(Activities.parse(
+                "Guggolás 3x10 50, aztán 15 perc séta").plans));
+        // Az evezés sorozata a teremé, nem ötven perc evezőgép.
+        assertEquals("kondi/60 futas/15 ", dump(Activities.parse("Tegnap kondi: "
+                + "fekvenyomás 4x8 70, evezés 3x10 50, aztán 15 perc kocogás "
+                + "levezetésként").plans));
+        assertEquals("kondi/60 joga/10 ", dump(Activities.parse(
+                "Kondi: evezés 3x10 50, utána 10 perc nyújtás").plans));
+        // A perc-lista és a sorozat utáni idő marad, ahogy volt.
+        assertEquals("kondi/25 ", dump(Activities.parse("Guggolás 3x40, 25 perc").plans));
+        assertEquals("tura/20 tura/10 tura/30 ", dump(Activities.parse(
+                "Kutyát sétáltattam háromszor: reggel 20, délben 10, este 30 perc").plans));
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

@@ -340,8 +340,14 @@ public final class StrengthParse {
         // A SOROZAT második száma nem lista-jel: a „guggolás 5x5. valami"
         // ötöse ismétlés, és a mondatból „5x valami" maradt – a gyakorlat
         // teljesen kiesett az erőnaplóból, ha bármi követte a sorozatot.
-        return s.replaceAll("(?<![\\d,.])(?<!\\dx)(?<!\\d×)"
-                + "(\\d{1,2})[.)]\\s+(?=[a-z])", " ");
+        // A SOROZAT UTÁNI SÚLY sem: a „guggolás 3x10 50. Utána 15 perc
+        // kocogás" ötven kilója lista-jelként esett ki, és saját testsúlyos
+        // guggolás került a naplóba. A kis szám marad lista-jel: az „1.
+        // guggolás 3x10 2. fekvenyomás 3x8" kettese a második pont, nem
+        // két kiló.
+        s = s.replaceAll("(?<![\\d,.])(?<!\\dx)(?<!\\d×)(?:\\d|1\\d)[.)]\\s+(?=[a-z])", " ");
+        return s.replaceAll("(?<![\\d,.])(?<!\\dx)(?<!\\d×)(?<![x×]\\s?\\d{1,3}\\s)"
+                + "[2-9]\\d[.)]\\s+(?=[a-z])", " ");
     }
 
     /**
@@ -485,6 +491,11 @@ public final class StrengthParse {
             java.util.regex.Matcher wl = java.util.regex.Pattern.compile(
                     "(?iu)(\\d{1,2}\\s?[x×]\\s?\\d{1,3})\\s*\\(?\\s*"
                     + "(\\d{2,3}(?:[.,]5)?(?:\\s*,\\s*\\d{2,3}(?:[.,]5)?){1,5})"
+                    // A MÁSIK TAGMONDAT ideje nem a lista tagja: a „guggolás
+                    // 3x10 50, 15 perc kocogás" tizenöt perce súlylistává
+                    // vált, és tizenöt kilós guggolás lett az ötven helyett.
+                    + "(?!\\s?(?:perc|mp|m[aá]sodperc|km|cm|ism|db|darab|k[oö]r"
+                    + "|sorozat|szett|x|×|[-\\s]?[aeoö]s)(?![\\p{L}]))"
                     + "\\s?(kg|kil[oó]\\p{L}*)?\\s*\\)?").matcher(text);
             StringBuffer wb = new StringBuffer();
             while (wl.find()) {

@@ -1578,7 +1578,11 @@ public final class Activities {
             // A SOROZAT ismétlésszáma nem a lista tagja: a „guggolás 3x40,
             // 25 perc" negyvenese percet kapott, és a kondi negyven perces
             // lett a huszonöt helyett.
-            String g = s.replaceAll("(?<![\\d,.x×])(?<![x×]\\s)(\\d{1,3})\\s*"
+            // A SOROZAT UTÁNI SÚLY sem: a „guggolás 3x10 50, aztán 15 perc
+            // kocogás" ötven kilója ötven percet kapott, és a bejegyzésből
+            // semmi nem lett – se kondi, se kocogás.
+            String g = s.replaceAll("(?<![\\d,.x×])(?<![x×]\\s)(?<![x×]\\s?\\d{1,3}\\s)"
+                    + "(\\d{1,3})\\s*"
                     + "(?=,\\s*(?:\\p{L}{2,12}\\s+){0,2}?"
                     + "\\d{1,3}\\s?perc(?:et|re|ig)?(?![a-z]))", "$1 perc");
             if (g.equals(s)) break;

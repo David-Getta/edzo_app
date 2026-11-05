@@ -319,6 +319,17 @@ tura/30 kondi/60
 Sétáltam 30 percet, utána plank 3x60 mp
 uszas/25 
 Úsztam 10x100 m-t
+kondi/60 futas/15 
+Guggolás 3x10 50, aztán 15 perc kocogás
+kondi/60 tura/15 
+Guggolás 3x10 50, aztán 15 perc séta
+Tegnap kondi: fekvenyomás 4x8 70, evezés 3x10 50, aztán 15 perc kocogás levezetésként
+kondi/60 joga/10 
+Kondi: evezés 3x10 50, utána 10 perc nyújtás
+kondi/25 
+Guggolás 3x40, 25 perc
+tura/20 tura/10 tura/30 
+Kutyát sétáltattam háromszor: reggel 20, délben 10, este 30 perc
 Ma 3 kör: 15 guggolás, 300 m evezés.
 Ma 5 rounds for time: 20 burpee, 400 m futás.
 Ma 400 m futás.
@@ -2160,7 +2171,6 @@ Reggel 7 kor futás 5 km
 Reggel 40 perc erősítés otthon: guggolás, fekvőtámasz, plank, 3 kör
 Futás 6 km, de az utolsó 2 km-t sétáltam
 10 km futás, az utolsó 1,5 km-t sétáltam
-Guggolás 3x40, 25 perc
 Fekvőtámasz 3x30, felülés 3x40, guggolás 3x40, 30 perc
 kutyát sétáltattam háromszor: reggel 20, délben 10, este 30 perc
 Bicikliztem be a munkába és haza, 2x8 km, kb 25-25 perc
@@ -6165,6 +6175,12 @@ Vádlim 38
 Derék 84, guggolás 3x5 100
 Vádliemelés 1×50@0
 Vádliemelés 50
+Guggolás 3×10/10/10@50
+Guggolás 3x10 50, 15 perc kocogás
+Guggolás 3x10 50. Utána 15 perc kocogás
+Guggolás 3×10/10/10@50 | Fekvenyomás 3×8/8/8@60
+Guggolás 3x10 50. Fekvenyomás 3x8 60
+Fekvenyomás 3x8 (70, 75, 80 kg)
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam
