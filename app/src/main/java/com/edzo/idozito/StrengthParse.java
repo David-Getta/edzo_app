@@ -1162,6 +1162,24 @@ public final class StrengthParse {
                 "fiatalkoromban", "gyerekkoromban", "evekkel ezelott"})
             if (nrm.contains(w) && !nrm.matches(".*(?<![a-z])(ma|most|tegnap)(?![a-z]).*"))
                 return out;
+        // Az EMOM percenként egy sorozat: az „emom 12 perc, 10 kettlebell
+        // swing" és a „percenként 5 húzódzkodás, 12 percen át" egyetlen
+        // tízes, illetve ötös sorozat lett – a tizenkét perc tizenkét kör.
+        // Csak EGY gyakorlatnál: a váltott EMOM percei megoszlanak.
+        if (nrm.matches("(?s).*(?<![a-z])(?:emom|minden\\s+(?:egyes\\s+)?percben|percenkent)"
+                + "(?![a-z]).*") && !nrm.matches("(?s).*\\d\\s?[x\u00d7]\\s?\\d.*")
+                && distinctMoves(nrm) == 1) {
+            java.util.regex.Matcher len = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,2})\\s?perc(?:ig|en at|en keresztul|es|et)?(?![a-z])")
+                    .matcher(nrm);
+            if (len.find()) {
+                int n = Integer.parseInt(len.group(1));
+                if (n >= 2 && n <= 60)
+                    text = text.replaceFirst("(?iu)(?<![\\p{L}\\d,.:])(\\d{1,2})"
+                            + "(?!\\s?(?:perc|mp|kg|kil|m[aá]sodperc|x|×|\\d))(?=\\s+\\p{L})",
+                            n + "x$1");
+            }
+        }
         // A TABATA PERJELE idő, nem súly: a „tabata 8x20/10 fekvőtámasz"
         // tízesét SÚLYKÉNT írtuk a naplóba – tíz kilós fekvőtámasz került a
         // rekordok és az 1RM közé, holott a húsz és a tíz másodperc: munka
@@ -2336,6 +2354,15 @@ public final class StrengthParse {
         s = s.replaceAll("(?<![\\d,.])\\d{1,3}\\s?(?:napos|hetes|honapos"
                 + "|hettel|nappal|honappal)(?![a-z])", "#");
         return s.replaceAll("(?<![\\d,.:])\\d{1,4}(?:[.,]\\d+)?\\s*(?:km|m)(?![a-z])", "#");
+    }
+
+    /** Hány KÜLÖNBÖZŐ gyakorlat neve áll a (normalizált) szövegben. */
+    private static int distinctMoves(String s) {
+        int n = 0;
+        for (String[] row : MOVES)
+            for (int i = 1; i < row.length; i++)
+                if (s.contains(row[i])) { n++; break; }
+        return n;
     }
 
     /**

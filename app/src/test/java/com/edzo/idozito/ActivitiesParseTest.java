@@ -1061,6 +1061,7 @@ public class ActivitiesParseTest {
     @Test public void roundsAfterRepsAreNotAnHour() {
         assertEquals(12, Activities.parse("Guggolás 100 kg 5 ismétlés 3 kör").hour);
         assertEquals(12, Activities.parse("Fekvőtámasz 20 ismétlés 3 kör").hour);
+        assertEquals(12, Activities.parse("minden percben 1 kör, 15 percig").hour);
         // A napszakkal kimondott óra óra marad.
         assertEquals(17, Activities.parse("Délután 5 kor guggolás 3x10 80 kg").hour);
     }

@@ -3154,4 +3154,16 @@ public class StrengthParseTest {
         assertEquals("Tolódzkodás 5×10/10/10/8/8@15",
                 sum("Dips 3x10 saját testsúly, aztán 2x8 +15 kg"));
     }
+
+    /** Az EMOM percenként egy sorozat: a perc a sorozatok száma. */
+    @Test public void anEmomIsOneSetPerMinute() {
+        assertEquals("Húzódzkodás 12×5/5/5/5/5/5/5/5/5/5/5/5@0",
+                sum("Percenként 5 húzódzkodás, 12 percen át"));
+        assertSets("EMOM 10 perc: 8 guggolás 60 kg", "Guggolás", 10, 8, 60);
+        assertEquals(12, StrengthParse.parse("Emom 12 perc, 10 kettlebell swing percenként")
+                .get(0).sets.size());
+        // A váltott EMOM perceit nem osztjuk szét találomra.
+        assertEquals(1, StrengthParse.parse("Emom 16 perc: páratlan percben 10 fekvőtámasz, "
+                + "párosban 15 guggolás").get(0).sets.size());
+    }
 }

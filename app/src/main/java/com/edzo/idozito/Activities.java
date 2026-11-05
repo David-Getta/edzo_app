@@ -8684,6 +8684,10 @@ public final class Activities {
             // mondunk ismétlést vagy darabszámot.
             if (spaced && s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
                     + "(?:ismetles\\w*|ism|db|darab\\w*)\\s*$")) continue;
+            // A PERCENKÉNTI kör sem időpont: a „minden percben 1 kör, 15
+            // percig" hajnali egyre tette a bejegyzést.
+            if (spaced && s.substring(0, m.start()).matches("(?s).*(?<![a-z])"
+                    + "(?:percben|percenkent|emom)\\s*$")) continue;
             // A KÖR UTÁN KIMONDOTT IDŐTARTAM is körökről beszél: a „3 kör 15
             // perc alatt: 10 fekvőtámasz…" hajnali háromra került – óraállás
             // után nem áll közvetlenül perc.

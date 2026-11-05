@@ -167,9 +167,12 @@ public class IntervalParseTest {
     }
 
     @Test public void ambiguousSentencesGiveNothing() {
-        // A „15 percig” a teljes idő, nem egy szakasz hossza – megnevezetlenül
-        // ekkora munkaidőt nem fogadunk el, mert edzés közben derülne ki.
-        assertNull(IntervalParse.parse("minden percben 1 kör, 15 percig"));
+        // A „15 percig” a teljes idő, nem egy szakasz hossza: a „minden
+        // percben" az EMOM magyarul, tizenöt egyperces kör – nem egyetlen
+        // tizenöt perces munkaszakasz.
+        IntervalParse.Plan em = IntervalParse.parse("minden percben 1 kör, 15 percig");
+        assertEquals(15, em.rounds);
+        assertEquals(60, em.work);
         // Távalapú intervall: nincs benne idő, tehát nincs mit beállítani.
         assertNull(IntervalParse.parse("intervall: 400 m gyors, 200 m lassú"));
     }
@@ -1145,5 +1148,18 @@ public class IntervalParseTest {
         IntervalParse.Plan q = IntervalParse.parse("20 perc: 4 kör, 3 perc munka 2 perc pihenő");
         assertEquals(180, q.work);
         assertEquals(120, q.rest);
+    }
+
+    /** A „minden percben" az EMOM, a „menet" a box köre. */
+    @Test public void everyMinuteIsAnEmomAndMenetIsARound() {
+        IntervalParse.Plan p = IntervalParse.parse("Minden percben 10 burpee 15 percig");
+        assertEquals(15, p.rounds);
+        assertEquals(60, p.work);
+        assertEquals(12, IntervalParse.parse("Percenként 5 húzódzkodás, 12 percen át").rounds);
+        p = IntervalParse.parse("Állíts be 3 perces köröket 1 perc pihenővel, 5 menet");
+        assertEquals(5, p.rounds);
+        assertEquals(180, p.work);
+        assertEquals(60, p.rest);
+        assertNull(IntervalParse.parse("Minden percben ittam egy kortyot"));
     }
 }

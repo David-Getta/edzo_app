@@ -305,6 +305,7 @@ Ma 6,5 ezer lépés
 7.5 ezer lépés
 Guggolás 100 kg 5 ismétlés 3 kör
 Fekvőtámasz 20 ismétlés 3 kör
+minden percben 1 kör, 15 percig
 Délután 5 kor guggolás 3x10 80 kg
 Kitörés sétálva 3x20 lépés 2x10 kg
 kondi/12 
@@ -4581,7 +4582,6 @@ fél perc munka fél perc pihenő
 20/10 nyolcszor
 6 x 3 perc futás 1 perc séta
 köröskénti 50 mp munka és 10 mp pihenő, 10 kör
-minden percben 1 kör, 15 percig
 intervall: 400 m gyors, 200 m lassú
 négyszer negyven másodperc munka húsz másodperc pihenő
 1:30 munka 0:30 pihenő 6 kör
@@ -4729,6 +4729,10 @@ Intervall: 1 perc futás, 2 perc sétálás, 6 kör
 Ma 45 perc erősítés otthon: 4 kör guggolás, fekvőtámasz, kitörés
 Erősítés 30 perc, 3 kör: 10 guggolás, 10 fekvőtámasz
 20 perc: 4 kör, 3 perc munka 2 perc pihenő
+Minden percben 10 burpee 15 percig
+Percenként 5 húzódzkodás, 12 percen át
+Állíts be 3 perces köröket 1 perc pihenővel, 5 menet
+Minden percben ittam egy kortyot
 vacsora 650 kcal
 energiaszelet 220 kcal
 müzliszelet 180 kalória
@@ -6252,6 +6256,10 @@ Húzódzkodás 5x6 +10 kg
 Húzódzkodás 5 sorozat 6 ismétlés, +10 kg
 Tolódzkodás 5×10/10/10/8/8@15
 Dips 3x10 saját testsúly, aztán 2x8 +15 kg
+Húzódzkodás 12×5/5/5/5/5/5/5/5/5/5/5/5@0
+EMOM 10 perc: 8 guggolás 60 kg
+Emom 12 perc, 10 kettlebell swing percenként
+Emom 16 perc: páratlan percben 10 fekvőtámasz, párosban 15 guggolás
 múlt hétvégén túráztunk
 múlt hét végén túra
 előző hétvégén futottam

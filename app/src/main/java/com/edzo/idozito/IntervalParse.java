@@ -121,6 +121,23 @@ public final class IntervalParse {
                         "$1 munka")
                 .replaceAll("(\\d\\s?(?:mp|masodperc|mperc|perc|sec|s)\\w*)\\s+ki(?![a-z])",
                         "$1 piheno");
+        // A „MINDEN PERCBEN" az EMOM magyarul: a „minden percben 10 burpee
+        // 15 percig" egyáltalán nem lett terv. A hossz a kör-szám, a
+        // percenkénti ismétlés pedig nem az.
+        {
+            java.util.regex.Matcher em = java.util.regex.Pattern.compile(
+                    "(?<![a-z])(?:minden\\s+(?:egyes\\s+)?perc(?:ben|nek|\\s+elejen)"
+                    + "|percenkent)(?![a-z])").matcher(s);
+            java.util.regex.Matcher ln = java.util.regex.Pattern.compile(
+                    "(?<![\\d,.])(\\d{1,2})\\s?perc(?:ig|en at|en keresztul|es)(?![a-z])")
+                    .matcher(s);
+            // A percenkénti „1 kör" a perc tartalma, nem a körszám.
+            if (!s.contains("emom") && em.find() && ln.find()) {
+                String rest = s.substring(em.end()).replaceFirst(
+                        "^\\s*(?:\\d{1,2}|egy)\\s?kor\\w*(?![a-z])", " ");
+                s = s.substring(0, em.start()) + rest + " emom " + ln.group(1);
+            }
+        }
         // A „TABATA KÉTSZER" két blokk, tizenhat kör: eddig két kör lett.
         {
             java.util.regex.Matcher tb = java.util.regex.Pattern.compile(
@@ -419,6 +436,9 @@ public final class IntervalParse {
         if (rounds <= 0) rounds = numberBefore(s, "sorozat");
         if (rounds <= 0) rounds = numberBefore(s, "szett");
         if (rounds <= 0) rounds = numberBefore(s, "round");
+        // A MENET a box körének a neve: a „3 perces köröket 1 perc
+        // pihenővel, 5 menet" egyetlen körös időzítő lett.
+        if (rounds <= 0) rounds = numberBefore(s, "menet");
         // Az időzítőnél az „ismétlés" a kört jelenti, nem a súlyzós
         // ismétlésszámot: a „3 perc munka 1 perc pihenő, 6 ismétlés" hat kör.
         if (rounds <= 0) rounds = numberBefore(s, "ismetles");
