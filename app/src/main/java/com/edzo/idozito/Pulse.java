@@ -177,6 +177,17 @@ public final class Pulse {
             for (String g : new String[]{"atlag", "max", "kozben", "edzes", "futas",
                     "futottam", "seta", "bringa", "terheles"})
                 if (s.contains(g)) return -1;
+        // A TEGNAPI érték a tegnapé: a „nyugalmi pulzus tegnap 60, ma 57"
+        // és a „tegnap 60 volt a pulzusom, ma 57" mai ötvenhete elveszett –
+        // a tegnapi szám állta el a minta útját. Ha a mondat MAI számot is
+        // mond, a tegnapi kiesik, és a mai a pulzus-szóhoz kerül.
+        if (s.matches("(?s).*(?<![a-z])(?:tegnap\\w*|multkor)(?![a-z]).*")
+                && s.matches("(?s).*(?<![a-z])ma(?:\\s+reggel)?\\s*:?\\s*\\d{2,3}(?!\\d).*")) {
+            s = s.replaceAll("(?<![a-z])(?:tegnap(?:elott)?|multkor)(?:\\s+(?:reggel|este))?"
+                    + "\\s*:?\\s*\\d{2,3}(?!\\d)(?:\\s+volt)?", " ");
+            if (!s.matches("(?s).*pulzus\\w*\\s?:?\\s?(?:\\p{L}+\\s){0,3}?\\d.*"))
+                s = s.replaceAll("(?<![a-z])ma(?:\\s+reggel)?\\s*:?\\s*(\\d{2,3})(?!\\d)", "pulzus $1");
+        }
         for (java.util.regex.Pattern p : FORMS) {
             java.util.regex.Matcher m = p.matcher(s);
             if (!m.find()) continue;

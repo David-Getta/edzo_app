@@ -313,4 +313,12 @@ public class PulseTest {
         assertEquals(78.4, BodyParse.parse("Pulzus 52, súly 78,4").kg, 0.01);
         assertEquals(79.1, BodyParse.parse("Pulzus 55, 79,1").kg, 0.01);
     }
+
+    /** A tegnapi érték a tegnapé: a mai szám a mérés. */
+    @Test public void yesterdaysValueGivesWayToToday() {
+        assertEquals(57, Pulse.parse("Nyugalmi pulzus tegnap 60, ma 57"));
+        assertEquals(57, Pulse.parse("Tegnap 60 volt a pulzusom, ma 57"));
+        assertEquals(57, Pulse.parse("Nyugalmi pulzus ma 57, tegnap 60"));
+        assertEquals(62, Pulse.parse("Reggeli pulzus 62, tegnap 58 volt"));
+    }
 }

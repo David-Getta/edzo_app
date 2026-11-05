@@ -601,6 +601,12 @@ public class FoodsParseTest {
         assertEquals(0.0, h.get(1).grams, 0.01);   // adag, nem a kétszáz gramm
     }
 
+    /** A túrótorta a magyar sajttorta, nem általános sütemény. */
+    @Test public void aCurdCakeIsACheesecake() {
+        assertEquals("Sajttorta", hits("Egy szelet túrótorta").get(0).food.name);
+        assertEquals("Túró", hits("Ettem túrót").get(0).food.name);
+    }
+
     /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
     @Test public void aDiabeticIsNotSugar() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

@@ -746,7 +746,9 @@ public final class Foods {
         new Food("Krémes", 260, 5, 150, "kremes"),
         new Food("Vaníliás karika", 380, 6, 70, "vanilias karika", "vaniliaskarika"),
         new Food("Lekváros bukta", 300, 6, 100, "lekvaros bukta", "bukta"),
-        new Food("Sajttorta", 320, 6, 120, "sajttorta", "cheesecake"),
+        // A TÚRÓTORTA a magyar sajttorta: eddig általános süteményként ment.
+        // (A „túrós torta" nem tő: a Rákóczi túrós a sütemények között van.)
+        new Food("Sajttorta", 320, 6, 120, "sajttorta", "cheesecake", "turotorta"),
         new Food("Fánk / churros", 400, 5, 60, "fank", "churros", "donut", "doughnut"),
         new Food("Kürtőskalács", 380, 6, 120, "kurtoskalaccs", "kurtoskalacs", "trdelnik"),
         new Food("Rántott gomba", 220, 5, 150, "rantott gomba"),
