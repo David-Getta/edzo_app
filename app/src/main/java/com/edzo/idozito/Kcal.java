@@ -163,6 +163,13 @@ public final class Kcal {
      * aki külön írja őket, az egy étkezés részeit sorolja.
      */
     public static int stated(String q) {
+        // A NAPI ÖSSZESÍTÉS nem napi cél: a „napi összesítés: 2200 kcal"
+        // kétezer-kétszáza eddig elveszett, mert a „napi" a cél szava is.
+        // Az összesítés, a mérleg és a bevitel szava mellett a napi csak
+        // azt mondja, melyik napról van szó.
+        if (q != null)
+            q = q.replaceAll("(?iu)(?<![\\p{L}])napi\\s+(?=[oö]sszes[ií]t|[oö]sszeg"
+                    + "|m[eé]rleg|bevitel|kimutat|z[aá]r[aá]s)", "");
         // A FORDÍTOTT SZÓREND is bevitel: az „alvás 7h20m, lépés 8432, kcal
         // 2100" kalóriája eddig elveszett – a mértékegység a szám ELŐTT
         // állt, a szám meg egység nélkül maradt.
@@ -641,10 +648,12 @@ public final class Kcal {
             // ma 80 g volt" és a „ma a fehérje csak 80 gramm lett"
             // nyolcvana sehova nem került. A beékelődés csak a felsorolt
             // szavakból állhat, a kcal-számot pedig nem vesszük el.
-            "(?<![a-z])(?:feherje|protein)(?:cel\\w*|m|d|je|nk)?(?![a-z])"
+            // A TÁRGYESET és a „-ból" is fehérje: a „fehérjét csak 90 grammot
+            // ettem" és a „fehérjéből 90 g lett" kilencvene sehova nem került.
+            "(?<![a-z])(?:feherje|protein)(?:cel\\w*|m|d|je|nk|t|bol|ben|re|vel|val)?(?![a-z])"
                     + "(?:\\s+(?:ma|tegnap|csak|kb|korulbelul|osszesen"
                     + "|kereken|pedig|sajnos))*"
-                    + "[^0-9]{0,4}(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?"
+                    + "[^0-9]{0,4}(\\d+(?:[.,]\\d+)?)\\s*(g|gr|gramm)?(?:ot|al|mal)?"
                     + "(?![a-z])(?!\\s?-?(?:kcal|kalor))");
 
     /**

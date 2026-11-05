@@ -780,4 +780,14 @@ public class KcalTest {
         // A puszta cél továbbra sem bevitel.
         assertEquals(-1, Kcal.protein("Napi 140 g fehérje a cél"));
     }
+
+    /** A napi összesítés nem napi cél, a tárgyesetű fehérje is fehérje. */
+    @Test public void aDailySummaryIsIntakeAndAccusativeProteinCounts() {
+        assertEquals(2200, Kcal.stated("Napi összesítés: 2200 kcal, 45% szénhidrát"));
+        assertEquals(1900, Kcal.stated("Napi mérleg: 1900 kcal"));
+        // A napi cél marad cél.
+        assertTrue(Kcal.stated("Napi cél 1800 kcal") <= 0);
+        assertEquals(90, Kcal.protein("Fehérjét csak 90 grammot ettem"));
+        assertEquals(90, Kcal.protein("Fehérjéből 90 g lett"));
+    }
 }

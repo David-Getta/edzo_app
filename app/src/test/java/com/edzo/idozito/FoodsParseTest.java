@@ -586,6 +586,21 @@ public class FoodsParseTest {
         assertEquals(2, hits("Sajt és pogácsa").size());
     }
 
+    /** A makró-sor mértékegység nélküli zsírja nem olaj, a sütés közege nem kapja a fogás grammját. */
+    @Test public void aMacroLineFatAndTheFryingFatAreNotOil() {
+        assertTrue(hits("Ma 2100 kcal, fehérje 160 g, szénhidrát 200, zsír 70").isEmpty());
+        assertTrue(hits("Fehérje 160, szénhidrát 200, zsír 70").isEmpty());
+        // Makró-sor nélkül a zsír konyhai zsír marad.
+        assertEquals(70.0, hits("Zsír 70 g").get(0).grams, 0.01);
+        // A sütés közege kanálnyi zsír marad, a hátravetett mennyiség a fogásé.
+        List<Foods.Hit> h = hits("Sült krumpli zsírban, 200 g");
+        assertEquals(2, h.size());
+        assertEquals("Sült krumpli", h.get(0).food.name);
+        assertEquals(200.0, h.get(0).grams, 0.01);
+        assertEquals("Olaj", h.get(1).food.name);
+        assertEquals(0.0, h.get(1).grams, 0.01);   // adag, nem a kétszáz gramm
+    }
+
     /** A cukorbeteg nem cukor: a diagnózisból nem lesz tíz gramm az étrendben. */
     @Test public void aDiabeticIsNotSugar() {
         List<Foods.Food> all = java.util.Arrays.asList(Foods.ALL);

@@ -3647,6 +3647,11 @@ Vacsorára 2 db tonhalas tortilla
 3 tojásos omlett sajttal
 2 tortilla
 Sajt és pogácsa
+Ma 2100 kcal, fehérje 160 g, szénhidrát 200, zsír 70
+Fehérje 160, szénhidrát 200, zsír 70
+Zsír 70 g
+Sült krumpli zsírban, 200 g
+Sült krumpli
 cukorbeteg vagyok, figyelem a szénhidrátot
 egy teáskanál cukor a kávéba
 vasárnapi meal prep: 4 adag csirkés rizs a hétre
@@ -3801,7 +3806,6 @@ sorház utcában találkoztunk
 a sörházban megittunk két sört
 mekis menüt ettem sajtburgerrel
 big mac menü nagy krumplival és kólával
-Sült krumpli
 főtt krumpli pörkölthöz
 a 20 fokos vízben úsztam fél órát
 úsztam és utána ittam egy pohár vizet
@@ -4844,6 +4848,11 @@ Fehérjebevitel: 135g
 Mai makrók: F 150 / SZH 200 / Zs 60
 Napi 140 g fehérje a cél, ma 120 lett
 Napi 140 g fehérje a cél
+Napi összesítés: 2200 kcal, 45% szénhidrát
+Napi mérleg: 1900 kcal
+Napi cél 1800 kcal
+Fehérjét csak 90 grammot ettem
+Fehérjéből 90 g lett
 a küszöb pontosan ezt a szintet adja
 egy XP-vel a küszöb alatt még az előző szint
 a következő szint mindig többe kerül
