@@ -1151,6 +1151,27 @@ public class ActivitiesParseTest {
         assertEquals("kondi/45 ", dump(Activities.parse("Kondi 45 perc: guggolás 5x5 100 kg").plans));
     }
 
+    /** A „hétfő óta minden nap" a hétfőtől máig tartó időszak, naponta egy alkalom. */
+    @Test public void sinceAWeekdayIsASpanUpToToday() {
+        // 2026. szeptember 30., szerda dél.
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.SEPTEMBER, 30, 12, 0, 0);
+        long wed = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse("Hétfő óta minden nap 10 ezer lépés", wed);
+        assertEquals(3, p.days);
+        assertEquals(0, p.offset);
+        assertEquals("3×tura/77", summaryOf(p));
+        assertEquals(10000, p.plans.get(0).steps);
+        p = Activities.parse("Kedd óta mindennap 30 perc séta", wed);
+        assertEquals(2, p.days);
+        assertEquals("2×tura/30", summaryOf(p));
+        // Napi szó nélkül az időszak marad, az alkalom egy.
+        p = Activities.parse("Tegnap óta 2 futás", wed);
+        assertEquals(2, p.days);
+        assertEquals("2×futas/45", summaryOf(p));
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

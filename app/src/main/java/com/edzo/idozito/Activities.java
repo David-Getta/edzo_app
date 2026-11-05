@@ -6059,7 +6059,10 @@ public final class Activities {
         // fejenként egyet jelent („1-1 kézi és foci"), ott a darabszám már jó.
         if ((dist > 0 || daily) && days > 1 && out.size() == 1) {
             Plan p0 = out.get(0);
-            out.set(0, new Plan(p0.kind, Math.min(50, p0.count * days), p0.minutes, p0.km));
+            // A LÉPÉSSZÁM is megmarad: az „elmúlt 4 napban minden nap 10
+            // ezer lépés" négy sétája lépés nélkül ment be.
+            out.set(0, new Plan(p0.kind, Math.min(50, p0.count * days), p0.minutes, p0.km,
+                    p0.steps));
         }
         // Gyakoriság kibontása: a „hetente kétszer az elmúlt hónapban" heti
         // két alkalom × négy hét. Időszak nélkül maga a periódus az időszak.
@@ -8731,7 +8734,8 @@ public final class Activities {
                 while (e > 0 && s.charAt(e - 1) == ' ') e--;
                 int a = e;
                 while (a > 0 && Character.isLetter(s.charAt(a - 1))) a--;
-                int mi = monthIndexOf(s.substring(a, e));
+                String word = s.substring(a, e);
+                int mi = monthIndexOf(word);
                 if (mi >= 0) {
                     java.util.Calendar cal = java.util.Calendar.getInstance();
                     cal.setTimeInMillis(now);
@@ -8741,6 +8745,27 @@ public final class Activities {
                     int back = Days.between(cal.getTimeInMillis(), now);
                     if (back >= 1 && back <= 365) return new int[]{a, o + 3, back + 1};
                 }
+                // „HÉTFŐ ÓTA minden nap 10 ezer lépés": a napnévtől máig
+                // tartó időszak – eddig a hétfő egyetlen napnak számított,
+                // és a négy napi séta egy hétfői lett. A „tegnap óta" ugyanez.
+                int dowBack = -1;
+                if (word.equals("tegnap")) dowBack = 1;
+                else if (word.equals("tegnapelott")) dowBack = 2;
+                else {
+                    String[][] dows = {{"hetfo", "2"}, {"kedd", "3"}, {"szerda", "4"},
+                            {"csutortok", "5"}, {"pentek", "6"}, {"szombat", "7"},
+                            {"vasarnap", "1"}};
+                    java.util.Calendar dc = java.util.Calendar.getInstance();
+                    dc.setTimeInMillis(now);
+                    int today = dc.get(java.util.Calendar.DAY_OF_WEEK);
+                    for (String[] d : dows)
+                        if (word.equals(d[0])) {
+                            dowBack = (today - Integer.parseInt(d[1]) + 7) % 7;
+                            if (dowBack == 0) dowBack = 7;
+                        }
+                }
+                if (dowBack >= 1 && !emptyClauseAfter(s, o + 3))
+                    return new int[]{a, o + 3, dowBack + 1};
             }
             o = s.indexOf("ota", o + 1);
         }
