@@ -1105,6 +1105,39 @@ public class ActivitiesParseTest {
                 "Kutyát sétáltattam háromszor: reggel 20, délben 10, este 30 perc").plans));
     }
 
+    /**
+     * A kötőszóval összefogott napok egy tétel napjai: a „hétfőn és
+     * csütörtökön kondi, szerdán futás" három napneve a két tételhez eddig
+     * nem talált párt, és minden mára került.
+     */
+    @Test public void daysJoinedByAndBelongToOneEntry() {
+        // 2026. szeptember 30., szerda dél.
+        java.util.Calendar c = java.util.Calendar.getInstance();
+        c.clear();
+        c.set(2026, java.util.Calendar.SEPTEMBER, 30, 12, 0, 0);
+        long wed = c.getTimeInMillis();
+        Activities.Parsed p = Activities.parse(
+                "Hétfőn és csütörtökön kondi, szerdán 8 km futás", wed);
+        assertEquals("2×kondi/60, 1×futas/48", summaryOf(p));
+        assertArrayEquals(new int[]{2, 6, 0}, p.exactDays);
+        p = Activities.parse("Kedden úszás, csütörtökön és szombaton futás", wed);
+        assertEquals("1×uszas/45, 2×futas/45", summaryOf(p));
+        assertArrayEquals(new int[]{1, 6, 4}, p.exactDays);
+        // A felsorolás vesszője is összefog.
+        p = Activities.parse("Hétfőn, szerdán és pénteken kondi, kedden futás", wed);
+        assertEquals("3×kondi/60, 1×futas/45", summaryOf(p));
+        assertArrayEquals(new int[]{2, 0, 5, 1}, p.exactDays);
+    }
+
+    private static String summaryOf(Activities.Parsed p) {
+        StringBuilder sb = new StringBuilder();
+        for (Activities.Plan pl : p.plans) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(pl.count).append("×").append(pl.kind.id).append("/").append(pl.minutes);
+        }
+        return sb.toString();
+    }
+
     @Test public void everyDistanceInARoundIsMultiplied() {
         assertEquals(0.9, Activities.parse("Ma 3 kör: 15 guggolás, "
                 + "300 m evezés.").plans.get(1).km, 0.01);

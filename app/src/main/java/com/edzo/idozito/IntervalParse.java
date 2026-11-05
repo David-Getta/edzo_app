@@ -492,6 +492,19 @@ public final class IntervalParse {
         // („percig", „alatt", „összesen"), így a szakasz-hosszal nem
         // téveszthető össze.
         if (rounds <= 0) rounds = roundsFromTotal(s, work + rest);
+        // Az EGYETLEN, a körszám ELŐTT kimondott hosszú idő az egész edzésé,
+        // nem egy köré: a „45 perc erősítés: 4 kör guggolás, fekvőtámasz,
+        // kitörés" négy darab negyvenöt perces kört adott – háromórás
+        // időzítőt egy háromnegyed órás edzésből. A kör az összidő
+        // körszámnyi része.
+        if (rounds >= 2 && rest <= 0 && work >= 600 && timeCount(s) < 2) {
+            java.util.regex.Matcher ft = java.util.regex.Pattern
+                    .compile("(?<![\\d,.])\\d{1,3}\\s?(?:perc|ora)").matcher(s);
+            java.util.regex.Matcher kr = java.util.regex.Pattern
+                    .compile("(?<![a-z\\d])\\d{1,2}\\s?(?:kor|round)(?![a-z])").matcher(s);
+            if (ft.find() && kr.find() && ft.start() < kr.start())
+                work = Math.max(MIN_SEC, work / rounds);
+        }
         // Egy szám nem terv. A „sétáltam 20 percet", a „csípő mobilitás
         // gyakorlatok 15 perc" és a „hengereltem a hátamat 10 percet"
         // egyetlen kimondott időt tartalmaz – a séta és a gyakorlat szava

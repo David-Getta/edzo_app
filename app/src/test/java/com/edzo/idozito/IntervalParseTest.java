@@ -1132,4 +1132,18 @@ public class IntervalParseTest {
         assertEquals(120, IntervalParse.parse("Intervall: 1 perc futás, 2 perc sétálás, 6 kör").rest);
         assertEquals(40, IntervalParse.parse("8 kör: 20 mp sprint, 40 mp séta").rest);
     }
+
+    /** A körszám előtt kimondott egyetlen hosszú idő az egész edzésé, nem egy köré. */
+    @Test public void aLoneTotalBeforeTheRoundsIsSplitAmongThem() {
+        IntervalParse.Plan p = IntervalParse.parse(
+                "Ma 45 perc erősítés otthon: 4 kör guggolás, fekvőtámasz, kitörés");
+        assertEquals(4, p.rounds);
+        assertEquals(675, p.work);
+        assertEquals(600, IntervalParse.parse(
+                "Erősítés 30 perc, 3 kör: 10 guggolás, 10 fekvőtámasz").work);
+        // A kimondott munka/pihenő pár marad, ahogy volt.
+        IntervalParse.Plan q = IntervalParse.parse("20 perc: 4 kör, 3 perc munka 2 perc pihenő");
+        assertEquals(180, q.work);
+        assertEquals(120, q.rest);
+    }
 }

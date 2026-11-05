@@ -6185,10 +6185,41 @@ public final class Activities {
                 for (int i = 0, d = 0; i < out.size(); i++)
                     for (int k = 0; k < out.get(i).count; k++) ex.add(wdBacks.get(d++)[2]);
             } else {
-                // Nem egyértelmű párosítás: minden a legutóbbi megnevezett napra.
-                int minB = Integer.MAX_VALUE;
-                for (int[] w : wdBacks) minB = Math.min(minB, w[2]);
-                offset = minB;
+                // „Hétfőn és csütörtökön kondi, szerdán futás": a kötőszóval
+                // összefogott napok EGY tétel napjai – eddig a három napnév a
+                // két tételhez nem talált párt, és minden mára került.
+                java.util.List<java.util.List<int[]>> groups = new java.util.ArrayList<>();
+                for (int i = 0; i < n; i++) {
+                    int[] w = wdBacks.get(i);
+                    int[] pw = i > 0 ? wdBacks.get(i - 1) : null;
+                    // A felsorolás vesszője is összefog („hétfőn, szerdán és
+                    // pénteken"): csak írásjel és kötőszó állhat a napok közt.
+                    boolean joined = pw != null && pw[1] > 0 && w[0] >= pw[1]
+                            && w[0] <= rawText.length()
+                            && rawText.substring(pw[1], w[0]).matches(
+                                "\\s*,?\\s*(?:(?:es|meg|valamint|illetve)\\s+(?:pedig\\s+)?)?");
+                    if (joined) groups.get(groups.size() - 1).add(w);
+                    else {
+                        java.util.List<int[]> g = new java.util.ArrayList<>();
+                        g.add(w);
+                        groups.add(g);
+                    }
+                }
+                if (out.size() >= 2 && groups.size() == out.size()) {
+                    for (int i = 0; i < out.size(); i++) {
+                        Plan p = out.get(i);
+                        int per = Math.max(1, p.count);
+                        int totalC = Math.min(50, per * groups.get(i).size());
+                        out.set(i, new Plan(p.kind, totalC, p.minutes, p.km, p.steps));
+                        for (int[] w : groups.get(i))
+                            for (int k = 0; k < per && ex.size() < 50; k++) ex.add(w[2]);
+                    }
+                } else {
+                    // Nem egyértelmű párosítás: minden a legutóbbi megnevezett napra.
+                    int minB = Integer.MAX_VALUE;
+                    for (int[] w : wdBacks) minB = Math.min(minB, w[2]);
+                    offset = minB;
+                }
             }
             if (!ex.isEmpty()) {
                 int minB = Integer.MAX_VALUE, maxB = 0;
