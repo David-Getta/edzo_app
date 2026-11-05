@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Grit app-ikon Android 7-hez (nem adaptív fallback): bordó lekerekített mező +
+     Blaze, a tűzfarkas fehér farkasfeje. Android 8+ az adaptív változatot használja. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#6E1120"
+        android:pathData="M24,0 L84,0 A24,24 0 0 1 108,24 L108,84 A24,24 0 0 1 84,108 L24,108 A24,24 0 0 1 0,84 L0,24 A24,24 0 0 1 24,0 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M27,52 L37,22 L51,45 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M81,52 L71,22 L57,45 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,40 L77,40 L74,59 L54,85 L34,59 Z" />
+    <path
+        android:fillColor="#3A0810"
+        android:pathData="M41,50 L55,52 L44,61 Z" />
+    <path
+        android:fillColor="#3A0810"
+        android:pathData="M67,50 L53,52 L64,61 Z" />
+    <path
+        android:fillColor="#3A0810"
+        android:pathData="M48,68 L60,68 L54,78 Z" />
+</vector>
